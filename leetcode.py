@@ -352,3 +352,198 @@ class Solution:
                 return match and fn(i+1, j+1)
             
         return fn(0, 0)
+
+
+
+    """11. Container With Most Water (Medium)
+	Given n non-negative integers a1, a2, ..., an , where each represents a 
+	point at coordinate (i, ai). n vertical lines are drawn such that the two 
+	endpoints of line i is at (i, ai) and (i, 0). Find two lines, which 
+	together with x-axis forms a container, such that the container contains 
+	the most water.
+
+	Note: You may not slant the container and n is at least 2.
+
+	Example:
+	Input: [1,8,6,2,5,4,8,3,7]
+	Output: 49"""
+
+    def maxArea(self, height: List[int]) -> int:
+        ans = 0
+        lo, hi = 0, len(height)-1
+        while lo < hi: 
+            ans = max(ans, (hi-lo)*min(height[lo], height[hi]))
+            if height[lo] < height[hi]: lo += 1
+            else: hi -= 1
+        return ans 
+
+
+
+    """12. Integer to Roman (Medium)
+	Roman numerals are represented by seven different symbols: I, V, X, L, C, D 
+	and M.
+
+	Symbol       Value
+	I             1
+	V             5
+	X             10
+	L             50
+	C             100
+	D             500
+	M             1000
+	For example, two is written as II in Roman numeral, just two one's added 
+	together. Twelve is written as, XII, which is simply X + II. The number 
+	twenty seven is written as XXVII, which is XX + V + II.
+
+	Roman numerals are usually written largest to smallest from left to right. 
+	However, the numeral for four is not IIII. Instead, the number four is 
+	written as IV. Because the one is before the five we subtract it making 
+	four. The same principle applies to the number nine, which is written as 
+	IX. There are six instances where subtraction is used:
+
+	I can be placed before V (5) and X (10) to make 4 and 9. 
+	X can be placed before L (50) and C (100) to make 40 and 90. 
+	C can be placed before D (500) and M (1000) to make 400 and 900.
+	Given an integer, convert it to a roman numeral. Input is guaranteed to be 
+	within the range from 1 to 3999.
+
+	Example 1:
+	Input: 3
+	Output: "III"
+
+	Example 2:
+	Input: 4
+	Output: "IV"
+
+	Example 3:
+	Input: 9
+	Output: "IX"
+
+	Example 4:
+	Input: 58
+	Output: "LVIII"
+	Explanation: L = 50, V = 5, III = 3.
+
+	Example 5:
+	Input: 1994
+	Output: "MCMXCIV"
+	Explanation: M = 1000, CM = 900, XC = 90 and IV = 4."""
+
+    def intToRoman(self, num: int) -> str:
+        roman = {1000:"M", 900:"CM", 500:"D", 400:"CD", 100:"C", 90:"XC", 50:"L", 40:"XL", 10:"X", 9:"IX", 5:"V", 4:"IV", 1:"I"}
+        ans = []
+        for k, v in roman.items(): 
+            ans.append(num//k * v)
+            num %= k
+        return "".join(ans)
+
+	"""13. Roman to Integer (Easy)
+	Roman numerals are represented by seven different symbols: I, V, X, L, C, 
+	D and M.
+
+	Symbol       Value
+	I             1
+	V             5
+	X             10
+	L             50
+	C             100
+	D             500
+	M             1000
+	For example, two is written as II in Roman numeral, just two one's added 
+	together. Twelve is written as, XII, which is simply X + II. The number 
+	twenty seven is written as XXVII, which is XX + V + II.
+
+	Roman numerals are usually written largest to smallest from left to right. 
+	However, the numeral for four is not IIII. Instead, the number four is 
+	written as IV. Because the one is before the five we subtract it making 
+	four. The same principle applies to the number nine, which is written as 
+	IX. There are six instances where subtraction is used:
+
+	I can be placed before V (5) and X (10) to make 4 and 9. 
+	X can be placed before L (50) and C (100) to make 40 and 90. 
+	C can be placed before D (500) and M (1000) to make 400 and 900.
+	Given a roman numeral, convert it to an integer. Input is guaranteed to be 
+	within the range from 1 to 3999.
+
+	Example 1:
+	Input: "III"
+	Output: 3
+
+	Example 2:
+	Input: "IV"
+	Output: 4
+
+	Example 3:
+	Input: "IX"
+	Output: 9
+
+	Example 4:
+	Input: "LVIII"
+	Output: 58
+	Explanation: L = 50, V= 5, III = 3.
+
+	Example 5:
+	Input: "MCMXCIV"
+	Output: 1994
+	Explanation: M = 1000, CM = 900, XC = 90 and IV = 4."""
+
+    def romanToInt(self, s: str) -> int:
+        val = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
+        ans = 0
+        for i in range(len(s)):
+            if i+1 < len(s) and val[s[i]] < val[s[i+1]]: ans -= val[s[i]]
+            else: ans += val[s[i]]
+        return ans
+
+
+    """14. Longest Common Prefix (Easy)
+	Write a function to find the longest common prefix string amongst an array 
+	of strings. If there is no common prefix, return an empty string "".
+
+	Example 1:
+	Input: ["flower","flow","flight"]
+	Output: "fl"
+
+	Example 2:
+	Input: ["dog","racecar","car"]
+	Output: ""
+	Explanation: There is no common prefix among the input strings."""
+
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+        if not strs: return ""
+        for i, c in enumerate(zip(*strs)): 
+            if len(set(c)) > 1: return strs[0][:i]
+        return min(strs)
+
+
+    """15. 3Sum (Medium)
+	Given an array nums of n integers, are there elements a, b, c in nums such 
+	that a + b + c = 0? Find all unique triplets in the array which gives the 
+	sum of zero.
+
+	Note: The solution set must not contain duplicate triplets.
+
+	Example:
+	Given array nums = [-1, 0, 1, 2, -1, -4],
+	A solution set is:
+	[
+	  [-1, 0, 1],
+	  [-1, -1, 2]
+	]"""
+
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        nums.sort()
+        ans = []
+        for i in range(len(nums)): 
+            if nums[i] > 0: break
+            if i and nums[i-1] == nums[i]: continue #remove duplicates
+            lo, hi = i+1, len(nums)-1
+            while lo < hi: 
+                x = nums[lo] + nums[hi] + nums[i]
+                if x > 0: hi -= 1
+                elif x < 0: lo += 1
+                else: 
+                    ans.append([nums[i], nums[lo], nums[hi]])
+                    lo += 1
+                    while lo < hi and nums[lo-1] == nums[lo]: lo += 1
+        return ans 
