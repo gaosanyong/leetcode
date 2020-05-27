@@ -645,6 +645,7 @@ class Solution:
 
 	Note: Given n will always be valid.
 	Follow up: Could you do this in one pass?"""
+
     def removeNthFromEnd(self, head: ListNode, n: int) -> ListNode:
         dummy = ListNode(next=head)
         fast = slow = dummy
@@ -684,6 +685,7 @@ class Solution:
 	Example 5:
 	Input: "{[]}"
 	Output: true"""
+	
     def isValid(self, s: str) -> bool:
         match, stack = {"(":")", "[":"]", "{":"}"}, []
         for x in s:
