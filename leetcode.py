@@ -547,3 +547,146 @@ class Solution:
                     lo += 1
                     while lo < hi and nums[lo-1] == nums[lo]: lo += 1
         return ans 
+
+
+    """16. 3Sum Closest (Medium)
+	Given an array nums of n integers and an integer target, find three 
+	integers in nums such that the sum is closest to target. Return the sum of 
+	the three integers. You may assume that each input would have exactly one 
+	solution.
+
+	Example 1:
+	Input: nums = [-1,2,1,-4], target = 1
+	Output: 2
+	Explanation: The sum that is closest to the target is 2. (-1 + 2 + 1 = 2).
+
+	Constraints:
+	3 <= nums.length <= 10^3
+	-10^3 <= nums[i] <= 10^3
+	-10^4 <= target <= 10^4"""
+
+    def threeSumClosest(self, nums: List[int], target: int) -> int:
+        nums.sort()
+        ans = float("inf")
+        for i in range(len(nums)): 
+            lo, hi = i+1, len(nums)-1
+            while lo < hi: 
+                val = nums[i] + nums[lo] + nums[hi] 
+                if val == target: return val
+                elif val > target: hi -= 1
+                else: lo += 1
+                ans = min(ans, val, key=lambda x: abs(x-target))
+        return ans 
+
+
+    """17. Letter Combinations of a Phone Number (Medium)
+	Given a string containing digits from 2-9 inclusive, return all possible 
+	letter combinations that the number could represent.
+
+	A mapping of digit to letters (just like on the telephone buttons) is given 
+	below. Note that 1 does not map to any letters.
+
+	Example:
+	Input: "23"
+	Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
+
+	Note: Although the above answer is in lexicographical order, your answer 
+	could be in any order you want."""
+
+    def letterCombinations(self, digits: str) -> List[str]:
+        if not digits: return []
+        phone = {"2":"abc", "3":"def", "4":"ghi", "5":"jkl", "6":"mno", "7":"pqrs", "8":"tuv", "9":"wxyz"}
+        return reduce(lambda x, y: [xx+yy for xx in x for yy in phone[y]], digits, [""])
+
+
+    """18. 4Sum (Medium)
+	Given an array nums of n integers and an integer target, are there elements 
+	a, b, c, and d in nums such that a + b + c + d = target? Find all unique 
+	quadruplets in the array which gives the sum of target.
+
+	Note: The solution set must not contain duplicate quadruplets.
+
+	Example:
+	Given array nums = [1, 0, -1, 0, -2, 2], and target = 0.
+
+	A solution set is:
+	[
+	  [-1,  0, 0, 1],
+	  [-2, -1, 1, 2],
+	  [-2,  0, 0, 2]
+	]"""
+
+    def fourSum(self, nums: List[int], target: int) -> List[List[int]]:
+        nums.sort()
+        ans = []
+        for i in range(len(nums)):
+            if i and nums[i-1] == nums[i]: continue
+            for j in range(i+1, len(nums)):
+                if j > i+1 and nums[j-1] == nums[j]: continue 
+                lo, hi = j+1, len(nums)-1
+                while lo < hi: 
+                    val = nums[i] + nums[j] + nums[lo] + nums[hi]
+                    if val < target: lo += 1
+                    elif val > target: hi -= 1
+                    else: 
+                        ans.append([nums[i], nums[j], nums[lo], nums[hi]])
+                        lo += 1
+                        while lo < hi and nums[lo-1] == nums[lo]: lo += 1
+        return ans
+
+
+    """19. Remove Nth Node From End of List (Medium)
+	Given a linked list, remove the n-th node from the end of list and return 
+	its head.
+
+	Example:
+	Given linked list: 1->2->3->4->5, and n = 2.
+	After removing the second node from the end, the linked list becomes 1->2->3->5.
+
+	Note: Given n will always be valid.
+	Follow up: Could you do this in one pass?"""
+    def removeNthFromEnd(self, head: ListNode, n: int) -> ListNode:
+        dummy = ListNode(next=head)
+        fast = slow = dummy
+        i = 0
+        while fast:
+            fast = fast.next 
+            if (i:=i+1) > n+1: slow = slow.next
+        slow.next = slow.next.next
+        return dummy.next 
+
+
+    """20. Valid Parentheses (Easy)
+	Given a string containing just the characters '(', ')', '{', '}', '[' and 
+	']', determine if the input string is valid.
+
+	An input string is valid if:
+	* Open brackets must be closed by the same type of brackets.
+	* Open brackets must be closed in the correct order.
+	Note: an empty string is also considered valid.
+
+	Example 1:
+	Input: "()"
+	Output: true
+	
+	Example 2:
+	Input: "()[]{}"
+	Output: true
+
+	Example 3:
+	Input: "(]"
+	Output: false
+
+	Example 4:
+	Input: "([)]"
+	Output: false
+
+	Example 5:
+	Input: "{[]}"
+	Output: true"""
+    def isValid(self, s: str) -> bool:
+        match, stack = {"(":")", "[":"]", "{":"}"}, []
+        for x in s:
+            if x in match: stack.append(x)
+            elif not stack or match[stack.pop()] != x: return False 
+        return not stack 
