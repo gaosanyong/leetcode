@@ -3,7 +3,8 @@ Python3. No algorithm or reasoning is provided for the sake of saving spaces.
 For more details, the readers are suggested to explore on their own effort.
 """
 
-from functools import lru_cache
+from functools import lru_cache, reduce
+from heapq import heappush, heappop
 
 class Solution:
 
@@ -685,10 +686,127 @@ class Solution:
 	Example 5:
 	Input: "{[]}"
 	Output: true"""
-	
+
     def isValid(self, s: str) -> bool:
         match, stack = {"(":")", "[":"]", "{":"}"}, []
         for x in s:
             if x in match: stack.append(x)
             elif not stack or match[stack.pop()] != x: return False 
         return not stack 
+
+
+    """21. Merge Two Sorted Lists (Easy)
+	Merge two sorted linked lists and return it as a new list. The new list 
+	should be made by splicing together the nodes of the first two lists.
+
+	Example:
+
+	Input: 1->2->4, 1->3->4
+	Output: 1->1->2->3->4->4"""
+    
+    def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
+        dummy = node = ListNode()
+        while l1 and l2: 
+            if l1.val > l2.val: l1, l2 = l2, l1
+            node.next = l1
+            l1, node = l1.next, node.next
+        node.next = l1 or l2
+        return dummy.next 
+
+
+    """22. Generate Parentheses (Medium)
+	Given n pairs of parentheses, write a function to generate all 
+	combinations of well-formed parentheses.
+
+	For example, given n = 3, a solution set is:
+
+	[
+	  "((()))",
+	  "(()())",
+	  "(())()",
+	  "()(())",
+	  "()()()"
+	]"""
+
+    def generateParenthesis(self, n: int) -> List[str]:
+        
+        def fn(s, op, cl):
+            """Backtracking to collect parentheses"""
+            if cl == n: return ans.append(s)
+            if op <  n: fn(s+"(", op+1, cl)
+            if cl < op: fn(s+")", op, cl+1)
+                
+        ans = []
+        fn("", 0, 0)
+        return ans 
+
+
+    """23. Merge k Sorted Lists (Hard)
+	Merge k sorted linked lists and return it as one sorted list. Analyze and 
+	describe its complexity.
+
+	Example:
+	Input:
+	[
+	  1->4->5,
+	  1->3->4,
+	  2->6
+	]
+	Output: 1->1->2->3->4->4->5->6"""
+    
+    def mergeKLists(self, lists: List[ListNode]) -> ListNode:
+        pq = []
+        for i, ll in enumerate(lists):
+            if ll: heappush(pq, (ll.val, i, ll))
+                
+        dummy = node = ListNode()
+        while pq: 
+            _, i, ll = heappop(pq)
+            if ll.next: heappush(pq, (ll.next.val, i, ll.next))
+            node.next = ll
+            node = node.next 
+        return dummy.next 
+
+
+    """24. Swap Nodes in Pairs (Medium)
+	Given a linked list, swap every two adjacent nodes and return its head.
+
+	You may not modify the values in the list's nodes, only nodes itself may be 
+	changed.
+
+	Example:
+	Given 1->2->3->4, you should return the list as 2->1->4->3."""
+
+    def swapPairs(self, head: ListNode) -> ListNode:
+        node = dummy = ListNode(0, head)
+        while node.next and node.next.next: 
+            node.next.next.next, node.next.next, node.next = node.next, node.next.next.next, node.next.next
+            node = node.next.next 
+        return dummy.next
+
+
+    """25. Reverse Nodes in k-Group (Hard)
+	Given a linked list, reverse the nodes of a linked list k at a time and 
+	return its modified list. k is a positive integer and is less than or 
+	equal to the length of the linked list. If the number of nodes is not a 
+	multiple of k then left-out nodes in the end should remain as it is.
+
+	Example:
+	Given this linked list: 1->2->3->4->5
+	For k = 2, you should return: 2->1->4->3->5
+	For k = 3, you should return: 3->2->1->4->5
+
+	Note: Only constant extra memory is allowed.
+	You may not alter the values in the list's nodes, only nodes itself may be changed."""
+    
+    def reverseKGroup(self, head: ListNode, k: int) -> ListNode:
+        node, i = head, 0
+        while node:
+            if (i:=i+1) == k: break
+            node = node.next 
+        if i < k: return head 
+        
+        prev, node = None, head 
+        for _ in range(k): node.next, node, prev = prev, node.next, node
+        head.next = self.reverseKGroup(node, k)
+        return prev 
