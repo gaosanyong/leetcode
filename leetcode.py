@@ -810,3 +810,197 @@ class Solution:
         for _ in range(k): node.next, node, prev = prev, node.next, node
         head.next = self.reverseKGroup(node, k)
         return prev 
+
+
+    """26. Remove Duplicates from Sorted Array (Easy)
+	Given a sorted array nums, remove the duplicates in-place such that each 
+	element appear only once and return the new length. Do not allocate extra 
+	space for another array, you must do this by modifying the input array in-
+	place with O(1) extra memory.
+
+	Example 1:
+	Given nums = [1,1,2], your function should return length = 2, with the 
+	first two elements of nums being 1 and 2 respectively. It doesn't matter 
+	what you leave beyond the returned length.
+
+	Example 2:
+	Given nums = [0,0,1,1,1,2,2,3,3,4], your function should return length = 5, 
+	with the first five elements of nums being modified to 0, 1, 2, 3, and 4 
+	respectively. It doesn't matter what values are set beyond the returned 
+	length.
+	
+	Clarification: Confused why the returned value is an integer but your 
+	answer is an array?
+
+	Note that the input array is passed in by reference, which means 
+	modification to the input array will be known to the caller as well.
+
+	Internally you can think of this:
+	// nums is passed in by reference. (i.e., without making a copy)
+	int len = removeDuplicates(nums);
+	// any modification to nums in your function would be known by the caller.
+	// using the length returned by your function, it prints the first len 
+	elements.
+	for (int i = 0; i < len; i++) {
+	    print(nums[i]);
+	}"""
+
+    def removeDuplicates(self, nums: List[int]) -> int:
+        k = 0
+        for i in range(len(nums)):
+            if i == 0 or nums[i-1] != nums[i]: 
+                nums[k] = nums[i]
+                k += 1
+        return k 
+
+
+    """27. Remove Element (Easy)
+	Given an array nums and a value val, remove all instances of that value in-
+	place and return the new length. Do not allocate extra space for another 
+	array, you must do this by modifying the input array in-place with O(1) 
+	extra memory. The order of elements can be changed. It doesn't matter what 
+	you leave beyond the new length.
+
+	Example 1:
+	Given nums = [3,2,2,3], val = 3, your function should return length = 2, 
+	with the first two elements of nums being 2. It doesn't matter what you 
+	leave beyond the returned length.
+	
+	Example 2:
+	Given nums = [0,1,2,2,3,0,4,2], val = 2, your function should return 
+	length = 5, with the first five elements of nums containing 0, 1, 3, 0, 
+	and 4. Note that the order of those five elements can be arbitrary. It 
+	doesn't matter what values are set beyond the returned length.
+	
+	Clarification:
+
+	Confused why the returned value is an integer but your answer is an array?
+
+	Note that the input array is passed in by reference, which means 
+	modification to the input array will be known to the caller as well.
+
+	Internally you can think of this:
+	// nums is passed in by reference. (i.e., without making a copy)
+	int len = removeElement(nums, val);
+	// any modification to nums in your function would be known by the caller.
+	// using the length returned by your function, it prints the first len elements.
+	for (int i = 0; i < len; i++) {
+	    print(nums[i]);
+	}"""
+
+    def removeElement(self, nums: List[int], val: int) -> int:
+        i = 0
+        for x in nums: 
+            if x != val: nums[i], i = x, i+1
+        return i
+
+
+    """28. Implement strStr() (Easy)
+	Implement strStr(). Return the index of the first occurrence of needle in 
+	haystack, or -1 if needle is not part of haystack.
+
+	Example 1:
+	Input: haystack = "hello", needle = "ll"
+	Output: 2
+
+	Example 2:
+	Input: haystack = "aaaaa", needle = "bba"
+	Output: -1
+
+	Clarification: 	What should we return when needle is an empty string? This 
+	is a great question to ask during an interview. For the purpose of this 
+	problem, we will return 0 when needle is an empty string. This is 
+	consistent to C's strstr() and Java's indexOf()."""
+
+    def strStr(self, haystack: str, needle: str) -> int:
+        """Knuth-Morris-Pratt algo (1977)"""
+        if not needle: return 0 #edge case 
+        
+        lps = [0]*len(needle) #longest prefix-suffix table 
+        k = 0
+        for i in range(1, len(needle)): 
+            while k and needle[k] != needle[i]: k = lps[k-1]
+            if needle[k] == needle[i]: k += 1
+            lps[i] = k 
+            
+        k = 0
+        for i in range(len(haystack)): 
+            while k and needle[k] != haystack[i]: k = lps[k-1]
+            if needle[k] == haystack[i]: k += 1
+            if k == len(needle): return i - len(needle) + 1
+        return -1
+
+
+    """29. Divide Two Integers (Medium)
+	Given two integers dividend and divisor, divide two integers without using 
+	multiplication, division and mod operator. Return the quotient after 
+	dividing dividend by divisor. The integer division should truncate toward 
+	zero, which means losing its fractional part. 
+
+	For example, truncate(8.345) = 8 and truncate(-2.7335) = -2.
+
+	Example 1:
+	Input: dividend = 10, divisor = 3
+	Output: 3
+	Explanation: 10/3 = truncate(3.33333..) = 3.
+
+	Example 2:
+	Input: dividend = 7, divisor = -3
+	Output: -2
+	Explanation: 7/-3 = truncate(-2.33333..) = -2.
+
+	Note: Both dividend and divisor will be 32-bit signed integers. The divisor 
+	will never be 0. Assume we are dealing with an environment which could only 
+	store integers within the 32-bit signed integer range: [−2^31,  2^31 − 1]. 
+	For the purpose of this problem, assume that your function returns 2^31 − 1 
+	when the division result overflows."""
+    
+    def divide(self, dividend: int, divisor: int) -> int:
+        if dividend == -2147483648 and divisor == 1: return -2147483648 #edge case 
+        
+        neg = (dividend > 0) ^ (divisor > 0)
+        ans, dividend, divisor = 0, abs(dividend), abs(divisor)
+        for i in reversed(range(31)):
+            if dividend >= divisor << i: 
+                ans |= 1 << i
+                dividend -= divisor << i
+        return -ans if neg else ans 
+
+
+    """30. Substring with Concatenation of All Words (Hard)
+	You are given a string, s, and a list of words, words, that are all of the 
+	same length. Find all starting indices of substring(s) in s that is a 
+	concatenation of each word in words exactly once and without any 
+	intervening characters.
+
+	Example 1:
+	Input:
+	  s = "barfoothefoobarman",
+	  words = ["foo","bar"]
+	Output: [0,9]
+
+	Explanation: Substrings starting at index 0 and 9 are "barfoo" and "foobar" respectively.
+	The output order does not matter, returning [9,0] is fine too.
+
+	Example 2:
+	Input:
+	  s = "wordgoodgoodgoodbestword",
+	  words = ["word","good","best","word"]
+	Output: []"""
+
+    def findSubstring(self, s: str, words: List[str]) -> List[int]:
+        if not words: return []
+        
+        target = dict()
+        for word in words: target[word] = target.get(word, 0) + 1
+            
+        ans, n = [], len(words[0])
+        for i in range(n): 
+            freq, kk = dict(), i
+            for j in range(i, len(s), n): 
+                word = s[j:j+n]
+                freq[word] = freq.get(word, 0) + 1
+                while freq[word] > target.get(word, 0): 
+                    freq[s[kk:(kk:=kk+n)]] -= 1
+                if j + n - kk == n * len(words): ans.append(kk)
+        return ans 
