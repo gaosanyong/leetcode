@@ -5,6 +5,8 @@ For more details, the readers are suggested to explore on their own effort.
 
 from functools import lru_cache, reduce
 from heapq import heappush, heappop
+from itertools import groupby
+from operator import gt, lt
 
 class Solution:
 
@@ -1003,4 +1005,376 @@ class Solution:
                 while freq[word] > target.get(word, 0): 
                     freq[s[kk:(kk:=kk+n)]] -= 1
                 if j + n - kk == n * len(words): ans.append(kk)
+        return ans 
+
+
+    """31. Next Permutation (Medium)
+	Implement next permutation, which rearranges numbers into the 
+	lexicographically next greater permutation of numbers. If such arrangement 
+	is not possible, it must rearrange it as the lowest possible order (ie, 
+	sorted in ascending order). The replacement must be in-place and use only 
+	constant extra memory. Here are some examples. Inputs are in the left-hand 
+	column and its corresponding outputs are in the right-hand column.
+
+	1,2,3 → 1,3,2
+	3,2,1 → 1,2,3
+	1,1,5 → 1,5,1"""
+
+    def nextPermutation(self, nums: List[int]) -> None:
+        k = len(nums)-1
+        while k and nums[k-1] >= nums[k]: k -= 1
+            
+        if k: 
+            lo, hi = k, len(nums)
+            while lo < hi:
+                mid = (lo + hi)//2
+                if nums[mid] <= nums[k-1]: hi = mid
+                else: lo = mid+1
+            nums[k-1], nums[lo-1] = nums[lo-1], nums[k-1]
+        
+        lo, hi = k, len(nums)-1
+        while lo < hi: 
+            nums[lo], nums[hi] = nums[hi], nums[lo]
+            lo, hi = lo+1, hi-1  
+
+
+    """32. Longest Valid Parentheses (Hard)
+	Given a string containing just the characters '(' and ')', find the length 
+	of the longest valid (well-formed) parentheses substring.
+
+	Example 1:
+	Input: "(()"
+	Output: 2
+	Explanation: The longest valid parentheses substring is "()"
+
+	Example 2:
+	Input: ")()())"
+	Output: 4
+	Explanation: The longest valid parentheses substring is "()()"""
+
+    def longestValidParentheses(self, s: str) -> int:
+        
+        def fn(fwd, ans=0): 
+            op = cl = 0
+            for c in s if fwd else reversed(s): 
+                if c == "(": op += 1
+                else: cl += 1
+                if (lt if fwd else gt)(op, cl): op = cl = 0
+                elif op == cl: ans = max(ans, op + cl)
+            return ans 
+        
+        return fn(False, fn(True))
+
+    """33. Search in Rotated Sorted Array (Medium)
+	Suppose an array sorted in ascending order is rotated at some pivot unknown 
+	to you beforehand. (i.e., [0,1,2,4,5,6,7] might become [4,5,6,7,0,1,2]). 
+	You are given a target value to search. If found in the array return its 
+	index, otherwise return -1. You may assume no duplicate exists in the array. 
+	Your algorithm's runtime complexity must be in the order of O(log n).
+
+	Example 1:
+	Input: nums = [4,5,6,7,0,1,2], target = 0
+	Output: 4
+
+	Example 2:
+	Input: nums = [4,5,6,7,0,1,2], target = 3
+	Output: -1"""
+
+    def search(self, nums: List[int], target: int) -> int:
+        lo, hi = 0, len(nums)-1
+        while lo <= hi: 
+            mid = (lo + hi)//2
+            if nums[mid] == target: return mid
+            if nums[lo] <= nums[mid]: 
+                if nums[lo] <= target < nums[mid]: hi = mid - 1
+                else: lo = mid + 1
+            else: 
+                if nums[mid] < target <= nums[hi]: lo = mid + 1
+                else: hi = mid - 1
+        return -1
+
+
+    """34. Find First and Last Position of Element in Sorted Array (Medium)
+	Given an array of integers nums sorted in ascending order, find the 
+	starting and ending position of a given target value. Your algorithm's 
+	runtime complexity must be in the order of O(log n). If the target is not 
+	found in the array, return [-1, -1].
+
+	Example 1:
+	Input: nums = [5,7,7,8,8,10], target = 8
+	Output: [3,4]
+
+	Example 2:
+	Input: nums = [5,7,7,8,8,10], target = 6
+	Output: [-1,-1]"""
+
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        
+        def fn(x, lo=0, hi=len(nums)):
+            while lo < hi:
+                mid = (lo + hi)//2
+                if nums[mid] >= x: hi = mid
+                else: lo = mid+1
+            return lo 
+        
+        lo = fn(target)
+        if not lo < len(nums) or nums[lo] != target: return [-1, -1]
+        return [lo, fn(target+1, lo)-1]
+
+
+    """35. Search Insert Position (Easy)
+	Given a sorted array and a target value, return the index if the target is 
+	found. If not, return the index where it would be if it were inserted in 
+	order. You may assume no duplicates in the array.
+
+	Example 1:
+	Input: [1,3,5,6], 5
+	Output: 2
+
+	Example 2:
+	Input: [1,3,5,6], 2
+	Output: 1
+
+	Example 3:
+	Input: [1,3,5,6], 7
+	Output: 4
+
+	Example 4:
+	Input: [1,3,5,6], 0
+	Output: 0"""
+
+    def searchInsert(self, nums: List[int], target: int) -> int:
+        lo, hi = 0, len(nums)
+        while lo < hi:
+            mid = (lo + hi)//2
+            if nums[mid] < target: lo = mid + 1
+            else: hi = mid
+        return lo 
+
+
+    """36. Valid Sudoku (Medium)
+	Determine if a 9x9 Sudoku board is valid. Only the filled cells need to be 
+	validated according to the following rules:
+
+	+ Each row must contain the digits 1-9 without repetition.
+	+ Each column must contain the digits 1-9 without repetition.
+	+ Each of the 9 3x3 sub-boxes of the grid must contain the digits 1-9 
+	without repetition.
+
+	A partially filled sudoku which is valid. The Sudoku board could be 
+	partially filled, where empty cells are filled with the character '.'.
+
+	Example 1:
+	Input:
+	[
+	  ["5","3",".",".","7",".",".",".","."],
+	  ["6",".",".","1","9","5",".",".","."],
+	  [".","9","8",".",".",".",".","6","."],
+	  ["8",".",".",".","6",".",".",".","3"],
+	  ["4",".",".","8",".","3",".",".","1"],
+	  ["7",".",".",".","2",".",".",".","6"],
+	  [".","6",".",".",".",".","2","8","."],
+	  [".",".",".","4","1","9",".",".","5"],
+	  [".",".",".",".","8",".",".","7","9"]
+	]
+	Output: true
+
+	Example 2:
+	Input:
+	[
+	  ["8","3",".",".","7",".",".",".","."],
+	  ["6",".",".","1","9","5",".",".","."],
+	  [".","9","8",".",".",".",".","6","."],
+	  ["8",".",".",".","6",".",".",".","3"],
+	  ["4",".",".","8",".","3",".",".","1"],
+	  ["7",".",".",".","2",".",".",".","6"],
+	  [".","6",".",".",".",".","2","8","."],
+	  [".",".",".","4","1","9",".",".","5"],
+	  [".",".",".",".","8",".",".","7","9"]
+	]
+	Output: false
+
+	Explanation: Same as Example 1, except with the 5 in the top left corner 
+	being modified to 8. Since there are two 8's in the top left 3x3 sub-box, 
+	it is invalid.
+	
+	Note:
+	A Sudoku board (partially filled) could be valid but is not necessarily 
+	solvable. Only the filled cells need to be validated according to the 
+	mentioned rules. The given board contain only digits 1-9 and the character 
+	'.'. The given board size is always 9x9."""
+
+    def isValidSudoku(self, board: List[List[str]]) -> bool:
+        seen = set()
+        for i, j in product(range(9), range(9)):
+            if board[i][j] != ".": 
+                item = {(i, board[i][j]), (board[i][j], j), (i//3, board[i][j], j//3)}
+                if seen & item: return False 
+                seen |= item
+        return True
+
+
+    """37. Sudoku Solver (Hard)
+	Write a program to solve a Sudoku puzzle by filling the empty cells. A 
+	sudoku solution must satisfy all of the following rules:
+
+	Each of the digits 1-9 must occur exactly once in each row.
+	Each of the digits 1-9 must occur exactly once in each column.
+	Each of the the digits 1-9 must occur exactly once in each of the 9 3x3 
+	sub-boxes of the grid.
+	
+	Empty cells are indicated by the character '.'.
+
+	Note:
+	The given board contain only digits 1-9 and the character '.'.
+	You may assume that the given Sudoku puzzle will have a single unique solution.
+	The given board size is always 9x9."""
+
+    def solveSudoku(self, board: List[List[str]]) -> None:
+        empty = []
+        seen = set()
+        for i in range(9):
+            for j in range(9):
+                if board[i][j] == ".": empty.append((i, j))
+                else: seen |= {(i, board[i][j]), (board[i][j], j), (i//3, board[i][j], j//3)}
+        
+        def fn(k, seen): 
+            """Return True if Sudoku is filled properly (for early termination)"""
+            if k == len(empty): return True
+            i, j = empty[k]
+            for x in "123456789": 
+                if seen & {(i, x), (x, j), (i//3, x, j//3)}: continue
+                seen |= {(i, x), (x, j), (i//3, x, j//3)}
+                board[i][j] = x
+                if fn(k+1, seen): return True 
+                seen -= {(i, x), (x, j), (i//3, x, j//3)}
+        
+        fn(0, seen)
+
+
+    """38. Count and Say (Easy)
+	The count-and-say sequence is the sequence of integers with the first five 
+	terms as following:
+
+	1.     1
+	2.     11
+	3.     21
+	4.     1211
+	5.     111221
+	1 is read off as "one 1" or 11.
+	11 is read off as "two 1s" or 21.
+	21 is read off as "one 2, then one 1" or 1211.
+
+	Given an integer n where 1 ≤ n ≤ 30, generate the nth term of the count-
+	and-say sequence. You can do so recursively, in other words from the 
+	previous member read off the digits, counting the number of digits in 
+	groups of the same digit.
+
+	Note: Each term of the sequence of integers will be represented as a string.
+
+	Example 1:
+	Input: 1
+	Output: "1"
+	Explanation: This is the base case.
+
+	Example 2:
+	Input: 4
+	Output: "1211"
+	Explanation: For n = 3 the term was "21" in which we have two groups "2" 
+	and "1", "2" can be read as "12" which means frequency = 1 and value = 2, 
+	the same way "1" is read as "11", so the answer is the concatenation of 
+	"12" and "11" which is "1211"."""
+
+    def countAndSay(self, n: int) -> str:
+        if n == 1: return "1"
+        return "".join(str(len(list(v))) + g for g, v in groupby(self.countAndSay(n-1)))
+
+
+    """39. Combination Sum (Medium)
+	Given a set of candidate numbers (candidates) (without duplicates) and a 
+	target number (target), find all unique combinations in candidates where 
+	the candidate numbers sums to target. The same repeated number may be 
+	chosen from candidates unlimited number of times.
+
+	Note:
+	All numbers (including target) will be positive integers.
+	The solution set must not contain duplicate combinations.
+
+	Example 1:
+	Input: candidates = [2,3,6,7], target = 7,
+	A solution set is:
+	[
+	  [7],
+	  [2,2,3]
+	]
+
+	Example 2:
+	Input: candidates = [2,3,5], target = 8,
+	A solution set is:
+	[
+	  [2,2,2,2],
+	  [2,3,3],
+	  [3,5]
+	]"""
+
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        candidates.sort()
+        
+        def fn(stack, x, k=0):
+            """backtracking using a stack"""
+            if x == 0: return ans.append(stack.copy()) #store a copy 
+            for i in range(k, len(candidates)): 
+                if candidates[i] > x: break 
+                stack.append(candidates[i])
+                fn(stack, x-candidates[i], i)
+                stack.pop()
+        
+        ans = []
+        fn([], target)
+        return ans 
+
+
+    """40. Combination Sum II (Medium)
+	Given a collection of candidate numbers (candidates) and a target number 
+	(target), find all unique combinations in candidates where the candidate 
+	numbers sums to target. Each number in candidates may only be used once in 
+	the combination.
+
+	Note:
+	All numbers (including target) will be positive integers. The solution set 
+	must not contain duplicate combinations.
+	
+	Example 1:
+	Input: candidates = [10,1,2,7,6,1,5], target = 8,
+	A solution set is:
+	[
+	  [1, 7],
+	  [1, 2, 5],
+	  [2, 6],
+	  [1, 1, 6]
+	]
+
+	Example 2:
+	Input: candidates = [2,5,2,1,2], target = 5,
+	A solution set is:
+	[
+	  [1,2,2],
+	  [5]
+	]"""
+
+    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
+        candidates.sort()
+        
+        def fn(stack, x, k=0):
+            """backtracking using a stack"""
+            if x == 0: return ans.append(stack.copy())
+            for i in range(k, len(candidates)):
+                if candidates[i] > x: break 
+                if i > k and candidates[i] == candidates[i-1]: continue
+                stack.append(candidates[i])
+                fn(stack, x - candidates[i], i+1)
+                stack.pop()
+                
+        ans = []
+        fn([], target)
         return ans 
