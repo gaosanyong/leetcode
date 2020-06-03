@@ -1553,3 +1553,159 @@ class Solution:
                 jump += 1
             next = max(next, i + nums[i])
         return jump 
+
+
+    """46. Permutations (Medium)
+	Given a collection of distinct integers, return all possible permutations.
+
+	Example:
+	Input: [1,2,3]
+	Output:
+	[
+	  [1,2,3],
+	  [1,3,2],
+	  [2,1,3],
+	  [2,3,1],
+	  [3,1,2],
+	  [3,2,1]
+	]"""
+
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        
+        def fn(i):
+            """Backtracking to get permutations (not Heap's algo)"""
+            if i == len(nums): ans.append(nums.copy())
+            for j in range(i, len(nums)): 
+                nums[i], nums[j] = nums[j], nums[i]
+                fn(i+1)
+                nums[i], nums[j] = nums[j], nums[i]
+            
+        ans = []
+        fn(0)
+        return ans 
+
+
+    """47. Permutations II (Medium)
+	Given a collection of numbers that might contain duplicates, return all 
+	possible unique permutations.
+
+	Example:
+	Input: [1,1,2]
+	Output:
+	[
+	  [1,1,2],
+	  [1,2,1],
+	  [2,1,1]
+	]"""
+
+    def permuteUnique(self, nums: List[int]) -> List[List[int]]:
+        nums.sort()
+        
+        def fn(i):
+            """Backtracking to get permutations (not Heap's algo)"""
+            if i == len(nums): ans.append(nums.copy())
+            seen = set()
+            for k in range(i, len(nums)):
+                if nums[k] not in seen:
+                    seen.add(nums[k])
+                    nums[i], nums[k] = nums[k], nums[i]
+                    fn(i+1)
+                    nums[i], nums[k] = nums[k], nums[i]
+        
+        ans = []
+        fn(0)
+        return ans 
+
+    """48. Rotate Image (Medium)
+	You are given an n x n 2D matrix representing an image. Rotate the image by 
+	90 degrees (clockwise).
+
+	Note:
+	You have to rotate the image in-place, which means you have to modify the 
+	input 2D matrix directly. DO NOT allocate another 2D matrix and do the 
+	rotation.
+
+	Example 1:
+	Given input matrix = 
+	[
+	  [1,2,3],
+	  [4,5,6],
+	  [7,8,9]
+	],
+	rotate the input matrix in-place such that it becomes:
+	[
+	  [7,4,1],
+	  [8,5,2],
+	  [9,6,3]
+	]
+
+	Example 2:
+	Given input matrix =
+	[
+	  [ 5, 1, 9,11],
+	  [ 2, 4, 8,10],
+	  [13, 3, 6, 7],
+	  [15,14,12,16]
+	], 
+	rotate the input matrix in-place such that it becomes:
+	[
+	  [15,13, 2, 5],
+	  [14, 3, 4, 1],
+	  [12, 6, 8, 9],
+	  [16, 7,10,11]
+	]"""
+
+    def rotate(self, matrix: List[List[int]]) -> None:
+        matrix[:] = [list(x) for x in zip(*matrix[::-1])]
+
+
+    """49. Group Anagrams (Medium)
+	Given an array of strings, group anagrams together.
+
+	Example:
+	Input: ["eat", "tea", "tan", "ate", "nat", "bat"],
+	Output:
+	[
+	  ["ate","eat","tea"],
+	  ["nat","tan"],
+	  ["bat"]
+	]
+	
+	Note:
+	All inputs will be in lowercase.
+	The order of your output does not matter."""
+    
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        ans = dict()
+        for word in strs:
+            ans.setdefault("".join(sorted(word)), []).append(word)
+        return ans.values()
+
+
+    """50. Pow(x, n) (Medium)
+	Implement pow(x, n), which calculates x raised to the power n (x^n).
+
+	Example 1:
+	Input: 2.00000, 10
+	Output: 1024.00000
+
+	Example 2:
+	Input: 2.10000, 3
+	Output: 9.26100
+
+	Example 3:
+	Input: 2.00000, -2
+	Output: 0.25000
+	Explanation: 2-2 = 1/22 = 1/4 = 0.25
+
+	Note:
+	-100.0 < x < 100.0
+	n is a 32-bit signed integer, within the range [−2^31, 2^31 − 1]"""
+
+    def myPow(self, x: float, n: int) -> float:
+        if n < 0: x, n = 1/x, -n
+        ans = 1
+        while n: 
+            if n & 1: ans *= x
+            x, n = x*x, n//2
+        return ans 
