@@ -1378,3 +1378,178 @@ class Solution:
         ans = []
         fn([], target)
         return ans 
+
+
+    """41. First Missing Positive (Hard)
+	Given an unsorted integer array, find the smallest missing positive integer.
+
+	Example 1:
+
+	Input: [1,2,0]
+	Output: 3
+	Example 2:
+
+	Input: [3,4,-1,1]
+	Output: 2
+	Example 3:
+
+	Input: [7,8,9,11,12]
+	Output: 1
+	Note:
+
+	Your algorithm should run in O(n) time and uses constant extra space."""
+
+    def firstMissingPositive(self, nums: List[int]) -> int:
+        
+        for i in range(len(nums)):
+            k = nums[i]
+            while k and 0 < k <= len(nums): 
+                nums[k-1], k = None, nums[k-1]
+                
+        return next((i+1 for i in range(len(nums)) if nums[i] is not None), len(nums)+1)
+
+
+    """42. Trapping Rain Water (Hard)
+	Given n non-negative integers representing an elevation map where the width 
+	of each bar is 1, compute how much water it is able to trap after raining.
+	The above elevation map is represented by array [0,1,0,2,1,0,1,3,2,1,2,1]. 
+	In this case, 6 units of rain water (blue section) are being trapped. 
+
+	Example:
+	Input: [0,1,0,2,1,0,1,3,2,1,2,1]
+	Output: 6"""
+
+    def trap(self, height: List[int]) -> int:
+        ans = left = right = 0
+        lo, hi = 0, len(height)-1
+        while lo < hi: 
+            if height[lo] < height[hi]: 
+                left = max(left, height[lo])
+                ans += left - height[lo]
+                lo += 1
+            else: 
+                right = max(right, height[hi])
+                ans += right - height[hi]
+                hi -= 1
+        return ans 
+
+
+
+    """43. Multiply Strings (Medium)
+	Given two non-negative integers num1 and num2 represented as strings, 
+	return the product of num1 and num2, also represented as a string.
+
+	Example 1:
+	Input: num1 = "2", num2 = "3"
+	Output: "6"
+
+	Example 2:
+	Input: num1 = "123", num2 = "456"
+	Output: "56088"
+
+	Note:
+	+ The length of both num1 and num2 is < 110.
+	+ Both num1 and num2 contain only digits 0-9.
+	+ Both num1 and num2 do not contain any leading zero, except the number 0 
+	  itself.
+	+ You must not use any built-in BigInteger library or convert the inputs to 
+	  integer directly."""
+
+    def multiply(self, num1: str, num2: str) -> str:
+        if num1 == "0" or num2 == "0": return "0" #edge case 
+        
+        ans = [0] * (len(num1) + len(num2))
+        for i, x in enumerate(reversed(num1)):
+            for j, y in enumerate(reversed(num2)): 
+                num = (ord(x) - 48) * (ord(y) - 48)
+                k = i + j
+                while num: 
+                    num, ans[k] = divmod(num + ans[k], 10)
+                    k += 1
+        return "".join(map(str, reversed(ans[:k])))
+
+
+    """44. Wildcard Matching (Hard)
+	Given an input string (s) and a pattern (p), implement wildcard pattern 
+	matching with support for '?' and '*'.
+
+	'?' Matches any single character.
+	'*' Matches any sequence of characters (including the empty sequence).
+	The matching should cover the entire input string (not partial).
+
+	Note:
+	s could be empty and contains only lowercase letters a-z.
+	p could be empty and contains only lowercase letters a-z, and characters 
+	like ? or *.
+	
+	Example 1:
+	Input:
+	s = "aa"
+	p = "a"
+	Output: false
+	Explanation: "a" does not match the entire string "aa".
+	
+	Example 2:
+	Input:
+	s = "aa"
+	p = "*"
+	Output: true
+	Explanation: '*' matches any sequence.
+
+	Example 3:
+	Input:
+	s = "cb"
+	p = "?a"
+	Output: false
+	Explanation: '?' matches 'c', but the second letter is 'a', which does not 
+	match 'b'.
+
+	Example 4:
+	Input:
+	s = "adceb"
+	p = "*a*b"
+	Output: true
+	Explanation: The first '*' matches the empty sequence, while the second '*' 
+	matches the substring "dce".
+	
+	Example 5:
+	Input:
+	s = "acdcb"
+	p = "a*c?b"
+	Output: false"""
+
+    def isMatch(self, s: str, p: str) -> bool:
+        
+        @lru_cache(None)
+        def fn(i, j): 
+            """Return True if s[i:] matches p[j:]"""
+            if j == len(p): return i == len(s)
+            if i < len(s) and (s[i] == p[j] or p[j] == "?"): return fn(i+1, j+1)
+            if p[j] == "*": return fn(i, j+1) or i < len(s) and fn(i+1, j)
+            return False 
+        
+        return fn(0, 0)
+
+
+    """45. Jump Game II (Hard)
+	Given an array of non-negative integers, you are initially positioned at 
+	the first index of the array. Each element in the array represents your 
+	maximum jump length at that position. Your goal is to reach the last index 
+	in the minimum number of jumps.
+
+	Example:
+	Input: [2,3,1,1,4]
+	Output: 2
+	Explanation: The minimum number of jumps to reach the last index is 2.
+    Jump 1 step from index 0 to 1, then 3 steps to the last index.
+
+	Note: You can assume that you can always reach the last index."""
+
+    def jump(self, nums: List[int]) -> int:
+        curr = next = jump = 0
+        for i in range(len(nums)):
+            if i > curr: 
+                curr = next;
+                jump += 1
+            next = max(next, i + nums[i])
+        return jump 
