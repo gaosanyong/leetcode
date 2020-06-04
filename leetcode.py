@@ -1876,3 +1876,137 @@ class Solution:
             if i > limit: return False 
             limit = max(limit, i + nums[i])
         return True 
+
+
+
+
+    """56. Merge Intervals (Medium)
+	Given a collection of intervals, merge all overlapping intervals.
+
+	Example 1:
+	Input: [[1,3],[2,6],[8,10],[15,18]]
+	Output: [[1,6],[8,10],[15,18]]
+	Explanation: Since intervals [1,3] and [2,6] overlaps, merge them into 
+	[1,6].
+
+	Example 2:
+	Input: [[1,4],[4,5]]
+	Output: [[1,5]]
+	Explanation: Intervals [1,4] and [4,5] are considered overlapping.
+
+	NOTE: input types have been changed on April 15, 2019. Please reset to 
+	default code definition to get new method signature."""
+
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+        intervals.sort()
+        ans = []
+        for interval in intervals: 
+            if ans and ans[-1][1] >= interval[0]: 
+                ans[-1][1] = max(ans[-1][1], interval[1])
+            else: ans.append(interval)
+        return ans
+
+
+    """57. Insert Interval (Hard)
+	Given a set of non-overlapping intervals, insert a new interval into the 
+	intervals (merge if necessary). You may assume that the intervals were 
+	initially sorted according to their start times.
+
+	Example 1:
+	Input: intervals = [[1,3],[6,9]], newInterval = [2,5]
+	Output: [[1,5],[6,9]]
+
+	Example 2:
+	Input: intervals = [[1,2],[3,5],[6,7],[8,10],[12,16]], newInterval = [4,8]
+	Output: [[1,2],[3,10],[12,16]]
+	Explanation: Because the new interval [4,8] overlaps with [3,5],[6,7],[8,10].
+
+	NOTE: input types have been changed on April 15, 2019. Please reset to 
+	default code definition to get new method signature."""
+
+    def insert(self, intervals: List[List[int]], newInterval: List[int]) -> List[List[int]]:
+        ans = []
+        for i, interval in enumerate(intervals): 
+            if interval[1] < newInterval[0]: ans.append(interval)
+            elif not (newInterval[1] < interval[0]): 
+                newInterval[0] = min(newInterval[0], interval[0])
+                newInterval[1] = max(newInterval[1], interval[1])
+            else: 
+                ans.append(newInterval)
+                return ans + intervals[i:]
+        return ans + [newInterval]
+
+    """58. Length of Last Word (Easy)
+	Given a string s consists of upper/lower-case alphabets and empty space 
+	characters ' ', return the length of last word (last word means the last 
+	appearing word if we loop from left to right) in the string. If the last 
+	word does not exist, return 0.
+
+	Note: A word is defined as a maximal substring consisting of non-space 
+	characters only.
+
+	Example:
+	Input: "Hello World"
+	Output: 5"""
+
+    def lengthOfLastWord(self, s: str) -> int:
+        words = s.split()
+        return len(words[-1]) if words else 0
+
+
+    """59. Spiral Matrix II (Medium)
+	Given a positive integer n, generate a square matrix filled with elements 
+	from 1 to n2 in spiral order.
+
+	Example:
+	Input: 3
+	Output:
+	[
+	 [ 1, 2, 3 ],
+	 [ 8, 9, 4 ],
+	 [ 7, 6, 5 ]
+	]"""
+
+    def generateMatrix(self, n: int) -> List[List[int]]:
+        matrix = [[0]*n for _ in range(n)]
+        i, j, di, dj = 0, 0, 0, 1
+        for v in range(1, n*n+1):
+            matrix[i][j] = v
+            if matrix[(i+di)%n][(j+dj)%n]: di, dj = dj, -di
+            i, j = i+di, j+dj
+        return matrix 
+
+
+    """60. Permutation Sequence (Medium)
+	The set [1,2,3,...,n] contains a total of n! unique permutations. By 
+	listing and labeling all of the permutations in order, we get the following 
+	sequence for n = 3:
+
+	"123"
+	"132"
+	"213"
+	"231"
+	"312"
+	"321"
+
+	Given n and k, return the kth permutation sequence.
+
+	Note:
+	Given n will be between 1 and 9 inclusive.
+	Given k will be between 1 and n! inclusive.
+
+	Example 1:
+	Input: n = 3, k = 3
+	Output: "213"
+
+	Example 2:
+	Input: n = 4, k = 9
+	Output: "2314" """
+
+    def getPermutation(self, n: int, k: int) -> str:
+        k -= 1
+        ans, digits = [], list(range(1, n+1))
+        for i in range(n):
+            d, k = divmod(k, factorial(n-i-1))
+            ans.append(digits.pop(d))
+        return "".join(str(x) for x in ans)
