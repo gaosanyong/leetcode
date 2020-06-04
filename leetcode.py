@@ -1709,3 +1709,170 @@ class Solution:
             if n & 1: ans *= x
             x, n = x*x, n//2
         return ans 
+
+
+    """51. N-Queens (Hard)
+	The n-queens puzzle is the problem of placing n queens on an n×n chessboard 
+	such that no two queens attack each other. Given an integer n, return all 
+	distinct solutions to the n-queens puzzle. Each solution contains a 
+	distinct board configuration of the n-queens' placement, where 'Q' and '.' 
+	both indicate a queen and an empty space respectively.
+
+	Example:
+	Input: 4
+	Output: [
+	 [".Q..",  // Solution 1
+	  "...Q",
+	  "Q...",
+	  "..Q."],
+
+	 ["..Q.",  // Solution 2
+	  "Q...",
+	  "...Q",
+	  ".Q.."]
+	]
+	Explanation: There exist two distinct solutions to the 4-queens puzzle as shown above."""
+
+    def solveNQueens(self, n: int) -> List[List[str]]:
+        
+        def fn(i, seen):
+            """Populate ans through backtracking row by row"""
+            if i == n: ans.append(["".join(row) for row in sol])
+            for j in range(n):
+                place = {("col", j), ("diag", i-j), ("anti", i+j)}
+                if not (place & seen): 
+                    sol[i][j] = "Q"
+                    seen |= place
+                    fn(i+1, seen)
+                    sol[i][j] = "."
+                    seen -= place 
+                    
+        ans, sol = [], [["."]*n for _ in range(n)]
+        fn(0, set())
+        return ans 
+
+
+    """52. N-Queens II (Hard)
+	The n-queens puzzle is the problem of placing n queens on an n×n chessboard 
+	such that no two queens attack each other. Given an integer n, return the 
+	number of distinct solutions to the n-queens puzzle.
+
+	Example:
+	Input: 4
+	Output: 2
+	Explanation: There are two distinct solutions to the 4-queens puzzle as shown below.
+	[
+	 [".Q..",  // Solution 1
+	  "...Q",
+	  "Q...",
+	  "..Q."],
+
+	 ["..Q.",  // Solution 2
+	  "Q...",
+	  "...Q",
+	  ".Q.."]
+	]"""
+
+    def totalNQueens(self, n: int) -> int:
+        
+        def fn(i, seen=set(), ans=0):
+            """Return the number of solutions"""
+            if i == n: ans += 1
+            for j in range(n):
+                place = {("col", j), ("diag", i-j), ("anti", i+j)}
+                if not (place & seen): 
+                    seen |= place
+                    ans = fn(i+1, seen, ans)
+                    seen -= place 
+            return ans 
+        
+        return fn(0)
+
+
+    """53. Maximum Subarray (Easy)
+	Given an integer array nums, find the contiguous subarray (containing at 
+	least one number) which has the largest sum and return its sum.
+
+	Example:
+
+	Input: [-2,1,-3,4,-1,2,1,-5,4],
+	Output: 6
+	Explanation: [4,-1,2,1] has the largest sum = 6.
+	
+	Follow up: If you have figured out the O(n) solution, try coding another 
+	solution using the divide and conquer approach, which is more subtle."""
+
+    def maxSubArray(self, nums: List[int]) -> int:
+        ans, val = float("-inf"), 0
+        for x in nums:
+            val = max(0, val) + x
+            ans = max(ans, val)
+        return ans 
+
+
+    """54. Spiral Matrix (Medium)
+	Given a matrix of m x n elements (m rows, n columns), return all elements 
+	of the matrix in spiral order.
+
+	Example 1:
+	Input:
+	[
+	 [ 1, 2, 3 ],
+	 [ 4, 5, 6 ],
+	 [ 7, 8, 9 ]
+	]
+	Output: [1,2,3,6,9,8,7,4,5]
+
+	Example 2:
+	Input:
+	[
+	  [1, 2, 3, 4],
+	  [5, 6, 7, 8],
+	  [9,10,11,12]
+	]
+	Output: [1,2,3,4,8,12,11,10,9,5,6,7]"""
+
+    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        if not matrix: return [] #edge case 
+        ans = []
+        m, n = len(matrix), len(matrix[0])
+        i, j, di, dj, k = 0, 0, 0, 1, 0  #position, direction & side
+        bd = [0, n, m, 0] #boundary (top|right|bottom|left)
+        for _ in range(m*n): 
+            ans.append(matrix[i][j])
+            if not(bd[0] <= i + di < bd[2] and bd[3] <= j + dj < bd[1]): 
+                di, dj = dj, -di           #rotate 
+                if k in (0, 3): bd[k] += 1 #top or left boundary
+                else: bd[k] -= 1           #bottom or right boundary
+                k = (k+1)%4
+            i, j = i+di, j+dj
+        return ans 
+
+
+    """55. Jump Game (Medium)
+	Given an array of non-negative integers, you are initially positioned at 
+	the first index of the array. Each element in the array represents your 
+	maximum jump length at that position. Determine if you are able to reach 
+	the last index.
+
+	Example 1:
+	Input: nums = [2,3,1,1,4]
+	Output: true
+	Explanation: Jump 1 step from index 0 to 1, then 3 steps to the last index.
+
+	Example 2:
+	Input: nums = [3,2,1,0,4]
+	Output: false
+	Explanation: You will always arrive at index 3 no matter what. Its maximum 
+	jump length is 0, which makes it impossible to reach the last index.
+
+	Constraints:
+	1 <= nums.length <= 3 * 10^4
+	0 <= nums[i][j] <= 10^5"""
+
+    def canJump(self, nums: List[int]) -> bool:
+        limit = 0
+        for i in range(len(nums)): 
+            if i > limit: return False 
+            limit = max(limit, i + nums[i])
+        return True 
