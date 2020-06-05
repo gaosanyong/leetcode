@@ -2010,3 +2010,200 @@ class Solution:
             d, k = divmod(k, factorial(n-i-1))
             ans.append(digits.pop(d))
         return "".join(str(x) for x in ans)
+
+
+    """61. Rotate List (Medium)
+	Given a linked list, rotate the list to the right by k places, where k is 
+	non-negative.
+
+	Example 1:
+	Input: 1->2->3->4->5->NULL, k = 2
+	Output: 4->5->1->2->3->NULL
+	Explanation:
+	rotate 1 steps to the right: 5->1->2->3->4->NULL
+	rotate 2 steps to the right: 4->5->1->2->3->NULL
+
+	Example 2:
+	Input: 0->1->2->NULL, k = 4
+	Output: 2->0->1->NULL
+	Explanation:
+	rotate 1 steps to the right: 2->0->1->NULL
+	rotate 2 steps to the right: 1->2->0->NULL
+	rotate 3 steps to the right: 0->1->2->NULL
+	rotate 4 steps to the right: 2->0->1->NULL"""
+
+    def rotateRight(self, head: ListNode, k: int) -> ListNode:
+        if not head: return None
+        
+        n, node = 0, head
+        while node: n, node = n+1, node.next
+        
+        k %= n
+        if k: 
+            fast = slow = head 
+            while fast.next: 
+                if k == 0: slow = slow.next
+                else: k -= 1
+                fast = fast.next 
+            head, fast.next, slow.next = slow.next, head, None
+        return head
+
+
+    """62. Unique Paths (Medium)
+	A robot is located at the top-left corner of a m x n grid (marked 'Start' 
+	in the diagram below). The robot can only move either down or right at any 
+	point in time. The robot is trying to reach the bottom-right corner of the 
+	grid (marked 'Finish' in the diagram below). How many possible unique paths 
+	are there?
+
+	Example 1:
+	Input: m = 3, n = 2
+	Output: 3
+	Explanation:
+	From the top-left corner, there are a total of 3 ways to reach the bottom-right corner:
+	1. Right -> Right -> Down
+	2. Right -> Down -> Right
+	3. Down -> Right -> Right
+
+	Example 2:
+	Input: m = 7, n = 3
+	Output: 28
+
+	Constraints:
+	1 <= m, n <= 100
+	It's guaranteed that the answer will be less than or equal to 2 * 10 ^ 9."""
+    
+    def uniquePaths(self, m: int, n: int) -> int:
+        
+        def choose(n, k): 
+            """Return n choose k"""
+            ans, k = 1, min(k, n-k)
+            for i in range(k):
+                ans *= n-i
+                ans //= i+1
+            return ans 
+        
+        return choose(m+n-2, m-1)
+
+
+    """63. Unique Paths II (Medium)
+	A robot is located at the top-left corner of a m x n grid (marked 'Start' 
+	in the diagram below). The robot can only move either down or right at any 
+	point in time. The robot is trying to reach the bottom-right corner of the 
+	grid (marked 'Finish' in the diagram below). Now consider if some obstacles 
+	are added to the grids. How many unique paths would there be? An obstacle 
+	and empty space is marked as 1 and 0 respectively in the grid.
+
+	Note: m and n will be at most 100.
+
+	Example 1:
+	Input:
+	[
+	  [0,0,0],
+	  [0,1,0],
+	  [0,0,0]
+	]
+	Output: 2
+	Explanation:
+	There is one obstacle in the middle of the 3x3 grid above.
+	There are two ways to reach the bottom-right corner:
+	1. Right -> Right -> Down -> Down
+	2. Down -> Down -> Right -> Right"""
+
+    def uniquePathsWithObstacles(self, obstacleGrid: List[List[int]]) -> int:
+        m, n = len(obstacleGrid), len(obstacleGrid[0])
+        
+        @lru_cache(None)
+        def fn(i, j): 
+            """Return number of unique paths ending at (i, j)"""
+            if i < 0 or j < 0 or obstacleGrid[i][j]: return 0
+            if i == 0 and j == 0: return 1 
+            return fn(i-1, j) + fn(i, j-1)
+        
+        return fn(m-1, n-1)
+
+
+    """64. Minimum Path Sum (Medium)
+	Given a m x n grid filled with non-negative numbers, find a path from top 
+	left to bottom right which minimizes the sum of all numbers along its path.
+	Note: You can only move either down or right at any point in time.
+
+	Example:
+
+	Input:
+	[
+	  [1,3,1],
+	  [1,5,1],
+	  [4,2,1]
+	]
+	Output: 7
+	Explanation: Because the path 1→3→1→1→1 minimizes the sum."""
+
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        
+        @lru_cache(None)
+        def fn(i, j): 
+            """Return min path sum ending at (i, j)"""
+            if i == 0 and j == 0: return grid[i][j]
+            if i < 0 or j < 0: return float("inf")
+            return grid[i][j] + min(fn(i-1, j), fn(i, j-1))
+        
+        return fn(m-1, n-1)
+
+
+    """65. Valid Number (Hard)
+	Validate if a given string can be interpreted as a decimal number.
+
+	Some examples:
+	"0"         => true
+	" 0.1 "     => true
+	"abc"       => false
+	"1 a"       => false
+	"2e10"      => true
+	" -90e3   " => true
+	" 1e"       => false
+	"e3"        => false
+	" 6e-1"     => true
+	" 99e2.5 "  => false
+	"53.5e93"   => true
+	" --6 "     => false
+	"-+3"       => false
+	"95a54e53"  => false
+
+	Note: It is intended for the problem statement to be ambiguous. You should 
+	gather all requirements up front before implementing one. However, here is 
+	a list of characters that can be in a valid decimal number:
+
+	Numbers 0-9
+	Exponent - "e"
+	Positive/negative sign - "+"/"-"
+	Decimal point - "."
+	Of course, the context of these characters also matters in the input.
+
+	Update (2015-02-10): The signature of the C++ function had been updated. If 
+	you still see your function signature accepts a const char * argument, 
+	please click the reload button to reset your code definition."""
+
+    def isNumber(self, s: str) -> bool:
+        dfa = [{'space': 0, 'sign': 1, 'digit': 2, '.': 3}, #state 0 - leading space
+               {'digit': 2, '.': 3},                        #state 1 - sign
+               {'digit': 2, '.': 4, 'e': 5, 'space': 8},    #state 2 - digit (terminal)
+               {'digit': 4},                                #state 3 - dot
+               {'digit': 4, 'e': 5, 'space': 8},            #state 4 - digit post dot (terminal)
+               {'sign': 6, 'digit': 7},                     #state 5 - exponential 
+               {'digit': 7},                                #state 6 - sign post exponential 
+               {'digit': 7, 'space': 8},                    #state 7 - digit post exponential (terminal)
+               {'space': 8}                                 #state 8 - trailing space (terminal)
+              ]
+        
+        state = 0
+        for c in s: 
+            if c in "0123456789": c = "digit"
+            elif c == " ":  c = "space"
+            elif c in "+-": c = "sign"
+            
+            if c not in dfa[state]: return False 
+            state = dfa[state][c]
+            
+        return state in [2, 4, 7, 8]
