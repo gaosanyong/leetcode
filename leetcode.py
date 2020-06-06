@@ -2396,3 +2396,216 @@ class Solution:
             return fn(k-1) + fn(k-2)
         
         return fn(n)
+
+
+    """71. Simplify Path (Medium)
+	Given an absolute path for a file (Unix-style), simplify it. Or in other 
+	words, convert it to the canonical path. In a UNIX-style file system, a 
+	period . refers to the current directory. Furthermore, a double period .. 
+	moves the directory up a level. Note that the returned canonical path must 
+	always begin with a slash /, and there must be only a single slash / 
+	between two directory names. The last directory name (if it exists) must 
+	not end with a trailing /. Also, the canonical path must be the shortest 
+	string representing the absolute path.
+
+	Example 1:
+	Input: "/home/"
+	Output: "/home"
+	Explanation: Note that there is no trailing slash after the last directory name.
+
+	Example 2:
+	Input: "/../"
+	Output: "/"
+	Explanation: Going one level up from the root directory is a no-op, as the root level is the highest level you can go.
+
+	Example 3:
+	Input: "/home//foo/"
+	Output: "/home/foo"
+	Explanation: In the canonical path, multiple consecutive slashes are replaced by a single one.
+
+	Example 4:
+	Input: "/a/./b/../../c/"
+	Output: "/c"
+
+	Example 5:
+	Input: "/a/../../b/../c//.//"
+	Output: "/c"
+
+	Example 6:
+	Input: "/a//b////c/d//././/.."
+	Output: "/a/b/c" """
+
+    def simplifyPath(self, path: str) -> str:
+        stack = []
+        for file in path.split("/"):
+            if file == "..": 
+                if stack: stack.pop()
+            elif file not in ("", "."): 
+                stack.append(file)
+        return "/" + "/".join(stack)
+
+
+    """72. Edit Distance (Hard)
+	Given two words word1 and word2, find the minimum number of operations 
+	required to convert word1 to word2. You have the following 3 operations 
+	permitted on a word:
+	- Insert a character
+	- Delete a character
+	- Replace a character
+	
+	Example 1:
+	Input: word1 = "horse", word2 = "ros"
+	Output: 3
+	Explanation: 
+	horse -> rorse (replace 'h' with 'r')
+	rorse -> rose (remove 'r')
+	rose -> ros (remove 'e')
+
+	Example 2:
+	Input: word1 = "intention", word2 = "execution"
+	Output: 5
+	Explanation: 
+	intention -> inention (remove 't')
+	inention -> enention (replace 'i' with 'e')
+	enention -> exention (replace 'n' with 'x')
+	exention -> exection (replace 'n' with 'c')
+	exection -> execution (insert 'u')"""
+
+    def minDistance(self, word1: str, word2: str) -> int:
+        m, n = len(word1), len(word2)
+        
+        @lru_cache(None)
+        def fn(i, j): 
+            """Return edit distance between word1[i:] and word2[j:]"""
+            if i == m or j == n: return m + n - i - j
+            if word1[i] == word2[j]: return fn(i+1, j+1)
+            return 1 + min(fn(i+1, j), fn(i, j+1), fn(i+1, j+1))
+        
+        return fn(0, 0)
+
+
+    """73. Set Matrix Zeroes (Medium)
+	Given a m x n matrix, if an element is 0, set its entire row and column to 
+	0. Do it in-place.
+
+	Example 1:
+	Input: 
+	[
+	  [1,1,1],
+	  [1,0,1],
+	  [1,1,1]
+	]
+	Output: 
+	[
+	  [1,0,1],
+	  [0,0,0],
+	  [1,0,1]
+	]
+
+	Example 2:
+	Input: 
+	[
+	  [0,1,2,0],
+	  [3,4,5,2],
+	  [1,3,1,5]
+	]
+	Output: 
+	[
+	  [0,0,0,0],
+	  [0,4,5,0],
+	  [0,3,1,0]
+	]
+
+	Follow up:
+	A straight forward solution using O(mn) space is probably a bad idea. A 
+	simple improvement uses O(m + n) space, but still not the best solution.
+	Could you devise a constant space solution?"""
+
+    def setZeroes(self, matrix: List[List[int]]) -> None:
+        m, n = len(matrix), len(matrix[0])
+        zero = False 
+        
+        for i in range(m):
+            if not matrix[i][0]: zero = True
+            for j in range(1, n): 
+                if not matrix[i][j]: matrix[i][0] = matrix[0][j] = 0
+        
+        for i in reversed(range(m)):
+            for j in reversed(range(1, n)):
+                if not matrix[i][0] or not matrix[0][j]: matrix[i][j] = 0
+            if zero: matrix[i][0] = 0
+
+
+    """74. Search a 2D Matrix (Medium)
+	Write an efficient algorithm that searches for a value in an m x n matrix. 
+	This matrix has the following properties: 
+	- Integers in each row are sorted from left to right.
+	- The first integer of each row is greater than the last integer of the 
+	previous row.
+	
+	Example 1:
+	Input:
+	matrix = [
+	  [1,   3,  5,  7],
+	  [10, 11, 16, 20],
+	  [23, 30, 34, 50]
+	]
+	target = 3
+	Output: true
+
+	Example 2:
+	Input:
+	matrix = [
+	  [1,   3,  5,  7],
+	  [10, 11, 16, 20],
+	  [23, 30, 34, 50]
+	]
+	target = 13
+	Output: false"""
+
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        if not matrix: return False #edge case 
+        
+        m, n = len(matrix), len(matrix[0])
+        lo, hi = 0, m*n
+        while lo < hi: 
+            mid = (lo + hi)//2
+            i, j = divmod(mid, n)
+            if matrix[i][j] == target: return True
+            elif matrix[i][j] > target: hi = mid
+            else: lo = mid+1
+        return False 
+
+
+    """75. Sort Colors (Medium)
+	Given an array with n objects colored red, white or blue, sort them in-
+	place so that objects of the same color are adjacent, with the colors in 
+	the order red, white and blue. Here, we will use the integers 0, 1, and 2 
+	to represent the color red, white, and blue respectively.
+
+	Note: You are not suppose to use the library's sort function for this problem.
+
+	Example:
+	Input: [2,0,2,1,1,0]
+	Output: [0,0,1,1,2,2]
+	Follow up:
+
+	A rather straight forward solution is a two-pass algorithm using counting 
+	sort. First, iterate the array counting number of 0's, 1's, and 2's, then 
+	overwrite array with total number of 0's, then 1's and followed by 2's.
+	Could you come up with a one-pass algorithm using only constant space?"""
+
+    def sortColors(self, nums: List[int]) -> None:
+        """Dijkstra's three-way partition"""
+        lo, mid, hi = 0, 0, len(nums)
+        
+        while mid < hi: 
+            if nums[mid] < 1: 
+                nums[lo], nums[mid] = nums[mid], nums[lo]
+                lo, mid = lo+1, mid+1
+            elif nums[mid] > 1:
+                hi -= 1
+                nums[mid], nums[hi] = nums[hi], nums[mid]
+            else:
+                mid += 1
+        
