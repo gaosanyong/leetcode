@@ -5,7 +5,7 @@ For more details, the readers are suggested to explore on their own effort.
 
 from functools import lru_cache, reduce
 from heapq import heappush, heappop
-from itertools import groupby
+from itertools import groupby, zip_longest
 from operator import gt, lt
 
 class Solution:
@@ -2207,3 +2207,192 @@ class Solution:
             state = dfa[state][c]
             
         return state in [2, 4, 7, 8]
+
+
+    """66. Plus One (Easy)
+	Given a non-empty array of digits representing a non-negative integer, plus 
+	one to the integer. The digits are stored such that the most significant 
+	digit is at the head of the list, and each element in the array contain a 
+	single digit. You may assume the integer does not contain any leading zero, 
+	except the number 0 itself.
+
+	Example 1:
+	Input: [1,2,3]
+	Output: [1,2,4]
+	Explanation: The array represents the integer 123.
+
+	Example 2:
+	Input: [4,3,2,1]
+	Output: [4,3,2,2]
+	Explanation: The array represents the integer 4321."""
+
+    def plusOne(self, digits: List[int]) -> List[int]:
+        carry = 1
+        for i in reversed(range(len(digits))):
+            carry, digits[i] = divmod(digits[i] + carry, 10)
+            if not carry: return digits
+        return [carry] + digits
+
+
+    """67. Add Binary (Easy)
+	Given two binary strings, return their sum (also a binary string). The 
+	input strings are both non-empty and contains only characters 1 or 0.
+
+	Example 1:
+	Input: a = "11", b = "1"
+	Output: "100"
+
+	Example 2:
+	Input: a = "1010", b = "1011"
+	Output: "10101"
+
+	Constraints:
+	Each string consists only of '0' or '1' characters.
+	1 <= a.length, b.length <= 10^4
+	Each string is either "0" or doesn't contain any leading zero."""
+
+    def addBinary(self, a: str, b: str) -> str:
+        ans, carry = [], 0
+        for x, y in zip_longest(reversed(a), reversed(b), fillvalue=0):
+            carry += (x == "1") + (y == "1")
+            carry, d = divmod(carry, 2)
+            ans.append(d)
+        if carry: ans.append(carry)
+        return "".join(map(str, reversed(ans)))
+
+
+    """68. Text Justification (Hard)
+	Given an array of words and a width maxWidth, format the text such that 
+	each line has exactly maxWidth characters and is fully (left and right) 
+	justified. You should pack your words in a greedy approach; that is, pack 
+	as many words as you can in each line. Pad extra spaces ' ' when necessary 
+	so that each line has exactly maxWidth characters. Extra spaces between 
+	words should be distributed as evenly as possible. If the number of spaces 
+	on a line do not divide evenly between words, the empty slots on the left 
+	will be assigned more spaces than the slots on the right. For the last line 
+	of text, it should be left justified and no extra space is inserted between 
+	words.
+
+	Note:
+	A word is defined as a character sequence consisting of non-space 
+	characters only. Each word's length is guaranteed to be greater than 0 and 
+	not exceed maxWidth. The input array words contains at least one word.
+
+	Example 1:
+	Input:
+	words = ["This", "is", "an", "example", "of", "text", "justification."]
+	maxWidth = 16
+	Output:
+	[
+	   "This    is    an",
+	   "example  of text",
+	   "justification.  "
+	]
+	
+	Example 2:
+	Input:
+	words = ["What","must","be","acknowledgment","shall","be"]
+	maxWidth = 16
+	Output:
+	[
+	  "What   must   be",
+	  "acknowledgment  ",
+	  "shall be        "
+	]
+	Explanation: Note that the last line is "shall be    " instead of "shall     be",
+	             because the last line must be left-justified instead of fully-justified.
+	             Note that the second line is also left-justified becase it contains only one word.
+
+	Example 3:
+	Input:
+	words = ["Science","is","what","we","understand","well","enough","to","explain",
+	         "to","a","computer.","Art","is","everything","else","we","do"]
+	maxWidth = 20
+	Output:
+	[
+	  "Science  is  what we",
+	  "understand      well",
+	  "enough to explain to",
+	  "a  computer.  Art is",
+	  "everything  else  we",
+	  "do                  "
+	]"""
+
+    def fullJustify(self, words: List[str], maxWidth: int) -> List[str]:
+        ans = []
+        line, width = [], 0
+        
+        for word in words: 
+            if width + len(line) + len(word) > maxWidth: 
+                n, k = divmod(maxWidth - width, max(1, len(line)-1))
+                for i in range(max(1, len(line)-1)): 
+                    line[i] += " " * (n + (i < k))
+                ans.append("".join(line))
+                line, width = [], 0
+            line.append(word)
+            width += len(word)
+            
+        ans.append(" ".join(line).ljust(maxWidth))
+        return ans 
+
+
+    """64. Minimum Path Sum (Medium)
+	Given a m x n grid filled with non-negative numbers, find a path from top 
+	left to bottom right which minimizes the sum of all numbers along its path.
+
+	Note: You can only move either down or right at any point in time.
+
+	Example:
+	Input:
+	[
+	  [1,3,1],
+	  [1,5,1],
+	  [4,2,1]
+	]
+	Output: 7
+	Explanation: Because the path 1→3→1→1→1 minimizes the sum."""
+
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        
+        @lru_cache(None)
+        def fn(i, j): 
+            """Return min path sum ending at (i, j)"""
+            if i == 0 and j == 0: return grid[i][j]
+            if i < 0 or j < 0: return float("inf")
+            return grid[i][j] + min(fn(i-1, j), fn(i, j-1))
+        
+        return fn(m-1, n-1)
+
+
+    """70. Climbing Stairs (Easy)
+	You are climbing a stair case. It takes n steps to reach to the top. Each 
+	time you can either climb 1 or 2 steps. In how many distinct ways can you 
+	climb to the top?
+
+	Note: Given n will be a positive integer.
+
+	Example 1:
+	Input: 2
+	Output: 2
+	Explanation: There are two ways to climb to the top.
+	1. 1 step + 1 step
+	2. 2 steps
+
+	Example 2:
+	Input: 3
+	Output: 3
+	Explanation: There are three ways to climb to the top.
+	1. 1 step + 1 step + 1 step
+	2. 1 step + 2 steps
+	3. 2 steps + 1 step"""
+
+    def climbStairs(self, n: int) -> int:
+        
+        @lru_cache(None)
+        def fn(k): 
+            """Return kth Fibonacci number"""
+            if k <= 1: return 1
+            return fn(k-1) + fn(k-2)
+        
+        return fn(n)
