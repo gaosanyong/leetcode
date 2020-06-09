@@ -2731,8 +2731,6 @@ class Solution:
 	1 <= word.length <= 10^3"""
 
     def exist(self, board: List[List[str]], word: str) -> bool:
-        if Counter(word) - Counter(sum(board, [])): return False #non-essential (500ms -> 252ms)
-        
         m, n = len(board), len(board[0])
         
         def fn(i, j, k):
