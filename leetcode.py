@@ -2609,3 +2609,183 @@ class Solution:
             else:
                 mid += 1
         
+
+    """76. Minimum Window Substring (Hard)
+	Given a string S and a string T, find the minimum window in S which will 
+	contain all the characters in T in complexity O(n).
+
+	Example:
+	Input: S = "ADOBECODEBANC", T = "ABC"
+	Output: "BANC"
+	Note:
+
+	If there is no such window in S that covers all characters in T, return the 
+	empty string "". If there is such window, you are guaranteed that there 
+	will always be only one unique minimum window in S."""
+
+    def minWindow(self, s: str, t: str) -> str:
+        freq = dict()
+        for c in t: freq[c] = 1 + freq.get(c, 0) #target freq table 
+        
+        count = ii = jj = 0
+        queue, ts = deque(), set(t)
+        for j, c in enumerate(s):
+            if c in ts: 
+                queue.append((j, c))
+                freq[c] -= 1
+                if freq[c] == 0: count += 1 #enough c in s
+                while count == len(ts): 
+                    i, c = queue.popleft()
+                    if not jj or j - i < jj - ii: ii, jj = i, j+1
+                    if freq[c] == 0: count -= 1 #not enough c in s
+                    freq[c] += 1
+        return s[ii:jj]
+
+
+    """77. Combinations (Medium)
+	Given two integers n and k, return all possible combinations of k numbers 
+	out of 1 ... n.
+
+	Example:
+	Input: n = 4, k = 2
+	Output:
+	[
+	  [2,4],
+	  [3,4],
+	  [2,3],
+	  [1,2],
+	  [1,3],
+	  [1,4],
+	]"""
+
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        
+        def fn(i): 
+            """Populate ans using a stack"""
+            if len(stack) == k: return ans.append(stack.copy())
+            for ii in range(i+1, n+1): 
+                stack.append(ii)
+                fn(ii)
+                stack.pop()
+        
+        ans, stack = [], []
+        fn(0)
+        return ans 
+
+
+    """78. Subsets (Medium)
+	Given a set of distinct integers, nums, return all possible subsets (the 
+	power set). Note that the solution set must not contain duplicate subsets.
+
+	Example:
+	Input: nums = [1,2,3]
+	Output:
+	[
+	  [3],
+	  [1],
+	  [2],
+	  [1,2,3],
+	  [1,3],
+	  [2,3],
+	  [1,2],
+	  []
+	]"""
+
+    def subsets(self, nums: List[int]) -> List[List[int]]:
+        
+        def fn(i):
+            """Populate ans using a stack"""
+            if len(nums) == i: return ans.append(stack.copy())
+            fn(i+1)
+            stack.append(nums[i])
+            fn(i+1)
+            stack.pop()
+                
+        ans, stack = [], []
+        fn(0)
+        return ans 
+
+
+    """79. Word Search (Medium)
+	Given a 2D board and a word, find if the word exists in the grid. The word 
+	can be constructed from letters of sequentially adjacent cell, where 
+	"adjacent" cells are those horizontally or vertically neighboring. The same 
+	letter cell may not be used more than once.
+
+	Example:
+	board =
+	[
+	  ['A','B','C','E'],
+	  ['S','F','C','S'],
+	  ['A','D','E','E']
+	]
+
+	Given word = "ABCCED", return true.
+	Given word = "SEE", return true.
+	Given word = "ABCB", return false.
+
+	Constraints:
+	board and word consists only of lowercase and uppercase English letters.
+	1 <= board.length <= 200
+	1 <= board[i].length <= 200
+	1 <= word.length <= 10^3"""
+
+    def exist(self, board: List[List[str]], word: str) -> bool:
+        if Counter(word) - Counter(sum(board, [])): return False #non-essential (500ms -> 252ms)
+        
+        m, n = len(board), len(board[0])
+        
+        def fn(i, j, k):
+            """Return True if a series starting from (i, j) matches word[k:]"""
+            if k == len(word): return True 
+            if not (0 <= i < m and 0 <= j < n) or (i, j) in seen or board[i][j] != word[k]: return False 
+            
+            seen.add((i, j))
+            ans = any(fn(i+di, j+dj, k+1) for di, dj in ((-1, 0), (0, -1), (1, 0), (0, 1)))
+            seen.remove((i, j))
+            return ans 
+        
+        seen = set()
+        return any(fn(i, j, 0) for i in range(m) for j in range(n))
+
+
+    """80. Remove Duplicates from Sorted Array II (Medium)
+	Given a sorted array nums, remove the duplicates in-place such that 
+	duplicates appeared at most twice and return the new length. Do not 
+	allocate extra space for another array, you must do this by modifying the 
+	input array in-place with O(1) extra memory.
+
+	Example 1:
+	Given nums = [1,1,1,2,2,3], your function should return length = 5, with 
+	the first five elements of nums being 1, 1, 2, 2 and 3 respectively. It 
+	doesn't matter what you leave beyond the returned length.
+	
+	Example 2:
+	Given nums = [0,0,1,1,1,1,2,3,3], your function should return length = 7, 
+	with the first seven elements of nums being modified to 0, 0, 1, 1, 2, 3 
+	and 3 respectively. It doesn't matter what values are set beyond the 
+	returned length.
+	
+	Clarification:
+	Confused why the returned value is an integer but your answer is an array?
+	Note that the input array is passed in by reference, which means 
+	modification to the input array will be known to the caller as well.
+
+	Internally you can think of this:
+	// nums is passed in by reference. (i.e., without making a copy)
+	int len = removeDuplicates(nums);
+
+	// any modification to nums in your function would be known by the caller.
+	// using the length returned by your function, it prints the first len 
+	elements.
+	for (int i = 0; i < len; i++) {
+	    print(nums[i]);
+	}"""
+
+    def removeDuplicates(self, nums: List[int]) -> int:
+        i = 0
+        for num in nums:
+            if i < 2 or nums[i-2] < num: 
+                nums[i] = num
+                i += 1
+        return i
