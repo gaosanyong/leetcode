@@ -2787,3 +2787,149 @@ class Solution:
                 nums[i] = num
                 i += 1
         return i
+
+
+    """81. Search in Rotated Sorted Array II (Medium)
+	Suppose an array sorted in ascending order is rotated at some pivot unknown 
+	to you beforehand. (i.e., [0,0,1,2,2,5,6] might become [2,5,6,0,0,1,2]). 
+	You are given a target value to search. If found in the array return true, 
+	otherwise return false.
+
+	Example 1:
+	Input: nums = [2,5,6,0,0,1,2], target = 0
+	Output: true
+
+	Example 2:
+	Input: nums = [2,5,6,0,0,1,2], target = 3
+	Output: false
+
+	Follow up: This is a follow up problem to Search in Rotated Sorted Array, 
+	where nums may contain duplicates. Would this affect the run-time 
+	complexity? How and why?"""
+
+    def search(self, nums: List[int], target: int) -> bool:
+        
+        def fn(lo, hi):
+            """Return True if target is found in nums[lo:hi+1]"""
+            if hi < lo: return False 
+            if lo == hi: return nums[lo] == target
+            
+            mid = (lo + hi)//2
+            if nums[mid] == target: return True
+            if nums[lo] < nums[mid]: 
+                if nums[lo] <= target < nums[mid]: return fn(lo, mid-1)
+                else: return fn(mid+1, hi)
+            elif nums[mid] < nums[hi]:
+                if nums[mid] < target <= nums[hi]: return fn(mid+1, hi)
+                else: return fn(lo, mid-1)
+            else: #nums[lo] == nums[mid] == nums[hi]
+                return fn(lo, mid-1) or fn(mid+1, hi)
+        
+        return fn(0, len(nums)-1)
+
+
+    """82. Remove Duplicates from Sorted List II (Medium)
+	Given a sorted linked list, delete all nodes that have duplicate numbers, 
+	leaving only distinct numbers from the original list. Return the linked 
+	list sorted as well.
+
+	Example 1:
+	Input: 1->2->3->3->4->4->5
+	Output: 1->2->5
+
+	Example 2:
+	Input: 1->1->1->2->3
+	Output: 2->3"""
+
+    def deleteDuplicates(self, head: ListNode) -> ListNode:
+        slow = fast = dummy = ListNode(None, head)
+        prev = None
+        while fast: 
+            if fast.val == prev or (fast.next and fast.val == fast.next.val): 
+                slow.next = fast.next
+            else: 
+                slow = slow.next
+            prev = fast.val
+            fast = fast.next
+        return dummy.next 
+
+
+    """83. Remove Duplicates from Sorted List (Easy)
+	Given a sorted linked list, delete all duplicates such that each element 
+	appear only once.
+
+	Example 1:
+	Input: 1->1->2
+	Output: 1->2
+
+	Example 2:
+	Input: 1->1->2->3->3
+	Output: 1->2->3"""
+
+    def deleteDuplicates(self, head: ListNode) -> ListNode:
+        slow = fast = head 
+        while fast:
+            if slow.val == fast.val: slow.next = fast.next
+            else: slow = slow.next
+            fast = fast.next 
+        return head 
+
+
+    """84. Largest Rectangle in Histogram (Hard)
+	Given n non-negative integers representing the histogram's bar height where 
+	the width of each bar is 1, find the area of largest rectangle in the 
+	histogram.
+
+	Example:
+	Input: [2,1,5,6,2,3]
+	Output: 10"""
+
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        ans, stack = 0, [] #mono-stack (non-decreasing)
+        for i in range(len(heights)+1): 
+            height = heights[i] if i < len(heights) else 0
+            
+            while stack and heights[stack[-1]] > height: 
+                h = heights[stack.pop()]
+                w = i - 1 - stack[-1] if stack else i
+                ans = max(ans, h*w)
+            stack.append(i)
+        return ans 
+
+
+    """85. Maximal Rectangle (Hard)
+	Given a 2D binary matrix filled with 0's and 1's, find the largest 
+	rectangle containing only 1's and return its area.
+
+	Example:
+	Input:
+	[
+	  ["1","0","1","0","0"],
+	  ["1","0","1","1","1"],
+	  ["1","1","1","1","1"],
+	  ["1","0","0","1","0"]
+	]
+	Output: 6"""
+
+    def maximalRectangle(self, matrix: List[List[str]]) -> int:
+        if not matrix: return 0
+        ans, m, n = 0, len(matrix), len(matrix[0])
+        height, lo, hi = [0]*n, [0]*n, [n]*n #height, lower & upper bound 
+        
+        for i in range(m): 
+            left, right = 0, n #[left:right]
+            for j in range(n): 
+                if matrix[i][j] == "0": 
+                    height[j] = lo[j] = 0
+                    left = j+1
+                else: 
+                    height[j] += 1
+                    lo[j] = max(lo[j], left)
+                    
+                if matrix[i][~j] == "0": 
+                    right = n-j-1
+                    hi[~j] = n
+                else: 
+                    hi[~j] = min(hi[~j], right)
+            ans = max(ans, max(x*(z-y) for x, y, z in zip(height, lo, hi)))
+        return ans 
