@@ -3257,3 +3257,196 @@ class Solution:
             return ans 
         
         return fn(1, n+1) if n else []
+
+
+    """96. Unique Binary Search Trees (Medium)
+	Given n, how many structurally unique BST's (binary search trees) that 
+	store values 1 ... n?
+
+	Example:
+	Input: 3
+	Output: 5
+	Explanation:
+	Given n = 3, there are a total of 5 unique BST's:
+
+	   1         3     3      2      1
+	    \       /     /      / \      \
+	     3     2     1      1   3      2
+	    /     /       \                 \
+	   2     1         2                 3"""
+
+    def numTrees(self, n: int) -> int:
+        
+        @lru_cache(None)
+        def fn(n):
+            """Return Catalan number in recursive form"""
+            if n == 0: return 1
+            return sum(fn(i)*fn(n-i-1) for i in range(n))
+        
+        return fn(n)
+
+
+    """97. Interleaving String (Hard)
+	Given s1, s2, s3, find whether s3 is formed by the interleaving of s1 and 
+	s2.
+
+	Example 1:
+	Input: s1 = "aabcc", s2 = "dbbca", s3 = "aadbbcbcac"
+	Output: true
+
+	Example 2:
+	Input: s1 = "aabcc", s2 = "dbbca", s3 = "aadbbbaccc"
+	Output: false"""
+
+    def isInterleave(self, s1: str, s2: str, s3: str) -> bool:
+        
+        @lru_cache(None)
+        def fn(i, j): 
+            """Return True if s3[i+j:] is formed by interleaving s1[i:] and s2[j:]"""
+            if i == len(s1) and j == len(s2): return True
+            ans = False
+            if i < len(s1) and s1[i] == s3[i+j]: ans = ans or fn(i+1, j)
+            if j < len(s2) and s2[j] == s3[i+j]: ans = ans or fn(i, j+1)
+            return ans 
+        
+        if len(s1) + len(s2) != len(s3): return False 
+        return fn(0, 0)
+
+
+    """98. Validate Binary Search Tree (Medium)
+	Given a binary tree, determine if it is a valid binary search tree (BST). 
+	Assume a BST is defined as follows: The left subtree of a node contains 
+	only nodes with keys less than the node's key. The right subtree of a node 
+	contains only nodes with keys greater than the node's key. Both the left 
+	and right subtrees must also be binary search trees.
+
+	Example 1:
+
+	    2
+	   / \
+	  1   3
+
+	Input: [2,1,3]
+	Output: true
+
+	Example 2:
+
+	    5
+	   / \
+	  1   4
+	     / \
+	    3   6
+
+	Input: [5,1,4,null,null,3,6]
+	Output: false
+	Explanation: The root node's value is 5 but its right child's value is 4."""
+
+    def isValidBST(self, root: TreeNode) -> bool:
+         
+        def fn(node, lo=-inf, hi=inf):
+            """Return True if tree rooted at node is a valid BST bounded between lo and hi"""
+            if not node: return True
+            return fn(node.left, lo, node.val) and lo < node.val < hi and fn(node.right, node.val, hi)
+        
+        return fn(root)
+
+
+    """99. Recover Binary Search Tree (Hard)
+	Two elements of a binary search tree (BST) are swapped by mistake. Recover 
+	the tree without changing its structure.
+
+	Example 1:
+	Input: [1,3,null,null,2]
+
+	   1
+	  /
+	 3
+	  \
+	   2
+
+	Output: [3,1,null,null,2]
+
+	   3
+	  /
+	 1
+	  \
+	   2
+
+	Example 2:
+	Input: [3,1,4,null,null,2]
+
+	  3
+	 / \
+	1   4
+	   /
+	  2
+
+	Output: [2,1,4,null,null,3]
+
+	  2
+	 / \
+	1   4
+	   /
+	  3
+
+	Follow up:
+	A solution using O(n) space is pretty straight forward.
+	Could you devise a constant space solution?"""
+
+    def recoverTree(self, root: TreeNode) -> None:
+        node, stack = root, []
+        prev = lo = hi = None
+        while stack or node:
+            if node:
+                stack.append(node)
+                node = node.left
+                continue
+            node = stack.pop()
+            if prev and prev.val > node.val:
+                if not lo: lo, hi = prev, node
+                else: hi = node
+            prev = node
+            node = node.right 
+        lo.val, hi.val = hi.val, lo.val 
+
+
+    """100. Same Tree (Easy)
+	Given two binary trees, write a function to check if they are the same or 
+	not. Two binary trees are considered the same if they are structurally 
+	identical and the nodes have the same value.
+
+	Example 1:
+	Input:     1         1
+	          / \       / \
+	         2   3     2   3
+
+	        [1,2,3],   [1,2,3]
+
+	Output: true
+
+	Example 2:
+	Input:     1         1
+	          /           \
+	         2             2
+
+	        [1,2],     [1,null,2]
+
+	Output: false
+
+	Example 3:
+	Input:     1         1
+	          / \       / \
+	         2   1     1   2
+
+	        [1,2,1],   [1,1,2]
+
+	Output: false"""
+
+    def isSameTree(self, p: TreeNode, q: TreeNode) -> bool:
+        
+        def fn(p, q): 
+            """Return True if trees rooted at p and q are structurally identical"""
+            if not p or not q: return p is q
+            return fn(p.left, q.left) and p.val == q.val and fn(p.right, q.right)
+        
+        return fn(p, q)
