@@ -3107,3 +3107,153 @@ class Solution:
         ans, stack = [], []
         fn(0)
         return ans 
+
+
+    """91. Decode Ways (Medium)
+	A message containing letters from A-Z is being encoded to numbers using the 
+	following mapping:
+
+	'A' -> 1
+	'B' -> 2
+	...
+	'Z' -> 26
+	
+	Given a non-empty string containing only digits, determine the total number 
+	of ways to decode it.
+
+	Example 1:
+	Input: "12"
+	Output: 2
+	Explanation: It could be decoded as "AB" (1 2) or "L" (12).
+
+	Example 2:
+	Input: "226"
+	Output: 3
+	Explanation: It could be decoded as "BZ" (2 26), "VF" (22 6), or "BBF" (2 2 6)."""
+
+    def numDecodings(self, s: str) -> int:
+        
+        @lru_cache(None)
+        def fn(i): 
+            """Return decode ways of s[i:]"""
+            if i >= len(s): return i == len(s) #boundary condition
+            return 0 if s[i] == "0" else fn(i+1) + (int(s[i:i+2]) <= 26)*fn(i+2)
+            
+        return fn(0)
+
+
+
+    """92. Reverse Linked List II (Medium)
+	Reverse a linked list from position m to n. Do it in one-pass. Note: 
+	1 ≤ m ≤ n ≤ length of list.
+
+	Example:
+	Input: 1->2->3->4->5->NULL, m = 2, n = 4
+	Output: 1->4->3->2->5->NULL"""
+
+    def reverseBetween(self, head: ListNode, m: int, n: int) -> ListNode:
+        dummy = node = ListNode(next=head)
+        for _ in range(m-1): node = node.next 
+            
+        prev, curr = None, node.next 
+        for _ in range(m, n+1): curr.next, curr, prev = prev, curr.next, curr
+            
+        node.next.next = curr
+        node.next = prev
+        
+        return dummy.next 
+
+
+    """93. Restore IP Addresses (Medium)
+	Given a string containing only digits, restore it by returning all possible 
+	valid IP address combinations. A valid IP address consists of exactly four 
+	integers (each integer is between 0 and 255) separated by single points.
+
+	Example:
+	Input: "25525511135"
+	Output: ["255.255.11.135", "255.255.111.35"]"""
+
+    def restoreIpAddresses(self, s: str) -> List[str]:
+        
+        def fn(i, n): 
+            """Populate ans with a stack through backtracking"""
+            if not (n <= len(s)-i <= 3*n): return 
+            if i == len(s): return ans.append(".".join(stack))
+            k = i+1 if s[i] == "0" else i+3
+            for j in range(i+1, min(k, len(s))+1): 
+                if j == i+3 and s[i:j] > "255": continue
+                stack.append(s[i:j])
+                fn(j, n-1)
+                stack.pop()
+            
+        ans, stack = [], []
+        fn(0, 4)
+        return ans 
+
+
+    """94. Binary Tree Inorder Traversal (Medium)
+	Given a binary tree, return the inorder traversal of its nodes' values.
+
+	Example:
+	Input: [1,null,2,3]
+	   1
+	    \
+	     2
+	    /
+	   3
+
+	Output: [1,3,2]"""
+
+    def inorderTraversal(self, root: TreeNode) -> List[int]:
+        ans, stack = [], []
+        node = root
+        while stack or node:
+            if node: 
+                stack.append(node)
+                node = node.left
+                continue
+            node = stack.pop()
+            ans.append(node.val)
+            node = node.right
+        return ans 
+
+
+    """95. Unique Binary Search Trees II (Medium)
+	Given an integer n, generate all structurally unique BST's (binary search 
+	trees) that store values 1 ... n.
+
+	Example:
+	Input: 3
+	Output:
+	[
+	  [1,null,3,2],
+	  [3,2,null,1],
+	  [3,1,null,null,2],
+	  [2,1,3],
+	  [1,null,2,null,3]
+	]
+	Explanation:
+	The above output corresponds to the 5 unique BST's shown below:
+
+	   1         3     3      2      1
+	    \       /     /      / \      \
+	     3     2     1      1   3      2
+	    /     /       \                 \
+	   2     1         2                 3
+	 
+	Constraints: 0 <= n <= 8"""
+
+    def generateTrees(self, n: int) -> List[TreeNode]:
+        
+        @lru_cache(None)
+        def fn(lo, hi): 
+            """Return structurally uniq BST using numbers from lo (inclusive) to hi (exclusive)"""
+            if lo == hi: return [None]
+            ans = []
+            for i in range(lo, hi):
+                for left in fn(lo, i):
+                    for right in fn(i+1, hi): 
+                        ans.append(TreeNode(i, left, right))
+            return ans 
+        
+        return fn(1, n+1) if n else []
