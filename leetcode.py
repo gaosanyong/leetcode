@@ -2933,3 +2933,177 @@ class Solution:
                     hi[~j] = min(hi[~j], right)
             ans = max(ans, max(x*(z-y) for x, y, z in zip(height, lo, hi)))
         return ans 
+
+
+    """86. Partition List (Medium)
+	Given a linked list and a value x, partition it such that all nodes less 
+	than x come before nodes greater than or equal to x. You should preserve 
+	the original relative order of the nodes in each of the two partitions.
+
+	Example:
+	Input: head = 1->4->3->2->5->2, x = 3
+	Output: 1->2->2->4->3->5"""
+
+    def partition(self, head: ListNode, x: int) -> ListNode:
+        dummy1 = node1 = ListNode()
+        dummy2 = node2 = ListNode()
+        
+        while head: 
+            if head.val < x: 
+                node1.next = head
+                node1 = node1.next
+            else:
+                node2.next = head
+                node2 = node2.next
+            head = head.next 
+        node2.next = None #terminate list (no cycle)
+        node1.next = dummy2.next
+        return dummy1.next 
+
+
+    """87. Scramble String (Hard)
+	Given a string s1, we may represent it as a binary tree by partitioning it 
+	to two non-empty substrings recursively. Below is one possible 
+	representation of s1 = "great":
+
+	    great
+	   /    \
+	  gr    eat
+	 / \    /  \
+	g   r  e   at
+	           / \
+	          a   t
+	
+	To scramble the string, we may choose any non-leaf node and swap its two 
+	children. For example, if we choose the node "gr" and swap its two 
+	children, it produces a scrambled string "rgeat".
+
+	    rgeat
+	   /    \
+	  rg    eat
+	 / \    /  \
+	r   g  e   at
+	           / \
+	          a   t
+	
+	We say that "rgeat" is a scrambled string of "great". Similarly, if we 
+	continue to swap the children of nodes "eat" and "at", it produces a 
+	scrambled string "rgtae".
+
+	    rgtae
+	   /    \
+	  rg    tae
+	 / \    /  \
+	r   g  ta  e
+	       / \
+	      t   a
+	
+	We say that "rgtae" is a scrambled string of "great". Given two strings s1 
+	and s2 of the same length, determine if s2 is a scrambled string of s1.
+
+	Example 1:
+	Input: s1 = "great", s2 = "rgeat"
+	Output: true
+
+	Example 2:
+	Input: s1 = "abcde", s2 = "caebd"
+	Output: false"""
+
+    def isScramble(self, s1: str, s2: str) -> bool:
+        
+        def fn(s1, s2):
+            """Return True if s1 is a scrambled string of s2"""
+            if len(s1) == 1: return s1 == s2
+            if sorted(s1) != sorted(s2): return False #160ms -> 50ms
+            return any(fn(s1[:i], s2[:i]) and fn(s1[i:], s2[i:]) or fn(s1[:i], s2[-i:]) and fn(s1[i:], s2[:-i]) for i in range(1, len(s1)))
+        
+        return fn(s1, s2)
+
+
+    """88. Merge Sorted Array (Easy)
+	Given two sorted integer arrays nums1 and nums2, merge nums2 into nums1 as 
+	one sorted array.
+
+	Note:
+	The number of elements initialized in nums1 and nums2 are m and n respectively.
+	You may assume that nums1 has enough space (size that is greater or equal to m + n) to hold additional elements from nums2.
+
+	Example:
+	Input:
+	nums1 = [1,2,3,0,0,0], m = 3
+	nums2 = [2,5,6],       n = 3
+	Output: [1,2,2,3,5,6]"""
+
+    def merge(self, nums1: List[int], m: int, nums2: List[int], n: int) -> None:
+        while n: 
+            if m and nums1[m-1] >= nums2[n-1]: 
+                nums1[m+n] = nums1[(m:=m-1)]
+            else: 
+                nums1[m+n] = nums2[(n:=n-1)]
+
+
+    """89. Gray Code (Medium)
+	The gray code is a binary numeral system where two successive values differ 
+	in only one bit. Given a non-negative integer n representing the total 
+	number of bits in the code, print the sequence of gray code. A gray code 
+	sequence must begin with 0.
+
+	Example 1:
+	Input: 2
+	Output: [0,1,3,2]
+	Explanation:
+	00 - 0
+	01 - 1
+	11 - 3
+	10 - 2
+
+	For a given n, a gray code sequence may not be uniquely defined. For 
+	example, [0,2,3,1] is also a valid gray code sequence.
+
+	00 - 0
+	10 - 2
+	11 - 3
+	01 - 1
+	
+	Example 2:
+	Input: 0
+	Output: [0]
+	Explanation: We define the gray code sequence to begin with 0. A gray code 
+	sequence of n has size = 2n, which for n = 0 the size is 20 = 1. Therefore, 
+	for n = 0 the gray code sequence is [0]."""
+
+    def grayCode(self, n: int) -> List[int]:
+        return [i ^ (i>>1) for i in range(1 << n)]
+
+
+    """90. Subsets II (Medium)
+	Given a collection of integers that might contain duplicates, nums, return 
+	all possible subsets (the power set). Note that the solution set must not 
+	contain duplicate subsets.
+
+	Example:
+	Input: [1,2,2]
+	Output:
+	[
+	  [2],
+	  [1],
+	  [1,2,2],
+	  [2,2],
+	  [1,2],
+	  []
+	]"""
+
+    def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
+        
+        def fn(i):
+            """Populate ans using a stack"""
+            if len(nums) == i: return ans.append(stack.copy())
+            if not stack or nums[i] != stack[-1]: fn(i+1)
+            stack.append(nums[i])
+            fn(i+1)
+            stack.pop()
+            
+        nums.sort()
+        ans, stack = [], []
+        fn(0)
+        return ans 
