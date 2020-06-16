@@ -3450,3 +3450,152 @@ class Solution:
             return fn(p.left, q.left) and p.val == q.val and fn(p.right, q.right)
         
         return fn(p, q)
+
+
+    """101. Symmetric Tree (Easy)
+	Given a binary tree, check whether it is a mirror of itself (ie, symmetric 
+	around its center). For example, this binary tree [1,2,2,3,4,4,3] is 
+	symmetric:
+
+	    1
+	   / \
+	  2   2
+	 / \ / \
+	3  4 4  3
+
+	But the following [1,2,2,null,3,null,3] is not:
+
+	    1
+	   / \
+	  2   2
+	   \   \
+	   3    3
+
+	Follow up: Solve it both recursively and iteratively."""
+
+    def isSymmetric(self, root: TreeNode) -> bool:
+        
+        def fn(m, n):
+            """Return True if subtrees rooted at m and n are symmetric"""
+            if not m or not n: return m is n
+            return fn(m.left, n.right) and m.val == n.val and fn(m.right, n.left)
+        
+        return fn(root, root)
+
+
+    """102. Binary Tree Level Order Traversal (Medium)
+	Given a binary tree, return the level order traversal of its nodes' values. 
+	(ie, from left to right, level by level).
+
+	For example:
+	Given binary tree [3,9,20,null,null,15,7],
+	    3
+	   / \
+	  9  20
+	    /  \
+	   15   7
+	return its level order traversal as:
+	[
+	  [3],
+	  [9,20],
+	  [15,7]
+	]"""
+
+    def levelOrder(self, root: TreeNode) -> List[List[int]]:
+        ans, queue = [], [root]
+        while queue: 
+            tmp, val = [], []
+            for node in queue: 
+                if node: 
+                    val.append(node.val)
+                    tmp.extend([node.left, node.right])
+            if val: ans.append(val)
+            queue = tmp 
+        return ans 
+
+
+    """103. Binary Tree Zigzag Level Order Traversal (Medium)
+	Given a binary tree, return the zigzag level order traversal of its nodes' 
+	values. (ie, from left to right, then right to left for the next level and 
+	alternate between).
+
+	For example:
+	Given binary tree [3,9,20,null,null,15,7],
+	    3
+	   / \
+	  9  20
+	    /  \
+	   15   7
+	return its zigzag level order traversal as:
+	[
+	  [3],
+	  [20,9],
+	  [15,7]
+	]"""
+
+    def zigzagLevelOrder(self, root: TreeNode) -> List[List[int]]:
+        ans, queue = [], [root]
+        stride = 1
+        while queue: 
+            tmp, val = [], []
+            for node in queue: 
+                if node: 
+                    val.append(node.val)
+                    tmp.extend([node.left, node.right])
+            if val: ans.append(val[::stride])
+            stride *= -1
+            queue = tmp
+        return ans 
+
+
+    """104. Maximum Depth of Binary Tree (Easy)
+	Given a binary tree, find its maximum depth. The maximum depth is the 
+	number of nodes along the longest path from the root node down to the 
+	farthest leaf node. Note that a leaf is a node with no children.
+
+	Example:
+	Given binary tree [3,9,20,null,null,15,7],
+
+	    3
+	   / \
+	  9  20
+	    /  \
+	   15   7"""
+
+    def maxDepth(self, root: TreeNode) -> int:
+        
+        def fn(node):
+            """Return depth of BST at given node"""
+            if not node: return 0
+            return 1 + max(fn(node.left), fn(node.right))
+        
+        return fn(root)
+
+
+    """105. Construct Binary Tree from Preorder and Inorder Traversal (Medium)
+	Given preorder and inorder traversal of a tree, construct the binary tree.
+
+	Note: You may assume that duplicates do not exist in the tree.
+
+	For example, given
+	preorder = [3,9,20,15,7]
+	inorder = [9,3,15,20,7]
+	Return the following binary tree:
+
+	    3
+	   / \
+	  9  20
+	    /  \
+	   15   7"""
+
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
+        imap = {v: i for i, v in enumerate(inorder)}
+        node = iter(preorder)
+        
+        def fn(lo, hi): 
+            """Return node constructed from inorder[lo:hi]"""
+            if lo == hi: return None
+            k = imap[next(node)]
+            return TreeNode(inorder[k], fn(lo, k), fn(k+1, hi))
+        
+        return fn(0, len(preorder))
