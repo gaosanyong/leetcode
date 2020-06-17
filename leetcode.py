@@ -3596,6 +3596,159 @@ class Solution:
             """Return node constructed from inorder[lo:hi]"""
             if lo == hi: return None
             k = imap[next(node)]
-            return TreeNode(inorder[k], fn(lo, k), fn(k+1, hi))
+            return TreeNode(inorder[k], left=fn(lo, k), right=fn(k+1, hi))
         
         return fn(0, len(preorder))
+
+
+    """106. Construct Binary Tree from Inorder and Postorder Traversal (Medium)
+	Given inorder and postorder traversal of a tree, construct the binary tree.
+
+	Note that you may assume that duplicates do not exist in the tree.
+
+	For example, given inorder = [9,3,15,20,7] and postorder = [9,15,7,20,3], 
+	return the following binary tree:
+
+	    3
+	   / \
+	  9  20
+	    /  \
+	   15   7"""
+
+    def buildTree(self, inorder: List[int], postorder: List[int]) -> TreeNode:
+        imap = {v: i for i, v in enumerate(inorder)}
+        
+        def fn(lo, hi):
+            """Return node constructed from from inorder[lo:hi]"""
+            if lo == hi: return None 
+            mid = imap[postorder.pop()]
+            return TreeNode(inorder[mid], right=fn(mid+1, hi), left=fn(lo, mid))
+        
+        return fn(0, len(inorder))
+
+
+    """107. Binary Tree Level Order Traversal II (Easy)
+	Given a binary tree, return the bottom-up level order traversal of its 
+	nodes' values. (ie, from left to right, level by level from leaf to root).
+
+	For example:
+	Given binary tree [3,9,20,null,null,15,7],
+	    3
+	   / \
+	  9  20
+	    /  \
+	   15   7
+	return its bottom-up level order traversal as:
+	[
+	  [15,7],
+	  [9,20],
+	  [3]
+	]"""
+
+    def levelOrderBottom(self, root: TreeNode) -> List[List[int]]:
+        ans, queue = [], [root]
+        while queue: 
+            tmp, val = [], []
+            for node in queue:
+                if node: 
+                    val.append(node.val)
+                    tmp.extend([node.left, node.right])
+            if val: ans.append(val)
+            queue = tmp
+        return ans[::-1]
+
+
+    """108. Convert Sorted Array to Binary Search Tree (Easy)
+	Given an array where elements are sorted in ascending order, convert it to 
+	a height balanced BST. For this problem, a height-balanced binary tree is 
+	defined as a binary tree in which the depth of the two subtrees of every 
+	node never differ by more than 1.
+
+	Example:
+	Given the sorted array: [-10,-3,0,5,9], one possible answer is: 
+	[0,-3,9,-10,null,5], which represents the following height balanced BST:
+
+	      0
+	     / \
+	   -3   9
+	   /   /
+	 -10  5"""
+
+    def sortedArrayToBST(self, nums: List[int]) -> TreeNode:
+        
+        def fn(lo, hi):
+            """Return node constructed from nums[lo:hi]"""
+            if lo == hi: return None
+            mid = (lo + hi)//2
+            return TreeNode(nums[mid], fn(lo, mid), fn(mid+1, hi))
+        
+        return fn(0, len(nums))
+
+
+    """109. Convert Sorted List to Binary Search Tree (Medium)
+	Given a singly linked list where elements are sorted in ascending order, 
+	convert it to a height balanced BST. For this problem, a height-balanced 
+	binary tree is defined as a binary tree in which the depth of the two 
+	subtrees of every node never differ by more than 1.
+
+	Example:
+	Given the sorted linked list: [-10,-3,0,5,9], one possible answer is: 
+	[0,-3,9,-10,null,5], which represents the following height balanced BST:
+
+	      0
+	     / \
+	   -3   9
+	   /   /
+	 -10  5"""
+
+    def sortedListToBST(self, head: ListNode) -> TreeNode:
+        nums = []
+        while head: 
+            nums.append(head.val)
+            head = head.next 
+            
+        def fn(lo, hi):
+            """Return node constructed from nums[lo:hi]"""
+            if lo == hi: return None
+            mid = (lo + hi)//2
+            return TreeNode(nums[mid], fn(lo, mid), fn(mid+1, hi))
+        
+        return fn(0, len(nums))
+
+
+    """110. Balanced Binary Tree (Easy)
+	Given a binary tree, determine if it is height-balanced. For this problem, 
+	a height-balanced binary tree is defined as: a binary tree in which the 
+	left and right subtrees of every node differ in height by no more than 1.
+
+	Example 1:
+	Given the following tree [3,9,20,null,null,15,7]:
+
+	    3
+	   / \
+	  9  20
+	    /  \
+	   15   7
+	Return true.
+
+	Example 2:
+	Given the following tree [1,2,2,3,3,null,null,4,4]:
+
+	       1
+	      / \
+	     2   2
+	    / \
+	   3   3
+	  / \
+	 4   4"""
+
+    def isBalanced(self, root: TreeNode) -> bool:
+        
+        def fn(node):
+            """Return balance flag & height"""
+            if not node: return True, 0
+            bal0, h0 = fn(node.left)
+            bal1, h1 = fn(node.right)
+            return bal0 and bal1 and abs(h0-h1) <= 1, 1 + max(h0, h1)
+        
+        return fn(root)[0]
