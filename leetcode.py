@@ -3934,3 +3934,163 @@ class Solution:
             for i in pos.get(c, []):
                 ans[i] += ans[i+1]
         return ans[0]
+
+
+    """116. Populating Next Right Pointers in Each Node (Medium)
+	You are given a perfect binary tree where all leaves are on the same 
+	level, and every parent has two children. The binary tree has the 
+	following definition:
+
+	struct Node {
+	  int val;
+	  Node *left;
+	  Node *right;
+	  Node *next;
+	}
+
+	Populate each next pointer to point to its next right node. If there is no 
+	next right node, the next pointer should be set to NULL. Initially, all 
+	next pointers are set to NULL.
+
+	Follow up:
+	You may only use constant extra space.
+	Recursive approach is fine, you may assume implicit stack space does not 
+	count as extra space for this problem.
+
+	Example 1:
+	Input: root = [1,2,3,4,5,6,7]
+	Output: [1,#,2,3,#,4,5,6,7,#]
+	Explanation: Given the above perfect binary tree (Figure A), your function 
+	should populate each next pointer to point to its next right node, just 
+	like in Figure B. The serialized output is in level order as connected by 
+	the next pointers, with '#' signifying the end of each level.
+
+	Constraints:
+	The number of nodes in the given tree is less than 4096.
+	-1000 <= node.val <= 1000"""
+
+    def connect(self, root: 'Node') -> 'Node':
+        head = root
+        while head and head.left: 
+            node = head
+            while node: 
+                node.left.next = node.right
+                if node.next: node.right.next = node.next.left
+                node = node.next
+            head = head.left
+        return root 
+
+
+    """117. Populating Next Right Pointers in Each Node II (Medium)
+	Given a binary tree
+
+	struct Node {
+	  int val;
+	  Node *left;
+	  Node *right;
+	  Node *next;
+	}
+
+	Populate each next pointer to point to its next right node. If there is no 
+	next right node, the next pointer should be set to NULL. Initially, all 
+	next pointers are set to NULL.
+
+	Follow up:
+	You may only use constant extra space. Recursive approach is fine, you may 
+	assume implicit stack space does not count as extra space for this problem.
+
+	Example 1:
+	Input: root = [1,2,3,4,5,null,7]
+	Output: [1,#,2,3,#,4,5,7,#]
+	Explanation: Given the above binary tree (Figure A), your function should 
+	populate each next pointer to point to its next right node, just like in 
+	Figure B. The serialized output is in level order as connected by the next 
+	pointers, with '#' signifying the end of each level.
+
+	Constraints:
+	The number of nodes in the given tree is less than 6000.
+	-100 <= node.val <= 100"""
+
+    def connect(self, root: 'Node') -> 'Node':
+        parent = root
+        while parent:
+            child = dummy = Node()
+            while parent: 
+                if parent.left: child.next = child = parent.left
+                if parent.right: child.next = child = parent.right
+                parent = parent.next 
+            parent = dummy.next 
+        return root 
+
+
+    """118. Pascal's Triangle (Easy)
+	Given a non-negative integer numRows, generate the first numRows of 
+	Pascal's triangle. In Pascal's triangle, each number is the sum of the two 
+	numbers directly above it.
+
+	Example:
+	Input: 5
+	Output:
+	[
+	     [1],
+	    [1,1],
+	   [1,2,1],
+	  [1,3,3,1],
+	 [1,4,6,4,1]
+	]"""
+
+    def generate(self, numRows: int) -> List[List[int]]:
+        ans, row = [], []
+        for i in range(numRows): 
+            row.append(1)
+            for j in range(i-1, 0, -1): row[j] += row[j-1]
+            ans.append(row.copy())
+        return ans
+
+
+    """119. Pascal's Triangle II (Easy)
+	Given a non-negative index k where k ≤ 33, return the kth index row of the 
+	Pascal's triangle. Note that the row index starts from 0. In Pascal's 
+	triangle, each number is the sum of the two numbers directly above it.
+
+	Example:
+	Input: 3
+	Output: [1,3,3,1]
+
+	Follow up: Could you optimize your algorithm to use only O(k) extra space?"""
+
+    def getRow(self, rowIndex: int) -> List[int]:
+        ans = [1]*(rowIndex + 1)
+        for i in range(1, rowIndex): 
+            ans[i] = ans[i-1] * (rowIndex-i+1)//i
+        return ans
+
+
+    """120. Triangle (Medium)
+	Given a triangle, find the minimum path sum from top to bottom. Each step 
+	you may move to adjacent numbers on the row below. For example, given the 
+	following triangle
+
+	[
+	     [2],
+	    [3,4],
+	   [6,5,7],
+	  [4,1,8,3]
+	]
+
+	The minimum path sum from top to bottom is 11 (i.e., 2 + 3 + 5 + 1 = 11).
+
+	Note: Bonus point if you are able to do this using only O(n) extra space, 
+	where n is the total number of rows in the triangle."""
+
+    def minimumTotal(self, triangle: List[List[int]]) -> int:
+        
+        @lru_cache(None)
+        def fn(i, j):
+            """Return minimum path sum ending at (i, j)"""
+            if i < 0: return 0
+            if j < 0 or j > i: return inf
+            return triangle[i][j] + min(fn(i-1, j-1), fn(i-1, j))
+        
+        m = len(triangle)
+        return min(fn(m-1, j) for j in range(m))
