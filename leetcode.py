@@ -3597,7 +3597,7 @@ class Solution:
             """Return node constructed from inorder[lo:hi]"""
             if lo == hi: return None
             k = imap[next(node)]
-            return TreeNode(inorder[k], fn(lo, k), fn(k+1, hi))
+            return TreeNode(inorder[k], left=fn(lo, k), right=fn(k+1, hi))
         
         return fn(0, len(preorder))
 
