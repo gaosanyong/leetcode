@@ -3756,3 +3756,181 @@ class Solution:
             return tf0 and tf1 and abs(h0-h1) <= 1, 1 + max(h0, h1)
         
         return fn(root)[0]
+
+
+    """111. Minimum Depth of Binary Tree (Easy)
+	Given a binary tree, find its minimum depth. The minimum depth is the 
+	number of nodes along the shortest path from the root node down to the 
+	nearest leaf node. Note that a leaf is a node with no children.
+
+	Example:
+	Given binary tree [3,9,20,null,null,15,7],
+
+	    3
+	   / \
+	  9  20
+	    /  \
+	   15   7
+	return its minimum depth = 2."""
+
+    def minDepth(self, root: TreeNode) -> int:
+        
+        def fn(node):
+            """Return minimum depth of given node"""
+            if not node: return 0
+            if not node.left or not node.right: return 1 + fn(node.left) + fn(node.right)
+            return 1 + min(fn(node.left), fn(node.right))
+        
+        return fn(root)
+
+
+    """112. Path Sum (Easy)
+	Given a binary tree and a sum, determine if the tree has a root-to-leaf 
+	path such that adding up all the values along the path equals the given 
+	sum. Note that a leaf is a node with no children.
+
+	Example:
+	Given the below binary tree and sum = 22,
+
+	      5
+	     / \
+	    4   8
+	   /   / \
+	  11  13  4
+	 /  \      \
+	7    2      1
+	return true, as there exist a root-to-leaf path 5->4->11->2 which sum is 22."""
+
+    def hasPathSum(self, root: TreeNode, sum: int) -> bool:
+        
+        def fn(node, x): 
+            """Return True if node is on root-to-leaf path"""
+            if not node: return False 
+            if not node.left and not node.right: return node.val == x
+            return fn(node.left, x-node.val) or fn(node.right, x-node.val)
+        
+        return fn(root, sum)
+
+
+    """113. Path Sum II (Medium)
+	Given a binary tree and a sum, find all root-to-leaf paths where each 
+	path's sum equals the given sum. Note that a leaf is a node with no 
+	children.
+
+	Example:
+	Given the below binary tree and sum = 22,
+
+	      5
+	     / \
+	    4   8
+	   /   / \
+	  11  13  4
+	 /  \    / \
+	7    2  5   1
+	Return:
+
+	[
+	   [5,4,11,2],
+	   [5,8,4,5]
+	]"""
+
+    def pathSum(self, root: TreeNode, sum: int) -> List[List[int]]:
+        
+        def fn(node, x): 
+            """Populate ans with a stack"""
+            if not node: return 
+            stack.append(node.val)
+            if not node.left and not node.right and node.val == x: ans.append(stack.copy())
+            fn(node.left, x-node.val) or fn(node.right, x-node.val)
+            stack.pop()
+            
+        ans, stack = [], []
+        fn(root, sum)
+        return ans 
+
+
+    """114. Flatten Binary Tree to Linked List (Medium)
+	Given a binary tree, flatten it to a linked list in-place.
+
+	For example, given the following tree:
+
+	    1
+	   / \
+	  2   5
+	 / \   \
+	3   4   6
+
+	The flattened tree should look like:
+
+	1
+	 \
+	  2
+	   \
+	    3
+	     \
+	      4
+	       \
+	        5
+	         \
+	          6"""
+
+    def flatten(self, root: TreeNode) -> None:
+        
+        def fn(node, tail=None):
+            """Return head of flattened binary tree"""
+            if not node: return tail
+            node.left, node.right = None, fn(node.left, fn(node.right, tail))
+            return node
+        
+        return fn(root)
+
+
+    """115. Distinct Subsequences (Hard)
+	Given a string S and a string T, count the number of distinct subsequences 
+	of S which equals T. A subsequence of a string is a new string which is 
+	formed from the original string by deleting some (can be none) of the 
+	characters without disturbing the relative positions of the remaining 
+	characters. (ie, "ACE" is a subsequence of "ABCDE" while "AEC" is not). 
+	It's guaranteed the answer fits on a 32-bit signed integer.
+
+	Example 1:
+	Input: S = "rabbbit", T = "rabbit"
+	Output: 3
+	Explanation:
+	As shown below, there are 3 ways you can generate "rabbit" from S.
+	(The caret symbol ^ means the chosen letters)
+
+	rabbbit
+	^^^^ ^^
+	rabbbit
+	^^ ^^^^
+	rabbbit
+	^^^ ^^^
+
+	Example 2:
+	Input: S = "babgbag", T = "bag"
+	Output: 5
+	Explanation:
+	As shown below, there are 5 ways you can generate "bag" from S.
+	(The caret symbol ^ means the chosen letters)
+
+	babgbag
+	^^ ^
+	babgbag
+	^^    ^
+	babgbag
+	^    ^^
+	babgbag
+	  ^  ^^
+	babgbag
+	    ^^^"""
+
+    def numDistinct(self, s: str, t: str) -> int:
+        pos = dict()
+        for i, c in enumerate(t): pos.setdefault(c, []).append(i)
+            
+        ans = [0]*len(t) + [1]
+        for c in reversed(s):
+            for i in pos.get(c, []):
+                ans[i] += ans[i+1]
+        return ans[0]
