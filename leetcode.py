@@ -4094,3 +4094,156 @@ class Solution:
         
         m = len(triangle)
         return min(fn(m-1, j) for j in range(m))
+
+
+
+    """121. Best Time to Buy and Sell Stock (Easy)
+	Say you have an array for which the ith element is the price of a given 
+	stock on day i. If you were only permitted to complete at most one 
+	transaction (i.e., buy one and sell one share of the stock), design an 
+	algorithm to find the maximum profit. Note that you cannot sell a stock 
+	before you buy one.
+
+	Example 1:
+	Input: [7,1,5,3,6,4]
+	Output: 5
+	Explanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.
+	             Not 7-1 = 6, as selling price needs to be larger than buying price.
+
+	Example 2:
+	Input: [7,6,4,3,1]
+	Output: 0
+	Explanation: In this case, no transaction is done, i.e. max profit = 0."""
+
+    def maxProfit(self, prices: List[int]) -> int:
+        buy, pnl = inf, 0
+        for price in prices:
+            buy = min(buy, price)
+            pnl = max(pnl, price - buy)
+        return pnl 
+
+
+    """122. Best Time to Buy and Sell Stock II (Easy)
+	Say you have an array prices for which the ith element is the price of a 
+	given stock on day i. Design an algorithm to find the maximum profit. You 
+	may complete as many transactions as you like (i.e., buy one and sell one 
+	share of the stock multiple times). Note: You may not engage in multiple 
+	transactions at the same time (i.e., you must sell the stock before you buy 
+	again).
+
+	Example 1:
+	Input: [7,1,5,3,6,4]
+	Output: 7
+	Explanation: Buy on day 2 (price = 1) and sell on day 3 (price = 5), profit = 5-1 = 4.
+	             Then buy on day 4 (price = 3) and sell on day 5 (price = 6), profit = 6-3 = 3.
+
+	Example 2:
+	Input: [1,2,3,4,5]
+	Output: 4
+	Explanation: Buy on day 1 (price = 1) and sell on day 5 (price = 5), profit = 5-1 = 4.
+	             Note that you cannot buy on day 1, buy on day 2 and sell them later, as you are
+	             engaging multiple transactions at the same time. You must sell before buying again.
+
+	Example 3:
+	Input: [7,6,4,3,1]
+	Output: 0
+	Explanation: In this case, no transaction is done, i.e. max profit = 0.
+
+	Constraints:
+	1 <= prices.length <= 3 * 10 ^ 4
+	0 <= prices[i] <= 10 ^ 4"""
+
+    def maxProfit(self, prices: List[int]) -> int:
+        return sum(max(0, prices[i] - prices[i-1]) for i in range(1, len(prices))) 
+
+
+
+    """123. Best Time to Buy and Sell Stock III (Hard)
+	Say you have an array for which the ith element is the price of a given 
+	stock on day i. Design an algorithm to find the maximum profit. You may 
+	complete at most two transactions. Note that you may not engage in multiple 
+	transactions at the same time (i.e., you must sell the stock before you buy 
+	again).
+
+	Example 1:
+	Input: [3,3,5,0,0,3,1,4]
+	Output: 6
+	Explanation: Buy on day 4 (price = 0) and sell on day 6 (price = 3), profit = 3-0 = 3.
+	             Then buy on day 7 (price = 1) and sell on day 8 (price = 4), profit = 4-1 = 3.
+
+	Example 2:
+	Input: [1,2,3,4,5]
+	Output: 4
+	Explanation: Buy on day 1 (price = 1) and sell on day 5 (price = 5), profit = 5-1 = 4.
+	             Note that you cannot buy on day 1, buy on day 2 and sell them later, as you are
+	             engaging multiple transactions at the same time. You must sell before buying again.
+
+	Example 3:
+	Input: [7,6,4,3,1]
+	Output: 0
+	Explanation: In this case, no transaction is done, i.e. max profit = 0."""
+
+    def maxProfit(self, prices: List[int]) -> int:
+        buy, pnl = [inf]*2, [0]*2
+        for price in prices: 
+            buy[0] = min(buy[0], price)
+            pnl[0] = max(pnl[0], price - buy[0])
+            buy[1] = min(buy[1], price - pnl[0])
+            pnl[1] = max(pnl[1], price - buy[1])
+        return pnl[1]
+
+
+    """124. Binary Tree Maximum Path Sum (Hard)
+	Given a non-empty binary tree, find the maximum path sum. For this problem, 
+	a path is defined as any sequence of nodes from some starting node to any 
+	node in the tree along the parent-child connections. The path must contain 
+	at least one node and does not need to go through the root.
+
+	Example 1:
+	Input: [1,2,3]
+
+	       1
+	      / \
+	     2   3
+
+	Output: 6
+
+	Example 2:
+	Input: [-10,9,20,null,null,15,7]
+
+	   -10
+	   / \
+	  9  20
+	    /  \
+	   15   7
+
+	Output: 42"""
+
+    def maxPathSum(self, root: TreeNode) -> int:
+        
+        def fn(node): 
+            """Return path sum ending at node and maximum path sum seen so far"""
+            if not node: return 0, -inf
+            lh, lps = fn(node.left)
+            rh, rps = fn(node.right)
+            return node.val + max(0, lh, rh), max(lps, rps, node.val + max(0, lh) + max(0, rh))
+        
+        return fn(root)[1]
+
+
+    """125. Valid Palindrome (Easy)
+	Given a string, determine if it is a palindrome, considering only 
+	alphanumeric characters and ignoring cases. Note that for the purpose of 
+	this problem, we define empty string as valid palindrome.
+
+	Example 1:
+	Input: "A man, a plan, a canal: Panama"
+	Output: true
+
+	Example 2:
+	Input: "race a car"
+	Output: false"""
+
+    def isPalindrome(self, s: str) -> bool:
+        s = "".join(c for c in s.lower() if c.isalnum())
+        return s == s[::-1]
