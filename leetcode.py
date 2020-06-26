@@ -4247,3 +4247,240 @@ class Solution:
     def isPalindrome(self, s: str) -> bool:
         s = "".join(c for c in s.lower() if c.isalnum())
         return s == s[::-1]
+
+
+    """126. Word Ladder II (Hard)
+	Given two words (beginWord and endWord), and a dictionary's word list, find 
+	all shortest transformation sequence(s) from beginWord to endWord, such 
+	that:
+	1) Only one letter can be changed at a time
+	2) Each transformed word must exist in the word list. Note that beginWord 
+	is not a transformed word.
+	
+	Note:
+	* Return an empty list if there is no such transformation sequence.
+	* All words have the same length.
+	* All words contain only lowercase alphabetic characters.
+	* You may assume no duplicates in the word list.
+	* You may assume beginWord and endWord are non-empty and are not the same.
+	
+	Example 1:
+	Input:
+	beginWord = "hit",
+	endWord = "cog",
+	wordList = ["hot","dot","dog","lot","log","cog"]
+
+	Output:
+	[
+	  ["hit","hot","dot","dog","cog"],
+	  ["hit","hot","lot","log","cog"]
+	]
+	
+	Example 2:
+	Input:
+	beginWord = "hit"
+	endWord = "cog"
+	wordList = ["hot","dot","dog","lot","log"]
+
+	Output: []
+
+	Explanation: The endWord "cog" is not in wordList, therefore no possible 
+	transformation."""
+
+    def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
+        if endWord not in wordList: return []
+        
+        graph = dict()
+        for word in wordList:
+            for i in range(len(word)):
+                graph.setdefault(word[:i] + "*" + word[i+1:], []).append(word)
+                
+        ans = []
+        front0, front1 = {beginWord: [[beginWord]]}, {endWord:[[endWord]]} #word & sequences ending in word
+        seen = {beginWord, endWord}
+        reverse = False 
+        
+        while front0 and front1 and not ans:
+            if len(front0) > len(front1): front0, front1, reverse = front1, front0, not reverse 
+            temp = dict()
+            for word, seq in front0.items(): 
+                for i in range(len(word)): 
+                    for node in graph.get(word[:i] + "*" + word[i+1:], []): 
+                        if node in front1: 
+                            ans.extend([y + x[::-1] if reverse else x + y[::-1] for x in seq for y in front1[node]])
+                        if node in seen: continue
+                        for x in seq: 
+                            temp.setdefault(node, []).append(x + [node])
+            seen |= set(temp.keys()) #has to be updated level-by-level
+            front0 = temp 
+        return ans 
+
+
+    """127. Word Ladder (Medium)
+	Given two words (beginWord and endWord), and a dictionary's word list, 
+	find the length of shortest transformation sequence from beginWord to 
+	endWord, such that:
+	1) Only one letter can be changed at a time.
+	2) Each transformed word must exist in the word list.
+	
+	Note:
+	* Return 0 if there is no such transformation sequence.
+	* All words have the same length.
+	* All words contain only lowercase alphabetic characters.
+	* You may assume no duplicates in the word list.
+	* You may assume beginWord and endWord are non-empty and are not the same.
+	
+	Example 1:
+	Input:
+	beginWord = "hit",
+	endWord = "cog",
+	wordList = ["hot","dot","dog","lot","log","cog"]
+
+	Output: 5
+	Explanation: As one shortest transformation is "hit" -> "hot" -> "dot" -> 
+	"dog" -> "cog", return its length 5.
+
+	Example 2:
+	Input:
+	beginWord = "hit"
+	endWord = "cog"
+	wordList = ["hot","dot","dog","lot","log"]
+
+	Output: 0
+	Explanation: The endWord "cog" is not in wordList, therefore no possible 
+	transformation."""
+
+    def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
+        if endWord not in wordList: return 0 #shortcut 
+        
+        graph = dict()
+        for word in wordList: 
+            for i in range(len(word)):
+                graph.setdefault(word[:i] + "*" + word[i+1:], []).append(word)
+        
+        #two-end bfs
+        front0, front1 = {beginWord}, {endWord}
+        seen = {beginWord, endWord}
+        
+        ans = 1
+        while front0 and front1: 
+            ans += 1
+            if len(front0) > len(front1): front0, front1 = front1, front0
+            #move forward frontier
+            temp = set()
+            for word in front0: 
+                for i in range(len(word)):
+                    for node in graph.get(word[:i] + "*" + word[i+1:], []):
+                        if node in front1: return ans 
+                        if node in seen: continue
+                        temp.add(node)
+                        seen.add(node)
+            front0 = temp
+        return 0
+
+
+    """128. Longest Consecutive Sequence (Hard)
+	Given an unsorted array of integers, find the length of the longest 
+	consecutive elements sequence. Your algorithm should run in O(n) complexity.
+
+	Example:
+	Input: [100, 4, 200, 1, 3, 2]
+	Output: 4
+	Explanation: The longest consecutive elements sequence is [1, 2, 3, 4]. 
+	Therefore its length is 4."""
+
+    def longestConsecutive(self, nums: List[int]) -> int:
+        nums = set(nums)
+        ans = val = 0
+        for x in nums: 
+            if x-1 not in nums: 
+                val = 0
+                while x in nums: val, x = val+1, x+1
+            ans = max(ans, val)
+        return ans 
+
+
+    """129. Sum Root to Leaf Numbers (Medium)
+	Given a binary tree containing digits from 0-9 only, each root-to-leaf path 
+	could represent a number. An example is the root-to-leaf path 1->2->3 which 
+	represents the number 123. Find the total sum of all root-to-leaf numbers.
+	Note that a leaf is a node with no children.
+
+	Example:
+	Input: [1,2,3]
+	    1
+	   / \
+	  2   3
+	Output: 25
+	Explanation:
+	The root-to-leaf path 1->2 represents the number 12.
+	The root-to-leaf path 1->3 represents the number 13.
+	Therefore, sum = 12 + 13 = 25.
+
+	Example 2:
+	Input: [4,9,0,5,1]
+	    4
+	   / \
+	  9   0
+	 / \
+	5   1
+	Output: 1026
+	Explanation:
+	The root-to-leaf path 4->9->5 represents the number 495.
+	The root-to-leaf path 4->9->1 represents the number 491.
+	The root-to-leaf path 4->0 represents the number 40.
+	Therefore, sum = 495 + 491 + 40 = 1026."""
+
+    def sumNumbers(self, root: TreeNode) -> int:
+        
+        def fn(node, val):
+            """Return sum of node-to-leaf numbers"""
+            if not node: return 0
+            val = 10*val + node.val
+            if not node.left and not node.right: return val 
+            return fn(node.left, val) + fn(node.right, val)
+            
+        return fn(root, 0)
+
+
+    """130. Surrounded Regions (Medium)
+	Given a 2D board containing 'X' and 'O' (the letter O), capture all regions 
+	surrounded by 'X'. A region is captured by flipping all 'O's into 'X's in 
+	that surrounded region.
+
+	Example:
+	X X X X
+	X O O X
+	X X O X
+	X O X X
+	After running your function, the board should be:
+
+	X X X X
+	X X X X
+	X X X X
+	X O X X
+
+	Explanation:
+	Surrounded regions shouldn’t be on the border, which means that any 'O' on 
+	the border of the board are not flipped to 'X'. Any 'O' that is not on the 
+	border and it is not connected to an 'O' on the border will be flipped to 
+	'X'. Two cells are connected if they are adjacent cells connected 
+	horizontally or vertically."""
+
+    def solve(self, board: List[List[str]]) -> None:
+        if not board: return [] #edge case 
+        m, n = len(board), len(board[0])
+        
+        def fn(i, j):
+            """Flood fill "O" with sentinel"""
+            if not (0 <= i < m and 0 <= j < n) or board[i][j] != "O": return 
+            board[i][j] = "#" #sentinel 
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): fn(ii, jj)
+        
+        for i in range(m): fn(i, 0) or fn(i, n-1)
+        for j in range(n): fn(0, j) or fn(m-1, j)
+        
+        for i in range(m):
+            for j in range(n):
+                if board[i][j] == "O": board[i][j] = "X"
+                if board[i][j] == "#": board[i][j] = "O"
