@@ -4872,3 +4872,168 @@ class Solution:
             return ans 
             
         return [" ".join(x) for x in fn(0)]
+
+
+    
+    """141. Linked List Cycle (Easy)
+	Given a linked list, determine if it has a cycle in it. To represent a 
+	cycle in the given linked list, we use an integer pos which represents the 
+	position (0-indexed) in the linked list where tail connects to. If pos is 
+	-1, then there is no cycle in the linked list.
+
+	Example 1:
+	Input: head = [3,2,0,-4], pos = 1
+	Output: true
+	Explanation: There is a cycle in the linked list, where tail connects to 
+	the second node.
+
+	Example 2:
+	Input: head = [1,2], pos = 0
+	Output: true
+	Explanation: There is a cycle in the linked list, where tail connects to 
+	the first node.
+
+	Example 3:
+	Input: head = [1], pos = -1
+	Output: false
+	Explanation: There is no cycle in the linked list.
+
+	Follow up:
+	Can you solve it using O(1) (i.e. constant) memory?"""
+
+    def hasCycle(self, head: ListNode) -> bool:
+        """Floyd's tortoise and hare (phase 1)"""
+        fast = slow = head
+        while fast and fast.next:
+            fast = fast.next.next
+            slow = slow.next
+            if fast == slow: return True
+        return False 
+
+
+    """142. Linked List Cycle II (Medium)
+	Given a linked list, return the node where the cycle begins. If there is no 
+	cycle, return null. To represent a cycle in the given linked list, we use 
+	an integer pos which represents the position (0-indexed) in the linked list 
+	where tail connects to. If pos is -1, then there is no cycle in the linked 
+	list. Note that do not modify the linked list.
+
+	Example 1:
+	Input: head = [3,2,0,-4], pos = 1
+	Output: tail connects to node index 1
+	Explanation: There is a cycle in the linked list, where tail connects to 
+	the second node.
+
+	Example 2:
+	Input: head = [1,2], pos = 0
+	Output: tail connects to node index 0
+	Explanation: There is a cycle in the linked list, where tail connects to 
+	the first node.
+
+	Example 3:
+	Input: head = [1], pos = -1
+	Output: no cycle
+	Explanation: There is no cycle in the linked list.
+
+	Follow-up:
+	Can you solve it without using extra space?"""
+
+    def detectCycle(self, head: ListNode) -> ListNode:
+        """Floyd's tortoise & hare (phase 2)"""
+        fast = slow = head 
+        while fast and fast.next:
+            fast, slow = fast.next.next, slow.next
+            if fast == slow: 
+                fast = head 
+                while fast != slow: fast, slow = fast.next, slow.next
+                return fast
+        return None 
+
+
+    """143. Reorder List (Medium)
+	Given a singly linked list L: L0→L1→…→Ln-1→Ln, reorder it to: 
+	L0→Ln→L1→Ln-1→L2→Ln-2→… You may not modify the values in the list's nodes, 
+	only nodes itself may be changed.
+
+	Example 1:
+	Given 1->2->3->4, reorder it to 1->4->2->3.
+
+	Example 2:
+	Given 1->2->3->4->5, reorder it to 1->5->2->4->3."""
+
+    def reorderList(self, head: ListNode) -> None:
+        fast = slow = head 
+        while fast and fast.next: 
+            fast = fast.next.next
+            slow = slow.next 
+        if slow: slow.next, slow = None, slow.next
+        
+        hi = None
+        while slow: 
+            slow.next, slow, hi = hi, slow.next, slow
+            
+        lo = head 
+        while hi: 
+            hi.next, hi, lo.next, lo = lo.next, hi.next, hi, lo.next
+            
+        return head 
+
+    
+    """144. Binary Tree Preorder Traversal (Medium)
+	Given a binary tree, return the preorder traversal of its nodes' values.
+
+	Example:
+	Input: [1,null,2,3]
+	   1
+	    \
+	     2
+	    /
+	   3
+
+	Output: [1,2,3]
+	Follow up: Recursive solution is trivial, could you do it iteratively?"""
+
+    def preorderTraversal(self, root: TreeNode) -> List[int]:
+        ans = []
+        stack = [root]
+        while stack: 
+            node = stack.pop()
+            if node: 
+                ans.append(node.val)
+                stack.append(node.right)
+                stack.append(node.left)
+        return ans 
+
+
+    """145. Binary Tree Postorder Traversal (Hard)
+	Given a binary tree, return the postorder traversal of its nodes' values.
+
+	Example:
+	Input: [1,null,2,3]
+	   1
+	    \
+	     2
+	    /
+	   3
+
+	Output: [3,2,1]
+	Follow up: Recursive solution is trivial, could you do it iteratively?"""
+
+    def postorderTraversal(self, root: TreeNode) -> List[int]:
+        ans = []
+        node, stack = root, []
+        while node or stack: 
+            if node: 
+                if node.right: stack.append(node.right)
+                stack.append(node)
+                node = node.left
+                continue
+            node = stack.pop()
+            if stack and stack[-1] == node.right: 
+                stack.pop()
+                stack.append(node)
+                node = node.right
+            else:
+                ans.append(node.val)
+                node = None
+        return ans 
