@@ -7,7 +7,7 @@ from functools import lru_cache, reduce
 from heapq import heappush, heappop
 from itertools import groupby, zip_longest
 from math import inf, sqrt
-from operator import gt, lt
+from operator import gt, lt, xor
 
 class Solution:
 
@@ -4700,3 +4700,175 @@ class Solution:
                 down += 1
                 ans += down if down < up else down + 1
         return ans 
+
+
+    """136. Single Number (Easy)
+	Given a non-empty array of integers, every element appears twice except for 
+	one. Find that single one. Note that your algorithm should have a linear 
+	runtime complexity. Could you implement it without using extra memory?
+
+	Example 1:
+	Input: [2,2,1]
+	Output: 1
+
+	Example 2:
+	Input: [4,1,2,1,2]
+	Output: 4"""
+
+    def singleNumber(self, nums: List[int]) -> int:
+        return reduce(xor, nums)
+
+
+    """137. Single Number II (Medium)
+	Given a non-empty array of integers, every element appears three times 
+	except for one, which appears exactly once. Find that single one. Note that 
+	your algorithm should have a linear runtime complexity. Could you implement 
+	it without using extra memory?
+
+	Example 1:
+	Input: [2,2,3,2]
+	Output: 3
+
+	Example 2:
+	Input: [0,1,0,1,0,1,99]
+	Output: 99"""
+
+    def singleNumber(self, nums: List[int]) -> int:
+        one = two = 0
+        for x in nums: 
+            two |= one & x
+            one ^= x
+            common = two & one
+            two &= ~common
+            one &= ~common 
+        return one 
+
+
+    """138. Copy List with Random Pointer (Medium)
+	A linked list is given such that each node contains an additional random 
+	pointer which could point to any node in the list or null. Return a deep 
+	copy of the list. The Linked List is represented in the input/output as a 
+	list of n nodes. Each node is represented as a pair of [val, random_index] 
+	where:
+
+	val: an integer representing Node.val
+	random_index: the index of the node (range from 0 to n-1) where random 
+	pointer points to, or null if it does not point to any node.
+
+	Example 1:
+	Input: head = [[7,null],[13,0],[11,4],[10,2],[1,0]]
+	Output: [[7,null],[13,0],[11,4],[10,2],[1,0]]
+
+	Example 2:
+	Input: head = [[1,1],[2,1]]
+	Output: [[1,1],[2,1]]
+
+	Example 3:
+	Input: head = [[3,null],[3,0],[3,null]]
+	Output: [[3,null],[3,0],[3,null]]
+
+	Example 4:
+	Input: head = []
+	Output: []
+	Explanation: Given linked list is empty (null pointer), so return null.
+
+	Constraints:
+	+ -10000 <= Node.val <= 10000
+	+ Node.random is null or pointing to a node in the linked list.
+	+ Number of Nodes will not exceed 1000."""
+
+    def copyRandomList(self, head: 'Node') -> 'Node':
+        memo = dict()
+        
+        def fn(n): 
+            """Return (deep) copy of node"""
+            if n and n not in memo: 
+                cln = memo[n] = Node(n.val)
+                cln.next, cln.random = fn(n.next), fn(n.random)
+            return memo.get(n)
+        
+        return fn(head)
+
+
+    """139. Word Break (Medium)
+	Given a non-empty string s and a dictionary wordDict containing a list of 
+	non-empty words, determine if s can be segmented into a space-separated 
+	sequence of one or more dictionary words. Note that the same word in the 
+	dictionary may be reused multiple times in the segmentation. You may assume 
+	the dictionary does not contain duplicate words.
+	
+	Example 1:
+	Input: s = "leetcode", wordDict = ["leet", "code"]
+	Output: true
+	Explanation: Return true because "leetcode" can be segmented as "leet code".
+
+	Example 2:
+	Input: s = "applepenapple", wordDict = ["apple", "pen"]
+	Output: true
+	Explanation: Return true because "applepenapple" can be segmented as "apple pen apple".
+	             Note that you are allowed to reuse a dictionary word.
+
+	Example 3:
+	Input: s = "catsandog", wordDict = ["cats", "dog", "sand", "and", "cat"]
+	Output: false"""
+
+    def wordBreak(self, s: str, wordDict: List[str]) -> bool:
+        
+        @lru_cache(None)
+        def fn(i):
+            """Return True if s[i:] can be segmented"""
+            if i == len(s): return True 
+            return any(s[i:i+len(word)] == word and fn(i+len(word)) for word in wordDict)
+        
+        return fn(0)
+
+
+    """140. Word Break II (Hard)
+	Given a non-empty string s and a dictionary wordDict containing a list of 
+	non-empty words, add spaces in s to construct a sentence where each word is 
+	a valid dictionary word. Return all such possible sentences. Note that the 
+	same word in the dictionary may be reused multiple times in the segmentation.
+	You may assume the dictionary does not contain duplicate words.
+	
+	Example 1:
+	Input:
+	s = "catsanddog"
+	wordDict = ["cat", "cats", "and", "sand", "dog"]
+	Output:
+	[
+	  "cats and dog",
+	  "cat sand dog"
+	]
+
+	Example 2:
+	Input:
+	s = "pineapplepenapple"
+	wordDict = ["apple", "pen", "applepen", "pine", "pineapple"]
+	Output:
+	[
+	  "pine apple pen apple",
+	  "pineapple pen apple",
+	  "pine applepen apple"
+	]
+	Explanation: Note that you are allowed to reuse a dictionary word.
+
+	Example 3:
+	Input:
+	s = "catsandog"
+	wordDict = ["cats", "dog", "sand", "and", "cat"]
+	Output:
+	[]"""
+
+    def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
+        
+        @lru_cache(None)
+        def fn(i):
+            """Return segmentation of s[i:]"""
+            if i == len(s): return [[]]
+            ans = []
+            for word in wordDict: 
+                if s[i:i+len(word)] == word: 
+                    ans.extend([word] + x for x in fn(i+len(word)))
+            return ans 
+            
+        return [" ".join(x) for x in fn(0)]
