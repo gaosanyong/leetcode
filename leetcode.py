@@ -5037,3 +5037,244 @@ class Solution:
                 ans.append(node.val)
                 node = None
         return ans 
+
+
+    """147. Insertion Sort List (Medium)
+	Sort a linked list using insertion sort. A graphical example of insertion 
+	sort. The partial sorted list (black) initially contains only the first 
+	element in the list. With each iteration one element (red) is removed from 
+	the input data and inserted in-place into the sorted list
+
+	Algorithm of Insertion Sort:
+	Insertion sort iterates, consuming one input element each repetition, and 
+	growing a sorted output list. At each iteration, insertion sort removes one 
+	element from the input data, finds the location it belongs within the 
+	sorted list, and inserts it there. It repeats until no input elements remain.
+
+	Example 1:
+	Input: 4->2->1->3
+	Output: 1->2->3->4
+
+	Example 2:
+	Input: -1->5->3->4->0
+	Output: -1->0->3->4->5"""
+
+    def insertionSortList(self, head: ListNode) -> ListNode:
+        node, prev = head, None
+        while node: 
+            if not prev or prev.val <= node.val: #append node 
+                node.next, node, prev = prev, node.next, node
+            else: 
+                temp = prev
+                while temp.next and temp.next.val > node.val: 
+                    temp = temp.next
+                node.next, node, temp.next = temp.next, node.next, node
+                
+        node, prev = prev, None
+        while node:
+            node.next, node, prev = prev, node.next, node
+        return prev 
+
+
+    """148. Sort List (Medium)
+	Sort a linked list in O(NlogN) time using constant space complexity.
+
+	Example 1:
+	Input: 4->2->1->3
+	Output: 1->2->3->4
+
+	Example 2:
+	Input: -1->5->3->4->0
+	Output: -1->0->3->4->5"""
+
+    def sortList(self, head: ListNode) -> ListNode:
+        #break list into two parts 
+        fast = prev = slow = head
+        while fast and fast.next:
+            fast, prev, slow = fast.next.next, slow, slow.next
+        if prev: prev.next = None #break list into two parts
+        
+        #slow == head of 2nd half
+        if not slow or head == slow: return head
+
+        list1 = self.sortList(head) #sort 1st half
+        list2 = self.sortList(slow) #sort 2nd half
+        
+        #merge two sorted sub-lists
+        dummy = node = ListNode()
+        while list1 and list2:
+            if list1.val > list2.val: list1, list2 = list2, list1
+            node.next = node = list1
+            list1 = list1.next
+        node.next = list1 or list2
+        return dummy.next 
+
+
+    """149. Max Points on a Line (Hard)
+	Given n points on a 2D plane, find the maximum number of points that lie on 
+	the same straight line.
+
+	Example 1:
+	Input: [[1,1],[2,2],[3,3]]
+	Output: 3
+	Explanation:
+	^
+	|
+	|        o
+	|     o
+	|  o  
+	+------------->
+	0  1  2  3  4
+
+	Example 2:
+	Input: [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+	Output: 4
+	Explanation:
+	^
+	|
+	|  o
+	|     o        o
+	|        o
+	|  o        o
+	+------------------->
+	0  1  2  3  4  5  6
+
+	NOTE: input types have been changed on April 15, 2019. Please reset to 
+	default code definition to get new method signature."""
+
+    def maxPoints(self, points: List[List[int]]) -> int:
+        ans = 0
+        for i, (x0, y0) in enumerate(points): #reference 
+            dupe = 1 #count of duplicates
+            freq = dict() #frequency table 
+            for x, y in points[i+1:]:
+                if x0 == x and y0 == y: dupe += 1
+                elif x0 == x: freq[0, inf] = 1 + freq.get((0, inf), 0)
+                elif y0 == y: freq[inf, 0] = 1 + freq.get((inf, 0), 0)
+                else: 
+                    g = gcd(x-x0, y-y0)
+                    x, y = (x-x0)//g, (y-y0)//g
+                    if x < 0: x, y = -x, -y
+                    freq[x, y] = 1 + freq.get((x, y), 0)
+            ans = max(ans, dupe + max(freq.values(), default=0))
+        return ans 
+
+
+    """150. Evaluate Reverse Polish Notation (Medium)
+	Evaluate the value of an arithmetic expression in Reverse Polish Notation. 
+	Valid operators are +, -, *, /. Each operand may be an integer or another 
+	expression.
+
+	Note:
+	Division between two integers should truncate toward zero. The given RPN 
+	expression is always valid. That means the expression would always evaluate 
+	to a result and there won't be any divide by zero operation.
+	
+	Example 1:
+	Input: ["2", "1", "+", "3", "*"]
+	Output: 9
+	Explanation: ((2 + 1) * 3) = 9
+
+	Example 2:
+	Input: ["4", "13", "5", "/", "+"]
+	Output: 6
+	Explanation: (4 + (13 / 5)) = 6
+
+	Example 3:
+	Input: ["10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"]
+	Output: 22
+	Explanation: 
+	  ((10 * (6 / ((9 + 3) * -11))) + 17) + 5
+	= ((10 * (6 / (12 * -11))) + 17) + 5
+	= ((10 * (6 / -132)) + 17) + 5
+	= ((10 * 0) + 17) + 5
+	= (0 + 17) + 5
+	= 17 + 5
+	= 22"""
+
+    def evalRPN(self, tokens: List[str]) -> int:
+        stack = []
+        for token in tokens: 
+            if token not in "+-*/": stack.append(int(token))
+            else: 
+                y, x = stack.pop(), stack.pop()
+                if token == "/": x = int(x/y)
+                else: x = eval(f"{x}{token}{y}")
+                stack.append(x)
+        return stack.pop()
+
+
+
+
+
+
+"""146. LRU Cache (Medium)
+Design and implement a data structure for Least Recently Used (LRU) cache. It 
+should support the following operations: get and put. 
+get(key)        - Get the value (will always be positive) of the key if the key 
+                  exists in the cache, otherwise return -1.
+put(key, value) - Set or insert the value if the key is not already present. 
+
+When the cache reached its capacity, it should invalidate the least recently 
+used item before inserting a new item. The cache is initialized with a positive 
+capacity.
+
+Follow up: Could you do both operations in O(1) time complexity?
+
+Example:
+LRUCache cache = new LRUCache( 2 /* capacity */ );
+
+cache.put(1, 1);
+cache.put(2, 2);
+cache.get(1);       // returns 1
+cache.put(3, 3);    // evicts key 2
+cache.get(2);       // returns -1 (not found)
+cache.put(4, 4);    // evicts key 1
+cache.get(1);       // returns -1 (not found)
+cache.get(3);       // returns 3
+cache.get(4);       // returns 4"""
+
+class ListNode:
+    def __init__(self, key=0, val=0, prev=None, next=None):
+        self.key = key
+        self.val = val
+        self.prev = prev
+        self.next = next
+        
+
+class LRUCache:
+
+    def __init__(self, capacity: int):
+        """Initialize hash table & dll"""
+        self.cpty = capacity
+        self.htab = dict() #hash table 
+        self.head = ListNode() #doubly linked list
+        self.tail = ListNode()
+        self.head.next = self.tail
+        self.tail.prev = self.head 
+        
+    def _del(self, key: int) -> int: 
+        """Delete given key from hash table & dll"""
+        node = self.htab.pop(key)
+        node.prev.next = node.next
+        node.next.prev = node.prev
+        return node.val
+
+    def _ins(self, key: int, value: int) -> None: 
+        """Insert at tail"""
+        node = ListNode(key, value, self.tail.prev, self.tail)
+        self.tail.prev.next = self.tail.prev = node
+        self.htab[key] = node
+        
+    def get(self, key: int) -> int:
+        if key not in self.htab: return -1
+        value = self._del(key)
+        self._ins(key, value)
+        return value
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.htab: self._del(key)
+        self._ins(key, value)
+        if len(self.htab) > self.cpty: 
+            self._del(self.head.next.key)
+
