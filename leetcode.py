@@ -5204,6 +5204,114 @@ class Solution:
         return stack.pop()
 
 
+    """151. Reverse Words in a String (Medium)
+	Given an input string, reverse the string word by word.
+
+	Example 1:
+	Input: "the sky is blue"
+	Output: "blue is sky the"
+
+	Example 2:
+	Input: "  hello world!  "
+	Output: "world! hello"
+	Explanation: Your reversed string should not contain leading or trailing 
+	spaces.
+
+	Example 3:
+	Input: "a good   example"
+	Output: "example good a"
+	Explanation: You need to reduce multiple spaces between two words to a 
+	single space in the reversed string.
+
+	Note:
+	+ A word is defined as a sequence of non-space characters.
+	+ Input string may contain leading or trailing spaces. However, your 
+	reversed string should not contain leading or trailing spaces.
+	+ You need to reduce multiple spaces between two words to a single space in 
+	the reversed string.
+
+	Follow up:
+	For C programmers, try to solve it in-place in O(1) extra space."""
+
+    def reverseWords(self, s: str) -> str:
+        return " ".join(reversed(s.split()))
+
+
+
+    """152. Maximum Product Subarray (Medium)
+	Given an integer array nums, find the contiguous subarray within an array 
+	(containing at least one number) which has the largest product.
+
+	Example 1:
+	Input: [2,3,-2,4]
+	Output: 6
+	Explanation: [2,3] has the largest product 6.
+
+	Example 2:
+	Input: [-2,0,-1]
+	Output: 0
+	Explanation: The result cannot be 2, because [-2,-1] is not a subarray."""
+
+    def maxProduct(self, nums: List[int]) -> int:
+        mn = mx = 1
+        ans = -inf
+        for x in nums:
+            if x < 0: mn, mx = mx, mn
+            mn, mx = min(x, mn*x), max(x, mx*x)
+            ans = max(ans, mx)
+        return ans 
+
+
+
+    """153. Find Minimum in Rotated Sorted Array (Medium)
+	Suppose an array sorted in ascending order is rotated at some pivot unknown 
+	to you beforehand. (i.e.,  [0,1,2,4,5,6,7] might become  [4,5,6,7,0,1,2]). 
+	Find the minimum element. You may assume no duplicate exists in the array.
+
+	Example 1:
+	Input: [3,4,5,1,2] 
+	Output: 1
+
+	Example 2:
+	Input: [4,5,6,7,0,1,2]
+	Output: 0"""
+
+    def findMin(self, nums: List[int]) -> int:
+        lo, hi = 0, len(nums)-1
+        while lo < hi:
+            mid = (lo + hi)//2
+            if nums[mid] < nums[hi]: hi = mid
+            else: lo = mid + 1
+        return nums[lo]
+
+
+    """154. Find Minimum in Rotated Sorted Array II (Hard)
+	Suppose an array sorted in ascending order is rotated at some pivot unknown 
+	to you beforehand. (i.e.,  [0,1,2,4,5,6,7] might become  [4,5,6,7,0,1,2]). 
+	Find the minimum element. The array may contain duplicates.
+
+	Example 1:
+	Input: [1,3,5]
+	Output: 1
+
+	Example 2:
+	Input: [2,2,2,0,1]
+	Output: 0
+
+	Note:
+	This is a follow up problem to Find Minimum in Rotated Sorted Array.
+	Would allow duplicates affect the run-time complexity? How and why?"""
+
+    def findMin(self, nums: List[int]) -> int:
+        lo, hi = 0, len(nums)-1
+        while lo < hi:
+            mid = (lo + hi)//2
+            if nums[mid] < nums[hi]: hi = mid
+            elif nums[mid] > nums[hi]: lo = mid + 1
+            else: hi -= 1
+        return nums[lo]
+
+
 
 
 
@@ -5278,3 +5386,57 @@ class LRUCache:
         if len(self.htab) > self.cpty: 
             self._del(self.head.next.key)
 
+
+
+"""155. Min Stack (Easy)
+Design a stack that supports push, pop, top, and retrieving the minimum element 
+in constant time.
+
+push(x) -- Push element x onto stack.
+pop() -- Removes the element on top of the stack.
+top() -- Get the top element.
+getMin() -- Retrieve the minimum element in the stack.
+ 
+Example 1:
+Input
+["MinStack","push","push","push","getMin","pop","top","getMin"]
+[[],[-2],[0],[-3],[],[],[],[]]
+
+Output
+[null,null,null,null,-3,null,0,-2]
+
+Explanation
+MinStack minStack = new MinStack();
+minStack.push(-2);
+minStack.push(0);
+minStack.push(-3);
+minStack.getMin(); // return -3
+minStack.pop();
+minStack.top();    // return 0
+minStack.getMin(); // return -2
+
+Constraints:
+Methods pop, top and getMin operations will always be called on non-empty stacks."""
+
+class MinStack:
+
+    def __init__(self):
+        self.min   = []  #min-stack for minimum so far
+        self.stack = []  #regular stack for values 
+        
+    def push(self, x: int) -> None:
+        if self.min: 
+            self.min.append(min(x, self.min[-1]))
+        else: 
+            self.min.append(x)
+        self.stack.append(x)
+        
+    def pop(self) -> None:
+        self.min.pop()
+        self.stack.pop()
+            
+    def top(self) -> int:
+        return self.stack[-1]
+        
+    def getMin(self) -> int:
+        return self.min[-1]
