@@ -5313,7 +5313,176 @@ class Solution:
 
 
 
+    """160. Intersection of Two Linked Lists (Easy)
+	Write a program to find the node at which the intersection of two singly 
+	linked lists begins. 
 
+	Example 1:
+	Input: intersectVal = 8, listA = [4,1,8,4,5], listB = [5,6,1,8,4,5], 
+	skipA = 2, skipB = 3
+	Output: Reference of the node with value = 8
+	Input Explanation: The intersected node's value is 8 (note that this must 
+	not be 0 if the two lists intersect). From the head of A, it reads as 
+	[4,1,8,4,5]. From the head of B, it reads as [5,6,1,8,4,5]. There are 2 
+	nodes before the intersected node in A; There are 3 nodes before the 
+	intersected node in B.
+	 
+	Example 2:
+	Input: intersectVal = 2, listA = [1,9,1,2,4], listB = [3,2,4], skipA = 3, 
+	skipB = 1
+	Output: Reference of the node with value = 2
+	Input Explanation: The intersected node's value is 2 (note that this must 
+	not be 0 if the two lists intersect). From the head of A, it reads as 
+	[1,9,1,2,4]. From the head of B, it reads as [3,2,4]. There are 3 nodes 
+	before the intersected node in A; There are 1 node before the intersected 
+	node in B.
+
+	Example 3:
+	Input: intersectVal = 0, listA = [2,6,4], listB = [1,5], skipA = 3, 
+	skipB = 2
+	Output: null
+	Input Explanation: From the head of A, it reads as [2,6,4]. From the head 
+	of B, it reads as [1,5]. Since the two lists do not intersect, intersectVal 
+	must be 0, while skipA and skipB can be arbitrary values.
+	Explanation: The two lists do not intersect, so return null.
+
+	Notes:
+	If the two linked lists have no intersection at all, return null.
+	The linked lists must retain their original structure after the function returns.
+	You may assume there are no cycles anywhere in the entire linked structure.
+	Each value on each linked list is in the range [1, 10^9].
+	Your code should preferably run in O(n) time and use only O(1) memory."""
+
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
+        nodeA, nodeB = headA, headB
+        while nodeA != nodeB:
+            nodeA = nodeA.next if nodeA else headB
+            nodeB = nodeB.next if nodeB else headA
+        return nodeA and nodeB
+
+   
+    """162. Find Peak Element (Medium)
+	A peak element is an element that is greater than its neighbors. Given an 
+	input array nums, where nums[i] ≠ nums[i+1], find a peak element and return 
+	its index. The array may contain multiple peaks, in that case return the 
+	index to any one of the peaks is fine. You may imagine that 
+	nums[-1] = nums[n] = -∞.
+
+	Example 1:
+	Input: nums = [1,2,3,1]
+	Output: 2
+	Explanation: 3 is a peak element and your function should return the index 
+	number 2.
+
+	Example 2:
+	Input: nums = [1,2,1,3,5,6,4]
+	Output: 1 or 5 
+	Explanation: Your function can return either index number 1 where the peak 
+	element is 2, or index number 5 where the peak element is 6.
+
+	Follow up: Your solution should be in logarithmic complexity."""
+
+    def findPeakElement(self, nums: List[int]) -> int:
+        lo, hi = 0, len(nums)-1
+        while lo < hi:
+            mid = (lo + hi)//2
+            if nums[mid] < nums[mid+1]: lo = mid + 1
+            else: hi = mid
+        return lo
+
+
+    """164. Maximum Gap (Hard)
+	Given an unsorted array, find the maximum difference between the successive 
+	elements in its sorted form. Return 0 if the array contains less than 2 
+	elements.
+
+	Example 1:
+	Input: [3,6,9,1]
+	Output: 3
+	Explanation: The sorted form of the array is [1,3,6,9], either (3,6) or 
+	             (6,9) has the maximum difference 3.
+
+	Example 2:
+	Input: [10]
+	Output: 0
+	Explanation: The array contains less than 2 elements, therefore return 0.
+	
+	Note:
+	You may assume all elements in the array are non-negative integers and fit 
+	in the 32-bit signed integer range. Try to solve it in linear time/space."""
+
+    def maximumGap(self, nums: List[int]) -> int:
+        if len(nums) < 2: return 0 #edge case 
+        
+        mn, mx = min(nums), max(nums)
+        step = max(1, (mx - mn)//(len(nums) - 1))
+        size = (mx - mn)//step + 1
+        buckets = [[inf, -inf] for _ in range(size)]
+        
+        for num in nums: 
+            i = (num - mn)//step
+            x, xx = buckets[i]
+            buckets[i] = [min(x, num), max(xx, num)]
+        
+        ans = 0
+        prev = mn
+        for i in range(len(buckets)): 
+            x, xx = buckets[i]
+            if x < inf: 
+                ans = max(ans, x - prev)
+                prev = xx
+        return ans 
+
+
+    """165. Compare Version Numbers (Medium)
+	Compare two version numbers version1 and version2. If version1 > version2 
+	return 1; if version1 < version2 return -1;otherwise return 0. You may 
+	assume that the version strings are non-empty and contain only digits and 
+	the . character. The . character does not represent a decimal point and is 
+	used to separate number sequences. For instance, 2.5 is not "two and a half" 
+	or "half way to version three", it is the fifth second-level revision of 
+	the second first-level revision. You may assume the default revision number 
+	for each level of a version number to be 0. For example, version number 3.4 
+	has a revision number of 3 and 4 for its first and second level revision 
+	number. Its third and fourth level revision number are both 0.
+
+	Example 1:
+	Input: version1 = "0.1", version2 = "1.1"
+	Output: -1
+
+	Example 2:
+	Input: version1 = "1.0.1", version2 = "1"
+	Output: 1
+
+	Example 3:
+	Input: version1 = "7.5.2.4", version2 = "7.5.3"
+	Output: -1
+
+	Example 4:
+	Input: version1 = "1.01", version2 = "1.001"
+	Output: 0
+	Explanation: Ignoring leading zeroes, both “01” and “001" represent the 
+	same number “1”
+
+	Example 5:
+	Input: version1 = "1.0", version2 = "1.0.0"
+	Output: 0
+	Explanation: The first version number does not have a third level revision 
+	number, which means its third level revision number is default to "0"
+	 
+	Note:
+	* Version strings are composed of numeric strings separated by dots . and 
+	  this numeric strings may have leading zeroes.
+	* Version strings do not start or end with dots, and they will not be two 
+	  consecutive dots."""
+
+    def compareVersion(self, version1: str, version2: str) -> int:
+        version1 = [int(x) for x in version1.split(".")]
+        version2 = [int(x) for x in version2.split(".")]
+        for x1, x2 in zip_longest(version1, version2, fillvalue=0):
+            if x1 > x2: return 1
+            if x1 < x2: return -1
+        return 0
 
 
 """146. LRU Cache (Medium)
