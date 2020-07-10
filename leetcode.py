@@ -5485,6 +5485,122 @@ class Solution:
         return 0
 
 
+    """166. Fraction to Recurring Decimal (Medium)
+	Given two integers representing the numerator and denominator of a 
+	fraction, return the fraction in string format. If the fractional part 
+	is repeating, enclose the repeating part in parentheses.
+
+	Example 1:
+	Input: numerator = 1, denominator = 2
+	Output: "0.5"
+
+	Example 2:
+	Input: numerator = 2, denominator = 1
+	Output: "2"
+
+	Example 3:
+	Input: numerator = 2, denominator = 3
+	Output: "0.(6)" """
+
+    def fractionToDecimal(self, numerator: int, denominator: int) -> str:
+        sign = "-" if numerator * denominator < 0 else ""
+        q, r = divmod(abs(numerator), abs(denominator))
+        if not r: return sign + str(q)
+        
+        seen = {r : (i := 0)}
+        dcml = ""
+        while r: 
+            d, r = divmod(10*r, abs(denominator))
+            dcml += str(d)
+            if r in seen: 
+                k = seen[r]
+                return sign + f"{q}.{dcml[:k]}({dcml[k:]})"
+            seen[r] = (i := i+1)
+        return sign + f"{q}.{dcml}"
+
+
+    """167. Two Sum II - Input array is sorted (Easy)
+	Given an array of integers that is already sorted in ascending order, find 
+	two numbers such that they add up to a specific target number. The function 
+	twoSum should return indices of the two numbers such that they add up to 
+	the target, where index1 must be less than index2.
+
+	Note:
+	Your returned answers (both index1 and index2) are not zero-based.
+	You may assume that each input would have exactly one solution and you may 
+	not use the same element twice.
+
+	Example:
+	Input: numbers = [2,7,11,15], target = 9
+	Output: [1,2]
+	Explanation: The sum of 2 and 7 is 9. Therefore index1 = 1, index2 = 2."""
+
+    def twoSum(self, numbers: List[int], target: int) -> List[int]:
+        lo, hi = 0, len(numbers)-1
+        while lo < hi: 
+            val = numbers[lo] + numbers[hi]
+            if val == target: return [lo+1, hi+1]
+            elif val > target: hi -= 1
+            else: lo += 1
+
+
+
+    """168. Excel Sheet Column Title (Easy)
+	Given a positive integer, return its corresponding column title as appear 
+	in an Excel sheet. 	For example:
+	    1 -> A
+	    2 -> B
+	    3 -> C
+	    ...
+	    26 -> Z
+	    27 -> AA
+	    28 -> AB 
+	    ...
+
+	Example 1:
+	Input: 1
+	Output: "A"
+
+	Example 2:
+	Input: 28
+	Output: "AB"
+
+	Example 3:
+	Input: 701
+	Output: "ZY" """
+
+    def convertToTitle(self, n: int) -> str:
+        ans = []
+        while n: 
+            n, r = divmod(n-1, 26)
+            ans.append(r)
+        return "".join(chr(r+65) for r in reversed(ans))
+
+
+    """169. Majority Element (Easy)
+	Given an array of size n, find the majority element. The majority element 
+	is the element that appears more than ⌊ n/2 ⌋ times. You may assume that 
+	the array is non-empty and the majority element always exist in the array.
+
+	Example 1:
+	Input: [3,2,3]
+	Output: 3
+
+	Example 2:
+	Input: [2,2,1,1,1,2,2]
+	Output: 2"""
+
+    def majorityElement(self, nums: List[int]) -> int:
+        """Boyer-Moore majority voting"""
+        vote = 0
+        for x in nums:
+            if not vote: ans = x
+            vote += 1 if x == ans else -1
+        return ans
+
+
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
