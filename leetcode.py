@@ -5599,6 +5599,187 @@ class Solution:
         return ans
 
 
+    """171. Excel Sheet Column Number (Easy)
+	Given a column title as appear in an Excel sheet, return its corresponding 
+	column number. For example:
+	    A -> 1
+	    B -> 2
+	    C -> 3
+	    ...
+	    Z -> 26
+	    AA -> 27
+	    AB -> 28 
+	    ...
+
+	Example 1:
+	Input: "A"
+	Output: 1
+
+	Example 2:
+	Input: "AB"
+	Output: 28
+
+	Example 3:
+	Input: "ZY"
+	Output: 701
+
+	Constraints:
+	* 1 <= s.length <= 7
+	* s consists only of uppercase English letters.
+	* s is between "A" and "FXSHRXW"."""
+
+    def titleToNumber(self, s: str) -> int:
+        ans = 0
+        for c in s:
+            ans = 26*ans + ord(c) - 64
+        return ans 
+
+
+    """172. Factorial Trailing Zeroes (Easy)
+	Given an integer n, return the number of trailing zeroes in n!.
+
+	Example 1:
+	Input: 3
+	Output: 0
+	Explanation: 3! = 6, no trailing zero.
+
+	Example 2:
+	Input: 5
+	Output: 1
+	Explanation: 5! = 120, one trailing zero.
+
+	Note: Your solution should be in logarithmic time complexity."""
+
+    def trailingZeroes(self, n: int) -> int:
+        ans = 0
+        while n:
+            n //= 5
+            ans += n
+        return ans 
+
+
+    """174. Dungeon Game (Hard)
+	The demons had captured the princess (P) and imprisoned her in the bottom-
+	right corner of a dungeon. The dungeon consists of M x N rooms laid out in 
+	a 2D grid. Our valiant knight (K) was initially positioned in the top-left 
+	room and must fight his way through the dungeon to rescue the princess. The 
+	knight has an initial health point represented by a positive integer. If at 
+	any point his health point drops to 0 or below, he dies immediately. Some 
+	of the rooms are guarded by demons, so the knight loses health (negative 
+	integers) upon entering these rooms; other rooms are either empty (0's) or 
+	contain magic orbs that increase the knight's health (positive integers). 
+	In order to reach the princess as quickly as possible, the knight decides 
+	to move only rightward or downward in each step.
+
+	Write a function to determine the knight's minimum initial health so that 
+	he is able to rescue the princess. For example, given the dungeon below, 
+	the initial health of the knight must be at least 7 if he follows the 
+	optimal path RIGHT-> RIGHT -> DOWN -> DOWN.
+
+	-2 (K)	-3	3
+	-5	-10	1
+	10	30	-5 (P)
+
+	Note:
+	* The knight's health has no upper bound.
+	* Any room can contain threats or power-ups, even the first room the knight 
+	  enters and the bottom-right room where the princess is imprisoned."""
+
+    def calculateMinimumHP(self, dungeon: List[List[int]]) -> int:
+        m, n = len(dungeon), len(dungeon[0])
+        
+        @lru_cache(None)
+        def fn(i, j): 
+            """Return minimum health at cell (i, j)"""
+            if i == m-1 and j == n-1: return max(1, 1 - dungeon[i][j])
+            if i > m-1 or j > n-1: return inf
+            return max(1, min(fn(i+1, j), fn(i, j+1)) - dungeon[i][j])
+        
+        return fn(0, 0)
+
+
+    """179. Largest Number (Medium)
+	Given a list of non negative integers, arrange them such that they form the 
+	largest number.
+
+	Example 1:
+	Input: [10,2]
+	Output: "210"
+
+	Example 2:
+	Input: [3,30,34,5,9]
+	Output: "9534330"
+
+	Note: The result may be very large, so you need to return a string instead 
+	of an integer."""
+
+    def largestNumber(self, nums: List[int]) -> str:
+        
+        def cmp(x, y):
+            """Compure two strings and return an integer based on outcome"""
+            if x + y > y + x: return 1
+            elif x + y == y + x: return 0
+            else: return -1
+                
+        nums = [str(x) for x in nums]
+        return "".join(sorted(nums, key=cmp_to_key(cmp), reverse=True)).lstrip("0") or "0"
+
+
+    """187. Repeated DNA Sequences (Medium)
+	All DNA is composed of a series of nucleotides abbreviated as A, C, G, and 
+	T, for example: "ACGAATTCCG". When studying DNA, it is sometimes useful to 
+	identify repeated sequences within the DNA. Write a function to find all 
+	the 10-letter-long sequences (substrings) that occur more than once in a 
+	DNA molecule.
+
+	Example:
+	Input: s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"
+	Output: ["AAAAACCCCC", "CCCCCAAAAA"]"""
+
+    def findRepeatedDnaSequences(self, s: str) -> List[str]:
+        htab = {"A":0, "C":1, "G":2, "T":3} #hash table
+        
+        ans, seen = set(), set()
+        hs = 0 
+        for i in range(len(s)):
+            hs = 4*hs + htab[s[i]]
+            if i >= 10: hs -= htab[s[i-10]]*4**10 #rolling hash
+            if hs in seen: ans.add(s[i-9:i+1])
+            if i >= 9: seen.add(hs)
+        return ans
+
+
+    """188. Best Time to Buy and Sell Stock IV (Hard)
+	Say you have an array for which the i-th element is the price of a given 
+	stock on day i. Design an algorithm to find the maximum profit. You may 
+	complete at most k transactions.
+
+	Note: You may not engage in multiple transactions at the same time (ie, 
+	you must sell the stock before you buy again).
+
+	Example 1:
+	Input: [2,4,1], k = 2
+	Output: 2
+	Explanation: Buy on day 1 (price = 2) and sell on day 2 (price = 4), 
+	             profit = 4-2 = 2.
+
+	Example 2:
+	Input: [3,2,6,5,0,3], k = 2
+	Output: 7
+	Explanation: Buy on day 2 (price = 2) and sell on day 3 (price = 6), 
+	             profit = 6-2 = 4. Then buy on day 5 (price = 0) and sell on 
+	             day 6 (price = 3), profit = 3-0 = 3."""
+
+    def maxProfit(self, k: int, prices: List[int]) -> int:
+        if k >= len(prices)//2: 
+            return sum(max(0, prices[i] - prices[i-1]) for i in range(1, len(prices)))
+        
+        buy, pnl = [inf]*k, [0]*k
+        for price in prices:
+            for i in range(k):
+                buy[i] = min(buy[i], price - (pnl[i-1] if i else 0))
+                pnl[i] = max(pnl[i], price - buy[i])
+        return pnl[-1] if prices and k else 0
 
 
 """146. LRU Cache (Medium)
@@ -5725,3 +5906,57 @@ class MinStack:
         
     def getMin(self) -> int:
         return self.min[-1]
+
+
+
+
+"""173. Binary Search Tree Iterator (Medium)
+Implement an iterator over a binary search tree (BST). Your iterator will be 
+initialized with the root node of a BST. Calling next() will return the next 
+smallest number in the BST.
+
+Example:
+
+BSTIterator iterator = new BSTIterator(root);
+iterator.next();    // return 3
+iterator.next();    // return 7
+iterator.hasNext(); // return true
+iterator.next();    // return 9
+iterator.hasNext(); // return true
+iterator.next();    // return 15
+iterator.hasNext(); // return true
+iterator.next();    // return 20
+iterator.hasNext(); // return false
+ 
+Note:
+next() and hasNext() should run in average O(1) time and uses O(h) memory, 
+where h is the height of the tree. You may assume that next() call will always 
+be valid, that is, there will be at least a next smallest number in the BST 
+when next() is called."""
+
+class BSTIterator:
+
+    def __init__(self, root: TreeNode):
+        self.stack = []
+        self._sink(root)
+    
+    def _sink(self, node: TreeNode) -> None:
+        """Sink along the tree and collect nodes to stack"""
+        while node:
+            self.stack.append(node)
+            node = node.left
+
+    def next(self) -> int:
+        """
+        @return the next smallest number
+        """
+        node = self.stack.pop()
+        ans = node.val 
+        self._sink(node.right)
+        return ans 
+
+    def hasNext(self) -> bool:
+        """
+        @return whether we have a next smallest number
+        """
+        return self.stack
