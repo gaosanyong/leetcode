@@ -5782,6 +5782,154 @@ class Solution:
         return pnl[-1] if prices and k else 0
 
 
+    """189. Rotate Array (Easy)
+	Given an array, rotate the array to the right by k steps, where k is non-
+	negative. 
+
+	Follow up:
+	Try to come up as many solutions as you can, there are at least 3 different 
+	ways to solve this problem. Could you do it in-place with O(1) extra space?
+
+	Example 1:
+	Input: nums = [1,2,3,4,5,6,7], k = 3
+	Output: [5,6,7,1,2,3,4]
+	Explanation:
+	rotate 1 steps to the right: [7,1,2,3,4,5,6]
+	rotate 2 steps to the right: [6,7,1,2,3,4,5]
+	rotate 3 steps to the right: [5,6,7,1,2,3,4]
+
+	Example 2:
+	Input: nums = [-1,-100,3,99], k = 2
+	Output: [3,99,-1,-100]
+	Explanation: 
+	rotate 1 steps to the right: [99,-1,-100,3]
+	rotate 2 steps to the right: [3,99,-1,-100]
+
+	Constraints:
+	* 1 <= nums.length <= 2 * 10^4
+	* It's guaranteed that nums[i] fits in a 32 bit-signed integer.
+	* k >= 0"""
+
+    def rotate(self, nums: List[int], k: int) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        g = gcd(k, (n := len(nums)))
+        for i in range(g):
+            ii = i
+            for _ in range(n//g): 
+                ii = (ii + k)%n
+                nums[i], nums[ii] = nums[ii], nums[i]
+
+
+    """190. Reverse Bits (Easy)
+	Reverse bits of a given 32 bits unsigned integer.
+
+	Example 1:
+	Input: 00000010100101000001111010011100
+	Output: 00111001011110000010100101000000
+	Explanation: The input binary string 00000010100101000001111010011100 
+	represents the unsigned integer 43261596, so return 964176192 which its 
+	binary representation is 00111001011110000010100101000000.
+	
+	Example 2:
+
+	Input: 11111111111111111111111111111101
+	Output: 10111111111111111111111111111111
+	Explanation: The input binary string 11111111111111111111111111111101 
+	represents the unsigned integer 4294967293, so return 3221225471 which its 
+	binary representation is 10111111111111111111111111111111.
+
+	Note:
+	Note that in some languages such as Java, there is no unsigned integer type. 
+	In this case, both input and output will be given as signed integer type and 
+	should not affect your implementation, as the internal binary representation 
+	of the integer is the same whether it is signed or unsigned. In Java, the 
+	compiler represents the signed integers using 2's complement notation. 
+	Therefore, in Example 2 above the input represents the signed integer -3 and 
+	the output represents the signed integer -1073741825.
+
+	Follow up: If this function is called many times, how would you optimize it?"""
+
+    def reverseBits(self, n: int) -> int:
+        return int(bin(n)[2:].zfill(32)[::-1], 2)
+
+
+    """191. Number of 1 Bits (Easy)
+	Write a function that takes an unsigned integer and return the number of 
+	'1' bits it has (also known as the Hamming weight).
+
+	Example 1:
+	Input: 00000000000000000000000000001011
+	Output: 3
+	Explanation: The input binary string 00000000000000000000000000001011 has a 
+	total of three '1' bits.
+
+	Example 2:
+	Input: 00000000000000000000000010000000
+	Output: 1
+	Explanation: The input binary string 00000000000000000000000010000000 has a 
+	total of one '1' bit.
+
+	Example 3:
+	Input: 11111111111111111111111111111101
+	Output: 31
+	Explanation: The input binary string 11111111111111111111111111111101 has a 
+	total of thirty one '1' bits.
+
+	Note:
+	Note that in some languages such as Java, there is no unsigned integer type. 
+	In this case, the input will be given as signed integer type and should not 
+	affect your implementation, as the internal binary representation of the 
+	integer is the same whether it is signed or unsigned. In Java, the compiler 
+	represents the signed integers using 2's complement notation. Therefore, in 
+	Example 3 above the input represents the signed integer -3.
+	 
+	Follow up: If this function is called many times, how would you optimize it?"""
+
+    def hammingWeight(self, n: int) -> int:
+        return bin(n).count("1")
+
+
+
+    """198. House Robber (Easy)
+	You are a professional robber planning to rob houses along a street. Each 
+	house has a certain amount of money stashed, the only constraint stopping 
+	you from robbing each of them is that adjacent houses have security system 
+	connected and it will automatically contact the police if two adjacent 
+	houses were broken into on the same night. Given a list of non-negative 
+	integers representing the amount of money of each house, determine the 
+	maximum amount of money you can rob tonight without alerting the police.
+
+	Example 1:
+	Input: nums = [1,2,3,1]
+	Output: 4
+	Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+	             Total amount you can rob = 1 + 3 = 4.
+
+	Example 2:
+	Input: nums = [2,7,9,3,1]
+	Output: 12
+	Explanation: Rob house 1 (money = 2), rob house 3 (money = 9) and rob house 
+	             5 (money = 1). Total amount you can rob = 2 + 9 + 1 = 12.
+
+	Constraints:
+	0 <= nums.length <= 100
+	0 <= nums[i] <= 400"""
+
+    def rob(self, nums: List[int]) -> int:
+        
+        @lru_cache(None)
+        def fn(i):
+            """Return the maximum amount of money after robbing ith house"""
+            if i < 0: return 0
+            return max(fn(i-1), fn(i-2) + nums[i])
+        
+        return fn(len(nums)-1)
+
+
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
