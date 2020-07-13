@@ -5891,7 +5891,6 @@ class Solution:
         return bin(n).count("1")
 
 
-
     """198. House Robber (Easy)
 	You are a professional robber planning to rob houses along a street. Each 
 	house has a certain amount of money stashed, the only constraint stopping 
@@ -5928,6 +5927,176 @@ class Solution:
         return fn(len(nums)-1)
 
 
+    """199. Binary Tree Right Side View (Medium)
+	Given a binary tree, imagine yourself standing on the right side of it, 
+	return the values of the nodes you can see ordered from top to bottom.
+
+	Example:
+	Input: [1,2,3,null,5,null,4]
+	Output: [1, 3, 4]
+	Explanation:
+
+	   1            <---
+	 /   \
+	2     3         <---
+	 \     \
+	  5     4       <---"""
+
+    def rightSideView(self, root: TreeNode) -> List[int]:
+        ans = []
+        queue, k = [root], 0
+        while queue: 
+            tmp = []
+            for node in queue: 
+                if node: 
+                    if len(ans) == k: ans.append(node.val)
+                    tmp.append(node.right)
+                    tmp.append(node.left)
+            queue, k = tmp, k+1
+        return ans 
+
+
+    """200. Number of Islands (Medium)
+	Given a 2d grid map of '1's (land) and '0's (water), count the number of 
+	islands. An island is surrounded by water and is formed by connecting 
+	adjacent lands horizontally or vertically. You may assume all four edges 
+	of the grid are all surrounded by water.
+
+	Example 1:
+	Input: grid = [
+	  ["1","1","1","1","0"],
+	  ["1","1","0","1","0"],
+	  ["1","1","0","0","0"],
+	  ["0","0","0","0","0"]
+	]
+	Output: 1
+
+	Example 2:
+	Input: grid = [
+	  ["1","1","0","0","0"],
+	  ["1","1","0","0","0"],
+	  ["0","0","1","0","0"],
+	  ["0","0","0","1","1"]
+	]
+	Output: 3"""
+
+    def numIslands(self, grid: List[List[str]]) -> int:
+        if not grid: return 0
+        m, n = len(grid), len(grid[0])
+        
+        def fn(i, j):
+            """Flood fill cell with "0"."""
+            if 0 <= i < m and 0 <= j < n and grid[i][j] == "1": 
+                grid[i][j] = "0"
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
+                    fn(ii, jj)
+                return 1
+            return 0
+                
+        return sum(fn(i, j) for i in range(m) for j in range(n))
+
+
+   """201. Bitwise AND of Numbers Range (Medium)
+	Given a range [m, n] where 0 <= m <= n <= 2147483647, return the bitwise 
+	AND of all numbers in this range, inclusive.
+
+	Example 1:
+	Input: [5,7]
+	Output: 4
+
+	Example 2:
+	Input: [0,1]
+	Output: 0"""
+
+    def rangeBitwiseAnd(self, m: int, n: int) -> int:
+        while n > m: 
+            n &= n-1 #unset last set bit
+        return n 
+
+
+    """202. Happy Number (Easy)
+	Write an algorithm to determine if a number n is "happy". A happy number is 
+	a number defined by the following process: Starting with any positive 
+	integer, replace the number by the sum of the squares of its digits, and 
+	repeat the process until the number equals 1 (where it will stay), or it 
+	loops endlessly in a cycle which does not include 1. Those numbers for 
+	which this process ends in 1 are happy numbers. Return True if n is a happy 
+	number, and False if not.
+
+	Example: 
+	Input: 19
+	Output: true
+	Explanation: 
+	12 + 92 = 82
+	82 + 22 = 68
+	62 + 82 = 100
+	12 + 02 + 02 = 1"""
+
+    def isHappy(self, n: int) -> bool:
+        fn = lambda n: sum(int(x)**2 for x in str(n))
+        fast, slow = fn(n), n
+        while fast != slow:
+            fast = fn(fn(fast))
+            slow = fn(slow)
+        return fast == 1
+
+
+    """203. Remove Linked List Elements (Easy)
+	Remove all elements from a linked list of integers that have value val.
+
+	Example:
+	Input:  1->2->6->3->4->5->6, val = 6
+	Output: 1->2->3->4->5"""
+
+    def removeElements(self, head: ListNode, val: int) -> ListNode:
+        dummy = node = ListNode(next=head) #head could be removed
+        while node.next: 
+            if node.next.val == val: node.next = node.next.next 
+            else: node = node.next 
+        return dummy.next 
+
+
+    """204. Count Primes (Easy)
+	Count the number of prime numbers less than a non-negative number, n.
+
+	Example:
+	Input: 10
+	Output: 4
+	Explanation: There are 4 prime numbers less than 10, they are 2, 3, 5, 7."""
+
+    def countPrimes(self, n: int) -> int:
+        """Sieve of Eratosthenes"""
+        prime = [False] *2 + [True] * (n-2) #0 and 1 are not prime
+        for i in range(int(sqrt(n))+1):
+            if prime[i]:
+                for k in range(i*i, n, i): 
+                    prime[k] = False 
+        return sum(prime)
+
+
+    """205. Isomorphic Strings (Easy)
+	Given two strings s and t, determine if they are isomorphic. Two strings 
+	are isomorphic if the characters in s can be replaced to get t. All 
+	occurrences of a character must be replaced with another character while 
+	preserving the order of characters. No two characters may map to the same 
+	character but a character may map to itself.
+
+	Example 1:
+	Input: s = "egg", t = "add"
+	Output: true
+
+	Example 2:
+	Input: s = "foo", t = "bar"
+	Output: false
+
+	Example 3:
+	Input: s = "paper", t = "title"
+	Output: true
+	Note:
+	You may assume both s and t have the same length."""
+
+    def isIsomorphic(self, s: str, t: str) -> bool:
+        return len(set(zip(s, t))) == len(set(s)) == len(set(t))
 
 
 """146. LRU Cache (Medium)
