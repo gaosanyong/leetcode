@@ -6099,6 +6099,144 @@ class Solution:
         return len(set(zip(s, t))) == len(set(s)) == len(set(t))
 
 
+    """206. Reverse Linked List (Easy)
+	Reverse a singly linked list.
+
+	Example:
+	Input: 1->2->3->4->5->NULL
+	Output: 5->4->3->2->1->NULL
+
+	Follow up: A linked list can be reversed either iteratively or recursively. 
+	Could you implement both?"""
+
+    def reverseList(self, head: ListNode) -> ListNode:
+        prev, node = None, head
+        while node:
+            node.next, node, prev = prev, node.next, node
+        return prev
+
+
+    """207. Course Schedule (Medium)
+	There are a total of numCourses courses you have to take, labeled from 0 to 
+	numCourses-1. Some courses may have prerequisites, for example to take 
+	course 0 you have to first take course 1, which is expressed as a pair: 
+	[0,1]. Given the total number of courses and a list of prerequisite pairs, 
+	is it possible for you to finish all courses?
+
+	Example 1:
+	Input: numCourses = 2, prerequisites = [[1,0]]
+	Output: true
+	Explanation: There are a total of 2 courses to take. To take course 1 you 
+	             should have finished course 0. So it is possible.
+
+	Example 2:
+	Input: numCourses = 2, prerequisites = [[1,0],[0,1]]
+	Output: false
+	Explanation: There are a total of 2 courses to take. To take course 1 you 
+	             should have finished course 0, and to take course 0 you should 
+	             also have finished course 1. So it is impossible.
+	 
+
+	Constraints:
+	* The input prerequisites is a graph represented by a list of edges, not 
+	  adjacency matrices. Read more about how a graph is represented.
+	* You may assume that there are no duplicate edges in the input 
+	  prerequisites.
+	* 1 <= numCourses <= 10^5"""
+
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        #graph as adjacency list
+        digraph = dict()
+        for u, v in prerequisites: digraph.setdefault(u, []).append(v)
+            
+        def cyclic(n):
+            """Return True if cycle is detected involving given node"""
+            if seen[n]: return seen[n] == -1
+            seen[n] = -1 #GRAY
+            if any(cyclic(nn) for nn in digraph.get(n, [])): return True
+            seen[n] = 1 #BLACK
+            return False 
+            
+        seen = [0]*numCourses #WHITE
+        return not any(cyclic(i) for i in range(numCourses))
+
+
+    """209. Minimum Size Subarray Sum (Medium)
+	Given an array of n positive integers and a positive integer s, find the 
+	minimal length of a contiguous subarray of which the sum ≥ s. If there 
+	isn't one, return 0 instead.
+
+	Example: 
+	Input: s = 7, nums = [2,3,1,2,4,3]
+	Output: 2
+	Explanation: the subarray [4,3] has the minimal length under the problem 
+	             constraint.
+
+	Follow up: If you have figured out the O(n) solution, try coding another 
+	           solution of which the time complexity is O(n log n). """
+
+    def minSubArrayLen(self, s: int, nums: List[int]) -> int:
+        ans, lo = inf, 0
+        for hi in range(len(nums)):
+            s -= nums[hi]
+            while s <= 0:
+                ans = min(ans, hi - lo + 1)
+                s += nums[lo]
+                lo += 1
+        return ans if ans < inf else 0
+
+
+    """210. Course Schedule II (Medium)
+	There are a total of n courses you have to take, labeled from 0 to n-1. 
+	Some courses may have prerequisites, for example to take course 0 you have 
+	to first take course 1, which is expressed as a pair: [0,1]. Given the 
+	total number of courses and a list of prerequisite pairs, return the 
+	ordering of courses you should take to finish all courses. There may be 
+	multiple correct orders, you just need to return one of them. If it is 
+	impossible to finish all courses, return an empty array.
+
+	Example 1:
+	Input: 2, [[1,0]] 
+	Output: [0,1]
+	Explanation: There are a total of 2 courses to take. To take course 1 you 
+	             should have finished course 0. So the correct course order is 
+	             [0,1].
+
+	Example 2:
+	Input: 4, [[1,0],[2,0],[3,1],[3,2]]
+	Output: [0,1,2,3] or [0,2,1,3]
+	Explanation: There are a total of 4 courses to take. To take course 3 you 
+	             should have finished both courses 1 and 2. Both courses 1 and 
+	             2 should be taken after you finished course 0. So one correct 
+	             course order is [0,1,2,3]. Another correct ordering is [0,2,1,3] .
+
+	Note:
+	* The input prerequisites is a graph represented by a list of edges, not 
+	  adjacency matrices. Read more about how a graph is represented.
+	* You may assume that there are no duplicate edges in the input prerequisites."""
+
+    def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
+        #graph as adjacency list
+        digraph = dict()
+        for u, v in prerequisites: digraph.setdefault(u, []).append(v)
+            
+        def cyclic(n):
+            """Return True if cycle is detected involving given node"""
+            if seen[n]: return seen[n] == -1
+            seen[n] = -1 #GRAY
+            if any(cyclic(nn) for nn in digraph.get(n, []) if seen[nn] != 1): return True
+            seen[n] = 1 #BLACK
+            ans.append(n)
+            return False 
+        
+        ans = []
+        seen = [0]*numCourses #WHITE
+        return [] if any(cyclic(i) for i in range(numCourses)) else ans 
+
+
+
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -6277,3 +6415,66 @@ class BSTIterator:
         @return whether we have a next smallest number
         """
         return self.stack
+
+
+"""208. Implement Trie (Prefix Tree) (Medium)
+Implement a trie with insert, search, and startsWith methods.
+
+Example:
+Trie trie = new Trie();
+trie.insert("apple");
+trie.search("apple");   // returns true
+trie.search("app");     // returns false
+trie.startsWith("app"); // returns true
+trie.insert("app");   
+trie.search("app");     // returns true
+
+Note:
+You may assume that all inputs are consist of lowercase letters a-z.
+All inputs are guaranteed to be non-empty strings."""
+
+class TrieNode:
+    """Node on trie"""
+    def __init__(self):
+        self.data = [None]*26 #lowercase letter only
+        self.word = False     #true if a word terminates here 
+        
+
+class Trie:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.root = TrieNode()
+
+    def insert(self, word: str) -> None:
+        """
+        Inserts a word into the trie.
+        """
+        node = self.root
+        for i in (ord(x) - 97 for x in word): 
+            if not node.data[i]: node.data[i] = TrieNode()
+            node = node.data[i]
+        node.word = True
+        
+    def _traverse(self, word): 
+        """traverse the trie to find word"""
+        node = self.root
+        for i in (ord(x)-97 for x in word):
+            if not node.data[i]: return None
+            node = node.data[i]
+        return node
+        
+    def search(self, word: str) -> bool:
+        """
+        Returns if the word is in the trie.
+        """
+        node = self._traverse(word)
+        return node.word if node else False 
+        
+    def startsWith(self, prefix: str) -> bool:
+        """
+        Returns if there is any word in the trie that starts with the given prefix.
+        """
+        return self._traverse(prefix)
