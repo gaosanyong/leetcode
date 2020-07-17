@@ -6234,7 +6234,133 @@ class Solution:
         return [] if any(cyclic(i) for i in range(numCourses)) else ans 
 
 
+    """212. Word Search II (Hard)
+	Given a 2D board and a list of words from the dictionary, find all words in 
+	the board. Each word must be constructed from letters of sequentially 
+	adjacent cell, where "adjacent" cells are those horizontally or vertically 
+	neighboring. The same letter cell may not be used more than once in a word.
 
+	Example:
+	Input: 
+	board = [
+	  ['o','a','a','n'],
+	  ['e','t','a','e'],
+	  ['i','h','k','r'],
+	  ['i','f','l','v']
+	]
+	words = ["oath","pea","eat","rain"]
+
+	Output: ["eat","oath"]
+
+	Note:
+	All inputs are consist of lowercase letters a-z.
+	The values of words are distinct."""
+
+    def findWords(self, board: List[List[str]], words: List[str]) -> List[str]:
+        m, n = len(board), len(board[0])
+        
+        trie = Trie()
+        for word in words: trie.insert(word)
+            
+        def fn(i, j, node): 
+            """Populate ans through backtracking"""
+            if node.word: 
+                ans.append("".join(stack))
+                node.word = False 
+            if not (0 <= i < m and 0 <= j < n) or board[i][j] not in node.children: return 
+            stack.append(board[i][j])
+            board[i][j] = "#"
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
+                fn(ii, jj, node.children[stack[-1]])
+            board[i][j] = stack.pop()
+        
+        ans, stack = [], []
+        for i in range(m):
+            for j in range(n): 
+                fn(i, j, trie.root)
+        return ans
+
+
+    """213. House Robber II (Medium)
+	You are a professional robber planning to rob houses along a street. Each 
+	house has a certain amount of money stashed. All houses at this place are 
+	arranged in a circle. That means the first house is the neighbor of the 
+	last one. Meanwhile, adjacent houses have security system connected and it 
+	will automatically contact the police if two adjacent houses were broken 
+	into on the same night. Given a list of non-negative integers representing 
+	the amount of money of each house, determine the maximum amount of money 
+	you can rob tonight without alerting the police.
+
+	Example 1:
+	Input: [2,3,2]
+	Output: 3
+	Explanation: You cannot rob house 1 (money = 2) and then rob house 3 
+	             (money = 2), because they are adjacent houses.
+
+	Example 2:
+	Input: [1,2,3,1]
+	Output: 4
+	Explanation: Rob house 1 (money = 1) and then rob house 3 (money = 3).
+	             Total amount you can rob = 1 + 3 = 4."""
+
+    def rob(self, nums: List[int]) -> int:
+        if len(nums) == 1: return nums[0] #edge case 
+        
+        def fn(lo, hi):
+            """Return money after robbing houses[lo:hi]"""
+            f0 = f1 = 0
+            for i in range(lo, hi):
+                f0, f1 = f1, max(f1, f0 + nums[i])
+            return f1
+        
+        return max(fn(0, len(nums)-1), fn(1, len(nums)))
+
+
+    """214. Shortest Palindrome (Hard)
+	Given a string s, you are allowed to convert it to a palindrome by adding 
+	characters in front of it. Find and return the shortest palindrome you can 
+	find by performing this transformation.
+
+	Example 1:
+	Input: "aacecaaa"
+	Output: "aaacecaaa"
+
+	Example 2:
+	Input: "abcd"
+	Output: "dcbabcd" """
+
+    def shortestPalindrome(self, s: str) -> str:
+        ss = s + "#" + s[::-1]
+        lps = [0]*len(ss) #longest prefix suffix array
+        k = 0
+        for i in range(1, len(ss)):
+            while k and ss[k] != ss[i]: 
+                k = lps[k-1]
+            if ss[k] == ss[i]: k += 1
+            lps[i] = k
+        return s[k:][::-1] + s
+
+
+    """215. Kth Largest Element in an Array (Medium)
+	Find the kth largest element in an unsorted array. Note that it is the kth 
+	largest element in the sorted order, not the kth distinct element.
+
+	Example 1:
+	Input: [3,2,1,5,6,4] and k = 2
+	Output: 5
+
+	Example 2:
+	Input: [3,2,3,1,2,4,5,5,6] and k = 4
+	Output: 4
+
+	Note: You may assume k is always valid, 1 ≤ k ≤ array's length."""
+
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        h = []
+        for x in nums: 
+            heappush(h, x)
+            if len(h) > k: heappop(h)
+        return h[0]
 
 
 """146. LRU Cache (Medium)
@@ -6478,3 +6604,47 @@ class Trie:
         Returns if there is any word in the trie that starts with the given prefix.
         """
         return self._traverse(prefix)
+
+
+"""211. Add and Search Word - Data structure design (Medium)
+Design a data structure that supports the following two operations:
+void addWord(word)
+bool search(word)
+
+search(word) can search a literal word or a regular expression string 
+containing only letters a-z or .. A . means it can represent any one letter.
+
+Example:
+addWord("bad")
+addWord("dad")
+addWord("mad")
+search("pad") -> false
+search("bad") -> true
+search(".ad") -> true
+search("b..") -> true
+
+Note: You may assume that all words are consist of lowercase letters a-z."""
+
+class WordDictionary:
+
+    def __init__(self):
+        self.root = {}
+
+    def addWord(self, word: str) -> None:
+        node = self.root
+        for letter in word:
+            node = node.setdefault(letter, {})
+        node["#"] = True #sentinel 
+
+    def search(self, word: str) -> bool:
+        
+        def fn(node, i): 
+            """Return True if word[i:] is found at trie rooted at n"""
+            if not node: return False 
+            if i == len(word): return node.get("#", False)
+            if word[i] == ".": 
+                return any(fn(node[k], i+1) for k in node if k != "#")
+            else: 
+                return fn(node.get(word[i]), i+1)
+        
+        return fn(self.root, 0)
