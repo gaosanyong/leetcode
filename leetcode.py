@@ -6269,7 +6269,7 @@ class Solution:
                 node.word = False 
             if not (0 <= i < m and 0 <= j < n) or board[i][j] not in node.children: return 
             stack.append(board[i][j])
-            board[i][j] = "#"
+            board[i][j] = "#" #mark as visited
             for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
                 fn(ii, jj, node.children[stack[-1]])
             board[i][j] = stack.pop()
@@ -6361,6 +6361,165 @@ class Solution:
             heappush(h, x)
             if len(h) > k: heappop(h)
         return h[0]
+
+
+    """216. Combination Sum III (Medium)
+	Find all possible combinations of k numbers that add up to a number n, 
+	given that only numbers from 1 to 9 can be used and each combination should 
+	be a unique set of numbers.
+
+	Note: All numbers will be positive integers. The solution set must not 
+	contain duplicate combinations.
+
+	Example 1:
+	Input: k = 3, n = 7
+	Output: [[1,2,4]]
+
+	Example 2:
+	Input: k = 3, n = 9
+	Output: [[1,2,6], [1,3,5], [2,3,4]]"""
+
+    def combinationSum3(self, k: int, n: int) -> List[List[int]]:
+        
+        def fn(n, i=1):
+            """Populate ans with a stack."""
+            if n == 0 and len(stack) == k: return ans.append(stack.copy())
+            if n < 0 or len(stack) == k: return 
+            for nn in range(i, 10):
+                stack.append(nn)
+                fn(n-nn, nn+1)
+                stack.pop()
+            
+        ans, stack = [], []
+        fn(n)
+        return ans 
+
+
+    """217. Contains Duplicate (Easy)
+	Given an array of integers, find if the array contains any duplicates. Your 
+	function should return true if any value appears at least twice in the 
+	array, and it should return false if every element is distinct.
+
+	Example 1:
+	Input: [1,2,3,1]
+	Output: true
+
+	Example 2:
+	Input: [1,2,3,4]
+	Output: false
+
+	Example 3:
+	Input: [1,1,1,3,3,4,3,2,4,2]
+	Output: true"""
+
+    def containsDuplicate(self, nums: List[int]) -> bool:
+        return len(nums) != len(set(nums))
+
+
+    """218. The Skyline Problem (Hard)
+	A city's skyline is the outer contour of the silhouette formed by all the 
+	buildings in that city when viewed from a distance. Now suppose you are 
+	given the locations and height of all the buildings as shown on a cityscape 
+	photo (Figure A), write a program to output the skyline formed by these 
+	buildings collectively (Figure B).
+
+	Buildings Skyline Contour
+	The geometric information of each building is represented by a triplet of 
+	integers [Li, Ri, Hi], where Li and Ri are the x coordinates of the left 
+	and right edge of the ith building, respectively, and Hi is its height. It 
+	is guaranteed that 0 ≤ Li, Ri ≤ INT_MAX, 0 < Hi ≤ INT_MAX, and Ri - Li > 0. 
+	You may assume all buildings are perfect rectangles grounded on an 
+	absolutely flat surface at height 0. For instance, the dimensions of all 
+	buildings in Figure A are recorded as: [ [2 9 10], [3 7 15], [5 12 12], 
+	[15 20 10], [19 24 8] ]. The output is a list of "key points" (red dots in 
+	Figure B) in the format of [ [x1,y1], [x2, y2], [x3, y3], ... ] that 
+	uniquely defines a skyline. A key point is the left endpoint of a 
+	horizontal line segment. Note that the last key point, where the rightmost 
+	building ends, is merely used to mark the termination of the skyline, and 
+	always has zero height. Also, the ground in between any two adjacent 
+	buildings should be considered part of the skyline contour. For instance, 
+	the skyline in Figure B should be represented as:[ [2 10], [3 15], [7 12], 
+	[12 0], [15 10], [20 8], [24, 0] ].
+
+	Notes:
+	The number of buildings in any input list is guaranteed to be in the range 
+	[0, 10000]. The input list is already sorted in ascending order by the left 
+	x position Li. The output list must be sorted by the x position. There must 
+	be no consecutive horizontal lines of equal height in the output skyline. 
+	For instance, [...[2 3], [4 5], [7 5], [11 5], [12 7]...] is not acceptable; 
+	the three lines of height 5 should be merged into one in the final output as 
+	such: [...[2 3], [4 5], [12 7], ...]"""
+
+    def getSkyline(self, buildings: List[List[int]]) -> List[List[int]]:
+        ans, hp = [], [] #front of heap => current height 
+        buildings.append([inf, inf, 0]) #trick
+        for li, ri, hi in buildings:
+            #down-slope
+            while hp and -hp[0][1] < li:                  #current height cannot reach li
+                _, rj = heappop(hp)                       #current height ends at rj
+                while hp and -hp[0][1] <= -rj: heappop(hp) #useless height ends earlier than rj
+                hj = hp[0][0] if hp else 0                #next height
+                ans.append((-rj, -hj))
+            #up-slope 
+            if hi > 0 and (not hp or -hp[0][0] < hi):     #new height higher than current height
+                if ans and ans[-1][0] == li: ans.pop()    #same left => update in-place 
+                ans.append([li, hi])
+            heappush(hp, (-hi, -ri))
+        return ans 
+
+
+    """219. Contains Duplicate II (Easy)
+	Given an array of integers and an integer k, find out whether there are two 
+	distinct indices i and j in the array such that nums[i] = nums[j] and the 
+	absolute difference between i and j is at most k.
+
+	Example 1:
+	Input: nums = [1,2,3,1], k = 3
+	Output: true
+
+	Example 2:
+	Input: nums = [1,0,1,1], k = 1
+	Output: true
+
+	Example 3:
+	Input: nums = [1,2,3,1,2,3], k = 2
+	Output: false"""
+
+    def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
+        seen = dict()
+        for i, x in enumerate(nums):
+            if x in seen and i - seen[x] <= k: return True 
+            seen[x] = i
+        return False 
+
+
+    """220. Contains Duplicate III (Medium)
+	Given an array of integers, find out whether there are two distinct indices 
+	i and j in the array such that the absolute difference between nums[i] and 
+	nums[j] is at most t and the absolute difference between i and j is at most 
+	k.
+
+	Example 1:
+	Input: nums = [1,2,3,1], k = 3, t = 0
+	Output: true
+
+	Example 2:
+	Input: nums = [1,0,1,1], k = 1, t = 2
+	Output: true
+
+	Example 3:
+	Input: nums = [1,5,9,1,5,9], k = 2, t = 3
+	Output: false"""
+
+    def containsNearbyAlmostDuplicate(self, nums: List[int], k: int, t: int) -> bool:
+        if t < 0: return False #edge case 
+        seen = dict()
+        for i in range(len(nums)):
+            bkt = nums[i]//(t + 1) #bucket 
+            if any(bkt+ii in seen and abs(nums[i]-seen[bkt+ii]) <= t for ii in (-1, 0, 1)): return True 
+            seen[bkt] = nums[i]
+            if i >= k: seen.pop(nums[i-k]//(t+1)) #memory of length k
+        return False 
 
 
 """146. LRU Cache (Medium)
