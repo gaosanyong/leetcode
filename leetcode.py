@@ -6522,6 +6522,125 @@ class Solution:
         return False 
 
 
+    """221. Maximal Square (Medium)
+	Given a 2D binary matrix filled with 0's and 1's, find the largest square 
+	containing only 1's and return its area.
+
+	Example:
+	Input: 
+	1 0 1 0 0
+	1 0 1 1 1
+	1 1 1 1 1
+	1 0 0 1 0
+	Output: 4"""
+
+    def maximalSquare(self, matrix: List[List[str]]) -> int:
+        
+        @lru_cache(None)
+        def fn(i, j):
+            """Return the length of max square ending at (i, j)."""
+            if i < 0 or j < 0 or matrix[i][j] == "0": return 0
+            return 1 + min(fn(i-1, j-1), fn(i-1, j), fn(i, j-1))
+        
+        return max((fn(i, j) for i in range(len(matrix)) for j in range(len(matrix[0]))), default=0)**2
+
+
+    """222. Count Complete Tree Nodes (Medium)
+	Given a complete binary tree, count the number of nodes. Note the 
+	definition of a complete binary tree from Wikipedia: in a complete binary
+	tree every level, except possibly the last, is completely filled, and all 
+	nodes in the last level are as far left as possible. It can have between 1 
+	and 2h nodes inclusive at the last level h.
+
+	Example:
+	Input: 
+	    1
+	   / \
+	  2   3
+	 / \  /
+	4  5 6
+	Output: 6"""
+
+    def countNodes(self, root: TreeNode) -> int:
+        
+        def ht(node):
+            """Return height of given node."""
+            n = 0
+            while node: n, node = n+1, node.left
+            return n
+        
+        def fn(node):
+            """Return number of nodes in the tree rooted at given node."""
+            if not node: return 0
+            h = ht(node.left)
+            if h == ht(node.right): return 2**h + fn(node.right)
+            else: return 2**(h-1) + fn(node.left)
+            
+        return fn(root)
+
+
+    """223. Rectangle Area (Medium)
+	Find the total area covered by two rectilinear rectangles in a 2D plane. 
+	Each rectangle is defined by its bottom left corner and top right corner as 
+	shown in the figure.
+
+	Example:
+	Input: A = -3, B = 0, C = 3, D = 4, E = 0, F = -1, G = 9, H = 2
+	Output: 45
+
+	Note: Assume that the total area is never beyond the maximum possible value 
+	of int."""
+
+    def computeArea(self, A: int, B: int, C: int, D: int, E: int, F: int, G: int, H: int) -> int:
+        area1 = (C-A) * (D-B)
+        area2 = (G-E) * (H-F)
+        overlap = max(0, min(C, G) - max(A, E)) * max(0, min(D, H) - max(B, F))
+        return area1 + area2 - overlap
+
+
+    """224. Basic Calculator (Hard)
+	Implement a basic calculator to evaluate a simple expression string. The 
+	expression string may contain open ( and closing parentheses ), the plus + 
+	or minus sign -, non-negative integers and empty spaces .
+
+	Example 1:
+	Input: "1 + 1"
+	Output: 2
+
+	Example 2:
+	Input: " 2-1 + 2 "
+	Output: 3
+
+	Example 3:
+	Input: "(1+(4+5+2)-3)+(6+8)"
+	Output: 23
+
+	Note:
+	You may assume that the given expression is always valid.
+	Do not use the eval built-in library function."""
+
+    def calculate(self, s: str) -> int:
+        ans, sign, val = 0, 1, 0
+        stack = []
+        for c in s:
+            if c.isdigit():
+                val = 10*val + int(c)
+            elif c in "+-":
+                ans += sign * val
+                sign = 1 if c == "+" else -1
+                val = 0
+            elif c == "(":
+                stack.append(ans)
+                stack.append(sign)
+                ans, sign = 0, 1
+            elif c == ")":
+                ans += sign * val
+                ans *= stack.pop()
+                ans += stack.pop()
+                sign, val = 1, 0
+        return ans + sign * val 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -6593,7 +6712,6 @@ class LRUCache:
             self._del(self.head.next.key)
 
 
-
 """155. Min Stack (Easy)
 Design a stack that supports push, pop, top, and retrieving the minimum element 
 in constant time.
@@ -6646,8 +6764,6 @@ class MinStack:
         
     def getMin(self) -> int:
         return self.min[-1]
-
-
 
 
 """173. Binary Search Tree Iterator (Medium)
@@ -6807,3 +6923,64 @@ class WordDictionary:
                 return fn(node.get(word[i]), i+1)
         
         return fn(self.root, 0)
+
+
+
+"""225. Implement Stack using Queues (Easy)
+Implement the following operations of a stack using queues.
+
+push(x) -- Push element x onto stack.
+pop()   -- Removes the element on top of the stack.
+top()   -- Get the top element.
+empty() -- Return whether the stack is empty.
+
+Example:
+MyStack stack = new MyStack();
+
+stack.push(1);
+stack.push(2);  
+stack.top();   // returns 2
+stack.pop();   // returns 2
+stack.empty(); // returns false
+
+Notes:
+You must use only standard operations of a queue -- which means only push to 
+back, peek/pop from front, size, and is empty operations are valid. Depending 
+on your language, queue may not be supported natively. You may simulate a queue 
+by using a list or deque (double-ended queue), as long as you use only standard 
+operations of a queue. You may assume that all operations are valid (for 
+example, no pop or top operations will be called on an empty stack)."""
+
+class MyStack:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.queue = deque()
+
+    def push(self, x: int) -> None:
+        """
+        Push element x onto stack.
+        """
+        self.queue.append(x)
+        for _ in range(len(self.queue)-1):
+            self.queue.append(self.queue.popleft())
+
+    def pop(self) -> int:
+        """
+        Removes the element on top of the stack and returns that element.
+        """
+        return self.queue.popleft()
+
+    def top(self) -> int:
+        """
+        Get the top element.
+        """
+        return self.queue[0] 
+
+    def empty(self) -> bool:
+        """
+        Returns whether the stack is empty.
+        """
+        return not self.queue 
