@@ -6641,6 +6641,168 @@ class Solution:
         return ans + sign * val 
 
 
+    """226. Invert Binary Tree (Easy)
+	Invert a binary tree.
+
+	Example:
+	Input:
+	     4
+	   /   \
+	  2     7
+	 / \   / \
+	1   3 6   9
+
+	Output:
+
+	     4
+	   /   \
+	  7     2
+	 / \   / \
+	9   6 3   1
+	
+	Trivia: This problem was inspired by this original tweet by Max Howell:
+	Google: 90% of our engineers use the software you wrote (Homebrew), but you 
+	can’t invert a binary tree on a whiteboard so f*** off."""
+
+    def invertTree(self, root: TreeNode) -> TreeNode:
+        
+        def fn(node):
+            """Return root of tree that is inverted"""
+            if not node: return 
+            node.left, node.right = fn(node.right), fn(node.left)
+            return node 
+        
+        return fn(root)
+
+
+    """227. Basic Calculator II (Medium)
+	Implement a basic calculator to evaluate a simple expression string. The 
+	expression string contains only non-negative integers, +, -, *, / operators 
+	and empty spaces . The integer division should truncate toward zero.
+
+	Example 1:
+	Input: "3+2*2"
+	Output: 7
+
+	Example 2:
+	Input: " 3/2 "
+	Output: 1
+
+	Example 3:
+	Input: " 3+5 / 2 "
+	Output: 5
+
+	Note:
+	You may assume that the given expression is always valid. Do not use the 
+	eval built-in library function."""
+
+    def calculate(self, s: str) -> int:
+        op, val = "+", 0
+        stack = []
+        for i, c in enumerate(s): 
+            if c.isdigit(): val = 10*val + int(c)
+            if i == len(s) - 1 or c in "+-*/": 
+                if   op == "+": stack.append(val)
+                elif op == "-": stack.append(-val)
+                elif op == "*": stack.append(stack.pop()*val)
+                elif op == "/": stack.append(int(stack.pop()/val))
+                op, val = c, 0
+        return sum(stack)
+
+
+    """228. Summary Ranges (Medium)
+	Given a sorted integer array without duplicates, return the summary of its 
+	ranges.
+
+	Example 1:
+	Input:  [0,1,2,4,5,7]
+	Output: ["0->2","4->5","7"]
+	Explanation: 0,1,2 form a continuous range; 4,5 form a continuous range.
+
+	Example 2:
+	Input:  [0,2,3,4,6,8,9]
+	Output: ["0","2->4","6","8->9"]
+	Explanation: 2,3,4 form a continuous range; 8,9 form a continuous range."""
+
+    def summaryRanges(self, nums: List[int]) -> List[str]:
+        ans = []
+        for i, x in enumerate(nums):
+            if not i or nums[i-1]+1 != x: val = [x] #start of a range
+            if i == len(nums)-1 or x+1 != nums[i+1]: 
+                if val[-1] != x: val.append(x) #end of a range
+                ans.append(val)
+        return ["->".join(map(str, x)) for x in ans]
+
+
+    """229. Majority Element II (Medium)
+	Given an integer array of size n, find all elements that appear more than 
+	⌊ n/3 ⌋ times. Note: The algorithm should run in linear time and in O(1) 
+	space.
+
+	Example 1:
+	Input: [3,2,3]
+	Output: [3]
+
+	Example 2:
+	Input: [1,1,1,3,3,2,2,2]
+	Output: [1,2]"""
+
+    def majorityElement(self, nums: List[int]) -> List[int]:
+        ans, vote = [0]*2, [0]*2
+        for x in nums:
+            if   x == ans[0]: vote[0] += 1
+            elif x == ans[1]: vote[1] += 1
+            elif vote[0] == 0: ans[0], vote[0] = x, 1
+            elif vote[1] == 0: ans[1], vote[1] = x, 1
+            else: vote = [x - 1 for x in vote]
+        return [x for x in set(ans) if nums.count(x) > len(nums)//3]
+
+
+    """230. Kth Smallest Element in a BST (Medium)
+	Given a binary search tree, write a function kthSmallest to find the kth 
+	smallest element in it.
+
+	Example 1:
+	Input: root = [3,1,4,null,2], k = 1
+	   3
+	  / \
+	 1   4
+	  \
+	   2
+	Output: 1
+
+	Example 2:
+	Input: root = [5,3,6,2,4,null,null,1], k = 3
+	       5
+	      / \
+	     3   6
+	    / \
+	   2   4
+	  /
+	 1
+	Output: 3
+
+	Follow up: What if the BST is modified (insert/delete operations) often and 
+	you need to find the kth smallest frequently? How would you optimize the 
+	kth Smallest routine?
+
+	Constraints:
+	The number of elements of the BST is between 1 to 10^4.
+	You may assume k is always valid, 1 ≤ k ≤ BST's total elements."""
+
+    def kthSmallest(self, root: TreeNode, k: int) -> int:
+        node = root
+        stack = []
+        while node or stack:
+            if node:
+                stack.append(node)
+                node = node.left
+                continue
+            node = stack.pop()
+            if not (k := k-1): break
+            node = node.right
+        return node.val 
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
