@@ -7144,6 +7144,77 @@ class Solution:
         return all(v == 0 for v in freq)
 
 
+    """257. Binary Tree Paths (Easy)
+	Given a binary tree, return all root-to-leaf paths.
+
+	Note: A leaf is a node with no children.
+
+	Example:
+	Input:
+
+	   1
+	 /   \
+	2     3
+	 \
+	  5
+	Output: ["1->2->5", "1->3"]
+
+	Explanation: All root-to-leaf paths are: 1->2->5, 1->3"""
+
+    def binaryTreePaths(self, root: TreeNode) -> List[str]:
+        
+        def fn(node):
+            """Populate ans with a stack via backtracking."""
+            if not node: return #null node
+            stack.append(node.val)
+            if node.left is node.right: ans.append("->".join(map(str, stack))) #leaf node
+            fn(node.left) or fn(node.right)
+            stack.pop()
+            
+        ans, stack = [], []
+        fn(root)
+        return ans 
+
+
+    """258. Add Digits (Easy)
+	Given a non-negative integer num, repeatedly add all its digits until the 
+	result has only one digit.
+
+	Example:
+	Input: 38
+	Output: 2 
+	Explanation: The process is like: 3 + 8 = 11, 1 + 1 = 2. 
+	             Since 2 has only one digit, return it.
+
+	Follow up: Could you do it without any loop/recursion in O(1) runtime?"""
+
+    def addDigits(self, num: int) -> int:
+        return num and 1 + (num - 1) % 9
+
+
+    """260. Single Number III (Medium)
+	Given an array of numbers nums, in which exactly two elements appear only 
+	once and all the other elements appear exactly twice. Find the two elements 
+	that appear only once.
+
+	Example:
+	Input:  [1,2,1,3,2,5]
+	Output: [3,5]
+
+	Note:
+	The order of the result is not important. So in the above example, [5, 3] 
+	is also correct. Your algorithm should run in linear runtime complexity. 
+	Could you implement it using only constant space complexity?"""
+
+    def singleNumber(self, nums: List[int]) -> List[int]:
+        diff = reduce(xor, nums)
+        diff &= -diff 
+        ans = [0]*2
+        for x in nums:
+            ans[bool(diff & x)] ^= x
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
