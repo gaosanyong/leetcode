@@ -7077,6 +7077,73 @@ class Solution:
             else: j -= 1
         return False 
 
+
+    """241. Different Ways to Add Parentheses (Medium)
+	Given a string of numbers and operators, return all possible results from 
+	computing all the different possible ways to group numbers and operators. 
+	The valid operators are +, - and *.
+
+	Example 1:
+	Input: "2-1-1"
+	Output: [0, 2]
+	Explanation: 
+	((2-1)-1) = 0 
+	(2-(1-1)) = 2
+
+	Example 2:
+	Input: "2*3-4*5"
+	Output: [-34, -14, -10, -10, 10]
+	Explanation: 
+	(2*(3-(4*5))) = -34 
+	((2*3)-(4*5)) = -14 
+	((2*(3-4))*5) = -10 
+	(2*((3-4)*5)) = -10 
+	(((2*3)-4)*5) = 10"""
+
+    def diffWaysToCompute(self, input: str) -> List[int]:
+        #pre-processing to tokenize input 
+        tokens = re.split(r'(\D)', input)
+        mp = {"+": add, "-": sub, "*": mul}
+        for i, token in enumerate(tokens):
+            if token.isdigit(): tokens[i] = int(token)
+            else: tokens[i] = mp[token]
+        
+        def fn(lo, hi): 
+            """Return possible outcomes of tokens[lo:hi]"""
+            if lo+1 == hi: return [tokens[lo]]
+            ans = []
+            for mid in range(lo+1, hi, 2): 
+                ans.extend(tokens[mid](x, y) for x in fn(lo, mid) for y in fn(mid+1, hi))
+            return ans
+        
+        return fn(0, len(tokens))
+
+
+
+    """242. Valid Anagram (Easy)
+	Given two strings s and t , write a function to determine if t is an 
+	anagram of s.
+
+	Example 1:
+	Input: s = "anagram", t = "nagaram"
+	Output: true
+
+	Example 2:
+	Input: s = "rat", t = "car"
+	Output: false
+
+	Note: You may assume the string contains only lowercase alphabets.
+
+	Follow up: What if the inputs contain unicode characters? How would you 
+	           adapt your solution to such case?"""
+    
+    def isAnagram(self, s: str, t: str) -> bool:
+        freq = [0]*26
+        for c in s: freq[ord(c)-97] += 1
+        for c in t: freq[ord(c)-97] -= 1
+        return all(v == 0 for v in freq)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
