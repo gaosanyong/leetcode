@@ -10,7 +10,7 @@ from math import inf, sqrt
 from operator import gt, lt, xor
 
 class Solution:
-
+=
 	"""1. Two Sum (Easy)
 	Given an array of integers, return indices of the two numbers such that 
 	they add up to a specific target. You may assume that each input would have 
@@ -6914,6 +6914,169 @@ class Solution:
             else: return node
 
 
+    """236. Lowest Common Ancestor of a Binary Tree (Medium)
+	Given a binary tree, find the lowest common ancestor (LCA) of two given 
+	nodes in the tree. According to the definition of LCA on Wikipedia: “The 
+	lowest common ancestor is defined between two nodes p and q as the lowest 
+	node in T that has both p and q as descendants (where we allow a node to be 
+	a descendant of itself).” Given the following binary tree:  
+
+	root = [3,5,1,6,2,0,8,null,null,7,4]
+
+	Example 1:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+	Output: 3
+	Explanation: The LCA of nodes 5 and 1 is 3.
+
+	Example 2:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+	Output: 5
+	Explanation: The LCA of nodes 5 and 4 is 5, since a node can be a 
+	             descendant of itself according to the LCA definition.
+
+	Note:
+	All of the nodes' values will be unique.
+	p and q are different and both values will exist in the binary tree."""
+
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        
+        def fn(node): 
+            """Return LCA of p and q in the tree rooted at node."""
+            if not node or node in (p, q): return node
+            left, right = fn(node.left), fn(node.right)
+            return node if left and right else left or right
+        
+        return fn(root)
+
+
+    """237. Delete Node in a Linked List (Easy)
+	Write a function to delete a node (except the tail) in a singly linked 
+	list, given only access to that node. Given linked list -- 
+	head = [4,5,1,9], which looks like following:
+
+    4 -> 5 -> 1 -> 9
+
+	Example 1:
+	Input: head = [4,5,1,9], node = 5
+	Output: [4,1,9]
+	Explanation: You are given the second node with value 5, the linked list 
+	should become 4 -> 1 -> 9 after calling your function.
+
+	Example 2:
+	Input: head = [4,5,1,9], node = 1
+	Output: [4,5,9]
+	Explanation: You are given the third node with value 1, the linked list 
+	should become 4 -> 5 -> 9 after calling your function.
+
+	Note:
+	* The linked list will have at least two elements.
+	* All of the nodes' values will be unique.
+	* The given node will not be the tail and it will always be a valid node of
+	  the linked list.
+	* Do not return anything from your function."""
+
+    def deleteNode(self, node):
+        node.val = node.next.val 
+        node.next = node.next.next 
+
+
+    """238. Product of Array Except Self (Medium)
+	Given an array nums of n integers where n > 1,  return an array output 
+	such that output[i] is equal to the product of all the elements of nums 
+	except nums[i].
+
+	Example:
+	Input:  [1,2,3,4]
+	Output: [24,12,8,6]
+
+	Constraint: 
+	It's guaranteed that the product of the elements of any prefix or suffix of 
+	the array (including the whole array) fits in a 32 bit integer.
+
+	Note: Please solve it without division and in O(n).
+
+	Follow up:
+	Could you solve it with constant space complexity? (The output array does 
+	not count as extra space for the purpose of space complexity analysis.)"""
+
+    def productExceptSelf(self, nums: List[int]) -> List[int]:
+        ans = [1] * len(nums)
+        prefix = suffix = 1
+        for i in range(len(nums)):
+            ans[i] *= prefix 
+            prefix *= nums[i]
+            ans[~i] *= suffix 
+            suffix *= nums[~i]
+        return ans 
+
+
+    """239. Sliding Window Maximum (Hard)
+	Given an array nums, there is a sliding window of size k which is moving 
+	from the very left of the array to the very right. You can only see the k 
+	numbers in the window. Each time the sliding window moves right by one 
+	position. Return the max sliding window.
+
+	Follow up: Could you solve it in linear time?
+
+	Example:
+	Input: nums = [1,3,-1,-3,5,3,6,7], and k = 3
+	Output: [3,3,5,5,6,7] 
+	Explanation: 
+
+	Window position                Max
+	---------------               -----
+	[1  3  -1] -3  5  3  6  7       3
+	 1 [3  -1  -3] 5  3  6  7       3
+	 1  3 [-1  -3  5] 3  6  7       5
+	 1  3  -1 [-3  5  3] 6  7       5
+	 1  3  -1  -3 [5  3  6] 7       6
+	 1  3  -1  -3  5 [3  6  7]      7
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* -10^4 <= nums[i] <= 10^4
+	* 1 <= k <= nums.length"""
+
+    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+        ans = []
+        queue = deque() #decreasing queue 
+        for i, x in enumerate(nums): 
+            while queue and queue[-1][1] <= x: queue.pop() #remove redundant 
+            queue.append((i, x))
+            if queue and queue[0][0] <= i-k: queue.popleft() #remove expired 
+            if i+1 >= k: ans.append(queue[0][1])
+        return ans 
+
+
+    """240. Search a 2D Matrix II (Medium)
+	Write an efficient algorithm that searches for a value in an m x n matrix. 
+	This matrix has the following properties:
+	* Integers in each row are sorted in ascending from left to right.
+	* Integers in each column are sorted in ascending from top to bottom.
+
+	Example:
+	Consider the following matrix:
+
+	[
+	  [1,   4,  7, 11, 15],
+	  [2,   5,  8, 12, 19],
+	  [3,   6,  9, 16, 22],
+	  [10, 13, 14, 17, 24],
+	  [18, 21, 23, 26, 30]
+	]
+	Given target = 5, return true. Given target = 20, return false."""
+
+    def searchMatrix(self, matrix, target):
+        if not matrix: return False #edge caes 
+        
+        m, n = len(matrix), len(matrix[0])
+        i, j = 0, n-1
+        while i < m and 0 <= j: 
+            if matrix[i][j] == target: return True 
+            elif matrix[i][j] < target: i += 1
+            else: j -= 1
+        return False 
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -7196,7 +7359,6 @@ class WordDictionary:
                 return fn(node.get(word[i]), i+1)
         
         return fn(self.root, 0)
-
 
 
 """225. Implement Stack using Queues (Easy)
