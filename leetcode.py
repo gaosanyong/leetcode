@@ -6803,6 +6803,117 @@ class Solution:
             node = node.right
         return node.val 
 
+
+    """231. Power of Two (Easy)
+	Given an integer, write a function to determine if it is a power of two.
+
+	Example 1:
+	Input: 1
+	Output: true 
+	Explanation: 20 = 1
+
+	Example 2:
+	Input: 16
+	Output: true
+	Explanation: 24 = 16
+
+	Example 3:
+	Input: 218
+	Output: false"""
+
+    def isPowerOfTwo(self, n: int) -> bool:
+        return n > 0 and n & (n-1) == 0
+
+
+    """233. Number of Digit One (Hard)
+	Given an integer n, count the total number of digit 1 appearing in all non-
+	negative integers less than or equal to n.
+
+	Example:
+	Input: 13
+	Output: 6 
+
+	Explanation: Digit 1 occurred in the following numbers: 1, 10, 11, 12, 13."""
+
+    def countDigitOne(self, n: int) -> int:
+        if n < 0: return 0 #edge case 
+        
+        ans = digit = tail = 0
+        magn = 1 #magnitude 
+        while n: 
+            tail = digit * magn//10 + tail #move digit to tail 
+            n, digit = divmod(n, 10) #seprate digit from head 
+            
+            ans += n * magn
+            if digit > 1: ans += magn
+            elif digit == 1: ans += tail + 1 #tail + 1 considering 000...
+                
+            magn *= 10
+        return ans 
+
+
+    """234. Palindrome Linked List (Easy)
+	Given a singly linked list, determine if it is a palindrome.
+
+	Example 1:
+	Input: 1->2
+	Output: false
+
+	Example 2:
+	Input: 1->2->2->1
+	Output: true
+
+	Follow up: Could you do it in O(n) time and O(1) space?"""
+
+    def isPalindrome(self, head: ListNode) -> bool:
+        fast = slow = head
+        while fast and fast.next:
+            fast = fast.next.next
+            slow = slow.next 
+            
+        prev = None
+        while slow: slow.next, slow, prev = prev, slow.next, slow
+        
+        while prev and head.val == prev.val: 
+            head = head.next
+            prev = prev.next 
+        
+        return not prev 
+
+
+    """235. Lowest Common Ancestor of a Binary Search Tree (Easy)
+	Given a binary search tree (BST), find the lowest common ancestor (LCA) of 
+	two given nodes in the BST. According to the definition of LCA on 
+	Wikipedia: "The lowest common ancestor is defined between two nodes p and q 
+	as the lowest node in T that has both p and q as descendants (where we 
+	allow a node to be a descendant of itself)."
+
+	Given binary search tree:  root = [6,2,8,0,4,7,9,null,null,3,5]
+
+	Example 1:
+	Input: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
+	Output: 6
+	Explanation: The LCA of nodes 2 and 8 is 6.
+
+	Example 2:
+	Input: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4
+	Output: 2
+	Explanation: The LCA of nodes 2 and 4 is 2, since a node can be a 
+	descendant of itself according to the LCA definition.
+
+	Constraints:
+	All of the nodes' values will be unique.
+	p and q are different and both values will exist in the BST."""
+
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        if p.val > q.val: p, q = q, p #p always smaller
+        node = root
+        while node: 
+            if q.val < node.val: node = node.left
+            elif node.val < p.val: node = node.right 
+            else: return node
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -7146,3 +7257,51 @@ class MyStack:
         Returns whether the stack is empty.
         """
         return not self.queue 
+
+
+"""232. Implement Queue using Stacks (Easy)
+Implement the following operations of a queue using stacks.
+push(x) -- Push element x to the back of queue.
+pop()   -- Removes the element from in front of queue.
+peek()  -- Get the front element.
+empty() -- Return whether the queue is empty.
+
+Example:
+MyQueue queue = new MyQueue();
+queue.push(1);
+queue.push(2);  
+queue.peek();  // returns 1
+queue.pop();   // returns 1
+queue.empty(); // returns false
+
+Notes:
+You must use only standard operations of a stack -- which means only push to 
+top, peek/pop from top, size, and is empty operations are valid. Depending on 
+your language, stack may not be supported natively. You may simulate a stack by 
+using a list or deque (double-ended queue), as long as you use only standard 
+operations of a stack. You may assume that all operations are valid (for 
+example, no pop or peek operations will be called on an empty queue)."""
+
+class MyQueue:
+
+    def __init__(self):
+        self.in_ = [] #in stack 
+        self.out = [] #out stack
+
+    def push(self, x: int) -> None:
+        self.in_.append(x)
+        
+    def _move(self) -> None: 
+        if not self.out:
+            while self.in_: self.out.append(self.in_.pop())
+
+    def pop(self) -> int:
+        self._move()
+        return self.out.pop()
+
+    def peek(self) -> int:
+        self._move()
+        return self.out[-1]
+
+    def empty(self) -> bool:
+        return not self.in_ and not self.out
