@@ -7292,6 +7292,113 @@ class Solution:
         return reduce(xor, (i^x for i, x in enumerate(nums, 1)))
 
 
+    """273. Integer to English Words (Hard)
+	Convert a non-negative integer to its english words representation. Given 
+	input is guaranteed to be less than 231 - 1.
+
+	Example 1:
+	Input: 123
+	Output: "One Hundred Twenty Three"
+
+	Example 2:
+	Input: 12345
+	Output: "Twelve Thousand Three Hundred Forty Five"
+
+	Example 3:
+	Input: 1234567
+	Output: "One Million Two Hundred Thirty Four Thousand Five Hundred Sixty 
+	        Seven"
+
+	Example 4:
+	Input: 1234567891
+	Output: "One Billion Two Hundred Thirty Four Million Five Hundred Sixty 
+	        Seven Thousand Eight Hundred Ninety One" """
+
+    def numberToWords(self, num: int) -> str:
+        mp = {1: "One",   11: "Eleven",    10: "Ten", 
+              2: "Two",   12: "Twelve",    20: "Twenty", 
+              3: "Three", 13: "Thirteen",  30: "Thirty", 
+              4: "Four",  14: "Fourteen",  40: "Forty",
+              5: "Five",  15: "Fifteen",   50: "Fifty", 
+              6: "Six",   16: "Sixteen",   60: "Sixty", 
+              7: "Seven", 17: "Seventeen", 70: "Seventy", 
+              8: "Eight", 18: "Eighteen",  80: "Eighty",
+              9: "Nine",  19: "Nineteen",  90: "Ninety"}
+        
+        def fn(n):
+            """Return English words of n (0-999) in array."""
+            if not n: return []
+            elif n < 20: return [mp[n]]
+            elif n < 100: return [mp[n//10*10]] + fn(n%10)
+            else: return [mp[n//100], "Hundred"] + fn(n%100)
+        
+        ans = []
+        for i, unit in zip((9, 6, 3, 0), ("Billion", "Million", "Thousand", "")): 
+            n, num = divmod(num, 10**i)
+            ans.extend(fn(n))
+            if n and unit: ans.append(unit)
+        return " ".join(ans) or "Zero"
+
+
+    """274. H-Index (Medium)
+	Given an array of citations (each citation is a non-negative integer) of a 
+	researcher, write a function to compute the researcher's h-index. According 
+	to the definition of h-index on Wikipedia: "A scientist has index h if h of 
+	his/her N papers have at least h citations each, and the other N − h papers 
+	have no more than h citations each."
+
+	Example:
+	Input: citations = [3,0,6,1,5]
+	Output: 3 
+	Explanation: [3,0,6,1,5] means the researcher has 5 papers in total and 
+	             each of them had received 3, 0, 6, 1, 5 citations respectively. 
+	             Since the researcher has 3 papers with at least 3 citations 
+	             each and the remaining two with no more than 3 citations each, 
+	             her h-index is 3.
+
+	Note: If there are several possible values for h, the maximum one is taken 
+	      as the h-index."""
+
+    def hIndex(self, citations: List[int]) -> int:
+        citations.sort(reverse=True)
+        arr = [i-c for i, c in enumerate(citations, 1)]
+        return bisect_right(arr, 0) #right-most occurrence of i <= c
+
+
+    """275. H-Index II (Medium)
+	Given an array of citations sorted in ascending order (each citation is a 
+	non-negative integer) of a researcher, write a function to compute the 
+	researcher's h-index. According to the definition of h-index on Wikipedia: 
+	"A scientist has index h if h of his/her N papers have at least h citations 
+	each, and the other N − h papers have no more than h citations each."
+
+	Example:
+	Input: citations = [0,1,3,5,6]
+	Output: 3 
+	Explanation: [0,1,3,5,6] means the researcher has 5 papers in total and 
+	             each of them had received 0, 1, 3, 5, 6 citations respectively. 
+	             Since the researcher has 3 papers with at least 3 citations 
+	             each and the remaining two with no more than 3 citations each, 
+	             her h-index is 3.
+
+	Note: If there are several possible values for h, the maximum one is taken 
+	      as the h-index.
+
+	Follow up:
+	This is a follow up problem to H-Index, where citations is now guaranteed 
+	to be sorted in ascending order. Could you solve it in logarithmic time 
+	complexity?"""
+
+    def hIndex(self, citations: List[int]) -> int:
+        lo = 0
+        hi = n = len(citations)
+        while lo < hi: 
+            mid = (lo + hi)//2
+            if citations[mid] >= n - mid: hi = mid #less paper than citation 
+            else: lo = mid + 1
+        return n - lo
+
+        
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
