@@ -7399,6 +7399,331 @@ class Solution:
         return n - lo
 
         
+    """278. First Bad Version (Easy)
+	You are a product manager and currently leading a team to develop a new 
+	product. Unfortunately, the latest version of your product fails the 
+	quality check. Since each version is developed based on the previous 
+	version, all the versions after a bad version are also bad. Suppose you 
+	have n versions [1, 2, ..., n] and you want to find out the first bad one, 
+	which causes all the following ones to be bad. You are given an API bool 
+	isBadVersion(version) which will return whether version is bad. Implement 
+	a function to find the first bad version. You should minimize the number of
+	calls to the API.
+
+	Example:
+	Given n = 5, and version = 4 is the first bad version.
+	call isBadVersion(3) -> false
+	call isBadVersion(5) -> true
+	call isBadVersion(4) -> true
+
+	Then 4 is the first bad version. """
+
+    def firstBadVersion(self, n):
+        lo, hi = 1, n #hi is bad 
+        while lo < hi: #no need to check lo == hi since hi is bad 
+            mid = (lo + hi)//2
+            if isBadVersion(mid): hi = mid #hi is bad 
+            else: lo = mid + 1
+        return lo 
+
+
+    """279. Perfect Squares (Medium)
+	Given a positive integer n, find the least number of perfect square numbers 
+	(for example, 1, 4, 9, 16, ...) which sum to n.
+
+	Example 1:
+	Input: n = 12
+	Output: 3 
+	Explanation: 12 = 4 + 4 + 4.
+
+	Example 2:
+	Input: n = 13
+	Output: 2
+	Explanation: 13 = 4 + 9."""
+
+    def numSquares(self, n: int) -> int:
+        if int(sqrt(n))**2 == n: return 1
+        
+        for i in range(1, int(sqrt(n))+1): 
+            if int(sqrt(n - i*i))**2 == n - i*i: return 2
+        
+        while n % 4 == 0: n //= 4
+            
+        return 4 if n%8 == 7 else 3 #Lagrange four-square theorem & Lagendre three-square theorem
+
+
+    """282. Expression Add Operators (Hard)
+	Given a string that contains only digits 0-9 and a target value, return 
+	all possibilities to add binary operators (not unary) +, -, or * between 
+	the digits so they evaluate to the target value.
+
+	Example 1:
+	Input: num = "123", target = 6
+	Output: ["1+2+3", "1*2*3"] 
+
+	Example 2:
+	Input: num = "232", target = 8
+	Output: ["2*3+2", "2+3*2"]
+
+	Example 3:
+	Input: num = "105", target = 5
+	Output: ["1*0+5","10-5"]
+
+	Example 4:
+	Input: num = "00", target = 0
+	Output: ["0+0", "0-0", "0*0"]
+
+	Example 5:
+	Input: num = "3456237490", target = 9191
+	Output: []
+
+	Constraints:
+	0 <= num.length <= 10
+	num only contain digits."""
+
+    def addOperators(self, num: str, target: int) -> List[str]:
+        if not num: return [] #edge case
+        ops = ["*", "+", "-"]
+        
+        def fn(i): 
+            """Populate ans with a stack via backtracking."""
+            stack.append(num[i]) #push operand on stack
+            if i == len(num)-1: #last position 
+                expr = "".join(stack)
+                if eval(expr) == target: ans.append(expr)
+            else: 
+                for op in ops + [""]:
+                    if (len(stack) == 1 or stack[-2] in ops) and stack[-1] == "0" and op == "": continue #standalone 0 
+                    stack.append(op) #push operator on stack 
+                    fn(i+1)
+                    stack.pop() #pop out operator 
+            stack.pop() #pop out operand 
+        
+        ans, stack = [], []
+        fn(0)
+        return ans 
+
+
+    """283. Move Zeroes (Easy)
+	Given an array nums, write a function to move all 0's to the end of it 
+	while maintaining the relative order of the non-zero elements.
+
+	Example:
+	Input: [0,1,0,3,12]
+	Output: [1,3,12,0,0]
+
+	Note:
+	You must do this in-place without making a copy of the array.
+	Minimize the total number of operations."""
+
+    def moveZeroes(self, nums: List[int]) -> None:
+        lo = 0
+        for hi in range(len(nums)):
+            if nums[hi]: 
+                nums[hi], nums[lo] = nums[lo], nums[hi]
+                lo += 1
+
+
+    """287. Find the Duplicate Number (Medium)
+	Given an array nums containing n + 1 integers where each integer is between 
+	1 and n (inclusive), prove that at least one duplicate number must exist. 
+	Assume that there is only one duplicate number, find the duplicate one.
+
+	Example 1:
+	Input: [1,3,4,2,2]
+	Output: 2
+
+	Example 2:
+	Input: [3,1,3,4,2]
+	Output: 3
+
+	Note:
+	* You must not modify the array (assume the array is read only).
+	* You must use only constant, O(1) extra space.
+	* Your runtime complexity should be less than O(n2).
+	* There is only one duplicate number in the array, but it could be repeated 
+	  more than once."""
+
+    def findDuplicate(self, nums: List[int]) -> int:
+        fast = slow = 0
+        while True:
+            fast = nums[nums[fast]]
+            slow = nums[slow]
+            if fast == slow: break 
+        fast = 0
+        while fast != slow:
+            fast = nums[fast]
+            slow = nums[slow]
+        return slow 
+
+
+    """289. Game of Life (Medium)
+	According to the Wikipedia's article: "The Game of Life, also known simply 
+	as Life, is a cellular automaton devised by the British mathematician John 
+	Horton Conway in 1970."
+
+	Given a board with m by n cells, each cell has an initial state live (1) or
+	dead (0). Each cell interacts with its eight neighbors (horizontal, 
+	vertical, diagonal) using the following four rules (taken from the above 
+	Wikipedia article):
+
+	* Any live cell with fewer than two live neighbors dies, as if caused by under-population.
+	* Any live cell with two or three live neighbors lives on to the next generation.
+	* Any live cell with more than three live neighbors dies, as if by over-population..
+	* Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
+	
+	Write a function to compute the next state (after one update) of the board 
+	given its current state. The next state is created by applying the above 
+	rules simultaneously to every cell in the current state, where births and 
+	deaths occur simultaneously.
+
+	Example:
+	Input: 
+	[
+	  [0,1,0],
+	  [0,0,1],
+	  [1,1,1],
+	  [0,0,0]
+	]
+	Output: 
+	[
+	  [0,0,0],
+	  [1,0,1],
+	  [0,1,1],
+	  [0,1,0]
+	]
+
+	Follow up:
+	* Could you solve it in-place? Remember that the board needs to be updated 
+	  at the same time: You cannot update some cells first and then use their 
+	  updated values to update other cells.
+	* In this question, we represent the board using a 2D array. In principle, 
+	  the board is infinite, which would cause problems when the active area 
+	  encroaches the border of the array. How would you address these problems?"""
+
+    def gameOfLife(self, board: List[List[int]]) -> None:
+        m, n = len(board), len(board[0])
+        
+        for i in range(m):
+            for j in range(n):
+                nbr = 0 #neighbor of live cells
+                for ii in range(i-1, i+2):
+                    for jj in range(j-1, j+2):
+                        if 0 <= ii < m and 0 <= jj < n and (ii != i or jj != j) and board[ii][jj] in (-1, 1): nbr += 1
+                            
+                if board[i][j] and (nbr < 2 or nbr > 3): board[i][j] = -1 #overshoot
+                elif not board[i][j] and nbr == 3: board[i][j] = 2 #overshoot
+                    
+        for i in range(m):
+            for j in range(n):
+                board[i][j] = int(board[i][j] > 0)
+
+
+    """290. Word Pattern (Easy)
+	Given a pattern and a string str, find if str follows the same pattern. 
+	Here follow means a full match, such that there is a bijection between 
+	a letter in pattern and a non-empty word in str.
+
+	Example 1:
+	Input: pattern = "abba", str = "dog cat cat dog"
+	Output: true
+
+	Example 2:
+	Input:pattern = "abba", str = "dog cat cat fish"
+	Output: false
+
+	Example 3:
+	Input: pattern = "aaaa", str = "dog cat cat dog"
+	Output: false
+
+	Example 4:
+	Input: pattern = "abba", str = "dog dog dog dog"
+	Output: false
+
+	Notes: You may assume pattern contains only lowercase letters, and str 
+	       contains lowercase letters that may be separated by a single space."""
+
+    def wordPattern(self, pattern: str, str: str) -> bool:
+        string = str.split()
+        return len(pattern) == len(string) and len(set(zip(pattern, string))) == len(set(pattern)) == len(set(string))
+
+
+    """292. Nim Game (Easy)
+	You are playing the following Nim Game with your friend: There is a heap of
+    stones on the table, each time one of you take turns to remove 1 to 3 
+    stones. The one who removes the last stone will be the winner. You will 
+    take the first turn to remove the stones. Both of you are very clever and 
+    have optimal strategies for the game. Write a function to determine whether 
+    you can win the game given the number of stones in the heap.
+
+	Example:
+	Input: 4
+	Output: false 
+	Explanation: If there are 4 stones in the heap, then you will never win the game;
+	             No matter 1, 2, or 3 stones you remove, the last stone will always be 
+	             removed by your friend."""
+
+    def canWinNim(self, n: int) -> bool:
+        return n % 4
+
+
+    """299. Bulls and Cows (Easy)
+	You are playing the following Bulls and Cows game with your friend: You 
+	write down a number and ask your friend to guess what the number is. Each 
+	time your friend makes a guess, you provide a hint that indicates how many 
+	digits in said guess match your secret number exactly in both digit and 
+	position (called "bulls") and how many digits match the secret number but 
+	locate in the wrong position (called "cows"). Your friend will use 
+	successive guesses and hints to eventually derive the secret number. Write 
+	a function to return a hint according to the secret number and friend's 
+	guess, use A to indicate the bulls and B to indicate the cows. Please note 
+	that both secret number and friend's guess may contain duplicate digits.
+
+	Example 1:
+	Input: secret = "1807", guess = "7810"
+	Output: "1A3B"
+	Explanation: 1 bull and 3 cows. The bull is 8, the cows are 0, 1 and 7.
+
+	Example 2:
+	Input: secret = "1123", guess = "0111"
+	Output: "1A1B"
+	Explanation: The 1st 1 in friend's guess is a bull, the 2nd or 3rd 1 is a cow.
+
+	Note: You may assume that the secret number and your friend's guess only 
+	      contain digits, and their lengths are always equal."""
+
+    def getHint(self, secret: str, guess: str) -> str:
+        bulls = sum(s == g for s, g in zip(secret, guess))
+        cows = sum((Counter(secret) & Counter(guess)).values()) - bulls
+        return f"{bulls}A{cows}B"
+
+
+    """300. Longest Increasing Subsequence (Medium)
+	Given an unsorted array of integers, find the length of longest increasing 
+	subsequence.
+
+	Example:
+	Input: [10,9,2,5,3,7,101,18]
+	Output: 4 
+	Explanation: The longest increasing subsequence is [2,3,7,101], therefore 
+	             the length is 4. 
+
+	Note:
+	* There may be more than one LIS combination, it is only necessary for you 
+	  to return the length.
+	* Your algorithm should run in O(n2) complexity.
+	
+	Follow up: Could you improve it to O(n log n) time complexity?"""
+
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        ans = []
+        for x in nums: 
+            i = bisect_left(ans, x)
+            if i == len(ans): ans.append(x)
+            else: ans[i] = x
+        return len(ans)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -7789,3 +8114,84 @@ class MyQueue:
 
     def empty(self) -> bool:
         return not self.in_ and not self.out
+
+
+"""284. Peeking Iterator (Medium)
+Given an Iterator class interface with methods: next() and hasNext(), design 
+and implement a PeekingIterator that support the peek() operation -- it 
+essentially peek() at the element that will be returned by the next call to 
+next().
+
+Example:
+Assume that the iterator is initialized to the beginning of the list: [1,2,3].
+Call next() gets you 1, the first element in the list.
+Now you call peek() and it returns 2, the next element. Calling next() after 
+that still return 2. 
+You call next() the final time and it returns 3, the last element. 
+Calling hasNext() after that should return false.
+
+Follow up: How would you extend your design to be generic and work with all 
+           types, not just integer?"""
+
+class PeekingIterator:
+    def __init__(self, iterator):
+        self.iter = iterator
+        self._fill() #fill the buffer 
+        
+    def _fill(self):
+        if self.iter.hasNext(): self.buff = self.iter.next()
+        else: self.buff = None
+
+    def peek(self):
+        return self.buff
+
+    def next(self):
+        tmp = self.buff
+        self._fill()
+        return tmp
+
+    def hasNext(self):
+        return self.buff is not None
+
+
+"""295. Find Median from Data Stream (Hard)
+Median is the middle value in an ordered integer list. If the size of the list 
+is even, there is no middle value. So the median is the mean of the two middle 
+value.
+
+For example, [2,3,4], the median is 3; [2,3], the median is (2 + 3) / 2 = 2.5
+
+Design a data structure that supports the following two operations:
+* void addNum(int num) - Add a integer number from the data stream to the data 
+  structure.
+* double findMedian() - Return the median of all elements so far.
+
+Example:
+addNum(1)
+addNum(2)
+findMedian() -> 1.5
+addNum(3) 
+findMedian() -> 2
+
+Follow up:
+* If all integer numbers from the stream are between 0 and 100, how would you 
+  optimize it?
+* If 99% of all integer numbers from the stream are between 0 and 100, how 
+  would you optimize it?"""
+
+class MedianFinder:
+
+    def __init__(self):
+        self.lo = [] #max heap for smaller half
+        self.hi = [] #min heap for larger half
+
+    def addNum(self, num: int) -> None:
+        heappush(self.lo, -num)
+        heappush(self.hi, -heappop(self.lo))
+        if len(self.lo) < len(self.hi):
+            heappush(self.lo, -heappop(self.hi))
+
+    def findMedian(self) -> float:
+        if len(self.lo) == len(self.hi): 
+            return (-self.lo[0] + self.hi[0])/2
+        return -self.lo[0]
