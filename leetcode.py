@@ -7,7 +7,7 @@ from functools import lru_cache, reduce
 from heapq import heappush, heappop
 from itertools import groupby, zip_longest
 from math import inf, sqrt
-from operator import gt, lt, xor
+from operator import gt, lt, or_, xor
 
 class Solution:
 =
@@ -4060,10 +4060,10 @@ class Solution:
 	Follow up: Could you optimize your algorithm to use only O(k) extra space?"""
 
     def getRow(self, rowIndex: int) -> List[int]:
-        ans = [1]*(rowIndex + 1)
-        for i in range(1, rowIndex): 
-            ans[i] = ans[i-1] * (rowIndex-i+1)//i
-        return ans
+        ans = [1]
+        for i in range(rowIndex): #n choose k 
+            ans.append(ans[-1]*(rowIndex-i)//(i+1))
+        return ans 
 
 
     """120. Triangle (Medium)
@@ -7724,6 +7724,760 @@ class Solution:
         return len(ans)
 
 
+
+    """306. Additive Number (Medium)
+	Additive number is a string whose digits can form additive sequence. A 
+	valid additive sequence should contain at least three numbers. Except for 
+	the first two numbers, each subsequent number in the sequence must be the 
+	sum of the preceding two. Given a string containing only digits '0'-'9', 
+	write a function to determine if it's an additive number. Note: Numbers in 
+	the additive sequence cannot have leading zeros, so sequence 1, 2, 03 or 1, 
+	02, 3 is invalid.
+
+	Example 1:
+	Input: "112358"
+	Output: true
+	Explanation: The digits can form an additive sequence: 1, 1, 2, 3, 5, 8. 
+	             1 + 1 = 2, 1 + 2 = 3, 2 + 3 = 5, 3 + 5 = 8
+
+	Example 2:
+	Input: "199100199"
+	Output: true
+	Explanation: The additive sequence is: 1, 99, 100, 199. 
+	             1 + 99 = 100, 99 + 100 = 199
+	 
+	Constraints:
+	num consists only of digits '0'-'9'.
+	1 <= num.length <= 35
+
+	Follow up: gHow would you handle overflow for very large input integers?"""
+
+    def isAdditiveNumber(self, num: str) -> bool:
+        n = len(num)
+        for i in range(1, n//2+1):
+            x = num[:i]
+            if x.startswith("0") and len(x) > 1: break #no leading zero 
+            for j in range(i+1, min(n-i, (n+i)//2)+1): #i <= n-j and j-i <= n-j
+                yy = num[i:j]
+                if yy.startswith("0") and len(yy) > 1: break #no leading zero
+                
+                ii, xx = i, x
+                while num.startswith(yy, ii):
+                    ii += len(yy)
+                    xx, yy = yy, str(int(xx) + int(yy))
+                if ii == len(num): return True 
+                
+        return False 
+
+
+    """313. Super Ugly Number (Medium)
+	Write a program to find the nth super ugly number. Super ugly numbers are 
+	positive numbers whose all prime factors are in the given prime list 
+	primes of size k.
+
+	Example:
+	Input: n = 12, primes = [2,7,13,19]
+	Output: 32 
+	Explanation: [1,2,4,7,8,13,14,16,19,26,28,32] is the sequence of the first 12 
+	             super ugly numbers given primes = [2,7,13,19] of size 4.
+
+	Note:
+	* 1 is a super ugly number for any given primes.
+	* The given numbers in primes are in ascending order.
+	* 0 < k ≤ 100, 0 < n ≤ 106, 0 < primes[i] < 1000.
+	* The nth super ugly number is guaranteed to fit in a 32-bit signed integer."""
+
+    def nthSuperUglyNumber(self, n: int, primes: List[int]) -> int:
+        ans = [1]
+        hp = [(p, 0) for p in primes]
+        heapify(hp)
+        
+        for _ in range(n-1): 
+            ans.append(hp[0][0])
+            while hp[0][0] == ans[-1]: 
+                p, i = heappop(hp)
+                heappush(hp, (p*ans[i+1]//ans[i], i+1))
+                
+        return ans[-1]
+
+
+    """318. Maximum Product of Word Lengths (Medium)
+	Given a string array words, find the maximum value of 
+	length(word[i]) * length(word[j]) where the two words do not share common 
+	letters. You may assume that each word will contain only lower case letters. 
+	If no such two words exist, return 0.
+
+	Example 1:
+	Input: ["abcw","baz","foo","bar","xtfn","abcdef"]
+	Output: 16 
+	Explanation: The two words can be "abcw", "xtfn".
+
+	Example 2:
+	Input: ["a","ab","abc","d","cd","bcd","abcd"]
+	Output: 4 
+	Explanation: The two words can be "ab", "cd".
+
+	Example 3:
+	Input: ["a","aa","aaa","aaaa"]
+	Output: 0 
+	Explanation: No such pair of words.
+
+	Constraints:
+	* 0 <= words.length <= 10^3
+	* 0 <= words[i].length <= 10^3
+	* words[i] consists only of lowercase English letters."""
+
+    def maxProduct(self, words: List[str]) -> int:
+        mp = {} #mapping from mask to length
+        for word in words: 
+            mask = reduce(or_, (1 << ord(c)-97 for c in word), 0)
+            mp[mask] = max(len(word), mp.get(mask, 0))
+        
+        return max((mp[x] * mp[y] for x in mp for y in mp if not x&y), default=0)
+
+
+    """319. Bulb Switcher (Medium)
+	There are n bulbs that are initially off. You first turn on all the bulbs. 
+	Then, you turn off every second bulb. On the third round, you toggle every 
+	third bulb (turning on if it's off or turning off if it's on). For the i-th 
+	round, you toggle every i bulb. For the n-th round, you only toggle the 
+	last bulb. Find how many bulbs are on after n rounds.
+
+	Example:
+	Input: 3
+	Output: 1 
+
+	Explanation: 
+	At first, the three bulbs are [off, off, off].
+	After first round, the three bulbs are [on, on, on].
+	After second round, the three bulbs are [on, off, on].
+	After third round, the three bulbs are [on, off, off]. 
+	So you should return 1, because there is only one bulb is on."""
+
+    def bulbSwitch(self, n: int) -> int:
+        return int(sqrt(n))
+
+
+    """322. Coin Change (Medium)
+	You are given coins of different denominations and a total amount of money 
+	amount. Write a function to compute the fewest number of coins that you 
+	need to make up that amount. If that amount of money cannot be made up by 
+	any combination of the coins, return -1.
+
+	Example 1:
+	Input: coins = [1, 2, 5], amount = 11
+	Output: 3 
+	Explanation: 11 = 5 + 5 + 1
+
+	Example 2:
+	Input: coins = [2], amount = 3
+	Output: -1
+
+	Note: You may assume that you have an infinite number of each kind of coin."""
+
+    def coinChange(self, coins: List[int], amount: int) -> int:
+        
+        @lru_cache(None)
+        def fn(x):
+            """Return fewest number of coins to make to x."""
+            if x == 0: return 0
+            if x < 0: return inf
+            return min(1 + fn(x - coin) for coin in coins)
+        
+        return fn(amount) if fn(amount) < inf else -1
+
+
+	"""328. Odd Even Linked List (Medium)
+	Given a singly linked list, group all odd nodes together followed by the 
+	even nodes. Please note here we are talking about the node number and not 
+	the value in the nodes. You should try to do it in place. The program 
+	should run in O(1) space complexity and O(nodes) time complexity.
+
+	Example 1:
+	Input: 1->2->3->4->5->NULL
+	Output: 1->3->5->2->4->NULL
+
+	Example 2:
+	Input: 2->1->3->5->6->4->7->NULL
+	Output: 2->3->6->7->1->5->4->NULL
+
+	Constraints:
+	* The relative order inside both the even and odd groups should remain as 
+	  it was in the input.
+	* The first node is considered odd, the second node even and so on ...
+	* The length of the linked list is between [0, 10^4]."""
+
+    def oddEvenList(self, head: ListNode) -> ListNode:
+        if not head: return 
+        odd = head
+        even = ehead = head.next 
+        while even and even.next:
+            odd.next = odd.next.next
+            even.next = even.next.next 
+            odd, even = odd.next, even.next
+        odd.next = ehead
+        return head 
+
+
+    """331. Verify Preorder Serialization of a Binary Tree (Medium)
+	One way to serialize a binary tree is to use pre-order traversal. When we 
+	encounter a non-null node, we record the node's value. If it is a null 
+	node, we record using a sentinel value such as #.
+
+	     _9_
+	    /   \
+	   3     2
+	  / \   / \
+	 4   1  #  6
+	/ \ / \   / \
+	# # # #   # #
+
+	For example, the above binary tree can be serialized to the string 
+	"9,3,4,#,#,1,#,#,2,#,6,#,#", where # represents a null node. Given a string 
+	of comma separated values, verify whether it is a correct preorder traversal 
+	serialization of a binary tree. Find an algorithm without reconstructing the 
+	tree. Each comma separated value in the string must be either an integer or 
+	a character '#' representing null pointer. You may assume that the input 
+	format is always valid, for example it could never contain two consecutive 
+	commas such as "1,,3".
+
+	Example 1:
+	Input: "9,3,4,#,#,1,#,#,2,#,6,#,#"
+	Output: true
+
+	Example 2:
+	Input: "1,#"
+	Output: false
+
+	Example 3:
+	Input: "9,#,#,1"
+	Output: false"""
+
+    def isValidSerialization(self, preorder: str) -> bool:
+        cnt = 1
+        for x in preorder.split(","): 
+            if cnt == 0: return False #intermediate 
+            cnt += 1 if x != "#" else -1
+        return cnt == 0  #end result 
+
+
+    """332. Reconstruct Itinerary (Medium)
+	Given a list of airline tickets represented by pairs of departure and 
+	arrival airports [from, to], reconstruct the itinerary in order. All of the 
+	tickets belong to a man who departs from JFK. Thus, the itinerary must 
+	begin with JFK.
+
+	Note:
+	If there are multiple valid itineraries, you should return the itinerary 
+	that has the smallest lexical order when read as a single string. For 
+	example, the itinerary ["JFK", "LGA"] has a smaller lexical order than 
+	["JFK", "LGB"]. All airports are represented by three capital letters (IATA 
+	code). You may assume all tickets form at least one valid itinerary. One 
+	must use all the tickets once and only once.
+	
+	Example 1:
+	Input: [["MUC", "LHR"], ["JFK", "MUC"], ["SFO", "SJC"], ["LHR", "SFO"]]
+	Output: ["JFK", "MUC", "LHR", "SFO", "SJC"]
+
+	Example 2:
+	Input: [["JFK","SFO"],["JFK","ATL"],["SFO","ATL"],["ATL","JFK"],["ATL","SFO"]]
+	Output: ["JFK","ATL","JFK","SFO","ATL","SFO"]
+
+	Explanation: Another possible reconstruction is ["JFK","SFO","ATL","JFK","ATL","SFO"].
+	             But it is larger in lexical order."""
+
+    def findItinerary(self, tickets: List[List[str]]) -> List[str]:
+        digraph = defaultdict(list)
+        for u, v in tickets: heappush(digraph[u], v)
+            
+        def fn(n): 
+            """Return Eulerian path via Hierholzer's algo."""
+            while digraph.get(n, []): fn(heappop(digraph[n]))
+            ans.appendleft(n)
+            
+        ans = deque()
+        fn("JFK")
+        return ans 
+
+
+    """334. Increasing Triplet Subsequence (Medium)
+	Given an unsorted array return whether an increasing subsequence of length 
+	3 exists or not in the array. Formally the function should return true if 
+	there exists i, j, k such that arr[i] < arr[j] < arr[k] given 
+	0 ≤ i < j < k ≤ n-1 else return false.
+	
+	Note: Your algorithm should run in O(n) time complexity and O(1) space 
+	      complexity.
+
+	Example 1:
+	Input: [1,2,3,4,5]
+	Output: true
+
+	Example 2:
+	Input: [5,4,3,2,1]
+	Output: false"""
+
+    def increasingTriplet(self, nums: List[int]) -> bool:
+        ans = [inf]*2
+        for x in nums:
+            if x <= ans[0]: ans[0] = x
+            elif x <= ans[1]: ans[1] = x
+            else: return True 
+        return False 
+
+
+    """337. House Robber III (Medium)
+	The thief has found himself a new place for his thievery again. There is 
+	only one entrance to this area, called the "root." Besides the root, each 
+	house has one and only one parent house. After a tour, the smart thief 
+	realized that "all houses in this place forms a binary tree". It will 
+	automatically contact the police if two directly-linked houses were broken 
+	into on the same night. Determine the maximum amount of money the thief can 
+	rob tonight without alerting the police.
+
+	Example 1:
+	Input: [3,2,3,null,3,null,1]
+
+	     3
+	    / \
+	   2   3
+	    \   \ 
+	     3   1
+	Output: 7 
+	Explanation: Maximum amount of money the thief can rob = 3 + 3 + 1 = 7.
+
+	Example 2:
+	Input: [3,4,5,1,3,null,1]
+
+	     3
+	    / \
+	   4   5
+	  / \   \ 
+	 1   3   1
+	Output: 9
+	Explanation: Maximum amount of money the thief can rob = 4 + 5 = 9."""
+
+    def rob(self, root: TreeNode) -> int:
+        
+        def fn(node): 
+            """Return max money possible of robbing & skipping this house."""
+            if not node: return 0, 0 # null node 
+            if node.left is node.right: return node.val, 0 # leaf node 
+            left, right = fn(node.left), fn(node.right) # post-order traversal 
+            return node.val+left[1]+right[1], max(left)+max(right)
+        
+        return max(fn(root))
+
+
+    """338. Counting Bits (Medium)
+	Given a non negative integer number num. For every numbers i in the range 
+	0 ≤ i ≤ num calculate the number of 1's in their binary representation and 
+	return them as an array.
+
+	Example 1:
+	Input: 2
+	Output: [0,1,1]
+
+	Example 2:
+	Input: 5
+	Output: [0,1,1,2,1,2]
+
+	Follow up:
+	* It is very easy to come up with a solution with run time 
+	  O(n*sizeof(integer)). But can you do it in linear time O(n) /possibly in 
+	  a single pass?
+	* Space complexity should be O(n).
+	* Can you do it like a boss? Do it without using any builtin function like 
+	  __builtin_popcount in c++ or in any other language."""
+
+    def countBits(self, num: int) -> List[int]:
+        ans = [0]*(1 + num)
+        for i in range(1, num+1): 
+            ans[i] = 1 + ans[i&(i-1)]
+        return ans 
+
+
+    """343. Integer Break (Medium)
+	Given a positive integer n, break it into the sum of at least two positive 
+	integers and maximize the product of those integers. Return the maximum 
+	product you can get.
+
+	Example 1:
+	Input: 2
+	Output: 1
+	Explanation: 2 = 1 + 1, 1 × 1 = 1.
+
+	Example 2:
+	Input: 10
+	Output: 36
+	Explanation: 10 = 3 + 3 + 4, 3 × 3 × 4 = 36.
+
+	Note: You may assume that n is not less than 2 and not larger than 58."""
+
+    def integerBreak(self, n: int) -> int:
+        
+        @lru_cache(None)
+        def fn(n): 
+            """Return the max product by splitting n."""
+            if n == 1: return 1
+            return max(max(i, fn(i))*max(n-i, fn(n-i)) for i in range(1, n//2+1))
+        
+        return fn(n)
+
+
+    """347. Top K Frequent Elements (Medium)
+	Given a non-empty array of integers, return the k most frequent elements.
+
+	Example 1:
+	Input: nums = [1,1,1,2,2,3], k = 2
+	Output: [1,2]
+
+	Example 2:
+	Input: nums = [1], k = 1
+	Output: [1]
+
+	Note:
+	* You may assume k is always valid, 1 ≤ k ≤ number of unique elements.
+	* Your algorithm's time complexity must be better than O(n log n), where n 
+	  is the array's size.
+	* It's guaranteed that the answer is unique, in other words the set of the 
+	  top k frequent elements is unique.
+	* You can return the answer in any order."""
+
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        freq = dict()
+        for x in nums: freq[x] = 1 + freq.get(x, 0)
+        
+        bucket = [[] for _ in nums]
+        for x, v in freq.items(): bucket[-v].append(x)
+            
+        ans = []
+        for x in bucket: 
+            ans.extend(x)
+            if len(ans) >= k: break
+        return ans 
+
+
+    """357. Count Numbers with Unique Digits (Medium)
+	Given a non-negative integer n, count all numbers with unique digits, x, 
+	where 0 ≤ x < 10^n.
+
+	Example:
+	Input: 2
+	Output: 91 
+	Explanation: The answer should be the total numbers in the range of 0 ≤ x < 100, 
+	             excluding 11,22,33,44,55,66,77,88,99
+	 
+	Constraints: 0 <= n <= 8"""
+
+    def countNumbersWithUniqueDigits(self, n: int) -> int:
+        if n == 0: return 1
+        ans, val = 10, 9
+        for i in range(1, min(n, 10)): 
+            val *= 10 - i 
+            ans += val 
+        return ans 
+
+
+    """365. Water and Jug Problem (Medium)
+	You are given two jugs with capacities x and y litres. There is an infinite 
+	amount of water supply available. You need to determine whether it is 
+	possible to measure exactly z litres using these two jugs. If z liters of 
+	water is measurable, you must have z liters of water contained within one 
+	or both buckets by the end.
+
+	Operations allowed:
+	* Fill any of the jugs completely with water.
+	* Empty any of the jugs.
+	* Pour water from one jug into another till the other jug is completely full or the first jug itself is empty.
+	
+	Example 1: (From the famous "Die Hard" example)
+	Input: x = 3, y = 5, z = 4
+	Output: True
+
+	Example 2:
+	Input: x = 2, y = 6, z = 5
+	Output: False
+
+	Constraints:
+	0 <= x <= 10^6
+	0 <= y <= 10^6
+	0 <= z <= 10^6"""
+
+    def canMeasureWater(self, x: int, y: int, z: int) -> bool:
+        if not z: return True #edge case 
+        
+        def gcd(x, y): 
+            """Return greatest common divisor via Euclidean algo"""
+            if x < y: x, y = y, x
+            while y: x, y = y, x%y
+            return x
+        
+        return z <= x + y and z % gcd(x, y) == 0
+
+
+    """368. Largest Divisible Subset (Medium)
+	Given a set of distinct positive integers, find the largest subset such 
+	that every pair (Si, Sj) of elements in this subset satisfies:
+
+	Si % Sj = 0 or Sj % Si = 0.
+
+	If there are multiple solutions, return any subset is fine.
+
+	Example 1:
+	Input: [1,2,3]
+	Output: [1,2] (of course, [1,3] will also be ok)
+
+	Example 2:
+	Input: [1,2,4,8]
+	Output: [1,2,4,8]"""
+
+    def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
+        nums.sort()
+        ans = []
+        seen = {}
+        for i, x in enumerate(nums): 
+            seen[x] = [x]
+            for ii in range(i): 
+                if x % nums[ii] == 0: seen[x] = max(seen[x], seen[nums[ii]] + [x], key=len)
+            ans = max(ans, seen[x], key=len)
+        return ans 
+
+
+    """371. Sum of Two Integers (Medium)
+	Calculate the sum of two integers a and b, but you are not allowed to use 
+	the operator + and -.
+
+	Example 1:
+	Input: a = 1, b = 2
+	Output: 3
+
+	Example 2:
+	Input: a = -2, b = 3
+	Output: 1"""
+
+    def getSum(self, a: int, b: int) -> int:
+        mask = 0xffffffff
+        while b&mask: 
+            a, b = a^b, (a&b) << 1
+        return a&mask if b > mask else a 
+
+
+    """372. Super Pow (Medium)
+	Your task is to calculate ab mod 1337 where a is a positive integer and b 
+	is an extremely large positive integer given in the form of an array.
+
+	Example 1:
+	Input: a = 2, b = [3]
+	Output: 8
+
+	Example 2:
+	Input: a = 2, b = [1,0]
+	Output: 1024"""
+
+    def superPow(self, a: int, b: List[int]) -> int:
+        ans = 1
+        for bb in b: 
+            ans = pow(ans, 10, 1337) * pow(a, bb, 1337)
+        return ans % 1337
+
+
+    """373. Find K Pairs with Smallest Sums (Medium)
+	You are given two integer arrays nums1 and nums2 sorted in ascending order 
+	and an integer k. Define a pair (u,v) which consists of one element from 
+	the first array and one element from the second array. Find the k pairs 
+	(u1,v1),(u2,v2) ...(uk,vk) with the smallest sums.
+
+	Example 1:
+	Input: nums1 = [1,7,11], nums2 = [2,4,6], k = 3
+	Output: [[1,2],[1,4],[1,6]] 
+	Explanation: The first 3 pairs are returned from the sequence: 
+	             [1,2],[1,4],[1,6],[7,2],[7,4],[11,2],[7,6],[11,4],[11,6]
+
+	Example 2:
+	Input: nums1 = [1,1,2], nums2 = [1,2,3], k = 2
+	Output: [1,1],[1,1]
+	Explanation: The first 2 pairs are returned from the sequence: 
+	             [1,1],[1,1],[1,2],[2,1],[1,2],[2,2],[1,3],[1,3],[2,3]
+
+	Example 3:
+	Input: nums1 = [1,2], nums2 = [3], k = 3
+	Output: [1,3],[2,3]
+	Explanation: All possible pairs are returned from the sequence: [1,3],[2,3]"""
+
+    def kSmallestPairs(self, nums1: List[int], nums2: List[int], k: int) -> List[List[int]]:
+        if not nums1 or not nums2: return [] # edge case
+        
+        hp = [(nums1[0] + nums2[j], 0, j) for j in range(len(nums2))]
+        heapify(hp)
+        
+        ans = []
+        while k and hp: 
+            k -= 1
+            _, i, j = heappop(hp)
+            ans.append([nums1[i], nums2[j]])
+            if i+1 < len(nums1): heappush(hp, (nums1[i+1] + nums2[j], i+1, j))
+        return ans 
+
+
+    """375. Guess Number Higher or Lower II (Medium)
+	We are playing the Guess Game. The game is as follows:
+	I pick a number from 1 to n. You have to guess which number I picked. Every 
+	time you guess wrong, I'll tell you whether the number I picked is higher 
+	or lower. However, when you guess a particular number x, and you guess 
+	wrong, you pay $x. You win the game when you guess the number I picked.
+
+	Example:
+	n = 10, I pick 8.
+	First round:  You guess 5, I tell you that it's higher. You pay $5.
+	Second round: You guess 7, I tell you that it's higher. You pay $7.
+	Third round:  You guess 9, I tell you that it's lower. You pay $9.
+	Game over. 8 is the number I picked. You end up paying $5 + $7 + $9 = $21.
+
+	Given a particular n ≥ 1, find out how much money you need to have to 
+	guarantee a win."""
+
+    def getMoneyAmount(self, n: int) -> int:
+        
+        @lru_cache(None)
+        def fn(lo, hi): 
+            """The cost of guessing a number where lo <= x <= hi."""
+            if lo >= hi: return 0 # no need to guess 
+            ans = inf
+            for mid in range(lo, hi+1): 
+                ans = min(ans, mid + max(fn(lo, mid-1), fn(mid+1, hi)))
+            return ans 
+        
+        return fn(1, n)
+
+
+    """376. Wiggle Subsequence (Medium)
+	A sequence of numbers is called a wiggle sequence if the differences 
+	between successive numbers strictly alternate between positive and 
+	negative. The first difference (if one exists) may be either positive or 
+	negative. A sequence with fewer than two elements is trivially a wiggle 
+	sequence. For example, [1,7,4,9,2,5] is a wiggle sequence because the 
+	differences (6,-3,5,-7,3) are alternately positive and negative. In 
+	contrast, [1,4,7,2,5] and [1,7,4,5,5] are not wiggle sequences, the first 
+	because its first two differences are positive and the second because its 
+	last difference is zero. Given a sequence of integers, return the length of 
+	the longest subsequence that is a wiggle sequence. A subsequence is 
+	obtained by deleting some number of elements (eventually, also zero) from 
+	the original sequence, leaving the remaining elements in their original 
+	order.
+
+	Example 1:
+	Input: [1,7,4,9,2,5]
+	Output: 6
+	Explanation: The entire sequence is a wiggle sequence.
+
+	Example 2:
+	Input: [1,17,5,10,13,15,10,5,16,8]
+	Output: 7
+	Explanation: There are several subsequences that achieve this length. One 
+	             is [1,17,10,13,10,16,8].
+
+	Example 3:
+	Input: [1,2,3,4,5,6,7,8,9]
+	Output: 2
+
+	Follow up: Can you do it in O(n) time?"""
+
+    def wiggleMaxLength(self, nums: List[int]) -> int:
+        if not nums: return 0 # edge cases 
+        ans = 1
+        prev = curr = 0
+        for i in range(1, len(nums)): 
+            curr = nums[i] - nums[i-1]
+            if prev * curr < 0: ans += 1
+            if curr: prev = curr 
+        return ans + bool(prev)
+
+
+    """377. Combination Sum IV (Medium)
+	Given an integer array with all positive numbers and no duplicates, find 
+	the number of possible combinations that add up to a positive integer 
+	target.
+
+	Example:
+	nums = [1, 2, 3]
+	target = 4
+	The possible combination ways are:
+	(1, 1, 1, 1)
+	(1, 1, 2)
+	(1, 2, 1)
+	(1, 3)
+	(2, 1, 1)
+	(2, 2)
+	(3, 1)
+	Note that different sequences are counted as different combinations. 
+	Therefore the output is 7.
+
+	Follow up:
+	* What if negative numbers are allowed in the given array?
+	* How does it change the problem?
+	* What limitation we need to add to the question to allow negative numbers?
+
+	Credits: Special thanks to @pbrother for adding this problem and creating 
+	         all test cases."""
+
+    def combinationSum4(self, nums: List[int], target: int) -> int:
+        
+        @lru_cache(None)
+        def fn(x):
+            """Return number of combinations summing up to target."""
+            if x <= 0: return int(x == 0)
+            return sum(fn(x - xx) for xx in nums)
+        
+        return fn(target)
+
+
+    """378. Kth Smallest Element in a Sorted Matrix (Medium)
+	Given a n x n matrix where each of the rows and columns are sorted in 
+	ascending order, find the kth smallest element in the matrix. Note that 
+	it is the kth smallest element in the sorted order, not the kth distinct 
+	element.
+
+	Example:
+	matrix = [
+	   [ 1,  5,  9],
+	   [10, 11, 13],
+	   [12, 13, 15]
+	],
+	k = 8,
+	return 13.
+
+	Note: You may assume k is always valid, 1 ≤ k ≤ n2."""
+
+    def kthSmallest(self, matrix: List[List[int]], k: int) -> int:
+        n = len(matrix)
+        hp = [(matrix[i][0], i, 0) for i in range(n)] # heap 
+        heapify(hp)
+        for _ in range(k): 
+            v, i, j = heappop(hp)
+            if j+1 < n: heappush(hp, (matrix[i][j+1], i, j+1))
+        return v
+
+
+    """386. Lexicographical Numbers (Medium)
+	Given an integer n, return 1 - n in lexicographical order. For example, 
+	given 13, return: [1,10,11,12,13,2,3,4,5,6,7,8,9]. Please optimize your 
+	algorithm to use less time and space. The input size may be as large as 
+	5,000,000."""
+
+    def lexicalOrder(self, n: int) -> List[int]:
+        
+        def dfs(x):
+            """Pre-order traverse the tree."""
+            if x <= n:
+                ans.append(x)
+                for xx in range(10): dfs(10*x + xx)
+        
+        ans = []
+        for x in range(1, 10): dfs(x)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -8195,3 +8949,311 @@ class MedianFinder:
         if len(self.lo) == len(self.hi): 
             return (-self.lo[0] + self.hi[0])/2
         return -self.lo[0]
+
+
+"""304. Range Sum Query 2D - Immutable (Medium)
+Given a 2D matrix matrix, find the sum of the elements inside the rectangle 
+defined by its upper left corner (row1, col1) and lower right corner (row2, 
+col2).
+
+Example:
+Given matrix = [
+  [3, 0, 1, 4, 2],
+  [5, 6, 3, 2, 1],
+  [1, 2, 0, 1, 5],
+  [4, 1, 0, 1, 7],
+  [1, 0, 3, 0, 5]
+]
+
+sumRegion(2, 1, 4, 3) -> 8
+sumRegion(1, 1, 2, 2) -> 11
+sumRegion(1, 2, 2, 4) -> 12
+
+Note:
+You may assume that the matrix does not change.
+There are many calls to sumRegion function.
+You may assume that row1 ≤ row2 and col1 ≤ col2."""
+
+class NumMatrix:
+
+    def __init__(self, matrix: List[List[int]]):
+        if not matrix: return 
+        m, n = len(matrix), len(matrix[0])
+        self.prefix = [[0]*(n+1) for _ in range(m+1)]
+        for i in range(m):
+            for j in range(n):
+                self.prefix[i+1][j+1] = matrix[i][j] + self.prefix[i][j+1] + self.prefix[i+1][j] - self.prefix[i][j]
+        
+    def sumRegion(self, row1: int, col1: int, row2: int, col2: int) -> int:
+        return self.prefix[row2+1][col2+1] - self.prefix[row1][col2+1] - self.prefix[row2+1][col1] + self.prefix[row1][col1]
+
+
+"""341. Flatten Nested List Iterator (Medium)
+Given a nested list of integers, implement an iterator to flatten it. Each 
+element is either an integer, or a list -- whose elements may also be integers 
+or other lists.
+
+Example 1:
+Input: [[1,1],2,[1,1]]
+Output: [1,1,2,1,1]
+Explanation: By calling next repeatedly until hasNext returns false, 
+             the order of elements returned by next should be: [1,1,2,1,1].
+
+Example 2:
+Input: [1,[4,[6]]]
+Output: [1,4,6]
+Explanation: By calling next repeatedly until hasNext returns false, 
+             the order of elements returned by next should be: [1,4,6]."""
+
+class NestedIterator:
+    def __init__(self, nestedList: [NestedInteger]):
+        self.stack = []
+        if nestedList: self.stack.append((nestedList, 0))
+        self.val = self._get()
+            
+    def _get(self) -> int: 
+        """Get next value in queue."""
+        while self.stack: 
+            data, i = self.stack.pop()
+            if i+1 < len(data): self.stack.append((data, i+1)) #backtracking point 
+            if data[i].isInteger(): return data[i].getInteger()
+            if not data[i].getList(): continue #empty list 
+            self.stack.append((data[i].getList(), 0)) #push nested list on stack
+        return None
+    
+    def next(self) -> int:
+        ans, self.val = self.val, self._get()
+        return ans 
+    
+    def hasNext(self) -> bool:
+        return self.val is not None 
+
+
+"""355. Design Twitter (Medium)
+Design a simplified version of Twitter where users can post tweets, 
+follow/unfollow another user and is able to see the 10 most recent tweets in 
+the user's news feed. Your design should support the following methods:
++ postTweet(userId, tweetId): Compose a new tweet.
++ getNewsFeed(userId): Retrieve the 10 most recent tweet ids in the user's news 
+  feed. Each item in the news feed must be posted by users who the user followed 
+  or by the user herself. Tweets must be ordered from most recent to least recent.
++ follow(followerId, followeeId): Follower follows a followee.
++ unfollow(followerId, followeeId): Follower unfollows a followee.
+
+Example:
+Twitter twitter = new Twitter();
+// User 1 posts a new tweet (id = 5).
+twitter.postTweet(1, 5);
+// User 1's news feed should return a list with 1 tweet id -> [5].
+twitter.getNewsFeed(1);
+// User 1 follows user 2.
+twitter.follow(1, 2);
+// User 2 posts a new tweet (id = 6).
+twitter.postTweet(2, 6);
+// User 1's news feed should return a list with 2 tweet ids -> [6, 5].
+// Tweet id 6 should precede tweet id 5 because it is posted after tweet id 5.
+twitter.getNewsFeed(1);
+// User 1 unfollows user 2.
+twitter.unfollow(1, 2);
+// User 1's news feed should return a list with 1 tweet id -> [5],
+// since user 1 is no longer following user 2.
+twitter.getNewsFeed(1);"""
+
+class Twitter:
+
+    def __init__(self):
+        self.cnt = 0 # global counter 
+        self.tweets = {} # mapping from user to tweets
+        self.followers = {} # mapping from user to followers
+
+    def postTweet(self, userId: int, tweetId: int) -> None:
+        self.cnt += 1
+        self.tweets.setdefault(userId, deque()).appendleft((self.cnt, tweetId))
+
+    def getNewsFeed(self, userId: int) -> List[int]:
+        hp = [] # max heap 
+        for fid in self.followers.get(userId, set()) | {userId}: 
+            if fid in self.tweets: # has tweeted 
+                cnt, tid = self.tweets[fid][0]
+                heappush(hp, (-cnt, tid, fid, 0)) # push follower's tweet on heap 
+        ans = []
+        for _ in range(10): 
+            if not hp: break 
+            _, tid, uid, i = heappop(hp)
+            ans.append(tid)
+            if i+1 < len(self.tweets[uid]): 
+                cnt, tid = self.tweets[uid][i+1]
+                heappush(hp, (-cnt, tid, uid, i+1))
+        return ans 
+
+    def follow(self, followerId: int, followeeId: int) -> None:
+        self.followers.setdefault(followerId, set()).add(followeeId)
+
+    def unfollow(self, followerId: int, followeeId: int) -> None:
+        self.followers.setdefault(followerId, set()).discard(followeeId)
+
+
+"""380. Insert Delete GetRandom O(1) (Medium)
+Design a data structure that supports all following operations in average O(1) 
+time.
++ insert(val): Inserts an item val to the set if not already present.
++ remove(val): Removes an item val from the set if present.
++ getRandom: Returns a random element from current set of elements (it's 
+             guaranteed that at least one element exists when this method is 
+             called). Each element must have the same probability of being 
+             returned.
+Example:
+// Init an empty set.
+RandomizedSet randomSet = new RandomizedSet();
+// Inserts 1 to the set. Returns true as 1 was inserted successfully.
+randomSet.insert(1);
+// Returns false as 2 does not exist in the set.
+randomSet.remove(2);
+// Inserts 2 to the set, returns true. Set now contains [1,2].
+randomSet.insert(2);
+// getRandom should return either 1 or 2 randomly.
+randomSet.getRandom();
+// Removes 1 from the set, returns true. Set now contains [2].
+randomSet.remove(1);
+// 2 was already in the set, so return false.
+randomSet.insert(2);
+// Since 2 is the only number in the set, getRandom always return 2.
+randomSet.getRandom();"""
+
+class RandomizedSet:
+
+    def __init__(self):
+        self.val = [] # array of values
+        self.map = {} # mapping from value to index 
+
+    def insert(self, val: int) -> bool:
+        if val in self.map: return False 
+        self.map[val] = len(self.val) # insert to mapping
+        self.val.append(val) # insert to array 
+        return True 
+
+    def remove(self, val: int) -> bool:
+        if val not in self.map: return False 
+        i = self.map[val]
+        self.map[self.val[-1]] = i
+        self.map.pop(val)
+        self.val[i] = self.val[-1]
+        self.val.pop()
+        return True 
+
+    def getRandom(self) -> int:
+        return choice(self.val)
+
+
+"""381. Insert Delete GetRandom O(1) - Duplicates allowed (Hard)
+Design a data structure that supports all following operations in average O(1) 
+time. Note: Duplicate elements are allowed.
++ insert(val): Inserts an item val to the collection.
++ remove(val): Removes an item val from the collection if present.
++ getRandom: Returns a random element from current collection of elements. The 
+             probability of each element being returned is linearly related to 
+             the number of same value the collection contains.
+Example:
+// Init an empty collection.
+RandomizedCollection collection = new RandomizedCollection();
+// Inserts 1 to the collection. Returns true as the collection did not contain 1.
+collection.insert(1);
+// Inserts another 1 to the collection. Returns false as the collection contained 1. Collection now contains [1,1].
+collection.insert(1);
+// Inserts 2 to the collection, returns true. Collection now contains [1,1,2].
+collection.insert(2);
+// getRandom should return 1 with the probability 2/3, and returns 2 with the probability 1/3.
+collection.getRandom();
+// Removes 1 from the collection, returns true. Collection now contains [1,2].
+collection.remove(1);
+// getRandom should return 1 and 2 both equally likely.
+collection.getRandom();"""
+
+class RandomizedCollection:
+
+    def __init__(self):
+        self.val = [] # val 
+        self.mpp = {} # val to set of indices 
+
+    def insert(self, val: int) -> bool:
+        self.mpp.setdefault(val, set()).add(len(self.val))
+        self.val.append(val)
+        return len(self.mpp[val]) == 1
+
+    def remove(self, val: int) -> bool:
+        if val not in self.mpp or not self.mpp[val]: return False  # flag 
+        i = self.mpp[val].pop()
+        self.mpp[self.val[-1]].add(i)
+        self.mpp[self.val[-1]].remove(len(self.val)-1)
+        self.val[i] = self.val[-1]
+        self.val.pop()
+        return True
+
+    def getRandom(self) -> int:
+        return choice(self.val)
+
+
+"""382. Linked List Random Node (Medium)
+Given a singly linked list, return a random node's value from the linked list. 
+Each node must have the same probability of being chosen.
+
+Follow up: What if the linked list is extremely large and its length is unknown 
+           to you? Could you solve this efficiently without using extra space?
+
+Example:
+// Init a singly linked list [1,2,3].
+ListNode head = new ListNode(1);
+head.next = new ListNode(2);
+head.next.next = new ListNode(3);
+Solution solution = new Solution(head);
+
+// getRandom() should return either 1, 2, or 3 randomly. Each element should 
+// have equal probability of returning.
+solution.getRandom();"""
+
+class Solution:
+
+    def __init__(self, head: ListNode):
+        self.head = head # store head of linked list 
+
+    def getRandom(self) -> int:
+        cnt = 0
+        node = self.head 
+        while node: 
+            cnt += 1
+            if randint(1, cnt) == cnt: ans = node.val # reservoir sampling 
+            node = node.next 
+        return ans 
+
+
+"""384. Shuffle an Array (Medium)
+Shuffle a set of numbers without duplicates.
+
+Example:
+// Init an array with set 1, 2, and 3.
+int[] nums = {1,2,3};
+Solution solution = new Solution(nums);
+
+// Shuffle the array [1,2,3] and return its result. Any permutation of [1,2,3] must equally likely to be returned.
+solution.shuffle();
+
+// Resets the array back to its original configuration [1,2,3].
+solution.reset();
+
+// Returns the random shuffling of array [1,2,3].
+solution.shuffle();"""
+
+class Solution:
+
+    def __init__(self, nums: List[int]):
+        self.nums = nums
+        self.orig = nums.copy() # original array 
+
+    def reset(self) -> List[int]:
+        return self.orig
+
+    def shuffle(self) -> List[int]:
+        for i in range(1, len(self.nums)): 
+            ii = randint(0, i)
+            self.nums[ii], self.nums[i] = self.nums[i], self.nums[ii]
+        return self.nums
