@@ -8478,6 +8478,227 @@ class Solution:
         return ans 
 
 
+    """388. Longest Absolute File Path (Medium)
+	We will represent the file system as a string where "\n\t" mean a 
+	subdirectory of the main directory, "\n\t\t" means a subdirectory of the 
+	subdirectory of the main directory and so on. Each folder will be 
+	represented as a string of letters and/or digits. Each file will be in the 
+	form "s1.s2" where s1 and s2 are strings of letters and/or digits. For 
+	example, the file system above is represented as 
+	"dir\n\tsubdir1\n\t\tfile1.ext\n\t\tsubsubdir1\n\tsubdir2\n\t\tsubsubdir2\n\t\t\tfile2.ext".
+
+	Given a string input representing the file system in the explained format, 
+	return the length of the longest absolute path to a file in the abstracted 
+	file system. If there is no file in the system, return 0.
+
+	Example 1:
+	Input: input = "dir\n\tsubdir1\n\tsubdir2\n\t\tfile.ext"
+	Output: 20
+	Explanation: We have only one file and its path is "dir/subdir2/file.ext" of length 20.
+	The path "dir/subdir1" doesn't contain any files.
+
+	Example 2:
+	Input: input = "dir\n\tsubdir1\n\t\tfile1.ext\n\t\tsubsubdir1\n\tsubdir2\n\t\tsubsubdir2\n\t\t\tfile2.ext"
+	Output: 32
+	Explanation: We have two files:
+	"dir/subdir1/file1.ext" of length 21
+	"dir/subdir2/subsubdir2/file2.ext" of length 32.
+	We return 32 since it is the longest path.
+
+	Example 3:
+	Input: input = "a"
+	Output: 0
+	Explanation: We don't have any files.
+
+	Constraints:
+	1 <= input.length <= 104
+	input may contain lower-case or upper-case English letters, a new line 
+	character '\n', a tab character '\t', a dot '.', a space ' ' or digits."""
+
+    def lengthLongestPath(self, input: str) -> int:
+        ans = 0
+        prefix = [0]
+        for x in input.split("\n"): # split string into dir & file
+            k = x.count("\t")
+            x = x.lstrip("\t")
+            if "." in x: ans = max(ans, prefix[k] + len(x)) # x is file 
+            else: 
+                if len(prefix) == k+1: prefix.append(prefix[-1] + 1 + len(x))
+                else: prefix[k+1] = prefix[k] + 1 + len(x)
+        return ans  
+
+
+    """390. Elimination Game (Medium)
+	There is a list of sorted integers from 1 to n. Starting from left to right, 
+	remove the first number and every other number afterward until you reach 
+	the end of the list. Repeat the previous step again, but this time from 
+	right to left, remove the right most number and every other number from the 
+	remaining numbers. We keep repeating the steps again, alternating left to 
+	right and right to left, until a single number remains. Find the last 
+	number that remains starting with a list of length n.
+
+	Example:
+	Input:
+	n = 9,
+	1 2 3 4 5 6 7 8 9
+	2 4 6 8
+	2 6
+	6
+
+	Output:
+	6"""
+
+    def lastRemaining(self, n: int) -> int:
+        if n == 1: return 1
+        if n&1: n -= 1
+        return n + 2 - 2*self.lastRemaining(n//2)
+
+
+    """393. UTF-8 Validation (Medium)
+	A character in UTF8 can be from 1 to 4 bytes long, subjected to the 
+	following rules:
+	+ For 1-byte character, the first bit is a 0, followed by its unicode code.
+	+ For n-bytes character, the first n-bits are all one's, the n+1 bit is 0, 
+	  followed by n-1 bytes with most significant 2 bits being 10.
+	
+	This is how the UTF-8 encoding would work:
+
+	   Char. number range  |        UTF-8 octet sequence
+	      (hexadecimal)    |              (binary)
+	   --------------------+---------------------------------------------
+	   0000 0000-0000 007F | 0xxxxxxx
+	   0000 0080-0000 07FF | 110xxxxx 10xxxxxx
+	   0000 0800-0000 FFFF | 1110xxxx 10xxxxxx 10xxxxxx
+	   0001 0000-0010 FFFF | 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
+	
+	Given an array of integers representing the data, return whether it is a 
+	valid utf-8 encoding. Note that input is an array of integers. Only the 
+	least significant 8 bits of each integer is used to store the data. This 
+	means each integer represents only 1 byte of data.
+
+	Example 1:
+	data = [197, 130, 1], which represents the octet sequence: 11000101 10000010 00000001.
+	Return true.
+	It is a valid utf-8 encoding for a 2-bytes character followed by a 1-byte character.
+
+	Example 2:
+	data = [235, 140, 4], which represented the octet sequence: 11101011 10001100 00000100.
+	Return false.
+	The first 3 bits are all one's and the 4th bit is 0 means it is a 3-bytes character.
+	The next byte is a continuation byte which starts with 10 and that's correct.
+	But the second continuation byte does not start with 10, so it is invalid."""
+
+    def validUtf8(self, data: List[int]) -> bool:
+        cnt = 0 
+        for x in data:
+            x = bin(x)[2:].zfill(8)
+            if cnt: # in the middle of multi-byte 
+                if x.startswith("10"): cnt -= 1
+                else: return False 
+            else: # beginning 
+                cnt = x.find("0")
+                if cnt == -1 or cnt == 1 or cnt > 4: return False 
+                if cnt: cnt -= 1
+        return cnt == 0
+
+
+    """394. Decode String (Medium)
+	Given an encoded string, return its decoded string. The encoding rule is: 
+	k[encoded_string], where the encoded_string inside the square brackets is 
+	being repeated exactly k times. Note that k is guaranteed to be a positive 
+	integer. You may assume that the input string is always valid; No extra 
+	white spaces, square brackets are well-formed, etc. Furthermore, you may 
+	assume that the original data does not contain any digits and that digits 
+	are only for those repeat numbers, k. For example, there won't be input 
+	like 3a or 2[4].
+
+	Example 1:
+	Input: s = "3[a]2[bc]"
+	Output: "aaabcbc"
+
+	Example 2:
+	Input: s = "3[a2[c]]"
+	Output: "accaccacc"
+
+	Example 3:
+	Input: s = "2[abc]3[cd]ef"
+	Output: "abcabccdcdcdef"
+
+	Example 4:
+	Input: s = "abc3[cd]xyz"
+	Output: "abccdcdcdxyz" """
+
+    def decodeString(self, s: str) -> str:
+        stack = []
+        nn = ss = ""
+        for c in s: 
+            if c == "[": 
+                stack.append(ss)
+                stack.append(nn)
+                nn = ss = ""
+            elif c == "]": 
+                ss *= int(stack.pop())
+                ss = stack.pop() + ss
+            elif c.isdigit(): nn += c
+            else: ss += c
+        return ss
+
+
+    """395. Longest Substring with At Least K Repeating Characters (Medium)
+	Find the length of the longest substring T of a given string (consists of 
+	lowercase letters only) such that every character in T appears no less than 
+	k times.
+
+	Example 1:
+	Input: s = "aaabb", k = 3
+	Output: 3
+	The longest substring is "aaa", as 'a' is repeated 3 times.
+
+	Example 2:
+	Input: s = "ababbc", k = 2
+	Output:	5
+	The longest substring is "ababb", as 'a' is repeated 2 times and 'b' is repeated 3 times."""
+
+    def longestSubstring(self, s: str, k: int) -> int:
+        if not s: return 0 # edge case 
+        
+        freq = {} # frequency table 
+        for c in s: freq[c] = 1 + freq.get(c, 0)
+            
+        if min(freq.values()) < k: 
+            m = min(freq, key=freq.get)
+            return max(self.longestSubstring(ss, k) for ss in s.split(m))
+        return len(s)
+
+
+    """396. Rotate Function (Medium)
+	Given an array of integers A and let n to be its length. Assume Bk to be 
+	an array obtained by rotating the array A k positions clock-wise, we define 
+	a "rotation function" F on A as follow:
+
+	F(k) = 0 * Bk[0] + 1 * Bk[1] + ... + (n-1) * Bk[n-1].
+
+	Calculate the maximum value of F(0), F(1), ..., F(n-1).
+
+	Note: n is guaranteed to be less than 105.
+
+	Example:
+	A = [4, 3, 2, 6]
+	F(0) = (0 * 4) + (1 * 3) + (2 * 2) + (3 * 6) = 0 + 3 + 4 + 18 = 25
+	F(1) = (0 * 6) + (1 * 4) + (2 * 3) + (3 * 2) = 0 + 4 + 6 + 6 = 16
+	F(2) = (0 * 2) + (1 * 6) + (2 * 4) + (3 * 3) = 0 + 6 + 8 + 9 = 23
+	F(3) = (0 * 3) + (1 * 2) + (2 * 6) + (3 * 4) = 0 + 2 + 12 + 12 = 26
+	So the maximum value of F(0), F(1), F(2), F(3) is F(3) = 26."""
+
+    def maxRotateFunction(self, A: List[int]) -> int:
+        ans = val = sum(i*x for i, x in enumerate(A))
+        ss = sum(A)
+        for x in reversed(A):
+            val += ss - len(A)*x
+            ans = max(ans, val)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
