@@ -8699,6 +8699,103 @@ class Solution:
         return ans 
 
 
+    """397. Integer Replacement (Medium)
+	Given a positive integer n and you can do operations as follow: 
+	+ If n is even, replace n with n/2.
+	+ If n is odd, you can replace n with either n + 1 or n - 1.
+	What is the minimum number of replacements needed for n to become 1?
+
+	Example 1:
+	Input: 8
+	Output: 3
+	Explanation: 8 -> 4 -> 2 -> 1
+	
+	Example 2:
+	Input: 7
+	Output: 4
+	Explanation: 7 -> 8 -> 4 -> 2 -> 1 or 7 -> 6 -> 3 -> 2 -> 1"""
+
+    def integerReplacement(self, n: int) -> int:
+        
+        @lru_cache(None)
+        def fn(n):
+            """Return """
+            if n == 1: return 0
+            if not n&1: return 1 + fn(n//2)
+            return 1 + min(fn(n+1), fn(n-1))
+        
+        return fn(n)
+
+
+    """399. Evaluate Division (Medium)
+	Equations are given in the format A / B = k, where A and B are variables 
+	represented as strings, and k is a real number (floating point number). 
+	Given some queries, return the answers. If the answer does not exist, 
+	return -1.0.
+
+	Example:
+	Given a / b = 2.0, b / c = 3.0.
+	queries are: a / c = ?, b / a = ?, a / e = ?, a / a = ?, x / x = ? .
+	return [6.0, 0.5, -1.0, 1.0, -1.0 ].
+
+	The input is: vector<pair<string, string>> equations, vector<double>& values, 
+	              vector<pair<string, string>> queries , where equations.size() == values.size(), 
+	              and the values are positive. This represents the equations. Return vector<double>.
+
+	According to the example above:
+	equations = [ ["a", "b"], ["b", "c"] ],
+	values = [2.0, 3.0],
+	queries = [ ["a", "c"], ["b", "a"], ["a", "e"], ["a", "a"], ["x", "x"] ]. 
+	The input is always valid. You may assume that evaluating the queries will 
+	result in no division by zero and there is no contradiction."""
+
+    def calcEquation(self, equations: List[List[str]], values: List[float], queries: List[List[str]]) -> List[float]:
+        graph = {}
+        for (u, v), w in zip(equations, values): 
+            graph.setdefault(u, []).append((v, 1/w))
+            graph.setdefault(v, []).append((u, w))
+
+        def dfs(n, g, val=1):
+            """Depth-first traverse the graph."""
+            if n in vals: return 
+            vals[n] = val, g
+            for nn, w in graph.get(n, []): dfs(nn, g, w*val)
+    
+        vals = dict()
+        for i, n in enumerate(graph): dfs(n, i)
+        
+        ans = []
+        for u, v in queries: 
+            if u in vals and v in vals and vals[u][1] == vals[v][1]: ans.append(vals[u][0]/vals[v][0])
+            else: ans.append(-1)
+        return ans 
+
+
+    """400. Nth Digit (Medium)
+	Find the nth digit of the infinite integer sequence 1, 2, 3, 4, 5, 6, 7, 8, 
+	9, 10, 11, ... Note that n is positive and will fit within the range of a 
+	32-bit signed integer (n < 231).
+
+	Example 1:
+	Input: 3
+	Output: 3
+	
+	Example 2:
+	Input: 11
+	Output: 0
+	Explanation: The 11th digit of the sequence 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
+	             11, ... is a 0, which is part of the number 10."""
+
+    def findNthDigit(self, n: int) -> int:
+        digit = base = 1 # starting from 1 digit
+        while n > 9*base*digit: # upper limit of d digits 
+            n -= 9*base*digit
+            digit += 1
+            base *= 10 
+        q, r = divmod(n-1, digit)
+        return int(str(base + q)[r])
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -9478,3 +9575,34 @@ class Solution:
             ii = randint(0, i)
             self.nums[ii], self.nums[i] = self.nums[i], self.nums[ii]
         return self.nums
+
+
+"""398. Random Pick Index (Medium)
+Given an array of integers with possible duplicates, randomly output the index 
+of a given target number. You can assume that the given target number must 
+exist in the array. Note that the array size can be very large. Solution that 
+uses too much extra space will not pass the judge.
+
+Example:
+int[] nums = new int[] {1,2,3,3,3};
+Solution solution = new Solution(nums);
+// pick(3) should return either index 2, 3, or 4 randomly. Each index should 
+// have equal probability of returning.
+solution.pick(3);
+// pick(1) should return 0. Since in the array only nums[0] is equal to 1.
+solution.pick(1);"""
+
+class Solution:
+
+    def __init__(self, nums: List[int]):
+        self.nums = nums # store nums
+
+    def pick(self, target: int) -> int:
+        """Sample index of target via resevoir sampling."""
+		ans = None
+        cnt = 0
+        for i, x in enumerate(self.nums): 
+            if x == target: 
+                cnt += 1
+                if randint(1, cnt) == cnt: ans = i # prob 1/cnt
+        return ans 
