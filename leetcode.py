@@ -10,7 +10,7 @@ from math import inf, sqrt
 from operator import gt, lt, or_, xor
 
 class Solution:
-=
+
 	"""1. Two Sum (Easy)
 	Given an array of integers, return indices of the two numbers such that 
 	they add up to a specific target. You may assume that each input would have 
@@ -50,9 +50,8 @@ class Solution:
             if l2: 
                 carry += l2.val 
                 l2 = l2.next 
-            node.next = ListNode(carry%10)
-            carry //= 10
-            node = node.next 
+            carry, x = divmod(carry, 10)
+            node.next = node = ListNode(x)
         return head.next 
 
 
@@ -5477,11 +5476,9 @@ class Solution:
 	  consecutive dots."""
 
     def compareVersion(self, version1: str, version2: str) -> int:
-        version1 = [int(x) for x in version1.split(".")]
-        version2 = [int(x) for x in version2.split(".")]
-        for x1, x2 in zip_longest(version1, version2, fillvalue=0):
-            if x1 > x2: return 1
-            if x1 < x2: return -1
+        for x, y in zip_longest(version1.split("."), version2.split("."), fillvalue="0"):
+            if int(x) > int(y): return 1
+            elif int(x) < int(y): return -1
         return 0
 
 
@@ -8794,6 +8791,306 @@ class Solution:
             base *= 10 
         q, r = divmod(n-1, digit)
         return int(str(base + q)[r])
+
+
+    """402. Remove K Digits (Medium)
+	Given a non-negative integer num represented as a string, remove k digits 
+	from the number so that the new number is the smallest possible.
+
+	Note:
+	+ The length of num is less than 10002 and will be ≥ k.
+	+ The given num does not contain any leading zero.
+	
+	Example 1:
+	Input: num = "1432219", k = 3
+	Output: "1219"
+	Explanation: Remove the three digits 4, 3, and 2 to form the new number 
+	             1219 which is the smallest.
+
+	Example 2:
+	Input: num = "10200", k = 1
+	Output: "200"
+	Explanation: Remove the leading 1 and the number is 200. Note that the 
+	             output must not contain leading zeroes.
+	
+	Example 3:
+	Input: num = "10", k = 2
+	Output: "0"
+	Explanation: Remove all the digits from the number and it is left with 
+	             nothing which is 0."""
+
+    def removeKdigits(self, num: str, k: int) -> str:
+        stack = []
+        for x in num: 
+            while k and stack and stack[-1] > x: 
+                k -= 1
+                stack.pop()
+            stack.append(x) 
+        return "".join(stack[:-k or None]).lstrip("0") or "0"
+
+
+    """406. Queue Reconstruction by Height (Medium)
+	Suppose you have a random list of people standing in a queue. Each person 
+	is described by a pair of integers (h, k), where h is the height of the 
+	person and k is the number of people in front of this person who have a 
+	height greater than or equal to h. Write an algorithm to reconstruct the 
+	queue. 
+	Note: The number of people is less than 1,100.
+	 
+	Example
+	Input: [[7,0], [4,4], [7,1], [5,0], [6,1], [5,2]]
+	Output: [[5,0], [7,0], [5,2], [6,1], [4,4], [7,1]]"""
+
+    def reconstructQueue(self, people: List[List[int]]) -> List[List[int]]:
+        ans = []
+        for h, k in sorted(people, key=lambda x: (-x[0], x[1])): # tallest to shortest 
+            ans.insert(k, [h, k])
+        return ans 
+
+
+    """413. Arithmetic Slices (Medium)
+	A sequence of numbers is called arithmetic if it consists of at least three 
+	elements and if the difference between any two consecutive elements is the 
+	same. For example, these are arithmetic sequences:
+	1, 3, 5, 7, 9
+	7, 7, 7, 7
+	3, -1, -5, -9
+
+	The following sequence is not arithmetic: 1, 1, 2, 5, 7. A zero-indexed 
+	array A consisting of N numbers is given. A slice of that array is any pair 
+	of integers (P, Q) such that 0 <= P < Q < N. A slice (P, Q) of the array A 
+	is called arithmetic if the sequence: A[P], A[P + 1], ..., A[Q - 1], A[Q] 
+	is arithmetic. In particular, this means that P + 1 < Q. The function 
+	should return the number of arithmetic slices in the array A.
+	 
+	Example:
+	A = [1, 2, 3, 4]
+	return: 3, for 3 arithmetic slices in A: 
+	[1, 2, 3], [2, 3, 4] and [1, 2, 3, 4] itself."""
+
+    def numberOfArithmeticSlices(self, A: List[int]) -> int:
+        ans = cnt = 0
+        for i in range(2, len(A)): 
+            if A[i-2] - A[i-1] == A[i-1] - A[i]: 
+                cnt += 1
+                ans += cnt 
+            else: cnt = 0
+        return ans 
+
+
+
+
+
+
+    """1592. Rearrange Spaces Between Words (Easy)
+	You are given a string text of words that are placed among some number of 
+	spaces. Each word consists of one or more lowercase English letters and are 
+	separated by at least one space. It's guaranteed that text contains at 
+	least one word. Rearrange the spaces so that there is an equal number of 
+	spaces between every pair of adjacent words and that number is maximized. 
+	If you cannot redistribute all the spaces equally, place the extra spaces 
+	at the end, meaning the returned string should be the same length as text. 
+	Return the string after rearranging the spaces.
+
+	Example 1:
+	Input: text = "  this   is  a sentence "
+	Output: "this   is   a   sentence"
+	Explanation: There are a total of 9 spaces and 4 words. We can evenly 
+	             divide the 9 spaces between the words: 9 / (4-1) = 3 spaces.
+
+	Example 2:
+	Input: text = " practice   makes   perfect"
+	Output: "practice   makes   perfect "
+	Explanation: There are a total of 7 spaces and 3 words. 7 / (3-1) = 3 
+	             spaces plus 1 extra space. We place this extra space at the 
+	             end of the string.
+	
+	Example 3:
+	Input: text = "hello   world"
+	Output: "hello   world"
+	
+	Example 4:
+	Input: text = "  walks  udp package   into  bar a"
+	Output: "walks  udp  package  into  bar  a "
+
+	Example 5:
+	Input: text = "a"
+	Output: "a"
+
+	Constraints:
+	* 1 <= text.length <= 100
+	* text consists of lowercase English letters and ' '.
+	* text contains at least one word."""
+
+    def reorderSpaces(self, text: str) -> str:
+        ns = text.count(" ") # count of spaces 
+        nw = len(text := text.split()) # count of words 
+        if nw > 1: nw, ns = divmod(ns, nw-1) # nw - between word spaces / ns - trailing spaces
+        return (" "*nw).join(text) + " "*ns
+
+
+    """1593. Split a String Into the Max Number of Unique Substrings (Medium)
+	Given a string s, return the maximum number of unique substrings that the 
+	given string can be split into. You can split string s into any list of 
+	non-empty substrings, where the concatenation of the substrings forms the 
+	original string. However, you must split the substrings such that all of 
+	them are unique. A substring is a contiguous sequence of characters within 
+	a string.
+
+	Example 1:
+	Input: s = "ababccc"
+	Output: 5
+	Explanation: One way to split maximally is ['a', 'b', 'ab', 'c', 'cc']. 
+	             Splitting like ['a', 'b', 'a', 'b', 'c', 'cc'] is not valid as 
+	             you have 'a' and 'b' multiple times.
+
+	Example 2:
+	Input: s = "aba"
+	Output: 2
+	Explanation: One way to split maximally is ['a', 'ba'].
+	
+	Example 3:
+	Input: s = "aa"
+	Output: 1
+	Explanation: It is impossible to split the string any further.
+
+	Constraints:
+	* 1 <= s.length <= 16
+	* s contains only lower case English letters."""
+
+    def maxUniqueSplit(self, s: str) -> int:
+        
+        def fn(i, seen=set()):
+            """Find max length via backtracking (not dp)."""
+            ans = 0
+            if i < len(s): # boundary condition when i == len(s)
+                for ii in range(i+1, len(s)+1): 
+                    if s[i:ii] not in seen: 
+                        seen.add(s[i:ii])
+                        ans = max(ans, 1 + fn(ii, seen))
+                        seen.remove(s[i:ii])
+            return ans 
+            
+        return fn(0)
+
+
+    """1594. Maximum Non Negative Product in a Matrix (Medium)
+	You are given a rows x cols matrix grid. Initially, you are located at the 
+	top-left corner (0, 0), and in each step, you can only move right or down 
+	in the matrix. Among all possible paths starting from the top-left corner 
+	(0, 0) and ending in the bottom-right corner (rows - 1, cols - 1), find the 
+	path with the maximum non-negative product. The product of a path is the 
+	product of all integers in the grid cells visited along the path. Return 
+	the maximum non-negative product modulo 109 + 7. If the maximum product is 
+	negative return -1. Notice that the modulo is performed after getting the 
+	maximum product.
+
+	Example 1:
+	Input: grid = [[-1,-2,-3],
+	               [-2,-3,-3],
+	               [-3,-3,-2]]
+	Output: -1
+	Explanation: It's not possible to get non-negative product in the path from 
+	             (0, 0) to (2, 2), so return -1.
+
+	Example 2:
+	Input: grid = [[1,-2,1],
+	               [1,-2,1],
+	               [3,-4,1]]
+	Output: 8
+	Explanation: Maximum non-negative product is in bold (1 * 1 * -2 * -4 * 1 = 8).
+	
+	Example 3:
+	Input: grid = [[1, 3],
+	               [0,-4]]
+	Output: 0
+	Explanation: Maximum non-negative product is in bold (1 * 0 * -4 = 0).
+
+	Example 4:
+	Input: grid = [[ 1, 4,4,0],
+	               [-2, 0,0,1],
+	               [ 1,-1,1,1]]
+	Output: 2
+	Explanation: Maximum non-negative product is in bold (1 * -2 * 1 * -1 * 1 * 1 = 2).
+
+	Constraints:
+	* 1 <= rows, cols <= 15
+	* -4 <= grid[i][j] <= 4"""
+
+    def maxProductPath(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        
+        @lru_cache(None)
+        def fn(i, j): 
+            """Return maximum & minimum products ending at (i, j)."""
+            if i == 0 and j == 0: return grid[0][0], grid[0][0]
+            if i < 0 or j < 0: return -inf, inf
+            if grid[i][j] == 0: return 0, 0
+            mx1, mn1 = fn(i-1, j) # from top
+            mx2, mn2 = fn(i, j-1) # from left 
+            mx, mn = max(mx1, mx2)*grid[i][j], min(mn1, mn2)*grid[i][j]
+            return (mx, mn) if grid[i][j] > 0 else (mn, mx)
+        
+        mx, _ = fn(m-1, n-1)
+        return -1 if mx < 0 else mx % 1_000_000_007
+
+
+    """1595. Minimum Cost to Connect Two Groups of Points (Hard)
+	You are given two groups of points where the first group has size1 points, 
+	the second group has size2 points, and size1 >= size2. The cost of the 
+	connection between any two points are given in an size1 x size2 matrix 
+	where cost[i][j] is the cost of connecting point i of the first group and 
+	point j of the second group. The groups are connected if each point in both 
+	groups is connected to one or more points in the opposite group. In other 
+	words, each point in the first group must be connected to at least one 
+	point in the second group, and each point in the second group must be 
+	connected to at least one point in the first group. Return the minimum cost 
+	it takes to connect the two groups.
+
+	Example 1:
+	Input: cost = [[15, 96], [36, 2]]
+	Output: 17
+	Explanation: The optimal way of connecting the groups is:
+	1--A
+	2--B
+	This results in a total cost of 17.
+
+	Example 2:
+	Input: cost = [[1, 3, 5], [4, 1, 1], [1, 5, 3]]
+	Output: 4
+	Explanation: The optimal way of connecting the groups is:
+	1--A
+	2--B
+	2--C
+	3--A
+	This results in a total cost of 4.
+	Note that there are multiple points connected to point 2 in the first group 
+	and point A in the second group. This does not matter as there is no limit 
+	to the number of points that can be connected. We only care about the 
+	minimum total cost.
+
+	Example 3:
+	Input: cost = [[2, 5, 1], [3, 4, 7], [8, 1, 2], [6, 2, 4], [3, 8, 8]]
+	Output: 10
+
+	Constraints:
+	* size1 == cost.length
+	* size2 == cost[i].length
+	* 1 <= size1, size2 <= 12
+	* size1 >= size2
+	* 0 <= cost[i][j] <= 100"""
+
+    def connectTwoGroups(self, cost: List[List[int]]) -> int:
+        m, n = len(cost), len(cost[0])
+        mn = [min(x) for x in zip(*cost)] # min cost of connecting points in 2nd group 
+        
+        @lru_cache(None)
+        def fn(i, mask):
+            """Return min cost of connecting group1[i:] and group2 represented as mask."""
+            if i == m: return sum(mn[j] for j in range(n) if not (mask & (1<<j)))
+            return min(cost[i][j] + fn(i+1, mask | 1<<j) for j in range(n))
+                
+        return fn(0, 0)
 
 
 """146. LRU Cache (Medium)
