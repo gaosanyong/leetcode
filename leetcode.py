@@ -5589,9 +5589,9 @@ class Solution:
 
     def majorityElement(self, nums: List[int]) -> int:
         """Boyer-Moore majority voting"""
-        vote = 0
+        ans, vote = None, 0
         for x in nums:
-            if not vote: ans = x
+            if vote == 0: ans = x
             vote += 1 if x == ans else -1
         return ans
 
@@ -6745,14 +6745,15 @@ class Solution:
 	Output: [1,2]"""
 
     def majorityElement(self, nums: List[int]) -> List[int]:
-        ans, vote = [0]*2, [0]*2
-        for x in nums:
-            if   x == ans[0]: vote[0] += 1
-            elif x == ans[1]: vote[1] += 1
-            elif vote[0] == 0: ans[0], vote[0] = x, 1
-            elif vote[1] == 0: ans[1], vote[1] = x, 1
-            else: vote = [x - 1 for x in vote]
-        return [x for x in set(ans) if nums.count(x) > len(nums)//3]
+        ans, vote = [None]*2, [0]*2
+        for x in nums: 
+            if vote[0] == 0 and x not in ans: ans[0] = x
+            elif vote[1] == 0 and x not in ans: ans[1] = x
+            
+            if ans[0] == x: vote[0] += 1
+            elif ans[1] == x: vote[1] += 1
+            else: vote = [x-1 for x in vote]
+        return [x for x in ans if nums.count(x) > len(nums)//3]
 
 
     """230. Kth Smallest Element in a BST (Medium)
@@ -8880,6 +8881,216 @@ class Solution:
 
 
 
+
+
+
+
+    """1588. Sum of All Odd Length Subarrays (Easy)
+	Given an array of positive integers arr, calculate the sum of all possible 
+	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
+	Return the sum of all odd-length subarrays of arr.
+
+	Example 1:
+	Input: arr = [1,4,2,5,3]
+	Output: 58
+	Explanation: The odd-length subarrays of arr and their sums are:
+	[1] = 1
+	[4] = 4
+	[2] = 2
+	[5] = 5
+	[3] = 3
+	[1,4,2] = 7
+	[4,2,5] = 11
+	[2,5,3] = 10
+	[1,4,2,5,3] = 15
+	If we add all these together we get 1 + 4 + 2 + 5 + 3 + 7 + 11 + 10 + 15 = 58
+
+	Example 2:
+	Input: arr = [1,2]
+	Output: 3
+	Explanation: There are only 2 subarrays of odd length, [1] and [2]. Their sum is 3.
+
+	Example 3:
+	Input: arr = [10,11,12]
+	Output: 66
+
+	Constraints:
+	* 1 <= arr.length <= 100
+	* 1 <= arr[i] <= 1000"""
+
+    def sumOddLengthSubarrays(self, arr: List[int]) -> int:
+        return sum(((i+1)*(len(arr)-i) + 1)//2 * x for i, x in enumerate(arr))
+
+
+
+    """1589. Maximum Sum Obtained of Any Permutation (Medium)
+	We have an array of integers, nums, and an array of requests where 
+	requests[i] = [starti, endi]. The ith request asks for the sum of 
+	nums[starti] + nums[starti + 1] + ... + nums[endi - 1] + nums[endi]. Both 
+	starti and endi are 0-indexed. Return the maximum total sum of all requests 
+	among all permutations of nums. Since the answer may be too large, return 
+	it modulo 10^9 + 7.
+
+	Example 1:
+	Input: nums = [1,2,3,4,5], requests = [[1,3],[0,1]]
+	Output: 19
+	Explanation: One permutation of nums is [2,1,3,4,5] with the following result: 
+	requests[0] -> nums[1] + nums[2] + nums[3] = 1 + 3 + 4 = 8
+	requests[1] -> nums[0] + nums[1] = 2 + 1 = 3
+	Total sum: 8 + 3 = 11.
+	A permutation with a higher total sum is [3,5,4,2,1] with the following result:
+	requests[0] -> nums[1] + nums[2] + nums[3] = 5 + 4 + 2 = 11
+	requests[1] -> nums[0] + nums[1] = 3 + 5  = 8
+	Total sum: 11 + 8 = 19, which is the best that you can do.
+
+	Example 2:
+	Input: nums = [1,2,3,4,5,6], requests = [[0,1]]
+	Output: 11
+	Explanation: A permutation with the max total sum is [6,5,4,3,2,1] with request sums [11].
+
+	Example 3:
+	Input: nums = [1,2,3,4,5,10], requests = [[0,2],[1,3],[1,1]]
+	Output: 47
+	Explanation: A permutation with the max total sum is [4,10,5,3,2,1] with request sums [19,18,10].
+
+	Constraints:
+	* n == nums.length
+	* 1 <= n <= 105
+	* 0 <= nums[i] <= 105
+	* 1 <= requests.length <= 105
+	* requests[i].length == 2
+	* 0 <= starti <= endi < n"""
+
+    def maxSumRangeQuery(self, nums: List[int], requests: List[List[int]]) -> int:
+        chg = [0]*len(nums) # change 
+        for i, j in requests: 
+            chg[i] += 1
+            if j+1 < len(nums): chg[j+1] -= 1
+        for i in range(1, len(nums)): chg[i] += chg[i-1] # cumulated change
+        return sum(n*c for n, c in zip(sorted(nums), sorted(chg))) % 1_000_000_007
+
+
+    """1590. Make Sum Divisible by P (Medium)
+	Given an array of positive integers nums, remove the smallest subarray 
+	(possibly empty) such that the sum of the remaining elements is divisible 
+	by p. It is not allowed to remove the whole array. Return the length of the 
+	smallest subarray that you need to remove, or -1 if it's impossible. A 
+	subarray is defined as a contiguous block of elements in the array.
+
+	Example 1:
+	Input: nums = [3,1,4,2], p = 6
+	Output: 1
+	Explanation: The sum of the elements in nums is 10, which is not divisible 
+	             by 6. We can remove the subarray [4], and the sum of the 
+	             remaining elements is 6, which is divisible by 6.
+
+	Example 2:
+	Input: nums = [6,3,5,2], p = 9
+	Output: 2
+	Explanation: We cannot remove a single element to get a sum divisible by 9. 
+	             The best way is to remove the subarray [5,2], leaving us with 
+	             [6,3] with sum 9.
+	
+	Example 3:
+	Input: nums = [1,2,3], p = 3
+	Output: 0
+	Explanation: Here the sum is 6. which is already divisible by 3. Thus we do 
+	             not need to remove anything.
+
+	Example 4:
+	Input: nums = [1,2,3], p = 7
+	Output: -1
+	Explanation: There is no way to remove a subarray in order to get a sum 
+	             divisible by 7.
+
+	Example 5:
+	Input: nums = [1000000000,1000000000,1000000000], p = 3
+	Output: 0
+
+	Constraints:
+	* 1 <= nums.length <= 105
+	* 1 <= nums[i] <= 109
+	* 1 <= p <= 109"""
+
+    def minSubarray(self, nums: List[int], p: int) -> int:
+        target = sum(nums) % p # targetted remainder 
+        ans = inf
+        seen = {(prefix := 0): -1}
+        for i, x in enumerate(nums): 
+            seen[(prefix := (prefix+x)%p)] = i # update seen before check 
+            if (prefix-target) % p in seen: 
+                ans = min(ans, i - seen[(prefix-target) % p])
+        return ans if ans < len(nums) else -1 # not allowed to remove whole array 
+
+
+
+    """1591. Strange Printer II (Hard)
+	There is a strange printer with the following two special requirements: 
+	1) On each turn, the printer will print a solid rectangular pattern of a 
+	   single color on the grid. This will cover up the existing colors in the 
+	   rectangle.
+	2) Once the printer has used a color for the above operation, the same 
+	   color cannot be used again.
+	
+	You are given a m x n matrix targetGrid, where targetGrid[row][col] is the 
+	color in the position (row, col) of the grid. Return true if it is possible 
+	to print the matrix targetGrid, otherwise, return false.
+
+	Example 1:
+	Input: targetGrid = [[1,1,1,1],[1,2,2,1],[1,2,2,1],[1,1,1,1]]
+	Output: true
+
+	Example 2:
+	Input: targetGrid = [[1,1,1,1],[1,1,3,3],[1,1,3,4],[5,5,1,4]]
+	Output: true
+
+	Example 3:
+	Input: targetGrid = [[1,2,1],[2,1,2],[1,2,1]]
+	Output: false
+	Explanation: It is impossible to form targetGrid because it is not allowed 
+	             to print the same color in different turns.
+
+	Example 4:
+	Input: targetGrid = [[1,1,1],[3,1,3]]
+	Output: false
+
+	Constraints:
+	* m == targetGrid.length
+	* n == targetGrid[i].length
+	* 1 <= m, n <= 60
+	* 1 <= targetGrid[row][col] <= 60"""
+
+    def isPrintable(self, targetGrid: List[List[int]]) -> bool:
+        m, n = len(targetGrid), len(targetGrid[0]) # dimensions 
+        
+        # build directed graph (adjacency list)
+        digraph = {} 
+        for c in range(1, 61): 
+            imn = jmn = 60
+            imx = jmx = 0
+            for i in range(m): 
+                for j in range(n): 
+                    if targetGrid[i][j] == c: 
+                        imn = min(imn, i)
+                        imx = max(imx, i)
+                        jmn = min(jmn, j)
+                        jmx = max(jmx, j)
+            for i in range(imn, imx+1):
+                for j in range(jmn, jmx+1): 
+                    if targetGrid[i][j] != c: 
+                        digraph.setdefault(c, set()).add(targetGrid[i][j])
+            
+        # check for cycle in digraph (tri-color)
+        def dfs(n): 
+            """Return True if a cycle is detected."""
+            if seen[n]: return seen[n] == 1 
+            seen[n] = 1
+            if any(dfs(nn) for nn in digraph.get(n, set())): return True 
+            seen[n] = 2
+            return False 
+        
+        seen = [0]*61
+        return not any(dfs(i) for i in range(61)) # cycle, i.e. impossible to print 
 
 
     """1592. Rearrange Spaces Between Words (Easy)
