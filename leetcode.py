@@ -9048,6 +9048,108 @@ class Solution:
         return fn(amount)
 
 
+    """522. Longest Uncommon Subsequence II (Medium)
+	Given a list of strings, you need to find the longest uncommon subsequence 
+	among them. The longest uncommon subsequence is defined as the longest 
+	subsequence of one of these strings and this subsequence should not be any 
+	subsequence of the other strings. A subsequence is a sequence that can be 
+	derived from one sequence by deleting some characters without changing the 
+	order of the remaining elements. Trivially, any string is a subsequence of 
+	itself and an empty string is a subsequence of any string. The input will 
+	be a list of strings, and the output needs to be the length of the longest 
+	uncommon subsequence. If the longest uncommon subsequence doesn't exist, 
+	return -1.
+
+	Example 1:
+	Input: "aba", "cdc", "eae"
+	Output: 3
+	
+	Note:
+	* All the given strings' lengths will not exceed 10.
+	* The length of the given list will be in the range of [2, 50]."""
+
+    def findLUSlength(self, strs: List[str]) -> int:
+        
+        def fn(p, s): 
+            """Return True if p is a subsequence of s."""
+            ss = iter(s)
+            return all(c in ss for c in p)
+        
+        strs.sort(key=len, reverse=True)
+        
+        for i in range(len(strs)): 
+            if not any(fn(strs[i], strs[ii]) for ii in range(len(strs)) if i != ii): return len(strs[i])
+        return -1
+
+
+    """523. Continuous Subarray Sum (Medium)
+	Given a list of non-negative numbers and a target integer k, write a 
+	function to check if the array has a continuous subarray of size at least 2 
+	that sums up to a multiple of k, that is, sums up to n*k where n is also an 
+	integer.
+
+	Example 1:
+	Input: [23, 2, 4, 6, 7],  k=6
+	Output: True
+	Explanation: Because [2, 4] is a continuous subarray of size 2 and sums up to 6.
+
+	Example 2:
+	Input: [23, 2, 6, 4, 7],  k=6
+	Output: True
+	Explanation: Because [23, 2, 6, 4, 7] is an continuous subarray of size 5 and sums up to 42.
+
+	Constraints:
+	* The length of the array won't exceed 10,000.
+	* You may assume the sum of all the numbers is in the range of a signed 32-bit integer."""
+
+    def checkSubarraySum(self, nums: List[int], k: int) -> bool:
+        prefix = 0 # prefix modulo 
+        seen = {0: -1}
+        for i, x in enumerate(nums): 
+            prefix += x
+            if k: prefix %= k
+            if prefix in seen and i - seen[prefix] >= 2: return True 
+            seen.setdefault(prefix, i)
+        return False 
+
+
+    """524. Longest Word in Dictionary through Deleting (Medium)
+	Given a string and a string dictionary, find the longest string in the 
+	dictionary that can be formed by deleting some characters of the given 
+	string. If there are more than one possible results, return the longest 
+	word with the smallest lexicographical order. If there is no possible 
+	result, return the empty string.
+
+	Example 1:
+	Input:
+	s = "abpcplea", d = ["ale","apple","monkey","plea"]
+	Output: "apple"
+
+	Example 2:
+	Input:
+	s = "abpcplea", d = ["a","b","c"]
+	Output: "a"
+	
+	Note:
+	* All the strings in the input will only contain lower-case letters.
+	* The size of the dictionary won't exceed 1,000.
+	* The length of all the strings in the input won't exceed 1,000."""
+
+    def findLongestWord(self, s: str, d: List[str]) -> str:
+        
+        def fn(word): 
+            """Return True if word is a subsequence of s."""
+            ss = iter(s)
+            return all(c in ss for c in word)
+        
+        ans = ""
+        for w in d: 
+            if (len(w) > len(ans) or len(w) == len(ans) and w < ans) and fn(w): 
+                ans = w
+        return ans 
+
+
+
     """1588. Sum of All Odd Length Subarrays (Easy)
 	Given an array of positive integers arr, calculate the sum of all possible 
 	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
@@ -10277,3 +10379,53 @@ class Solution:
                 cnt += 1
                 if randint(1, cnt) == cnt: ans = i # prob 1/cnt
         return ans 
+
+
+"""519. Random Flip Matrix (Medium)
+You are given the number of rows n_rows and number of columns n_cols of a 2D 
+binary matrix where all values are initially 0. Write a function flip which 
+chooses a 0 value uniformly at random, changes it to 1, and then returns the 
+position [row.id, col.id] of that value. Also, write a function reset which 
+sets all values back to 0. Try to minimize the number of calls to system's 
+Math.random() and optimize the time and space complexity.
+
+Note:
+* 1 <= n_rows, n_cols <= 10000
+* 0 <= row.id < n_rows and 0 <= col.id < n_cols
+* flip will not be called when the matrix has no 0 values left.
+* the total number of calls to flip and reset will not exceed 1000.
+
+Example 1:
+Input: 
+["Solution","flip","flip","flip","flip"]
+[[2,3],[],[],[],[]]
+Output: [null,[0,1],[1,2],[1,0],[1,1]]
+
+Example 2:
+Input: 
+["Solution","flip","flip","reset","flip"]
+[[1,2],[],[],[],[]]
+Output: [null,[0,0],[0,1],null,[0,0]]
+
+Explanation of Input Syntax: The input is two lists: the subroutines called and 
+their arguments. Solution's constructor has two arguments, n_rows and n_cols. 
+flip and reset have no arguments. Arguments are always wrapped with a list, 
+even if there aren't any."""
+
+class Solution:
+
+    def __init__(self, n_rows: int, n_cols: int):
+        self.mp = {}
+        self.cols = n_cols
+        self.size = self.cpty = n_rows * n_cols 
+
+    def flip(self) -> List[int]:
+        self.size -= 1
+        r = randint(0, self.size) 
+        rr = self.mp.get(r, r) # mapped random number (remove duplicates)
+        self.mp[r] = self.mp.get(self.size, self.size) # move rn at self.size to r
+        return rr//self.cols, rr%self.cols
+
+    def reset(self) -> None:
+        self.mp = {}
+        self.size = self.cpty 
