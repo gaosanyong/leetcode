@@ -9149,6 +9149,141 @@ class Solution:
         return ans 
 
 
+    """525. Contiguous Array (Medium)
+	Given a binary array, find the maximum length of a contiguous subarray 
+	with equal number of 0 and 1.
+
+	Example 1:
+	Input: [0,1]
+	Output: 2
+	Explanation: [0, 1] is the longest contiguous subarray with equal number of 
+	             0 and 1.
+	
+	Example 2:
+	Input: [0,1,0]
+	Output: 2
+	Explanation: [0, 1] (or [1, 0]) is a longest contiguous subarray with equal 
+	             number of 0 and 1.
+
+	Note: The length of the given binary array will not exceed 50,000."""
+
+    def findMaxLength(self, nums: List[int]) -> int:
+        seen = {0:-1}
+        ans = prefix = 0
+        for i, x in enumerate(nums):
+            prefix += x-0.5
+            ans = max(ans, i - seen.setdefault(prefix, i))
+        return ans 
+
+
+    """526. Beautiful Arrangement (Medium)
+	Suppose you have N integers from 1 to N. We define a beautiful arrangement 
+	as an array that is constructed by these N numbers successfully if one of 
+	the following is true for the ith position (1 <= i <= N) in this array:
+	* The number at the ith position is divisible by i.
+	* i is divisible by the number at the ith position.
+	Now given N, how many beautiful arrangements can you construct?
+
+	Example 1:
+	Input: 2
+	Output: 2
+
+	Explanation: 
+	The first beautiful arrangement is [1, 2]:
+	Number at the 1st position (i=1) is 1, and 1 is divisible by i (i=1).
+	Number at the 2nd position (i=2) is 2, and 2 is divisible by i (i=2).
+	The second beautiful arrangement is [2, 1]:
+	Number at the 1st position (i=1) is 2, and 2 is divisible by i (i=1).
+	Number at the 2nd position (i=2) is 1, and i (i=2) is divisible by 1.
+
+	Note: N is a positive integer and will not exceed 15."""
+
+    def countArrangement(self, N: int) -> int:
+        
+        def fn(i): 
+            """Return the number of beautiful arrangements of N numbers."""
+            if i == 0: return 1 # boundary condition 
+            ans = 0
+            for k in range(1, N+1): 
+                if k not in seen and (k%i == 0 or i%k == 0): 
+                    seen.add(k)
+                    ans += fn(i-1)
+                    seen.remove(k)
+            return ans 
+        
+        seen = set()
+        return fn(N)
+
+
+    """529. Minesweeper (Medium)
+	Let's play the minesweeper game (Wikipedia, online game)! You are given a 
+	2D char matrix representing the game board. 'M' represents an unrevealed 
+	mine, 'E' represents an unrevealed empty square, 'B' represents a revealed 
+	blank square that has no adjacent (above, below, left, right, and all 4 
+	diagonals) mines, digit ('1' to '8') represents how many mines are adjacent 
+	to this revealed square, and finally 'X' represents a revealed mine. Now 
+	given the next click position (row and column indices) among all the 
+	unrevealed squares ('M' or 'E'), return the board after revealing this 
+	position according to the following rules:
+
+	* If a mine ('M') is revealed, then the game is over - change it to 'X'.
+	* If an empty square ('E') with no adjacent mines is revealed, then change 
+	  it to revealed blank ('B') and all of its adjacent unrevealed squares 
+	  should be revealed recursively.
+	* If an empty square ('E') with at least one adjacent mine is revealed, 
+	  then change it to a digit ('1' to '8') representing the number of 
+	  adjacent mines.
+	* Return the board when no more squares will be revealed.
+
+	Example 1:
+	Input: [['E', 'E', 'E', 'E', 'E'],
+  	        ['E', 'E', 'M', 'E', 'E'],
+  	        ['E', 'E', 'E', 'E', 'E'],
+  	        ['E', 'E', 'E', 'E', 'E']]
+	Click : [3,0]
+	Output:[['B', '1', 'E', '1', 'B'],
+	        ['B', '1', 'M', '1', 'B'],
+	        ['B', '1', '1', '1', 'B'],
+	        ['B', 'B', 'B', 'B', 'B']]
+
+	Example 2:
+	Input: [['B', '1', 'E', '1', 'B'],
+	        ['B', '1', 'M', '1', 'B'],
+	        ['B', '1', '1', '1', 'B'],
+	        ['B', 'B', 'B', 'B', 'B']]
+	Click : [1,2]
+	Output:[['B', '1', 'E', '1', 'B'],
+	        ['B', '1', 'X', '1', 'B'],
+	        ['B', '1', '1', '1', 'B'],
+	        ['B', 'B', 'B', 'B', 'B']]
+
+	Note:
+	* The range of the input matrix's height and width is [1,50].
+	* The click position will only be an unrevealed square ('M' or 'E'), which 
+	  also means the input board contains at least one clickable square.
+	* The input board won't be a stage when game is over (some mines have been 
+	  revealed).
+	* For simplicity, not mentioned rules should be ignored in this problem. 
+	  For example, you don't need to reveal all the unrevealed mines when the 
+	  game is over, consider any cases that you will win the game or flag any squares."""
+
+    def updateBoard(self, board: List[List[str]], click: List[int]) -> List[List[str]]:
+        m, n = len(board), len(board[0]) # dimensions 
+        i, j = click 
+        if board[i][j] == "M": board[i][j] = "X"
+        elif board[i][j] == "E": 
+            stack = [(i, j)]
+            while stack: 
+                i, j = stack.pop()
+                cnt = 0
+                for ii, jj in product(range(i-1, i+2), range(j-1, j+2)): 
+                    if 0 <= ii < m and 0 <= jj < n and (ii, jj) != (i, j) and board[ii][jj] == "M": cnt += 1
+                if cnt: board[i][j] = str(cnt)
+                else: 
+                    board[i][j] = "B"
+                    for ii, jj in product(range(i-1, i+2), range(j-1, j+2)): 
+                        if 0 <= ii < m and 0 <= jj < n and (ii, jj) != (i, j) and board[ii][jj] == "E": stack.append((ii, jj))
+        return board
 
     """1588. Sum of All Odd Length Subarrays (Easy)
 	Given an array of positive integers arr, calculate the sum of all possible 
@@ -10429,3 +10564,70 @@ class Solution:
     def reset(self) -> None:
         self.mp = {}
         self.size = self.cpty 
+
+
+"""528. Random Pick with Weight (Medium)
+You are given an array of positive integers w where w[i] describes the weight 
+of ith index (0-indexed). We need to call the function pickIndex() which 
+randomly returns an integer in the range [0, w.length - 1]. pickIndex() should 
+return the integer proportional to its weight in the w array. For example, for 
+w = [1, 3], the probability of picking the index 0 is 1 / (1 + 3) = 0.25 
+(i.e 25%) while the probability of picking the index 1 is 3 / (1 + 3) = 0.75 
+(i.e 75%). More formally, the probability of picking index i is w[i] / sum(w).
+
+Example 1:
+Input:
+["Solution","pickIndex"]
+[[[1]],[]]
+Output: [null,0]
+
+Explanation:
+Solution solution = new Solution([1]);
+solution.pickIndex(); // return 0. Since there is only one single element on the array the only option is to return the first element.
+
+Example 2:
+Input:
+["Solution","pickIndex","pickIndex","pickIndex","pickIndex","pickIndex"]
+[[[1,3]],[],[],[],[],[]]
+Output: [null,1,1,1,1,0]
+Explanation: 
+Solution solution = new Solution([1, 3]);
+solution.pickIndex(); // return 1. It's returning the second element (index = 1) that has probability of 3/4.
+solution.pickIndex(); // return 1
+solution.pickIndex(); // return 1
+solution.pickIndex(); // return 1
+solution.pickIndex(); // return 0. It's returning the first element (index = 0) that has probability of 1/4.
+
+Since this is a randomization problem, multiple answers are allowed so the following outputs can be considered correct :
+[null,1,1,1,1,0]
+[null,1,1,1,1,1]
+[null,1,1,1,0,0]
+[null,1,1,1,0,1]
+[null,1,0,1,0,0]
+......
+and so on.
+
+Constraints:
+* 1 <= w.length <= 10000
+* 1 <= w[i] <= 10^5
+* pickIndex will be called at most 10000 times."""
+
+class Solution:
+
+    def __init__(self, w: List[int]):
+        self.prefix = [0]
+        for x in w: self.prefix.append(self.prefix[-1] + x)
+
+    def pickIndex(self) -> int:
+        r = randint(1, self.prefix[-1])
+        
+        def fn(arr, x):
+            """Return the position of x in arr."""
+            lo, hi = 0, len(arr)
+            while lo < hi: 
+                mid = lo + hi >> 1
+                if arr[mid] < x: lo = mid+1
+                else: hi = mid
+            return lo
+        
+        return fn(self.prefix, r)-1
