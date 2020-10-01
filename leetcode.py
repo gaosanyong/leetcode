@@ -9285,6 +9285,128 @@ class Solution:
                         if 0 <= ii < m and 0 <= jj < n and (ii, jj) != (i, j) and board[ii][jj] == "E": stack.append((ii, jj))
         return board
 
+
+    """532. K-diff Pairs in an Array (Medium)
+	Given an array of integers nums and an integer k, return the number of 
+	unique k-diff pairs in the array. A k-diff pair is an integer pair 
+	(nums[i], nums[j]), where the following are true:
+	* 0 <= i, j < nums.length
+	* i != j
+	* a <= b
+	* b - a == k
+
+	Example 1:
+	Input: nums = [3,1,4,1,5], k = 2
+	Output: 2
+	Explanation: There are two 2-diff pairs in the array, (1, 3) and (3, 5).
+	Although we have two 1s in the input, we should only return the number of unique pairs.
+
+	Example 2:
+	Input: nums = [1,2,3,4,5], k = 1
+	Output: 4
+	Explanation: There are four 1-diff pairs in the array, (1, 2), (2, 3), (3, 4) and (4, 5).
+
+	Example 3:
+	Input: nums = [1,3,1,5,4], k = 0
+	Output: 1
+	Explanation: There is one 0-diff pair in the array, (1, 1).
+
+	Example 4:
+	Input: nums = [1,2,4,4,3,3,0,9,2,3], k = 3
+	Output: 2
+
+	Example 5:
+	Input: nums = [-1,-2,-3], k = 1
+	Output: 2
+
+	Constraints:
+	* 1 <= nums.length <= 104
+	* -107 <= nums[i] <= 107
+	* 0 <= k <= 107"""
+
+    def findPairs(self, nums: List[int], k: int) -> int:
+        ans, seen = set(), set()
+        for x in nums: 
+            if x - k in seen: ans.add(x)
+            if x + k in seen: ans.add(x+k)
+            seen.add(x)
+        return len(ans)
+
+
+    """537. Complex Number Multiplication (Medium)
+	Given two strings representing two complex numbers. You need to return a 
+	string representing their multiplication. Note i2 = -1 according to the 
+	definition.
+
+	Example 1:
+	Input: "1+1i", "1+1i"
+	Output: "0+2i"
+	Explanation: (1 + i) * (1 + i) = 1 + i2 + 2 * i = 2i, and you need convert 
+	             it to the form of 0+2i.
+	
+	Example 2:
+	Input: "1+-1i", "1+-1i"
+	Output: "0+-2i"
+	Explanation: (1 - i) * (1 - i) = 1 + i2 - 2 * i = -2i, and you need convert 
+	             it to the form of 0+-2i.
+	
+	Note: The input strings will not have extra blank. The input strings will 
+	be given in the form of a+bi, where the integer a and b will both belong to 
+	the range of [-100, 100]. And the output should be also in this form."""
+
+    def complexNumberMultiply(self, a: str, b: str) -> str:
+        ar, ac = map(int, a[:-1].split("+"))
+        br, bc = map(int, b[:-1].split("+"))
+        return f"{ar*br-ac*bc}+{ar*bc+ac*br}i"
+
+
+    """538. Convert BST to Greater Tree (Medium)
+	Given the root of a Binary Search Tree (BST), convert it to a Greater Tree 
+	such that every key of the original BST is changed to the original key plus 
+	sum of all keys greater than the original key in BST. As a reminder, a 
+	binary search tree is a tree that satisfies these constraints:
+	* The left subtree of a node contains only nodes with keys less than the node's key.
+	* The right subtree of a node contains only nodes with keys greater than the node's key.
+	* Both the left and right subtrees must also be binary search trees.
+	
+	Note: This question is the same as 1038: https://leetcode.com/problems/binary-search-tree-to-greater-sum-tree/
+
+	Example 1:
+	Input: root = [4,1,6,0,2,5,7,null,null,null,3,null,null,null,8]
+	Output: [30,36,21,36,35,26,15,null,null,null,33,null,null,null,8]
+
+	Example 2:
+	Input: root = [0,null,1]
+	Output: [1,null,1]
+
+	Example 3:
+	Input: root = [1,0,2]
+	Output: [3,3,2]
+
+	Example 4:
+	Input: root = [3,2,4,1]
+	Output: [7,9,4,10]
+
+	Constraints:
+	* The number of nodes in the tree is in the range [0, 104].
+	* -104 <= Node.val <= 104
+	* All the values in the tree are unique.
+	* root is guaranteed to be a valid binary search tree."""
+
+    def convertBST(self, root: TreeNode) -> TreeNode:
+        
+        def fn(node, x): 
+            """Inorder traverse the tree and update node's value."""
+            if not node: return x
+            x = fn(node.right, x) # sum of right subtree
+            x += node.val 
+            node.val = x
+            return fn(node.left, x)
+        
+        fn(root, 0)
+        return root 
+
+
     """1588. Sum of All Odd Length Subarrays (Easy)
 	Given an array of positive integers arr, calculate the sum of all possible 
 	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
@@ -10631,3 +10753,26 @@ class Solution:
             return lo
         
         return fn(self.prefix, r)-1
+
+
+"""535. Encode and Decode TinyURL (Medium)
+Note: This is a companion problem to the System Design problem: Design TinyURL. 
+TinyURL is a URL shortening service where you enter a URL such as 
+https://leetcode.com/problems/design-tinyurl and it returns a short URL such as 
+http://tinyurl.com/4e9iAk. Design the encode and decode methods for the TinyURL 
+service. There is no restriction on how your encode/decode algorithm should 
+work. You just need to ensure that a URL can be encoded to a tiny URL and the 
+tiny URL can be decoded to the original URL."""
+
+class Codec:
+
+    def encode(self, longUrl: str) -> str:
+        """Encodes a URL to a shortened URL."""
+        self.lut = {} # look up table 
+        key = hex(abs(hash(longUrl)))
+        self.lut[key] = longUrl
+        return "http://tinyurl/" + key 
+
+    def decode(self, shortUrl: str) -> str:
+        """Decodes a shortened URL to its original URL."""
+        return self.lut[shortUrl.split("/")[-1]]
