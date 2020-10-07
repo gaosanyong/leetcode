@@ -9826,6 +9826,219 @@ class Solution:
         return fn(0, 0)
 
 
+    """1608. Special Array With X Elements Greater Than or Equal X (Easy)
+	You are given an array nums of non-negative integers. nums is considered 
+	special if there exists a number x such that there are exactly x numbers in 
+	nums that are greater than or equal to x. Notice that x does not have to be 
+	an element in nums. Return x if the array is special, otherwise, return -1. 
+	It can be proven that if nums is special, the value for x is unique.
+
+	Example 1:
+	Input: nums = [3,5]
+	Output: 2
+	Explanation: There are 2 values (3 and 5) that are greater than or equal to 2.
+
+	Example 2:
+	Input: nums = [0,0]
+	Output: -1
+	Explanation: No numbers fit the criteria for x.
+	If x = 0, there should be 0 numbers >= x, but there are 2.
+	If x = 1, there should be 1 number >= x, but there are 0.
+	If x = 2, there should be 2 numbers >= x, but there are 0.
+	x cannot be greater since there are only 2 numbers in nums.
+
+	Example 3:
+	Input: nums = [0,4,3,0,4]
+	Output: 3
+	Explanation: There are 3 values that are greater than or equal to 3.
+
+	Example 4:
+	Input: nums = [3,6,7,7,0]
+	Output: -1
+
+	Constraints:
+	* 1 <= nums.length <= 100
+	* 0 <= nums[i] <= 1000"""
+
+    def specialArray(self, nums: List[int]) -> int:
+        nums.sort() 
+        if len(nums) <= nums[0]: return len(nums) # edge case 
+        for i in range(1, len(nums)): 
+            if nums[i-1] < len(nums)-i <= nums[i]: return len(nums)-i
+        return -1
+
+
+    """1609. Even Odd Tree (Medium)
+	A binary tree is named Even-Odd if it meets the following conditions:
+	* The root of the binary tree is at level index 0, its children are at 
+	  level index 1, their children are at level index 2, etc.
+	* For every even-indexed level, all nodes at the level have odd integer 
+	  values in strictly increasing order (from left to right).
+	* For every odd-indexed level, all nodes at the level have even integer 
+	  values in strictly decreasing order (from left to right).
+	Given the root of a binary tree, return true if the binary tree is Even-
+	Odd, otherwise return false.
+
+	Example 1:
+	Input: root = [1,10,4,3,null,7,9,12,8,6,null,null,2]
+	Output: true
+	Explanation: The node values on each level are:
+	Level 0: [1]
+	Level 1: [10,4]
+	Level 2: [3,7,9]
+	Level 3: [12,8,6,2]
+	Since levels 0 and 2 are all odd and increasing, and levels 1 and 3 are all 
+	even and decreasing, the tree is Even-Odd.
+
+	Example 2:
+	Input: root = [5,4,2,3,3,7]
+	Output: false
+	Explanation: The node values on each level are:
+	Level 0: [5]
+	Level 1: [4,2]
+	Level 2: [3,3,7]
+	Node values in the level 2 must be in strictly increasing order, so the 
+	tree is not Even-Odd.
+
+	Example 3:
+	Input: root = [5,9,1,3,5,7]
+	Output: false
+	Explanation: Node values in the level 1 should be even integers.
+
+	Example 4:
+	Input: root = [1]
+	Output: true
+
+	Example 5:
+	Input: root = [11,8,6,1,3,9,11,30,20,18,16,12,10,4,2,17]
+	Output: true
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 105].
+	* 1 <= Node.val <= 106"""
+
+    def isEvenOddTree(self, root: TreeNode) -> bool:
+        queue = [root]
+        even = True # True for even level
+        while queue: 
+            newq = []
+            prev = -inf if even else inf
+            for node in queue: 
+                if not even and (node.val & 1 or prev <= node.val): return False 
+                elif even and (not (node.val & 1) or prev >= node.val): return False 
+                prev = node.val 
+                if node.left: newq.append(node.left)
+                if node.right: newq.append(node.right)
+            queue = newq 
+            even = not even
+        return True 
+
+
+    """1610. Maximum Number of Visible Points (Hard)
+	You are given an array points, an integer angle, and your location, where 
+	location = [posx, posy] and points[i] = [xi, yi] both denote integral 
+	coordinates on the X-Y plane. Initially, you are facing directly east from 
+	your position. You cannot move from your position, but you can rotate. In 
+	other words, posx and posy cannot be changed. Your field of view in degrees 
+	is represented by angle, determining how wide you can see from any given 
+	view direction. Let d be the amount in degrees that you rotate 
+	counterclockwise. Then, your field of view is the inclusive range of angles 
+	[d - angle/2, d + angle/2]. You can see some set of points if, for each 
+	point, the angle formed by the point, your position, and the immediate east 
+	direction from your position is in your field of view. There can be 
+	multiple points at one coordinate. There may be points at your location, 
+	and you can always see these points regardless of your rotation. Points do 
+	not obstruct your vision to other points. Return the maximum number of 
+	points you can see.
+
+	Example 1:
+	Input: points = [[2,1],[2,2],[3,3]], angle = 90, location = [1,1]
+	Output: 3
+	Explanation: The shaded region represents your field of view. All points 
+	             can be made visible in your field of view, including [3,3] 
+	             even though [2,2] is in front and in the same line of sight.
+
+	Example 2:
+	Input: points = [[2,1],[2,2],[3,4],[1,1]], angle = 90, location = [1,1]
+	Output: 4
+	Explanation: All points can be made visible in your field of view, 
+	             including the one at your location.
+
+	Example 3:
+	Input: points = [[1,0],[2,1]], angle = 13, location = [1,1]
+	Output: 1
+	Explanation: You can only see one of the two points, as shown above.
+
+	Constraints:
+	* 1 <= points.length <= 105
+	* points[i].length == 2
+	* location.length == 2
+	* 0 <= angle < 360
+	* 0 <= posx, posy, xi, yi <= 109"""
+
+    def visiblePoints(self, points: List[List[int]], angle: int, location: List[int]) -> int:
+        x0, y0 = location
+        
+        ans = ovlp = 0
+        theta = [] 
+        for x, y in points: 
+            if x == x0 and y == y0: ovlp += 1
+            else: theta.append(atan2(y-y0, x-x0)) # (x, y) wrt (x0, y0)
+        
+        theta.sort()
+        theta += [x+2*pi for x in theta]
+        ii = 0
+        for i in range(len(theta)): 
+            while theta[i] - theta[ii] > angle*pi/180: ii += 1
+            ans = max(ans, i-ii+1)
+        return ans + ovlp
+
+
+    """1611. Minimum One Bit Operations to Make Integers Zero (Hard)
+	Given an integer n, you must transform it into 0 using the following 
+	operations any number of times:
+	* Change the rightmost (0th) bit in the binary representation of n.
+	* Change the ith bit in the binary representation of n if the (i-1)th bit 
+	  is set to 1 and the (i-2)th through 0th bits are set to 0.
+	Return the minimum number of operations to transform n into 0.
+
+	Example 1:
+	Input: n = 0
+	Output: 0
+
+	Example 2:
+	Input: n = 3
+	Output: 2
+	Explanation: The binary representation of 3 is "11".
+	"11" -> "01" with the 2nd operation since the 0th bit is 1.
+	"01" -> "00" with the 1st operation.
+
+	Example 3:
+	Input: n = 6
+	Output: 4
+	Explanation: The binary representation of 6 is "110".
+	"110" -> "010" with the 2nd operation since the 1st bit is 1 and 0th through 0th bits are 0.
+	"010" -> "011" with the 1st operation.
+	"011" -> "001" with the 2nd operation since the 0th bit is 1.
+	"001" -> "000" with the 1st operation.
+
+	Example 4:
+	Input: n = 9
+	Output: 14
+
+	Example 5:
+	Input: n = 333
+	Output: 393
+
+	Constraints: 0 <= n <= 109"""
+
+    def minimumOneBitOperations(self, n: int) -> int:
+        if not n: return 0 # edge case 
+        if not (n & (n-1)): return 2*n-1
+        b = 1 << n.bit_length()-1 # most significant set bit 
+        return self.minimumOneBitOperations((b>>1)^b^n) + b
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
