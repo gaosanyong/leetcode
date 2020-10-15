@@ -137,16 +137,12 @@ class Solution:
 	Output: "bb"""
 
     def longestPalindrome(self, s: str) -> str:
-        
-        def fn(i, j): 
-            """Return the length of longest Palindrome starting from i, j"""
-            while i >= 0 and j < len(s) and s[i] == s[j]: i, j = i-1, j+1
-            return j-i-1
-        
         ans = ""
-        for i in range(len(s)): 
-            ll = max(fn(i, i), fn(i, i+1))
-            ans = max(ans, s[i-(ll-1)//2 : i+1+ll//2], key=len)
+        for i in range(2*len(s)-1): 
+            lo = i//2
+            hi = lo + i%2
+            while 0 <= lo and hi < len(s) and s[lo] == s[hi]: lo, hi = lo-1, hi+1
+            ans = max(ans, s[lo+1:hi], key=len)
         return ans 
 
 
@@ -5087,26 +5083,20 @@ class Solution:
 	Output: -1->0->3->4->5"""
 
     def sortList(self, head: ListNode) -> ListNode:
-        #break list into two parts 
-        fast = prev = slow = head
-        while fast and fast.next:
-            fast, prev, slow = fast.next.next, slow, slow.next
-        if prev: prev.next = None #break list into two parts
+        if not head or not head.next: return head # boundary condition (null or single node)
         
-        #slow == head of 2nd half
-        if not slow or head == slow: return head
-
-        list1 = self.sortList(head) #sort 1st half
-        list2 = self.sortList(slow) #sort 2nd half
-        
-        #merge two sorted sub-lists
-        dummy = node = ListNode()
+        fast = prev = slow = head 
+        while fast and fast.next: fast, prev, slow = fast.next.next, slow, slow.next
+            
+        prev.next = None # break list into two pieces 
+        list1, list2 = self.sortList(head), self.sortList(slow) # sort two pieces repectively 
+        dummy = node = ListNode() # merge 
         while list1 and list2:
             if list1.val > list2.val: list1, list2 = list2, list1
             node.next = node = list1
-            list1 = list1.next
-        node.next = list1 or list2
-        return dummy.next 
+            list1 = list1.next 
+        node.next = list1 or list2 
+        return dummy.next
 
 
     """149. Max Points on a Line (Hard)
@@ -7799,6 +7789,35 @@ class Solution:
         return ans[-1]
 
 
+    """316. Remove Duplicate Letters (Medium)
+	Given a string s, remove duplicate letters so that every letter appears 
+	once and only once. You must make sure your result is the smallest in 
+	lexicographical order among all possible results. Note: This question is 
+	the same as 1081: 
+	https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/
+
+	Example 1:
+	Input: s = "bcabc"
+	Output: "abc"
+
+	Example 2:
+	Input: s = "cbacdcbc"
+	Output: "acdb"
+
+	Constraints:
+	* 1 <= s.length <= 104
+	* s consists of lowercase English letters."""
+
+    def removeDuplicateLetters(self, s: str) -> str:
+        mp = {c: i for i, c in enumerate(s)}
+        stack = []
+        for i, c in enumerate(s): 
+            if c not in stack: 
+                while stack and c < stack[-1] and i < mp[stack[-1]]: stack.pop()
+                stack.append(c)
+        return "".join(map(str, stack))
+
+
     """318. Maximum Product of Word Lengths (Medium)
 	Given a string array words, find the maximum value of 
 	length(word[i]) * length(word[j]) where the two words do not share common 
@@ -9407,6 +9426,203 @@ class Solution:
         return root 
 
 
+    """650. 2 Keys Keyboard (Medium)
+	Initially on a notepad only one character 'A' is present. You can perform 
+	two operations on this notepad for each step:
+	* Copy All: You can copy all the characters present on the notepad (partial 
+	  copy is not allowed).
+	* Paste: You can paste the characters which are copied last time.
+	 
+	Given a number n. You have to get exactly n 'A' on the notepad by 
+	performing the minimum number of steps permitted. Output the minimum number 
+	of steps to get n 'A'.
+
+	Example 1:
+	Input: 3
+	Output: 3
+	Explanation: Intitally, we have one character 'A'.
+	In step 1, we use Copy All operation.
+	In step 2, we use Paste operation to get 'AA'.
+	In step 3, we use Paste operation to get 'AAA'.
+
+	Note: The n will be in the range [1, 1000]."""
+
+    def minSteps(self, n: int) -> int:
+        for i in range(2, int(sqrt(n)+1)): 
+            if n%i == 0: return i + self.minSteps(n//i)
+        return 0 if n == 1 else n 
+
+
+    """654. Maximum Binary Tree (Medium)
+	Given an integer array with no duplicates. A maximum tree building on this 
+	array is defined as follow:
+	* The root is the maximum number in the array.
+	* The left subtree is the maximum tree constructed from left part subarray 
+	  divided by the maximum number.
+	* The right subtree is the maximum tree constructed from right part 
+	  subarray divided by the maximum number.
+	Construct the maximum tree by the given array and output the root node of 
+	this tree.
+
+	Example 1:
+	Input: [3,2,1,6,0,5]
+	Output: return the tree root node representing the following tree:
+	      6
+	    /   \
+	   3     5
+	    \    / 
+	     2  0   
+	       \
+	        1
+	Note: The size of the given array will be in the range [1,1000]."""
+
+    def constructMaximumBinaryTree(self, nums: List[int]) -> TreeNode:
+        stack = []
+        for x in nums: 
+            node = TreeNode(x)
+            while stack and stack[-1].val < x: node.left = stack.pop()
+            if stack: stack[-1].right = node 
+            stack.append(node)
+        return stack[0]
+
+
+    """655. Print Binary Tree (Medium)
+	Print a binary tree in an m*n 2D string array following these rules:
+	1 The row number m should be equal to the height of the given binary tree.
+	2 The column number n should always be an odd number.
+	3 The root node's value (in string format) should be put in the exactly 
+	  middle of the first row it can be put. The column and the row where the 
+	  root node belongs will separate the rest space into two parts (left-
+	  bottom part and right-bottom part). You should print the left subtree in 
+	  the left-bottom part and print the right subtree in the right-bottom part. 
+	  The left-bottom part and the right-bottom part should have the same size. 
+	  Even if one subtree is none while the other is not, you don't need to 
+	  print anything for the none subtree but still need to leave the space as 
+	  large as that for the other subtree. However, if two subtrees are none, 
+	  then you don't need to leave space for both of them.
+	4 Each unused space should contain an empty string "".
+	5 Print the subtrees following the same rules.
+	
+	Example 1:
+	Input:
+	     1
+	    /
+	   2
+	Output:
+	[["", "1", ""],
+	 ["2", "", ""]]
+	
+	Example 2:
+	Input:
+	     1
+	    / \
+	   2   3
+	    \
+	     4
+	Output:
+	[["", "", "", "1", "", "", ""],
+	 ["", "2", "", "", "", "3", ""],
+	 ["", "", "4", "", "", "", ""]]
+	
+	Example 3:
+	Input:
+	      1
+	     / \
+	    2   5
+	   / 
+	  3 
+	 / 
+	4 
+	Output:
+	[["",  "",  "", "",  "", "", "", "1", "",  "",  "",  "",  "", "", ""]
+	 ["",  "",  "", "2", "", "", "", "",  "",  "",  "",  "5", "", "", ""]
+	 ["",  "3", "", "",  "", "", "", "",  "",  "",  "",  "",  "", "", ""]
+	 ["4", "",  "", "",  "", "", "", "",  "",  "",  "",  "",  "", "", ""]]
+
+	Note: The height of binary tree is in the range of [1, 10]."""
+
+    def printTree(self, root: TreeNode) -> List[List[str]]:
+        ht = lambda node: 1 + max(ht(node.left), ht(node.right)) if node else 0 # height of binary tree 
+        m = ht(root) # rows 
+        n = 2**m - 1 # columns 
+        
+        def dfs(node, i, lo=0, hi=n): 
+            """Populate ans via dfs."""
+            if not node: return 
+            mid = lo + hi >> 1
+            ans[i][mid] = str(node.val)
+            dfs(node.left, i+1, lo, mid) or dfs(node.right, i+1, mid+1, hi)
+
+        ans = [[""]*n for _ in range(m)]
+        dfs(root, 0)
+        return ans
+
+
+    """658. Find K Closest Elements (Medium)
+	Given a sorted array arr, two integers k and x, find the k closest elements 
+	to x in the array. The result should also be sorted in ascending order. If 
+	there is a tie, the smaller elements are always preferred.
+
+	Example 1:
+	Input: arr = [1,2,3,4,5], k = 4, x = 3
+	Output: [1,2,3,4]
+
+	Example 2:
+	Input: arr = [1,2,3,4,5], k = 4, x = -1
+	Output: [1,2,3,4]
+
+	Constraints:
+	* 1 <= k <= arr.length
+	* 1 <= arr.length <= 10^4
+	* Absolute value of elements in the array and x will not exceed 10^4"""
+
+    def findClosestElements(self, arr: List[int], k: int, x: int) -> List[int]:
+        lo, hi = 0, len(arr)-k
+        while lo < hi: 
+            mid = lo + hi >> 1
+            if x - arr[mid] > arr[mid+k] - x: lo = mid + 1
+            else: hi = mid
+        return arr[lo:lo+k]
+
+
+    """659. Split Array into Consecutive Subsequences (Medium)
+	Given an array nums sorted in ascending order, return true if and only if 
+	you can split it into 1 or more subsequences such that each subsequence 
+	consists of consecutive integers and has length at least 3.
+
+	Example 1:
+	Input: [1,2,3,3,4,5]
+	Output: True
+	Explanation: You can split them into two consecutive subsequences : 
+	1, 2, 3
+	3, 4, 5
+
+	Example 2:
+	Input: [1,2,3,3,4,4,5,5]
+	Output: True
+	Explanation: You can split them into two consecutive subsequences : 
+	1, 2, 3, 4, 5
+	3, 4, 5
+	
+	Example 3:
+	Input: [1,2,3,4,4,5]
+	Output: False
+
+	Constraints: 1 <= nums.length <= 10000"""
+
+    def isPossible(self, nums: List[int]) -> bool:
+        freq = {}
+        for x in nums: freq[x] = 1 + freq.get(x, 0) # frequency table of nums
+        
+        seen = deque()
+        for i, x in enumerate(nums):
+            if i == 0 or nums[i-1] != x: 
+                if (n := freq[x] - freq.get(x-1, 0)) > 0: seen.extend([x]*n)
+                elif any(x - seen.popleft() < 3 for _ in range(-n)): return False 
+                if not freq.get(x+1, 0) and any(x - seen.popleft() < 2 for _ in range(freq[x])): return False 
+        return True 
+
+
     """1588. Sum of All Odd Length Subarrays (Easy)
 	Given an array of positive integers arr, calculate the sum of all possible 
 	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
@@ -10989,3 +11205,43 @@ class Codec:
     def decode(self, shortUrl: str) -> str:
         """Decodes a shortened URL to its original URL."""
         return self.lut[shortUrl.split("/")[-1]]
+
+
+"""1603. Design Parking System (Easy)
+Design a parking system for a parking lot. The parking lot has three kinds of 
+parking spaces: big, medium, and small, with a fixed number of slots for each 
+size. Implement the ParkingSystem class:
+* ParkingSystem(int big, int medium, int small) Initializes object of the 
+  ParkingSystem class. The number of slots for each parking space are given as 
+  part of the constructor.
+* bool addCar(int carType) Checks whether there is a parking space of carType 
+  for the car that wants to get into the parking lot. carType can be of three 
+  kinds: big, medium, or small, which are represented by 1, 2, and 3 
+  respectively. A car can only park in a parking space of its carType. If there 
+  is no space available, return false, else park the car in that size space and 
+  return true.
+
+Example 1:
+Input: ["ParkingSystem", "addCar", "addCar", "addCar", "addCar"]
+       [[1, 1, 0], [1], [2], [3], [1]]
+Output: [null, true, true, false, false]
+Explanation:
+ParkingSystem parkingSystem = new ParkingSystem(1, 1, 0);
+parkingSystem.addCar(1); // return true because there is 1 available slot for a big car
+parkingSystem.addCar(2); // return true because there is 1 available slot for a medium car
+parkingSystem.addCar(3); // return false because there is no available slot for a small car
+parkingSystem.addCar(1); // return false because there is no available slot for a big car. It is already occupied.
+
+Constraints:
+* 0 <= big, medium, small <= 1000
+* carType is 1, 2, or 3
+* At most 1000 calls will be made to addCar"""
+
+class ParkingSystem:
+
+    def __init__(self, big: int, medium: int, small: int):
+        self.space = [big, medium, small]
+
+    def addCar(self, carType: int) -> bool:
+        self.space[carType-1] -= 1 # space taken 
+        return self.space[carType-1] >= 0
