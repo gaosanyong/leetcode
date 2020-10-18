@@ -9623,6 +9623,113 @@ class Solution:
         return True 
 
 
+    """662. Maximum Width of Binary Tree (Medium)
+	Given a binary tree, write a function to get the maximum width of the given 
+	tree. The maximum width of a tree is the maximum width among all levels. 
+	The width of one level is defined as the length between the end-nodes (the 
+	leftmost and right most non-null nodes in the level, where the null nodes 
+	between the end-nodes are also counted into the length calculation. It is 
+	guaranteed that the answer will in the range of 32-bit signed integer.
+
+	Example 1:
+	Input: 
+	           1
+	         /   \
+	        3     2
+	       / \     \  
+	      5   3     9 
+	Output: 4
+	Explanation: The maximum width existing in the third level with the length 
+	             4 (5,3,null,9).
+
+	Example 2:
+	Input: 
+	          1
+	         /  
+	        3    
+	       / \       
+	      5   3     
+	Output: 2
+	Explanation: The maximum width existing in the third level with the length 
+	             2 (5,3).
+
+	Example 3:
+	Input: 
+	          1
+	         / \
+	        3   2 
+	       /        
+	      5      
+	Output: 2
+	Explanation: The maximum width existing in the second level with the length 
+	             2 (3,2).
+
+	Example 4:
+	Input: 
+	          1
+	         / \
+	        3   2
+	       /     \  
+	      5       9 
+	     /         \
+	    6           7
+	Output: 8
+	Explanation:The maximum width existing in the fourth level with the length 
+	            8 (6,null,null,null,null,null,null,7).
+	 
+	Constraints: The given binary tree will have between 1 and 3000 nodes."""
+
+    def widthOfBinaryTree(self, root: TreeNode) -> int:
+        ans = 1
+        queue = [(root, 0)]
+        while queue: 
+            ans = max(ans, queue[-1][1] - queue[0][1] + 1)
+            newq = []
+            for node, i in queue: 
+                if node.left: newq.append((node.left, 2*i))
+                if node.right: newq.append((node.right, 2*i+1))
+            queue = newq
+        return ans 
+
+
+    """695. Max Area of Island (Medium)
+	Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's 
+	(representing land) connected 4-directionally (horizontal or vertical.) You 
+	may assume all four edges of the grid are surrounded by water. Find the 
+	maximum area of an island in the given 2D array. (If there is no island, 
+	the maximum area is 0.)
+
+	Example 1:
+	[[0,0,1,0,0,0,0,1,0,0,0,0,0],
+	 [0,0,0,0,0,0,0,1,1,1,0,0,0],
+	 [0,1,1,0,1,0,0,0,0,0,0,0,0],
+	 [0,1,0,0,1,1,0,0,1,0,1,0,0],
+	 [0,1,0,0,1,1,0,0,1,1,1,0,0],
+	 [0,0,0,0,0,0,0,0,0,0,1,0,0],
+	 [0,0,0,0,0,0,0,1,1,1,0,0,0],
+	 [0,0,0,0,0,0,0,1,1,0,0,0,0]]
+	Given the above grid, return 6. Note the answer is not 11, because the 
+	island must be connected 4-directionally.
+	
+	Example 2:
+	[[0,0,0,0,0,0,0,0]]
+	Given the above grid, return 0.
+
+	Note: The length of each dimension in the given grid does not exceed 50."""
+
+    def maxAreaOfIsland(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0]) # dimension 
+        
+        def dfs(i, j): 
+            """Depth-first traverse the grid."""
+            if grid[i][j] == 1: 
+                grid[i][j] = 0 # mark visited 
+                return 1 + sum(dfs(ii, jj) for ii, jj in ((i-1, j), (i, j-1), (i, j+1), (i+1, j)) if 0 <= ii < m and 0 <= jj < n)
+            return 0
+        
+        return max(dfs(i, j) for i in range(m) for j in range(n))
+
+
     """1588. Sum of All Odd Length Subarrays (Easy)
 	Given an array of positive integers arr, calculate the sum of all possible 
 	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
@@ -10253,6 +10360,252 @@ class Solution:
         if not (n & (n-1)): return 2*n-1
         b = 1 << n.bit_length()-1 # most significant set bit 
         return self.minimumOneBitOperations((b>>1)^b^n) + b
+
+
+    """1624. Largest Substring Between Two Equal Characters (Easy)
+	Given a string s, return the length of the longest substring between two 
+	equal characters, excluding the two characters. If there is no such 
+	substring return -1. A substring is a contiguous sequence of characters 
+	within a string.
+
+	Example 1:
+	Input: s = "aa"
+	Output: 0
+	Explanation: The optimal substring here is an empty substring between the 
+	             two 'a's.
+
+	Example 2:
+	Input: s = "abca"
+	Output: 2
+	Explanation: The optimal substring here is "bc".
+
+	Example 3:
+	Input: s = "cbzxy"
+	Output: -1
+	Explanation: There are no characters that appear twice in s.
+
+	Example 4:
+	Input: s = "cabbac"
+	Output: 4
+	Explanation: The optimal substring here is "abba". Other non-optimal 
+	             substrings include "bb" and "".
+
+	Constraints:
+	* 1 <= s.length <= 300
+	* s contains only lowercase English letters."""
+
+    def maxLengthBetweenEqualCharacters(self, s: str) -> int:
+        ans, seen = -1, {}
+        for i, c in enumerate(s): 
+            ans = max(ans, i - seen.setdefault(c, i) - 1)
+        return ans 
+
+
+    """1625. Lexicographically Smallest String After Applying Operations (Medium)
+	You are given a string s of even length consisting of digits from 0 to 9, 
+	and two integers a and b. You can apply either of the following two 
+	operations any number of times and in any order on s: 
+	1) Add a to all odd indices of s (0-indexed). Digits post 9 are cycled back 
+	   to 0. For example, if s = "3456" and a = 5, s becomes "3951".
+	2) Rotate s to the right by b positions. For example, if s = "3456" and 
+	   b = 1, s becomes "6345".
+	Return the lexicographically smallest string you can obtain by applying the 
+	above operations any number of times on s. A string a is lexicographically 
+	smaller than a string b (of the same length) if in the first position where 
+	a and b differ, string a has a letter that appears earlier in the alphabet 
+	than the corresponding letter in b. For example, "0158" is lexicographically 
+	smaller than "0190" because the first position they differ is at the third 
+	letter, and '5' comes before '9'.
+
+	Example 1:
+	Input: s = "5525", a = 9, b = 2
+	Output: "2050"
+	Explanation: We can apply the following operations:
+	Start:  "5525"
+	Rotate: "2555"
+	Add:    "2454"
+	Add:    "2353"
+	Rotate: "5323"
+	Add:    "5222"
+	​​​​​​​Add:    "5121"
+	​​​​​​​Rotate: "2151"
+	​​​​​​​Add:    "2050"​​​​​​​​​​​​
+	There is no way to obtain a string that is lexicographically smaller then 
+	"2050".
+
+	Example 2:
+	Input: s = "74", a = 5, b = 1
+	Output: "24"
+	Explanation: We can apply the following operations:
+	Start:  "74"
+	Rotate: "47"
+	​​​​​​​Add:    "42"
+	​​​​​​​Rotate: "24"​​​​​​​​​​​​
+	There is no way to obtain a string that is lexicographically smaller then 
+	"24".
+
+	Example 3:
+	Input: s = "0011", a = 4, b = 2
+	Output: "0011"
+	Explanation: There are no sequence of operations that will give us a 
+	             lexicographically smaller string than "0011".
+
+	Example 4:
+	Input: s = "43987654", a = 7, b = 3
+	Output: "00553311"
+	 
+	Constraints:
+	* 2 <= s.length <= 100
+	* s.length is even.
+	* s consists of digits from 0 to 9 only.
+	* 1 <= a <= 9
+	* 1 <= b <= s.length - 1"""
+
+    def findLexSmallestString(self, s: str, a: int, b: int) -> str:
+        op1 = lambda s: "".join(str((int(c)+a)%10) if i&1 else c for i, c in enumerate(s))
+        op2 = lambda s: s[-b:] + s[:-b]
+        
+        seen = set()
+        stack = [s]
+        while stack: 
+            s = stack.pop()
+            seen.add(s)
+            if (ss := op1(s)) not in seen: stack.append(ss)
+            if (ss := op2(s)) not in seen: stack.append(ss)
+        return min(seen)
+
+
+    """1626. Best Team With No Conflicts (Medium)
+	You are the manager of a basketball team. For the upcoming tournament, you 
+	want to choose the team with the highest overall score. The score of the 
+	team is the sum of scores of all the players in the team. However, the 
+	basketball team is not allowed to have conflicts. A conflict exists if a 
+	younger player has a strictly higher score than an older player. A conflict 
+	does not occur between players of the same age. Given two lists, scores and 
+	ages, where each scores[i] and ages[i] represents the score and age of the 
+	ith player, respectively, return the highest overall score of all possible 
+	basketball teams.
+
+	Example 1:
+	Input: scores = [1,3,5,10,15], ages = [1,2,3,4,5]
+	Output: 34
+	Explanation: You can choose all the players.
+
+	Example 2:
+	Input: scores = [4,5,6,5], ages = [2,1,2,1]
+	Output: 16
+	Explanation: It is best to choose the last 3 players. Notice that you are 
+	             allowed to choose multiple people of the same age.
+
+	Example 3:
+	Input: scores = [1,2,3,5], ages = [8,9,10,1]
+	Output: 6
+	Explanation: It is best to choose the first 3 players. 
+	 
+	Constraints:
+	* 1 <= scores.length, ages.length <= 1000
+	* scores.length == ages.length
+	* 1 <= scores[i] <= 106
+	* 1 <= ages[i] <= 1000"""
+
+    def bestTeamScore(self, scores: List[int], ages: List[int]) -> int:
+        ages, scores = zip(*sorted(zip(ages, scores)))
+        
+        @lru_cache(None)
+        def fn(i): 
+            """Return max score up to ith player included."""
+            if i < 0: return 0 # boundary condition 
+            return scores[i] + max((fn(ii) for ii in range(i) if ages[ii] == ages[i] or scores[ii] <= scores[i]), default=0)
+        
+        return max(fn(i) for i in range(len(scores)))
+
+
+    """1627. Graph Connectivity With Threshold (Hard)
+	We have n cities labeled from 1 to n. Two different cities with labels x 
+	and y are directly connected by a bidirectional road if and only if x and y 
+	share a common divisor strictly greater than some threshold. More formally, 
+	cities with labels x and y have a road between them if there exists an 
+	integer z such that all of the following are true:
+	x % z == 0,
+	y % z == 0, and
+	z > threshold.
+	Given the two integers, n and threshold, and an array of queries, you must 
+	determine for each queries[i] = [ai, bi] if cities ai and bi are connected 
+	(i.e. there is some path between them). Return an array answer, where 
+	answer.length == queries.length and answer[i] is true if for the ith query, 
+	there is a path between ai and bi, or answer[i] is false if there is no 
+	path.
+
+	Example 1:
+	Input: n = 6, threshold = 2, queries = [[1,4],[2,5],[3,6]]
+	Output: [false,false,true]
+	Explanation: The divisors for each number:
+	1:   1
+	2:   1, 2
+	3:   1, 3
+	4:   1, 2, 4
+	5:   1, 5
+	6:   1, 2, 3, 6
+	Using the underlined divisors above the threshold, only cities 3 and 6 
+	share a common divisor, so they are the only ones directly connected. The 
+	result of each query:
+	[1,4]   1 is not connected to 4
+	[2,5]   2 is not connected to 5
+	[3,6]   3 is connected to 6 through path 3--6
+
+	Example 2:
+	Input: n = 6, threshold = 0, queries = [[4,5],[3,4],[3,2],[2,6],[1,3]]
+	Output: [true,true,true,true,true]
+	Explanation: The divisors for each number are the same as the previous 
+	             example. However, since the threshold is 0, all divisors can 
+	             be used. Since all numbers share 1 as a divisor, all cities 
+	             are connected.
+	
+	Example 3:
+	Input: n = 5, threshold = 1, queries = [[4,5],[4,5],[3,2],[2,3],[3,4]]
+	Output: [false,false,false,false,false]
+	Explanation: Only cities 2 and 4 share a common divisor 2 which is strictly 
+	             greater than the threshold 1, so they are the only ones 
+	             directly connected.
+	Please notice that there can be multiple queries for the same pair of nodes 
+	[x, y], and that the query [x, y] is equivalent to the query [y, x].
+
+	Constraints:
+	* 2 <= n <= 104
+	* 0 <= threshold <= n
+	* 1 <= queries.length <= 105
+	* queries[i].length == 2
+	* 1 <= ai, bi <= cities
+	* ai != bi"""
+
+""" 
+ 	class UnionFind:
+	    def __init__(self, n):
+	        self.parent = list(range(n))
+	        self.rank = [1]*n
+	        
+	    def find(self, p): 
+	        if self.parent[p] != p:
+	            self.parent[p] = self.find(self.parent[p]) # path compression 
+	        return self.parent[p]
+	    
+	    def union(self, p, q): 
+	        prt, qrt = self.find(p), self.find(q)
+	        if prt == qrt: return False
+	        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt # union with ranking 
+	        self.parent[prt] = qrt
+	        self.rank[qrt] += self.rank[prt]
+	        return True 
+"""
+
+    def areConnected(self, n: int, threshold: int, queries: List[List[int]]) -> List[bool]:
+        uf = UnionFind(n)
+        
+        for u in range(threshold+1, n+1):
+            for v in range(u*2, n+1, u): 
+                uf.union(u-1, v-1)
+        
+        return [uf.find(u-1) == uf.find(v-1) for u, v in queries]
 
 
 """146. LRU Cache (Medium)
