@@ -8534,15 +8534,12 @@ class Solution:
 
     def lengthLongestPath(self, input: str) -> int:
         ans = 0
-        prefix = [0]
-        for x in input.split("\n"): # split string into dir & file
-            k = x.count("\t")
-            x = x.lstrip("\t")
-            if "." in x: ans = max(ans, prefix[k] + len(x)) # x is file 
-            else: 
-                if len(prefix) == k+1: prefix.append(prefix[-1] + 1 + len(x))
-                else: prefix[k+1] = prefix[k] + 1 + len(x)
-        return ans  
+        prefix = {-1: 0}
+        for subd in input.split("\n"): # sub-directory
+            depth = subd.count("\t")
+            prefix[depth] = prefix[depth-1] + len(subd) - depth # not including delimiter
+            if "." in subd: ans = max(ans, prefix[depth] + depth) # including delimiter
+        return ans
 
 
     """389. Find the Difference (Easy)
@@ -9692,6 +9689,178 @@ class Solution:
         return ans 
 
 
+    """678. Valid Parenthesis String (Medium)
+	Given a string containing only three types of characters: '(', ')' and '*', 
+	write a function to check whether this string is valid. We define the 
+	validity of a string by these rules:
+	1) Any left parenthesis '(' must have a corresponding right parenthesis ')'.
+	2) Any right parenthesis ')' must have a corresponding left parenthesis '('.
+	3) Left parenthesis '(' must go before the corresponding right parenthesis ')'.
+	4) '*' could be treated as a single right parenthesis ')' or a single left parenthesis '(' or an empty string.
+	5) An empty string is also valid.
+	
+	Example 1:
+	Input: "()"
+	Output: True
+	
+	Example 2:
+	Input: "(*)"
+	Output: True
+	
+	Example 3:
+	Input: "(*))"
+	Output: True
+	
+	Note: The string size will be in the range [1, 100]."""
+
+    def checkValidString(self, s: str) -> bool:
+        op = cl = 0
+        for i in range(len(s)):
+            op += 1 if s[ i] in "(*" else -1
+            cl += 1 if s[~i] in ")*" else -1
+            if op < 0 or cl < 0: return False 
+        return True 
+
+
+    """686. Repeated String Match (Medium)
+	Given two strings a and b, return the minimum number of times you should 
+	repeat string a so that string b is a substring of it. If it is impossible 
+	for b​​​​​​ to be a substring of a after repeating it, return -1. Notice: string 
+	"abc" repeated 0 times is "",  repeated 1 time is "abc" and repeated 2 
+	times is "abcabc".
+
+	Example 1:
+	Input: a = "abcd", b = "cdabcdab"
+	Output: 3
+	Explanation: We return 3 because by repeating a three times "abcdabcdabcd", 
+	             b is a substring of it.
+
+	Example 2:
+	Input: a = "a", b = "aa"
+	Output: 2
+
+	Example 3:
+	Input: a = "a", b = "a"
+	Output: 1
+
+	Example 4:
+	Input: a = "abc", b = "wxyz"
+	Output: -1
+
+	Constraints:
+	* 1 <= a.length <= 104
+	* 1 <= b.length <= 104
+	* a and b consist of lower-case English letters."""
+
+    def repeatedStringMatch(self, a: str, b: str) -> int:
+        n = ceil(len(b)/len(a)) # ceiling of len(b)/len(a)
+        return next((n+i for i in range(2) if b in (n+i)*a), -1)
+
+
+    """687. Longest Univalue Path (Medium)
+	Given the root of a binary tree, return the length of the longest path, 
+	where each node in the path has the same value. This path may or may not 
+	pass through the root. The length of the path between two nodes is 
+	represented by the number of edges between them.
+
+	Example 1:
+	Input: root = [5,4,5,1,1,5]
+	Output: 2
+
+	Example 2:
+	Input: root = [1,4,5,4,4,5]
+	Output: 2
+
+	Constraints:
+	* The number of nodes in the tree is in the range [0, 104].
+	* -1000 <= Node.val <= 1000
+	* The depth of the tree will not exceed 1000."""
+
+    def longestUnivaluePath(self, root: TreeNode) -> int:
+        
+        def dfs(node): 
+            """Return longest univalue branch and longest univalue path (post-order traversal)."""
+            nonlocal ans 
+            if not node: return 0
+            lx, rx = dfs(node.left), dfs(node.right) 
+            if not node.left or node.left.val != node.val: lx = 0
+            if not node.right or node.right.val != node.val: rx = 0 
+            ans = max(ans, 1 + lx + rx)
+            return 1 + max(lx, rx)
+        
+        ans = 0
+        dfs(root)
+        return max(0, ans-1)
+
+
+    """688. Knight Probability in Chessboard (Medium)
+	On an NxN chessboard, a knight starts at the r-th row and c-th column and 
+	attempts to make exactly K moves. The rows and columns are 0 indexed, so 
+	the top-left square is (0, 0), and the bottom-right square is (N-1, N-1). A 
+	chess knight has 8 possible moves it can make, as illustrated below. Each 
+	move is two squares in a cardinal direction, then one square in an 
+	orthogonal direction. Each time the knight is to move, it chooses one of 
+	eight possible moves uniformly at random (even if the piece would go off 
+	the chessboard) and moves there. The knight continues moving until it has 
+	made exactly K moves or has moved off the chessboard. Return the 
+	probability that the knight remains on the board after it has stopped 
+	moving.
+
+	Example:
+	Input: 3, 2, 0, 0
+	Output: 0.0625
+	Explanation: There are two moves (to (1,2), (2,1)) that will keep the 
+	             knight on the board. From each of those positions, there are 
+	             also two moves that will keep the knight on the board. The 
+	             total probability the knight stays on the board is 0.0625.
+	 
+	Note:
+	* N will be between 1 and 25.
+	* K will be between 0 and 100.
+	* The knight always initially starts on the board."""
+
+    def knightProbability(self, N: int, K: int, r: int, c: int) -> float:
+        
+        @lru_cache(None)
+        def fn(k, i, j): 
+            """Return probability in chessboard at (i, j) with k moves left."""
+            if not (0 <= i < N and 0 <= j < N): return 0
+            if k == 0: return 1 
+            return 1/8*sum(fn(k-1, i+ii, j+jj) for ii, jj in ((-2, -1), (-2, 1), (-1, -2), (-1, 2), (1, -2), (1, 2), (2, -1), (2, 1)))
+            
+        return fn(K, r, c)
+
+
+    """692. Top K Frequent Words (Medium)
+	Given a non-empty list of words, return the k most frequent elements. Your 
+	answer should be sorted by frequency from highest to lowest. If two words 
+	have the same frequency, then the word with the lower alphabetical order 
+	comes first.
+
+	Example 1:
+	Input: ["i", "love", "leetcode", "i", "love", "coding"], k = 2
+	Output: ["i", "love"]
+	Explanation: "i" and "love" are the two most frequent words. Note that "i" 
+	             comes before "love" due to a lower alphabetical order.
+	
+	Example 2:
+	Input: ["the", "day", "is", "sunny", "the", "the", "the", "sunny", "is", "is"], k = 4
+	Output: ["the", "is", "sunny", "day"]
+	Explanation: "the", "is", "sunny" and "day" are the four most frequent 
+	             words, with the number of occurrence being 4, 3, 2 and 1 
+	             respectively.
+	Note:
+	* You may assume k is always valid, 1 ≤ k ≤ number of unique elements.
+	* Input words contain only lowercase letters.
+	
+	Follow up: Try to solve it in O(n log k) time and O(n) extra space."""
+
+    def topKFrequent(self, words: List[str], k: int) -> List[str]:
+        freq = {} # frequency table
+        for x in words: freq[x] = 1 + freq.get(x, 0) 
+        return nsmallest(k, freq, key=lambda x: (-freq[x], x))
+
+
     """695. Max Area of Island (Medium)
 	Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's 
 	(representing land) connected 4-directionally (horizontal or vertical.) You 
@@ -9722,9 +9891,9 @@ class Solution:
         
         def dfs(i, j): 
             """Depth-first traverse the grid."""
-            if grid[i][j] == 1: 
+            if 0 <= i < m and 0 <= j < n and grid[i][j] == 1: 
                 grid[i][j] = 0 # mark visited 
-                return 1 + sum(dfs(ii, jj) for ii, jj in ((i-1, j), (i, j-1), (i, j+1), (i+1, j)) if 0 <= ii < m and 0 <= jj < n)
+                return 1 + sum(dfs(ii, jj) for ii, jj in ((i-1, j), (i, j-1), (i, j+1), (i+1, j)))
             return 0
         
         return max(dfs(i, j) for i in range(m) for j in range(n))
@@ -10606,6 +10775,237 @@ class Solution:
                 uf.union(u-1, v-1)
         
         return [uf.find(u-1) == uf.find(v-1) for u, v in queries]
+
+
+    """1629. Slowest Key (Easy)
+	A newly designed keypad was tested, where a tester pressed a sequence of n 
+	keys, one at a time. You are given a string keysPressed of length n, where 
+	keysPressed[i] was the ith key pressed in the testing sequence, and a 
+	sorted list releaseTimes, where releaseTimes[i] was the time the ith key 
+	was released. Both arrays are 0-indexed. The 0th key was pressed at the 
+	time 0, and every subsequent key was pressed at the exact time the previous 
+	key was released. The tester wants to know the key of the keypress that had 
+	the longest duration. The ith keypress had a duration of 
+	releaseTimes[i] - releaseTimes[i - 1], and the 0th keypress had a duration 
+	of releaseTimes[0]. Note that the same key could have been pressed multiple 
+	times during the test, and these multiple presses of the same key may not 
+	have had the same duration. Return the key of the keypress that had the 
+	longest duration. If there are multiple such keypresses, return the 
+	lexicographically largest key of the keypresses.
+
+	Example 1:
+	Input: releaseTimes = [9,29,49,50], keysPressed = "cbcd"
+	Output: "c"
+	Explanation: The keypresses were as follows:
+	1) Keypress for 'c' had a duration of 9 (pressed at time 0 and released at 
+	   time 9).
+	2) Keypress for 'b' had a duration of 29 - 9 = 20 (pressed at time 9 right 
+	   after the release of the previous character and released at time 29).
+	3) Keypress for 'c' had a duration of 49 - 29 = 20 (pressed at time 29 
+	   right after the release of the previous character and released at time 
+	   49).
+	4) Keypress for 'd' had a duration of 50 - 49 = 1 (pressed at time 49 right 
+	   after the release of the previous character and released at time 50).
+	The longest of these was the keypress for 'b' and the second keypress for 
+	'c', both with duration 20. 'c' is lexicographically larger than 'b', so 
+	the answer is 'c'.
+
+	Example 2:
+	Input: releaseTimes = [12,23,36,46,62], keysPressed = "spuda"
+	Output: "a"
+	Explanation: The keypresses were as follows:
+	Keypress for 's' had a duration of 12.
+	Keypress for 'p' had a duration of 23 - 12 = 11.
+	Keypress for 'u' had a duration of 36 - 23 = 13.
+	Keypress for 'd' had a duration of 46 - 36 = 10.
+	Keypress for 'a' had a duration of 62 - 46 = 16.
+	The longest of these was the keypress for 'a' with duration 16.
+
+	Constraints:
+	* releaseTimes.length == n
+	* keysPressed.length == n
+	* 2 <= n <= 1000
+	* 0 <= releaseTimes[i] <= 109
+	* releaseTimes[i] < releaseTimes[i+1]
+	* keysPressed contains only lowercase English letters."""
+
+    def slowestKey(self, releaseTimes: List[int], keysPressed: str) -> str:
+        ans, mx = "", 0
+        for i, (t, k) in enumerate(zip(releaseTimes, keysPressed)):
+            if i: t -= releaseTimes[i-1]
+            if t > mx or t == mx and k > ans: ans, mx = k, t # update 
+        return ans 
+
+
+    """1630. Arithmetic Subarrays (Medium)
+	A sequence of numbers is called arithmetic if it consists of at least two 
+	elements, and the difference between every two consecutive elements is the 
+	same. More formally, a sequence s is arithmetic if and only if 
+	s[i+1] - s[i] == s[1] - s[0] for all valid i.
+
+	For example, these are arithmetic sequences:
+	1, 3, 5, 7, 9
+	7, 7, 7, 7
+	3, -1, -5, -9
+	The following sequence is not arithmetic: 1, 1, 2, 5, 7
+	You are given an array of n integers, nums, and two arrays of m integers 
+	each, l and r, representing the m range queries, where the ith query is the 
+	range [l[i], r[i]]. All the arrays are 0-indexed. Return a list of boolean 
+	elements answer, where answer[i] is true if the subarray nums[l[i]], 
+	nums[l[i]+1], ... , nums[r[i]] can be rearranged to form an arithmetic 
+	sequence, and false otherwise.
+
+	Example 1:
+	Input: nums = [4,6,5,9,3,7], l = [0,0,2], r = [2,3,5]
+	Output: [true,false,true]
+	Explanation:
+	In the 0th query, the subarray is [4,6,5]. This can be rearranged as [6,5,4], which is an arithmetic sequence.
+	In the 1st query, the subarray is [4,6,5,9]. This cannot be rearranged as an arithmetic sequence.
+	In the 2nd query, the subarray is [5,9,3,7]. This can be rearranged as [3,5,7,9], which is an arithmetic sequence.
+
+	Example 2:
+	Input: nums = [-12,-9,-3,-12,-6,15,20,-25,-20,-15,-10], l = [0,1,6,4,8,7], r = [4,4,9,7,9,10]
+	Output: [false,true,false,false,true,true]
+
+	Constraints:
+	* n == nums.length
+	* m == l.length
+	* m == r.length
+	* 2 <= n <= 500
+	* 1 <= m <= 500
+	* 0 <= l[i] < r[i] < n
+	* -10^5 <= nums[i] <= 10^5"""
+
+    def checkArithmeticSubarrays(self, nums: List[int], l: List[int], r: List[int]) -> List[bool]:
+        ans = []
+        for ll, rr in zip(l, r): 
+            seq = sorted(nums[ll:rr+1])
+            ans.append(len(set(seq[i] - seq[i-1] for i in range(1, len(seq)))) == 1)
+        return ans 
+
+
+    """1631. Path With Minimum Effort (Medium)
+	You are a hiker preparing for an upcoming hike. You are given heights, a 2D 
+	array of size rows x columns, where heights[row][col] represents the height 
+	of cell (row, col). You are situated in the top-left cell, (0, 0), and you 
+	hope to travel to the bottom-right cell, (rows-1, columns-1) (i.e., 
+	0-indexed). You can move up, down, left, or right, and you wish to find a 
+	route that requires the minimum effort. A route's effort is the maximum 
+	absolute difference in heights between two consecutive cells of the route. 
+	Return the minimum effort required to travel from the top-left cell to the 
+	bottom-right cell.
+
+	Example 1:
+	Input: heights = [[1,2,2],[3,8,2],[5,3,5]]
+	Output: 2
+	Explanation: The route of [1,3,5,3,5] has a maximum absolute difference of 
+	             2 in consecutive cells. This is better than the route of 
+	             [1,2,2,2,5], where the maximum absolute difference is 3.
+
+	Example 2:
+	Input: heights = [[1,2,3],[3,8,4],[5,3,5]]
+	Output: 1
+	Explanation: The route of [1,2,3,4,5] has a maximum absolute difference of 
+	             1 in consecutive cells, which is better than route [1,3,5,3,5].
+	
+	Example 3:
+	Input: heights = [[1,2,1,1,1],[1,2,1,2,1],[1,2,1,2,1],[1,2,1,2,1],[1,1,1,2,1]]
+	Output: 0
+
+	Explanation: This route does not require any effort.
+
+	Constraints:
+	* rows == heights.length
+	* columns == heights[i].length
+	* 1 <= rows, columns <= 100
+	* 1 <= heights[i][j] <= 106"""
+
+    def minimumEffortPath(self, heights: List[List[int]]) -> int:
+        m, n = len(heights), len(heights[0])
+        seen = [[inf]*n for _ in heights] # lowest height seen
+        hp = [(0, 0, 0)] # height|row|column 
+        while hp: 
+            h, i, j = heappop(hp)
+            if i == m-1 and j == n-1: return h # end condition 
+            if h < seen[i][j]: 
+                seen[i][j] = h
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                    if 0 <= ii < m and 0 <= jj < n: 
+                        hh = max(h, abs(heights[ii][jj] - heights[i][j]))
+                        if hh < seen[ii][jj]: heappush(hp, (hh, ii, jj))
+
+
+    """1632. Rank Transform of a Matrix (Hard)
+	Given an m x n matrix, return a new matrix answer where answer[row][col] is 
+	the rank of matrix[row][col]. The rank is an integer that represents how 
+	large an element is compared to other elements. It is calculated using the 
+	following rules:
+	* The rank is an integer starting from 1.
+	* If two elements p and q are in the same row or column, then:
+		- If p < q then rank(p) < rank(q)
+		- If p == q then rank(p) == rank(q)
+		- If p > q then rank(p) > rank(q)
+	* The rank should be as small as possible.
+	It is guaranteed that answer is unique under the given rules.
+
+	Example 1:
+	Input: matrix = [[1,2],[3,4]]
+	Output: [[1,2],[2,3]]
+	Explanation:
+	The rank of matrix[0][0] is 1 because it is the smallest integer in its row and column.
+	The rank of matrix[0][1] is 2 because matrix[0][1] > matrix[0][0] and matrix[0][0] is rank 1.
+	The rank of matrix[1][0] is 2 because matrix[1][0] > matrix[0][0] and matrix[0][0] is rank 1.
+	The rank of matrix[1][1] is 3 because matrix[1][1] > matrix[0][1], matrix[1][1] > matrix[1][0], and both matrix[0][1] and matrix[1][0] are rank 2.
+
+	Example 2:
+	Input: matrix = [[7,7],[7,7]]
+	Output: [[1,1],[1,1]]
+
+	Example 3:
+	Input: matrix = [[20,-21,14],[-19,4,19],[22,-47,24],[-19,4,19]]
+	Output: [[4,2,3],[1,3,4],[5,1,6],[1,3,4]]
+
+	Example 4:
+	Input: matrix = [[7,3,6],[1,4,5],[9,8,2]]
+	Output: [[5,1,4],[1,2,3],[6,3,1]]
+
+	Constraints:
+	* m == matrix.length
+	* n == matrix[i].length
+	* 1 <= m, n <= 500
+	* -10^9 <= matrix[row][col] <= 10^9"""
+
+    def matrixRankTransform(self, matrix: List[List[int]]) -> List[List[int]]:
+        m, n = len(matrix), len(matrix[0]) # dimension 
+        # mapping from value to index 
+        mp = {} 
+        for i in range(m):
+            for j in range(n): 
+                mp.setdefault(matrix[i][j], []).append((i, j))
+        
+        def find(p):
+            """Find root of p."""
+            if p != parent[p]:
+                parent[p] = find(parent[p])
+            return parent[p]
+        
+        rank = [0]*(m+n)
+        ans = [[0]*n for _ in range(m)]
+        
+        for k in sorted(mp): # from minimum to maximum 
+            parent = list(range(m+n))
+            for i, j in mp[k]: 
+                ii, jj = find(i), find(m+j) # find 
+                parent[ii] = jj # union 
+                rank[jj] = max(rank[ii], rank[jj]) # max rank 
+            
+            seen = set()
+            for i, j in mp[k]:
+                ii = find(i)
+                if ii not in seen: rank[ii] += 1
+                seen.add(ii)
+                rank[i] = rank[m+j] = ans[i][j] = rank[ii]
+        return ans 
 
 
 """146. LRU Cache (Medium)
