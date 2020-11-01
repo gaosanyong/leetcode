@@ -9899,6 +9899,172 @@ class Solution:
         return max(dfs(i, j) for i in range(m) for j in range(n))
 
 
+    """725. Split Linked List in Parts (Medium)
+	Given a (singly) linked list with head node root, write a function to split 
+	the linked list into k consecutive linked list "parts". The length of each 
+	part should be as equal as possible: no two parts should have a size 
+	differing by more than 1. This may lead to some parts being null. The parts 
+	should be in order of occurrence in the input list, and parts occurring 
+	earlier should always have a size greater than or equal parts occurring 
+	later. Return a List of ListNode's representing the linked list parts that 
+	are formed. Examples 1->2->3->4, k = 5 // 5 equal parts [ [1], [2], [3], [4], null ]
+
+	Example 1:
+	Input: root = [1, 2, 3], k = 5
+	Output: [[1],[2],[3],[],[]]
+	Explanation: The input and each element of the output are ListNodes, not 
+	arrays. For example, the input root has root.val = 1, root.next.val = 2, 
+	root.next.next.val = 3, and root.next.next.next = null. The first element 
+	output[0] has output[0].val = 1, output[0].next = null. The last element 
+	output[4] is null, but it's string representation as a ListNode is [].
+	
+	Example 2:
+	Input: root = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10], k = 3
+	Output: [[1, 2, 3, 4], [5, 6, 7], [8, 9, 10]]
+	Explanation: The input has been split into consecutive parts with size 
+	difference at most 1, and earlier parts are a larger size than the later 
+	parts.
+	
+	Note:
+	* The length of root will be in the range [0, 1000].
+	* Each value of a node in the input will be an integer in the range [0, 999].
+	* k will be an integer in the range [1, 50]."""
+
+    def splitListToParts(self, root: ListNode, k: int) -> List[ListNode]:
+        n, node = 0, root # length of linked list 
+        while node: n, node = n+1, node.next
+        
+        ans = []
+        node = root 
+        q, r = divmod(n, k) # quotient & residual
+        q += 1
+        for i in range(k): 
+            ans.append(node)
+            if i == r: q -= 1
+            prev = None
+            for _ in range(q): 
+                prev = node
+                if node: node = node.next 
+            if prev: prev.next = None # break list into parts 
+        return ans 
+
+
+    """739. Daily Temperatures (Medium)
+	Given a list of daily temperatures T, return a list such that, for each day 
+	in the input, tells you how many days you would have to wait until a warmer 
+	temperature. If there is no future day for which this is possible, put 0 
+	instead. For example, given the list of temperatures T = [73, 74, 75, 71, 
+	69, 72, 76, 73], your output should be [1, 1, 4, 2, 1, 1, 0, 0]. Note that 
+	the length of temperatures will be in the range [1, 30000]. Each temperature 
+	will be an integer in the range [30, 100]."""
+
+    def dailyTemperatures(self, T: List[int]) -> List[int]:
+        ans = [0]*len(T)
+        stack = []
+        for i in range(len(T)): 
+            while stack and T[stack[-1]] < T[i]: 
+                ii = stack.pop()
+                ans[ii] = i - ii 
+            stack.append(i)
+        return ans 
+
+
+    """740. Delete and Earn (Medium)
+	Given an array nums of integers, you can perform operations on the array. 
+	In each operation, you pick any nums[i] and delete it to earn nums[i] 
+	points. After, you must delete every element equal to nums[i] - 1 or 
+	nums[i] + 1. You start with 0 points. Return the maximum number of points 
+	you can earn by applying such operations.
+
+	Example 1:
+	Input: nums = [3, 4, 2]
+	Output: 6
+	Explanation: Delete 4 to earn 4 points, consequently 3 is also deleted. 
+	             Then, delete 2 to earn 2 points. 6 total points are earned.
+	Example 2:
+	Input: nums = [2, 2, 3, 3, 3, 4]
+	Output: 9
+	Explanation: Delete 3 to earn 3 points, deleting both 2's and the 4. Then, 
+	             delete 3 again to earn 3 points, and 3 again to earn 3 points. 
+	             9 total points are earned.
+	Note:
+	* The length of nums is at most 20000.
+	* Each element nums[i] is an integer in the range [1, 10000]."""
+
+    def deleteAndEarn(self, nums: List[int]) -> int:
+        mp = {}
+        for x in nums: mp[x] = x + mp.get(x, 0)
+        
+        @lru_cache(None)
+        def fn(i): 
+            """Return maximum points one can earn from nums[i:]."""
+            if i >= len(nums): return 0 
+            if nums[i] + 1 not in mp: return mp[nums[i]] + fn(i+1)
+            return max(mp[nums[i]] + fn(i+2), fn(i+1))
+        
+        nums = sorted(set(nums))
+        return fn(0)
+
+
+    """752. Open the Lock (Medium)
+	You have a lock in front of you with 4 circular wheels. Each wheel has 10 
+	slots: '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'. The wheels can 
+	rotate freely and wrap around: for example we can turn '9' to be '0', or 
+	'0' to be '9'. Each move consists of turning one wheel one slot. The lock 
+	initially starts at '0000', a string representing the state of the 4 wheels. 
+	You are given a list of deadends dead ends, meaning if the lock displays 
+	any of these codes, the wheels of the lock will stop turning and you will 
+	be unable to open it. Given a target representing the value of the wheels 
+	that will unlock the lock, return the minimum total number of turns 
+	required to open the lock, or -1 if it is impossible.
+
+	Example 1:
+	Input: deadends = ["0201","0101","0102","1212","2002"], target = "0202"
+	Output: 6
+	Explanation:
+	A sequence of valid moves would be "0000" -> "1000" -> "1100" -> "1200" -> "1201" -> "1202" -> "0202".
+	Note that a sequence like "0000" -> "0001" -> "0002" -> "0102" -> "0202" would be invalid,
+	because the wheels of the lock become stuck after the display becomes the dead end "0102".
+
+	Example 2:
+	Input: deadends = ["8888"], target = "0009"
+	Output: 1
+	Explanation:
+	We can turn the last wheel in reverse to move from "0000" -> "0009".
+
+	Example 3:
+	Input: deadends = ["8887","8889","8878","8898","8788","8988","7888","9888"], target = "8888"
+	Output: -1
+	Explanation:
+	We can't reach the target without getting stuck.
+
+	Example 4:
+	Input: deadends = ["0000"], target = "8888"
+	Output: -1
+
+	Constraints:
+	* 1 <= deadends.length <= 500
+	* deadends[i].length == 4
+	* target.length == 4
+	* target will not be in the list deadends.
+	* target and deadends[i] consist of digits only."""
+
+    def openLock(self, deadends: List[str], target: str) -> int:
+        pq = [(0, "0000")] # min priority queue
+        seen = set(deadends)
+        
+        while pq: 
+            k, n = heappop(pq)
+            if n not in seen: 
+                if n == target: return k
+                seen.add(n)  # marked as seen upon processing 
+                for i in range(4): 
+                    for chg in (-1, 1): 
+                        nn = n[:i] + str((int(n[i]) + chg)%10) + n[i+1:]
+                        if nn not in seen: heappush(pq, (k+1, nn))
+        return -1 
+
+
     """1588. Sum of All Odd Length Subarrays (Easy)
 	Given an array of positive integers arr, calculate the sum of all possible 
 	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
@@ -11008,6 +11174,188 @@ class Solution:
         return ans 
 
 
+    """1640. Check Array Formation Through Concatenation (Easy)
+	You are given an array of distinct integers arr and an array of integer 
+	arrays pieces, where the integers in pieces are distinct. Your goal is to 
+	form arr by concatenating the arrays in pieces in any order. However, you 
+	are not allowed to reorder the integers in each array pieces[i]. Return 
+	true if it is possible to form the array arr from pieces. Otherwise, return 
+	false.
+
+	Example 1:
+	Input: arr = [85], pieces = [[85]]
+	Output: true
+
+	Example 2:
+	Input: arr = [15,88], pieces = [[88],[15]]
+	Output: true
+	Explanation: Concatenate [15] then [88]
+
+	Example 3:
+	Input: arr = [49,18,16], pieces = [[16,18,49]]
+	Output: false
+	Explanation: Even though the numbers match, we cannot reorder pieces[0].
+
+	Example 4:
+	Input: arr = [91,4,64,78], pieces = [[78],[4,64],[91]]
+	Output: true
+	Explanation: Concatenate [91] then [4,64] then [78]
+
+	Example 5:
+	Input: arr = [1,3,5,7], pieces = [[2,4,6,8]]
+	Output: false
+
+	Constraints:
+	* 1 <= pieces.length <= arr.length <= 100
+	* sum(pieces[i].length) == arr.length
+	* 1 <= pieces[i].length <= arr.length
+	* 1 <= arr[i], pieces[i][j] <= 100
+	* The integers in arr are distinct.
+	* The integers in pieces are distinct (i.e., If we flatten pieces in a 1D 
+	  array, all the integers in this array are distinct)."""
+
+    def canFormArray(self, arr: List[int], pieces: List[List[int]]) -> bool:
+        mp = {x[0]: x for x in pieces}
+        i = 0
+        while i < len(arr): 
+            if (x := arr[i]) not in mp or mp[x] != arr[i:i+len(mp[x])]: return False 
+            i += len(mp[x])
+        return True 
+
+
+    """1641. Count Sorted Vowel Strings (Medium)
+	Given an integer n, return the number of strings of length n that consist 
+	only of vowels (a, e, i, o, u) and are lexicographically sorted. A string s 
+	is lexicographically sorted if for all valid i, s[i] is the same as or 
+	comes before s[i+1] in the alphabet.
+
+	Example 1:
+	Input: n = 1
+	Output: 5
+	Explanation: The 5 sorted strings that consist of vowels only are ["a","e","i","o","u"].
+
+	Example 2:
+	Input: n = 2
+	Output: 15
+	Explanation: The 15 sorted strings that consist of vowels only are
+	["aa","ae","ai","ao","au","ee","ei","eo","eu","ii","io","iu","oo","ou","uu"].
+	Note that "ea" is not a valid string since 'e' comes after 'a' in the alphabet.
+
+	Example 3:
+	Input: n = 33
+	Output: 66045
+
+	Constraints: 1 <= n <= 50 """
+
+    def countVowelStrings(self, n: int) -> int:
+        
+        @lru_cache(None)
+        def fn(n, k): 
+            """Return number of sorted strings of length n consisting of k vowels."""
+            if n == 1: return k # base case 
+            return sum(fn(n-1, kk) for kk in range(1, k+1))
+        
+        return fn(n, 5)
+
+
+    """1642. Furthest Building You Can Reach (Medium)
+	You are given an integer array heights representing the heights of 
+	buildings, some bricks, and some ladders. You start your journey from 
+	building 0 and move to the next building by possibly using bricks or 
+	ladders. While moving from building i to building i+1 (0-indexed),
+	* If the current building's height is greater than or equal to the next 
+	  building's height, you do not need a ladder or bricks.
+	* If the current building's height is less than the next building's height, 
+	  you can either use one ladder or (h[i+1] - h[i]) bricks.
+	Return the furthest building index (0-indexed) you can reach if you use the 
+	given ladders and bricks optimally.
+
+	Example 1:
+	Input: heights = [4,2,7,6,9,14,12], bricks = 5, ladders = 1
+	Output: 4
+	Explanation: Starting at building 0, you can follow these steps:
+	- Go to building 1 without using ladders nor bricks since 4 >= 2.
+	- Go to building 2 using 5 bricks. You must use either bricks or ladders because 2 < 7.
+	- Go to building 3 without using ladders nor bricks since 7 >= 6.
+	- Go to building 4 using your only ladder. You must use either bricks or ladders because 6 < 9.
+	It is impossible to go beyond building 4 because you do not have any more bricks or ladders.
+
+	Example 2:
+	Input: heights = [4,12,2,7,3,18,20,3,19], bricks = 10, ladders = 2
+	Output: 7
+
+	Example 3:
+	Input: heights = [14,3,19,3], bricks = 17, ladders = 0
+	Output: 3
+
+	Constraints:
+	* 1 <= heights.length <= 105
+	* 1 <= heights[i] <= 106
+	* 0 <= bricks <= 109
+	* 0 <= ladders <= heights.length"""
+
+    def furthestBuilding(self, heights: List[int], bricks: int, ladders: int) -> int:
+        pq = [] # max heap (priority queue)
+        for i in range(1, len(heights)): 
+            ht = heights[i] - heights[i-1] # height diff 
+            if ht > 0:  
+                heappush(pq, -ht)
+                bricks -= ht
+                if bricks < 0: # not enough bricks
+                    if ladders == 0: return i-1 # i not reachable
+                    bricks += -heappop(pq) # swapping ladder with most bricks 
+                    ladders -= 1
+        return i 
+
+
+    """1643. Kth Smallest Instructions (Hard)
+	Bob is standing at cell (0, 0), and he wants to reach destination: 
+	(row, column). He can only travel right and down. You are going to help Bob 
+	by providing instructions for him to reach destination. The instructions 
+	are represented as a string, where each character is either:
+	* 'H', meaning move horizontally (go right), or
+	* 'V', meaning move vertically (go down).
+	Multiple instructions will lead Bob to destination. For example, if 
+	destination is (2, 3), both "HHHVV" and "HVHVH" are valid instructions. 
+	However, Bob is very picky. Bob has a lucky number k, and he wants the kth 
+	lexicographically smallest instructions that will lead him to destination. 
+	k is 1-indexed. Given an integer array destination and an integer k, return 
+	the kth lexicographically smallest instructions that will take Bob to destination.
+
+	Example 1:
+	Input: destination = [2,3], k = 1
+	Output: "HHHVV"
+	Explanation: All the instructions that reach (2, 3) in lexicographic order are as follows:
+	["HHHVV", "HHVHV", "HHVVH", "HVHHV", "HVHVH", "HVVHH", "VHHHV", "VHHVH", "VHVHH", "VVHHH"].
+
+	Example 2:
+	Input: destination = [2,3], k = 2
+	Output: "HHVHV"
+
+	Example 3:
+	Input: destination = [2,3], k = 3
+	Output: "HHVVH"
+
+	Constraints:
+	* destination.length == 2
+	* 1 <= row, column <= 15
+	* 1 <= k <= nCr(row + column, row), where nCr(a, b) denotes a choose b​​​​​."""
+
+    def kthSmallestPath(self, destination: List[int], k: int) -> str:
+        m, n = destination # m "V" & n "H" in total 
+        ans = ""
+        while n: 
+            kk = comb(m+n-1, n-1) # (m+n-1 choose n-1) instructions starting with "H"  
+            if kk >= k: 
+                ans += "H"
+                n -= 1
+            else: 
+                ans += "V"
+                m -= 1
+                k -= kk 
+        return ans + m*"V"
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -11958,6 +12306,60 @@ class Codec:
     def decode(self, shortUrl: str) -> str:
         """Decodes a shortened URL to its original URL."""
         return self.lut[shortUrl.split("/")[-1]]
+
+
+"""729. My Calendar I (Medium)
+Implement a MyCalendar class to store your events. A new event can be added if 
+adding the event will not cause a double booking. Your class will have the 
+method, book(int start, int end). Formally, this represents a booking on the 
+half open interval [start, end), the range of real numbers x such that 
+start <= x < end. A double booking happens when two events have some non-empty 
+intersection (ie., there is some time that is common to both events.) For each 
+call to the method MyCalendar.book, return true if the event can be added to 
+the calendar successfully without causing a double booking. Otherwise, return 
+false and do not add the event to the calendar. Your class will be called like 
+this: MyCalendar cal = new MyCalendar(); MyCalendar.book(start, end)
+
+Example 1:
+MyCalendar();
+MyCalendar.book(10, 20); // returns true
+MyCalendar.book(15, 25); // returns false
+MyCalendar.book(20, 30); // returns true
+Explanation: 
+The first event can be booked. The second can't because time 15 is already 
+booked by another event. The third event can be booked, as the first event 
+takes every time less than 20, but not including 20.
+
+Note:
+* The number of calls to MyCalendar.book per test case will be at most 1000.
+* In calls to MyCalendar.book(start, end), start and end are integers in the 
+  range [0, 10^9].
+
+class Node: 
+    def __init__(self, val=0, left=None, right=None): 
+        self.val = val
+        self.left = left
+        self.right = right 
+"""
+
+class MyCalendar:
+
+    def __init__(self):
+        self.root = None
+
+    def book(self, start: int, end: int) -> bool:
+        if not self.root: 
+            self.root = Node((start, end))
+            return True 
+        prev = node = self.root 
+        while node: 
+            prev = node 
+            if end <= node.val[0]: node = node.left 
+            elif node.val[1] <= start: node = node.right 
+            else: return False # double booking 
+        if end <= prev.val[0]: prev.left = Node((start, end))
+        else: prev.right = Node((start, end))
+        return True 
 
 
 """1603. Design Parking System (Easy)
