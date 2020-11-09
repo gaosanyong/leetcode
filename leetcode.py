@@ -10065,6 +10065,337 @@ class Solution:
         return -1 
 
 
+    """756. Pyramid Transition Matrix (Medium)
+	We are stacking blocks to form a pyramid. Each block has a color which is a 
+	one letter string. We are allowed to place any color block C on top of two 
+	adjacent blocks of colors A and B, if and only if ABC is an allowed triple. 
+	We start with a bottom row of bottom, represented as a single string. We 
+	also start with a list of allowed triples allowed. Each allowed triple is 
+	represented as a string of length 3. Return true if we can build the pyramid 
+	all the way to the top, otherwise false.
+
+	Example 1:
+	Input: bottom = "BCD", allowed = ["BCG", "CDE", "GEA", "FFF"]
+	Output: true
+	Explanation: We can stack the pyramid like this:
+	    A
+	   / \
+	  G   E
+	 / \ / \
+	B   C   D
+	We are allowed to place G on top of B and C because BCG is an allowed triple.  
+	Similarly, we can place E on top of C and D, then A on top of G and E.
+
+	Example 2:
+	Input: bottom = "AABA", allowed = ["AAA", "AAB", "ABA", "ABB", "BAC"]
+	Output: false
+	Explanation: We can't stack the pyramid to the top. Note that there could 
+	             be allowed triples (A, B, C) and (A, B, D) with C != D.
+	 
+	Constraints:
+	* bottom will be a string with length in range [2, 8].
+	* allowed will have length in range [0, 200].
+	* Letters in all strings will be chosen from the set {'A', 'B', 'C', 'D', 'E', 'F', 'G'}."""
+
+    def pyramidTransition(self, bottom: str, allowed: List[str]) -> bool:
+        mp = {}
+        for x, y, z in allowed: mp.setdefault((x, y), []).append(z)
+        
+        def fn(row):
+            """Return True if row could be built from allowed transition."""
+            if len(row) == 1: return True 
+            for xx in product(*(mp.get((x, y), []) for x, y in zip(row, row[1:]))):
+                if fn(xx): return True
+            return False 
+        
+        return fn(bottom)
+
+
+    """763. Partition Labels (Medium)
+	A string S of lowercase English letters is given. We want to partition this 
+	string into as many parts as possible so that each letter appears in at 
+	most one part, and return a list of integers representing the size of these 
+	parts.
+
+	Example 1:
+	Input: S = "ababcbacadefegdehijhklij"
+	Output: [9,7,8]
+	Explanation: The partition is "ababcbaca", "defegde", "hijhklij". This is a 
+	             partition so that each letter appears in at most one part. A 
+	             partition like "ababcbacadefegde", "hijhklij" is incorrect, 
+	             because it splits S into less parts.
+	Note:
+	* S will have length in range [1, 500].
+	* S will consist of lowercase English letters ('a' to 'z') only."""
+
+    def partitionLabels(self, S: str) -> List[int]:
+        mp = {c: i for i, c in enumerate(S)}
+        ans = []
+        ss = ee = 0
+        for i, c in enumerate(S): 
+            ee = max(ee, mp[c])
+            if ee == i: 
+                ans.append(ee - ss + 1)
+                ss = ee + 1
+        return ans 
+
+
+    """764. Largest Plus Sign (Medium)
+	In a 2D grid from (0, 0) to (N-1, N-1), every cell contains a 1, except 
+	those cells in the given list mines which are 0. What is the largest axis-
+	aligned plus sign of 1s contained in the grid? Return the order of the 
+	plus sign. If there is none, return 0. An "axis-aligned plus sign of 1s of 
+	order k" has some center grid[x][y] = 1 along with 4 arms of length k-1 
+	going up, down, left, and right, and made of 1s. This is demonstrated in 
+	the diagrams below. Note that there could be 0s or 1s beyond the arms of 
+	the plus sign, only the relevant area of the plus sign is checked for 1s.
+
+	Examples of Axis-Aligned Plus Signs of Order k:
+	Order 1:
+	000
+	010
+	000
+
+	Order 2:
+	00000
+	00100
+	01110
+	00100
+	00000
+
+	Order 3:
+	0000000
+	0001000
+	0001000
+	0111110
+	0001000
+	0001000
+	0000000
+
+	Example 1:
+	Input: N = 5, mines = [[4, 2]]
+	Output: 2
+	Explanation:
+	11111
+	11111
+	11111
+	11111
+	11011
+	In the above grid, the largest plus sign can only be order 2. One of them 
+	is marked in bold.
+
+	Example 2:
+	Input: N = 2, mines = []
+	Output: 1
+	Explanation: There is no plus sign of order 2, but there is of order 1.
+
+	Example 3:
+
+	Input: N = 1, mines = [[0, 0]]
+	Output: 0
+	Explanation:
+	There is no plus sign, so return 0.
+	
+	Note:
+	* N will be an integer in the range [1, 500].
+	* mines will have length at most 5000.
+	* mines[i] will be length 2 and consist of integers in the range [0, N-1].
+	* (Additionally, programs submitted in C, C++, or C# will be judged with a 
+	  slightly smaller time limit.)"""
+
+    def orderOfLargestPlusSign(self, N: int, mines: List[List[int]]) -> int:
+        mines = {(x, y) for x, y in mines}
+        dp = [[N]*N for _ in range(N)]
+        for i in range(N):
+            tt = ll = rr = bb = 0 # top | left | right | bottom 
+            for j in range(N): 
+                dp[i][j] = min(dp[i][j], ll := 0 if (i, j) in mines else ll+1)
+                dp[j][i] = min(dp[j][i], tt := 0 if (j, i) in mines else tt+1)
+                dp[~i][~j] = min(dp[~i][~j], rr := 0 if (~i%N, ~j%N) in mines else rr+1)
+                dp[~j][~i] = min(dp[~j][~i], bb := 0 if (~j%N, ~i%N) in mines else bb+1)
+        return max(map(max, dp))
+
+
+    """767. Reorganize String (Medium)
+	Given a string S, check if the letters can be rearranged so that two 
+	characters that are adjacent to each other are not the same. If possible, 
+	output any possible result.  If not possible, return the empty string.
+
+	Example 1:
+	Input: S = "aab"
+	Output: "aba"
+
+	Example 2:
+	Input: S = "aaab"
+	Output: ""
+	Note: S will consist of lowercase letters and have length in range [1, 500]."""
+
+    def reorganizeString(self, S: str) -> str:
+        freq = {}
+        for c in S: freq[c] = 1 +freq.get(c, 0) # frequency table 
+        
+        ans = [""]*len(S)
+        i = 0
+        for k in sorted(freq, reverse=True, key=freq.get): 
+            if 2*freq[k] - 1 > len(S): return "" # impossible 
+            for _ in range(freq[k]): 
+                ans[i] = k
+                i = i+2 if i+2 < len(S) else 1 # reset to 1 
+        return "".join(ans)
+
+
+    """769. Max Chunks To Make Sorted (Medium)
+	Given an array arr that is a permutation of [0, 1, ..., arr.length - 1], we 
+	split the array into some number of "chunks" (partitions), and individually 
+	sort each chunk.  After concatenating them, the result equals the sorted 
+	array. What is the most number of chunks we could have made?
+
+	Example 1:
+	Input: arr = [4,3,2,1,0]
+	Output: 1
+	Explanation: Splitting into two or more chunks will not return the required 
+	             result. For example, splitting into [4, 3], [2, 1, 0] will 
+	             result in [3, 4, 0, 1, 2], which isn't sorted.
+
+	Example 2:
+	Input: arr = [1,0,2,3,4]
+	Output: 4
+	Explanation: We can split into two chunks, such as [1, 0], [2, 3, 4]. 
+	             However, splitting into [1, 0], [2], [3], [4] is the highest 
+	             number of chunks possible.
+	
+	Note:
+	* arr will have length in range [1, 10].
+	* arr[i] will be a permutation of [0, 1, ..., arr.length - 1]."""
+
+    def maxChunksToSorted(self, arr: List[int]) -> int:
+        ans = prefix = 0
+        for i, x in enumerate(arr): 
+            prefix = max(prefix, x)
+            if i == prefix: ans += 1
+        return ans 
+
+
+    """777. Swap Adjacent in LR String (Medium)
+	In a string composed of 'L', 'R', and 'X' characters, like "RXXLRXRXL", a 
+	move consists of either replacing one occurrence of "XL" with "LX", or 
+	replacing one occurrence of "RX" with "XR". Given the starting string start 
+	and the ending string end, return True if and only if there exists a 
+	sequence of moves to transform one string to the other.
+
+	Example 1:
+	Input: start = "RXXLRXRXL", end = "XRLXXRRLX"
+	Output: true
+	Explanation: We can transform start to end following these steps:
+	RXXLRXRXL ->
+	XRXLRXRXL ->
+	XRLXRXRXL ->
+	XRLXXRRXL ->
+	XRLXXRRLX
+
+	Example 2:
+	Input: start = "X", end = "L"
+	Output: false
+
+	Example 3:
+	Input: start = "LLR", end = "RRL"
+	Output: false
+
+	Example 4:
+	Input: start = "XL", end = "LX"
+	Output: true
+
+	Example 5:
+	Input: start = "XLLR", end = "LXLX"
+	Output: false
+
+	Constraints:
+	* 1 <= start.length <= 104
+	* start.length == end.length
+	* Both start and end will only consist of characters in 'L', 'R', and 'X'."""
+
+    def canTransform(self, start: str, end: str) -> bool:
+        ss = [(x, i) for i, x in enumerate(start) if x != "X"]
+        ee = [(x, i) for i, x in enumerate(end) if x != "X"]
+        
+        if len(ss) != len(ee): return False 
+        
+        for (s, i), (e, j) in zip(ss, ee): 
+            if s != e: return False 
+            if s == e == "L" and i < j: return False 
+            if s == e == "R" and i > j: return False 
+        return True 
+
+
+    """779. K-th Symbol in Grammar (Medium)
+	On the first row, we write a 0. Now in every subsequent row, we look at the 
+	previous row and replace each occurrence of 0 with 01, and each occurrence 
+	of 1 with 10. Given row N and index K, return the K-th indexed symbol in 
+	row N. (The values of K are 1-indexed.) (1 indexed).
+
+	Examples:
+	Input: N = 1, K = 1
+	Output: 0
+
+	Input: N = 2, K = 1
+	Output: 0
+
+	Input: N = 2, K = 2
+	Output: 1
+
+	Input: N = 4, K = 5
+	Output: 1
+
+	Explanation:
+	row 1: 0
+	row 2: 01
+	row 3: 0110
+	row 4: 01101001
+	
+	Note:
+	* N will be an integer in the range [1, 30].
+	* K will be an integer in the range [1, 2^(N-1)]."""
+
+    def kthGrammar(self, N: int, K: int) -> int:
+        return bin(K-1).count("1") & 1
+
+
+    """781. Rabbits in Forest (Medium)
+	In a forest, each rabbit has some color. Some subset of rabbits (possibly 
+	all of them) tell you how many other rabbits have the same color as them. 
+	Those answers are placed in an array. Return the minimum number of rabbits 
+	that could be in the forest.
+
+	Examples:
+	Input: answers = [1, 1, 2]
+	Output: 5
+	Explanation:
+	The two rabbits that answered "1" could both be the same color, say red. 
+	The rabbit than answered "2" can't be red or the answers would be 
+	inconsistent. Say the rabbit that answered "2" was blue. Then there should 
+	be 2 other blue rabbits in the forest that didn't answer into the array. 
+	The smallest possible number of rabbits in the forest is therefore 5: 3 
+	that answered plus 2 that didn't.
+
+	Input: answers = [10, 10, 10]
+	Output: 11
+
+	Input: answers = []
+	Output: 0
+	
+	Note:
+	* answers will have length at most 1000.
+	* Each answers[i] will be an integer in the range [0, 999]."""
+
+    def numRabbits(self, answers: List[int]) -> int:
+        ans = 0
+        cnt = defaultdict(int)
+        for x in answers: 
+            if not cnt[x] % (1 + x): ans += 1 + x # reached capacity & update ans
+            cnt[x] += 1
+        return ans 
+
+
     """1588. Sum of All Odd Length Subarrays (Easy)
 	Given an array of positive integers arr, calculate the sum of all possible 
 	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
@@ -11216,11 +11547,7 @@ class Solution:
 
     def canFormArray(self, arr: List[int], pieces: List[List[int]]) -> bool:
         mp = {x[0]: x for x in pieces}
-        i = 0
-        while i < len(arr): 
-            if (x := arr[i]) not in mp or mp[x] != arr[i:i+len(mp[x])]: return False 
-            i += len(mp[x])
-        return True 
+        return sum((mp.get(x, []) for x in arr), []) == arr
 
 
     """1641. Count Sorted Vowel Strings (Medium)
@@ -11354,6 +11681,241 @@ class Solution:
                 m -= 1
                 k -= kk 
         return ans + m*"V"
+
+
+    """1646. Get Maximum in Generated Array (Easy)
+	You are given an integer n. An array nums of length n + 1 is generated in 
+	the following way:
+	* nums[0] = 0
+	* nums[1] = 1
+	* nums[2 * i] = nums[i] when 2 <= 2 * i <= n
+	* nums[2 * i + 1] = nums[i] + nums[i + 1] when 2 <= 2 * i + 1 <= n
+	Return the maximum integer in the array nums​​​.
+
+	Example 1:
+	Input: n = 7
+	Output: 3
+	Explanation: According to the given rules:
+	  nums[0] = 0
+	  nums[1] = 1
+	  nums[(1 * 2) = 2] = nums[1] = 1
+	  nums[(1 * 2) + 1 = 3] = nums[1] + nums[2] = 1 + 1 = 2
+	  nums[(2 * 2) = 4] = nums[2] = 1
+	  nums[(2 * 2) + 1 = 5] = nums[2] + nums[3] = 1 + 2 = 3
+	  nums[(3 * 2) = 6] = nums[3] = 2
+	  nums[(3 * 2) + 1 = 7] = nums[3] + nums[4] = 2 + 1 = 3
+	Hence, nums = [0,1,1,2,1,3,2,3], and the maximum is 3.
+
+	Example 2:
+	Input: n = 2
+	Output: 1
+	Explanation: According to the given rules, the maximum between nums[0], 
+	             nums[1], and nums[2] is 1.
+
+	Example 3:
+	Input: n = 3
+	Output: 2
+	Explanation: According to the given rules, the maximum between nums[0], 
+	             nums[1], nums[2], and nums[3] is 2.
+
+	Constraints:
+	* 0 <= n <= 100"""
+
+    def getMaximumGenerated(self, n: int) -> int:
+        if not n: return 0 # edge case 
+        nums = [0, 1]
+        for i in range(2, n+1): 
+            if i&1: nums.append(nums[i//2] + nums[i//2+1])
+            else: nums.append(nums[i//2])
+        return max(nums)
+
+
+    """1647. Minimum Deletions to Make Character Frequencies Unique (Medium)
+	A string s is called good if there are no two different characters in s 
+	that have the same frequency. Given a string s, return the minimum number 
+	of characters you need to delete to make s good. The frequency of a 
+	character in a string is the number of times it appears in the string. For 
+	example, in the string "aab", the frequency of 'a' is 2, while the 
+	frequency of 'b' is 1.
+
+	Example 1:
+	Input: s = "aab"
+	Output: 0
+	Explanation: s is already good.
+
+	Example 2:
+	Input: s = "aaabbbcc"
+	Output: 2
+	Explanation: You can delete two 'b's resulting in the good string "aaabcc". 
+	             Another way it to delete one 'b' and one 'c' resulting in the 
+	             good string "aaabbc".
+
+	Example 3:
+	Input: s = "ceabaacb"
+	Output: 2
+	Explanation: You can delete both 'c's resulting in the good string "eabaab". 
+	             Note that we only care about characters that are still in the 
+	             string at the end (i.e. frequency of 0 is ignored).
+
+	Constraints:
+	* 1 <= s.length <= 105
+	* s contains only lowercase English letters."""
+
+    def minDeletions(self, s: str) -> int:
+        freq = {} # frequency table 
+        for c in s: freq[c] = 1 + freq.get(c, 0)
+        
+        ans = 0
+        seen = set()
+        for k in freq.values(): 
+            while k in seen: 
+                k -= 1 
+                ans += 1
+            if k: seen.add(k)
+        return ans 
+
+
+    """1648. Sell Diminishing-Valued Colored Balls (Medium)
+	You have an inventory of different colored balls, and there is a customer 
+	that wants orders balls of any color. The customer weirdly values the 
+	colored balls. Each colored ball's value is the number of balls of that 
+	color you currently have in your inventory. For example, if you own 6 
+	yellow balls, the customer would pay 6 for the first yellow ball. After the 
+	transaction, there are only 5 yellow balls left, so the next yellow ball is 
+	then valued at 5 (i.e., the value of the balls decreases as you sell more 
+	to the customer). You are given an integer array, inventory, where 
+	inventory[i] represents the number of balls of the ith color that you 
+	initially own. You are also given an integer orders, which represents the 
+	total number of balls that the customer wants. You can sell the balls in 
+	any order. Return the maximum total value that you can attain after selling 
+	orders colored balls. As the answer may be too large, return it modulo 
+	10^9 + 7.
+
+	Example 1:
+	Input: inventory = [2,5], orders = 4
+	Output: 14
+	Explanation: Sell the 1st color 1 time (2) and the 2nd color 3 times 
+	             (5 + 4 + 3). The maximum total value is 2 + 5 + 4 + 3 = 14.
+
+	Example 2:
+	Input: inventory = [3,5], orders = 6
+	Output: 19
+	Explanation: Sell the 1st color 2 times (3 + 2) and the 2nd color 4 times 
+	             (5 + 4 + 3 + 2). The maximum total value is 3 + 2 + 5 + 4 + 3 + 2 = 19.
+	
+	Example 3:
+	Input: inventory = [2,8,4,10,6], orders = 20
+	Output: 110
+	
+	Example 4:
+	Input: inventory = [1000000000], orders = 1000000000
+	Output: 21
+	Explanation: Sell the 1st color 1000000000 times for a total value of 
+	             500000000500000000. 500000000500000000 modulo 109 + 7 = 21.
+	 
+	Constraints:
+	* 1 <= inventory.length <= 105
+	* 1 <= inventory[i] <= 109
+	* 1 <= orders <= min(sum(inventory[i]), 109)"""
+
+    def maxProfit(self, inventory: List[int], orders: int) -> int:
+        inventory.sort(reverse=True) # inventory high to low 
+        inventory.append(0)
+        ans = i = 0
+        while orders: 
+            sell = min(orders, (i+1)*(inventory[i] - inventory[i+1]))
+            q, r = divmod(sell, i+1)
+            ans += (i+1)*(2*inventory[i] - q + 1)*q//2 + r*(inventory[i] - q)
+            orders -= sell 
+            i += 1
+        return ans % 1_000_000_007
+
+
+    """1649. Create Sorted Array through Instructions (Hard)
+	Given an integer array instructions, you are asked to create a sorted array 
+	from the elements in instructions. You start with an empty container nums. 
+	For each element from left to right in instructions, insert it into nums. 
+	The cost of each insertion is the minimum of the following:
+	* The number of elements currently in nums that are strictly less than 
+	  instructions[i].
+	* The number of elements currently in nums that are strictly greater than 
+	  instructions[i].
+	For example, if inserting element 3 into nums = [1,2,3,5], the cost of 
+	insertion is min(2, 1) (elements 1 and 2 are less than 3, element 5 is 
+	greater than 3) and nums will become [1,2,3,3,5]. Return the total cost to 
+	insert all elements from instructions into nums. Since the answer may be 
+	large, return it modulo 109 + 7
+
+	Example 1:
+	Input: instructions = [1,5,6,2]
+	Output: 1
+	Explanation: Begin with nums = [].
+	Insert 1 with cost min(0, 0) = 0, now nums = [1].
+	Insert 5 with cost min(1, 0) = 0, now nums = [1,5].
+	Insert 6 with cost min(2, 0) = 0, now nums = [1,5,6].
+	Insert 2 with cost min(1, 2) = 1, now nums = [1,2,5,6].
+	The total cost is 0 + 0 + 0 + 1 = 1.
+
+	Example 2:
+	Input: instructions = [1,2,3,6,5,4]
+	Output: 3
+	Explanation: Begin with nums = [].
+	Insert 1 with cost min(0, 0) = 0, now nums = [1].
+	Insert 2 with cost min(1, 0) = 0, now nums = [1,2].
+	Insert 3 with cost min(2, 0) = 0, now nums = [1,2,3].
+	Insert 6 with cost min(3, 0) = 0, now nums = [1,2,3,6].
+	Insert 5 with cost min(3, 1) = 1, now nums = [1,2,3,5,6].
+	Insert 4 with cost min(3, 2) = 2, now nums = [1,2,3,4,5,6].
+	The total cost is 0 + 0 + 0 + 0 + 1 + 2 = 3.
+
+	Example 3:
+	Input: instructions = [1,3,3,3,2,4,2,1,2]
+	Output: 4
+	Explanation: Begin with nums = [].
+	Insert 1 with cost min(0, 0) = 0, now nums = [1].
+	Insert 3 with cost min(1, 0) = 0, now nums = [1,3].
+	Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3].
+	Insert 3 with cost min(1, 0) = 0, now nums = [1,3,3,3].
+	Insert 2 with cost min(1, 3) = 1, now nums = [1,2,3,3,3].
+	Insert 4 with cost min(5, 0) = 0, now nums = [1,2,3,3,3,4].
+	​​​​​​​Insert 2 with cost min(1, 4) = 1, now nums = [1,2,2,3,3,3,4].
+	​​​​​​​Insert 1 with cost min(0, 6) = 0, now nums = [1,1,2,2,3,3,3,4].
+	​​​​​​​Insert 2 with cost min(2, 4) = 2, now nums = [1,1,2,2,2,3,3,3,4].
+	The total cost is 0 + 0 + 0 + 0 + 1 + 0 + 1 + 0 + 2 = 4.
+	 
+	Constraints:
+	* 1 <= instructions.length <= 10^5
+	* 1 <= instructions[i] <= 10^5
+
+class Fenwick:
+    def __init__(self, n):
+        self.nums = [0]*(n+1)
+        
+    def sum(self, k): 
+        ans = 0
+        while k: 
+            ans += self.nums[k]
+            k &= k-1
+        return ans 
+    
+    def add(self, i, x): 
+        i += 1
+        while i < len(self.nums): 
+            self.nums[i] += x
+            i += i & -i
+	"""
+
+    def createSortedArray(self, instructions: List[int]) -> int:
+        ans = 0
+        fen = Fenwick(10**5)
+        freq = {} # frequency of each instructions
+        for i, x in enumerate(instructions): 
+            less = fen.sum(x)
+            more = i - freq.get(x, 0) - less
+            ans += min(less, more)
+            fen.add(x, 1)
+            freq[x] = 1 + freq.get(x, 0)
+        return ans % 1_000_000_007
 
 
 """146. LRU Cache (Medium)
