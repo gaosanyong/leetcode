@@ -10396,6 +10396,159 @@ class Solution:
         return ans 
 
 
+    """787. Cheapest Flights Within K Stops (Medium)
+	There are n cities connected by m flights. Each flight starts from city u 
+	and arrives at v with a price w. Now given all the cities and flights, 
+	together with starting city src and the destination dst, your task is to 
+	find the cheapest price from src to dst with up to k stops. If there is no 
+	such route, output -1.
+
+	Example 1:
+	Input: 
+	n = 3, edges = [[0,1,100],[1,2,100],[0,2,500]]
+	src = 0, dst = 2, k = 1
+	Output: 200
+	Explanation: The cheapest price from city 0 to city 2 with at most 1 stop 
+	             costs 200, as marked red in the picture.
+
+	Example 2:
+	Input: 
+	n = 3, edges = [[0,1,100],[1,2,100],[0,2,500]]
+	src = 0, dst = 2, k = 0
+	Output: 500
+	Explanation: The cheapest price from city 0 to city 2 with at most 0 stop 
+	             costs 500, as marked blue in the picture.
+
+	Constraints:
+	* The number of nodes n will be in range [1, 100], with nodes labeled from 0 to n - 1.
+	* The size of flights will be in range [0, n * (n - 1) / 2].
+	* The format of each flight will be (src, dst, price).
+	* The price of each flight will be in the range [1, 10000].
+	* k is in the range of [0, n - 1].
+	* There will not be any duplicated flights or self cycles."""
+
+    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, K: int) -> int:
+        graph = {} # digraph 
+        for u, v, p in flights: 
+            graph.setdefault(u, []).append((v, p)) 
+            
+        pq = [(0, -1, src)] # min-heap (cost-stop-city)
+        while pq: 
+            p, k, u = heappop(pq) # current stop 
+            if k <= K: 
+                if u == dst: return p
+                for v, pp in graph.get(u, []): 
+                    heappush(pq, (p + pp, k+1, v))
+        return -1
+
+
+    """789. Escape The Ghosts (Medium)
+	You are playing a simplified PAC-MAN game on an infinite 2-D grid. You 
+	start at the point [0, 0], and you are given a destination point 
+	target = [xtarget, ytarget], which you are trying to get to. There are 
+	several ghosts on the map with their starting positions given as an array 
+	ghosts, where ghosts[i] = [xi, yi] represents the starting position of the 
+	ith ghost. All inputs are integral coordinates. Each turn, you and all the 
+	ghosts may independently choose to either move 1 unit in any of the four 
+	cardinal directions: north, east, south, or west or stay still. All actions 
+	happen simultaneously. You escape if and only if you can reach the target 
+	before any ghost reaches you. If you reach any square (including the 
+	target) at the same time as a ghost, it does not count as an escape. Return 
+	true if it is possible to escape, otherwise return false.
+
+	Example 1:
+	Input: ghosts = [[1,0],[0,3]], target = [0,1]
+	Output: true
+	Explanation: You can reach the destination (0, 1) after 1 turn, while the 
+	             ghosts located at (1, 0) and (0, 3) cannot catch up with you.
+
+	Example 2:
+	Input: ghosts = [[1,0]], target = [2,0]
+	Output: false
+	Explanation: You need to reach the destination (2, 0), but the ghost at 
+	             (1, 0) lies between you and the destination.
+	
+	Example 3:
+	Input: ghosts = [[2,0]], target = [1,0]
+	Output: false
+	Explanation: The ghost can reach the target at the same time as you.
+
+	Example 4:
+	Input: ghosts = [[5,0],[-10,-2],[0,-5],[-2,-2],[-7,1]], target = [7,7]
+	Output: false
+
+	Example 5:
+	Input: ghosts = [[-1,0],[0,1],[-1,0],[0,1],[-1,0]], target = [0,0]
+	Output: true
+
+	Constraints:
+	* 1 <= ghosts.length <= 100
+	* ghosts[i].length == 2
+	* -10^4 <= xi, yi <= 10^4
+	* There can be multiple ghosts in the same location.
+	* target.length == 2
+	* -10^4 <= xtarget, ytarget <= 10^4"""
+
+    def escapeGhosts(self, ghosts: List[List[int]], target: List[int]) -> bool:
+        xx, yy = target 
+        return all(abs(x-xx) + abs(y-yy) > abs(xx) + abs(yy) for x, y in ghosts)
+
+
+    """790. Domino and Tromino Tiling (Medium)
+	We have two types of tiles: a 2x1 domino shape, and an "L" tromino shape. 
+	These shapes may be rotated.
+	XX  <- domino
+	XX  <- "L" tromino
+	X
+	Given N, how many ways are there to tile a 2 x N board? Return your answer 
+	modulo 10^9 + 7. (In a tiling, every square must be covered by a tile. Two 
+	tilings are different if and only if there are two 4-directionally adjacent 
+	cells on the board such that exactly one of the tilings has both squares 
+	occupied by a tile.)
+
+	Example:
+	Input: 3
+	Output: 5
+	Explanation: 
+	The five different ways are listed below, different letters indicates different tiles:
+	XYZ XXZ XYY XXY XYY
+	XYZ YYZ XZZ XYY XXY
+	
+	Note: N  will be in range [1, 1000]."""
+
+    def numTilings(self, N: int) -> int:
+        f0, f1, f2 = 0, 1, 1
+        for i in range(N-1): 
+            f0, f1, f2 = f1, f2, 2*f2 + f0
+        return f2 % 1_000_000_007
+
+
+    """791. Custom Sort String (Medium)
+	S and T are strings composed of lowercase letters. In S, no letter occurs 
+	more than once. S was sorted in some custom order previously. We want to 
+	permute the characters of T so that they match the order that S was sorted. 
+	More specifically, if x occurs before y in S, then x should occur before y 
+	in the returned string. Return any permutation of T (as a string) that 
+	satisfies this property.
+
+	Example :
+	Input: S = "cba"
+		   T = "abcd"
+	Output: "cbad"
+	Explanation: "a", "b", "c" appear in S, so the order of "a", "b", "c" 
+	             should be "c", "b", and "a". Since "d" does not appear in S, 
+	             it can be at any position in T. "dcba", "cdba", "cbda" are 
+	             also valid outputs.
+	Note:
+	* S has length at most 26, and no character is repeated in S.
+	* T has length at most 200.
+	* S and T consist of lowercase letters only."""
+
+    def customSortString(self, S: str, T: str) -> str:
+        mp = {c: i for i, c in enumerate(S)}
+        return "".join(sorted(T, key=lambda x: mp.get(x, 26)))
+
+
     """1588. Sum of All Odd Length Subarrays (Easy)
 	Given an array of positive integers arr, calculate the sum of all possible 
 	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
