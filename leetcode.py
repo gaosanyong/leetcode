@@ -3585,16 +3585,17 @@ class Solution:
 	   15   7"""
 
     def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
-        imap = {v: i for i, v in enumerate(inorder)}
-        node = iter(preorder)
-        
-        def fn(lo, hi): 
-            """Return node constructed from inorder[lo:hi]"""
-            if lo == hi: return None
-            k = imap[next(node)]
-            return TreeNode(inorder[k], left=fn(lo, k), right=fn(k+1, hi))
-        
-        return fn(0, len(preorder))
+        mp = {x: i for i, x in enumerate(inorder)} # relative position 
+        stack = []
+        root = None
+        for x in preorder: 
+            if not root: root = node = TreeNode(x)
+            elif mp[x] < mp[stack[-1].val]: stack[-1].left = node = TreeNode(x)
+            else: 
+                while stack and mp[stack[-1].val] < mp[x]: node = stack.pop() # retrace 
+                node.right = node = TreeNode(x)
+            stack.append(node)
+        return root
 
 
     """106. Construct Binary Tree from Inorder and Postorder Traversal (Medium)
@@ -3612,15 +3613,18 @@ class Solution:
 	   15   7"""
 
     def buildTree(self, inorder: List[int], postorder: List[int]) -> TreeNode:
-        imap = {v: i for i, v in enumerate(inorder)}
+        mp = {x: i for i, x in enumerate(inorder)} # relative position 
         
-        def fn(lo, hi): 
-            """Return root of tree constructed from inorder[lo:hi]"""
-            if lo == hi: return None
-            mid = imap[postorder.pop()]
-            return TreeNode(inorder[mid], right=fn(mid+1, hi), left=fn(lo, mid)) #right sub-tree needs to be created before left sub-tree
-        
-        return fn(0, len(inorder))
+        root = None
+        stack = []
+        for x in reversed(postorder): 
+            if not root: root = node = TreeNode(x)
+            elif mp[x] > mp[stack[-1].val]: stack[-1].right = node = TreeNode(x)
+            else: 
+                while stack and mp[stack[-1].val] > mp[x]: node = stack.pop() # retrace 
+                node.left = node = TreeNode(x)
+            stack.append(node)
+        return root 
 
 
     """107. Binary Tree Level Order Traversal II (Easy)
@@ -10549,6 +10553,1067 @@ class Solution:
         return "".join(sorted(T, key=lambda x: mp.get(x, 26)))
 
 
+    """795. Number of Subarrays with Bounded Maximum (Medium)
+	We are given an array A of positive integers, and two positive integers L 
+	and R (L <= R). Return the number of (contiguous, non-empty) subarrays such 
+	that the value of the maximum array element in that subarray is at least L 
+	and at most R.
+
+	Example :
+	Input: A = [2, 1, 4, 3]
+	       L = 2
+	       R = 3
+	Output: 3
+	Explanation: There are three subarrays that meet the requirements: [2], [2, 1], [3].
+	
+	Note:
+	* L, R  and A[i] will be an integer in the range [0, 10^9].
+	* The length of A will be in the range of [1, 50000]."""
+
+    def numSubarrayBoundedMax(self, A: List[int], L: int, R: int) -> int:
+        ans = val = cnt = 0
+        for x in A: 
+            if x < L: cnt += 1 # count of <= R
+            elif L <= x <= R: val = cnt = cnt + 1
+            else: val = cnt = 0 
+            ans += val 
+        return ans 
+
+
+    """797. All Paths From Source to Target (Medium)
+	Given a directed acyclic graph (DAG) of n nodes labeled from 0 to n - 1, 
+	find all possible paths from node 0 to node n - 1, and return them in any 
+	order. The graph is given as follows: graph[i] is a list of all nodes you 
+	can visit from node i (i.e., there is a directed edge from node i to node 
+	graph[i][j]).
+
+	Example 1:
+	Input: graph = [[1,2],[3],[3],[]]
+	Output: [[0,1,3],[0,2,3]]
+	Explanation: There are two paths: 0 -> 1 -> 3 and 0 -> 2 -> 3.
+
+	Example 2:
+	Input: graph = [[4,3,1],[3,2,4],[3],[4],[]]
+	Output: [[0,4],[0,3,4],[0,1,3,4],[0,1,2,3,4],[0,1,4]]
+
+	Example 3:
+	Input: graph = [[1],[]]
+	Output: [[0,1]]
+
+	Example 4:
+	Input: graph = [[1,2,3],[2],[3],[]]
+	Output: [[0,1,2,3],[0,2,3],[0,3]]
+
+	Example 5:
+	Input: graph = [[1,3],[2],[3],[]]
+	Output: [[0,1,2,3],[0,3]]
+
+	Constraints:
+	* n == graph.length
+	* 2 <= n <= 15
+	* 0 <= graph[i][j] < n
+	* graph[i][j] != i (i.e., there will be no self-loops).
+	* The input graph is guaranteed to be a DAG."""
+
+    def allPathsSourceTarget(self, graph: List[List[int]]) -> List[List[int]]:
+        
+        @lru_cache(None)
+        def fn(n): 
+            """Return path from given node to dst node."""
+            if n == len(graph)-1: return [[n]]
+            ans = []
+            for nn in graph[n]: 
+                ans.extend([[n] + x for x in fn(nn)])
+            return ans 
+        
+        return fn(0)
+
+
+    """813. Largest Sum of Averages (Medium)
+	We partition a row of numbers A into at most K adjacent (non-empty) groups, 
+	then our score is the sum of the average of each group. What is the largest 
+	score we can achieve? Note that our partition must use every number in A, 
+	and that scores are not necessarily integers.
+
+	Example:
+	Input: A = [9,1,2,3,9]
+	       K = 3
+	Output: 20
+	Explanation: The best choice is to partition A into [9], [1, 2, 3], [9]. 
+	             The answer is 9 + (1 + 2 + 3) / 3 + 9 = 20. We could have also 
+	             partitioned A into [9, 1], [2], [3, 9], for example. That 
+	             partition would lead to a score of 5 + 2 + 6 = 13, which is worse.
+	 
+	Note:
+	* 1 <= A.length <= 100.
+	* 1 <= A[i] <= 10000.
+	* 1 <= K <= A.length.
+	* Answers within 10^-6 of the correct answer will be accepted as correct."""
+
+    def largestSumOfAverages(self, A: List[int], K: int) -> float:
+        prefix = [0]
+        for x in A: prefix.append(prefix[-1] + x) # prefix sum 
+        
+        @lru_cache(None)
+        def fn(i, k): 
+            """Return largest sum of average of A[lo:hi+1] with at most k groups."""
+            if i == 1 or k == 1: return prefix[i]/i # boundary condition 
+            if i <= k: return prefix[i] # shortcut
+            ans = fn(i, k-1)
+            for ii in range(1, i):
+                ans = max(ans, fn(i-ii, k-1) + (prefix[i] - prefix[i-ii])/ii)
+            return ans 
+            
+        return fn(len(A), K)
+
+
+    """816. Ambiguous Coordinates (Medium)
+	We had some 2-dimensional coordinates, like "(1, 3)" or "(2, 0.5)".  Then, 
+	we removed all commas, decimal points, and spaces, and ended up with the 
+	string S.  Return a list of strings representing all possibilities for what 
+	our original coordinates could have been. Our original representation never 
+	had extraneous zeroes, so we never started with numbers like "00", "0.0", 
+	"0.00", "1.0", "001", "00.01", or any other number that can be represented 
+	with less digits.  Also, a decimal point within a number never occurs 
+	without at least one digit occuring before it, so we never started with 
+	numbers like ".1". The final answer list can be returned in any order.  
+	Also note that all coordinates in the final answer have exactly one space 
+	between them (occurring after the comma.)
+
+	Example 1:
+	Input: "(123)"
+	Output: ["(1, 23)", "(12, 3)", "(1.2, 3)", "(1, 2.3)"]
+	
+	Example 2:
+	Input: "(00011)"
+	Output:  ["(0.001, 1)", "(0, 0.011)"]
+	Explanation: 0.0, 00, 0001 or 00.01 are not allowed.
+	
+	Example 3:
+	Input: "(0123)"
+	Output: ["(0, 123)", "(0, 12.3)", "(0, 1.23)", "(0.1, 23)", "(0.1, 2.3)", "(0.12, 3)"]
+	
+	Example 4:
+	Input: "(100)"
+	Output: [(10, 0)]
+	Explanation: 1.0 is not allowed.
+
+	Note:
+	* 4 <= S.length <= 12.
+	* S[0] = "(", S[S.length - 1] = ")", and the other elements in S are digits."""
+
+    def ambiguousCoordinates(self, S: str) -> List[str]:
+        S = S[1:-1] # strip "(" and ")"
+        
+        def fn(s): 
+            """Return valid number derived from s."""
+            if len(s) == 1: return [s] # edge case 
+            if s.startswith("0") and s.endswith("0"): return []
+            if s.startswith("0"): return [s[:1] + "." + s[1:]]
+            if s.endswith("0"): return [s]
+            return [s] + [s[:i] + "." + s[i:] for i in range(1, len(s))]
+
+        ans = []
+        for i in range(1, len(S)): 
+            ans.extend([f"({x}, {y})" for x in fn(S[:i]) for y in fn(S[i:])])
+        return ans
+
+
+
+    """817. Linked List Components (Medium)
+	We are given head, the head node of a linked list containing unique integer 
+	values. We are also given the list G, a subset of the values in the linked 
+	list. Return the number of connected components in G, where two values are 
+	connected if they appear consecutively in the linked list.
+
+	Example 1:
+	Input: head: 0->1->2->3
+	       G = [0, 1, 3]
+	Output: 2
+	Explanation: 0 and 1 are connected, so [0, 1] and [3] are the two connected 
+	             components.
+
+	Example 2:
+	Input: head: 0->1->2->3->4
+	       G = [0, 3, 1, 4]
+	Output: 2
+	Explanation: 0 and 1 are connected, 3 and 4 are connected, so [0, 1] and 
+	             [3, 4] are the two connected components.
+	
+	Note:
+	* If N is the length of the linked list given by head, 1 <= N <= 10000.
+	* The value of each node in the linked list will be in the range [0, N - 1].
+	* 1 <= G.length <= 10000.
+	* G is a subset of all values in the linked list."""
+
+    def numComponents(self, head: ListNode, G: List[int]) -> int:
+        Gs = set(G)
+        ans = 0
+        while head: 
+            if head.val in Gs and (head.next is None or head.next.val not in Gs): ans += 1
+            head = head.next 
+        return ans 
+
+
+    """822. Card Flipping Game (Medium)
+	On a table are N cards, with a positive integer printed on the front and 
+	back of each card (possibly different). We flip any number of cards, and 
+	after we choose one card. If the number X on the back of the chosen card 
+	is not on the front of any card, then this number X is good. What is the 
+	smallest number that is good?  If no number is good, output 0. Here, 
+	fronts[i] and backs[i] represent the number on the front and back of card 
+	i. A flip swaps the front and back numbers, so the value on the front is 
+	now on the back and vice versa.
+
+	Example:
+	Input: fronts = [1,2,4,4,7], backs = [1,3,4,1,3]
+	Output: 2
+	Explanation: If we flip the second card, the fronts are [1,3,4,4,7] and the 
+	             backs are [1,2,4,1,3]. We choose the second card, which has 
+	             number 2 on the back, and it isn't on the front of any card, 
+	             so 2 is good.
+	Note:
+	* 1 <= fronts.length == backs.length <= 1000.
+	* 1 <= fronts[i] <= 2000.
+	* 1 <= backs[i] <= 2000."""
+
+    def flipgame(self, fronts: List[int], backs: List[int]) -> int:
+        same = {ff for ff, bb in zip(fronts, backs) if ff == bb}
+        return min((x for x in fronts+backs if x not in same), default=0)
+
+
+    """823. Binary Trees With Factors (Medium)
+	Given an array of unique integers, each integer is strictly greater than 1. 
+	We make a binary tree using these integers and each number may be used for 
+	any number of times. Each non-leaf node's value should be equal to the 
+	product of the values of it's children. How many binary trees can we make?  
+	Return the answer modulo 10 ** 9 + 7.
+
+	Example 1:
+	Input: A = [2, 4]
+	Output: 3
+	Explanation: We can make these trees: [2], [4], [4, 2, 2]
+
+	Example 2:
+	Input: A = [2, 4, 5, 10]
+	Output: 7
+	Explanation: We can make these trees: [2], [4], [5], [10], [4, 2, 2], 
+	             [10, 2, 5], [10, 5, 2].
+
+	Note:
+	* 1 <= A.length <= 1000.
+	* 2 <= A[i] <= 10 ^ 9."""
+
+    def numFactoredBinaryTrees(self, A: List[int]) -> int:
+        cnt = {}
+        for x in sorted(A): 
+            cnt[x] = 1 + sum(cnt[xx]*cnt[x//xx] for xx in cnt if not x%xx and x//xx in cnt)
+        return sum(cnt.values()) % 1_000_000_007
+
+
+    """825. Friends Of Appropriate Ages (Medium)
+	Some people will make friend requests. The list of their ages is given and 
+	ages[i] is the age of the ith person. Person A will NOT friend request 
+	person B (B != A) if any of the following conditions are true:
+	* age[B] <= 0.5 * age[A] + 7
+	* age[B] > age[A]
+	* age[B] > 100 && age[A] < 100
+	Otherwise, A will friend request B. Note that if A requests B, B does not 
+	necessarily request A.  Also, people will not friend request themselves. 
+	How many total friend requests are made?
+
+	Example 1:
+	Input: [16,16]
+	Output: 2
+	Explanation: 2 people friend request each other.
+	
+	Example 2:
+	Input: [16,17,18]
+	Output: 2
+	Explanation: Friend requests are made 17 -> 16, 18 -> 17.
+
+	Example 3:
+	Input: [20,30,100,110,120]
+	Output: 3
+	Explanation: Friend requests are made 110 -> 100, 120 -> 110, 120 -> 100.
+
+	Notes:
+	* 1 <= ages.length <= 20000.
+	* 1 <= ages[i] <= 120."""
+
+    def numFriendRequests(self, ages: List[int]) -> int:
+        freq = {}
+        for x in ages: freq[x] = 1 + freq.get(x, 0)
+        
+        ans = 0 
+        for x in freq: 
+            for y in freq: 
+                if 0.5*x + 7 < y <= x: 
+                    ans += freq[x] * freq[y]
+                    if x == y: ans -= freq[x]
+        return ans 
+
+
+    """826. Most Profit Assigning Work (Medium)
+	We have jobs: difficulty[i] is the difficulty of the ith job, and profit[i] 
+	is the profit of the ith job. Now we have some workers. worker[i] is the 
+	ability of the ith worker, which means that this worker can only complete a 
+	job with difficulty at most worker[i]. Every worker can be assigned at most 
+	one job, but one job can be completed multiple times. For example, if 3 
+	people attempt the same job that pays $1, then the total profit will be $3.
+	If a worker cannot complete any job, his profit is $0. What is the most 
+	profit we can make?
+
+	Example 1:
+	Input: difficulty = [2,4,6,8,10], profit = [10,20,30,40,50], worker = [4,5,6,7]
+	Output: 100 
+	Explanation: Workers are assigned jobs of difficulty [4,4,6,6] and they get 
+	             profit of [20,20,30,30] seperately.
+
+	Notes:
+	* 1 <= difficulty.length = profit.length <= 10000
+	* 1 <= worker.length <= 10000
+	* difficulty[i], profit[i], worker[i]  are in range [1, 10^5]"""
+
+    def maxProfitAssignment(self, difficulty: List[int], profit: List[int], worker: List[int]) -> int:
+        job = sorted(zip(difficulty, profit))
+        ans = i = mx = 0 
+        for w in sorted(worker): 
+            while i < len(job) and job[i][0] <= w: 
+                mx = max(mx, job[i][1])
+                i += 1
+            ans += mx 
+        return ans 
+
+
+    """831. Masking Personal Information (Medium)
+	We are given a personal information string S, which may represent either an 
+	email address or a phone number. We would like to mask this personal 
+	information according to the following rules:
+
+	1. Email address:
+	We define a name to be a string of length ≥ 2 consisting of only lowercase 
+	letters a-z or uppercase letters A-Z. An email address starts with a name, 
+	followed by the symbol '@', followed by a name, followed by the dot '.' and 
+	followed by a name. All email addresses are guaranteed to be valid and in 
+	the format of "name1@name2.name3". To mask an email, all names must be 
+	converted to lowercase and all letters between the first and last letter of 
+	the first name must be replaced by 5 asterisks '*'.
+
+	2. Phone number:
+	A phone number is a string consisting of only the digits 0-9 or the 
+	characters from the set {'+', '-', '(', ')', ' '}. You may assume a phone 
+	number contains 10 to 13 digits. The last 10 digits make up the local 
+	number, while the digits before those make up the country code. Note that 
+	the country code is optional. We want to expose only the last 4 digits and 
+	mask all other digits. The local number should be formatted and masked as 
+	"***-***-1111", where 1 represents the exposed digits. To mask a phone 
+	number with country code like "+111 111 111 1111", we write it in the form 
+	"+***-***-***-1111".  The '+' sign and the first '-' sign before the local 
+	number should only exist if there is a country code.  For example, a 12 
+	digit phone number mask should start with "+**-". Note that extraneous 
+	characters like "(", ")", " ", as well as extra dashes or plus signs not 
+	part of the above formatting scheme should be removed.
+
+	Return the correct "mask" of the information provided.
+
+	Example 1:
+	Input: "LeetCode@LeetCode.com"
+	Output: "l*****e@leetcode.com"
+	Explanation: All names are converted to lowercase, and the letters between 
+	             the first and last letter of the first name is replaced by 5 
+	             asterisks. Therefore, "leetcode" -> "l*****e".
+
+	Example 2:
+	Input: "AB@qq.com"
+	Output: "a*****b@qq.com"
+	Explanation: There must be 5 asterisks between the first and last letter 
+	             of the first name "ab". Therefore, "ab" -> "a*****b".
+	
+	Example 3:
+	Input: "1(234)567-890"
+	Output: "***-***-7890"
+	Explanation: 10 digits in the phone number, which means all digits make up 
+	             the local number.
+
+	Example 4:
+	Input: "86-(10)12345678"
+	Output: "+**-***-***-5678"
+	Explanation: 12 digits, 2 digits for country code and 10 digits for local 
+	             number. 
+
+	Notes:
+	* S.length <= 40.
+	* Emails have length at least 8.
+	* Phone numbers have length at least 10."""
+
+    def maskPII(self, S: str) -> str:
+        if "@" in S: # email address
+            name, domain = S.lower().split("@")
+            return f"{name[0]}*****{name[-1]}@{domain}"
+        else: # phone number 
+            d = "".join(c for c in S if c.isdigit())
+            ans = f"***-***-{d[-4:]}"
+            return ans if len(d) == 10 else f"+{'*'*(len(d)-10)}-" + ans 
+
+
+    """832. Flipping an Image (Easy)
+	Given a binary matrix A, we want to flip the image horizontally, then 
+	invert it, and return the resulting image. To flip an image horizontally 
+	means that each row of the image is reversed.  For example, flipping 
+	[1, 1, 0] horizontally results in [0, 1, 1]. To invert an image means that 
+	each 0 is replaced by 1, and each 1 is replaced by 0. For example, 
+	inverting [0, 1, 1] results in [1, 0, 0].
+
+	Example 1:
+	Input: [[1,1,0],[1,0,1],[0,0,0]]
+	Output: [[1,0,0],[0,1,0],[1,1,1]]
+	Explanation: First reverse each row: [[0,1,1],[1,0,1],[0,0,0]]. Then, 
+	             invert the image: [[1,0,0],[0,1,0],[1,1,1]]
+
+	Example 2:
+	Input: [[1,1,0,0],[1,0,0,1],[0,1,1,1],[1,0,1,0]]
+	Output: [[1,1,0,0],[0,1,1,0],[0,0,0,1],[1,0,1,0]]
+	Explanation: First reverse each row: [[0,0,1,1],[1,0,0,1],[1,1,1,0],[0,1,0,1]]. 
+	             Then invert the image: [[1,1,0,0],[0,1,1,0],[0,0,0,1],[1,0,1,0]]
+
+	Notes:
+	* 1 <= A.length = A[0].length <= 20
+	* 0 <= A[i][j] <= 1"""
+
+    def flipAndInvertImage(self, A: List[List[int]]) -> List[List[int]]:
+        m, n = len(A), len(A[0])
+        for i in range(m):
+            for j in range(n+1 >> 1): 
+                A[i][j], A[i][~j] = 1^A[i][~j], 1^A[i][j]
+        return A
+
+
+    """833. Find And Replace in String (Medium)
+	To some string S, we will perform some replacement operations that replace 
+	groups of letters with new ones (not necessarily the same size). Each 
+	replacement operation has 3 parameters: a starting index i, a source word x 
+	and a target word y.  The rule is that if x starts at position i in the 
+	original string S, then we will replace that occurrence of x with y.  If 
+	not, we do nothing. For example, if we have S = "abcd" and we have some 
+	replacement operation i = 2, x = "cd", y = "ffff", then because "cd" starts 
+	at position 2 in the original string S, we will replace it with "ffff". 
+	Using another example on S = "abcd", if we have both the replacement 
+	operation i = 0, x = "ab", y = "eee", as well as another replacement 
+	operation i = 2, x = "ec", y = "ffff", this second operation does nothing 
+	because in the original string S[2] = 'c', which doesn't match x[0] = 'e'. 
+	All these operations occur simultaneously.  
+
+	It's guaranteed that there won't be any overlap in replacement: for example, 
+	S = "abc", indexes = [0, 1], sources = ["ab","bc"] is not a valid test case.
+
+	Example 1:
+	Input: S = "abcd", indexes = [0, 2], sources = ["a", "cd"], targets = ["eee", "ffff"]
+	Output: "eeebffff"
+	Explanation: "a" starts at index 0 in S, so it's replaced by "eee".
+	             "cd" starts at index 2 in S, so it's replaced by "ffff".
+
+	Example 2:
+	Input: S = "abcd", indexes = [0, 2], sources = ["ab","ec"], targets = ["eee","ffff"]
+	Output: "eeecd"
+	Explanation: "ab" starts at index 0 in S, so it's replaced by "eee".
+	             "ec" doesn't starts at index 2 in the original S, so we do nothing.
+
+	Constraints:
+	* 0 <= S.length <= 1000
+	* S consists of only lowercase English letters.
+	* 0 <= indexes.length <= 100
+	* 0 <= indexes[i] < S.length
+	* sources.length == indexes.length
+	* targets.length == indexes.length
+	* 1 <= sources[i].length, targets[i].length <= 50
+	* sources[i] and targets[i] consist of only lowercase English letters."""
+
+    def findReplaceString(self, S: str, indexes: List[int], sources: List[str], targets: List[str]) -> str:
+        for i, s, t in sorted(zip(indexes, sources, targets), reverse=True): 
+            if S[i:i+len(s)] == s: S = S[:i] + t + S[i+len(s):]
+        return S
+
+
+    """837. New 21 Game (Medium)
+	Alice plays the following game, loosely based on the card game "21". Alice 
+	starts with 0 points, and draws numbers while she has less than K points. 
+	During each draw, she gains an integer number of points randomly from the 
+	range [1, W], where W is an integer.  Each draw is independent and the 
+	outcomes have equal probabilities. Alice stops drawing numbers when she 
+	gets K or more points.  What is the probability that she has N or less 
+	points?
+
+	Example 1:
+	Input: N = 10, K = 1, W = 10
+	Output: 1.00000
+	Explanation:  Alice gets a single card, then stops.
+
+	Example 2:
+	Input: N = 6, K = 1, W = 10
+	Output: 0.60000
+	Explanation:  Alice gets a single card, then stops.
+	In 6 out of W = 10 possibilities, she is at or below N = 6 points.
+
+	Example 3:
+	Input: N = 21, K = 17, W = 10
+	Output: 0.73278
+
+	Note:
+	* 0 <= K <= N <= 10000
+	* 1 <= W <= 10000
+	* Answers will be accepted as correct if they are within 10^-5 of the correct answer.
+	* The judging time limit has been reduced for this question."""
+
+    def new21Game(self, N: int, K: int, W: int) -> float:
+        ans = [0]*K + [1]*(N-K+1) + [0]*W
+        val = sum(ans[K:K+W+1])
+        for i in reversed(range(K)): 
+            ans[i] = val/W
+            val += ans[i] - ans[i+W]
+        return ans[0]
+
+
+    """840. Magic Squares In Grid (Medium)
+	A 3 x 3 magic square is a 3 x 3 grid filled with distinct numbers from 1 to 
+	9 such that each row, column, and both diagonals all have the same sum. 
+	Given a row x col grid of integers, how many 3 x 3 "magic square" subgrids 
+	are there?  (Each subgrid is contiguous).
+
+	Example 1:
+	Input: grid = [[4,3,8,4],[9,5,1,9],[2,7,6,2]]
+	Output: 1
+	
+	Example 2:
+	Input: grid = [[8]]
+	Output: 0
+
+	Example 3:
+	Input: grid = [[4,4],[3,3]]
+	Output: 0
+
+	Example 4:
+	Input: grid = [[4,7,8],[9,5,1],[2,3,6]]
+	Output: 0
+
+	Constraints:
+	* row == grid.length
+	* col == grid[i].length
+	* 1 <= row, col <= 10
+	* 0 <= grid[i][j] <= 15"""
+
+    def numMagicSquaresInside(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0]) # dimension 
+        
+        def fn(i, j): 
+            """Return True if grid[i-1:i+2][j-1:j+2] is a magic squre."""
+            seen = set()
+            row, col = [0]*3, [0]*3 # row sum & column sum 
+            diag = anti = 0
+            for ii in range(i-1, i+2):
+                for jj in range(j-1, j+2):
+                    if not 0 <= grid[ii][jj] < 10 or grid[ii][jj] in seen: return False 
+                    seen.add(grid[ii][jj])
+                    row[ii-i+1] += grid[ii][jj]
+                    col[jj-j+1] += grid[ii][jj]
+                    if ii-jj == i-j: diag += grid[ii][jj]
+                    if ii+jj == i+j: anti += grid[ii][jj]
+            return len(set(row)) == 1 and len(set(col)) == 1 and row[0] == col[0] == diag == anti
+        
+        ans = 0
+        for i in range(1, m-1):
+            for j in range(1, n-1): 
+                if grid[i][j] == 5 and fn(i, j): ans += 1
+        return ans 
+
+
+    """841. Keys and Rooms (Medium)
+	There are N rooms and you start in room 0. Each room has a distinct number 
+	in 0, 1, 2, ..., N-1, and each room may have some keys to access the next 
+	room. Formally, each room i has a list of keys rooms[i], and each key 
+	rooms[i][j] is an integer in [0, 1, ..., N-1] where N = rooms.length.  A 
+	key rooms[i][j] = v opens the room with number v. Initially, all the rooms 
+	start locked (except for room 0). You can walk back and forth between rooms 
+	freely. Return true if and only if you can enter every room.
+
+	Example 1:
+	Input: [[1],[2],[3],[]]
+	Output: true
+	Explanation:  
+	We start in room 0, and pick up key 1.
+	We then go to room 1, and pick up key 2.
+	We then go to room 2, and pick up key 3.
+	We then go to room 3.  Since we were able to go to every room, we return true.
+
+	Example 2:
+	Input: [[1,3],[3,0,1],[2],[0]]
+	Output: false
+	Explanation: We can't enter the room with number 2.
+
+	Note:
+	* 1 <= rooms.length <= 1000
+	* 0 <= rooms[i].length <= 1000
+	* The number of keys in all rooms combined is at most 3000."""
+
+    def canVisitAllRooms(self, rooms: List[List[int]]) -> bool:
+        seen = [False]*len(rooms)
+        stack = [0]
+        while stack: 
+            n = stack.pop()
+            if not seen[n]:
+                seen[n] = True 
+                stack.extend(rooms[n])
+        return all(seen)
+
+
+    """845. Longest Mountain in Array (Medium)
+	Let's call any (contiguous) subarray B (of A) a mountain if the following 
+	properties hold:
+	* B.length >= 3
+	* There exists some 0 < i < B.length - 1 such that 
+	  B[0] < B[1] < ... B[i-1] < B[i] > B[i+1] > ... > B[B.length - 1]
+	(Note that B could be any subarray of A, including the entire array A.)
+	Given an array A of integers, return the length of the longest mountain. 
+	Return 0 if there is no mountain.
+
+	Example 1:
+	Input: [2,1,4,7,3,2,5]
+	Output: 5
+	Explanation: The largest mountain is [1,4,7,3,2] which has length 5.
+
+	Example 2:
+	Input: [2,2,2]
+	Output: 0
+	Explanation: There is no mountain.
+
+	Note:
+	* 0 <= A.length <= 10000
+	* 0 <= A[i] <= 10000
+	
+	Follow up:
+	* Can you solve it using only one pass?
+	* Can you solve it in O(1) space?"""
+
+    def longestMountain(self, A: List[int]) -> int:
+        ans = 0
+        for i in range(1, len(A)-1): 
+            if A[i-1] < A[i] > A[i+1]: 
+                lo = hi = i
+                while 0 < lo and A[lo-1] < A[lo]: lo -= 1
+                while hi < len(A)-1 and A[hi] > A[hi+1]: hi += 1
+                ans = max(ans, hi - lo + 1)
+        return ans 
+
+
+    """848. Shifting Letters (Medium)
+	We have a string S of lowercase letters, and an integer array shifts. Call 
+	the shift of a letter, the next letter in the alphabet, (wrapping around so 
+	that 'z' becomes 'a'). For example, shift('a') = 'b', shift('t') = 'u', and 
+	shift('z') = 'a'. Now for each shifts[i] = x, we want to shift the first 
+	i+1 letters of S, x times. Return the final string after all such shifts to 
+	S are applied.
+
+	Example 1:
+	Input: S = "abc", shifts = [3,5,9]
+	Output: "rpl"
+	Explanation: We start with "abc".
+	After shifting the first 1 letters of S by 3, we have "dbc".
+	After shifting the first 2 letters of S by 5, we have "igc".
+	After shifting the first 3 letters of S by 9, we have "rpl", the answer.
+
+	Note:
+	* 1 <= S.length = shifts.length <= 20000
+	* 0 <= shifts[i] <= 10 ^ 9"""
+
+    def shiftingLetters(self, S: str, shifts: List[int]) -> str:
+        for i in reversed(range(1, len(shifts))): shifts[i-1] += shifts[i]
+        return "".join(chr(97 + (ord(c) - 97 + x) % 26) for c, x in zip(S, shifts))
+
+
+    """849. Maximize Distance to Closest Person (Medium)
+	You are given an array representing a row of seats where seats[i] = 1 
+	represents a person sitting in the ith seat, and seats[i] = 0 represents 
+	that the ith seat is empty (0-indexed). There is at least one empty seat, 
+	and at least one person sitting. Alex wants to sit in the seat such that 
+	the distance between him and the closest person to him is maximized. Return 
+	that maximum distance to the closest person.
+
+	Example 1:
+	Input: seats = [1,0,0,0,1,0,1]
+	Output: 2
+	Explanation: If Alex sits in the second open seat (i.e. seats[2]), then the 
+	             closest person has distance 2. If Alex sits in any other open 
+	             seat, the closest person has distance 1. Thus, the maximum 
+	             distance to the closest person is 2.
+
+	Example 2:
+	Input: seats = [1,0,0,0]
+	Output: 3
+	Explanation: If Alex sits in the last seat (i.e. seats[3]), the closest 
+	             person is 3 seats away. This is the maximum distance possible, 
+	             so the answer is 3.
+	
+	Example 3:
+	Input: seats = [0,1]
+	Output: 1
+
+	Constraints:
+	* 2 <= seats.length <= 2 * 104
+	* seats[i] is 0 or 1.
+	* At least one seat is empty.
+	* At least one seat is occupied."""
+
+    def maxDistToClosest(self, seats: List[int]) -> int:
+        ans = 0
+        ii = -1
+        for i, x in enumerate(seats): 
+            if x: 
+                ans = max(ans, i) if ii < 0 else max(ans, (i-ii)//2)
+                ii = i 
+        return max(ans, i - ii)
+
+
+    """851. Loud and Rich (Medium)
+	In a group of N people (labelled 0, 1, 2, ..., N-1), each person has 
+	different amounts of money, and different levels of quietness. For 
+	convenience, we'll call the person with label x, simply "person x". We'll 
+	say that richer[i] = [x, y] if person x definitely has more money than 
+	person y.  Note that richer may only be a subset of valid observations. 
+	Also, we'll say quiet[x] = q if person x has quietness q. Now, return 
+	answer, where answer[x] = y if y is the least quiet person (that is, the 
+	person y with the smallest value of quiet[y]), among all people who 
+	definitely have equal to or more money than person x.
+
+	Example 1:
+	Input: richer = [[1,0],[2,1],[3,1],[3,7],[4,3],[5,3],[6,3]], 
+	       quiet = [3,2,5,4,6,1,7,0]
+	Output: [5,5,2,5,4,5,6,7]
+	Explanation: 
+	answer[0] = 5.
+	Person 5 has more money than 3, which has more money than 1, which has more 
+	money than 0. The only person who is quieter (has lower quiet[x]) is person 
+	7, but it isn't clear if they have more money than person 0.
+	answer[7] = 7.
+	Among all people that definitely have equal to or more money than person 7
+	(which could be persons 3, 4, 5, 6, or 7), the person who is the quietest 
+	(has lower quiet[x]) is person 7. The other answers can be filled out with 
+	similar reasoning.
+	
+	Note:
+	* 1 <= quiet.length = N <= 500
+	* 0 <= quiet[i] < N, all quiet[i] are different.
+	* 0 <= richer.length <= N * (N-1) / 2
+	* 0 <= richer[i][j] < N
+	* richer[i][0] != richer[i][1]
+	* richer[i]'s are all different.
+	* The observations in richer are all logically consistent."""
+
+    def loudAndRich(self, richer: List[List[int]], quiet: List[int]) -> List[int]:
+        graph = {} # graph as adjacency list 
+        for x, y in richer: graph.setdefault(y, []).append(x)
+        
+        @lru_cache(None)
+        def fn(x): 
+            """Return richer & loudest person given person."""
+            ans = x
+            for xx in graph.get(x, []): 
+                if quiet[fn(xx)] < quiet[ans]: ans = fn(xx)
+            return ans 
+        
+        return [fn(x) for x in range(len(quiet))]
+
+
+    """853. Car Fleet (Medium)
+	N cars are going to the same destination along a one lane road. The 
+	destination is target miles away. Each car i has a constant speed speed[i] 
+	(in miles per hour), and initial position position[i] miles towards the 
+	target along the road. A car can never pass another car ahead of it, but it 
+	can catch up to it, and drive bumper to bumper at the same speed. The 
+	distance between these two cars is ignored - they are assumed to have the 
+	same position. A car fleet is some non-empty set of cars driving at the 
+	same position and same speed.  Note that a single car is also a car fleet. 
+	If a car catches up to a car fleet right at the destination point, it will 
+	still be considered as one car fleet. How many car fleets will arrive at 
+	the destination?
+
+	Example 1:
+	Input: target = 12, position = [10,8,0,5,3], speed = [2,4,1,1,3]
+	Output: 3
+	Explanation:
+	The cars starting at 10 and 8 become a fleet, meeting each other at 12.
+	The car starting at 0 doesn't catch up to any other car, so it is a fleet by itself.
+	The cars starting at 5 and 3 become a fleet, meeting each other at 6.
+	Note that no other cars meet these fleets before the destination, so the answer is 3.
+
+	Note:
+	* 0 <= N <= 10 ^ 4
+	* 0 < target <= 10 ^ 6
+	* 0 < speed[i] <= 10 ^ 6
+	* 0 <= position[i] < target
+	* All initial positions are different."""
+
+    def carFleet(self, target: int, position: List[int], speed: List[int]) -> int:
+        ans = prev = 0
+        for pp, ss in sorted(zip(position, speed), reverse=True): 
+            tt = (target - pp)/ss # time to arrive at target 
+            if prev < tt: 
+                ans += 1
+                prev = tt
+        return ans 
+
+
+    """856. Score of Parentheses (Medium)
+	Given a balanced parentheses string S, compute the score of the string 
+	based on the following rule:
+	* () has score 1
+	* AB has score A + B, where A and B are balanced parentheses strings.
+	* (A) has score 2 * A, where A is a balanced parentheses string.
+
+	Example 1:
+	Input: "()"
+	Output: 1
+
+	Example 2:
+	Input: "(())"
+	Output: 2
+
+	Example 3:
+	Input: "()()"
+	Output: 2
+
+	Example 4:
+	Input: "(()(()))"
+	Output: 6
+
+	Note:
+	* S is a balanced parentheses string, containing only ( and ).
+	* 2 <= S.length <= 50"""
+
+    def scoreOfParentheses(self, S: str) -> int:
+        ans, stack = 0, []
+        for c in S: 
+            if c == "(": 
+                stack.append(ans)
+                ans = 0
+            elif c == ")": 
+                ans = 2*ans if ans else 1
+                if stack: ans += stack.pop()
+        return ans 
+
+
+    """865. Smallest Subtree with all the Deepest Nodes (Medium)
+	Given the root of a binary tree, the depth of each node is the shortest 
+	distance to the root. Return the smallest subtree such that it contains all 
+	the deepest nodes in the original tree. A node is called the deepest if it 
+	has the largest depth possible among any node in the entire tree. The 
+	subtree of a node is tree consisting of that node, plus the set of all 
+	descendants of that node.
+
+	Example 1:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4]
+	Output: [2,7,4]
+	Explanation: We return the node with value 2, colored in yellow in the 
+	             diagram. The nodes coloured in blue are the deepest nodes of 
+	             the tree. Notice that nodes 5, 3 and 2 contain the deepest 
+	             nodes in the tree but node 2 is the smallest subtree among 
+	             them, so we return it.
+
+	Example 2:
+	Input: root = [1]
+	Output: [1]
+	Explanation: The root is the deepest node in the tree.
+	
+	Example 3:
+	Input: root = [0,1,3,null,2]
+	Output: [2]
+	Explanation: The deepest node in the tree is 2, the valid subtrees are the 
+	             subtrees of nodes 2, 1 and 0 but the subtree of node 2 is the 
+	             smallest.
+
+	Constraints:
+	* The number of nodes in the tree will be in the range [1, 500].
+	* 0 <= Node.val <= 500
+	* The values of the nodes in the tree are unique."""
+
+    def subtreeWithAllDeepest(self, root: TreeNode) -> TreeNode:
+        
+        @lru_cache(None)
+        def fn(node):
+            """Return height of tree rooted at node."""
+            if not node: return 0
+            return 1 + max(fn(node.left), fn(node.right))
+        
+        node = root
+        while node: 
+            left, right = fn(node.left), fn(node.right)
+            if left == right: return node
+            elif left > right: node = node.left
+            else: node = node.right 
+
+
+    """881. Boats to Save People (Medium)
+	The i-th person has weight people[i], and each boat can carry a maximum 
+	weight of limit. Each boat carries at most 2 people at the same time, 
+	provided the sum of the weight of those people is at most limit. Return the 
+	minimum number of boats to carry every given person.  (It is guaranteed 
+	each person can be carried by a boat.)
+
+	Example 1:
+	Input: people = [1,2], limit = 3
+	Output: 1
+	Explanation: 1 boat (1, 2)
+
+	Example 2:
+	Input: people = [3,2,2,1], limit = 3
+	Output: 3
+	Explanation: 3 boats (1, 2), (2) and (3)
+
+	Example 3:
+	Input: people = [3,5,3,4], limit = 5
+	Output: 4
+	Explanation: 4 boats (3), (3), (4), (5)
+
+	Note:
+	* 1 <= people.length <= 50000
+	* 1 <= people[i] <= limit <= 30000"""
+
+    def numRescueBoats(self, people: List[int], limit: int) -> int:
+        people.sort()
+        
+        ans = 0
+        lo, hi = 0, len(people)-1
+        while lo < hi: 
+            if people[lo] + people[hi] <= limit: lo += 1
+            ans += 1
+            hi -= 1
+        return ans + (lo == hi)
+
+
+    """889. Construct Binary Tree from Preorder and Postorder Traversal (Medium)
+	Return any binary tree that matches the given preorder and postorder 
+	traversals. Values in the traversals pre and post are distinct positive 
+	integers.
+
+	Example 1:
+	Input: pre = [1,2,4,5,3,6,7], post = [4,5,2,6,7,3,1]
+	Output: [1,2,3,4,5,6,7]
+
+	Note:
+	* 1 <= pre.length == post.length <= 30
+	* pre[] and post[] are both permutations of 1, 2, ..., pre.length.
+	* It is guaranteed an answer exists. If there exists multiple answers, you 
+	  can return any of them."""
+
+
+    def constructFromPrePost(self, pre: List[int], post: List[int]) -> TreeNode:
+        mp = {x: i for i, x in enumerate(post)}
+        
+        root = None 
+        stack = []
+        for x in pre: 
+            if not root: root = node = TreeNode(x)
+            elif mp[x] < mp[stack[-1].val]: stack[-1].left = node = TreeNode(x)
+            else: 
+                while mp[stack[-1].val] < mp[x]: stack.pop() # retrace 
+                stack[-1].right = node = TreeNode(x)
+            stack.append(node)
+        return root 
+
+
+    """890. Find and Replace Pattern (Medium)
+	You have a list of words and a pattern, and you want to know which words in 
+	words matches the pattern. A word matches the pattern if there exists a 
+	permutation of letters p so that after replacing every letter x in the 
+	pattern with p(x), we get the desired word. (Recall that a permutation of 
+	letters is a bijection from letters to letters: every letter maps to 
+	another letter, and no two letters map to the same letter.) Return a list 
+	of the words in words that match the given pattern. You may return the 
+	answer in any order.
+
+	Example 1:
+	Input: words = ["abc","deq","mee","aqq","dkd","ccc"], pattern = "abb"
+	Output: ["mee","aqq"]
+	Explanation: "mee" matches the pattern because there is a permutation 
+	             {a -> m, b -> e, ...}. "ccc" does not match the pattern 
+	             because {a -> c, b -> c, ...} is not a permutation, since a 
+	             and b map to the same letter.
+
+	Note:
+	* 1 <= words.length <= 50
+	* 1 <= pattern.length = words[i].length <= 20"""
+
+    def findAndReplacePattern(self, words: List[str], pattern: str) -> List[str]:
+        fn = lambda x: len(set(zip(x, pattern))) == len(set(x)) == len(set(pattern))
+        return [word for word in words if fn(word)]
+
+
+    """894. All Possible Full Binary Trees (Medium)
+	A full binary tree is a binary tree where each node has exactly 0 or 2 
+	children. Return a list of all possible full binary trees with N nodes. 
+	Each element of the answer is the root node of one possible tree. Each node 
+	of each tree in the answer must have node.val = 0. You may return the final 
+	list of trees in any order.
+
+	Example 1:
+	Input: 7
+	Output: [[0,0,0,null,null,0,0,null,null,0,0],[0,0,0,null,null,0,0,0,0],
+	         [0,0,0,0,0,0,0],[0,0,0,0,0,null,null,null,null,0,0],
+	         [0,0,0,0,0,null,null,0,0]]
+
+	Note: 1 <= N <= 20"""
+
+    def allPossibleFBT(self, N: int) -> List[TreeNode]:
+        
+        @lru_cache(None)
+        def fn(n):
+            """Return all full binary trees of n nodes."""
+            if n == 1: return [TreeNode()]
+            ans = []
+            for nn in range(1, n, 2): 
+                for left in fn(nn):
+                    for right in fn(n-1-nn): 
+                        ans.append(TreeNode(left=left, right=right))
+            return ans 
+        
+        return fn(N)
+
+
+    """898. Bitwise ORs of Subarrays (Medium)
+	We have an array A of non-negative integers. For every (contiguous) 
+	subarray B = [A[i], A[i+1], ..., A[j]] (with i <= j), we take the bitwise 
+	OR of all the elements in B, obtaining a result A[i] | A[i+1] | ... | A[j]. 
+	Return the number of possible results.  (Results that occur more than once 
+	are only counted once in the final answer.)
+
+	Example 1:
+	Input: [0]
+	Output: 1
+	Explanation: There is only one possible result: 0.
+
+	Example 2:
+	Input: [1,1,2]
+	Output: 3
+	Explanation: The possible subarrays are [1], [1], [2], [1, 1], [1, 2], [1, 1, 2].
+				 These yield the results 1, 1, 2, 1, 3, 3.
+				 There are 3 unique values, so the answer is 3.
+	
+	Example 3:
+	Input: [1,2,4]
+	Output: 6
+	Explanation: The possible results are 1, 2, 3, 4, 6, and 7.
+
+	Note:
+	* 1 <= A.length <= 50000
+	* 0 <= A[i] <= 10^9"""
+
+    def subarrayBitwiseORs(self, A: List[int]) -> int:
+        ans, vals = set(), set()
+        for x in A: 
+            vals = {x | xx for xx in vals} | {x}
+            ans |= vals
+        return len(ans)
+
+
     """1588. Sum of All Odd Length Subarrays (Easy)
 	Given an array of positive integers arr, calculate the sum of all possible 
 	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
@@ -12071,6 +13136,227 @@ class Fenwick:
         return ans % 1_000_000_007
 
 
+    """1657. Determine if Two Strings Are Close (Medium)
+	Two strings are considered close if you can attain one from the other using 
+	the following operations:
+	* Operation 1: Swap any two existing characters.
+	  + For example, abcde -> aecdb
+	* Operation 2: Transform every occurrence of one existing character into 
+	  another existing character, and do the same with the other character.
+	  + For example, aacabb -> bbcbaa (all a's turn into b's, and all b's turn 
+	    into a's)
+	You can use the operations on either string as many times as necessary. 
+	Given two strings, word1 and word2, return true if word1 and word2 are 
+	close, and false otherwise.
+
+	Example 1:
+	Input: word1 = "abc", word2 = "bca"
+	Output: true
+	Explanation: You can attain word2 from word1 in 2 operations.
+            	 Apply Operation 1: "abc" -> "acb"
+            	 Apply Operation 1: "acb" -> "bca"
+
+	Example 2:
+	Input: word1 = "a", word2 = "aa"
+	Output: false
+	Explanation: It is impossible to attain word2 from word1, or vice versa, in 
+	             any number of operations.
+	
+	Example 3:
+	Input: word1 = "cabbba", word2 = "abbccc"
+	Output: true
+	Explanation: You can attain word2 from word1 in 3 operations.
+	             Apply Operation 1: "cabbba" -> "caabbb"
+	             Apply Operation 2: "caabbb" -> "baaccc"
+	             Apply Operation 2: "baaccc" -> "abbccc"
+
+	Example 4:
+	Input: word1 = "cabbba", word2 = "aabbss"
+	Output: false
+	Explanation: It is impossible to attain word2 from word1, or vice versa, in 
+	             any amount of operations.
+
+	Constraints:
+	* 1 <= word1.length, word2.length <= 105
+	* word1 and word2 contain only lowercase English letters."""
+
+    def closeStrings(self, word1: str, word2: str) -> bool:
+        cnt1, cnt2 = Counter(word1), Counter(word2)
+        return cnt1.keys() == cnt2.keys() and sorted(cnt1.values()) == sorted(cnt2.values())
+
+
+    """1672. Richest Customer Wealth (Easy)
+	You are given an m x n integer grid accounts where accounts[i][j] is the 
+	amount of money the i​​​​​​​​​​​th​​​​ customer has in the j​​​​​​​​​​​th​​​​ bank. Return the wealth 
+	that the richest customer has. A customer's wealth is the amount of money 
+	they have in all their bank accounts. The richest customer is the customer 
+	that has the maximum wealth.
+
+	Example 1:
+	Input: accounts = [[1,2,3],[3,2,1]]
+	Output: 6
+	Explanation:
+	1st customer has wealth = 1 + 2 + 3 = 6
+	2nd customer has wealth = 3 + 2 + 1 = 6
+	Both customers are considered the richest with a wealth of 6 each, so return 6.
+
+	Example 2:
+	Input: accounts = [[1,5],[7,3],[3,5]]
+	Output: 10
+	Explanation: 
+	1st customer has wealth = 6
+	2nd customer has wealth = 10 
+	3rd customer has wealth = 8
+	The 2nd customer is the richest with a wealth of 10.
+
+	Example 3:
+	Input: accounts = [[2,8,7],[7,1,3],[1,9,5]]
+	Output: 17
+
+	Constraints:
+	* m == accounts.length
+	* n == accounts[i].length
+	* 1 <= m, n <= 50
+	* 1 <= accounts[i][j] <= 100"""
+
+    def maximumWealth(self, accounts: List[List[int]]) -> int:
+        return max(map(sum, accounts))
+
+
+    """1673. Find the Most Competitive Subsequence (Medium)
+	Given an integer array nums and a positive integer k, return the most 
+	competitive subsequence of nums of size k. An array's subsequence is a 
+	resulting sequence obtained by erasing some (possibly zero) elements from 
+	the array. We define that a subsequence a is more competitive than a 
+	subsequence b (of the same length) if in the first position where a and b 
+	differ, subsequence a has a number less than the corresponding number in b. 
+	For example, [1,3,4] is more competitive than [1,3,5] because the first 
+	position they differ is at the final number, and 4 is less than 5.
+
+	Example 1:
+	Input: nums = [3,5,2,6], k = 2
+	Output: [2,6]
+	Explanation: Among the set of every possible subsequence: 
+	             {[3,5], [3,2], [3,6], [5,2], [5,6], [2,6]}, [2,6] is the most 
+	             competitive.
+
+	Example 2:
+	Input: nums = [2,4,3,3,5,4,9,6], k = 4
+	Output: [2,3,3,4]
+	 
+	Constraints:
+	* 1 <= nums.length <= 105
+	* 0 <= nums[i] <= 109
+	* 1 <= k <= nums.length"""
+
+    def mostCompetitive(self, nums: List[int], k: int) -> List[int]:
+        stack = [] # (increasing) mono-stack 
+        for i, x in enumerate(nums): 
+            while stack and stack[-1] > x and len(stack) + len(nums) - i > k: stack.pop()
+            if len(stack) < k: stack.append(x)
+        return stack 
+
+
+    """1674. Minimum Moves to Make Array Complementary (Medium)
+	You are given an integer array nums of even length n and an integer limit. 
+	In one move, you can replace any integer from nums with another integer 
+	between 1 and limit, inclusive. The array nums is complementary if for all 
+	indices i (0-indexed), nums[i] + nums[n - 1 - i] equals the same number. 
+	For example, the array [1,2,3,4] is complementary because for all indices i, 
+	nums[i] + nums[n - 1 - i] = 5. Return the minimum number of moves required 
+	to make nums complementary.
+
+	Example 1:
+	Input: nums = [1,2,4,3], limit = 4
+	Output: 1
+	Explanation: In 1 move, you can change nums to [1,2,2,3] (underlined elements are changed).
+	nums[0] + nums[3] = 1 + 3 = 4.
+	nums[1] + nums[2] = 2 + 2 = 4.
+	nums[2] + nums[1] = 2 + 2 = 4.
+	nums[3] + nums[0] = 3 + 1 = 4.
+	Therefore, nums[i] + nums[n-1-i] = 4 for every i, so nums is complementary.
+
+	Example 2:
+	Input: nums = [1,2,2,1], limit = 2
+	Output: 2
+	Explanation: In 2 moves, you can change nums to [2,2,2,2]. You cannot change any number to 3 since 3 > limit.
+
+	Example 3:
+	Input: nums = [1,2,1,2], limit = 2
+	Output: 0
+	Explanation: nums is already complementary.
+
+	Constraints:
+	* n == nums.length
+	* 2 <= n <= 105
+	* 1 <= nums[i] <= limit <= 105
+	* n is even."""
+
+    def minMoves(self, nums: List[int], limit: int) -> int:
+        diff = [0]*(2*limit+2) # difference array 
+        
+        for i in range(len(nums)//2): 
+            m = min(nums[i], nums[~i]) + 1 # lower bound 
+            diff[m] += -1
+            x = nums[i] + nums[~i]
+            diff[x] += -1
+            diff[x+1] += 1
+            M = max(nums[i], nums[~i]) + 1 + limit # upper bound 
+            diff[M] += 1
+        
+        for i in range(1, len(diff)): diff[i] += diff[i-1] # prefix sum 
+        return len(nums) + min(diff)
+
+
+    """1675. Minimize Deviation in Array (Hard)
+	You are given an array nums of n positive integers. You can perform two 
+	types of operations on any element of the array any number of times:
+
+	* If the element is even, divide it by 2.
+	  + For example, if the array is [1,2,3,4], then you can do this operation 
+	    on the last element, and the array will be [1,2,3,2].
+	* If the element is odd, multiply it by 2.
+	  + For example, if the array is [1,2,3,4], then you can do this operation 
+	    on the first element, and the array will be [2,2,3,4].
+	The deviation of the array is the maximum difference between any two 
+	elements in the array. Return the minimum deviation the array can have 
+	after performing some number of operations.
+
+	Example 1:
+	Input: nums = [1,2,3,4]
+	Output: 1
+	Explanation: You can transform the array to [1,2,3,2], then to [2,2,3,2], 
+	             then the deviation will be 3 - 2 = 1.
+
+	Example 2:
+	Input: nums = [4,1,5,20,3]
+	Output: 3
+	Explanation: You can transform the array after two operations to [4,2,5,5,3], 
+	             then the deviation will be 5 - 2 = 3.
+
+	Example 3:
+	Input: nums = [2,10,8]
+	Output: 3
+
+	Constraints:
+	* n == nums.length
+	* 2 <= n <= 105
+	* 1 <= nums[i] <= 109"""
+
+    def minimumDeviation(self, nums: List[int]) -> int:
+        pq = [-2*x if x&1 else -x for x in nums] # max-heap 
+        heapify(pq)
+        
+        mn = -max(pq)
+        ans = -pq[0] - mn 
+        while not pq[0] & 1: 
+            x = heappop(pq)
+            heappush(pq, x//2)
+            mn = min(mn, -x//2)
+            ans = min(ans, -pq[0] - mn)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -13115,3 +14401,52 @@ class ParkingSystem:
     def addCar(self, carType: int) -> bool:
         self.space[carType-1] -= 1 # space taken 
         return self.space[carType-1] >= 0
+
+
+"""1656. Design an Ordered Stream (Easy)
+There are n (id, value) pairs, where id is an integer between 1 and n and value 
+is a string. No two pairs have the same id. Design a stream that takes the n 
+pairs in an arbitrary order, and returns the values over several calls in 
+increasing order of their ids. Implement the OrderedStream class:
+* OrderedStream(int n) Constructs the stream to take n values and sets a current 
+  ptr to 1.
+* String[] insert(int id, String value) Stores the new (id, value) pair in the 
+  stream. After storing the pair:
+  + If the stream has stored a pair with id = ptr, then find the longest 
+    contiguous incrementing sequence of ids starting with id = ptr and return a 
+    list of the values associated with those ids in order. Then, update ptr to 
+    the last id + 1.
+  + Otherwise, return an empty list.
+
+Example:
+Input: ["OrderedStream", "insert", "insert", "insert", "insert", "insert"]
+       [[5], [3, "ccccc"], [1, "aaaaa"], [2, "bbbbb"], [5, "eeeee"], [4, "ddddd"]]
+Output: [null, [], ["aaaaa"], ["bbbbb", "ccccc"], [], ["ddddd", "eeeee"]]
+Explanation: 
+OrderedStream os= new OrderedStream(5);
+os.insert(3, "ccccc"); // Inserts (3, "ccccc"), returns [].
+os.insert(1, "aaaaa"); // Inserts (1, "aaaaa"), returns ["aaaaa"].
+os.insert(2, "bbbbb"); // Inserts (2, "bbbbb"), returns ["bbbbb", "ccccc"].
+os.insert(5, "eeeee"); // Inserts (5, "eeeee"), returns [].
+os.insert(4, "ddddd"); // Inserts (4, "ddddd"), returns ["ddddd", "eeeee"].
+ 
+Constraints:
+* 1 <= n <= 1000
+* 1 <= id <= n
+* value.length == 5
+* value consists only of lowercase letters.
+* Each call to insert will have a unique id.
+* Exactly n calls will be made to insert."""
+
+class OrderedStream:
+
+    def __init__(self, n: int):
+        self.data = [None]*n
+        self.ptr = 0
+
+    def insert(self, id: int, value: str) -> List[str]:
+        id -= 1
+        self.data[id] = value 
+        if id == self.ptr: 
+            while self.ptr < len(self.data) and self.data[self.ptr]: self.ptr += 1 # update self.ptr 
+        return self.data[id:self.ptr]
