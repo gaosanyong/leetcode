@@ -11613,6 +11613,187 @@ class Solution:
             ans |= vals
         return len(ans)
 
+    
+    """909. Snakes and Ladders (Medium)
+	On an N x N board, the numbers from 1 to N*N are written boustrophedonically 
+	starting from the bottom left of the board, and alternating direction each 
+	row. You start on square 1 of the board (which is always in the last row and 
+	first column).  Each move, starting from square x, consists of the following:
+	* You choose a destination square S with number x+1, x+2, x+3, x+4, x+5, or 
+	  x+6, provided this number is <= N*N.
+	  + (This choice simulates the result of a standard 6-sided die roll: ie., 
+	    there are always at most 6 destinations, regardless of the size of the 
+	    board.)
+	* If S has a snake or ladder, you move to the destination of that snake or 
+	  ladder.  Otherwise, you move to S.
+	A board square on row r and column c has a "snake or ladder" if 
+	board[r][c] != -1.  The destination of that snake or ladder is board[r][c]. 
+	Note that you only take a snake or ladder at most once per move: if the 
+	destination to a snake or ladder is the start of another snake or ladder, 
+	you do not continue moving.  (For example, if the board is `[[4,-1],[-1,3]]`, 
+	and on the first move your destination square is `2`, then you finish your 
+	first move at `3`, because you do not continue moving to `4`.) Return the 
+	least number of moves required to reach square N*N.  If it is not possible, 
+	return -1.
+
+	Example 1:
+	Input: [
+	[-1,-1,-1,-1,-1,-1],
+	[-1,-1,-1,-1,-1,-1],
+	[-1,-1,-1,-1,-1,-1],
+	[-1,35,-1,-1,13,-1],
+	[-1,-1,-1,-1,-1,-1],
+	[-1,15,-1,-1,-1,-1]]
+	Output: 4
+	Explanation: 
+	At the beginning, you start at square 1 [at row 5, column 0].
+	You decide to move to square 2, and must take the ladder to square 15.
+	You then decide to move to square 17 (row 3, column 5), and must take the snake to square 13.
+	You then decide to move to square 14, and must take the ladder to square 35.
+	You then decide to move to square 36, ending the game.
+	It can be shown that you need at least 4 moves to reach the N*N-th square, so the answer is 4.
+
+	Note:
+	* 2 <= board.length = board[0].length <= 20
+	* board[i][j] is between 1 and N*N or is equal to -1.
+	* The board square with number 1 has no snake or ladder.
+	* The board square with number N*N has no snake or ladder."""
+
+    def snakesAndLadders(self, board: List[List[int]]) -> int:
+        n = len(board)
+        ans = 0
+        queue = [1]
+        seen = {1}
+        while queue: # bfs 
+            newq = []
+            for x in queue: 
+                if x == n*n: return ans 
+                for xx in range(x+1, x+7): 
+                    if xx <= n*n:
+                        i, j = divmod(xx-1, n)
+                        if board[~i][~j if i&1 else j] != -1: xx = board[~i][~j if i&1 else j]
+                        if xx not in seen: 
+                            newq.append(xx)
+                            seen.add(xx)
+            ans += 1
+            queue = newq 
+        return -1 
+
+
+    """910. Smallest Range II (Medium)
+	Given an array A of integers, for each integer A[i] we need to choose 
+	either x = -K or x = K, and add x to A[i] (only once). After this process, 
+	we have some array B. Return the smallest possible difference between the 
+	maximum value of B and the minimum value of B.
+
+	Example 1:
+	Input: A = [1], K = 0
+	Output: 0
+	Explanation: B = [1]
+
+	Example 2:
+	Input: A = [0,10], K = 2
+	Output: 6
+	Explanation: B = [2,8]
+
+	Example 3:
+	Input: A = [1,3,6], K = 3
+	Output: 3
+	Explanation: B = [4,6,3]
+
+	Note:
+	* 1 <= A.length <= 10000
+	* 0 <= A[i] <= 10000
+	* 0 <= K <= 10000"""
+
+    def smallestRangeII(self, A: List[int], K: int) -> int:
+        A.sort()
+        ans = A[-1] - A[0]
+        for i in range(1, len(A)): 
+            mn = min(A[0] + K, A[i] - K) # move up A[:i]
+            mx = max(A[i-1]+K, A[-1] - K) # move down A[i:]
+            ans = min(ans, mx - mn)
+        return ans 
+
+
+    """912. Sort an Array (Medium)
+	Given an array of integers nums, sort the array in ascending order.
+
+	Example 1:
+	Input: nums = [5,2,3,1]
+	Output: [1,2,3,5]
+
+	Example 2:
+	Input: nums = [5,1,1,2,0,0]
+	Output: [0,0,1,1,2,5]
+
+	Constraints:
+	* 1 <= nums.length <= 50000
+	* -50000 <= nums[i] <= 50000"""
+
+    def sortArray(self, nums: List[int]) -> List[int]:
+        
+        def part(lo, hi): 
+            """Return a random partition of nums[lo:hi]."""
+            mid = randint(lo, hi-1)
+            nums[lo], nums[mid] = nums[mid], nums[lo]
+            i, j = lo+1, hi-1
+            while i <= j: 
+                if nums[i] < nums[lo]: i += 1
+                elif nums[j] > nums[lo]: j -= 1
+                else: 
+                    nums[i], nums[j] = nums[j], nums[i]
+                    i += 1
+                    j -= 1
+            nums[lo], nums[j] = nums[j], nums[lo]
+            return j
+                
+            
+        def sort(lo, hi): 
+            """Sort subarray nums[lo:hi] in place."""
+            if lo + 1 >= hi: return 
+            mid = part(lo, hi)
+            sort(lo, mid)
+            sort(mid+1, hi)
+            
+        sort(0, len(nums))
+        return nums
+
+
+    """915. Partition Array into Disjoint Intervals (Medium)
+	Given an array A, partition it into two (contiguous) subarrays left and 
+	right so that:
+	* Every element in left is less than or equal to every element in right.
+	* left and right are non-empty.
+	* left has the smallest possible size.
+	Return the length of left after such a partitioning.  It is guaranteed that 
+	such a partitioning exists.
+
+	Example 1:
+	Input: [5,0,3,8,6]
+	Output: 3
+	Explanation: left = [5,0,3], right = [8,6]
+
+	Example 2:
+	Input: [1,1,1,0,6,12]
+	Output: 4
+	Explanation: left = [1,1,1,0], right = [6,12]
+
+	Note:
+	* 2 <= A.length <= 30000
+	* 0 <= A[i] <= 10^6
+	* It is guaranteed there is at least one way to partition A as described."""
+
+    def partitionDisjoint(self, A: List[int]) -> int:
+        ans = 0
+        mx, val = -inf, inf
+        for i, x in enumerate(A, 1): 
+            mx = max(mx, x)
+            if x < val: 
+                ans = i 
+                val = mx 
+        return ans
+
 
     """1588. Sum of All Odd Length Subarrays (Easy)
 	Given an array of positive integers arr, calculate the sum of all possible 
@@ -14361,6 +14542,53 @@ class MyCalendar:
         if end <= prev.val[0]: prev.left = Node((start, end))
         else: prev.right = Node((start, end))
         return True 
+
+
+"""911. Online Election (Medium)
+In an election, the i-th vote was cast for persons[i] at time times[i]. Now, we 
+would like to implement the following query function: TopVotedCandidate.q(int t) 
+will return the number of the person that was leading the election at time t. 
+Votes cast at time t will count towards our query.  In the case of a tie, the 
+most recent vote (among tied candidates) wins.
+
+Example 1:
+Input: ["TopVotedCandidate","q","q","q","q","q","q"], [[[0,1,1,0,0,1,0],[0,5,10,15,20,25,30]],[3],[12],[25],[15],[24],[8]]
+Output: [null,0,1,1,0,0,1]
+Explanation: 
+At time 3, the votes are [0], and 0 is leading.
+At time 12, the votes are [0,1,1], and 1 is leading.
+At time 25, the votes are [0,1,1,0,0,1], and 1 is leading (as ties go to the most recent vote.)
+This continues for 3 more queries at time 15, 24, and 8.
+
+Note:
+* 1 <= persons.length = times.length <= 5000
+* 0 <= persons[i] <= persons.length
+* times is a strictly increasing array with all elements in [0, 10^9].
+* TopVotedCandidate.q is called at most 10000 times per test case.
+* TopVotedCandidate.q(int t) is always called with t >= times[0]."""
+
+class TopVotedCandidate:
+
+    def __init__(self, persons: List[int], times: List[int]):
+        self.times = times 
+        self.winner = []
+        
+        pp = 0 
+        freq = {} # frequency table 
+        for p in persons: 
+            freq[p] = 1 + freq.get(p, 0)
+            if freq[p] >= freq.get(pp, 0): pp = p
+            self.winner.append(pp)
+
+
+    def q(self, t: int) -> int:
+        """Standard last-true binary search."""
+        lo, hi = -1, len(self.times)-1
+        while lo < hi: 
+            mid = lo + hi + 1 >> 1
+            if self.times[mid] <= t: lo = mid
+            else: hi = mid - 1
+        return self.winner[lo]
 
 
 """1603. Design Parking System (Easy)
