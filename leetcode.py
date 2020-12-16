@@ -9427,6 +9427,35 @@ class Solution:
         return root 
 
 
+    """605. Can Place Flowers (Easy)
+	You have a long flowerbed in which some of the plots are planted, and some 
+	are not. However, flowers cannot be planted in adjacent plots. Given an 
+	integer array flowerbed containing 0's and 1's, where 0 means empty and 1 
+	means not empty, and an integer n, return if n new flowers can be planted 
+	in the flowerbed without violating the no-adjacent-flowers rule.
+
+	Example 1:
+	Input: flowerbed = [1,0,0,0,1], n = 1
+	Output: true
+
+	Example 2:
+	Input: flowerbed = [1,0,0,0,1], n = 2
+	Output: false
+
+	Constraints:
+	* 1 <= flowerbed.length <= 2 * 10^4
+	* flowerbed[i] is 0 or 1.
+	* There are no two adjacent flowers in flowerbed.
+	* 0 <= n <= flowerbed.length"""
+
+    def canPlaceFlowers(self, flowerbed: List[int], n: int) -> bool:
+        for i in range(len(flowerbed)):
+            if (i == 0 or flowerbed[i-1] == 0) and flowerbed[i] == 0 and (i+1 == len(flowerbed) or flowerbed[i+1] == 0): 
+                flowerbed[i] = 1
+                n -= 1
+        return n <= 0
+
+
     """650. 2 Keys Keyboard (Medium)
 	Initially on a notepad only one character 'A' is present. You can perform 
 	two operations on this notepad for each step:
@@ -11578,6 +11607,40 @@ class Solution:
         return fn(N)
 
 
+    """897. Increasing Order Search Tree (Easy)
+	Given the root of a binary search tree, rearrange the tree in in-order so 
+	that the leftmost node in the tree is now the root of the tree, and every 
+	node has no left child and only one right child.
+
+	Example 1:
+	Input: root = [5,3,6,2,4,null,8,1,null,null,null,7,9]
+	Output: [1,null,2,null,3,null,4,null,5,null,6,null,7,null,8,null,9]
+
+	Example 2:
+	Input: root = [5,1,7]
+	Output: [1,null,5,null,7]
+
+	Constraints:
+	* The number of nodes in the given tree will be in the range [1, 100].
+	* 0 <= Node.val <= 1000"""
+
+    def increasingBST(self, root: TreeNode) -> TreeNode:
+        ans = temp = None
+        stack = []
+        node = root
+        while stack or node: 
+            if node: 
+                stack.append(node)
+                node = node.left
+                continue
+            node = stack.pop()
+            if not ans: ans = temp = node 
+            else: temp.right = temp = node
+            node.left = None 
+            node = node.right
+        return ans 
+
+
     """898. Bitwise ORs of Subarrays (Medium)
 	We have an array A of non-negative integers. For every (contiguous) 
 	subarray B = [A[i], A[i+1], ..., A[j]] (with i <= j), we take the bitwise 
@@ -11795,6 +11858,481 @@ class Solution:
         return ans
 
 
+    """916. Word Subsets (Medium)
+	We are given two arrays A and B of words. Each word is a string of 
+	lowercase letters. Now, say that word b is a subset of word a if every 
+	letter in b occurs in a, including multiplicity.  For example, "wrr" is a 
+	subset of "warrior", but is not a subset of "world". Now say a word a from 
+	A is universal if for every b in B, b is a subset of a. Return a list of 
+	all universal words in A.  You can return the words in any order.
+
+	Example 1:
+	Input: A = ["amazon","apple","facebook","google","leetcode"], B = ["e","o"]
+	Output: ["facebook","google","leetcode"]
+
+	Example 2:
+	Input: A = ["amazon","apple","facebook","google","leetcode"], B = ["l","e"]
+	Output: ["apple","google","leetcode"]
+
+	Example 3:
+	Input: A = ["amazon","apple","facebook","google","leetcode"], B = ["e","oo"]
+	Output: ["facebook","google"]
+
+	Example 4:
+	Input: A = ["amazon","apple","facebook","google","leetcode"], B = ["lo","eo"]
+	Output: ["google","leetcode"]
+
+	Example 5:
+	Input: A = ["amazon","apple","facebook","google","leetcode"], B = ["ec","oc","ceo"]
+	Output: ["facebook","leetcode"]
+
+	Note:
+	* 1 <= A.length, B.length <= 10000
+	* 1 <= A[i].length, B[i].length <= 10
+	* A[i] and B[i] consist only of lowercase letters.
+	* All words in A[i] are unique: there isn't i != j with A[i] == A[j]."""
+
+    def wordSubsets(self, A: List[str], B: List[str]) -> List[str]:
+        freq = Counter()
+        for x in B: freq |= Counter(x)
+        return [x for x in A if not freq - Counter(x)]
+
+
+    """921. Minimum Add to Make Parentheses Valid (Medium)
+	Given a string S of '(' and ')' parentheses, we add the minimum number of 
+	parentheses ( '(' or ')', and in any positions ) so that the resulting 
+	parentheses string is valid. Formally, a parentheses string is valid if and 
+	only if:
+	* It is the empty string, or
+	* It can be written as AB (A concatenated with B), where A and B are valid 
+	  strings, or
+	* It can be written as (A), where A is a valid string.
+	Given a parentheses string, return the minimum number of parentheses we 
+	must add to make the resulting string valid.
+
+	Example 1:
+	Input: "())"
+	Output: 1
+
+	Example 2:
+	Input: "((("
+	Output: 3
+
+	Example 3:
+	Input: "()"
+	Output: 0
+
+	Example 4:
+	Input: "()))(("
+	Output: 4
+
+	Note:
+	* S.length <= 1000
+	* S only consists of '(' and ')' characters."""
+
+    def minAddToMakeValid(self, S: str) -> int:
+        op = cl = 0 # open and closed parenthesis needed 
+        for c in S: 
+            cl += 1 if c == "(" else -1 # need ) to balance extra (
+            if cl < 0: 
+                cl = 0
+                op += 1 # need ( to balance extra )
+        return op + cl 
+
+
+    """923. 3Sum With Multiplicity (Medium)
+	Given an integer array A, and an integer target, return the number of 
+	tuples i, j, k  such that i < j < k and A[i] + A[j] + A[k] == target. As 
+	the answer can be very large, return it modulo 109 + 7.
+
+	Example 1:
+	Input: A = [1,1,2,2,3,3,4,4,5,5], target = 8
+	Output: 20
+	Explanation: 
+	Enumerating by the values (A[i], A[j], A[k]):
+	(1, 2, 5) occurs 8 times;
+	(1, 3, 4) occurs 8 times;
+	(2, 2, 4) occurs 2 times;
+	(2, 3, 3) occurs 2 times.
+
+	Example 2:
+	Input: A = [1,1,2,2,2,2], target = 5
+	Output: 12
+	Explanation: 
+	A[i] = 1, A[j] = A[k] = 2 occurs 12 times:
+	We choose one 1 from [1,1] in 2 ways,
+	and two 2s from [2,2,2,2] in 6 ways.
+
+	Constraints:
+	* 3 <= A.length <= 3000
+	* 0 <= A[i] <= 100
+	* 0 <= target <= 300"""
+
+    def threeSumMulti(self, A: List[int], target: int) -> int:
+        freq = {} # frequency table 
+        for x in A: freq[x] = 1 + freq.get(x, 0) 
+        
+        A = list(freq)
+        ans = 0
+        for i in range(len(A)):
+            for j in range(i, len(A)):
+                x = target - A[i] - A[j]
+                if x in freq: 
+                    if A[i] == A[j] == x: 
+                        ans += freq[x]*(freq[x]-1)*(freq[x]-2)//6
+                    elif A[i] == A[j]: 
+                        ans += freq[A[i]]*(freq[A[i]]-1)//2*freq[x]
+                    elif A[i] < x and A[j] < x: 
+                        ans += freq[A[i]] * freq[A[j]] * freq[x]
+        return ans % 1_000_000_007
+
+
+    """926. Flip String to Monotone Increasing (Medium)
+	A string of '0's and '1's is monotone increasing if it consists of some 
+	number of '0's (possibly 0), followed by some number of '1's (also possibly 
+	0.) We are given a string S of '0's and '1's, and we may flip any '0' to a 
+	'1' or a '1' to a '0'. Return the minimum number of flips to make S monotone 
+	increasing.
+
+	Example 1:
+	Input: "00110"
+	Output: 1
+	Explanation: We flip the last digit to get 00111.
+
+	Example 2:
+	Input: "010110"
+	Output: 2
+	Explanation: We flip to get 011111, or alternatively 000111.
+
+	Example 3:
+	Input: "00011000"
+	Output: 2
+	Explanation: We flip to get 00000000.
+
+	Note:
+	* 1 <= S.length <= 20000
+	* S only consists of '0' and '1' characters."""
+
+    def minFlipsMonoIncr(self, S: str) -> int:
+        ones = flip = 0
+        for ch in S: 
+            if ch == "1": ones += 1
+            else: flip = min(ones, flip + 1)
+        return flip 
+
+
+    """930. Binary Subarrays With Sum (Medium)
+	In an array A of 0s and 1s, how many non-empty subarrays have sum S?
+
+	Example 1:
+	Input: A = [1,0,1,0,1], S = 2
+	Output: 4
+	Explanation: 
+	The 4 subarrays are bolded below:
+	[1,0,1,0,1]
+	[1,0,1,0,1]
+	[1,0,1,0,1]
+	[1,0,1,0,1]
+
+	Note:
+	* A.length <= 30000
+	* 0 <= S <= A.length
+	* A[i] is either 0 or 1."""
+
+    def numSubarraysWithSum(self, A: List[int], S: int) -> int:
+        ans = prefix = 0
+        seen = {0: 1}
+        for x in A:
+            prefix += x
+            ans += seen.get(prefix - S, 0)
+            seen[prefix] = 1 + seen.get(prefix, 0)
+        return ans 
+
+
+    """931. Minimum Falling Path Sum (Medium)
+	Given a square array of integers A, we want the minimum sum of a falling 
+	path through A. A falling path starts at any element in the first row, and 
+	chooses one element from each row.  The next row's choice must be in a 
+	column that is different from the previous row's column by at most one.
+
+	Example 1:
+	Input: [[1,2,3],[4,5,6],[7,8,9]]
+	Output: 12
+	Explanation: 
+	The possible falling paths are:
+	[1,4,7], [1,4,8], [1,5,7], [1,5,8], [1,5,9]
+	[2,4,7], [2,4,8], [2,5,7], [2,5,8], [2,5,9], [2,6,8], [2,6,9]
+	[3,5,7], [3,5,8], [3,5,9], [3,6,8], [3,6,9]
+	The falling path with the smallest sum is [1,4,7], so the answer is 12.
+
+	Constraints:
+	* 1 <= A.length == A[0].length <= 100
+	* -100 <= A[i][j] <= 100"""
+
+    def minFallingPathSum(self, A: List[List[int]]) -> int:
+        n = len(A)
+        
+        @lru_cache(None)
+        def fn(i, j): 
+            """Return the minimum falling path ending at (i, j)."""
+            if not (0 <= i < n and 0 <= j < n): return inf
+            if i == 0: return A[i][j]
+            return min(fn(i-1, j-1), fn(i-1, j), fn(i-1, j+1)) + A[i][j]
+        
+        return min(fn(n-1, j) for j in range(n))
+
+
+    """934. Shortest Bridge (Medium)
+	In a given 2D binary array A, there are two islands.  (An island is a 4-
+	directionally connected group of 1s not connected to any other 1s.) Now, we 
+	may change 0s to 1s so as to connect the two islands together to form 1 
+	island. Return the smallest number of 0s that must be flipped.  (It is 
+	guaranteed that the answer is at least 1.)
+
+	Example 1:
+	Input: A = [[0,1],[1,0]]
+	Output: 1
+
+	Example 2:
+	Input: A = [[0,1,0],[0,0,0],[0,0,1]]
+	Output: 2
+
+	Example 3:
+	Input: A = [[1,1,1,1,1],[1,0,0,0,1],[1,0,1,0,1],[1,0,0,0,1],[1,1,1,1,1]]
+	Output: 1
+
+	Constraints:
+	* 2 <= A.length == A[0].length <= 100
+	* A[i][j] == 0 or A[i][j] == 1"""
+
+    def shortestBridge(self, A: List[List[int]]) -> int:
+        m, n = len(A), len(A[0])
+        i, j = next((i, j) for i in range(m) for j in range(n) if A[i][j])
+        
+        # dfs 
+        stack = [(i, j)]
+        seen = set(stack)
+        while stack: 
+            i, j = stack.pop()
+            seen.add((i, j)) # mark as visited 
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                if 0 <= ii < m and 0 <= jj < n and A[ii][jj] and (ii, jj) not in seen: 
+                    stack.append((ii, jj))
+                    seen.add((ii, jj))
+        
+        # bfs 
+        ans = 0
+        queue = list(seen)
+        while queue:
+            newq = []
+            for i, j in queue: 
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                    if 0 <= ii < m and 0 <= jj < n and (ii, jj) not in seen: 
+                        if A[ii][jj] == 1: return ans 
+                        newq.append((ii, jj))
+                        seen.add((ii, jj))
+            queue = newq
+            ans += 1
+
+
+    """935. Knight Dialer (Medium)
+	The chess knight has a unique movement, it may move two squares vertically 
+	and one square horizontally, or two squares horizontally and one square 
+	vertically (with both forming the shape of an L). We have a chess knight 
+	and a phone pad as shown below, the knight can only stand on a numeric cell 
+	(i.e. blue cell). Given an integer n, return how many distinct phone numbers 
+	of length n we can dial. You are allowed to place the knight on any numeric 
+	cell initially and then you should perform n - 1 jumps to dial a number of 
+	length n. All jumps should be valid knight jumps. As the answer may be very 
+	large, return the answer modulo 109 + 7.
+
+	Example 1:
+	Input: n = 1
+	Output: 10
+	Explanation: We need to dial a number of length 1, so placing the knight 
+	             over any numeric cell of the 10 cells is sufficient.
+
+	Example 2:
+	Input: n = 2
+	Output: 20
+	Explanation: All the valid number we can dial are [04, 06, 16, 18, 27, 29, 
+	             34, 38, 40, 43, 49, 60, 61, 67, 72, 76, 81, 83, 92, 94]
+	
+	Example 3:
+	Input: n = 3
+	Output: 46
+
+	Example 4:
+	Input: n = 4
+	Output: 104
+
+	Example 5:
+	Input: n = 3131
+	Output: 136006598
+	Explanation: Please take care of the mod.
+	 
+	Constraints: 1 <= n <= 5000"""
+
+    def knightDialer(self, n: int) -> int:
+        mp = {0: [4, 6], 1: [6, 8], 2: [7, 9], 3: [4, 8], 4: [0, 3, 9], 
+              5: [], 6: [0, 1, 7], 7: [2, 6], 8: [1, 3], 9: [2, 4]}
+        ans = [1]*10 
+        for _ in range(n-1): 
+            temp = [0]*10
+            for i in range(10): 
+                for ii in mp[i]: temp[i] += ans[ii]
+                temp[i] %= 1_000_000_007
+            ans = temp 
+        return sum(ans) % 1_000_000_007
+
+
+    """939. Minimum Area Rectangle (Medium)
+	Given a set of points in the xy-plane, determine the minimum area of a 
+	rectangle formed from these points, with sides parallel to the x and y axes.
+	If there isn't any rectangle, return 0.
+
+	Example 1:
+	Input: [[1,1],[1,3],[3,1],[3,3],[2,2]]
+	Output: 4
+
+	Example 2:
+	Input: [[1,1],[1,3],[3,1],[3,3],[4,1],[4,3]]
+	Output: 2
+
+	Note:
+	* 1 <= points.length <= 500
+	* 0 <= points[i][0] <= 40000
+	* 0 <= points[i][1] <= 40000
+	* All points are distinct."""
+
+    def minAreaRect(self, points: List[List[int]]) -> int:
+        ans = inf
+        seen = {(x, y) for x, y in points}
+        for x, y in points: 
+            for xx, yy in points: 
+                if x != xx and y != yy and (x, yy) in seen and (xx, y) in seen: 
+                    ans = min(ans, abs((xx-x)*(yy-y)))
+        return ans if ans < inf else 0
+
+
+    """945. Minimum Increment to Make Array Unique (Medium)
+	Given an array of integers A, a move consists of choosing any A[i], and 
+	incrementing it by 1. Return the least number of moves to make every value 
+	in A unique.
+
+	Example 1:
+	Input: [1,2,2]
+	Output: 1
+	Explanation: After 1 move, the array could be [1, 2, 3].
+
+	Example 2:
+	Input: [3,2,1,2,1,7]
+	Output: 6
+	Explanation: After 6 moves, the array could be [3, 4, 1, 2, 5, 7]. It can 
+	             be shown with 5 or less moves that it is impossible for the 
+	             array to have all unique values.
+
+	Note:
+	* 0 <= A.length <= 40000
+	* 0 <= A[i] < 40000"""
+
+    def minIncrementForUnique(self, A: List[int]) -> int:
+        ans = cap = 0
+        for x in sorted(A): 
+            ans += max(0, cap - x)
+            cap = max(cap, x) + 1
+        return ans 
+
+    
+    """946. Validate Stack Sequences (Medium)
+	Given two sequences pushed and popped with distinct values, return true if 
+	and only if this could have been the result of a sequence of push and pop 
+	operations on an initially empty stack.
+
+	Example 1:
+	Input: pushed = [1,2,3,4,5], popped = [4,5,3,2,1]
+	Output: true
+	Explanation: We might do the following sequence:
+	push(1), push(2), push(3), push(4), pop() -> 4,
+	push(5), pop() -> 5, pop() -> 3, pop() -> 2, pop() -> 1
+
+	Example 2:
+	Input: pushed = [1,2,3,4,5], popped = [4,3,5,1,2]
+	Output: false
+	Explanation: 1 cannot be popped before 2.
+
+	Constraints:
+	* 0 <= pushed.length == popped.length <= 1000
+	* 0 <= pushed[i], popped[i] < 1000
+	* pushed is a permutation of popped.
+	* pushed and popped have distinct values."""
+
+    def validateStackSequences(self, pushed: List[int], popped: List[int]) -> bool:
+        i = 0
+        stack = []
+        for x in pushed: 
+            stack.append(x)
+            while stack and stack[-1] == popped[i]:
+                stack.pop()
+                i += 1
+        return not stack 
+
+
+    """948. Bag of Tokens (Medium)
+	You have an initial power of P, an initial score of 0, and a bag of tokens 
+	where tokens[i] is the value of the ith token (0-indexed). Your goal is to 
+	maximize your total score by potentially playing each token in one of two 
+	ways:
+	* If your current power is at least tokens[i], you may play the ith token 
+	  face up, losing tokens[i] power and gaining 1 score.
+	* If your current score is at least 1, you may play the ith token face down, 
+	  gaining tokens[i] power and losing 1 score.
+	Each token may be played at most once and in any order. You do not have to 
+	play all the tokens. Return the largest possible score you can achieve 
+	after playing any number of tokens.
+
+	Example 1:
+	Input: tokens = [100], P = 50
+	Output: 0
+	Explanation: Playing the only token in the bag is impossible because you 
+	             either have too little power or too little score.
+
+	Example 2:
+	Input: tokens = [100,200], P = 150
+	Output: 1
+	Explanation: Play the 0th token (100) face up, your power becomes 50 and 
+	             score becomes 1. There is no need to play the 1st token since 
+	             you cannot play it face up to add to your score.
+	
+	Example 3:
+	Input: tokens = [100,200,300,400], P = 200
+	Output: 2
+	Explanation: Play the tokens in this order to get a score of 2:
+	1. Play the 0th token (100) face up, your power becomes 100 and score becomes 1.
+	2. Play the 3rd token (400) face down, your power becomes 500 and score becomes 0.
+	3. Play the 1st token (200) face up, your power becomes 300 and score becomes 1.
+	4. Play the 2nd token (300) face up, your power becomes 0 and score becomes 2.
+
+	Constraints:
+	* 0 <= tokens.length <= 1000
+	* 0 <= tokens[i], P < 104"""
+
+    def bagOfTokensScore(self, tokens: List[int], P: int) -> int:
+        tokens.sort()
+        score, lo, hi = 0, 0, len(tokens)-1
+        while lo <= hi: 
+            if tokens[lo] <= P: # exchange power for score
+                P -= tokens[lo]
+                lo += 1
+                score += 1
+            elif score and lo < hi: # exchange score for power 
+                P += tokens[hi]
+                hi -= 1
+                score -= 1
+            else: break 
+        return score
+
+
     """1588. Sum of All Odd Length Subarrays (Easy)
 	Given an array of positive integers arr, calculate the sum of all possible 
 	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
@@ -11831,6 +12369,53 @@ class Solution:
     def sumOddLengthSubarrays(self, arr: List[int]) -> int:
         return sum(((i+1)*(len(arr)-i) + 1)//2 * x for i, x in enumerate(arr))
 
+
+
+    """1492. The kth Factor of n (Medium)
+	Given two positive integers n and k. A factor of an integer n is defined as 
+	an integer i where n % i == 0. Consider a list of all factors of n sorted 
+	in ascending order, return the kth factor in this list or return -1 if n 
+	has less than k factors.
+
+	Example 1:
+	Input: n = 12, k = 3
+	Output: 3
+	Explanation: Factors list is [1, 2, 3, 4, 6, 12], the 3rd factor is 3.
+
+	Example 2:
+	Input: n = 7, k = 2
+	Output: 7
+	Explanation: Factors list is [1, 7], the 2nd factor is 7.
+
+	Example 3:
+	Input: n = 4, k = 4
+	Output: -1
+	Explanation: Factors list is [1, 2, 4], there is only 3 factors. We should return -1.
+
+	Example 4:
+	Input: n = 1, k = 1
+	Output: 1
+	Explanation: Factors list is [1], the 1st factor is 1.
+
+	Example 5:
+	Input: n = 1000, k = 3
+	Output: 4
+	Explanation: Factors list is [1, 2, 4, 5, 8, 10, 20, 25, 40, 50, 100, 125, 200, 250, 500, 1000].
+
+	Constraints: 1 <= k <= n <= 1000"""
+
+    def kthFactor(self, n: int, k: int) -> int:
+        for i in range(1, int(sqrt(n))+1): # forward pass 
+            if not n%i: k -= 1
+            if not k: return i 
+        
+        while i > 0: # backward pass 
+            if i * i < n: 
+                if not n%i: k -= 1
+                if not k: return n//i
+            i -= 1
+        
+        return -1 
 
 
     """1589. Maximum Sum Obtained of Any Permutation (Medium)
@@ -13538,6 +14123,276 @@ class Fenwick:
         return ans 
 
 
+    """1678. Goal Parser Interpretation (Easy)
+	You own a Goal Parser that can interpret a string command. The command 
+	consists of an alphabet of "G", "()" and/or "(al)" in some order. The Goal 
+	Parser will interpret "G" as the string "G", "()" as the string "o", and 
+	"(al)" as the string "al". The interpreted strings are then concatenated in 
+	the original order. Given the string command, return the Goal Parser's 
+	interpretation of command.
+
+	Example 1:
+	Input: command = "G()(al)"
+	Output: "Goal"
+	Explanation: The Goal Parser interprets the command as follows:
+	G -> G
+	() -> o
+	(al) -> al
+	The final concatenated result is "Goal".
+
+	Example 2:
+	Input: command = "G()()()()(al)"
+	Output: "Gooooal"
+
+	Example 3:
+	Input: command = "(al)G(al)()()G"
+	Output: "alGalooG"
+
+	Constraints:
+	* 1 <= command.length <= 100
+	* command consists of "G", "()", and/or "(al)" in some order."""
+
+    def interpret(self, command: str) -> str:
+        return command.replace("()", "o").replace("(al)", "al")
+
+
+    """1679. Max Number of K-Sum Pairs (Medium)
+	You are given an integer array nums and an integer k. In one operation, you 
+	can pick two numbers from the array whose sum equals k and remove them from 
+	the array. Return the maximum number of operations you can perform on the 
+	array.
+
+	Example 1:
+	Input: nums = [1,2,3,4], k = 5
+	Output: 2
+	Explanation: Starting with nums = [1,2,3,4]:
+	- Remove numbers 1 and 4, then nums = [2,3]
+	- Remove numbers 2 and 3, then nums = []
+	There are no more pairs that sum up to 5, hence a total of 2 operations.
+
+	Example 2:
+	Input: nums = [3,1,3,4,3], k = 6
+	Output: 1
+	Explanation: Starting with nums = [3,1,3,4,3]:
+	- Remove the first two 3's, then nums = [1,4,3]
+	There are no more pairs that sum up to 6, hence a total of 1 operation.
+
+	Constraints:
+	* 1 <= nums.length <= 105
+	* 1 <= nums[i] <= 109
+	* 1 <= k <= 109"""
+
+    def maxOperations(self, nums: List[int], k: int) -> int:
+        freq = {}
+        for x in nums: freq[x] = 1 + freq.get(x, 0)
+        
+        ans = 0
+        for x, v in freq.items(): 
+            if k - x in freq: 
+                if x == k - x: ans += freq[x]//2
+                elif x < k - x: ans += min(freq[x], freq[k-x])
+        return ans 
+
+
+    """1680. Concatenation of Consecutive Binary Numbers (Medium)
+	Given an integer n, return the decimal value of the binary string formed by 
+	concatenating the binary representations of 1 to n in order, modulo 109 + 7.
+
+	Example 1:
+	Input: n = 1
+	Output: 1
+	Explanation: "1" in binary corresponds to the decimal value 1. 
+
+	Example 2:
+	Input: n = 3
+	Output: 27
+	Explanation: In binary, 1, 2, and 3 corresponds to "1", "10", and "11". 
+	             After concatenating them, we have "11011", which corresponds 
+	             to the decimal value 27.
+
+	Example 3:
+	Input: n = 12
+	Output: 505379714
+	Explanation: The concatenation results in "1101110010111011110001001101010111100".
+	             The decimal value of that is 118505380540. After modulo 10^9 + 7, 
+	             the result is 505379714.
+
+	Constraints: 1 <= n <= 105"""
+
+    def concatenatedBinary(self, n: int) -> int:
+        ans = k = 0
+        for x in range(1, n+1): 
+            if not x & x-1: k += 1
+            ans = ((ans << k) + x) % 1_000_000_007
+        return ans 
+
+
+    """1688. Count of Matches in Tournament (Easy)
+	You are given an integer n, the number of teams in a tournament that has 
+	strange rules: 
+	* If the current number of teams is even, each team gets paired with another 
+	  team. A total of n / 2 matches are played, and n / 2 teams advance to the 
+	  next round.
+	* If the current number of teams is odd, one team randomly advances in the 
+	  tournament, and the rest gets paired. A total of (n - 1) / 2 matches are 
+	  played, and (n - 1) / 2 + 1 teams advance to the next round.
+	Return the number of matches played in the tournament until a winner is 
+	decided.
+
+	Example 1:
+	Input: n = 7
+	Output: 6
+	Explanation: Details of the tournament: 
+	- 1st Round: Teams = 7, Matches = 3, and 4 teams advance.
+	- 2nd Round: Teams = 4, Matches = 2, and 2 teams advance.
+	- 3rd Round: Teams = 2, Matches = 1, and 1 team is declared the winner.
+	Total number of matches = 3 + 2 + 1 = 6.
+
+	Example 2:
+	Input: n = 14
+	Output: 13
+	Explanation: Details of the tournament:
+	- 1st Round: Teams = 14, Matches = 7, and 7 teams advance.
+	- 2nd Round: Teams = 7, Matches = 3, and 4 teams advance.
+	- 3rd Round: Teams = 4, Matches = 2, and 2 teams advance.
+	- 4th Round: Teams = 2, Matches = 1, and 1 team is declared the winner.
+	Total number of matches = 7 + 3 + 2 + 1 = 13.
+
+	Constraints: 1 <= n <= 200"""
+
+    def numberOfMatches(self, n: int) -> int:
+        return n-1
+
+
+    """1689. Partitioning Into Minimum Number Of Deci-Binary Numbers (Medium)
+	A decimal number is called deci-binary if each of its digits is either 0 or 
+	1 without any leading zeros. For example, 101 and 1100 are deci-binary, 
+	while 112 and 3001 are not. Given a string n that represents a positive 
+	decimal integer, return the minimum number of positive deci-binary numbers 
+	needed so that they sum up to n.
+
+	Example 1:
+	Input: n = "32"
+	Output: 3
+	Explanation: 10 + 11 + 11 = 32
+
+	Example 2:
+	Input: n = "82734"
+	Output: 8
+
+	Example 3:
+	Input: n = "27346209830709182346"
+	Output: 9
+
+	Constraints:
+	* 1 <= n.length <= 105
+	* n consists of only digits.
+	* n does not contain any leading zeros and represents a positive integer."""
+
+    def minPartitions(self, n: str) -> int:
+        return int(max(n))
+
+
+    """1690. Stone Game VII (Medium)
+	Alice and Bob take turns playing a game, with Alice starting first. There 
+	are n stones arranged in a row. On each player's turn, they can remove 
+	either the leftmost stone or the rightmost stone from the row and receive 
+	points equal to the sum of the remaining stones' values in the row. The 
+	winner is the one with the higher score when there are no stones left to 
+	remove. Bob found that he will always lose this game (poor Bob, he always 
+	loses), so he decided to minimize the score's difference. Alice's goal is 
+	to maximize the difference in the score. Given an array of integers stones 
+	where stones[i] represents the value of the ith stone from the left, return 
+	the difference in Alice and Bob's score if they both play optimally.
+
+	Example 1:
+	Input: stones = [5,3,1,4,2]
+	Output: 6
+	Explanation: 
+	- Alice removes 2 and gets 5 + 3 + 1 + 4 = 13 points. Alice = 13, Bob = 0, stones = [5,3,1,4].
+	- Bob removes 5 and gets 3 + 1 + 4 = 8 points. Alice = 13, Bob = 8, stones = [3,1,4].
+	- Alice removes 3 and gets 1 + 4 = 5 points. Alice = 18, Bob = 8, stones = [1,4].
+	- Bob removes 1 and gets 4 points. Alice = 18, Bob = 12, stones = [4].
+	- Alice removes 4 and gets 0 points. Alice = 18, Bob = 12, stones = [].
+	The score difference is 18 - 12 = 6.
+
+	Example 2:
+	Input: stones = [7,90,5,1,100,10,10,2]
+	Output: 122
+
+	Constraints:
+	* n == stones.length
+	* 2 <= n <= 1000
+	* 1 <= stones[i] <= 1000"""
+
+    def stoneGameVII(self, stones: List[int]) -> int:
+        prefix = [0]
+        for x in stones: prefix.append(prefix[-1] + x)
+            
+        n = len(stones)
+        dp = [[0]*(n+1) for _ in range(n+1)]
+        
+        for lo in reversed(range(n+1)):
+            for hi in range(n+1): 
+                if lo < hi: 
+                    dp[lo][hi] = max(prefix[hi]-prefix[lo+1]-dp[lo+1][hi], prefix[hi-1]-prefix[lo]-dp[lo][hi-1])
+        
+        return dp[0][-1]
+
+
+    """1691. Maximum Height by Stacking Cuboids (Hard)
+	Given n cuboids where the dimensions of the ith cuboid is 
+	cuboids[i] = [widthi, lengthi, heighti] (0-indexed). Choose a subset of 
+	cuboids and place them on each other. You can place cuboid i on cuboid j if 
+	widthi <= widthj and lengthi <= lengthj and heighti <= heightj. You can 
+	rearrange any cuboid's dimensions by rotating it to put it on another 
+	cuboid. Return the maximum height of the stacked cuboids.
+
+	Example 1:
+	Input: cuboids = [[50,45,20],[95,37,53],[45,23,12]]
+	Output: 190
+	Explanation:
+	Cuboid 1 is placed on the bottom with the 53x37 side facing down with height 95.
+	Cuboid 0 is placed next with the 45x20 side facing down with height 50.
+	Cuboid 2 is placed next with the 23x12 side facing down with height 45.
+	The total height is 95 + 50 + 45 = 190.
+
+	Example 2:
+	Input: cuboids = [[38,25,45],[76,35,3]]
+	Output: 76
+	Explanation:
+	You can't place any of the cuboids on the other.
+	We choose cuboid 1 and rotate it so that the 35x3 side is facing down and its height is 76.
+
+	Example 3:
+	Input: cuboids = [[7,11,17],[7,17,11],[11,7,17],[11,17,7],[17,7,11],[17,11,7]]
+	Output: 102
+	Explanation:
+	After rearranging the cuboids, you can see that all cuboids have the same dimension.
+	You can place the 11x7 side down on all cuboids so their heights are 17.
+	The maximum height of stacked cuboids is 6 * 17 = 102.
+
+	Constraints:
+	* n == cuboids.length
+	* 1 <= n <= 100
+	* 1 <= widthi, lengthi, heighti <= 100"""
+
+    def maxHeight(self, cuboids: List[List[int]]) -> int:
+        cuboids = sorted((sorted(x, reverse=True) for x in cuboids), reverse=True)
+        
+        @lru_cache(None)
+        def fn(i, h, l, w): 
+            """Return max heights of stacking cuboids[i:]."""
+            if i == len(cuboids): return 0 # no cuboids left 
+            hi, li, wi = cuboids[i]
+            if hi <= h and li <= l and wi <= w: 
+                return max(hi + fn(i+1, hi, li, wi), fn(i+1, h, l, w))
+            else:
+                return fn(i+1, h, l, w)
+            
+        return fn(0, inf, inf, inf)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -14589,6 +15444,58 @@ class TopVotedCandidate:
             if self.times[mid] <= t: lo = mid
             else: hi = mid - 1
         return self.winner[lo]
+
+
+"""919. Complete Binary Tree Inserter (Medium)
+A complete binary tree is a binary tree in which every level, except possibly 
+the last, is completely filled, and all nodes are as far left as possible. 
+Write a data structure CBTInserter that is initialized with a complete binary 
+tree and supports the following operations:
+* CBTInserter(TreeNode root) initializes the data structure on a given tree 
+  with head node root;
+* CBTInserter.insert(int v) will insert a TreeNode into the tree with value 
+  node.val = v so that the tree remains complete, and returns the value of the 
+  parent of the inserted TreeNode;
+* CBTInserter.get_root() will return the head node of the tree.
+
+Example 1:
+Input: inputs = ["CBTInserter","insert","get_root"], inputs = [[[1]],[2],[]]
+Output: [null,1,[1,2]]
+
+Example 2:
+Input: inputs = ["CBTInserter","insert","insert","get_root"], 
+       inputs = [[[1,2,3,4,5,6]],[7],[8],[]]
+Output: [null,3,4,[1,2,3,4,5,6,7,8]]
+
+Note:
+* The initial given tree is complete and contains between 1 and 1000 nodes.
+* CBTInserter.insert is called at most 10000 times per test case.
+* Every value of a given or inserted node is between 0 and 5000."""
+
+class CBTInserter:
+
+    def __init__(self, root: TreeNode):
+        self.root = root
+        self.nodes = deque([]) # nodes with None child
+        queue = deque([root])
+        while queue: # bfs 
+            node = queue.popleft()
+            if node.left: queue.append(node.left)
+            if node.right: queue.append(node.right)
+            else: self.nodes.append(node)
+
+    def insert(self, v: int) -> int:
+        node = self.nodes[0]
+        ans = node.val
+        if not node.left: node.left = node = TreeNode(v)
+        else: 
+            node.right = node = TreeNode(v)
+            self.nodes.popleft()
+        self.nodes.append(node)
+        return ans 
+
+    def get_root(self) -> TreeNode:
+        return self.root
 
 
 """1603. Design Parking System (Easy)
