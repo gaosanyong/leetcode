@@ -8913,7 +8913,37 @@ class Solution:
         return ans 
 
 
+    """481. Magical String (Medium)
+	A magical string S consists of only '1' and '2' and obeys the following 
+	rules:
+	The string S is magical because concatenating the number of contiguous 
+	occurrences of characters '1' and '2' generates the string S itself. The 
+	first few elements of string S is the following: S = "1221121221221121122……"
+	If we group the consecutive '1's and '2's in S, it will be:
+	1 22 11 2 1 22 1 22 11 2 11 22 ......
+	and the occurrences of '1's or '2's in each group are:
+	1 2 2 1 1 2 1 2 2 1 2 2 ......
+	You can see that the occurrence sequence above is the S itself. Given an 
+	integer N as input, return the number of '1's in the first N number in the 
+	magical string S.
 
+	Example 1:
+	Input: 6
+	Output: 3
+	Explanation: The first 6 elements of magical string S is "12211" and it 
+	             contains three 1's, so return 3.
+
+	Note: N will not exceed 100,000."""
+
+    def magicalString(self, n: int) -> int:
+        if n == 0: return 0 # edge case 
+        
+        S = [1,2,2]
+        i = 2
+        while len(S) < n: 
+            S.extend(S[i] * [3 ^ S[-1]])
+            i += 1
+        return S[:n].count(1)
 
 
     """513. Find Bottom Left Tree Value (Medium)
@@ -12333,6 +12363,133 @@ class Solution:
         return score
 
 
+    """949. Largest Time for Given Digits (Medium)
+	Given an array arr of 4 digits, find the latest 24-hour time that can be 
+	made using each digit exactly once. 24-hour times are formatted as "HH:MM", 
+	where HH is between 00 and 23, and MM is between 00 and 59. The earliest 
+	24-hour time is 00:00, and the latest is 23:59. Return the latest 24-hour 
+	time in "HH:MM" format. If no valid time can be made, return an empty string.
+
+	Example 1:
+	Input: A = [1,2,3,4]
+	Output: "23:41"
+	Explanation: The valid 24-hour times are "12:34", "12:43", "13:24", "13:42", 
+	             "14:23", "14:32", "21:34", "21:43", "23:14", and "23:41". Of 
+	             these times, "23:41" is the latest.
+
+	Example 2:
+	Input: A = [5,5,5,5]
+	Output: ""
+	Explanation: There are no valid 24-hour times as "55:55" is not valid.
+	
+	Example 3:
+	Input: A = [0,0,0,0]
+	Output: "00:00"
+
+	Example 4:
+	Input: A = [0,0,1,0]
+	Output: "10:00"
+
+	Constraints:
+	* arr.length == 4
+	* 0 <= arr[i] <= 9"""
+
+    def largestTimeFromDigits(self, arr: List[int]) -> str:
+        hh = mm = -1
+        for x in permutations(arr):
+            h = 10*x[0] + x[1]
+            m = 10*x[2] + x[3]
+            if h < 24 and m < 60 and 60*hh + mm < 60*h + m: hh, mm = h, m
+        return f"{hh:02}:{mm:02}" if hh > -1 else ""
+
+
+    """950. Reveal Cards In Increasing Order (Medium)
+	In a deck of cards, every card has a unique integer. You can order the deck
+	in any order you want. Initially, all the cards start face down (unrevealed) 
+	in one deck. Now, you do the following steps repeatedly, until all cards are 
+	revealed:
+	1) Take the top card of the deck, reveal it, and take it out of the deck.
+	2) If there are still cards in the deck, put the next top card of the deck 
+	   at the bottom of the deck.
+	3) If there are still unrevealed cards, go back to step 1.  Otherwise, stop.
+	Return an ordering of the deck that would reveal the cards in increasing order.
+	The first entry in the answer is considered to be the top of the deck.
+
+	Example 1:
+	Input: [17,13,11,2,3,5,7]
+	Output: [2,13,3,11,5,17,7]
+	Explanation: 
+	We get the deck in the order [17,13,11,2,3,5,7] (this order doesn't matter), 
+	and reorder it. After reordering, the deck starts as [2,13,3,11,5,17,7], 
+	where 2 is the top of the deck.
+	We reveal  2, and move 13 to the bottom.  The deck is now [3,11,5,17,7,13].
+	We reveal  3, and move 11 to the bottom.  The deck is now [5,17,7,13,11].
+	We reveal  5, and move 17 to the bottom.  The deck is now [7,13,11,17].
+	We reveal  7, and move 13 to the bottom.  The deck is now [11,17,13].
+	We reveal 11, and move 17 to the bottom.  The deck is now [13,17].
+	We reveal 13, and move 17 to the bottom.  The deck is now [17].
+	We reveal 17.
+	Since all the cards revealed are in increasing order, the answer is correct.
+
+	Note:
+	* 1 <= A.length <= 1000
+	* 1 <= A[i] <= 10^6
+	* A[i] != A[j] for all i != j"""
+
+    def deckRevealedIncreasing(self, deck: List[int]) -> List[int]:
+        ans = [0]*len(deck)
+        idx = deque(range(len(deck)))
+        for x in sorted(deck): 
+            ans[idx.popleft()] = x
+            if idx: idx.append(idx.popleft())
+        return ans 
+
+
+    """951. Flip Equivalent Binary Trees (Medium)
+	For a binary tree T, we can define a flip operation as follows: choose any 
+	node, and swap the left and right child subtrees. A binary tree X is flip 
+	equivalent to a binary tree Y if and only if we can make X equal to Y after 
+	some number of flip operations. Given the roots of two binary trees root1 
+	and root2, return true if the two trees are flip equivelent or false 
+	otherwise.
+
+	Example 1:
+	Flipped Trees Diagram
+	Input: root1 = [1,2,3,4,5,6,null,null,null,7,8], 
+	       root2 = [1,3,2,null,6,4,5,null,null,null,null,8,7]
+	Output: true
+	Explanation: We flipped at nodes with values 1, 3, and 5.
+
+	Example 2:
+	Input: root1 = [], root2 = []
+	Output: true
+
+	Example 3:
+	Input: root1 = [], root2 = [1]
+	Output: false
+
+	Example 4:
+	Input: root1 = [0,null,1], root2 = []
+	Output: false
+
+	Example 5:
+	Input: root1 = [0,null,1], root2 = [0,1]
+	Output: true
+
+	Constraints:
+	* The number of nodes in each tree is in the range [0, 100].
+	* Each tree will have unique node values in the range [0, 99]."""
+
+    def flipEquiv(self, root1: TreeNode, root2: TreeNode) -> bool:
+        
+        def fn(n1, n2):
+            """Return True if n1 is a flip of n2."""
+            if not n1 or not n2: return n1 is n2
+            return n1.val == n2.val and (fn(n1.left, n2.right) and fn(n1.right, n2.left) or fn(n1.left, n2.left) and fn(n1.right, n2.right))
+        
+        return fn(root1, root2)
+
+
     """1588. Sum of All Odd Length Subarrays (Easy)
 	Given an array of positive integers arr, calculate the sum of all possible 
 	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
@@ -14391,6 +14548,201 @@ class Fenwick:
                 return fn(i+1, h, l, w)
             
         return fn(0, inf, inf, inf)
+
+
+    """1694. Reformat Phone Number (Easy)
+	You are given a phone number as a string number. number consists of digits, 
+	spaces ' ', and/or dashes '-'. You would like to reformat the phone number 
+	in a certain manner. Firstly, remove all spaces and dashes. Then, group the 
+	digits from left to right into blocks of length 3 until there are 4 or fewer 
+	digits. The final digits are then grouped as follows:
+	* 2 digits: A single block of length 2.
+	* 3 digits: A single block of length 3.
+	* 4 digits: Two blocks of length 2 each.
+	The blocks are then joined by dashes. Notice that the reformatting process 
+	should never produce any blocks of length 1 and produce at most two blocks 
+	of length 2. Return the phone number after formatting.
+
+	Example 1:
+	Input: number = "1-23-45 6"
+	Output: "123-456"
+	Explanation: The digits are "123456".
+	Step 1: There are more than 4 digits, so group the next 3 digits. The 1st block is "123".
+	Step 2: There are 3 digits remaining, so put them in a single block of length 3. The 2nd block is "456".
+	Joining the blocks gives "123-456".
+
+	Example 2:
+	Input: number = "123 4-567"
+	Output: "123-45-67"
+	Explanation: The digits are "1234567".
+	Step 1: There are more than 4 digits, so group the next 3 digits. The 1st block is "123".
+	Step 2: There are 4 digits left, so split them into two blocks of length 2. The blocks are "45" and "67".
+	Joining the blocks gives "123-45-67".
+
+	Example 3:
+	Input: number = "123 4-5678"
+	Output: "123-456-78"
+	Explanation: The digits are "12345678".
+	Step 1: The 1st block is "123".
+	Step 2: The 2nd block is "456".
+	Step 3: There are 2 digits left, so put them in a single block of length 2. The 3rd block is "78".
+	Joining the blocks gives "123-456-78".
+
+	Example 4:
+	Input: number = "12"
+	Output: "12"
+
+	Example 5:
+	Input: number = "--17-5 229 35-39475 "
+	Output: "175-229-353-94-75"
+
+	Constraints:
+	* 2 <= number.length <= 100
+	* number consists of digits and the characters '-' and ' '.
+	* There are at least two digits in number."""
+
+    def reformatNumber(self, number: str) -> str:
+        number = number.replace("-", "").replace(" ", "") # replacing - and space 
+        ans = []
+        for i in range(0, len(number), 3): 
+            if len(number) - i != 4: ans.append(number[i:i+3])
+            else: 
+                ans.extend([number[i:i+2], number[i+2:]])
+                break 
+        return "-".join(ans)
+
+
+    """1695. Maximum Erasure Value (Medium)
+	You are given an array of positive integers nums and want to erase a 
+	subarray containing unique elements. The score you get by erasing the 
+	subarray is equal to the sum of its elements. Return the maximum score you 
+	can get by erasing exactly one subarray. An array b is called to be a 
+	subarray of a if it forms a contiguous subsequence of a, that is, if it is 
+	equal to a[l],a[l+1],...,a[r] for some (l,r).
+
+	Example 1:
+	Input: nums = [4,2,4,5,6]
+	Output: 17
+	Explanation: The optimal subarray here is [2,4,5,6].
+
+	Example 2:
+	Input: nums = [5,2,1,2,5,2,1,2,5]
+	Output: 8
+	Explanation: The optimal subarray here is [5,2,1] or [1,2,5].
+
+	Constraints:
+	* 1 <= nums.length <= 105
+	* 1 <= nums[i] <= 104"""
+
+    def maximumUniqueSubarray(self, nums: List[int]) -> int:
+        prefix = [0]
+        for x in nums: prefix.append(prefix[-1] + x)
+        
+        ans = ii = 0
+        seen = {}
+        for i, x in enumerate(nums): 
+            ii = max(ii, seen.get(x, -1)+1)
+            ans = max(ans, prefix[i+1] - prefix[ii])
+            seen[x] = i
+        return ans 
+
+
+    """1696. Jump Game VI (Medium)
+	You are given a 0-indexed integer array nums and an integer k. You are 
+	initially standing at index 0. In one move, you can jump at most k steps 
+	forward without going outside the boundaries of the array. That is, you can 
+	jump from index i to any index in the range [i + 1, min(n - 1, i + k)] 
+	inclusive. You want to reach the last index of the array (index n - 1). 
+	Your score is the sum of all nums[j] for each index j you visited in the 
+	array. Return the maximum score you can get.
+
+	Example 1:
+	Input: nums = [1,-1,-2,4,-7,3], k = 2
+	Output: 7
+	Explanation: You can choose your jumps forming the subsequence [1,-1,4,3] 
+	             (underlined above). The sum is 7.
+
+	Example 2:
+	Input: nums = [10,-5,-2,4,0,3], k = 3
+	Output: 17
+	Explanation: You can choose your jumps forming the subsequence [10,4,3] 
+	             (underlined above). The sum is 17.
+	
+	Example 3:
+	Input: nums = [1,-5,-20,4,-1,3,-6,-3], k = 2
+	Output: 0
+
+	Constraints:
+	* 1 <= nums.length, k <= 105
+	* -104 <= nums[i] <= 104"""
+
+    def maxResult(self, nums: List[int], k: int) -> int:
+        queue = deque() # (decreasing) mono-queue 
+        for i in reversed(range(len(nums))): 
+            if queue and queue[0][1] - i > k: queue.popleft() # expired max 
+            ans = nums[i] + queue[0][0] if queue else nums[i] # max as of i
+            while queue and queue[-1][0] <= ans: queue.pop()
+            queue.append((ans, i))
+        return ans 
+
+
+    """1697. Checking Existence of Edge Length Limited Paths (Hard)
+	An undirected graph of n nodes is defined by edgeList, where 
+	edgeList[i] = [ui, vi, disi] denotes an edge between nodes ui and vi with 
+	distance disi. Note that there may be multiple edges between two nodes. 
+	Given an array queries, where queries[j] = [pj, qj, limitj], your task is 
+	to determine for each queries[j] whether there is a path between pj and qj 
+	such that each edge on the path has a distance strictly less than limitj. 
+	Return a boolean array answer, where answer.length == queries.length and 
+	the jth value of answer is true if there is a path for queries[j] is true, 
+	and false otherwise.
+
+	Example 1:
+	Input: n = 3, 
+	       edgeList = [[0,1,2],[1,2,4],[2,0,8],[1,0,16]], 
+	       queries = [[0,1,2],[0,2,5]]
+	Output: [false,true]
+	Explanation: The above figure shows the given graph. Note that there are 
+	             two overlapping edges between 0 and 1 with distances 2 and 16. 
+	             For the first query, between 0 and 1 there is no path where 
+	             each distance is less than 2, thus we return false for this 
+	             query. For the second query, there is a path (0 -> 1 -> 2) of 
+	             two edges with distances less than 5, thus we return true for 
+	             this query.
+
+	Example 2:
+	Input: n = 5, 
+	       edgeList = [[0,1,10],[1,2,5],[2,3,9],[3,4,13]], 
+	       queries = [[0,4,14],[1,4,13]]
+	Output: [true,false]
+	Exaplanation: The above figure shows the given graph.
+
+	Constraints:
+	* 2 <= n <= 105
+	* 1 <= edgeList.length, queries.length <= 105
+	* edgeList[i].length == 3
+	* queries[j].length == 3
+	* 0 <= ui, vi, pj, qj <= n - 1
+	* ui != vi
+	* pj != qj
+	* 1 <= disi, limitj <= 109
+	* There may be multiple edges between two nodes."""
+
+    def distanceLimitedPathsExist(self, n: int, edgeList: List[List[int]], queries: List[List[int]]) -> List[bool]:
+        queries = sorted((w, p, q, i) for i, (p, q, w) in enumerate(queries))
+        edgeList = sorted((w, u, v) for u, v, w in edgeList)
+        
+        uf = UnionFind(n)
+        
+        ans = [None] * len(queries)
+        ii = 0
+        for w, p, q, i in queries: 
+            while ii < len(edgeList) and edgeList[ii][0] < w: 
+                _, u, v = edgeList[ii]
+                uf.union(u, v)
+                ii += 1
+            ans[i] = uf.find(p) == uf.find(q)
+        return ans 
 
 
 """146. LRU Cache (Medium)
