@@ -14745,6 +14745,216 @@ class Fenwick:
         return ans 
 
 
+    """1704. Determine if String Halves Are Alike (Easy)
+	You are given a string s of even length. Split this string into two halves 
+	of equal lengths, and let a be the first half and b be the second half. Two 
+	strings are alike if they have the same number of vowels ('a', 'e', 'i', 
+	'o', 'u', 'A', 'E', 'I', 'O', 'U'). Notice that s contains uppercase and 
+	lowercase letters. Return true if a and b are alike. Otherwise, return 
+	false.
+
+	Example 1:
+	Input: s = "book"
+	Output: true
+	Explanation: a = "bo" and b = "ok". a has 1 vowel and b has 1 vowel. 
+	             Therefore, they are alike.
+
+	Example 2:
+	Input: s = "textbook"
+	Output: false
+	Explanation: a = "text" and b = "book". a has 1 vowel whereas b has 2. 
+	             Therefore, they are not alike. Notice that the vowel o is 
+	             counted twice.
+
+	Example 3:
+	Input: s = "MerryChristmas"
+	Output: false
+
+	Example 4:
+	Input: s = "AbCdEfGh"
+	Output: true
+
+	Constraints:
+	* 2 <= s.length <= 1000
+	* s.length is even.
+	* s consists of uppercase and lowercase letters."""
+
+    def halvesAreAlike(self, s: str) -> bool:
+        cnt = 0
+        for i, c in enumerate(s):
+            if c in "aeiouAEIOU": cnt += 1 if i < len(s)//2 else -1
+        return cnt == 0
+
+
+    """1705. Maximum Number of Eaten Apples (Medium)
+	There is a special kind of apple tree that grows apples every day for n 
+	days. On the ith day, the tree grows apples[i] apples that will rot after 
+	days[i] days, that is on day i + days[i] the apples will be rotten and 
+	cannot be eaten. On some days, the apple tree does not grow any apples, 
+	which are denoted by apples[i] == 0 and days[i] == 0. You decided to eat at 
+	most one apple a day (to keep the doctors away). Note that you can keep 
+	eating after the first n days. Given two integer arrays days and apples of 
+	length n, return the maximum number of apples you can eat.
+
+	Example 1:
+	Input: apples = [1,2,3,5,2], days = [3,2,1,4,2]
+	Output: 7
+	Explanation: You can eat 7 apples:
+	- On the first day, you eat an apple that grew on the first day.
+	- On the second day, you eat an apple that grew on the second day.
+	- On the third day, you eat an apple that grew on the second day. After 
+	  this day, the apples that grew on the third day rot.
+	- On the fourth to the seventh days, you eat apples that grew on the fourth 
+	  day.
+
+	Example 2:
+	Input: apples = [3,0,0,0,0,2], days = [3,0,0,0,0,2]
+	Output: 5
+	Explanation: You can eat 5 apples:
+	- On the first to the third day you eat apples that grew on the first day.
+	- Do nothing on the fouth and fifth days.
+	- On the sixth and seventh days you eat apples that grew on the sixth day.
+
+	Constraints:
+	* apples.length == n
+	* days.length == n
+	* 1 <= n <= 2 * 104
+	* 0 <= apples[i], days[i] <= 2 * 104
+	* days[i] = 0 if and only if apples[i] = 0."""
+
+    def eatenApples(self, apples: List[int], days: List[int]) -> int:
+        ans = 0
+        
+        pq = [] # min-heap 
+        for i, (x, d) in enumerate(zip(apples, days)): 
+            while pq and pq[0][0] <= i: heappop(pq) # rotten 
+            if x: heappush(pq, (i+d, x))
+            if pq: 
+                ii, x = heappop(pq)
+                if x-1: heappush(pq, (ii, x-1))
+                ans += 1
+        
+        i += 1
+        while pq: 
+            ii, x = heappop(pq)
+            x = min(x, ii-i)
+            ans += x
+            i += x 
+        return ans 
+
+
+    """1706. Where Will the Ball Fall (Medium)
+	You have a 2-D grid of size m x n representing a box, and you have n balls. 
+	The box is open on the top and bottom sides. Each cell in the box has a 
+	diagonal board spanning two corners of the cell that can redirect a ball to 
+	the right or to the left.
+	* A board that redirects the ball to the right spans the top-left corner to 
+	  the bottom-right corner and is represented in the grid as 1.
+	* A board that redirects the ball to the left spans the top-right corner to 
+	  the bottom-left corner and is represented in the grid as -1.
+	We drop one ball at the top of each column of the box. Each ball can get 
+	stuck in the box or fall out of the bottom. A ball gets stuck if it hits a 
+	"V" shaped pattern between two boards or if a board redirects the ball into 
+	either wall of the box. Return an array answer of size n where answer[i] is 
+	the column that the ball falls out of at the bottom after dropping the ball 
+	from the ith column at the top, or -1 if the ball gets stuck in the box.
+
+	Example 1:
+	Input: grid = [[1,1,1,-1,-1],[1,1,1,-1,-1],[-1,-1,-1,1,1],[1,1,1,1,-1],[-1,-1,-1,-1,-1]]
+	Output: [1,-1,-1,-1,-1]
+	Explanation: This example is shown in the photo.
+	Ball b0 is dropped at column 0 and falls out of the box at column 1.
+	Ball b1 is dropped at column 1 and will get stuck in the box between column 2 and 3 and row 1.
+	Ball b2 is dropped at column 2 and will get stuck on the box between column 2 and 3 and row 0.
+	Ball b3 is dropped at column 3 and will get stuck on the box between column 2 and 3 and row 0.
+	Ball b4 is dropped at column 4 and will get stuck on the box between column 2 and 3 and row 1.
+
+	Example 2:
+	Input: grid = [[-1]]
+	Output: [-1]
+	Explanation: The ball gets stuck against the left wall.
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 100
+	* grid[i][j] is 1 or -1."""
+
+    def findBall(self, grid: List[List[int]]) -> List[int]:
+        m, n = len(grid), len(grid[0]) # dimensions
+        ans = [-1]*n 
+        for j in range(n): 
+            k = j
+            for i in range(m):
+                kk = k + grid[i][k]
+                if not 0 <= kk < n or grid[i][k] * grid[i][kk] < 0: break
+                k = kk 
+            else: ans[j] = k # no break 
+        return ans 
+
+
+    """1707. Maximum XOR With an Element From Array (Hard)
+	You are given an array nums consisting of non-negative integers. You are 
+	also given a queries array, where queries[i] = [xi, mi]. The answer to the 
+	ith query is the maximum bitwise XOR value of xi and any element of nums 
+	that does not exceed mi. In other words, the answer is max(nums[j] XOR xi) 
+	for all j such that nums[j] <= mi. If all elements in nums are larger than 
+	mi, then the answer is -1. Return an integer array answer where 
+	answer.length == queries.length and answer[i] is the answer to the ith 
+	query.
+
+	Example 1:
+	Input: nums = [0,1,2,3,4], queries = [[3,1],[1,3],[5,6]]
+	Output: [3,3,7]
+	Explanation:
+	1) 0 and 1 are the only two integers not greater than 1. 0 XOR 3 = 3 and 
+	   1 XOR 3 = 2. The larger of the two is 3.
+	2) 1 XOR 2 = 3.
+	3) 5 XOR 2 = 7.
+
+	Example 2:
+	Input: nums = [5,2,4,6,6,3], queries = [[12,4],[8,1],[6,3]]
+	Output: [15,-1,5]
+
+	Constraints:
+	* 1 <= nums.length, queries.length <= 105
+	* queries[i].length == 2
+	* 0 <= nums[j], xi, mi <= 10^9"""
+
+	# class Trie: 
+	#     def __init__(self):
+	#         self.root = {}
+	        
+	#     def __bool__(self):
+	#         return bool(self.root)
+	    
+	#     def insert(self, num):
+	#         node = self.root 
+	#         for x in bin(num)[2:].zfill(32): 
+	#             node = node.setdefault(int(x), {})
+	#         node["#"] = num
+	    
+	#     def query(self, num): 
+	#         node = self.root
+	#         for x in bin(num)[2:].zfill(32):
+	#             node = node.get(1 - int(x)) or node.get(int(x))
+	#         return num ^ node["#"]
+
+    def maximizeXor(self, nums: List[int], queries: List[List[int]]) -> List[int]:
+        nums.sort()
+        queries = sorted((m, x, i) for i, (x, m) in enumerate(queries))
+        
+        ans = [-1]*len(queries)
+        k = 0
+        trie = Trie()
+        for m, x, i in queries: 
+            while k < len(nums) and nums[k] <= m: 
+                trie.insert(nums[k])
+                k += 1
+            if trie: ans[i] = trie.query(x)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
