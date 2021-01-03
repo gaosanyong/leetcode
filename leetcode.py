@@ -10128,6 +10128,35 @@ class Solution:
         return -1 
 
 
+    """754. Reach a Number (Medium)
+	You are standing at position 0 on an infinite number line. There is a goal 
+	at position target. On each move, you can either go left or right. During 
+	the n-th move (starting from 1), you take n steps. Return the minimum 
+	number of steps required to reach the destination.
+
+	Example 1:
+	Input: target = 3
+	Output: 2
+	Explanation:
+	On the first move we step from 0 to 1.
+	On the second step we step from 1 to 3.
+	
+	Example 2:
+	Input: target = 2
+	Output: 3
+	Explanation:
+	On the first move we step from 0 to 1.
+	On the second move we step  from 1 to -1.
+	On the third move we step from -1 to 2.
+	
+	Note: target will be a non-zero integer in the range [-10^9, 10^9]."""
+
+    def reachNumber(self, target: int) -> int:
+        target = abs(target)
+        k = ceil((-1 + sqrt(1 + 8*target))/2)
+        return k if not k*(k+1)//2 - target & 1 else k + 1 + k%2
+
+
     """756. Pyramid Transition Matrix (Medium)
 	We are stacking blocks to form a pyramid. Each block has a color which is a 
 	one letter string. We are allowed to place any color block C on top of two 
@@ -11510,6 +11539,38 @@ class Solution:
             else: node = node.right 
 
 
+    """869. Reordered Power of 2 (Medium)
+	Starting with a positive integer N, we reorder the digits in any order 
+	(including the original order) such that the leading digit is not zero. 
+	Return true if and only if we can do this in a way such that the resulting 
+	number is a power of 2.
+
+	Example 1:
+	Input: 1
+	Output: true
+
+	Example 2:
+	Input: 10
+	Output: false
+
+	Example 3:
+	Input: 16
+	Output: true
+
+	Example 4:
+	Input: 24
+	Output: false
+
+	Example 5:
+	Input: 46
+	Output: true
+
+	Note: 1 <= N <= 10^9"""
+
+    def reorderedPowerOf2(self, N: int) -> bool:
+        return any(Counter(str(N)) == Counter(str(1 << i)) for i in range(30))
+
+
     """881. Boats to Save People (Medium)
 	The i-th person has weight people[i], and each boat can carry a maximum 
 	weight of limit. Each boat carries at most 2 people at the same time, 
@@ -12490,43 +12551,6 @@ class Solution:
         return fn(root1, root2)
 
 
-    """1588. Sum of All Odd Length Subarrays (Easy)
-	Given an array of positive integers arr, calculate the sum of all possible 
-	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
-	Return the sum of all odd-length subarrays of arr.
-
-	Example 1:
-	Input: arr = [1,4,2,5,3]
-	Output: 58
-	Explanation: The odd-length subarrays of arr and their sums are:
-	[1] = 1
-	[4] = 4
-	[2] = 2
-	[5] = 5
-	[3] = 3
-	[1,4,2] = 7
-	[4,2,5] = 11
-	[2,5,3] = 10
-	[1,4,2,5,3] = 15
-	If we add all these together we get 1 + 4 + 2 + 5 + 3 + 7 + 11 + 10 + 15 = 58
-
-	Example 2:
-	Input: arr = [1,2]
-	Output: 3
-	Explanation: There are only 2 subarrays of odd length, [1] and [2]. Their sum is 3.
-
-	Example 3:
-	Input: arr = [10,11,12]
-	Output: 66
-
-	Constraints:
-	* 1 <= arr.length <= 100
-	* 1 <= arr[i] <= 1000"""
-
-    def sumOddLengthSubarrays(self, arr: List[int]) -> int:
-        return sum(((i+1)*(len(arr)-i) + 1)//2 * x for i, x in enumerate(arr))
-
-
 
     """1492. The kth Factor of n (Medium)
 	Given two positive integers n and k. A factor of an integer n is defined as 
@@ -12573,6 +12597,43 @@ class Solution:
             i -= 1
         
         return -1 
+
+
+    """1588. Sum of All Odd Length Subarrays (Easy)
+	Given an array of positive integers arr, calculate the sum of all possible 
+	odd-length subarrays. A subarray is a contiguous subsequence of the array. 
+	Return the sum of all odd-length subarrays of arr.
+
+	Example 1:
+	Input: arr = [1,4,2,5,3]
+	Output: 58
+	Explanation: The odd-length subarrays of arr and their sums are:
+	[1] = 1
+	[4] = 4
+	[2] = 2
+	[5] = 5
+	[3] = 3
+	[1,4,2] = 7
+	[4,2,5] = 11
+	[2,5,3] = 10
+	[1,4,2,5,3] = 15
+	If we add all these together we get 1 + 4 + 2 + 5 + 3 + 7 + 11 + 10 + 15 = 58
+
+	Example 2:
+	Input: arr = [1,2]
+	Output: 3
+	Explanation: There are only 2 subarrays of odd length, [1] and [2]. Their sum is 3.
+
+	Example 3:
+	Input: arr = [10,11,12]
+	Output: 66
+
+	Constraints:
+	* 1 <= arr.length <= 100
+	* 1 <= arr[i] <= 1000"""
+
+    def sumOddLengthSubarrays(self, arr: List[int]) -> int:
+        return sum(((i+1)*(len(arr)-i) + 1)//2 * x for i, x in enumerate(arr))
 
 
     """1589. Maximum Sum Obtained of Any Permutation (Medium)
@@ -14953,6 +15014,161 @@ class Fenwick:
                 k += 1
             if trie: ans[i] = trie.query(x)
         return ans 
+
+
+    """1710. Maximum Units on a Truck (Easy)
+	You are assigned to put some amount of boxes onto one truck. You are given 
+	a 2D array boxTypes, where boxTypes[i] = [numberOfBoxesi, numberOfUnitsPerBoxi]:
+	* numberOfBoxesi is the number of boxes of type i.
+	* numberOfUnitsPerBoxi is the number of units in each box of the type i.
+	You are also given an integer truckSize, which is the maximum number of 
+	boxes that can be put on the truck. You can choose any boxes to put on the 
+	truck as long as the number of boxes does not exceed truckSize. Return the 
+	maximum total number of units that can be put on the truck.
+
+	Example 1:
+	Input: boxTypes = [[1,3],[2,2],[3,1]], truckSize = 4
+	Output: 8
+	Explanation: There are:
+	- 1 box of the first type that contains 3 units.
+	- 2 boxes of the second type that contain 2 units each.
+	- 3 boxes of the third type that contain 1 unit each.
+	You can take all the boxes of the first and second types, and one box of the third type.
+	The total number of units will be = (1 * 3) + (2 * 2) + (1 * 1) = 8.
+
+	Example 2:
+	Input: boxTypes = [[5,10],[2,5],[4,7],[3,9]], truckSize = 10
+	Output: 91
+
+	Constraints:
+	* 1 <= boxTypes.length <= 1000
+	* 1 <= numberOfBoxesi, numberOfUnitsPerBoxi <= 1000
+	* 1 <= truckSize <= 106"""
+
+    def maximumUnits(self, boxTypes: List[List[int]], truckSize: int) -> int:
+        boxTypes.sort(key=lambda x: x[1], reverse=True)
+        ans = 0
+        for box, unit in boxTypes: 
+            box = min(box, truckSize)
+            truckSize -= box
+            ans += box * unit
+        return ans 
+
+
+    """1711. Count Good Meals (Medium)
+	A good meal is a meal that contains exactly two different food items with a 
+	sum of deliciousness equal to a power of two. You can pick any two different 
+	foods to make a good meal. Given an array of integers deliciousness where 
+	deliciousness[i] is the deliciousness of the i​​​​​​th​​​​​​​​ item of food, return the 
+	number of different good meals you can make from this list modulo 10^9 + 7. 
+	Note that items with different indices are considered different even if they 
+	have the same deliciousness value.
+
+	Example 1:
+	Input: deliciousness = [1,3,5,7,9]
+	Output: 4
+	Explanation: The good meals are (1,3), (1,7), (3,5) and, (7,9).
+	Their respective sums are 4, 8, 8, and 16, all of which are powers of 2.
+
+	Example 2:
+	Input: deliciousness = [1,1,1,3,3,3,7]
+	Output: 15
+	Explanation: The good meals are (1,1) with 3 ways, (1,3) with 9 ways, and (1,7) with 3 ways.
+
+	Constraints:
+	* 1 <= deliciousness.length <= 105
+	* 0 <= deliciousness[i] <= 220"""
+
+    def countPairs(self, deliciousness: List[int]) -> int:
+        ans = 0
+        freq = defaultdict(int)
+        for x in deliciousness: 
+            for k in range(22): ans += freq[2**k - x]
+            freq[x] += 1
+        return ans % 1_000_000_007
+
+
+    """1712. Ways to Split Array Into Three Subarrays (Medium)
+	A split of an integer array is good if:
+	* The array is split into three non-empty contiguous subarrays - named left, 
+	  mid, right respectively from left to right.
+	* The sum of the elements in left is less than or equal to the sum of the 
+	  elements in mid, and the sum of the elements in mid is less than or equal 
+	  to the sum of the elements in right.
+	Given nums, an array of non-negative integers, return the number of good 
+	ways to split nums. As the number may be too large, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: nums = [1,1,1]
+	Output: 1
+	Explanation: The only good way to split nums is [1] [1] [1].
+
+	Example 2:
+	Input: nums = [1,2,2,2,5,0]
+	Output: 3
+	Explanation: There are three good ways of splitting nums:
+	[1] [2] [2,2,5,0]
+	[1] [2,2] [2,5,0]
+	[1,2] [2,2] [5,0]
+
+	Example 3:
+	Input: nums = [3,2,1]
+	Output: 0
+	Explanation: There is no good way to split nums.
+
+	Constraints:
+	* 3 <= nums.length <= 105
+	* 0 <= nums[i] <= 104"""
+
+    def waysToSplit(self, nums: List[int]) -> int:
+        prefix = [0]
+        for x in nums: prefix.append(prefix[-1] + x)
+        
+        ans = j = k = 0 
+        for i in range(1, len(nums)): 
+            j = max(j, i+1)
+            while j < len(nums) and 2*prefix[i] > prefix[j]: j += 1
+            k = max(k, j)
+            while k < len(nums) and 2*prefix[k] <= prefix[i] + prefix[-1]: k += 1
+            ans += k - j 
+        return ans % 1_000_000_007
+
+
+    """1713. Minimum Operations to Make a Subsequence (Hard)
+	You are given an array target that consists of distinct integers and 
+	another integer array arr that can have duplicates. In one operation, you 
+	can insert any integer at any position in arr. For example, if arr = [1,4,1,2], 
+	you can add 3 in the middle and make it [1,4,3,1,2]. Note that you can 
+	insert the integer at the very beginning or end of the array. Return the 
+	minimum number of operations needed to make target a subsequence of arr. A 
+	subsequence of an array is a new array generated from the original array by 
+	deleting some elements (possibly none) without changing the remaining 
+	elements' relative order. For example, [2,7,4] is a subsequence of [4,2,3,7,2,1,4] 
+	(the underlined elements), while [2,4,2] is not.
+
+	Example 1:
+	Input: target = [5,1,3], arr = [9,4,2,3,4]
+	Output: 2
+	Explanation: You can add 5 and 1 in such a way that makes arr = [5,9,4,1,2,3,4], then target will be a subsequence of arr.
+
+	Example 2:
+	Input: target = [6,4,8,1,3,2], arr = [4,7,6,2,3,8,6,1]
+	Output: 3
+
+	Constraints:
+	* 1 <= target.length, arr.length <= 105
+	* 1 <= target[i], arr[i] <= 109
+	* target contains no duplicates."""
+
+    def minOperations(self, target: List[int], arr: List[int]) -> int:
+        mp = {x: i for i, x in enumerate(target)}
+        stack = []
+        for x in arr: 
+            if x in mp: 
+                i = bisect_left(stack, mp[x])
+                if i < len(stack): stack[i] = mp[x]
+                else: stack.append(mp[x])
+        return len(target) - len(stack)
 
 
 """146. LRU Cache (Medium)
