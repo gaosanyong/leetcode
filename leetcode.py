@@ -14806,6 +14806,172 @@ class Fenwick:
         return ans 
 
 
+    """1700. Number of Students Unable to Eat Lunch (Easy)
+	The school cafeteria offers circular and square sandwiches at lunch break, 
+	referred to by numbers 0 and 1 respectively. All students stand in a queue. 
+	Each student either prefers square or circular sandwiches. The number of 
+	sandwiches in the cafeteria is equal to the number of students. The 
+	sandwiches are placed in a stack. At each step:
+	* If the student at the front of the queue prefers the sandwich on the top 
+	  of the stack, they will take it and leave the queue.
+	* Otherwise, they will leave it and go to the queue's end.
+	This continues until none of the queue students want to take the top 
+	sandwich and are thus unable to eat. You are given two integer arrays 
+	students and sandwiches where sandwiches[i] is the type of the i​​​​​​th 
+	sandwich in the stack (i = 0 is the top of the stack) and students[j] is 
+	the preference of the j​​​​​​th student in the initial queue (j = 0 is the front 
+	of the queue). Return the number of students that are unable to eat.
+
+	Example 1:
+	Input: students = [1,1,0,0], sandwiches = [0,1,0,1]
+	Output: 0 
+	Explanation:
+	- Front student leaves the top sandwich and returns to the end of the line making students = [1,0,0,1].
+	- Front student leaves the top sandwich and returns to the end of the line making students = [0,0,1,1].
+	- Front student takes the top sandwich and leaves the line making students = [0,1,1] and sandwiches = [1,0,1].
+	- Front student leaves the top sandwich and returns to the end of the line making students = [1,1,0].
+	- Front student takes the top sandwich and leaves the line making students = [1,0] and sandwiches = [0,1].
+	- Front student leaves the top sandwich and returns to the end of the line making students = [0,1].
+	- Front student takes the top sandwich and leaves the line making students = [1] and sandwiches = [1].
+	- Front student takes the top sandwich and leaves the line making students = [] and sandwiches = [].
+	Hence all students are able to eat.
+
+	Example 2:
+	Input: students = [1,1,1,0,0,1], sandwiches = [1,0,0,0,1,1]
+	Output: 3
+
+	Constraints:
+	* 1 <= students.length, sandwiches.length <= 100
+	* students.length == sandwiches.length
+	* sandwiches[i] is 0 or 1.
+	* students[i] is 0 or 1."""
+
+    def countStudents(self, students: List[int], sandwiches: List[int]) -> int:
+        ss = sum(students)
+        for i, x in enumerate(sandwiches): 
+            if (x and not ss) or (not x and ss == len(sandwiches) - i): return len(sandwiches)-i
+            ss -= x 
+        return 0 
+
+
+    """1701. Average Waiting Time (Medium)
+	There is a restaurant with a single chef. You are given an array customers, 
+	where customers[i] = [arrivali, timei]:
+	* arrivali is the arrival time of the ith customer. The arrival times are 
+	  sorted in non-decreasing order.
+	* timei is the time needed to prepare the order of the ith customer.
+	When a customer arrives, he gives the chef his order, and the chef starts 
+	preparing it once he is idle. The customer waits till the chef finishes 
+	preparing his order. The chef does not prepare food for more than one 
+	customer at a time. The chef prepares food for customers in the order they 
+	were given in the input. Return the average waiting time of all customers. 
+	Solutions within 10-5 from the actual answer are considered accepted.
+
+	Example 1:
+	Input: customers = [[1,2],[2,5],[4,3]]
+	Output: 5.00000
+	Explanation:
+	1) The first customer arrives at time 1, the chef takes his order and starts preparing it immediately at time 1, and finishes at time 3, so the waiting time of the first customer is 3 - 1 = 2.
+	2) The second customer arrives at time 2, the chef takes his order and starts preparing it at time 3, and finishes at time 8, so the waiting time of the second customer is 8 - 2 = 6.
+	3) The third customer arrives at time 4, the chef takes his order and starts preparing it at time 8, and finishes at time 11, so the waiting time of the third customer is 11 - 4 = 7.
+	So the average waiting time = (2 + 6 + 7) / 3 = 5.
+
+	Example 2:
+	Input: customers = [[5,2],[5,4],[10,3],[20,1]]
+	Output: 3.25000
+	Explanation:
+	1) The first customer arrives at time 5, the chef takes his order and starts preparing it immediately at time 5, and finishes at time 7, so the waiting time of the first customer is 7 - 5 = 2.
+	2) The second customer arrives at time 5, the chef takes his order and starts preparing it at time 7, and finishes at time 11, so the waiting time of the second customer is 11 - 5 = 6.
+	3) The third customer arrives at time 10, the chef takes his order and starts preparing it at time 11, and finishes at time 14, so the waiting time of the third customer is 14 - 10 = 4.
+	4) The fourth customer arrives at time 20, the chef takes his order and starts preparing it immediately at time 20, and finishes at time 21, so the waiting time of the fourth customer is 21 - 20 = 1.
+	So the average waiting time = (2 + 6 + 4 + 1) / 4 = 3.25.
+	 
+	Constraints:
+	* 1 <= customers.length <= 105
+	* 1 <= arrivali, timei <= 104
+	* arrivali <= arrivali+1"""
+
+    def averageWaitingTime(self, customers: List[List[int]]) -> float:
+        ans = t = 0
+        for arrvl, tt in customers: 
+            t = max(t, arrvl) + tt
+            ans += t - arrvl
+        return ans/len(customers)
+
+
+    """1702. Maximum Binary String After Change (Medium)
+	You are given a binary string binary consisting of only 0's or 1's. You can 
+	apply each of the following operations any number of times:
+	* Operation 1: If the number contains the substring "00", you can replace it with "10".
+	  - For example, "00010" -> "10010"
+	* Operation 2: If the number contains the substring "10", you can replace it with "01".
+	  - For example, "00010" -> "00001"
+	Return the maximum binary string you can obtain after any number of 
+	operations. Binary string x is greater than binary string y if x's decimal 
+	representation is greater than y's decimal representation.
+
+	Example 1:
+	Input: binary = "000110"
+	Output: "111011"
+	Explanation: A valid transformation sequence can be:
+	"000110" -> "000101" 
+	"000101" -> "100101" 
+	"100101" -> "110101" 
+	"110101" -> "110011" 
+	"110011" -> "111011"
+
+	Example 2:
+	Input: binary = "01"
+	Output: "01"
+	Explanation: "01" cannot be transformed any further.
+
+	Constraints:
+	* 1 <= binary.length <= 105
+	* binary consist of '0' and '1'."""
+
+    def maximumBinaryString(self, binary: str) -> str:
+        if binary.count("0") <= 1: return binary 
+        ones = binary.count("1", binary.index("0"))
+        return (len(binary)-ones-1)*"1" + "0" + ones*"1"
+
+
+    """1703. Minimum Adjacent Swaps for K Consecutive Ones (Hard)
+	You are given an integer array, nums, and an integer k. nums comprises of 
+	only 0's and 1's. In one move, you can choose two adjacent indices and swap 
+	their values. Return the minimum number of moves required so that nums has 
+	k consecutive 1's.
+
+	Example 1:
+	Input: nums = [1,0,0,1,0,1], k = 2
+	Output: 1
+	Explanation: In 1 move, nums could be [1,0,0,0,1,1] and have 2 consecutive 1's.
+
+	Example 2:
+	Input: nums = [1,0,0,0,0,0,1,1], k = 3
+	Output: 5
+	Explanation: In 5 moves, the leftmost 1 can be shifted right until nums = [0,0,0,0,0,1,1,1].
+
+	Example 3:
+	Input: nums = [1,1,0,1], k = 2
+	Output: 0
+	Explanation: nums already has 2 consecutive 1's.
+
+	Constraints:
+	* 1 <= nums.length <= 105
+	* nums[i] is 0 or 1.
+	* 1 <= k <= sum(nums)"""
+
+    def minMoves(self, nums: List[int], k: int) -> int:
+        loc = [i for i, x in enumerate(nums) if x]
+        prefix = [0]
+        for x in loc: prefix.append(prefix[-1] + x)
+        
+        ans = inf
+        for i in range(len(loc)-k+1): 
+            ans = min(ans, (prefix[i+k] - prefix[i+(k+1)//2]) - (prefix[i+k//2] - prefix[i]))
+        return ans - (k//2)*((k+1)//2)
+
+
     """1704. Determine if String Halves Are Alike (Easy)
 	You are given a string s of even length. Split this string into two halves 
 	of equal lengths, and let a be the first half and b be the second half. Two 
