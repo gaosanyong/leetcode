@@ -5305,6 +5305,68 @@ class Solution:
         return nums[lo]
 
 
+    """156. Binary Tree Upside Down (Medium)
+	Given the root of a binary tree, turn the tree upside down and return the 
+	new root. You can turn a binary tree upside down with the following steps:
+	* The original left child becomes the new root.
+	* The original root becomes the new right child.
+	* The original right child becomes the new left child.
+	The mentioned steps are done level by level, it is guaranteed that every 
+	node in the given tree has either 0 or 2 children.
+
+	Example 1:
+	Input: root = [1,2,3,4,5]
+	Output: [4,5,2,null,null,3,1]
+
+	Example 2:
+	Input: root = []
+	Output: []
+
+	Example 3:
+	Input: root = [1]
+	Output: [1]
+
+	Constraints:
+	* The number of nodes in the tree will be in the range [0, 10].
+	* 1 <= Node.val <= 10
+	* Every node has either 0 or 2 children."""
+
+    def upsideDownBinaryTree(self, root: TreeNode) -> TreeNode:
+        if not root or not root.left: return root 
+        ans = self.upsideDownBinaryTree(root.left)
+        root.left.left = root.right
+        root.left.right = root
+        root.left = root.right = None
+        return ans 
+
+
+    """159. Longest Substring with At Most Two Distinct Characters (Medium)
+	Given a string s , find the length of the longest substring t  that 
+	contains at most 2 distinct characters.
+
+	Example 1:
+	Input: "eceba"
+	Output: 3
+	Explanation: t is "ece" which its length is 3.
+
+	Example 2:
+	Input: "ccaabbb"
+	Output: 5
+	Explanation: t is "aabbb" which its length is 5."""
+
+    def lengthOfLongestSubstringTwoDistinct(self, s: str) -> int:
+        ans, ii = 0, -1 # starting anchor
+        queue = deque()
+        seen = {} # last seen 
+        for i, x in enumerate(s): 
+            if not queue or queue[-1] != x: queue.append(x)
+            if len(queue) > 2: 
+                xx = queue.popleft()
+                if xx != x: ii = seen[xx] # update anchor 
+            ans = max(ans, i - ii)
+            seen[x] = i
+        return ans 
+
 
     """160. Intersection of Two Linked Lists (Easy)
 	Write a program to find the node at which the intersection of two singly 
@@ -5352,6 +5414,46 @@ class Solution:
             nodeA = nodeA.next if nodeA else headB
             nodeB = nodeB.next if nodeB else headA
         return nodeA and nodeB
+
+
+    """161. One Edit Distance (Medium)
+	Given two strings s and t, return true if they are both one edit distance 
+	apart, otherwise return false. A string s is said to be one distance apart 
+	from a string t if you can:
+	* Insert exactly one character into s to get t.
+	* Delete exactly one character from s to get t.
+	* Replace exactly one character of s with a different character to get t.
+
+	Example 1:
+	Input: s = "ab", t = "acb"
+	Output: true
+	Explanation: We can insert 'c' into s to get t.
+
+	Example 2:
+	Input: s = "", t = ""
+	Output: false
+	Explanation: We cannot get t from s by only one step.
+
+	Example 3:
+	Input: s = "a", t = ""
+	Output: true
+
+	Example 4:
+	Input: s = "", t = "A"
+	Output: true
+
+	Constraints:
+	* 0 <= s.length <= 104
+	* 0 <= t.length <= 104
+	* s and t consist of lower-case letters, upper-case letters and/or digits."""
+
+    def isOneEditDistance(self, s: str, t: str) -> bool:
+        if s == t: return False 
+        i = 0
+        while i < min(len(t), len(s)): 
+            if s[i] != t[i]: break 
+            i += 1
+        return s[i:] == t[i+1:] or s[i+1:] == t[i+1:] or s[i+1:] == t[i:]
 
    
     """162. Find Peak Element (Medium)
@@ -5770,6 +5872,36 @@ class Solution:
                 
         nums = [str(x) for x in nums]
         return "".join(sorted(nums, key=cmp_to_key(cmp), reverse=True)).lstrip("0") or "0"
+
+
+    """186. Reverse Words in a String II (Medium)
+	Given an input string , reverse the string word by word. 
+
+	Example:
+	Input:  ["t","h","e"," ","s","k","y"," ","i","s"," ","b","l","u","e"]
+	Output: ["b","l","u","e"," ","i","s"," ","s","k","y"," ","t","h","e"]
+
+	Note: 
+	* A word is defined as a sequence of non-space characters.
+	* The input string does not contain leading or trailing spaces.
+	* The words are always separated by a single space.
+	Follow up: Could you do it in-place without allocating extra space?"""
+
+    def reverseWords(self, s: List[str]) -> None:
+
+        def fn(lo, hi): 
+            """Reverse s[lo:hi+1] in-place."""
+            while lo < hi: 
+                s[lo], s[hi] = s[hi], s[lo]
+                lo, hi = lo+1, hi-1
+                
+        fn(0, len(s)-1)
+        lo = 0
+        for i in range(len(s)+1): 
+            if i == len(s) or s[i] == " ": 
+                hi = i - 1
+                fn(lo, hi)
+                lo = i + 1
 
 
     """187. Repeated DNA Sequences (Medium)
@@ -16844,6 +16976,177 @@ class Fenwick:
         return ((7*q + (49+2*r))*q + r*(r+1))//2
 
 
+    """1736. Latest Time by Replacing Hidden Digits (Easy)
+	You are given a string time in the form of hh:mm, where some of the digits 
+	in the string are hidden (represented by ?). The valid times are those 
+	inclusively between 00:00 and 23:59. Return the latest valid time you can 
+	get from time by replacing the hidden digits.
+
+	Example 1:
+	Input: time = "2?:?0"
+	Output: "23:50"
+	Explanation: The latest hour beginning with the digit '2' is 23 and the 
+	             latest minute ending with the digit '0' is 50.
+
+	Example 2:
+	Input: time = "0?:3?"
+	Output: "09:39"
+
+	Example 3:
+	Input: time = "1?:22"
+	Output: "19:22"
+
+	Constraints:
+	* time is in the format hh:mm.
+	* It is guaranteed that you can produce a valid time from the given string."""
+
+    def maximumTime(self, time: str) -> str:
+        time = list(time)
+        for i in range(len(time)): 
+            if time[i] == "?": 
+                if i == 0: time[i] = "2" if time[i+1] in "?0123" else "1"
+                elif i == 1: time[i] = "3" if time[0] == "2" else "9"
+                elif i == 3: time[i] = "5"
+                else: time[i] = "9"
+        return "".join(time)
+
+
+    """1737. Change Minimum Characters to Satisfy One of Three Conditions (Medium)
+	You are given two strings a and b that consist of lowercase letters. In one 
+	operation, you can change any character in a or b to any lowercase letter. 
+	Your goal is to satisfy one of the following three conditions:
+	* Every letter in a is strictly less than every letter in b in the alphabet.
+	* Every letter in b is strictly less than every letter in a in the alphabet.
+	* Both a and b consist of only one distinct letter.
+	Return the minimum number of operations needed to achieve your goal.
+
+	Example 1:
+	Input: a = "aba", b = "caa"
+	Output: 2
+	Explanation: Consider the best way to make each condition true:
+	1) Change b to "ccc" in 2 operations, then every letter in a is less than 
+	   every letter in b.
+	2) Change a to "bbb" and b to "aaa" in 3 operations, then every letter in b 
+	   is less than every letter in a.
+	3) Change a to "aaa" and b to "aaa" in 2 operations, then a and b consist 
+	   of one distinct letter.
+	The best way was done in 2 operations (either condition 1 or condition 3).
+
+	Example 2:
+	Input: a = "dabadd", b = "cda"
+	Output: 3
+	Explanation: The best way is to make condition 1 true by changing b to "eee".
+
+	Constraints:
+	* 1 <= a.length, b.length <= 105
+	* a and b consist only of lowercase letters."""
+
+    def minCharacters(self, a: str, b: str) -> int:
+        pa, pb = [0]*26, [0]*26
+        for x in a: pa[ord(x)-97] += 1
+        for x in b: pb[ord(x)-97] += 1
+        
+        ans = len(a) - max(pa) + len(b) - max(pb) # condition 3
+        for i in range(25): 
+            pa[i+1] += pa[i]
+            pb[i+1] += pb[i]
+            ans = min(ans, pa[i] + len(b) - pb[i]) # condition 2
+            ans = min(ans, len(a) - pa[i] + pb[i]) # condition 1
+        return ans 
+
+
+    """1738. Find Kth Largest XOR Coordinate Value (Medium)
+	You are given a 2D matrix of size m x n, consisting of non-negative 
+	integers. You are also given an integer k. The value of coordinate (a, b) 
+	of the matrix is the XOR of all matrix[i][j] where 0 <= i <= a < m and 
+	0 <= j <= b < n (0-indexed). Find the kth largest value (1-indexed) of all 
+	the coordinates of matrix.
+
+	Example 1:
+	Input: matrix = [[5,2],[1,6]], k = 1
+	Output: 7
+	Explanation: The value of coordinate (0,1) is 5 XOR 2 = 7, which is the largest value.
+
+	Example 2:
+	Input: matrix = [[5,2],[1,6]], k = 2
+	Output: 5
+	Explanation: The value of coordinate (0,0) is 5 = 5, which is the 2nd largest value.
+
+	Example 3:
+	Input: matrix = [[5,2],[1,6]], k = 3
+	Output: 4
+	Explanation: The value of coordinate (1,0) is 5 XOR 1 = 4, which is the 3rd largest value.
+
+	Example 4:
+	Input: matrix = [[5,2],[1,6]], k = 4
+	Output: 0
+	Explanation: The value of coordinate (1,1) is 5 XOR 2 XOR 1 XOR 6 = 0, which is the 4th largest value.
+
+	Constraints:
+	* m == matrix.length
+	* n == matrix[i].length
+	* 1 <= m, n <= 1000
+	* 0 <= matrix[i][j] <= 106
+	* 1 <= k <= m * n"""
+
+    def kthLargestValue(self, matrix: List[List[int]], k: int) -> int:
+        m, n = len(matrix), len(matrix[0]) # dimensions 
+        
+        pq = []
+        for i in range(m): 
+            for j in range(n): 
+                if i: matrix[i][j] ^= matrix[i-1][j]
+                if j: matrix[i][j] ^= matrix[i][j-1]
+                if i and j: matrix[i][j] ^= matrix[i-1][j-1]
+                heappush(pq, matrix[i][j])
+                if len(pq) > k: heappop(pq)
+        return pq[0]
+
+
+    """1739. Building Boxes (Hard)
+	You have a cubic storeroom where the width, length, and height of the room 
+	are all equal to n units. You are asked to place n boxes in this room where 
+	each box is a cube of unit side length. There are however some rules to 
+	placing the boxes:
+	* You can place the boxes anywhere on the floor.
+	* If box x is placed on top of the box y, then each side of the four 
+	  vertical sides of the box y must either be adjacent to another box or to 
+	  a wall.
+	Given an integer n, return the minimum possible number of boxes touching 
+	the floor.
+
+	Example 1:
+	Input: n = 3
+	Output: 3
+	Explanation: The figure above is for the placement of the three boxes. 
+	             These boxes are placed in the corner of the room, where the 
+	             corner is on the left side.
+
+	Example 2:
+	Input: n = 4
+	Output: 3
+	Explanation: The figure above is for the placement of the four boxes. These 
+	             boxes are placed in the corner of the room, where the corner 
+	             is on the left side.
+	
+	Example 3:
+	Input: n = 10
+	Output: 6
+	Explanation: The figure above is for the placement of the ten boxes. These 
+	             boxes are placed in the corner of the room, where the corner 
+	             is on the back side.
+
+	Constraints: 1 <= n <= 10^9"""
+
+    def minimumBoxes(self, n: int) -> int:
+        x = int((6*n)**(1/3))
+        if x*(x+1)*(x+2) > 6*n: x -= 1
+        
+        ans = x*(x+1)//2
+        n -= x*(x+1)*(x+2)//6
+        return ans + ceil((sqrt(1+8*n)-1)/2)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -17234,6 +17537,40 @@ class MyQueue:
 
     def empty(self) -> bool:
         return not self.in_ and not self.out
+
+
+"""244. Shortest Word Distance II (Medium)
+Design a class which receives a list of words in the constructor, and implements 
+a method that takes two words word1 and word2 and return the shortest distance 
+between these two words in the list. Your method will be called repeatedly many 
+times with different parameters. 
+
+Example:
+Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+
+Input: word1 = “coding”, word2 = “practice”
+Output: 3
+Input: word1 = "makes", word2 = "coding"
+Output: 1
+Note: You may assume that word1 does not equal to word2, and word1 and word2 
+      are both in the list."""
+
+class WordDistance:
+
+    def __init__(self, words: List[str]):
+        self.loc = {}
+        for i, w in enumerate(words):
+            self.loc.setdefault(w, []).append(i)
+
+    def shortest(self, word1: str, word2: str) -> int:
+        ans = inf
+        loc1, loc2 = self.loc[word1], self.loc[word2]
+        i1 = i2 = 0 
+        while i1 < len(loc1) and i2 < len(loc2):
+            ans = min(ans, abs(loc1[i1] - loc2[i2]))
+            if loc1[i1] < loc2[i2]: i1 += 1
+            else: i2 += 1
+        return ans 
 
 
 """284. Peeking Iterator (Medium)
