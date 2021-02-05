@@ -753,16 +753,14 @@ class Solution:
 	Output: 1->1->2->3->4->4->5->6"""
     
     def mergeKLists(self, lists: List[ListNode]) -> ListNode:
-        pq = []
-        for i, ll in enumerate(lists):
-            if ll: heappush(pq, (ll.val, i, ll))
-                
+        pq = [(x.val, i, x) for i, x in enumerate(lists) if x]
+        heapify(pq)
         dummy = node = ListNode()
+        
         while pq: 
-            _, i, ll = heappop(pq)
-            if ll.next: heappush(pq, (ll.next.val, i, ll.next))
-            node.next = ll
-            node = node.next 
+            _, i, x = heappop(pq)
+            node.next = node = x
+            if x.next: heappush(pq, (x.next.val, i, x.next))
         return dummy.next 
 
 
@@ -2433,11 +2431,9 @@ class Solution:
 
     def simplifyPath(self, path: str) -> str:
         stack = []
-        for file in path.split("/"):
-            if file == "..": 
-                if stack: stack.pop()
-            elif file not in ("", "."): 
-                stack.append(file)
+        for x in path.split("/"):
+                if x == ".." and stack: stack.pop()
+                if x not in (".", "..", ""): stack.append(x)
         return "/" + "/".join(stack)
 
 
@@ -5230,7 +5226,6 @@ class Solution:
         return " ".join(reversed(s.split()))
 
 
-
     """152. Maximum Product Subarray (Medium)
 	Given an integer array nums, find the contiguous subarray within an array 
 	(containing at least one number) which has the largest product.
@@ -5338,6 +5333,89 @@ class Solution:
         root.left.right = root
         root.left = root.right = None
         return ans 
+
+
+    """157. Read N Characters Given Read4 (Easy)
+	Given a file and assume that you can only read the file using a given 
+	method read4, implement a method to read n characters. 
+	 
+	Method read4:
+	The API read4 reads 4 consecutive characters from the file, then writes 
+	those characters into the buffer array buf4. The return value is the number 
+	of actual characters read. Note that read4() has its own file pointer, much 
+	like FILE *fp in C.
+
+	Definition of read4:
+	    Parameter:  char[] buf4
+	    Returns:    int
+	Note: buf4[] is destination not source, the results from read4 will be 
+	      copied to buf4[]
+
+	Below is a high level example of how read4 works:
+	File file("abcde"); // File is "abcde", initially file pointer (fp) points to 'a'
+	char[] buf4 = new char[4]; // Create buffer with enough space to store characters
+	read4(buf4); // read4 returns 4. Now buf4 = "abcd", fp points to 'e'
+	read4(buf4); // read4 returns 1. Now buf4 = "e", fp points to end of file
+	read4(buf4); // read4 returns 0. Now buf4 = "", fp points to end of file
+
+	Method read:
+	By using the read4 method, implement the method read that reads n 
+	characters from the file and store it in the buffer array buf. Consider 
+	that you cannot manipulate the file directly. The return value is the 
+	number of actual characters read.
+
+	Definition of read:
+	    Parameters:	char[] buf, int n
+	    Returns:	int
+	Note: buf[] is destination not source, you will need to write the results to buf[]
+
+	Example 1:
+
+	Input: file = "abc", n = 4
+	Output: 3
+	Explanation: After calling your read method, buf should contain "abc". We 
+	             read a total of 3 characters from the file, so return 3. Note 
+	             that "abc" is the file's content, not buf. buf is the 
+	             destination buffer that you will have to write the results to.
+
+	Example 2:
+	Input: file = "abcde", n = 5
+	Output: 5
+	Explanation: After calling your read method, buf should contain "abcde". We 
+	             read a total of 5 characters from the file, so return 5.
+
+	Example 3:
+	Input: file = "abcdABCD1234", n = 12
+	Output: 12
+	Explanation: After calling your read method, buf should contain "abcdABCD1234". 
+	             We read a total of 12 characters from the file, so return 12.
+	
+	Example 4:
+	Input: file = "leetcode", n = 5
+	Output: 5
+	Explanation: After calling your read method, buf should contain "leetc". We 
+	             read a total of 5 characters from the file, so return 5.
+
+	Note:
+	* Consider that you cannot manipulate the file directly, the file is only 
+	  accesible for read4 but not for read.
+	* The read function will only be called once for each test case.
+	* You may assume the destination buffer array, buf, is guaranteed to have 
+	  enough space for storing n characters."""
+
+    def read(self, buf, n):
+        """
+        :type buf: Destination buffer (List[str])
+        :type n: Number of characters to read (int)
+        :rtype: The number of actual characters read (int)
+        """
+        ans, k = 0, 4
+        buf4 = [" "]*4
+        while ans < n and k == 4: 
+            k = read4(buf4)
+            buf[ans: ans+4] = buf4
+            ans += k
+        return min(n, ans)
 
 
     """159. Longest Substring with At Most Two Distinct Characters (Medium)
@@ -6067,7 +6145,11 @@ class Solution:
 	Follow up: If this function is called many times, how would you optimize it?"""
 
     def hammingWeight(self, n: int) -> int:
-        return bin(n).count("1")
+        ans = 0
+        while n: 
+            ans += 1
+            n &= n-1
+        return ans 
 
 
     """198. House Robber (Easy)
@@ -7324,6 +7406,336 @@ class Solution:
         return all(v == 0 for v in freq)
 
 
+    """243. Shortest Word Distance (Easy)
+	Given a list of words and two words word1 and word2, return the shortest 
+	distance between these two words in the list.
+
+	Example:
+	Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+	Input: word1 = “coding”, word2 = “practice”
+	Output: 3
+	Input: word1 = "makes", word2 = "coding"
+	Output: 1
+	Note: You may assume that word1 does not equal to word2, and word1 and 
+	      word2 are both in the list."""
+
+    def shortestDistance(self, words: List[str], word1: str, word2: str) -> int:
+        ans = i1 = i2 = inf
+        for i, word in enumerate(words):
+            if word == word1: i1 = i
+            elif word == word2: i2 = i 
+            ans = min(ans, abs(i1 - i2))
+        return ans 
+
+
+    """245. Shortest Word Distance III (Medium)
+	Given a list of words and two words word1 and word2, return the shortest 
+	distance between these two words in the list. word1 and word2 may be the 
+	same and they represent two individual words in the list.
+
+	Example:
+	Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+	Input: word1 = “makes”, word2 = “coding”
+	Output: 1
+	Input: word1 = "makes", word2 = "makes"
+	Output: 3
+	
+	Note: You may assume word1 and word2 are both in the list."""
+
+    def shortestWordDistance(self, words: List[str], word1: str, word2: str) -> int:
+        ans = i1 = i2 = inf
+        for i, word in enumerate(words):
+            if word == word1: i1 = i2 if word1 == word2 else i
+            if word == word2: i2 = i
+            ans = min(ans, abs(i1-i2))
+        return ans 
+
+
+    """246. Strobogrammatic Number (Easy)
+	A strobogrammatic number is a number that looks the same when rotated 180 
+	degrees (looked at upside down). Write a function to determine if a number 
+	is strobogrammatic. The number is represented as a string.
+
+	Example 1:
+	Input: num = "69"
+	Output: true
+
+	Example 2:
+	Input: num = "88"
+	Output: true
+
+	Example 3:
+	Input: num = "962"
+	Output: false
+
+	Example 4:
+	Input: num = "1"
+	Output: true"""
+
+    def isStrobogrammatic(self, num: str) -> bool:
+        mp = {"0":"0", "1":"1", "6":"9", "8":"8", "9":"6"}
+        return all(mp.get(num[i]) == num[~i] for i in range(len(num)//2+1))
+
+
+    """247. Strobogrammatic Number II (Medium)
+	A strobogrammatic number is a number that looks the same when rotated 180 
+	degrees (looked at upside down). Find all strobogrammatic numbers that are 
+	of length = n.
+
+	Example:
+	Input:  n = 2
+	Output: ["11","69","88","96"]"""
+
+    def findStrobogrammatic(self, n: int) -> List[str]:
+        mp = ["00", "11", "69", "88", "96"]
+        
+        def fn(n):
+            """Return strobogrammatic number of length n."""
+            if n == 0: return [""]
+            if n == 1: return ["0", "1", "8"]
+            return [x+y+xx for x, xx in mp for y in fn(n-2)]
+        
+        ans = fn(n)
+        return [x for x in ans if not x.startswith("0")] if n > 1 else ans 
+
+
+    """249. Group Shifted Strings (Medium)
+	Given a string, we can "shift" each of its letter to its successive letter, 
+	for example: "abc" -> "bcd". We can keep "shifting" which forms the sequence:
+	"abc" -> "bcd" -> ... -> "xyz"
+	Given a list of non-empty strings which contains only lowercase alphabets, 
+	group all strings that belong to the same shifting sequence.
+
+	Example:
+	Input: ["abc", "bcd", "acef", "xyz", "az", "ba", "a", "z"],
+	Output: 
+	[
+	  ["abc","bcd","xyz"],
+	  ["az","ba"],
+	  ["acef"],
+	  ["a","z"]
+	]"""
+
+    def groupStrings(self, strings: List[str]) -> List[List[str]]:
+        ans = {}
+        for string in strings: 
+            key = []
+            for i in range(1, len(string)):
+                key.append((ord(string[i]) - ord(string[0])) % 26)
+            ans.setdefault("#".join(map(str, key)), []).append(string)
+        return ans.values()
+
+
+    """250. Count Univalue Subtrees (Medium)
+	Given the root of a binary tree, return the number of uni-value subtrees. A 
+	uni-value subtree means all nodes of the subtree have the same value.
+
+	Example 1:
+	Input: root = [5,1,5,5,5,null,5]
+	Output: 4
+
+	Example 2:
+	Input: root = []
+	Output: 0
+
+	Example 3:
+	Input: root = [5,5,5,5,5,null,5]
+	Output: 6
+
+	Constraints:
+	* The numbrt of the node in the tree will be in the range [0, 1000].
+	* -1000 <= Node.val <= 1000"""
+
+    def countUnivalSubtrees(self, root: TreeNode) -> int:
+        if not root: return 0 
+        
+        def fn(node): 
+            """Return count of univalue subtrees of sub-tree rooted at node."""
+            lc = rc = 0
+            lv = rv = node.val 
+            if node.left: lc, lv = fn(node.left)
+            if node.right: rc, rv = fn(node.right)
+            if lv == rv == node.val: return lc + rc + 1, node.val 
+            return lc + rc, None
+            
+        return fn(root)[0]           
+
+
+    """252. Meeting Rooms (Easy)
+	Given an array of meeting time intervals where intervals[i] = [starti, endi], 
+	determine if a person could attend all meetings.
+
+	Example 1:
+	Input: intervals = [[0,30],[5,10],[15,20]]
+	Output: false
+
+	Example 2:
+	Input: intervals = [[7,10],[2,4]]
+	Output: true
+
+	Constraints:
+	* 0 <= intervals.length <= 10^4
+	* intervals[i].length == 2
+	* 0 <= starti < endi <= 10^6"""
+
+    def canAttendMeetings(self, intervals: List[List[int]]) -> bool:
+        intervals.sort()
+        return all(intervals[i-1][1] <= intervals[i][0] for i in range(1, len(intervals)))
+
+
+    """253. Meeting Rooms II (Medium)
+	Given an array of meeting time intervals intervals where 
+	intervals[i] = [starti, endi], return the minimum number of conference 
+	rooms required.
+
+	Example 1:
+	Input: intervals = [[0,30],[5,10],[15,20]]
+	Output: 2
+
+	Example 2:
+	Input: intervals = [[7,10],[2,4]]
+	Output: 1
+
+	Constraints:
+	*1 <= intervals.length <= 104
+	*0 <= starti < endi <= 106"""
+
+    def minMeetingRooms(self, intervals: List[List[int]]) -> int:
+        pq = []
+        for x, y in intervals: 
+            heappush(pq, (x, +1))
+            heappush(pq, (y, -1))
+            
+        ans = prefix = 0
+        while pq: 
+            _, x = heappop(pq)
+            prefix += x
+            ans = max(ans, prefix)
+        return ans 
+
+
+    """254. Factor Combinations (Medium)
+	Numbers can be regarded as product of its factors. For example,
+	8 = 2 x 2 x 2 = = 2 x 4.
+	Write a function that takes an integer n and return all possible 
+	combinations of its factors.
+
+	Note:
+	* You may assume that n is always positive.
+	* Factors should be greater than 1 and less than n.
+	
+	Example 1:
+	Input: 1
+	Output: []
+
+	Example 2:
+	Input: 37
+	Output:[]
+
+	Example 3:
+	Input: 12
+	Output: [[2, 6],
+			 [2, 2, 3],
+			 [3, 4]]
+
+	Example 4:
+	Input: 32
+	Output: [[2, 16],
+	         [2, 2, 8],
+	         [2, 2, 2, 4],
+	         [2, 2, 2, 2, 2],
+	         [2, 4, 4],
+	         [4, 8]]"""
+
+    def getFactors(self, n: int) -> List[List[int]]:
+        factors = [k for k in range(2, int(sqrt(n))+1) if n % k == 0]
+        
+        def fn(i, n): 
+            """Populate ans via a stack."""
+            if len(stack) > 0 and stack[-1] <= n: ans.append(stack + [n])
+            for ii in range(i, len(factors)):
+                if n % factors[ii] == 0: 
+                    stack.append(factors[ii])
+                    fn(ii, n//factors[ii])
+                    stack.pop()
+            
+        ans, stack = [], []
+        fn(0, n)
+        return ans 
+
+
+    """255. Verify Preorder Sequence in Binary Search Tree (Medium)
+	Given an array of numbers, verify whether it is the correct preorder 
+	traversal sequence of a binary search tree. You may assume each number in 
+	the sequence is unique. Consider the following binary search tree: 
+
+	     5
+	    / \
+	   2   6
+	  / \
+	 1   3
+	
+	Example 1:
+	Input: [5,2,6,1,3]
+	Output: false
+
+	Example 2:
+	Input: [5,2,1,3,6]
+	Output: true
+
+	Follow up: Could you do it using only constant space complexity?"""
+
+    def verifyPreorder(self, preorder: List[int]) -> bool:
+        lo = -inf 
+        stack = []
+        for x in preorder: 
+            if x < lo: return False 
+            while stack and stack[-1] < x: lo = stack.pop()
+            stack.append(x)
+        return True 
+
+
+    """256. Paint House (Medium)
+	There is a row of n houses, where each house can be painted one of three 
+	colors: red, blue, or green. The cost of painting each house with a certain 
+	color is different. You have to paint all the houses such that no two 
+	adjacent houses have the same color. The cost of painting each house with a 
+	certain color is represented by a n x 3 cost matrix. For example, 
+	costs[0][0] is the cost of painting house 0 with the color red; costs[1][2] 
+	is the cost of painting house 1 with color green, and so on... Find the 
+	minimum cost to paint all houses.
+
+	Example 1:
+	Input: costs = [[17,2,17],[16,16,5],[14,3,19]]
+	Output: 10
+	Explanation: Paint house 0 into blue, paint house 1 into green, paint house 
+	             2 into blue. Minimum cost: 2 + 5 + 3 = 10.
+
+	Example 2:
+	Input: costs = []
+	Output: 0
+	
+	Example 3:
+	Input: costs = [[7,6,2]]
+	Output: 2
+
+	Constraints:
+	* costs.length == n
+	* costs[i].length == 3
+	* 0 <= n <= 100
+	* 1 <= costs[i][j] <= 20"""
+
+    def minCost(self, costs: List[List[int]]) -> int:
+        
+        @lru_cache(None)
+        def fn(i, j): 
+            """Return min cost of painting ith house w/ jth color."""
+            if i == len(costs): return 0 # no more houses to paint 
+            return costs[i][j] + min(fn(i+1, jj) for jj in range(3) if j != jj)
+            
+        return min(fn(0, j) for j in range(3))
+
+
     """257. Binary Tree Paths (Easy)
 	Given a binary tree, return all root-to-leaf paths.
 
@@ -7370,6 +7782,47 @@ class Solution:
 
     def addDigits(self, num: int) -> int:
         return num and 1 + (num - 1) % 9
+
+
+    """259. 3Sum Smaller (Medium)
+	Given an array of n integers nums and an integer target, find the number of 
+	index triplets i, j, k with 0 <= i < j < k < n that satisfy the condition 
+	nums[i] + nums[j] + nums[k] < target. 
+
+	Follow up: Could you solve it in O(n2) runtime?
+
+	Example 1:
+	Input: nums = [-2,0,1,3], target = 2
+	Output: 2
+	Explanation: Because there are two triplets which sums are less than 2:
+	[-2,0,1]
+	[-2,0,3]
+
+	Example 2:
+	Input: nums = [], target = 0
+	Output: 0
+
+	Example 3:
+	Input: nums = [0], target = 0
+	Output: 0
+
+	Constraints:
+	* n == nums.length
+	* 0 <= n <= 300
+	* -100 <= nums[i] <= 100
+	* -100 <= target <= 100"""
+
+    def threeSumSmaller(self, nums: List[int], target: int) -> int:
+        nums.sort()
+        ans = 0
+        for i in range(len(nums)): 
+            lo, hi = i+1, len(nums)-1
+            while lo < hi: 
+                if nums[i] + nums[lo] + nums[hi] >= target: hi -= 1
+                else: 
+                    ans += hi - lo
+                    lo += 1
+        return ans 
 
 
     """260. Single Number III (Medium)
@@ -7453,6 +7906,65 @@ class Solution:
         return ans[-1]
 
 
+    """266. Palindrome Permutation (Easy)
+	Given a string, determine if a permutation of the string could form a 
+	palindrome.
+
+	Example 1:
+	Input: "code"
+	Output: false
+
+	Example 2:
+	Input: "aab"
+	Output: true
+
+	Example 3:
+	Input: "carerac"
+	Output: true"""
+
+    def canPermutePalindrome(self, s: str) -> bool:
+        freq = {}
+        for c in s: freq[c] = 1 + freq.get(c, 0)
+        return sum(v&1 for v in freq.values()) <= 1
+
+
+    """267. Palindrome Permutation II (Medium)
+	Given a string s, return all the palindromic permutations (without 
+	duplicates) of it. Return an empty list if no palindromic permutation could 
+	be form.
+
+	Example 1:
+	Input: "aabb"
+	Output: ["abba", "baab"]
+
+	Example 2:
+	Input: "abc"
+	Output: []"""
+
+    def generatePalindromes(self, s: str) -> List[str]:
+        freq = {}
+        for c in s: freq[c] = 1 + freq.get(c, 0)
+        
+        mid = []
+        for k, v in freq.items(): 
+            if v&1: mid.append(k)
+        
+        ans = []
+        if len(mid) <= 1: 
+            
+            def fn(x):
+                """Populate ans via backtracking."""
+                if len(x) == len(s): ans.append(x)
+                for k, v in freq.items(): 
+                    if v >= 2: 
+                        freq[k] -= 2
+                        fn(k + x + k)
+                        freq[k] += 2
+            
+            fn(mid.pop() if mid else "")
+        return ans 
+
+
     """268. Missing Number (Easy)
 	Given an array containing n distinct numbers taken from 0, 1, 2, ..., n, 
 	find the one that is missing from the array.
@@ -7470,6 +7982,34 @@ class Solution:
 
     def missingNumber(self, nums: List[int]) -> int:
         return reduce(xor, (i^x for i, x in enumerate(nums, 1)))
+
+
+    """270. Closest Binary Search Tree Value (Easy)
+	Given a non-empty binary search tree and a target value, find the value in 
+	the BST that is closest to the target.
+
+	Note:
+	* Given target value is a floating point.
+	* You are guaranteed to have only one unique value in the BST that is closest to the target.
+	
+	Example:
+	Input: root = [4,2,5,1,3], target = 3.714286
+	    4
+	   / \
+	  2   5
+	 / \
+	1   3
+	Output: 4"""
+
+    def closestValue(self, root: TreeNode, target: float) -> int:
+        ans = inf
+        node = root
+        while node: 
+            if node.val == target: return node.val
+            ans = min(ans, node.val, key=lambda x: abs(x-target))
+            if node.val < target: node = node.right
+            else: node = node.left
+        return ans 
 
 
     """273. Integer to English Words (Hard)
@@ -7578,6 +8118,82 @@ class Solution:
             else: lo = mid + 1
         return n - lo
 
+
+    """276. Paint Fence (Easy)
+	There is a fence with n posts, each post can be painted with one of the k 
+	colors. You have to paint all the posts such that no more than two adjacent 
+	fence posts have the same color. Return the total number of ways you can 
+	paint the fence.
+
+	Note: n and k are non-negative integers.
+
+	Example:
+	Input: n = 3, k = 2
+	Output: 6
+	Explanation: Take c1 as color 1, c2 as color 2. All possible ways are:
+
+	            post1  post2  post3      
+	 -----      -----  -----  -----       
+	   1         c1     c1     c2 
+	   2         c1     c2     c1 
+	   3         c1     c2     c2 
+	   4         c2     c1     c1  
+	   5         c2     c1     c2
+	   6         c2     c2     c1"""
+
+    def numWays(self, n: int, k: int) -> int:
+        if not n: return 0
+        f0, f1 = k, k*k
+        for _ in range(1, n):
+            f0, f1 = f1, (k-1)*(f0+f1)
+        return f0
+
+
+    """277. Find the Celebrity (Medium)
+	Suppose you are at a party with n people (labeled from 0 to n - 1), and 
+	among them, there may exist one celebrity. The definition of a celebrity is 
+	that all the other n - 1 people know him/her, but he/she does not know any 
+	of them. Now you want to find out who the celebrity is or verify that there 
+	is not one. The only thing you are allowed to do is to ask questions like: 
+	"Hi, A. Do you know B?" to get information about whether A knows B. You 
+	need to find out the celebrity (or verify there is not one) by asking as 
+	few questions as possible (in the asymptotic sense). You are given a helper 
+	function bool knows(a, b) which tells you whether A knows B. Implement a 
+	function int findCelebrity(n). There will be exactly one celebrity if 
+	he/she is in the party. Return the celebrity's label if there is a 
+	celebrity in the party. If there is no celebrity, return -1.
+
+	Example 1:
+	Input: graph = [[1,1,0],[0,1,0],[1,1,1]]
+	Output: 1
+	Explanation: There are three persons labeled with 0, 1 and 2. graph[i][j] = 1 
+	             means person i knows person j, otherwise graph[i][j] = 0 means 
+	             person i does not know person j. The celebrity is the person 
+	             labeled as 1 because both 0 and 2 know him but 1 does not know 
+	             anybody.
+
+	Example 2:
+	Input: graph = [[1,0,1],[1,1,0],[0,1,1]]
+	Output: -1
+	Explanation: There is no celebrity.
+
+	Constraints:
+	* n == graph.length
+	* n == graph[i].length
+	* 2 <= n <= 100
+	* graph[i][j] is 0 or 1.
+	* graph[i][i] == 1
+	 
+	Follow up: If the maximum number of allowed calls to the API knows is 3 * n, 
+	           could you find a solution without exceeding the maximum number 
+	           of calls?"""
+
+    def findCelebrity(self, n: int) -> int:
+        k = 0
+        for i in range(1, n): 
+            if knows(k, i): k = i 
+        return k if all(knows(i, k) for i in range(n)) and not any(knows(k, i) for i in range(n) if i != k) else -1
+
         
     """278. First Bad Version (Easy)
 	You are a product manager and currently leading a team to develop a new 
@@ -7630,6 +8246,20 @@ class Solution:
         while n % 4 == 0: n //= 4
             
         return 4 if n%8 == 7 else 3 #Lagrange four-square theorem & Lagendre three-square theorem
+
+
+    """280. Wiggle Sort (Medium)
+	Given an unsorted array nums, reorder it in-place such that 
+	nums[0] <= nums[1] >= nums[2] <= nums[3]....
+
+	Example:
+	Input: nums = [3,5,2,1,6,4]
+	Output: One possible answer is [3,5,1,6,2,4]"""
+
+    def wiggleSort(self, nums: List[int]) -> None:
+        for i in range(len(nums)-1):
+            if i & 1 and nums[i] < nums[i+1] or not i&1 and nums[i] > nums[i+1]: 
+                nums[i], nums[i+1] = nums[i+1], nums[i]
 
 
     """282. Expression Add Operators (Hard)
@@ -7702,6 +8332,57 @@ class Solution:
             if nums[hi]: 
                 nums[hi], nums[lo] = nums[lo], nums[hi]
                 lo += 1
+
+
+    """286. Walls and Gates (Medium)
+	You are given an m x n grid rooms initialized with these three possible 
+	values.
+	* -1 A wall or an obstacle.
+	* 0 A gate.
+	* INF Infinity means an empty room. We use the value 231 - 1 = 2147483647 
+	  to represent INF as you may assume that the distance to a gate is less 
+	  than 2147483647.
+	Fill each empty room with the distance to its nearest gate. If it is 
+	impossible to reach a gate, it should be filled with INF.
+
+	Example 1:
+	Input: rooms = [[2147483647,        -1,         0,2147483647],
+	                [2147483647,2147483647,2147483647,        -1],
+	                [2147483647,        -1,2147483647,        -1],
+	                [         0,        -1,2147483647,2147483647]]
+	Output: [[3,-1,0,1],[2,2,1,-1],[1,-1,2,-1],[0,-1,3,4]]
+	
+	Example 2:
+	Input: rooms = [[-1]]
+	Output: [[-1]]
+
+	Example 3:
+	Input: rooms = [[2147483647]]
+	Output: [[2147483647]]
+
+	Example 4:
+	Input: rooms = [[0]]
+	Output: [[0]]
+
+	Constraints:
+	* m == rooms.length
+	* n == rooms[i].length
+	* 1 <= m, n <= 250
+	* rooms[i][j] is -1, 0, or 231 - 1."""
+
+    def wallsAndGates(self, rooms: List[List[int]]) -> None:
+        m, n = len(rooms), len(rooms[0]) # dimensions 
+        dist = 0
+        queue = [(i, j) for i in range(m) for j in range(n) if rooms[i][j] == 0] 
+        while queue: 
+            dist += 1
+            newq = []
+            for i, j in queue: 
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                    if 0 <= ii < m and 0 <= jj < n and rooms[ii][jj] == 2147483647: 
+                        rooms[ii][jj] = dist
+                        newq.append((ii, jj))
+            queue = newq
 
 
     """287. Find the Duplicate Number (Medium)
@@ -7847,6 +8528,100 @@ class Solution:
         return n % 4
 
 
+    """293. Flip Game (Easy)
+	You are playing the following Flip Game with your friend: Given a string 
+	that contains only these two characters: + and -, you and your friend take 
+	turns to flip two consecutive "++" into "--". The game ends when a person 
+	can no longer make a move and therefore the other person will be the winner. 
+	Write a function to compute all possible states of the string after one 
+	valid move.
+
+	Example:
+	Input: s = "++++"
+	Output: ["--++",
+	         "+--+",
+	         "++--"]
+	Note: If there is no valid move, return an empty list []."""
+
+    def generatePossibleNextMoves(self, s: str) -> List[str]:
+        ans = []
+        for i in range(len(s)-1):
+            if s[i:i+2] == "++": ans.append(s[:i] + "--" + s[i+2:])
+        return ans 
+
+
+    """294. Flip Game II (Medium)
+	You are playing the following Flip Game with your friend: Given a string 
+	that contains only these two characters: + and -, you and your friend take 
+	turns to flip two consecutive "++" into "--". The game ends when a person 
+	can no longer make a move and therefore the other person will be the winner. 
+	Write a function to determine if the starting player can guarantee a win.
+
+	Example:
+	Input: s = "++++"
+	Output: true 
+	Explanation: The starting player can guarantee a win by flipping the middle 
+	             "++" to become "+--+".
+
+	Follow up: Derive your algorithm's runtime complexity."""
+
+    def canWin(self, s: str) -> bool:
+        
+        @cache
+        def fn(s): 
+            """Return True if player can win by playing optimally."""
+            if "++" not in s: return False # already lost 
+            for i in range(len(s)-1): 
+                if s[i:i+2] == "++" and not fn(s[:i] + "--" + s[i+2:]): return True 
+            return False 
+        
+        return fn(s)
+
+
+    """298. Binary Tree Longest Consecutive Sequence (Medium)
+	Given a binary tree, find the length of the longest consecutive sequence 
+	path. The path refers to any sequence of nodes from some starting node to 
+	any node in the tree along the parent-child connections. The longest 
+	consecutive path need to be from parent to child (cannot be the reverse).
+
+	Example 1:
+	Input:
+	   1
+	    \
+	     3
+	    / \
+	   2   4
+	        \
+	         5
+	Output: 3
+	Explanation: Longest consecutive sequence path is 3-4-5, so return 3.
+
+	Example 2:
+	Input:
+
+	   2
+	    \
+	     3
+	    / 
+	   2    
+	  / 
+	 1
+	Output: 2 
+	Explanation: Longest consecutive sequence path is 2-3, not 3-2-1, so return 2."""
+
+    def longestConsecutive(self, root: TreeNode) -> int:
+        if not root: return 0 # edge case 
+        
+        ans = 0
+        stack = [(root, 1)]
+        while stack: 
+            node, val = stack.pop()
+            ans = max(ans, val)
+            if node.left: stack.append((node.left, val+1 if node.left.val == node.val+1 else 1))
+            if node.right: stack.append((node.right, val+1 if node.right.val == node.val+1 else 1))
+        return ans 
+
+
     """299. Bulls and Cows (Easy)
 	You are playing the following Bulls and Cows game with your friend: You 
 	write down a number and ask your friend to guess what the number is. Each 
@@ -7950,6 +8725,44 @@ class Solution:
         return False 
 
 
+    """311. Sparse Matrix Multiplication (Medium)
+	Given two sparse matrices A and B, return the result of AB. You may assume 
+	that A's column number is equal to B's row number.
+
+	Example:
+	Input:
+	A = [
+	  [ 1, 0, 0],
+	  [-1, 0, 3]
+	]
+
+	B = [
+	  [ 7, 0, 0 ],
+	  [ 0, 0, 0 ],
+	  [ 0, 0, 1 ]
+	]
+
+	Output:
+	     |  1 0 0 |   | 7 0 0 |   |  7 0 0 |
+	AB = | -1 0 3 | x | 0 0 0 | = | -7 0 3 |
+	                  | 0 0 1 |
+
+	Constraints:
+	* 1 <= A.length, B.length <= 100
+	* 1 <= A[i].length, B[i].length <= 100
+	* -100 <= A[i][j], B[i][j] <= 100"""
+
+    def multiply(self, A: List[List[int]], B: List[List[int]]) -> List[List[int]]:
+        m, l, n = len(A), len(B), len(B[0]) # dimensions 
+        ans = [[0] * n for _ in range(m)]
+        for i in range(m):
+            for k in range(l): 
+                if A[i][k]: 
+                    for j in range(n):
+                        ans[i][j] += A[i][k] * B[k][j]
+        return ans 
+
+
     """313. Super Ugly Number (Medium)
 	Write a program to find the nth super ugly number. Super ugly numbers are 
 	positive numbers whose all prime factors are in the given prime list 
@@ -7979,6 +8792,42 @@ class Solution:
                 heappush(hp, (p*ans[i+1]//ans[i], i+1))
                 
         return ans[-1]
+
+
+    """314. Binary Tree Vertical Order Traversal (Medium)
+	Given the root of a binary tree, return the vertical order traversal of its 
+	nodes' values. (i.e., from top to bottom, column by column). If two nodes 
+	are in the same row and column, the order should be from left to right.
+
+	Example 1:
+	Input: root = [3,9,20,null,null,15,7]
+	Output: [[9],[3,15],[20],[7]]
+
+	Example 2:
+	Input: root = [3,9,8,4,0,1,7]
+	Output: [[4],[9],[3,0,1],[8],[7]]
+
+	Example 3:
+	Input: root = [3,9,8,4,0,1,7,null,null,null,2,5]
+	Output: [[4],[9,5],[3,0,1],[8,2],[7]]
+
+	Example 4:
+	Input: root = []
+	Output: []
+
+	Constraints:
+	* The number of nodes in the tree is in the range [0, 100].
+	* -100 <= Node.val <= 100"""
+
+    def verticalOrder(self, root: TreeNode) -> List[List[int]]:
+        ans = {}
+        queue = [(root, 0)]
+        for node, k in queue: 
+            if node: 
+                ans.setdefault(k, []).append(node.val)
+                queue.append((node.left, k-1))
+                queue.append((node.right, k+1))
+        return [ans[k] for k in sorted(ans)]
 
 
     """316. Remove Duplicate Letters (Medium)
@@ -8067,6 +8916,41 @@ class Solution:
         return int(sqrt(n))
 
 
+    """320. Generalized Abbreviation (Medium)
+	A word's generalized abbreviation can be constructed by taking any number 
+	of non-overlapping substrings and replacing them with their respective 
+	lengths. For example, "abcde" can be abbreviated into "a3e" ("bcd" turned 
+	into "3"), "1bcd1" ("a" and "e" both turned into "1"), and "23" ("ab" 
+	turned into "2" and "cde" turned into "3"). Given a string word, return a 
+	list of all the possible generalized abbreviations of word. Return the 
+	answer in any order.
+
+	Example 1:
+	Input: word = "word"
+	Output: ["4","3d","2r1","2rd","1o2","1o1d","1or1","1ord","w3","w2d","w1r1",
+	         "w1rd","wo2","wo1d","wor1","word"]
+
+	Example 2:
+	Input: word = "a"
+	Output: ["1","a"]
+
+	Constraints:
+	* 1 <= word.length <= 15
+	* word consists of only lowercase English letters."""
+
+    def generateAbbreviations(self, word: str) -> List[str]:
+        
+        def fn(i, s="", n=0):
+            """Populate ans via backtracking."""
+            if i == len(word): return ans.append(s + (str(n) if n else ""))
+            fn(i+1, s, n+1)
+            fn(i+1, s + (str(n) if n else "") + word[i], 0)
+        
+        ans = []
+        fn(0)
+        return ans
+
+
     """322. Coin Change (Medium)
 	You are given coins of different denominations and a total amount of money 
 	amount. Write a function to compute the fewest number of coins that you 
@@ -8094,6 +8978,87 @@ class Solution:
             return min(1 + fn(x - coin) for coin in coins)
         
         return fn(amount) if fn(amount) < inf else -1
+
+
+	"""323. Number of Connected Components in an Undirected Graph (Medium)
+	Given n nodes labeled from 0 to n - 1 and a list of undirected edges (each 
+	edge is a pair of nodes), write a function to find the number of connected 
+	components in an undirected graph.
+
+	Example 1:
+	Input: n = 5 and edges = [[0, 1], [1, 2], [3, 4]]
+	     0          3
+	     |          |
+	     1 --- 2    4 
+	Output: 2
+
+	Example 2:
+	Input: n = 5 and edges = [[0, 1], [1, 2], [2, 3], [3, 4]]
+
+	     0           4
+	     |           |
+	     1 --- 2 --- 3
+	Output:  1
+
+	Note: You can assume that no duplicate edges will appear in edges. Since 
+	      all edges are undirected, [0, 1] is the same as [1, 0] and thus will 
+	      not appear together in edges.
+
+	class UnionFind: 
+	    def __init__(self, n):
+	        self.parent = list(range(n))
+	        self.rank = [1]*n
+	        self.components = n
+	        
+	    def find(self, p):
+	        if p != self.parent[p]:
+	            self.parent[p] = self.find(self.parent[p])
+	        return self.parent[p]
+	    
+	    def union(self, p, q):
+	        prt, qrt = self.find(p), self.find(q)
+	        if prt == qrt: return False 
+	        self.components -= 1
+	        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
+	        self.parent[prt] = qrt
+	        self.rank[qrt] += self.rank[prt]
+	        return True 
+	"""
+
+    def countComponents(self, n: int, edges: List[List[int]]) -> int:
+        uf = UnionFind(n)
+        for u, v in edges: 
+            uf.union(u, v)
+        return uf.components
+
+
+    """325. Maximum Size Subarray Sum Equals k (Medium)
+	Given an array nums and a target value k, find the maximum length of a 
+	subarray that sums to k. If there isn't one, return 0 instead.
+
+	Note: The sum of the entire nums array is guaranteed to fit within the 
+          32-bit signed integer range.
+
+	Example 1:
+	Input: nums = [1, -1, 5, -2, 3], k = 3
+	Output: 4 
+	Explanation: The subarray [1, -1, 5, -2] sums to 3 and is the longest.
+	
+	Example 2:
+	Input: nums = [-2, -1, 2, 1], k = 1
+	Output: 2 
+	Explanation: The subarray [-1, 2] sums to 1 and is the longest.
+	
+	Follow Up: Can you do it in O(n) time?"""
+
+    def maxSubArrayLen(self, nums: List[int], k: int) -> int:
+        ans = prefix = 0
+        seen = {0: -1}
+        for i, x in enumerate(nums): 
+            prefix += x
+            if prefix-k in seen: ans = max(ans, i - seen[prefix-k])
+            seen.setdefault(prefix, i)
+        return ans 
 
 
 	"""328. Odd Even Linked List (Medium)
@@ -8206,6 +9171,50 @@ class Solution:
             
         ans = deque()
         fn("JFK")
+        return ans 
+
+
+    """333. Largest BST Subtree (Medium)
+	Given the root of a binary tree, find the largest subtree, which is also a 
+	Binary Search Tree (BST), where the largest means subtree has the largest 
+	number of nodes. A Binary Search Tree (BST) is a tree in which all the 
+	nodes follow the below-mentioned properties:
+	* The left subtree values are less than the value of their parent (root) 
+	  node's value.
+	* The right subtree values are greater than the value of their parent 
+	  (root) node's value.
+	Note: A subtree must include all of its descendants.
+	Follow up: Can you figure out ways to solve it with O(n) time complexity?
+
+	Example 1:
+	Input: root = [10,5,15,1,8,null,7]
+	Output: 3
+	Explanation: The Largest BST Subtree in this case is the highlighted one. 
+	             The return value is the subtree's size, which is 3.
+
+	Example 2:
+	Input: root = [4,2,7,2,3,5,null,2,null,null,null,null,null,1]
+	Output: 2
+
+	Constraints:
+	* The number of nodes in the tree is in the range [0, 104].
+	* -104 <= Node.val <= 104"""
+
+    def largestBSTSubtree(self, root: TreeNode) -> int:
+        
+        def fn(node):
+            """Update largest BST subtree."""
+            nonlocal ans 
+            if not node: return True, 0, inf, -inf # BST? | size | low | high
+            ltf, lsz, llo, lhi = fn(node.left)
+            rtf, rsz, rlo, rhi = fn(node.right)
+            tf = ltf and rtf and lhi < node.val < rlo
+            sz = 1 + lsz + rsz
+            if tf: ans = max(ans, sz)
+            return tf, sz, min(llo, node.val), max(rhi, node.val)
+        
+        ans = 0
+        fn(root)
         return ans 
 
 
@@ -8346,6 +9355,37 @@ class Solution:
         return ans 
 
 
+    """340. Longest Substring with At Most K Distinct Characters (Medium)
+	Given a string s and an integer k, return the length of the longest 
+	substring of s that contains at most k distinct characters.
+
+	Example 1:
+	Input: s = "eceba", k = 2
+	Output: 3
+	Explanation: The substring is "ece" with length 3.
+
+	Example 2:
+	Input: s = "aa", k = 1
+	Output: 2
+	Explanation: The substring is "aa" with length 2.
+
+	Constraints:
+	* 1 <= s.length <= 5 * 104
+	* 0 <= k <= 50"""
+
+    def lengthOfLongestSubstringKDistinct(self, s: str, k: int) -> int:
+        ans = ii = 0
+        freq = {}
+        for i, c in enumerate(s): 
+            freq[c] = 1 + freq.get(c, 0)
+            while len(freq) > k: 
+                freq[s[ii]] -= 1
+                if freq[s[ii]] == 0: freq.pop(s[ii])
+                ii += 1
+            ans = max(ans, i - ii + 1)
+        return ans 
+
+
     """343. Integer Break (Medium)
 	Given a positive integer n, break it into the sum of at least two positive 
 	integers and maximize the product of those integers. Return the maximum 
@@ -8407,6 +9447,38 @@ class Solution:
         return ans 
 
 
+    """356. Line Reflection (Medium)
+	Given n points on a 2D plane, find if there is such a line parallel to 
+	y-axis that reflect the given points symmetrically, in other words, answer 
+	whether or not if there exists a line that after reflecting all points over 
+	the given line the set of the original points is the same that the 
+	reflected ones. Note that there can be repeated points.
+
+	Follow up: Could you do better than O(n2) ?
+
+	Example 1:
+	Input: points = [[1,1],[-1,1]]
+	Output: true
+	Explanation: We can choose the line x = 0.
+
+	Example 2:
+	Input: points = [[1,1],[-1,-1]]
+	Output: false
+	Explanation: We can't choose a line.
+
+	Constraints:
+	* n == points.length
+	* 1 <= n <= 10^4
+	* -10^8 <= points[i][j] <= 10^8"""
+
+    def isReflected(self, points: List[List[int]]) -> bool:
+        points = {(x, y) for x, y in points}
+        avg = sum(x for x, _ in points)/len(points)
+        for x, y in points: 
+            if (2*avg - x, y) not in points: return False 
+        return True 
+
+
     """357. Count Numbers with Unique Digits (Medium)
 	Given a non-negative integer n, count all numbers with unique digits, x, 
 	where 0 ≤ x < 10^n.
@@ -8426,6 +9498,83 @@ class Solution:
             val *= 10 - i 
             ans += val 
         return ans 
+
+
+    """360. Sort Transformed Array (Medium)
+	Given a sorted array of integers nums and integer values a, b and c. Apply 
+	a quadratic function of the form f(x) = ax2 + bx + c to each element x in 
+	the array. The returned array must be in sorted order. Expected time 
+	complexity: O(n)
+
+	Example 1:
+	Input: nums = [-4,-2,2,4], a = 1, b = 3, c = 5
+	Output: [3,9,15,33]
+
+	Example 2:
+	Input: nums = [-4,-2,2,4], a = -1, b = 3, c = 5
+	Output: [-23,-5,1,7]"""
+
+    def sortTransformedArray(self, nums: List[int], a: int, b: int, c: int) -> List[int]:
+        nums = [a*x*x + b*x + c for x in nums]
+        ans = [None]*len(nums)
+        
+        lo, hi = 0, len(nums)-1 # 2-pointer 
+        i, ii = (-1, -1) if a >= 0 else (0, 1)
+        while lo <= hi: 
+            if nums[lo] * ii > nums[hi] * ii: 
+                ans[i] = nums[hi]
+                hi -= 1
+            else:
+                ans[i] = nums[lo]
+                lo += 1
+            i += ii 
+        return ans 
+
+
+    """361. Bomb Enemy (Medium)
+	Given a 2D grid, each cell is either a wall 'W', an enemy 'E' or empty '0' 
+	(the number zero), return the maximum enemies you can kill using one bomb. 
+	The bomb kills all the enemies in the same row and column from the planted 
+	point until it hits the wall since the wall is too strong to be destroyed.
+	Note: You can only put the bomb at an empty cell.
+
+	Example:
+	Input: [["0","E","0","0"],["E","0","W","E"],["0","E","0","0"]]
+	Output: 3 
+	Explanation: For the given grid,
+	0 E 0 0 
+	E 0 W E 
+	0 E 0 0
+	Placing a bomb at (1,1) kills 3 enemies."""
+
+    def maxKilledEnemies(self, grid: List[List[str]]) -> int:
+        if not grid: return 0 # edge case 
+        m, n = len(grid), len(grid[0]) # dimensions 
+        
+        ans = 0
+        cnt = [[0]*n for _ in range(m)]
+        up, dn = [0]*n, [0]*n
+        
+        for i in range(m): 
+            lt = rt = 0
+            for j in range(n): 
+                cnt[i][j] += dn[j] + lt
+                cnt[i][~j] += rt 
+                cnt[~i][j] += up[j]
+                
+                if grid[i][j] == "E": lt, dn[j] = lt+1, dn[j]+1
+                elif grid[i][j] == "W": lt = dn[j] = 0
+                else: ans = max(ans, cnt[i][j])
+                    
+                if grid[i][~j] == "E": rt += 1
+                elif grid[i][~j] == "W": rt = 0
+                else: ans = max(ans, cnt[i][~j])
+                
+                if grid[~i][j] == "E": up[j] += 1
+                elif grid[~i][j] == "W": up[j] = 0 
+                else: ans = max(ans, cnt[~i][j])
+        
+        return ans
 
 
     """364. Nested List Weight Sum II (Medium)
@@ -8497,6 +9646,47 @@ class Solution:
         return z <= x + y and z % gcd(x, y) == 0
 
 
+    """366. Find Leaves of Binary Tree (Medium)
+	Given a binary tree, collect a tree's nodes as if you were doing this: 
+	Collect and remove all leaves, repeat until the tree is empty.
+
+	Example:
+	Input: [1,2,3,4,5]
+	          1
+	         / \
+	        2   3
+	       / \     
+	      4   5    
+	Output: [[4,5,3],[2],[1]]
+
+	Explanation:
+	1. Removing the leaves [4,5,3] would result in this tree:
+	          1
+	         / 
+	        2          
+	2. Now removing the leaf [2] would result in this tree:
+	          1          
+
+	3. Now removing the leaf [1] would result in the empty tree:
+	          []         
+	[[3,5,4],[2],[1]], [[3,4,5],[2],[1]], etc, are also consider correct 
+	answers since per each level it doesn't matter the order on which elements 
+	are returned."""
+
+    def findLeaves(self, root: TreeNode) -> List[List[int]]:
+        
+        def fn(node):
+            """Return height of give node."""
+            if not node: return 0 
+            h = 1 + max(fn(node.left), fn(node.right))
+            seen.setdefault(h, []).append(node.val)
+            return h 
+        
+        seen = {}
+        fn(root)
+        return seen.values()
+
+
     """368. Largest Divisible Subset (Medium)
 	Given a set of distinct positive integers, find the largest subset such 
 	that every pair (Si, Sj) of elements in this subset satisfies:
@@ -8522,6 +9712,69 @@ class Solution:
             for ii in range(i): 
                 if x % nums[ii] == 0: seen[x] = max(seen[x], seen[nums[ii]] + [x], key=len)
             ans = max(ans, seen[x], key=len)
+        return ans 
+
+
+    """369. Plus One Linked List (Medium)
+	Given a non-negative integer represented as a linked list of digits, plus 
+	one to the integer. The digits are stored such that the most significant 
+	digit is at the head of the list.
+
+	Example 1:
+	Input: head = [1,2,3]
+	Output: [1,2,4]
+
+	Example 2:
+	Input: head = [0]
+	Output: [1]
+
+	Constraints:
+	* The number of nodes in the linked list is in the range [1, 100].
+	* 0 <= Node.val <= 9
+	* The number represented by the linked list does not contain leading zeros 
+	  except for the zero itself. """
+
+    def plusOne(self, head: ListNode) -> ListNode:
+        prev, node = None, head
+        while node: 
+            if node.val < 9: prev = node
+            node = node.next 
+        
+        if not prev: 
+            head = ListNode(1, head)
+            node = head.next 
+        else: 
+            prev.val += 1
+            node = prev.next 
+            
+        while node: 
+            node.val = 0
+            node = node.next 
+        return head 
+
+
+    """370. Range Addition (Medium)
+	Assume you have an array of length n initialized with all 0's and are given 
+	k update operations. Each operation is represented as a triplet: 
+	[startIndex, endIndex, inc] which increments each element of subarray 
+	A[startIndex ... endIndex] (startIndex and endIndex inclusive) with inc. 
+	Return the modified array after all k operations were executed.
+
+	Example:
+	Input: length = 5, updates = [[1,3,2],[2,4,3],[0,2,-2]]
+	Output: [-2,0,3,5,3]
+	Explanation:
+	Initial state: [0,0,0,0,0]
+	After applying operation [1,3,2]: [0,2,2,2,0]
+	After applying operation [2,4,3]: [0,2,5,5,3]
+	After applying operation [0,2,-2]: [-2,0,3,5,3]"""
+
+    def getModifiedArray(self, length: int, updates: List[List[int]]) -> List[int]:
+        ans = [0]*length
+        for si, ei, inc in updates: 
+            ans[si] += inc
+            if ei+1 < length: ans[ei+1] -= inc
+        for i in range(1, length): ans[i] += ans[i-1]
         return ans 
 
 
@@ -9143,6 +10396,40 @@ class Solution:
         return ans 
 
 
+    """408. Valid Word Abbreviation (Easy)
+	Given a non-empty string s and an abbreviation abbr, return whether the 
+	string matches with the given abbreviation. A string such as "word" 
+	contains only the following valid abbreviations:
+	["word", "1ord", "w1rd", "wo1d", "wor1", "2rd", "w2d", "wo2", "1o1d", 
+	 "1or1", "w1r1", "1o2", "2r1", "3d", "w3", "4"]
+	Notice that only the above abbreviations are valid abbreviations of the 
+	string "word". Any other string is not a valid abbreviation of "word".
+
+	Note: Assume s contains only lowercase letters and abbr contains only 
+	      lowercase letters and digits.
+
+	Example 1:
+	Given s = "internationalization", abbr = "i12iz4n":
+	Return true.
+
+	Example 2:
+	Given s = "apple", abbr = "a2e":
+	Return false."""
+
+    def validWordAbbreviation(self, word: str, abbr: str) -> bool:
+        i = j = 0
+        while i < len(word) and j < len(abbr): 
+            if abbr[j].isalpha(): 
+                if word[i] == abbr[j]: i, j = i+1, j+1
+                else: return False 
+            else: 
+                if abbr[j] == "0": return False # edge case 
+                jj = j 
+                while j < len(abbr) and abbr[j].isdigit(): j += 1
+                i += int(abbr[jj:j])
+        return i == len(word) and j == len(abbr)
+
+
     """413. Arithmetic Slices (Medium)
 	A sequence of numbers is called arithmetic if it consists of at least three 
 	elements and if the difference between any two consecutive elements is the 
@@ -9172,6 +10459,114 @@ class Solution:
             else: cnt = 0
         return ans 
 
+
+    """422. Valid Word Square (Easy)
+	Given a sequence of words, check whether it forms a valid word square. A 
+	sequence of words forms a valid word square if the kth row and column read 
+	the exact same string, where 0 ≤ k < max(numRows, numColumns).
+
+	Note:
+	* The number of words given is at least 1 and does not exceed 500.
+	* Word length will be at least 1 and does not exceed 500.
+	* Each word contains only lowercase English alphabet a-z.
+
+	Example 1:
+	Input: ["abcd",
+	        "bnrt",
+	        "crmy",
+	        "dtye"]
+	Output: true
+	Explanation:
+	The first row and first column both read "abcd".
+	The second row and second column both read "bnrt".
+	The third row and third column both read "crmy".
+	The fourth row and fourth column both read "dtye".
+	Therefore, it is a valid word square.
+
+	Example 2:
+	Input: ["abcd",
+	        "bnrt",
+	        "crm",
+	        "dt"]
+	Output:	true
+	Explanation:
+	The first row and first column both read "abcd".
+	The second row and second column both read "bnrt".
+	The third row and third column both read "crm".
+	The fourth row and fourth column both read "dt".
+	Therefore, it is a valid word square.
+
+	Example 3:
+	Input: ["ball",
+	        "area",
+	        "read",
+	        "lady"]
+	Output: false
+	Explanation:
+	The third row reads "read" while the third column reads "lead".
+	Therefore, it is NOT a valid word square."""
+
+    def validWordSquare(self, words: List[str]) -> bool:
+        return words == ["".join(x) for x in zip_longest(*words, fillvalue="")]
+
+
+    """426. Convert Binary Search Tree to Sorted Doubly Linked List (Medium)
+	Convert a Binary Search Tree to a sorted Circular Doubly-Linked List in 
+	place. You can think of the left and right pointers as synonymous to the 
+	predecessor and successor pointers in a doubly-linked list. For a circular 
+	doubly linked list, the predecessor of the first element is the last 
+	element, and the successor of the last element is the first element. We 
+	want to do the transformation in place. After the transformation, the left 
+	pointer of the tree node should point to its predecessor, and the right 
+	pointer should point to its successor. You should return the pointer to the 
+	smallest element of the linked list.
+
+	Example 1:
+	Input: root = [4,2,5,1,3]
+	Output: [1,2,3,4,5]
+	Explanation: The figure below shows the transformed BST. The solid line 
+	             indicates the successor relationship, while the dashed line 
+	             means the predecessor relationship.
+
+	Example 2:
+	Input: root = [2,1,3]
+	Output: [1,2,3]
+
+	Example 3:
+	Input: root = []
+	Output: []
+	Explanation: Input is an empty tree. Output is also an empty Linked List.
+
+	Example 4:
+	Input: root = [1]
+	Output: [1]
+
+	Constraints:
+	* -1000 <= Node.val <= 1000
+	* Node.left.val < Node.val < Node.right.val
+	* All values of Node.val are unique.
+	* 0 <= Number of Nodes <= 2000"""
+
+    def treeToDoublyList(self, root: 'Node') -> 'Node':
+        if not root: return # edge case 
+        
+        def fn(node): 
+            """Return head & tail of flattened tree."""
+            head = tail = node 
+            if node.left: 
+                head, tail0 = fn(node.left)
+                tail0.right = node 
+                node.left = tail0
+            if node.right:
+                head1, tail = fn(node.right)
+                node.right = head1
+                head1.left = node 
+            return head, tail 
+        
+        head, tail = fn(root)
+        head.left = tail
+        tail.right = head 
+        return head 
 
     """481. Magical String (Medium)
 	A magical string S consists of only '1' and '2' and obeys the following 
@@ -9746,6 +11141,73 @@ class Solution:
                 x = nums[x]
                 val += 1
             ans = max(ans, val)
+        return ans 
+
+
+    """573. Squirrel Simulation (Medium)
+	There's a tree, a squirrel, and several nuts. Positions are represented by 
+	the cells in a 2D grid. Your goal is to find the minimal distance for the 
+	squirrel to collect all the nuts and put them under the tree one by one. 
+	The squirrel can only take at most one nut at one time and can move in four 
+	directions - up, down, left and right, to the adjacent cell. The distance 
+	is represented by the number of moves.
+	
+	Example 1:
+	Input: 
+	Height : 5
+	Width : 7
+	Tree position : [2,2]
+	Squirrel : [4,4]
+	Nuts : [[3,0], [2,5]]
+	Output: 12
+	​​​​​
+	Note:
+	* All given positions won't overlap.
+	* The squirrel can take at most one nut at one time.
+	* The given positions of nuts have no order.
+	* Height and width are positive integers. 3 <= height * width <= 10,000.
+	* The given positions contain at least one nut, only one tree and one squirrel."""
+
+    def minDistance(self, height: int, width: int, tree: List[int], squirrel: List[int], nuts: List[List[int]]) -> int:
+        ans, mn = 0, inf
+        for x, y in nuts: 
+            ans += 2*(abs(tree[0]-x) + abs(tree[1]-y))
+            mn = min(mn, abs(squirrel[0]-x) + abs(squirrel[1]-y) - abs(tree[0]-x) - abs(tree[1]-y))
+        return ans + mn
+
+
+    """594. Longest Harmonious Subsequence (Easy)
+	We define a harmonious array as an array where the difference between its 
+	maximum value and its minimum value is exactly 1. Given an integer array 
+	nums, return the length of its longest harmonious subsequence among all its 
+	possible subsequences. A subsequence of array is a sequence that can be 
+	derived from the array by deleting some or no elements without changing the 
+	order of the remaining elements.
+
+	Example 1:
+	Input: nums = [1,3,2,2,5,2,3,7]
+	Output: 5
+	Explanation: The longest harmonious subsequence is [3,2,2,2,3].
+
+	Example 2:
+	Input: nums = [1,2,3,4]
+	Output: 2
+
+	Example 3:
+	Input: nums = [1,1,1,1]
+	Output: 0
+
+	Constraints:
+	* 1 <= nums.length <= 2 * 104
+	* -109 <= nums[i] <= 109"""
+
+    def findLHS(self, nums: List[int]) -> int:
+        freq = {}
+        for x in nums: freq[x] = 1 + freq.get(x, 0)
+        
+        ans = 0
+        for x in nums: 
+            if x + 1 in freq: ans = max(ans, freq[x] + freq[x+1])
         return ans 
 
 
@@ -10340,6 +11802,69 @@ class Solution:
         return ans 
 
 
+    """734. Sentence Similarity (Easy)
+	We can represent a sentence as an array of words, for example, the sentence 
+	"I am happy with leetcode" can be represented as 
+	arr = ["I","am",happy","with","leetcode"]. Given two sentences sentence1 
+	and sentence2 each represented as a string array and given an array of 
+	string pairs similarPairs where similarPairs[i] = [xi, yi] indicates that 
+	the two words xi and yi are similar. Return true if sentence1 and sentence2 
+	are similar, or false if they are not similar.
+
+	Two sentences are similar if:
+	* They have the same length (i.e. the same number of words)
+	* sentence1[i] and sentence2[i] are similar.
+	Notice that a word is always similar to itself, also notice that the 
+	similarity relation is not transitive. For example, if the words a and b 
+	are similar and the words b and c are similar, a and c are not necessarily 
+	similar.
+
+	Example 1:
+	Input: sentence1 = ["great","acting","skills"], 
+	       sentence2 = ["fine","drama","talent"], 
+	       similarPairs = [["great","fine"],["drama","acting"],["skills","talent"]]
+	Output: true
+	Explanation: The two sentences have the same length and each word i of 
+	             sentence1 is also similar to the corresponding word in 
+	             sentence2.
+	
+	Example 2:
+	Input: sentence1 = ["great"], 
+	       sentence2 = ["great"], 
+	       similarPairs = []
+	Output: true
+	Explanation: A word is similar to itself.
+
+	Example 3:
+	Input: sentence1 = ["great"], 
+	       sentence2 = ["doubleplus","good"], 
+	       similarPairs = [["great","doubleplus"]]
+	Output: false
+	Explanation: As they don't have the same length, we return false.
+
+	Constraints:
+	* 1 <= sentence1.length, sentence2.length <= 1000
+	* 1 <= sentence1[i].length, sentence2[i].length <= 20
+	* sentence1[i] and sentence2[i] consist of lower-case and upper-case English letters.
+	* 0 <= similarPairs.length <= 1000
+	* similarPairs[i].length == 2
+	* 1 <= xi.length, yi.length <= 20
+	* xi and yi consist of lower-case and upper-case English letters.
+	* All the pairs (xi, yi) are distinct."""
+
+    def areSentencesSimilar(self, sentence1: List[str], sentence2: List[str], similarPairs: List[List[str]]) -> bool:
+        if len(sentence1) != len(sentence2): return False # edge case 
+        
+        mp = {}
+        for x, y in similarPairs: 
+            mp.setdefault(x, set()).add(y)
+            mp.setdefault(y, set()).add(x)
+        
+        for w1, w2 in zip(sentence1, sentence2): 
+            if w1 != w2 and w1 not in mp.get(w2, set()): return False 
+        return True 
+
+
     """739. Daily Temperatures (Medium)
 	Given a list of daily temperatures T, return a list such that, for each day 
 	in the input, tells you how many days you would have to wait until a warmer 
@@ -10395,6 +11920,53 @@ class Solution:
         
         nums = sorted(set(nums))
         return fn(0)
+
+
+    """750. Number Of Corner Rectangles (Medium)
+	Given a grid where each entry is only 0 or 1, find the number of corner 
+	rectangles. A corner rectangle is 4 distinct 1s on the grid that form an 
+	axis-aligned rectangle. Note that only the corners need to have the value 
+	1. Also, all four 1s used must be distinct.
+
+	Example 1:
+	Input: grid = [[1, 0, 0, 1, 0],
+         	       [0, 0, 1, 0, 1],
+         	       [0, 0, 0, 1, 0],
+         	       [1, 0, 1, 0, 1]]
+	Output: 1
+	Explanation: There is only one corner rectangle, with corners grid[1][2], 
+	             grid[1][4], grid[3][2], grid[3][4].
+
+	Example 2:
+	Input: grid = [[1, 1, 1],
+	               [1, 1, 1],
+	               [1, 1, 1]]
+	Output: 9
+	Explanation: There are four 2x2 rectangles, four 2x3 and 3x2 rectangles, 
+	             and one 3x3 rectangle.
+
+	Example 3:
+	Input: grid = [[1, 1, 1, 1]]
+	Output: 0
+	Explanation: Rectangles must have four distinct corners.
+
+	Note:
+	* The number of rows and columns of grid will each be in the range [1, 200].
+	* Each grid[i][j] will be either 0 or 1.
+	* The number of 1s in the grid will be at most 6000."""
+
+    def countCornerRectangles(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0]) # dimensions 
+        seen = {}
+        ans = 0
+        for i in range(m):
+            for j in range(n): 
+                if grid[i][j]: 
+                    for jj in range(j): 
+                        if grid[i][jj]: 
+                            ans += seen.get((jj, j), 0)
+                            seen[jj, j] = 1 + seen.get((jj, j), 0)
+        return ans 
 
 
     """752. Open the Lock (Medium)
@@ -10529,6 +12101,68 @@ class Solution:
             return False 
         
         return fn(bottom)
+
+
+    """758. Bold Words in String (Easy)
+	Given a set of keywords words and a string S, make all appearances of all 
+	keywords in S bold. Any letters between <b> and </b> tags become bold. The 
+	returned string should use the least number of tags possible, and of course 
+	the tags should form a valid combination. For example, given that 
+	words = ["ab", "bc"] and S = "aabcd", we should return "a<b>abc</b>d". Note 
+	that returning "a<b>a<b>b</b>c</b>d" would use more tags, so it is incorrect.
+
+	Constraints:
+	* words has length in range [0, 50].
+	* words[i] has length in range [1, 10].
+	* S has length in range [0, 500].
+	* All characters in words[i] and S are lowercase letters.
+	* Note: This question is the same as 616: https://leetcode.com/problems/add-bold-tag-in-string/"""
+
+    def boldWords(self, words: List[str], S: str) -> str:
+        mark = [False]*len(S)
+        
+        for word in words: 
+            k = -1
+            while True: 
+                k = S.find(word, k+1)
+                if k == -1: break 
+                mark[k:k+len(word)] = [True]*len(word)
+        
+        ans = []
+        for i in range(len(S)): 
+            if mark[i] and (i == 0 or not mark[i-1]): ans.append("<b>")
+            ans.append(S[i])
+            if mark[i] and (i+1 == len(S) or not mark[i+1]): ans.append("</b>")
+        return "".join(ans)
+
+
+    """760. Find Anagram Mappings (Easy)
+	Given two lists Aand B, and B is an anagram of A. B is an anagram of A 
+	means B is made by randomizing the order of the elements in A. We want to 
+	find an index mapping P, from A to B. A mapping P[i] = j means the ith 
+	element in A appears in B at index j. These lists A and B may contain 
+	duplicates. If there are multiple answers, output any of them. For example, 
+	given
+	A = [12, 28, 46, 32, 50]
+	B = [50, 12, 32, 46, 28]
+
+	We should return [1, 4, 3, 2, 0] as P[0] = 1 because the 0th element of A 
+	appears at B[1], and P[1] = 4 because the 1st element of A appears at B[4], 
+	and so on.
+	
+	Note:
+	* A, B have equal lengths in range [1, 100].
+	* A[i], B[i] are integers in range [0, 10^5]."""
+
+    def anagramMappings(self, A: List[int], B: List[int]) -> List[int]:
+        mp = {}
+        for i, x in enumerate(B):
+            mp.setdefault(x, []).append(i)
+        
+        ans = []
+        for x in A: 
+            ans.append(mp[x].pop())
+        return ans 
 
 
     """763. Partition Labels (Medium)
@@ -11043,6 +12677,40 @@ class Solution:
             return ans 
         
         return fn(0)
+
+
+    """800. Similar RGB Color (Easy)
+	In the following, every capital letter represents some hexadecimal digit 
+	from 0 to f. The red-green-blue color "#AABBCC" can be written as "#ABC" in 
+	shorthand.  For example, "#15c" is shorthand for the color "#1155cc". Now, 
+	say the similarity between two colors "#ABCDEF" and "#UVWXYZ" is 
+	-(AB - UV)^2 - (CD - WX)^2 - (EF - YZ)^2. Given the color "#ABCDEF", return 
+	a 7 character color that is most similar to #ABCDEF, and has a shorthand 
+	(that is, it can be represented as some "#XYZ"
+
+	Example 1:
+	Input: color = "#09f166"
+	Output: "#11ee66"
+	Explanation: The similarity is 
+	             -(0x09 - 0x11)^2 -(0xf1 - 0xee)^2 - (0x66 - 0x66)^2 = -64 -9 -0 = -73.
+	             This is the highest among any shorthand color.
+	
+	Note:
+	* color is a string of length 7.
+	* color is a valid RGB color: for i > 0, color[i] is a hexadecimal digit from 0 to f
+	* Any answer which has the same (highest) similarity as the best answer will be accepted.
+	* All inputs and outputs should use lowercase letters, and the output is 7 characters."""
+
+    def similarRGB(self, color: str) -> str:
+        
+        def fn(c):
+            """Return color of xx closest to input."""
+            ans = 0
+            for k in range(1, 16): 
+                ans = min(ans, k*16+k, key=lambda x: abs(x - int(c, 16)))
+            return hex(ans)[2:].zfill(2)
+        
+        return "#" + "".join(fn(color[i:i+2]) for i in (1,3,5))
 
 
     """813. Largest Sum of Averages (Medium)
@@ -13636,6 +15304,122 @@ class Solution:
         return ans 
 
 
+    """1056. Confusing Number (Easy)
+	Given a number N, return true if and only if it is a confusing number, 
+	which satisfies the following condition:
+	We can rotate digits by 180 degrees to form new digits. When 0, 1, 6, 8, 9 
+	are rotated 180 degrees, they become 0, 1, 9, 8, 6 respectively. When 2, 3, 
+	4, 5 and 7 are rotated 180 degrees, they become invalid. A confusing number 
+	is a number that when rotated 180 degrees becomes a different number with 
+	each digit valid.
+
+	Example 1:
+	Input: 6
+	Output: true
+	Explanation: We get 9 after rotating 6, 9 is a valid number and 9!=6.
+	
+	Example 2:
+	Input: 89
+	Output: true
+	Explanation: We get 68 after rotating 89, 86 is a valid number and 86!=89.
+	
+	Example 3:
+	Input: 11
+	Output: false
+	Explanation: We get 11 after rotating 11, 11 is a valid number but the 
+	             value remains the same, thus 11 is not a confusing number.
+	
+	Example 4:
+	Input: 25
+	Output: false
+	Explanation: We get an invalid number after rotating 25.
+
+	Note:
+	* 0 <= N <= 10^9
+	* After the rotation we can ignore leading zeros, for example if after 
+	  rotation we have 0008 then this number is considered as just 8."""
+
+    def confusingNumber(self, N: int) -> bool:
+        mp = {0:0, 1:1, 6:9, 8:8, 9:6}
+        n, nn = N, 0
+        while n: 
+            n, r = divmod(n, 10)
+            if r not in mp: return False
+            nn = 10*nn + mp[r]
+        return nn != N
+
+
+    """1064. Fixed Point (Easy)
+	Given an array of distinct integers arr, where arr is sorted in ascending 
+	order, return the smallest index i that satisfies arr[i] == i. If there is 
+	no such index, return -1.
+
+	Example 1:
+	Input: arr = [-10,-5,0,3,7]
+	Output: 3
+	Explanation: For the given array, arr[0] = -10, arr[1] = -5, arr[2] = 0, 
+	             arr[3] = 3, thus the output is 3.
+
+	Example 2:
+	Input: arr = [0,2,5,8,17]
+	Output: 0
+	Explanation: arr[0] = 0, thus the output is 0.
+
+	Example 3:
+	Input: arr = [-10,-5,3,4,7,9]
+	Output: -1
+	Explanation: There is no such i that arr[i] == i, thus the output is -1.
+
+	Constraints:
+	* 1 <= arr.length < 104
+	* -109 <= arr[i] <= 109
+
+	Follow up: The O(n) solution is very straightforward. Can we do better?"""
+
+    def fixedPoint(self, arr: List[int]) -> int:
+        lo, hi = 0, len(arr)-1
+        while lo < hi: 
+            mid = lo + hi >> 1
+            if arr[mid] - mid < 0: lo = mid + 1
+            else: hi = mid
+        return lo if arr[lo] == lo else -1
+
+
+    """1065. Index Pairs of a String (Easy)
+	Given a text string and words (a list of strings), return all index pairs 
+	[i, j] so that the substring text[i]...text[j] is in the list of words.
+
+	Example 1:
+	Input: text = "thestoryofleetcodeandme", words = ["story","fleet","leetcode"]
+	Output: [[3,7],[9,13],[10,17]]
+
+	Example 2:
+	Input: text = "ababa", words = ["aba","ab"]
+	Output: [[0,1],[0,2],[2,3],[2,4]]
+	Explanation: Notice that matches can overlap, see "aba" is found in [0,2] 
+	             and [2,4].
+
+	Note:
+	* All strings contains only lowercase English letters.
+	* It's guaranteed that all strings in words are different.
+	* 1 <= text.length <= 100
+	* 1 <= words.length <= 20
+	* 1 <= words[i].length <= 50
+	* Return the pairs [i,j] in sorted order (i.e. sort them by their first 
+	  coordinate in case of ties sort them by their second coordinate)."""
+
+    def indexPairs(self, text: str, words: List[str]) -> List[List[int]]:
+        ans = []
+        for word in words: 
+            k = -1
+            while True: 
+                k = text.find(word, k+1)
+                if k == -1: break 
+                ans.append([k, k+len(word)-1])
+        return sorted(ans)
+
+
+
     """1072. Flip Columns For Maximum Number of Equal Rows (Medium)
 	Given a matrix consisting of 0s and 1s, we may choose any number of columns 
 	in the matrix and flip every cell in that column.  Flipping a cell changes 
@@ -13783,6 +15567,68 @@ class Solution:
         return "".join(stack)
 
 
+    """1085. Sum of Digits in the Minimum Number (Easy)
+	Given an array A of positive integers, let S be the sum of the digits of 
+	the minimal element of A. Return 0 if S is odd, otherwise return 1.
+
+	Example 1:
+	Input: [34,23,1,24,75,33,54,8]
+	Output: 0
+	Explanation: The minimal element is 1, and the sum of those digits is S = 1 
+	             which is odd, so the answer is 0.
+	
+	Example 2:
+	Input: [99,77,33,66,55]
+	Output: 1
+	Explanation: The minimal element is 33, and the sum of those digits is 
+	             S = 3 + 3 = 6 which is even, so the answer is 1.
+
+	Constraints:
+	* 1 <= A.length <= 100
+	* 1 <= A[i] <= 100"""
+
+    def sumOfDigits(self, A: List[int]) -> int:
+        return 1 ^ 1&sum(int(x) for x in str(min(A)))
+
+
+    """1086. High Five (Easy)
+	Given a list of the scores of different students, items, where 
+	items[i] = [IDi, scorei] represents one score from a student with IDi, 
+	calculate each student's top five average. Return the answer as an array of 
+	pairs result, where result[j] = [IDj, topFiveAveragej] represents the 
+	student with IDj and their top five average. Sort result by IDj in 
+	increasing order. A student's top five average is calculated by taking the 
+	sum of their top five scores and dividing it by 5 using integer division.
+
+	Example 1:
+	Input: items = [[1,91],[1,92],[2,93],[2,97],[1,60],[2,77],[1,65],[1,87],[1,100],[2,100],[2,76]]
+	Output: [[1,87],[2,88]]
+	Explanation: 
+	The student with ID = 1 got scores 91, 92, 60, 65, 87, and 100. Their top five average is (100 + 92 + 91 + 87 + 65) / 5 = 87.
+	The student with ID = 2 got scores 93, 97, 77, 100, and 76. Their top five average is (100 + 97 + 93 + 77 + 76) / 5 = 88.6, but with integer division their average converts to 88.
+
+	Example 2:
+	Input: items = [[1,100],[7,100],[1,100],[7,100],[1,100],[7,100],[1,100],[7,100],[1,100],[7,100]]
+	Output: [[1,100],[7,100]]
+
+	Constraints:
+	* 1 <= items.length <= 1000
+	* items[i].length == 2
+	* 1 <= IDi <= 1000
+	* 0 <= scorei <= 100
+	* For each IDi, there will be at least five scores."""
+
+    def highFive(self, items: List[List[int]]) -> List[List[int]]:
+        mp = {}
+        for x, score in items: 
+            mp.setdefault(x, []).append(score)
+        
+        ans = []
+        for x in mp: 
+            ans.append([x, sum(sorted(mp[x])[-5:])//5])
+        return sorted(ans)
+
+
     """1090. Largest Values From Labels (Medium)
 	We have a set of items: the i-th item has value values[i] and label labels[i]. 
 	Then, we choose a subset S of these items, such that:
@@ -13868,6 +15714,546 @@ class Solution:
                 queue = newq
                 ans += 1
         return -1 
+
+
+    """1099. Two Sum Less Than K (Easy)
+	Given an array nums of integers and integer k, return the maximum sum such 
+	that there exists i < j with nums[i] + nums[j] = sum and sum < k. If no i, 
+	j exist satisfying this equation, return -1.
+
+	Example 1:
+	Input: nums = [34,23,1,24,75,33,54,8], k = 60
+	Output: 58
+	Explanation: We can use 34 and 24 to sum 58 which is less than 60.
+
+	Example 2:
+	Input: nums = [10,20,30], k = 15
+	Output: -1
+	Explanation: In this case it is not possible to get a pair sum less that 15.
+
+	Constraints:
+	* 1 <= nums.length <= 100
+	* 1 <= nums[i] <= 1000
+	* 1 <= k <= 2000"""
+
+    def twoSumLessThanK(self, nums: List[int], k: int) -> int:
+        nums.sort()
+        ans = -1
+        lo, hi = 0, len(nums)-1
+        while lo < hi: 
+            val = nums[lo] + nums[hi]
+            if val >= k: hi -= 1
+            else: 
+                ans = max(ans, val)
+                lo += 1
+        return ans
+
+
+    """1118. Number of Days in a Month (Easy)
+	Given a year Y and a month M, return how many days there are in that month.
+
+	Example 1:
+	Input: Y = 1992, M = 7
+	Output: 31
+
+	Example 2:
+	Input: Y = 2000, M = 2
+	Output: 29
+
+	Example 3:
+	Input: Y = 1900, M = 2
+	Output: 28
+
+	Note:
+	* 1583 <= Y <= 2100
+	* 1 <= M <= 12"""
+
+    def numberOfDays(self, Y: int, M: int) -> int:
+        days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        return days[M-1] + (M == 2 and (Y%4 == 0 and Y%100 != 0 or Y%400 == 0))
+
+
+    """1119. Remove Vowels from a String (Easy)
+	Given a string s, remove the vowels 'a', 'e', 'i', 'o', and 'u' from it, 
+	and return the new string.
+
+	Example 1:
+	Input: s = "leetcodeisacommunityforcoders"
+	Output: "ltcdscmmntyfrcdrs"
+
+	Example 2:
+	Input: s = "aeiou"
+	Output: ""
+
+	Constraints:
+	* 1 <= s.length <= 1000
+	* s consists of only lowercase English letters."""
+
+    def removeVowels(self, S: str) -> str:
+        return "".join(c for c in S if c not in "aeiou")
+
+
+    """1133. Largest Unique Number (Easy)
+	Given an array of integers A, return the largest integer that only occurs 
+	once. If no integer occurs once, return -1.
+
+	Example 1:
+	Input: [5,7,3,9,4,9,8,3,1]
+	Output: 8
+	Explanation: The maximum integer in the array is 9 but it is repeated. The 
+	             number 8 occurs only once, so it's the answer.
+	
+	Example 2:
+	Input: [9,9,8,8]
+	Output: -1
+	Explanation: There is no number that occurs only once.
+
+	Note:
+	* 1 <= A.length <= 2000
+	* 0 <= A[i] <= 1000"""
+
+    def largestUniqueNumber(self, A: List[int]) -> int:
+        freq = {}
+        for x in A: freq[x] = 1 + freq.get(x, 0)
+        return max((x for x, v in freq.items() if v == 1), default=-1)
+
+
+    """1134. Armstrong Number (Easy)
+	The k-digit number N is an Armstrong number if and only if the k-th power 
+	of each digit sums to N. Given a positive integer N, return true if and 
+	only if it is an Armstrong number.
+
+	Example 1:
+	Input: 153
+	Output: true
+	Explanation: 153 is a 3-digit number, and 153 = 1^3 + 5^3 + 3^3.
+	
+	Example 2:
+	Input: 123
+	Output: false
+	Explanation: 123 is a 3-digit number, and 123 != 1^3 + 2^3 + 3^3 = 36.
+
+	Note: 1 <= N <= 10^8"""
+
+    def isArmstrong(self, N: int) -> bool:
+        s = str(N)
+        return sum(int(x)**len(s) for x in s) == N
+
+
+    """1150. Check If a Number Is Majority Element in a Sorted Array (Easy)
+	Given an array nums sorted in non-decreasing order, and a number target, 
+	return True if and only if target is a majority element. A majority element 
+	is an element that appears more than N/2 times in an array of length N.
+
+	Example 1:
+	Input: nums = [2,4,5,5,5,5,5,6,6], target = 5
+	Output: true
+	Explanation: The value 5 appears 5 times and the length of the array is 9. 
+	             Thus, 5 is a majority element because 5 > 9/2 is true.
+	
+	Example 2:
+	Input: nums = [10,100,101,101], target = 101
+	Output: false
+	Explanation: The value 101 appears 2 times and the length of the array is 4. 
+	             Thus, 101 is not a majority element because 2 > 4/2 is false.
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* 1 <= nums[i] <= 10^9
+	* 1 <= target <= 10^9"""
+
+    def isMajorityElement(self, nums: List[int], target: int) -> bool:
+        if nums[(len(nums)-1)//2] != target: return False
+        k = bisect_left(nums, target, 0, len(nums)//2)
+        return nums[k + len(nums)//2] == target 
+
+
+    """1165. Single-Row Keyboard (Easy)
+	There is a special keyboard with all keys in a single row. Given a string 
+	keyboard of length 26 indicating the layout of the keyboard (indexed from 
+	0 to 25), initially your finger is at index 0. To type a character, you 
+	have to move your finger to the index of the desired character. The time 
+	taken to move your finger from index i to index j is |i - j|. You want to 
+	type a string word. Write a function to calculate how much time it takes to 
+	type it with one finger.
+
+	Example 1:
+	Input: keyboard = "abcdefghijklmnopqrstuvwxyz", word = "cba"
+	Output: 4
+	Explanation: The index moves from 0 to 2 to write 'c' then to 1 to write 
+	             'b' then to 0 again to write 'a'. Total time = 2 + 1 + 1 = 4. 
+	
+	Example 2:
+	Input: keyboard = "pqrstuvwxyzabcdefghijklmno", word = "leetcode"
+	Output: 73
+
+	Constraints:
+	* keyboard.length == 26
+	* keyboard contains each English lowercase letter exactly once in some order.
+	* 1 <= word.length <= 10^4
+	* word[i] is an English lowercase letter."""
+
+    def calculateTime(self, keyboard: str, word: str) -> int:
+        loc = {c: i for i, c in enumerate(keyboard)}
+        ans = prev = 0
+        for c in word: 
+            ans += abs(loc[c] - prev)
+            prev = loc[c]
+        return ans 
+
+
+    """1176. Diet Plan Performance (Easy)
+	A dieter consumes calories[i] calories on the i-th day. Given an integer k, 
+	for every consecutive sequence of k days (calories[i], calories[i+1], ..., 
+	calories[i+k-1] for all 0 <= i <= n-k), they look at T, the total calories 
+	consumed during that sequence of k days (calories[i] + calories[i+1] + ... 
+	+ calories[i+k-1]):
+	* If T < lower, they performed poorly on their diet and lose 1 point; 
+	* If T > upper, they performed well on their diet and gain 1 point;
+	* Otherwise, they performed normally and there is no change in points.
+	Initially, the dieter has zero points. Return the total number of points 
+	the dieter has after dieting for calories.length days. Note that the total 
+	points can be negative.
+
+	Example 1:
+	Input: calories = [1,2,3,4,5], k = 1, lower = 3, upper = 3
+	Output: 0
+	Explanation: Since k = 1, we consider each element of the array separately and compare it to lower and upper.
+	calories[0] and calories[1] are less than lower so 2 points are lost.
+	calories[3] and calories[4] are greater than upper so 2 points are gained.
+
+	Example 2:
+	Input: calories = [3,2], k = 2, lower = 0, upper = 1
+	Output: 1
+	Explanation: Since k = 2, we consider subarrays of length 2.
+	calories[0] + calories[1] > upper so 1 point is gained.
+
+	Example 3:
+	Input: calories = [6,5,0,0], k = 2, lower = 1, upper = 5
+	Output: 0
+	Explanation:
+	calories[0] + calories[1] > upper so 1 point is gained.
+	lower <= calories[1] + calories[2] <= upper so no change in points.
+	calories[2] + calories[3] < lower so 1 point is lost.
+
+	Constraints:
+	* 1 <= k <= calories.length <= 10^5
+	* 0 <= calories[i] <= 20000
+	* 0 <= lower <= upper"""
+
+    def dietPlanPerformance(self, calories: List[int], k: int, lower: int, upper: int) -> int:
+        ans = val = 0
+        for i, x in enumerate(calories): 
+            val += x
+            if i+1 >= k: 
+                if val < lower: ans -= 1
+                elif val > upper: ans += 1
+                val -= calories[i-k+1]
+        return ans 
+
+
+    """1180. Count Substrings with Only One Distinct Letter (Easy)
+	Given a string S, return the number of substrings that have only one 
+	distinct letter.
+
+	Example 1:
+	Input: S = "aaaba"
+	Output: 8
+	Explanation: The substrings with one distinct letter are "aaa", "aa", "a", "b".
+	             "aaa" occurs 1 time.
+	             "aa" occurs 2 times.
+	             "a" occurs 4 times.
+	             "b" occurs 1 time.
+	             So the answer is 1 + 2 + 4 + 1 = 8.
+
+	Example 2:
+	Input: S = "aaaaaaaaaa"
+	Output: 55
+
+	Constraints:
+	* 1 <= S.length <= 1000
+	* S[i] consists of only lowercase English letters."""
+
+    def countLetters(self, S: str) -> int:
+        ans = ii = 0
+        for i in range(len(S)):
+            if S[ii] != S[i]: ii = i 
+            ans += i - ii + 1
+        return ans 
+
+
+    """1196. How Many Apples Can You Put into the Basket (Easy)
+	You have some apples, where arr[i] is the weight of the i-th apple. You 
+	also have a basket that can carry up to 5000 units of weight. Return the 
+	maximum number of apples you can put in the basket.
+
+	Example 1:
+	Input: arr = [100,200,150,1000]
+	Output: 4
+	Explanation: All 4 apples can be carried by the basket since their sum of 
+	             weights is 1450.
+
+	Example 2:
+	Input: arr = [900,950,800,1000,700,800]
+	Output: 5
+	Explanation: The sum of weights of the 6 apples exceeds 5000 so we choose 
+	             any 5 of them.
+
+	Constraints:
+	* 1 <= arr.length <= 10^3
+	* 1 <= arr[i] <= 10^3"""
+
+    def maxNumberOfApples(self, arr: List[int]) -> int:
+        ans = wt = 0
+        for x in sorted(arr): 
+            wt += x
+            if wt <= 5000: ans += 1
+        return ans 
+
+
+    """1213. Intersection of Three Sorted Arrays (Easy)
+	Given three integer arrays arr1, arr2 and arr3 sorted in strictly 
+	increasing order, return a sorted array of only the integers that 
+	appeared in all three arrays.
+
+	Example 1:
+	Input: arr1 = [1,2,3,4,5], 
+	       arr2 = [1,2,5,7,9], 
+	       arr3 = [1,3,4,5,8]
+	Output: [1,5]
+	Explanation: Only 1 and 5 appeared in the three arrays.
+
+	Example 2:
+	Input: arr1 = [197,418,523,876,1356], 
+	       arr2 = [501,880,1593,1710,1870], 
+	       arr3 = [521,682,1337,1395,1764]
+	Output: []
+
+	Constraints:
+	* 1 <= arr1.length, arr2.length, arr3.length <= 1000
+	* 1 <= arr1[i], arr2[i], arr3[i] <= 2000"""
+
+    def arraysIntersection(self, arr1: List[int], arr2: List[int], arr3: List[int]) -> List[int]:
+        ans = []
+        i1 = i2 = i3 = 0
+        while i1 < len(arr1) and i2 < len(arr2) and i3 < len(arr3): 
+            if arr1[i1] == arr2[i2] == arr3[i3]: ans.append(arr1[i1])
+            mn = min(arr1[i1], arr2[i2], arr3[i3])
+            if arr1[i1] == mn: i1 += 1
+            if arr2[i2] == mn: i2 += 1
+            if arr3[i3] == mn: i3 += 1
+        return ans 
+
+
+    """1228. Missing Number In Arithmetic Progression (Easy)
+	In some array arr, the values were in arithmetic progression: the values 
+	arr[i+1] - arr[i] are all equal for every 0 <= i < arr.length - 1. Then, a 
+	value from arr was removed that was not the first or last value in the 
+	array. Return the removed value.
+
+	Example 1:
+	Input: arr = [5,7,11,13]
+	Output: 9
+	Explanation: The previous array was [5,7,9,11,13].
+
+	Example 2:
+	Input: arr = [15,13,12]
+	Output: 14
+	Explanation: The previous array was [15,14,13,12].
+
+	Constraints:
+	* 3 <= arr.length <= 1000
+	* 0 <= arr[i] <= 10^5"""
+
+    def missingNumber(self, arr: List[int]) -> int:
+        chg = (arr[-1] - arr[0])//len(arr)
+        lo, hi = 0, len(arr)
+        while lo < hi: 
+            mid = lo + hi >> 1
+            if arr[mid] == arr[0] + mid * chg: lo = mid + 1
+            else: hi = mid
+        return arr[0] + lo * chg
+
+
+    """1243. Array Transformation (Easy)
+	Given an initial array arr, every day you produce a new array using the 
+	array of the previous day. On the i-th day, you do the following operations 
+	on the array of day i-1 to produce the array of day i:
+	* If an element is smaller than both its left neighbor and its right 
+	  neighbor, then this element is incremented.
+	* If an element is bigger than both its left neighbor and its right 
+	  neighbor, then this element is decremented.
+	* The first and last elements never change.
+	After some days, the array does not change. Return that final array.
+
+	Example 1:
+	Input: arr = [6,2,3,4]
+	Output: [6,3,3,4]
+	Explanation: On the first day, the array is changed from [6,2,3,4] to 
+	             [6,3,3,4]. No more operations can be done to this array.
+	
+	Example 2:
+	Input: arr = [1,6,3,4,3,5]
+	Output: [1,4,4,4,4,5]
+	Explanation: 
+	On the first day, the array is changed from [1,6,3,4,3,5] to [1,5,4,3,4,5].
+	On the second day, the array is changed from [1,5,4,3,4,5] to [1,4,4,4,4,5].
+	No more operations can be done to this array.
+
+	Constraints:
+	* 3 <= arr.length <= 100
+	* 1 <= arr[i] <= 100"""
+
+    def transformArray(self, arr: List[int]) -> List[int]:
+        prev = [0]*len(arr)
+        while prev != arr: 
+            prev = arr[:]
+            for i in range(1, len(arr)-1): 
+                if prev[i-1] < prev[i] > prev[i+1]: arr[i] -= 1
+                elif prev[i-1] > prev[i] < prev[i+1]: arr[i] += 1
+        return arr
+
+
+    """1271. Hexspeak (Easy)
+	A decimal number can be converted to its Hexspeak representation by first 
+	converting it to an uppercase hexadecimal string, then replacing all 
+	occurrences of the digit 0 with the letter O, and the digit 1 with the 
+	letter I.  Such a representation is valid if and only if it consists only 
+	of the letters in the set {"A", "B", "C", "D", "E", "F", "I", "O"}. Given 
+	a string num representing a decimal integer N, return the Hexspeak 
+	representation of N if it is valid, otherwise return "ERROR".
+
+	Example 1:
+	Input: num = "257"
+	Output: "IOI"
+	Explanation:  257 is 101 in hexadecimal.
+
+	Example 2:
+	Input: num = "3"
+	Output: "ERROR"
+
+	Constraints:
+	* 1 <= N <= 10^12
+	* There are no leading zeros in the given string.
+	* All answers must be in uppercase letters."""
+
+    def toHexspeak(self, num: str) -> str:
+        s = hex(int(num))[2:].upper().translate(str.maketrans("01", "OI"))
+        return s if all(c.isalpha() for c in s) else "ERROR"
+
+
+    """1329. Sort the Matrix Diagonally (Medium)
+	A matrix diagonal is a diagonal line of cells starting from some cell in 
+	either the topmost row or leftmost column and going in the bottom-right 
+	direction until reaching the matrix's end. For example, the matrix diagonal 
+	starting from mat[2][0], where mat is a 6 x 3 matrix, includes cells 
+	mat[2][0], mat[3][1], and mat[4][2]. Given an m x n matrix mat of integers, 
+	sort each matrix diagonal in ascending order and return the resulting matrix.
+
+	Example 1:
+	Input: mat = [[3,3,1,1],[2,2,1,2],[1,1,1,2]]
+	Output: [[1,1,1,1],[1,2,2,2],[1,2,3,3]]
+
+	Constraints:
+	* m == mat.length
+	* n == mat[i].length
+	* 1 <= m, n <= 100
+	* 1 <= mat[i][j] <= 100"""
+
+    def diagonalSort(self, mat: List[List[int]]) -> List[List[int]]:
+        m, n = len(mat), len(mat[0]) # dimensions 
+        
+        for k in range(-m+1, n): 
+            i, j = (-k, 0) if k < 0 else (0, k)
+            vals = []
+            while i < m and j < n: 
+                vals.append(mat[i][j])
+                i, j = i+1, j+1
+            vals.sort()
+            while vals:
+                i, j = i-1, j-1
+                mat[i][j] = vals.pop()
+        return mat
+
+
+    """1426. Counting Elements (Easy)
+	Given an integer array arr, count how many elements x there are, such that 
+	x + 1 is also in arr. If there're duplicates in arr, count them seperately.
+
+	Example 1:
+	Input: arr = [1,2,3]
+	Output: 2
+	Explanation: 1 and 2 are counted cause 2 and 3 are in arr.
+
+	Example 2:
+	Input: arr = [1,1,3,3,5,5,7,7]
+	Output: 0
+	Explanation: No numbers are counted, cause there's no 2, 4, 6, or 8 in arr.
+
+	Example 3:
+	Input: arr = [1,3,2,3,5,0]
+	Output: 3
+	Explanation: 0, 1 and 2 are counted cause 1, 2 and 3 are in arr.
+
+	Example 4:
+	Input: arr = [1,1,2,2]
+	Output: 2
+	Explanation: Two 1s are counted cause 2 is in arr.
+
+	Example 5:
+	Input: arr = [1,1,2]
+	Output: 2
+	Explanation: Both 1s are counted because 2 is in the array.
+
+	Constraints:
+	* 1 <= arr.length <= 1000
+	* 0 <= arr[i] <= 1000"""
+
+    def countElements(self, arr: List[int]) -> int:
+        freq = {}
+        for x in arr: freq[x] = freq.get(x, 0) + 1
+        return sum(v for k, v in freq.items() if k + 1 in freq) 
+
+
+    """1427. Perform String Shifts (Easy)
+	You are given a string s containing lowercase English letters, and a matrix 
+	shift, where shift[i] = [direction, amount]:
+	* direction can be 0 (for left shift) or 1 (for right shift). 
+	* amount is the amount by which string s is to be shifted.
+	* A left shift by 1 means remove the first character of s and append it to 
+	  the end.
+	* Similarly, a right shift by 1 means remove the last character of s and 
+	  add it to the beginning.
+	Return the final string after all operations.
+
+	Example 1:
+	Input: s = "abc", shift = [[0,1],[1,2]]
+	Output: "cab"
+	Explanation: [0,1] means shift to left by 1. "abc" -> "bca"
+	             [1,2] means shift to right by 2. "bca" -> "cab"
+	
+	Example 2:
+	Input: s = "abcdefg", shift = [[1,1],[1,1],[0,2],[1,3]]
+	Output: "efgabcd"
+	Explanation: [1,1] means shift to right by 1. "abcdefg" -> "gabcdef"
+	             [1,1] means shift to right by 1. "gabcdef" -> "fgabcde"
+	             [0,2] means shift to left by 2. "fgabcde" -> "abcdefg"
+	             [1,3] means shift to right by 3. "abcdefg" -> "efgabcd"
+	 
+	Constraints:
+	* 1 <= s.length <= 100
+	* s only contains lower case English letters.
+	* 1 <= shift.length <= 100
+	* shift[i].length == 2
+	* 0 <= shift[i][0] <= 1
+	* 0 <= shift[i][1] <= 100"""
+
+    def stringShift(self, s: str, shift: List[List[int]]) -> str:
+        amount = 0
+        for d, x in shift: 
+            amount += x if d == 0 else -x
+        amount %= len(s)
+        return s[amount:] + s[:amount]
 
 
     """1469. Find All The Lonely Nodes (Easy)
@@ -15704,6 +18090,42 @@ class Fenwick:
         return cnt1.keys() == cnt2.keys() and sorted(cnt1.values()) == sorted(cnt2.values())
 
 
+    """1663. Smallest String With A Given Numeric Value (Medium)
+	The numeric value of a lowercase character is defined as its position 
+	(1-indexed) in the alphabet, so the numeric value of a is 1, the numeric 
+	value of b is 2, the numeric value of c is 3, and so on. The numeric value 
+	of a string consisting of lowercase characters is defined as the sum of its 
+	characters' numeric values. For example, the numeric value of the string 
+	"abe" is equal to 1 + 2 + 5 = 8. You are given two integers n and k. Return 
+	the lexicographically smallest string with length equal to n and numeric 
+	value equal to k. Note that a string x is lexicographically smaller than 
+	string y if x comes before y in dictionary order, that is, either x is a 
+	prefix of y, or if i is the first position such that x[i] != y[i], then 
+	x[i] comes before y[i] in alphabetic order.
+
+	Example 1:
+	Input: n = 3, k = 27
+	Output: "aay"
+	Explanation: The numeric value of the string is 1 + 1 + 25 = 27, and it is 
+	             the smallest string with such a value and length equal to 3.
+
+	Example 2:
+	Input: n = 5, k = 73
+	Output: "aaszz"
+
+	Constraints:
+	* 1 <= n <= 105
+	* n <= k <= 26 * n"""
+
+    def getSmallestString(self, n: int, k: int) -> str:
+        ans = []
+        for i in range(n): 
+            val = max(1, k - (n-i-1)*26)
+            ans.append(chr(val + 96))
+            k -= val
+        return "".join(ans)
+
+
     """1672. Richest Customer Wealth (Easy)
 	You are given an m x n integer grid accounts where accounts[i][j] is the 
 	amount of money the i​​​​​​​​​​​th​​​​ customer has in the j​​​​​​​​​​​th​​​​ bank. Return the wealth 
@@ -16976,6 +19398,36 @@ class Fenwick:
         return ((7*q + (49+2*r))*q + r*(r+1))//2
 
 
+    """1732. Find the Highest Altitude (Easy)
+	There is a biker going on a road trip. The road trip consists of n + 1 
+	points at different altitudes. The biker starts his trip on point 0 with 
+	altitude equal 0. You are given an integer array gain of length n where 
+	gain[i] is the net gain in altitude between points i​​​​​​ and i + 1 for all 
+	(0 <= i < n). Return the highest altitude of a point.
+
+	Example 1:
+	Input: gain = [-5,1,5,0,-7]
+	Output: 1
+	Explanation: The altitudes are [0,-5,-4,1,1,-6]. The highest is 1.
+
+	Example 2:
+	Input: gain = [-4,-3,-2,-1,4,3,2]
+	Output: 0
+	Explanation: The altitudes are [0,-4,-7,-9,-10,-6,-3,-1]. The highest is 0.
+
+	Constraints:
+	* n == gain.length
+	* 1 <= n <= 100
+	* -100 <= gain[i] <= 100"""
+
+    def largestAltitude(self, gain: List[int]) -> int:
+        ans = prefix = 0
+        for x in gain:
+            prefix += x
+            ans = max(ans, prefix)
+        return ans 
+
+
     """1736. Latest Time by Replacing Hidden Digits (Easy)
 	You are given a string time in the form of hh:mm, where some of the digits 
 	in the string are hidden (represented by ?). The valid times are those 
@@ -17141,10 +19593,186 @@ class Fenwick:
     def minimumBoxes(self, n: int) -> int:
         x = int((6*n)**(1/3))
         if x*(x+1)*(x+2) > 6*n: x -= 1
-        
-        ans = x*(x+1)//2
         n -= x*(x+1)*(x+2)//6
-        return ans + ceil((sqrt(1+8*n)-1)/2)
+        return x*(x+1)//2 + ceil((sqrt(1+8*n)-1)/2)
+
+
+    """1742. Maximum Number of Balls in a Box (Easy)
+	You are working in a ball factory where you have n balls numbered from 
+	lowLimit up to highLimit inclusive (i.e., n == highLimit - lowLimit + 1), 
+	and an infinite number of boxes numbered from 1 to infinity. Your job at 
+	this factory is to put each ball in the box with a number equal to the sum 
+	of digits of the ball's number. For example, the ball number 321 will be 
+	put in the box number 3 + 2 + 1 = 6 and the ball number 10 will be put in 
+	the box number 1 + 0 = 1. Given two integers lowLimit and highLimit, return 
+	the number of balls in the box with the most balls.
+
+	Example 1:
+	Input: lowLimit = 1, highLimit = 10
+	Output: 2
+	Explanation:
+	Box Number:  1 2 3 4 5 6 7 8 9 10 11 ...
+	Ball Count:  2 1 1 1 1 1 1 1 1 0  0  ...
+	Box 1 has the most number of balls with 2 balls.
+
+	Example 2:
+	Input: lowLimit = 5, highLimit = 15
+	Output: 2
+	Explanation:
+	Box Number:  1 2 3 4 5 6 7 8 9 10 11 ...
+	Ball Count:  1 1 1 1 2 2 1 1 1 0  0  ...
+	Boxes 5 and 6 have the most number of balls with 2 balls in each.
+
+	Example 3:
+	Input: lowLimit = 19, highLimit = 28
+	Output: 2
+	Explanation:
+	Box Number:  1 2 3 4 5 6 7 8 9 10 11 12 ...
+	Ball Count:  0 1 1 1 1 1 1 1 1 2  0  0  ...
+	Box 10 has the most number of balls with 2 balls.
+	 
+	Constraints: 1 <= lowLimit <= highLimit <= 10^5"""
+
+    def countBalls(self, lowLimit: int, highLimit: int) -> int:
+        freq = {}
+        for x in range(lowLimit, highLimit+1):
+            key = sum(int(xx) for xx in str(x))
+            freq[key] = 1 + freq.get(key, 0) 
+        return max(freq.values())
+
+
+    """1743. Restore the Array From Adjacent Pairs (Medium)
+	There is an integer array nums that consists of n unique elements, but you 
+	have forgotten it. However, you do remember every pair of adjacent elements 
+	in nums. You are given a 2D integer array adjacentPairs of size n - 1 where 
+	each adjacentPairs[i] = [ui, vi] indicates that the elements ui and vi are 
+	adjacent in nums. It is guaranteed that every adjacent pair of elements 
+	nums[i] and nums[i+1] will exist in adjacentPairs, either as [nums[i], 
+	nums[i+1]] or [nums[i+1], nums[i]]. The pairs can appear in any order. 
+	Return the original array nums. If there are multiple solutions, return any 
+	of them.
+
+	Example 1:
+	Input: adjacentPairs = [[2,1],[3,4],[3,2]]
+	Output: [1,2,3,4]
+	Explanation: This array has all its adjacent pairs in adjacentPairs. Notice 
+	             that adjacentPairs[i] may not be in left-to-right order.
+
+	Example 2:
+	Input: adjacentPairs = [[4,-2],[1,4],[-3,1]]
+	Output: [-2,4,1,-3]
+	Explanation: There can be negative numbers. Another solution is [-3,1,4,-2], 
+	             which would also be accepted.
+	
+	Example 3:
+	Input: adjacentPairs = [[100000,-100000]]
+	Output: [100000,-100000]
+
+	Constraints:
+	* nums.length == n
+	* adjacentPairs.length == n - 1
+	* adjacentPairs[i].length == 2
+	* 2 <= n <= 105
+	* -10^5 <= nums[i], ui, vi <= 10^5
+	* There exists some nums that has adjacentPairs as its pairs."""
+
+    def restoreArray(self, adjacentPairs: List[List[int]]) -> List[int]:
+        graph = {}
+        for u, v in adjacentPairs: 
+            graph.setdefault(u, []).append(v)
+            graph.setdefault(v, []).append(u)
+        
+        ans = []
+        seen = set()
+        stack = [next(x for x in graph if len(graph[x]) == 1)]
+        while stack: 
+            n = stack.pop()
+            ans.append(n)
+            seen.add(n)
+            for nn in graph[n]: 
+                if nn not in seen: stack.append(nn)
+        return ans 
+
+
+    """1744. Can You Eat Your Favorite Candy on Your Favorite Day? (Medium)
+	You are given a (0-indexed) array of positive integers candiesCount where 
+	candiesCount[i] represents the number of candies of the ith type you have. 
+	You are also given a 2D array queries where 
+	queries[i] = [favoriteTypei, favoriteDayi, dailyCapi].
+
+	You play a game with the following rules:
+	* You start eating candies on day 0.
+	* You cannot eat any candy of type i unless you have eaten all candies of 
+	  type i - 1.
+	* You must eat at least one candy per day until you have eaten all the 
+	  candies.
+	Construct a boolean array answer such that answer.length == queries.length 
+	and answer[i] is true if you can eat a candy of type favoriteTypei on day 
+	favoriteDayi without eating more than dailyCapi candies on any day, and 
+	false otherwise. Note that you can eat different types of candy on the same 
+	day, provided that you follow rule 2. Return the constructed array answer.
+
+	Example 1:
+	Input: candiesCount = [7,4,5,3,8], queries = [[0,2,2],[4,2,4],[2,13,1000000000]]
+	Output: [true,false,true]
+	Explanation:
+	1- If you eat 2 candies (type 0) on day 0 and 2 candies (type 0) on day 1, you will eat a candy of type 0 on day 2.
+	2- You can eat at most 4 candies each day.
+	   If you eat 4 candies every day, you will eat 4 candies (type 0) on day 0 and 4 candies (type 0 and type 1) on day 1.
+	   On day 2, you can only eat 4 candies (type 1 and type 2), so you cannot eat a candy of type 4 on day 2.
+	3- If you eat 1 candy each day, you will eat a candy of type 2 on day 13.
+
+	Example 2:
+	Input: candiesCount = [5,2,6,4,1], queries = [[3,1,2],[4,10,3],[3,10,100],[4,100,30],[1,3,1]]
+	Output: [false,true,true,false,false]
+
+	Constraints:
+	* 1 <= candiesCount.length <= 10^5
+	* 1 <= candiesCount[i] <= 10^5
+	* 1 <= queries.length <= 10^5
+	* queries[i].length == 3
+	* 0 <= favoriteTypei < candiesCount.length
+	* 0 <= favoriteDayi <= 10^9
+	* 1 <= dailyCapi <= 10^9"""
+
+    def canEat(self, candiesCount: List[int], queries: List[List[int]]) -> List[bool]:
+        prefix = [0]
+        for x in candiesCount: prefix.append(prefix[-1] + x) # prefix sum 
+        return [prefix[t] < (day+1)*cap and day < prefix[t+1] for t, day, cap in queries]
+
+
+    """1745. Palindrome Partitioning IV (Hard)
+	Given a string s, return true if it is possible to split the string s into 
+	three non-empty palindromic substrings. Otherwise, return false.​​​​​ A string 
+	is said to be palindrome if it the same string when reversed.
+
+	Example 1:
+	Input: s = "abcbdd"
+	Output: true
+	Explanation: "abcbdd" = "a" + "bcb" + "dd", and all three substrings are 
+	             palindromes.
+
+	Example 2:
+	Input: s = "bcbddxy"
+	Output: false
+	Explanation: s cannot be split into 3 palindromes.
+
+	Constraints:
+	* 3 <= s.length <= 2000
+	* s​​​​​​ consists only of lowercase English letters."""
+
+    def checkPartitioning(self, s: str) -> bool:
+        mp = defaultdict(set)
+        for i in range(2*len(s)-1): 
+            lo, hi = i//2, (i+1)//2
+            while 0 <= lo <= hi < len(s) and s[lo] == s[hi]: 
+                mp[lo].add(hi)
+                lo, hi = lo-1, hi+1
+        
+        for i in range(len(s)):
+            for j in range(i+1, len(s)):
+                if i-1 in mp[0] and j-1 in mp[i] and len(s)-1 in mp[j]: return True
+        return False 
 
 
 """146. LRU Cache (Medium)
@@ -17251,25 +19879,71 @@ Methods pop, top and getMin operations will always be called on non-empty stacks
 class MinStack:
 
     def __init__(self):
-        self.min   = []  #min-stack for minimum so far
-        self.stack = []  #regular stack for values 
-        
+        self.stack = []
+
     def push(self, x: int) -> None:
-        if self.min: 
-            self.min.append(min(x, self.min[-1]))
-        else: 
-            self.min.append(x)
-        self.stack.append(x)
-        
+        if not self.stack: mn = x
+        else: mn = min(x, self.stack[-1][1])
+        self.stack.append((x, mn))
+
     def pop(self) -> None:
-        self.min.pop()
         self.stack.pop()
-            
+
     def top(self) -> int:
-        return self.stack[-1]
-        
+        return self.stack[-1][0]
+
     def getMin(self) -> int:
-        return self.min[-1]
+        return self.stack[-1][1]
+
+
+"""170. Two Sum III - Data structure design (Easy)
+Design a data structure that accepts a stream of integers and checks if it has 
+a pair of integers that sum up to a particular value.
+
+Implement the TwoSum class:
+* TwoSum() Initializes the TwoSum object, with an empty array initially.
+* void add(int number) Adds number to the data structure.
+* boolean find(int value) Returns true if there exists any pair of numbers whose sum is equal to value, otherwise, it returns false.
+
+Example 1:
+Input: ["TwoSum", "add", "add", "add", "find", "find"]
+       [[], [1], [3], [5], [4], [7]]
+Output: [null, null, null, null, true, false]
+Explanation: 
+TwoSum twoSum = new TwoSum();
+twoSum.add(1);   // [] --> [1]
+twoSum.add(3);   // [1] --> [1,3]
+twoSum.add(5);   // [1,3] --> [1,3,5]
+twoSum.find(4);  // 1 + 3 = 4, return true
+twoSum.find(7);  // No two integers sum up to 7, return false
+
+Constraints:
+* -105 <= number <= 105
+* -231 <= value <= 231 - 1
+* At most 5 * 104 calls will be made to add and find."""
+
+class TwoSum:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.freq = {}
+
+    def add(self, number: int) -> None:
+        """
+        Add the number to an internal data structure..
+        """
+        self.freq[number] = 1 + self.freq.get(number, 0)
+
+    def find(self, value: int) -> bool:
+        """
+        Find if there exists any pair of numbers which sum is equal to the value.
+        """
+        for x in self.freq: 
+            if value - x != x and value - x in self.freq: return True 
+            elif value - x == x and self.freq[x] > 1: return True 
+        return False 
 
 
 """173. Binary Search Tree Iterator (Medium)
@@ -17573,6 +20247,93 @@ class WordDistance:
         return ans 
 
 
+"""251. Flatten 2D Vector (Medium)
+Design and implement an iterator to flatten a 2d vector. It should support the 
+following operations: next and hasNext.
+
+Example:
+Vector2D iterator = new Vector2D([[1,2],[3],[4]]);
+
+iterator.next(); // return 1
+iterator.next(); // return 2
+iterator.next(); // return 3
+iterator.hasNext(); // return true
+iterator.hasNext(); // return true
+iterator.next(); // return 4
+iterator.hasNext(); // return false
+ 
+Notes: Please remember to RESET your class variables declared in Vector2D, as 
+       static/class variables are persisted across multiple test cases. Please 
+       see here for more details. You may assume that next() call will always 
+       be valid, that is, there will be at least a next element in the 2d vector 
+       when next() is called.
+ 
+Follow up: As an added challenge, try to code it using only iterators in C++ or 
+           iterators in Java."""
+
+class Vector2D:
+
+    def __init__(self, v: List[List[int]]):
+        
+        def fn(arr):
+            """Return flattened array."""
+            ans = []
+            for x in arr:
+                if isinstance(x, int): ans.append(x)
+                else: ans.extend(fn(x))
+            return ans 
+        
+        self.vals = fn(v)
+        self.i = 0                 
+
+    def next(self) -> int:
+        i, self.i = self.i, self.i+1
+        return self.vals[i]
+
+    def hasNext(self) -> bool:
+        return self.i < len(self.vals)
+
+
+"""281. Zigzag Iterator (Medium)
+Given two 1d vectors, implement an iterator to return their elements alternately.
+
+Example:
+Input:
+v1 = [1,2]
+v2 = [3,4,5,6] 
+Output: [1,3,2,4,5,6]
+Explanation: By calling next repeatedly until hasNext returns false, the order 
+             of elements returned by next should be: [1,3,2,4,5,6].
+
+Follow up: What if you are given k 1d vectors? How well can your code be 
+           extended to such cases?
+
+Clarification for the follow up question: The "Zigzag" order is not clearly 
+defined and is ambiguous for k > 2 cases. If "Zigzag" does not look right to 
+you, replace "Zigzag" with "Cyclic". For example:
+
+Input:
+[1,2,3]
+[4,5,6,7]
+[8,9]
+Output: [1,4,8,2,5,9,3,6,7]."""
+
+class ZigzagIterator:
+    def __init__(self, v1: List[int], v2: List[int]):
+        self.vals = deque()
+        if v1: self.vals.append(deque(v1))
+        if v2: self.vals.append(deque(v2))
+
+    def next(self) -> int:
+        v = self.vals.popleft()
+        ans = v.popleft()
+        if v: self.vals.append(v)
+        return ans 
+
+    def hasNext(self) -> bool:
+        return self.vals
+
+
 """284. Peeking Iterator (Medium)
 Given an Iterator class interface with methods: next() and hasNext(), design 
 and implement a PeekingIterator that support the peek() operation -- it 
@@ -17609,6 +20370,65 @@ class PeekingIterator:
 
     def hasNext(self):
         return self.buff is not None
+
+
+"""288. Unique Word Abbreviation (Medium)
+The abbreviation of a word is a concatenation of its first letter, the number 
+of characters between the first and last letter, and its last letter. If a word 
+has only two characters, then it is an abbreviation of itself.
+
+For example:
+* dog --> d1g because there is one letter between the first letter 'd' and the 
+  last letter 'g'.
+* internationalization --> i18n because there are 18 letters between the first 
+  letter 'i' and the last letter 'n'.
+* it --> it because any word with only two characters is an abbreviation of 
+  itself.
+
+Implement the ValidWordAbbr class:
+* ValidWordAbbr(String[] dictionary) Initializes the object with a dictionary 
+  of words.
+* boolean isUnique(string word) Returns true if either of the following 
+  conditions are met (otherwise returns false):
+  + There is no word in dictionary whose abbreviation is equal to word's 
+    abbreviation.
+  + For any word in dictionary whose abbreviation is equal to word's 
+    abbreviation, that word and word are the same.
+
+Example 1:
+Input: ["ValidWordAbbr", "isUnique", "isUnique", "isUnique", "isUnique"]
+       [[["deer", "door", "cake", "card"]], ["dear"], ["cart"], ["cane"], ["make"]]
+Output: [null, false, true, false, true]
+
+Explanation: 
+ValidWordAbbr validWordAbbr = new ValidWordAbbr(["deer", "door", "cake", "card"]);
+validWordAbbr.isUnique("dear"); // return false, dictionary word "deer" and word "dear" have the same abbreviation
+                                // "d2r" but are not the same.
+validWordAbbr.isUnique("cart"); // return true, no words in the dictionary have the abbreviation "c2t".
+validWordAbbr.isUnique("cane"); // return false, dictionary word "cake" and word "cane" have the same abbreviation 
+                                // "c2e" but are not the same.
+validWordAbbr.isUnique("make"); // return true, no words in the dictionary have the abbreviation "m2e".
+validWordAbbr.isUnique("cake"); // return true, because "cake" is already in the dictionary and no other word in the dictionary has "c2e" abbreviation.
+ 
+Constraints:
+* 1 <= dictionary.length <= 3 * 104
+* 1 <= dictionary[i].length <= 20
+* dictionary[i] consists of lowercase English letters.
+* 1 <= word.length <= 20
+* word consists of lowercase English letters.
+* At most 5000 calls will be made to isUnique."""
+
+class ValidWordAbbr:
+
+    def __init__(self, dictionary: List[str]):
+        self.mp = {}
+        for word in set(dictionary): 
+            key = word[0] + str(len(word)) + word[-1]
+            self.mp.setdefault(key, set()).add(word)
+
+    def isUnique(self, word: str) -> bool:
+        key = word[0] + str(len(word)) + word[-1]
+        return self.mp.get(key, set()) <= {word}
 
 
 """295. Find Median from Data Stream (Hard)
@@ -17732,6 +20552,209 @@ class NestedIterator:
         return self.val is not None 
 
 
+"""346. Moving Average from Data Stream (Easy)
+Given a stream of integers and a window size, calculate the moving average of 
+all integers in the sliding window. 
+
+Implement the MovingAverage class:
+* MovingAverage(int size) Initializes the object with the size of the window size.
+* double next(int val) Returns the moving average of the last size values of the stream.
+
+Example 1:
+Input: ["MovingAverage", "next", "next", "next", "next"]
+       [[3], [1], [10], [3], [5]]
+Output: [null, 1.0, 5.5, 4.66667, 6.0]
+Explanation: 
+MovingAverage movingAverage = new MovingAverage(3);
+movingAverage.next(1); // return 1.0 = 1 / 1
+movingAverage.next(10); // return 5.5 = (1 + 10) / 2
+movingAverage.next(3); // return 4.66667 = (1 + 10 + 3) / 3
+movingAverage.next(5); // return 6.0 = (10 + 3 + 5) / 3
+
+Constraints:
+* 1 <= size <= 1000
+* -10^5 <= val <= 10^5
+* At most 104 calls will be made to next."""
+
+class MovingAverage:
+
+    def __init__(self, size: int):
+        """
+        Initialize your data structure here.
+        """
+        self.nums = deque()
+        self.size = size 
+        self.rsm = 0
+
+    def next(self, val: int) -> float:
+        self.nums.append(val)
+        self.rsm += val
+        if len(self.nums) > self.size: 
+            self.rsm -= self.nums.popleft()
+        return self.rsm/len(self.nums)
+
+
+"""348. Design Tic-Tac-Toe (Medium)
+Assume the following rules are for the tic-tac-toe game on an n x n board 
+between two players:
+* A move is guaranteed to be valid and is placed on an empty block.
+* Once a winning condition is reached, no more moves are allowed.
+* A player who succeeds in placing n of their marks in a horizontal, vertical, 
+  or diagonal row wins the game.
+
+Implement the TicTacToe class:
+* TicTacToe(int n) Initializes the object the size of the board n.
+* int move(int row, int col, int player) Indicates that player with id player 
+  plays at the cell (row, col) of the board. The move is guaranteed to be a valid move.
+
+Follow up: Could you do better than O(n2) per move() operation?
+
+Example 1:
+Input: ["TicTacToe", "move", "move", "move", "move", "move", "move", "move"]
+       [[3], [0, 0, 1], [0, 2, 2], [2, 2, 1], [1, 1, 2], [2, 0, 1], [1, 0, 2], [2, 1, 1]]
+Output: [null, 0, 0, 0, 0, 0, 0, 1]
+Explanation: 
+TicTacToe ticTacToe = new TicTacToe(3);
+Assume that player 1 is "X" and player 2 is "O" in the board.
+ticTacToe.move(0, 0, 1); // return 0 (no one wins)
+|X| | |
+| | | |    // Player 1 makes a move at (0, 0).
+| | | |
+
+ticTacToe.move(0, 2, 2); // return 0 (no one wins)
+|X| |O|
+| | | |    // Player 2 makes a move at (0, 2).
+| | | |
+
+ticTacToe.move(2, 2, 1); // return 0 (no one wins)
+|X| |O|
+| | | |    // Player 1 makes a move at (2, 2).
+| | |X|
+
+ticTacToe.move(1, 1, 2); // return 0 (no one wins)
+|X| |O|
+| |O| |    // Player 2 makes a move at (1, 1).
+| | |X|
+
+ticTacToe.move(2, 0, 1); // return 0 (no one wins)
+|X| |O|
+| |O| |    // Player 1 makes a move at (2, 0).
+|X| |X|
+
+ticTacToe.move(1, 0, 2); // return 0 (no one wins)
+|X| |O|
+|O|O| |    // Player 2 makes a move at (1, 0).
+|X| |X|
+
+ticTacToe.move(2, 1, 1); // return 1 (player 1 wins)
+|X| |O|
+|O|O| |    // Player 1 makes a move at (2, 1).
+|X|X|X|
+ 
+Constraints:
+* 2 <= n <= 100
+* player is 1 or 2.
+* 1 <= row, col <= n
+* (row, col) are unique for each different call to move.
+* At most n2 calls will be made to move."""
+
+class TicTacToe:
+
+    def __init__(self, n: int):
+        self.n = n
+        self.rows = [[0]*n for _ in range(2)]
+        self.cols = [[0]*n for _ in range(2)]
+        self.diag = [0]*2
+        self.anti = [0]*2
+
+    def move(self, row: int, col: int, player: int) -> int:
+        self.rows[player-1][row] += 1
+        self.cols[player-1][col] += 1
+        if row == col: self.diag[player-1] += 1
+        if row + col == self.n-1: self.anti[player-1] += 1
+        if self.n in (self.rows[player-1][row], self.cols[player-1][col], self.diag[player-1], self.anti[player-1]): return player
+        return 0 
+
+
+"""353. Design Snake Game (Medium)
+Design a Snake game that is played on a device with screen size height x width. 
+Play the game online if you are not familiar with the game. The snake is 
+initially positioned at the top left corner (0, 0) with a length of 1 unit. You 
+are given an array food where food[i] = (ri, ci) is the row and column position 
+of a piece of food that the snake can eat. When a snake eats a piece of food, 
+its length and the game's score both increase by 1. Each piece of food appears 
+one by one on the screen, meaning the second piece of food will not appear 
+until the snake eats the first piece of food. When a piece of food appears on 
+the screen, it is guaranteed that it will not appear on a block occupied by the 
+snake. The game is over if the snake goes out of bounds (hits a wall) or if its 
+head occupies a space that its body occupies after moving (i.e. a snake of 
+length 4 cannot run into itself).
+
+Implement the SnakeGame class:
+* SnakeGame(int width, int height, int[][] food) Initializes the object with a 
+  screen of size height x width and the positions of the food.
+* int move(String direction) Returns the score of the game after applying one 
+  direction move by the snake. If the game is over, return -1.
+
+Example 1:
+Input: ["SnakeGame", "move", "move", "move", "move", "move", "move"]
+       [[3, 2, [[1, 2], [0, 1]]], ["R"], ["D"], ["R"], ["U"], ["L"], ["U"]]
+Output: [null, 0, 0, 1, 1, 2, -1]
+Explanation:
+SnakeGame snakeGame = new SnakeGame(3, 2, [[1, 2], [0, 1]]);
+snakeGame.move("R"); // return 0
+snakeGame.move("D"); // return 0
+snakeGame.move("R"); // return 1, snake eats the first piece of food. The second piece of food appears
+                     // at (0, 1).
+snakeGame.move("U"); // return 1
+snakeGame.move("L"); // return 2, snake eats the second food. No more food appears.
+snakeGame.move("U"); // return -1, game over because snake collides with border
+ 
+Constraints:
+* 1 <= width, height <= 104
+* 1 <= food.length <= 50
+* food[i].length == 2
+* 0 <= ri < height
+* 0 <= ci < width
+* direction.length == 1
+* direction is 'U', 'D', 'L', or 'R'.
+* At most 104 calls will be made to move."""
+
+class SnakeGame:
+
+    def __init__(self, width: int, height: int, food: List[List[int]]):
+        """
+        Initialize your data structure here.
+        @param width - screen width
+        @param height - screen height 
+        @param food - A list of food positions
+        E.g food = [[1,1], [1,0]] means the first food is positioned at [1,1], the second is at [1,0].
+        """
+        self.width = width
+        self.height = height 
+        self.food = deque(food)
+        self.position = OrderedDict({(0,0): 0})
+
+    def move(self, direction: str) -> int:
+        """
+        Moves the snake.
+        @param direction - 'U' = Up, 'L' = Left, 'R' = Right, 'D' = Down 
+        @return The game's score after the move. Return -1 if game over. 
+        Game over when snake crosses the screen boundary or bites its body.
+        """
+        (i, j), _ = self.position.popitem(last=True) # current position
+        self.position[(i, j)] = 0 # add back 
+        if direction == "U": i -= 1
+        elif direction == "L": j -= 1
+        elif direction == "R": j += 1
+        else: i += 1
+        if self.food and self.food[0] == [i, j]: self.food.popleft()
+        else: self.position.popitem(last=False)
+        if not (0 <= i < self.height and 0 <= j < self.width) or (i, j) in self.position: return -1 # game over 
+        self.position[(i, j)] = 0
+        return len(self.position)-1
+
+
 """355. Design Twitter (Medium)
 Design a simplified version of Twitter where users can post tweets, 
 follow/unfollow another user and is able to see the 10 most recent tweets in 
@@ -17794,6 +20817,184 @@ class Twitter:
 
     def unfollow(self, followerId: int, followeeId: int) -> None:
         self.followers.setdefault(followerId, set()).discard(followeeId)
+
+
+"""359. Logger Rate Limiter (Easy)
+Design a logger system that receives a stream of messages along with their 
+timestamps. Each unique message should only be printed at most every 10 seconds 
+(i.e. a message printed at timestamp t will prevent other identical messages 
+from being printed until timestamp t + 10). All messages will come in 
+chronological order. Several messages may arrive at the same timestamp.
+
+Implement the Logger class:
+* Logger() Initializes the logger object.
+* bool shouldPrintMessage(int timestamp, string message) Returns true if the message should be printed in the given timestamp, otherwise returns false.
+
+Example 1:
+Input: ["Logger", "shouldPrintMessage", "shouldPrintMessage", "shouldPrintMessage", "shouldPrintMessage", "shouldPrintMessage", "shouldPrintMessage"]
+       [[], [1, "foo"], [2, "bar"], [3, "foo"], [8, "bar"], [10, "foo"], [11, "foo"]]
+Output: [null, true, true, false, false, false, true]
+Explanation:
+Logger logger = new Logger();
+logger.shouldPrintMessage(1, "foo");  // return true, next allowed timestamp for "foo" is 1 + 10 = 11
+logger.shouldPrintMessage(2, "bar");  // return true, next allowed timestamp for "bar" is 2 + 10 = 12
+logger.shouldPrintMessage(3, "foo");  // 3 < 11, return false
+logger.shouldPrintMessage(8, "bar");  // 8 < 12, return false
+logger.shouldPrintMessage(10, "foo"); // 10 < 11, return false
+logger.shouldPrintMessage(11, "foo"); // 11 >= 11, return true, next allowed timestamp for "foo" is
+                                      // 11 + 10 = 21
+ 
+Constraints:
+* 0 <= timestamp <= 10^9
+* Every timestamp will be passed in non-decreasing order (chronological order).
+* 1 <= message.length <= 30
+* At most 10^4 calls will be made to shouldPrintMessage."""
+
+class Logger:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.seen = {}
+
+    def shouldPrintMessage(self, timestamp: int, message: str) -> bool:
+        """
+        Returns true if the message should be printed in the given timestamp, otherwise returns false.
+        If this method returns false, the message will not be printed.
+        The timestamp is in seconds granularity.
+        """
+        if timestamp - self.seen.get(message, -inf) >= 10: 
+            self.seen[message] = timestamp
+            return True
+        return False 
+
+
+"""362. Design Hit Counter (Medium)
+Design a hit counter which counts the number of hits received in the past 5 
+minutes. Each function accepts a timestamp parameter (in seconds granularity) 
+and you may assume that calls are being made to the system in chronological 
+order (ie, the timestamp is monotonically increasing). You may assume that the 
+earliest timestamp starts at 1. It is possible that several hits arrive roughly 
+at the same time.
+
+Example:
+HitCounter counter = new HitCounter();
+
+// hit at timestamp 1.
+counter.hit(1);
+
+// hit at timestamp 2.
+counter.hit(2);
+
+// hit at timestamp 3.
+counter.hit(3);
+
+// get hits at timestamp 4, should return 3.
+counter.getHits(4);
+
+// hit at timestamp 300.
+counter.hit(300);
+
+// get hits at timestamp 300, should return 4.
+counter.getHits(300);
+
+// get hits at timestamp 301, should return 3.
+counter.getHits(301); 
+Follow up:
+What if the number of hits per second could be very large? Does your design scale?"""
+
+class HitCounter:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.queue = deque()
+        self.val = 0
+
+    def hit(self, timestamp: int) -> None:
+        """
+        Record a hit.
+        @param timestamp - The current timestamp (in seconds granularity).
+        """
+        if self.queue and self.queue[-1][0] == timestamp: self.queue[-1][1] += 1
+        else: self.queue.append([timestamp, 1])
+        self.val += 1
+
+    def getHits(self, timestamp: int) -> int:
+        """
+        Return the number of hits in the past 5 minutes.
+        @param timestamp - The current timestamp (in seconds granularity).
+        """
+        while self.queue and self.queue[0][0] + 300 <= timestamp: 
+            self.val -= self.queue.popleft()[1]
+        return self.val 
+
+
+"""379. Design Phone Directory (Medium)
+Design a Phone Directory which supports the following operations:
+* get: Provide a number which is not assigned to anyone.
+* check: Check if a number is available or not.
+* release: Recycle or release a number.
+
+Example:
+// Init a phone directory containing a total of 3 numbers: 0, 1, and 2.
+PhoneDirectory directory = new PhoneDirectory(3);
+
+// It can return any available phone number. Here we assume it returns 0.
+directory.get();
+
+// Assume it returns 1.
+directory.get();
+
+// The number 2 is available, so return true.
+directory.check(2);
+
+// It returns 2, the only number that is left.
+directory.get();
+
+// The number 2 is no longer available, so return false.
+directory.check(2);
+
+// Release number 2 back to the pool.
+directory.release(2);
+
+// Number 2 is available again, return true.
+directory.check(2);
+ 
+Constraints:
+* 1 <= maxNumbers <= 10^4
+* 0 <= number < maxNumbers
+* The total number of call of the methods is between [0 - 20000]"""
+
+class PhoneDirectory:
+
+    def __init__(self, maxNumbers: int):
+        """
+        Initialize your data structure here
+        @param maxNumbers - The maximum numbers that can be stored in the phone directory.
+        """
+        self.nums = set(range(maxNumbers))
+
+    def get(self) -> int:
+        """
+        Provide a number which is not assigned to anyone.
+        @return - Return an available number. Return -1 if none is available.
+        """
+        return self.nums.pop() if self.nums else -1 
+
+    def check(self, number: int) -> bool:
+        """
+        Check if a number is available or not.
+        """
+        return number in self.nums
+
+    def release(self, number: int) -> None:
+        """
+        Recycle or release a number.
+        """
+        self.nums.add(number)
 
 
 """380. Insert Delete GetRandom O(1) (Medium)
@@ -18131,6 +21332,136 @@ class Codec:
     def decode(self, shortUrl: str) -> str:
         """Decodes a shortened URL to its original URL."""
         return self.lut[shortUrl.split("/")[-1]]
+
+
+"""604. Design Compressed String Iterator (Easy)
+Design and implement a data structure for a compressed string iterator. The 
+given compressed string will be in the form of each letter followed by a 
+positive integer representing the number of this letter existing in the original 
+uncompressed string.
+
+Implement the StringIterator class:
+* next() Returns the next character if the original string still has uncompressed characters, otherwise returns a white space.
+* hasNext() Returns true if there is any letter needs to be uncompressed in the original string, otherwise returns false.
+
+Example 1:
+Input: ["StringIterator", "next", "next", "next", "next", "next", "next", "hasNext", "next", "hasNext"]
+       [["L1e2t1C1o1d1e1"], [], [], [], [], [], [], [], [], []]
+Output: [null, "L", "e", "e", "t", "C", "o", true, "d", true]
+Explanation:
+StringIterator stringIterator = new StringIterator("L1e2t1C1o1d1e1");
+stringIterator.next(); // return "L"
+stringIterator.next(); // return "e"
+stringIterator.next(); // return "e"
+stringIterator.next(); // return "t"
+stringIterator.next(); // return "C"
+stringIterator.next(); // return "o"
+stringIterator.hasNext(); // return True
+stringIterator.next(); // return "d"
+stringIterator.hasNext(); // return True
+
+Constraints:
+* 1 <= compressedString.length <= 1000
+* compressedString consists of lower-case an upper-case English letters and digits.
+* The number of a single character repetitions in compressedString is in the range [1, 10^9]
+* At most 100 calls will be made to next and hasNext."""
+
+class StringIterator:
+
+    def __init__(self, compressedString: str):
+        self.data = compressedString 
+        self.char = None
+        self.i = self.n = 0
+
+    def next(self) -> str:
+        if not self.hasNext(): return " "
+        if not self.n: 
+            self.char = self.data[self.i]
+            self.i = ii = self.i+1
+            while self.i < len(self.data) and self.data[self.i].isdigit(): self.i += 1
+            self.n = int(self.data[ii:self.i])
+        self.n -= 1
+        return self.char 
+
+    def hasNext(self) -> bool:
+        return self.i < len(self.data) or self.n 
+
+
+"""716. Max Stack (Easy)
+Design a max stack data structure that supports the stack operations and 
+supports finding the stack's maximum element.
+
+Implement the MaxStack class:
+* MaxStack() Initializes the stack object.
+* void push(int x) Pushes element x onto the stack.
+* int pop() Removes the element on top of the stack and returns it.
+* int top() Gets the element on the top of the stack without removing it.
+* int peekMax() Retrieves the maximum element in the stack without removing it.
+* int popMax() Retrieves the maximum element in the stack and removes it. If 
+  there is more than one maximum element, only remove the top-most one.
+ 
+Example 1:
+Input: ["MaxStack", "push", "push", "push", "top", "popMax", "top", "peekMax", "pop", "top"]
+       [[], [5], [1], [5], [], [], [], [], [], []]
+Output: [null, null, null, null, 5, 5, 1, 5, 1, 5]
+Explanation
+MaxStack stk = new MaxStack();
+stk.push(5);   // [5] the top of the stack and the maximum number is 5.
+stk.push(1);   // [5, 1] the top of the stack is 1, but the maximum is 5.
+stk.push(5);   // [5, 1, 5] the top of the stack is 5, which is also the maximum, because it is the top most one.
+stk.top();     // return 5, [5, 1, 5] the stack did not change.
+stk.popMax();  // return 5, [5, 1] the stack is changed now, and the top is different from the max.
+stk.top();     // return 1, [5, 1] the stack did not change.
+stk.peekMax(); // return 5, [5, 1] the stack did not change.
+stk.pop();     // return 1, [5] the top of the stack and the max element is now 5.
+stk.top();     // return 5, [5] the stack did not change.
+ 
+Constraints:
+* -10^7 <= x <= 10^7
+* At most 104 calls will be made to push, pop, top, peekMax, and popMax.
+* There will be at least one element in the stack when pop, top, peekMax, or 
+  popMax is called.
+
+Follow up: Could you come up with a solution that supports O(1) for each top 
+           call and O(logn) for each other call? """
+
+class MaxStack:
+
+    def __init__(self):
+        """
+        initialize your data structure here.
+        """
+        self.k = 0              # key
+        self.pq = []            # priority queue 
+        self.od = OrderedDict() # ordered dict 
+
+    def push(self, x: int) -> None:
+        heappush(self.pq, (-x, self.k))
+        self.od[self.k] = x
+        self.k -= 1
+
+    def pop(self) -> int:
+        k, x = self.od.popitem(last=True)
+        return x
+
+    def top(self) -> int:
+        k, x = self.od.popitem(last=True)
+        self.od[k] = x
+        return x
+
+    def peekMax(self) -> int:
+        while self.pq: 
+            x, k = heappop(self.pq)
+            if k in self.od: break 
+        heappush(self.pq, (x, k))
+        return -x
+
+    def popMax(self) -> int:
+        while self.pq: 
+            x, k = heappop(self.pq)
+            if k in self.od: break 
+        self.od.pop(k)
+        return -x 
 
 
 """729. My Calendar I (Medium)
