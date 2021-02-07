@@ -12839,6 +12839,34 @@ class Solution:
         return ans 
 
 
+    """821. Shortest Distance to a Character (Easy)
+	Given a string s and a character c that occurs in s, return an array of 
+	integers answer where answer.length == s.length and answer[i] is the 
+	shortest distance from s[i] to the character c in s.
+
+	Example 1:
+	Input: s = "loveleetcode", c = "e"
+	Output: [3,2,1,0,1,0,0,1,2,2,1,0]
+
+	Example 2:
+	Input: s = "aaab", c = "b"
+	Output: [3,2,1,0]
+
+	Constraints:
+	* 1 <= s.length <= 104
+	* s[i] and c are lowercase English letters.
+	* c occurs at least once in s."""
+
+    def shortestToChar(self, s: str, c: str) -> List[int]:
+        locs = [i for i, x in enumerate(s) if x == c]
+        ans = []
+        k = 0
+        for i, c in enumerate(s):
+            if k+1 < len(locs) and locs[k+1]-i < i - locs[k]: k += 1
+            ans.append(abs(i - locs[k]))
+        return ans 
+
+
     """822. Card Flipping Game (Medium)
 	On a table are N cards, with a positive integer printed on the front and 
 	back of each card (possibly different). We flip any number of cards, and 
@@ -19773,6 +19801,204 @@ class Fenwick:
             for j in range(i+1, len(s)):
                 if i-1 in mp[0] and j-1 in mp[i] and len(s)-1 in mp[j]: return True
         return False 
+
+
+    """1752. Check if Array Is Sorted and Rotated (Easy)
+	Given an array nums, return true if the array was originally sorted in non-
+	decreasing order, then rotated some number of positions (including zero). 
+	Otherwise, return false. There may be duplicates in the original array. 
+	Note: An array A rotated by x positions results in an array B of the same 
+	length such that A[i] == B[(i+x) % A.length], where % is the modulo operation.
+
+	Example 1:
+	Input: nums = [3,4,5,1,2]
+	Output: true
+	Explanation: [1,2,3,4,5] is the original sorted array. You can rotate the 
+	             array by x = 3 positions to begin on the the element of value 
+	             3: [3,4,5,1,2].
+	
+	Example 2:
+	Input: nums = [2,1,3,4]
+	Output: false
+	Explanation: There is no sorted array once rotated that can make nums.
+	
+	Example 3:
+	Input: nums = [1,2,3]
+	Output: true
+	Explanation: [1,2,3] is the original sorted array. You can rotate the array 
+	             by x = 0 positions (i.e. no rotation) to make nums.
+	
+	Example 4:
+	Input: nums = [1,1,1]
+	Output: true
+	Explanation: [1,1,1] is the original sorted array. You can rotate any 
+	             number of positions to make nums.
+	
+	Example 5:
+	Input: nums = [2,1]
+	Output: true
+	Explanation: [1,2] is the original sorted array. You can rotate the array 
+	             by x = 5 positions to begin on the element of value 2: [2,1].
+
+	Constraints:
+	* 1 <= nums.length <= 100
+	* 1 <= nums[i] <= 100"""
+
+    def check(self, nums: List[int]) -> bool:
+        cnt = 0
+        for i in range(len(nums)): 
+            if nums[i-1] > nums[i]: cnt += 1
+        return cnt <= 1
+
+
+    """1753. Maximum Score From Removing Stones (Medium)
+	You are playing a solitaire game with three piles of stones of sizes 
+	a​​​​​​, b,​​​​​​ and c​​​​​​ respectively. Each turn you choose two different non-empty 
+	piles, take one stone from each, and add 1 point to your score. The game 
+	stops when there are fewer than two non-empty piles (meaning there are no 
+	more available moves). Given three integers a​​​​​, b,​​​​​ and c​​​​​, return the 
+	maximum score you can get.
+
+	Example 1:
+	Input: a = 2, b = 4, c = 6
+	Output: 6
+	Explanation: The starting state is (2, 4, 6). One optimal set of moves is:
+	- Take from 1st and 3rd piles, state is now (1, 4, 5)
+	- Take from 1st and 3rd piles, state is now (0, 4, 4)
+	- Take from 2nd and 3rd piles, state is now (0, 3, 3)
+	- Take from 2nd and 3rd piles, state is now (0, 2, 2)
+	- Take from 2nd and 3rd piles, state is now (0, 1, 1)
+	- Take from 2nd and 3rd piles, state is now (0, 0, 0)
+	There are fewer than two non-empty piles, so the game ends. Total: 6 points.
+
+	Example 2:
+	Input: a = 4, b = 4, c = 6
+	Output: 7
+	Explanation: The starting state is (4, 4, 6). One optimal set of moves is:
+	- Take from 1st and 2nd piles, state is now (3, 3, 6)
+	- Take from 1st and 3rd piles, state is now (2, 3, 5)
+	- Take from 1st and 3rd piles, state is now (1, 3, 4)
+	- Take from 1st and 3rd piles, state is now (0, 3, 3)
+	- Take from 2nd and 3rd piles, state is now (0, 2, 2)
+	- Take from 2nd and 3rd piles, state is now (0, 1, 1)
+	- Take from 2nd and 3rd piles, state is now (0, 0, 0)
+	There are fewer than two non-empty piles, so the game ends. Total: 7 points.
+
+	Example 3:
+	Input: a = 1, b = 8, c = 8
+	Output: 8
+	Explanation: One optimal set of moves is to take from the 2nd and 3rd piles 
+	             for 8 turns until they are empty. After that, there are fewer 
+	             than two non-empty piles, so the game ends.
+
+	Constraints: 1 <= a, b, c <= 105"""
+
+    def maximumScore(self, a: int, b: int, c: int) -> int:
+        a, b, c = sorted((a, b, c))
+        if a + b < c: return a + b
+        return (a + b + c)//2
+
+    
+    """1754. Largest Merge Of Two Strings (Medium)
+	You are given two strings word1 and word2. You want to construct a string 
+	merge in the following way: while either word1 or word2 are non-empty, 
+	choose one of the following options:
+	* If word1 is non-empty, append the first character in word1 to merge and 
+	  delete it from word1.
+	  + For example, if word1 = "abc" and merge = "dv", then after choosing 
+	    this operation, word1 = "bc" and merge = "dva".
+	* If word2 is non-empty, append the first character in word2 to merge and 
+	  delete it from word2.
+	  + For example, if word2 = "abc" and merge = "", then after choosing this 
+	    operation, word2 = "bc" and merge = "a".
+	Return the lexicographically largest merge you can construct. A string a is 
+	lexicographically larger than a string b (of the same length) if in the 
+	first position where a and b differ, a has a character strictly larger than 
+	the corresponding character in b. For example, "abcd" is lexicographically 
+	larger than "abcc" because the first position they differ is at the fourth 
+	character, and d is greater than c.
+
+	Example 1:
+	Input: word1 = "cabaa", word2 = "bcaaa"
+	Output: "cbcabaaaaa"
+	Explanation: One way to get the lexicographically largest merge is:
+	- Take from word1: merge = "c", word1 = "abaa", word2 = "bcaaa"
+	- Take from word2: merge = "cb", word1 = "abaa", word2 = "caaa"
+	- Take from word2: merge = "cbc", word1 = "abaa", word2 = "aaa"
+	- Take from word1: merge = "cbca", word1 = "baa", word2 = "aaa"
+	- Take from word1: merge = "cbcab", word1 = "aa", word2 = "aaa"
+	- Append the remaining 5 a's from word1 and word2 at the end of merge.
+
+	Example 2:
+	Input: word1 = "abcabc", word2 = "abdcaba"
+	Output: "abdcabcabcaba"
+
+	Constraints:
+	* 1 <= word1.length, word2.length <= 3000
+	* word1 and word2 consist only of lowercase English letters."""
+
+    def largestMerge(self, word1: str, word2: str) -> str:
+        ans = []
+        i1 = i2 = 0
+        while i1 < len(word1) and i2 < len(word2): 
+            if word1[i1:] > word2[i2:]: 
+                ans.append(word1[i1])
+                i1 += 1
+            else: 
+                ans.append(word2[i2])
+                i2 += 1
+        return "".join(ans) + word1[i1:] + word2[i2:]
+
+
+    """1755. Closest Subsequence Sum (Hard)
+	You are given an integer array nums and an integer goal. You want to choose 
+	a subsequence of nums such that the sum of its elements is the closest 
+	possible to goal. That is, if the sum of the subsequence's elements is sum, 
+	then you want to minimize the absolute difference abs(sum - goal). Return 
+	the minimum possible value of abs(sum - goal). Note that a subsequence of 
+	an array is an array formed by removing some elements (possibly all or none) 
+	of the original array.
+
+	Example 1:
+	Input: nums = [5,-7,3,5], goal = 6
+	Output: 0
+	Explanation: Choose the whole array as a subsequence, with a sum of 6. This 
+	             is equal to the goal, so the absolute difference is 0.
+
+	Example 2:
+	Input: nums = [7,-9,15,-2], goal = -5
+	Output: 1
+	Explanation: Choose the subsequence [7,-9,-2], with a sum of -4. The 
+	             absolute difference is abs(-4 - (-5)) = abs(1) = 1, which is 
+	             the minimum.
+	
+	Example 3:
+	Input: nums = [1,2,3], goal = -7
+	Output: 7
+
+	Constraints:
+	* 1 <= nums.length <= 40
+	* -10^7 <= nums[i] <= 10^7
+	* -10^9 <= goal <= 10^9"""
+
+    def minAbsDifference(self, nums: List[int], goal: int) -> int:
+        
+        def fn(nums):
+            ans = {0}
+            for x in nums: 
+                ans |= {x + y for y in ans}
+            return ans 
+        
+        nums0 = sorted(fn(nums[:len(nums)//2]))
+        nums1 = sorted(fn(nums[len(nums)//2:]))
+        
+        ans = inf
+        k = len(nums1)-1
+        for x in nums0: 
+            while 0 <= k and x + nums1[k] > goal: k -= 1
+            if 0 <= k: ans = min(ans, goal - x - nums1[k])
+            if k+1 < len(nums1): ans = min(ans, nums1[k+1] + x - goal)
+        return ans 
 
 
 """146. LRU Cache (Medium)
