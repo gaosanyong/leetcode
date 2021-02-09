@@ -11714,6 +11714,57 @@ class Solution:
         return nsmallest(k, freq, key=lambda x: (-freq[x], x))
 
 
+    """694. Number of Distinct Islands (Medium)
+	Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's 
+	(representing land) connected 4-directionally (horizontal or vertical.) You 
+	may assume all four edges of the grid are surrounded by water. Count the 
+	number of distinct islands. An island is considered to be the same as 
+	another if and only if one island can be translated (and not rotated or 
+	reflected) to equal the other.
+
+	Example 1:
+	11000
+	11000
+	00011
+	00011
+	Given the above grid map, return 1.
+	
+	Example 2:
+	11011
+	10000
+	00001
+	11011
+	Given the above grid map, return 3.
+
+	Notice that:
+	11 and  1 are considered different island shapes, because we do not consider 
+	1      11
+	reflection / rotation.
+	
+	Note: The length of each dimension in the given grid does not exceed 50."""
+
+    def numDistinctIslands(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0]) # dimensions 
+        seen = set()
+        
+        def fn(i, j):
+            """Travere grid depth-first."""
+            grid[i][j] = 0 # mark visited 
+            vals.add((i, j))
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
+                if 0 <= ii < m and 0 <= jj < n and grid[ii][jj]: fn(ii, jj)
+        
+        for i in range(m):
+            for j in range(n): 
+                if grid[i][j]: 
+                    vals = set()
+                    fn(i, j)
+                    mi = min(i for i, _ in vals)
+                    mj = min(j for _, j in vals) 
+                    seen.add(tuple(sorted((i-mi, j-mj) for i, j in vals)))
+        return len(seen)
+
+
     """695. Max Area of Island (Medium)
 	Given a non-empty 2D array grid of 0's and 1's, an island is a group of 1's 
 	(representing land) connected 4-directionally (horizontal or vertical.) You 
@@ -18430,6 +18481,44 @@ class Fenwick:
         return ans 
 
 
+    """1682. Longest Palindromic Subsequence II (Medium)
+	A subsequence of a string s is considered a good palindromic subsequence if:
+	* It is a subsequence of s.
+	* It is a palindrome (has the same value if reversed).
+	* It has an even length.
+	* No two consecutive characters are equal, except the two middle ones.
+	For example, if s = "abcabcabb", then "abba" is considered a good palindromic 
+	subsequence, while "bcb" (not even length) and "bbbb" (has equal consecutive 
+	characters) are not. Given a string s, return the length of the longest good 
+	palindromic subsequence in s.
+
+	Example 1:
+	Input: s = "bbabab"
+	Output: 4
+	Explanation: The longest good palindromic subsequence of s is "baab".
+
+	Example 2:
+	Input: s = "dcbccacdb"
+	Output: 4
+	Explanation: The longest good palindromic subsequence of s is "dccd".
+
+	Constraints:
+	* 1 <= s.length <= 250
+	* s consists of lowercase English letters."""
+
+    def longestPalindromeSubseq(self, s: str) -> int:
+        dp = [[[0]*27 for _ in s] for _ in s] # n x n x 27 
+        
+        for i in reversed(range(len(s))):
+            for j in range(i+1, len(s)):
+                for k in range(27): 
+                    if s[i] == s[j] != chr(k+96): 
+                        dp[i][j][k] = 2 + dp[i+1][j-1][ord(s[i])-96]
+                    else: 
+                        dp[i][j][k] = max(dp[i+1][j][k], dp[i][j-1][k])
+        return dp[0][-1][0]
+
+
     """1684. Count the Number of Consistent Strings (Easy)
 	You are given a string allowed consisting of distinct characters and an 
 	array of strings words. A string is consistent if all characters in the 
@@ -19801,6 +19890,197 @@ class Fenwick:
             for j in range(i+1, len(s)):
                 if i-1 in mp[0] and j-1 in mp[i] and len(s)-1 in mp[j]: return True
         return False 
+
+
+    """1746. Maximum Subarray Sum After One Operation (Medium)
+	You are given an integer array nums. You must perform exactly one operation 
+	where you can replace one element nums[i] with nums[i] * nums[i]. Return 
+	the maximum possible subarray sum after exactly one operation. The subarray 
+	must be non-empty.
+
+	Example 1:
+	Input: nums = [2,-1,-4,-3]
+	Output: 17
+	Explanation: You can perform the operation on index 2 (0-indexed) to make 
+	             nums = [2,-1,16,-3]. Now, the maximum subarray sum is 
+	             2 + -1 + 16 = 17.
+
+	Example 2:
+	Input: nums = [1,-1,1,1,-1,-1,1]
+	Output: 4
+	Explanation: You can perform the operation on index 1 (0-indexed) to make 
+	             nums = [1,1,1,1,-1,-1,1]. Now, the maximum subarray sum is 
+	             1 + 1 + 1 + 1 = 4.
+
+	Constraints:
+	* 1 <= nums.length <= 105
+	* -104 <= nums[i] <= 104"""
+
+    def maxSumAfterOperation(self, nums: List[int]) -> int:
+        ans = f0 = f1 = 0 
+        for x in nums: 
+            f1 = max(max(0, f0) + x*x, f1 + x)
+            f0 = max(0, f0) + x 
+            ans = max(ans, f1)
+        return ans 
+
+
+    """1748. Sum of Unique Elements (Easy)
+	You are given an integer array nums. The unique elements of an array are 
+	the elements that appear exactly once in the array. Return the sum of all 
+	the unique elements of nums.
+
+	Example 1:
+	Input: nums = [1,2,3,2]
+	Output: 4
+	Explanation: The unique elements are [1,3], and the sum is 4.
+
+	Example 2:
+	Input: nums = [1,1,1,1,1]
+	Output: 0
+	Explanation: There are no unique elements, and the sum is 0.
+
+	Example 3:
+	Input: nums = [1,2,3,4,5]
+	Output: 15
+	Explanation: The unique elements are [1,2,3,4,5], and the sum is 15.
+
+	Constraints:
+	* 1 <= nums.length <= 100
+	* 1 <= nums[i] <= 100"""
+
+    def sumOfUnique(self, nums: List[int]) -> int:
+        freq = {}
+        for x in nums: freq[x] = 1 + freq.get(x, 0)
+        return sum(x for x in nums if freq[x] == 1)
+
+
+    """1749. Maximum Absolute Sum of Any Subarray (Medium)
+	You are given an integer array nums. The absolute sum of a subarray 
+	[numsl, numsl+1, ..., numsr-1, numsr] is abs(numsl + numsl+1 + ... + numsr-1 + numsr).
+	Return the maximum absolute sum of any (possibly empty) subarray of nums. 
+	Note that abs(x) is defined as follows:
+	* If x is a negative integer, then abs(x) = -x.
+	* If x is a non-negative integer, then abs(x) = x.
+
+	Example 1:
+	Input: nums = [1,-3,2,3,-4]
+	Output: 5
+	Explanation: The subarray [2,3] has absolute sum = abs(2+3) = abs(5) = 5.
+
+	Example 2:
+	Input: nums = [2,-5,1,-4,3,-2]
+	Output: 8
+	Explanation: The subarray [-5,1,-4] has absolute sum = abs(-5+1-4) = abs(-8) = 8.
+
+	Constraints:
+	* 1 <= nums.length <= 105
+	* -104 <= nums[i] <= 104"""
+
+    def maxAbsoluteSum(self, nums: List[int]) -> int:
+        ans = mx = mn = 0
+        for x in nums: 
+            mx = max(mx + x, 0)
+            mn = min(mn + x, 0)
+            ans = max(ans, mx, -mn)
+        return ans 
+
+
+    """1750. Minimum Length of String After Deleting Similar Ends (Medium)
+	Given a string s consisting only of characters 'a', 'b', and 'c'. You are 
+	asked to apply the following algorithm on the string any number of times:
+	* Pick a non-empty prefix from the string s where all the characters in the 
+	  prefix are equal.
+	* Pick a non-empty suffix from the string s where all the characters in 
+	  this suffix are equal.
+	* The prefix and the suffix should not intersect at any index.
+	* The characters from the prefix and suffix must be the same.
+	* Delete both the prefix and the suffix.
+	Return the minimum length of s after performing the above operation any 
+	number of times (possibly zero times).
+
+	Example 1:
+	Input: s = "ca"
+	Output: 2
+	Explanation: You can't remove any characters, so the string stays as is.
+
+	Example 2:
+	Input: s = "cabaabac"
+	Output: 0
+	Explanation: An optimal sequence of operations is:
+	- Take prefix = "c" and suffix = "c" and remove them, s = "abaaba".
+	- Take prefix = "a" and suffix = "a" and remove them, s = "baab".
+	- Take prefix = "b" and suffix = "b" and remove them, s = "aa".
+	- Take prefix = "a" and suffix = "a" and remove them, s = "".
+
+	Example 3:
+	Input: s = "aabccabba"
+	Output: 3
+	Explanation: An optimal sequence of operations is:
+	- Take prefix = "aa" and suffix = "a" and remove them, s = "bccabb".
+	- Take prefix = "b" and suffix = "bb" and remove them, s = "cca".
+
+	Constraints:
+	* 1 <= s.length <= 105
+	* s only consists of characters 'a', 'b', and 'c'."""
+
+    def minimumLength(self, s: str) -> int:
+        lo, hi = 0, len(s)-1
+        while lo < hi and s[lo] == s[hi]:
+            ch = s[lo]
+            while lo <= hi and s[lo] == ch: lo += 1
+            while lo <= hi and s[hi] == ch: hi -= 1
+        return hi - lo + 1
+
+
+    """1751. Maximum Number of Events That Can Be Attended II (Hard)
+	You are given an array of events where events[i] = [startDayi, endDayi, valuei]. 
+	The ith event starts at startDayi and ends at endDayi, and if you attend 
+	this event, you will receive a value of valuei. You are also given an 
+	integer k which represents the maximum number of events you can attend. You 
+	can only attend one event at a time. If you choose to attend an event, you 
+	must attend the entire event. Note that the end day is inclusive: that is, 
+	you cannot attend two events where one of them starts and the other ends on 
+	the same day. Return the maximum sum of values that you can receive by 
+	attending events.
+
+	Example 1:
+	Input: events = [[1,2,4],[3,4,3],[2,3,1]], k = 2
+	Output: 7
+	Explanation: Choose the green events, 0 and 1 (0-indexed) for a total value 
+	             of 4 + 3 = 7.
+
+	Example 2:
+	Input: events = [[1,2,4],[3,4,3],[2,3,10]], k = 2
+	Output: 10
+	Explanation: Choose event 2 for a total value of 10. Notice that you cannot 
+	             attend any other event as they overlap, and that you do not 
+	             have to attend k events.
+
+	Example 3:
+	Input: events = [[1,1,1],[2,2,2],[3,3,3],[4,4,4]], k = 3
+	Output: 9
+	Explanation: Although the events do not overlap, you can only attend 3 
+	             events. Pick the highest valued three.
+
+	Constraints:
+	* 1 <= k <= events.length
+	* 1 <= k * events.length <= 106
+	* 1 <= startDayi <= endDayi <= 109
+	* 1 <= valuei <= 106"""
+
+    def maxValue(self, events: List[List[int]], k: int) -> int:
+        events.sort()
+        starts = [i for i, _, _ in events]
+        
+        @cache
+        def fn(i, k): 
+            """Return """
+            if i == len(events) or k == 0: return 0 
+            ii = bisect_left(starts, events[i][1]+1)
+            return max(fn(i+1, k), events[i][2] + fn(ii, k-1))
+        
+        return fn(0, k)
 
 
     """1752. Check if Array Is Sorted and Rotated (Easy)
