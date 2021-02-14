@@ -4773,14 +4773,14 @@ class Solution:
 	+ Number of Nodes will not exceed 1000."""
 
     def copyRandomList(self, head: 'Node') -> 'Node':
-        memo = dict()
+        mp = {}
         
-        def fn(n): 
-            """Return (deep) copy of node"""
-            if n and n not in memo: 
-                cln = memo[n] = Node(n.val)
-                cln.next, cln.random = fn(n.next), fn(n.random)
-            return memo.get(n)
+        def fn(node): 
+            """Return a deep copy of node."""
+            if node and node not in mp:
+                temp = mp[node] = Node(node.val)
+                temp.next, temp.random = fn(node.next), fn(node.random)
+            return mp.get(node)
         
         return fn(head)
 
@@ -8509,6 +8509,66 @@ class Solution:
         return len(pattern) == len(string) and len(set(zip(pattern, string))) == len(set(pattern)) == len(set(string))
 
 
+    """291. Word Pattern II (Medium)
+	Given a pattern and a string s, return true if s matches the pattern. A 
+	string s matches a pattern if there is some bijective mapping of single 
+	characters to strings such that if each character in pattern is replaced by 
+	the string it maps to, then the resulting string is s. A bijective mapping 
+	means that no two characters map to the same string, and no character maps 
+	to two different strings.
+
+	Example 1:
+	Input: pattern = "abab", s = "redblueredblue"
+	Output: true
+	Explanation: One possible mapping is as follows:
+	'a' -> "red"
+	'b' -> "blue"
+
+	Example 2:
+	Input: pattern = "aaaa", s = "asdasdasdasd"
+	Output: true
+	Explanation: One possible mapping is as follows:
+	'a' -> "asd"
+
+	Example 3:
+	Input: pattern = "abab", s = "asdasdasdasd"
+	Output: true
+	Explanation: One possible mapping is as follows:
+	'a' -> "a"
+	'b' -> "sdasd"
+	Note that 'a' and 'b' cannot both map to "asd" since the mapping is a bijection.
+
+	Example 4:
+	Input: pattern = "aabb", s = "xyzabcxzyabc"
+	Output: false
+
+	Constraints:
+	* 1 <= pattern.length, s.length <= 20
+	* pattern and s consist of only lower-case English letters."""
+
+    def wordPatternMatch(self, pattern: str, s: str) -> bool:
+        
+        def fn(i, k):
+            """Return True if pattern[i:] can be mapping to s[k:]"""
+            if i == len(pattern): return k == len(s) # boundary condition
+            if k == len(s): return i == len(pattern) # boundary condition 
+            
+            if pattern[i] in mp: 
+                if mp[pattern[i]] == s[k:k+len(mp[pattern[i]])] and fn(i+1, k+len(mp[pattern[i]])): return True
+                return False
+            for kk in range(k+1, len(s)+1): 
+                if s[k:kk] not in mp: 
+                    mp[pattern[i]] = s[k:kk]
+                    mp[s[k:kk]] = pattern[i]
+                    if fn(i+1, kk): return True 
+                    mp.pop(pattern[i])
+                    if pattern[i] != s[k:kk]: mp.pop(s[k:kk])
+            return False
+        
+        mp = {}
+        return fn(0, 0)
+
+
     """292. Nim Game (Easy)
 	You are playing the following Nim Game with your friend: There is a heap of
     stones on the table, each time one of you take turns to remove 1 to 3 
@@ -10458,6 +10518,56 @@ class Solution:
                 ans += cnt 
             else: cnt = 0
         return ans 
+
+
+    """418. Sentence Screen Fitting (Medium)
+	Given a rows x cols screen and a sentence represented by a list of non-
+	empty words, find how many times the given sentence can be fitted on the 
+	screen.
+
+	Note:
+	* A word cannot be split into two lines.
+	* The order of words in the sentence must remain unchanged.
+	* Two consecutive words in a line must be separated by a single space.
+	* Total words in the sentence won't exceed 100.
+	* Length of each word is greater than 0 and won't exceed 10.
+	* 1 ≤ rows, cols ≤ 20,000.
+	
+	Example 1:
+	Input: rows = 2, cols = 8, sentence = ["hello", "world"]
+	Output: 1
+	Explanation:
+		hello---
+		world---
+	The character '-' signifies an empty space on the screen.
+
+	Example 2:
+	Input: rows = 3, cols = 6, sentence = ["a", "bcd", "e"]
+	Output: 2
+	Explanation:
+		a-bcd- 
+		e-a---
+		bcd-e-
+	The character '-' signifies an empty space on the screen.
+
+	Example 3:
+	Input: rows = 4, cols = 5, sentence = ["I", "had", "apple", "pie"]
+	Output: 1
+	Explanation:
+		I-had
+		apple
+		pie-I
+		had--
+	The character '-' signifies an empty space on the screen."""
+
+    def wordsTyping(self, sentence: List[str], rows: int, cols: int) -> int:
+        ss = " ".join(sentence) + " "
+        ans = 0
+        for _ in range(rows): 
+            ans += cols
+            while ss[ans % len(ss)] != " ": ans -= 1
+            ans += 1
+        return ans // len(ss)
 
 
     """422. Valid Word Square (Easy)
@@ -12499,6 +12609,59 @@ class Solution:
             if not cnt[x] % (1 + x): ans += 1 + x # reached capacity & update ans
             cnt[x] += 1
         return ans 
+
+
+    """785. Is Graph Bipartite? (Medium)
+	There is an undirected graph with n nodes, where each node is numbered 
+	between 0 and n - 1. You are given a 2D array graph, where graph[u] is an 
+	array of nodes that node u is adjacent to. More formally, for each v in 
+	graph[u], there is an undirected edge between node u and node v. The graph 
+	has the following properties:
+	* There are no self-edges (graph[u] does not contain u).
+	* There are no parallel edges (graph[u] does not contain duplicate values).
+	* If v is in graph[u], then u is in graph[v] (the graph is undirected).
+	* The graph may not be connected, meaning there may be two nodes u and v 
+	  such that there is no path between them.
+	A graph is bipartite if the nodes can be partitioned into two independent 
+	sets A and B such that every edge in the graph connects a node in set A and 
+	a node in set B. Return true if and only if it is bipartite.
+
+	Example 1:
+	Input: graph = [[1,2,3],[0,2],[0,1,3],[0,2]]
+	Output: false
+	Explanation: There is no way to partition the nodes into two independent 
+	             sets such that every edge connects a node in one and a node in 
+	             the other.
+
+	Example 2:
+	Input: graph = [[1,3],[0,2],[1,3],[0,2]]
+	Output: true
+	Explanation: We can partition the nodes into two sets: {0, 2} and {1, 3}.
+
+	Constraints:
+	* graph.length == n
+	* 1 <= n <= 100
+	* 0 <= graph[u].length < n
+	* 0 <= graph[u][i] <= n - 1
+	* graph[u] does not contain u.
+	* All the values of graph[u] are unique.
+	* If graph[u] contains v, then graph[v] contains u."""
+
+    def isBipartite(self, graph: List[List[int]]) -> bool:
+        seen = [0]*len(graph)
+        
+        for k in range(len(graph)): 
+            if not seen[k]: 
+                seen[k] = 1
+                stack = [k]
+                while stack: 
+                    n = stack.pop()
+                    for nn in graph[n]: 
+                        if not seen[nn]: 
+                            seen[nn] = seen[n] + 1
+                            stack.append(nn)
+                        elif seen[n] & 1 == seen[nn] & 1: return False # check parity
+        return True 
 
 
     """787. Cheapest Flights Within K Stops (Medium)
@@ -19515,6 +19678,87 @@ class Fenwick:
         return ((7*q + (49+2*r))*q + r*(r+1))//2
 
 
+    """1730. Shortest Path to Get Food (Medium)
+	You are starving and you want to eat food as quickly as possible. You want 
+	to find the shortest path to arrive at any food cell. You are given an m x n 
+	character matrix, grid, of these different types of cells:
+	* '*' is your location. There is exactly one '*' cell.
+	* '#' is a food cell. There may be multiple food cells.
+	* 'O' is free space, and you can travel through these cells.
+	* 'X' is an obstacle, and you cannot travel through these cells.
+	You can travel to any adjacent cell north, east, south, or west of your 
+	current location if there is not an obstacle. Return the length of the 
+	shortest path for you to reach any food cell. If there is no path for you 
+	to reach food, return -1.
+
+	Example 1:
+	Input: grid = [["X","X","X","X","X","X"],
+	               ["X","*","O","O","O","X"],
+	               ["X","O","O","#","O","X"],
+	               ["X","X","X","X","X","X"]]
+	Output: 3
+	Explanation: It takes 3 steps to reach the food.
+	
+	Example 2:
+	Input: grid = [["X","X","X","X","X"],
+	               ["X","*","X","O","X"],
+	               ["X","O","X","#","X"],
+	               ["X","X","X","X","X"]]
+	Output: -1
+	Explanation: It is not possible to reach the food.
+	
+	Example 3:
+	Input: grid = [["X","X","X","X","X","X","X","X"],
+	               ["X","*","O","X","O","#","O","X"],
+	               ["X","O","O","X","O","O","X","X"],
+	               ["X","O","O","O","O","#","O","X"],
+	               ["X","X","X","X","X","X","X","X"]]
+	Output: 6
+	Explanation: There can be multiple food cells. It only takes 6 steps to reach the bottom food.
+	
+	Example 4:
+	Input: grid = [["O","*"],
+	               ["#","O"]]
+	Output: 2
+
+	Example 5:
+	Input: grid = [["X","*"],
+	               ["#","X"]]
+	Output: -1
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 200
+	* grid[row][col] is '*', 'X', 'O', or '#'.
+	* The grid contains exactly one '*'."""
+
+    def getFood(self, grid: List[List[str]]) -> int:
+        m, n = len(grid), len(grid[0]) # dimensions 
+        
+        for i in range(m):
+            for j in range(n): 
+                if grid[i][j] == "*": break 
+            else: continue 
+            break 
+            
+        ans = 0
+        queue = [(i, j)]
+        grid[i][j] = "X" # mark visited (upon pushing)
+        
+        while queue: 
+            ans += 1
+            newq = []
+            for i, j in queue: 
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                    if 0 <= ii < m and 0 <= jj < n and grid[ii][jj] != "X": 
+                        if grid[ii][jj] == "#": return ans 
+                        newq.append((ii, jj))
+                        grid[ii][jj] = "X" # mark visited 
+            queue = newq
+        return -1 
+
+
     """1732. Find the Highest Altitude (Easy)
 	There is a biker going on a road trip. The road trip consists of n + 1 
 	points at different altitudes. The biker starts his trip on point 0 with 
@@ -19542,6 +19786,164 @@ class Fenwick:
         for x in gain:
             prefix += x
             ans = max(ans, prefix)
+        return ans 
+
+
+    """1732. Find the Highest Altitude (Easy)
+	There is a biker going on a road trip. The road trip consists of n + 1 
+	points at different altitudes. The biker starts his trip on point 0 with 
+	altitude equal 0. You are given an integer array gain of length n where 
+	gain[i] is the net gain in altitude between points i​​​​​​ and i + 1 for all 
+	(0 <= i < n). Return the highest altitude of a point.
+
+	Example 1:
+	Input: gain = [-5,1,5,0,-7]
+	Output: 1
+	Explanation: The altitudes are [0,-5,-4,1,1,-6]. The highest is 1.
+
+	Example 2:
+	Input: gain = [-4,-3,-2,-1,4,3,2]
+	Output: 0
+	Explanation: The altitudes are [0,-4,-7,-9,-10,-6,-3,-1]. The highest is 0.
+
+	Constraints:
+	* n == gain.length
+	* 1 <= n <= 100
+	* -100 <= gain[i] <= 100"""
+
+    def largestAltitude(self, gain: List[int]) -> int:
+        ans = prefix = 0
+        for x in gain: 
+            prefix += x
+            ans = max(ans, prefix)
+        return ans 
+
+
+    """1733. Minimum Number of People to Teach (Medium)
+	On a social network consisting of m users and some friendships between 
+	users, two users can communicate with each other if they know a common 
+	language. You are given an integer n, an array languages, and an array 
+	friendships where:
+	* There are n languages numbered 1 through n,
+	* languages[i] is the set of languages the i​​​​​​th​​​​ user knows, and
+	* friendships[i] = [u​​​​​​i​​​, v​​​​​​i] denotes a friendship between the users u​​​​​​​​​​​i​​​​​ and vi.
+	You can choose one language and teach it to some users so that all friends 
+	can communicate with each other. Return the minimum number of users you 
+	need to teach. Note that friendships are not transitive, meaning if x is a 
+	friend of y and y is a friend of z, this doesn't guarantee that x is a 
+	friend of z.
+
+	Example 1:
+	Input: n = 2, languages = [[1],[2],[1,2]], friendships = [[1,2],[1,3],[2,3]]
+	Output: 1
+	Explanation: You can either teach user 1 the second language or user 2 the first language.
+
+	Example 2:
+	Input: n = 3, languages = [[2],[1,3],[1,2],[3]], friendships = [[1,4],[1,2],[3,4],[2,3]]
+	Output: 2
+	Explanation: Teach the third language to users 1 and 3, yielding two users to teach.
+
+	Constraints:
+	* 2 <= n <= 500
+	* languages.length == m
+	* 1 <= m <= 500
+	* 1 <= languages[i].length <= n
+	* 1 <= languages[i][j] <= n
+	* 1 <= u​​​​​​i < v​​​​​​i <= languages.length
+	* 1 <= friendships.length <= 500
+	* All tuples (u​​​​​i, v​​​​​​i) are unique
+	* languages[i] contains only unique values"""
+
+    def minimumTeachings(self, n: int, languages: List[List[int]], friendships: List[List[int]]) -> int:
+        languages = [set(x) for x in languages]
+        
+        users = set()
+        for u, v in friendships: 
+            if not languages[u-1] & languages[v-1]: 
+                users.add(u-1)
+                users.add(v-1)
+        
+        freq = {}
+        for i in users: 
+            for k in languages[i]:
+                freq[k] = 1 + freq.get(k, 0)
+        return len(users) - max(freq.values(), default=0)
+
+
+    """1734. Decode XORed Permutation (Medium)
+	There is an integer array perm that is a permutation of the first n 
+	positive integers, where n is always odd. It was encoded into another 
+	integer array encoded of length n - 1, such that 
+	encoded[i] = perm[i] XOR perm[i + 1]. 
+	For example, if perm = [1,3,2], then encoded = [2,1]. Given the encoded 
+	array, return the original array perm. It is guaranteed that the answer 
+	exists and is unique.
+
+	Example 1:
+	Input: encoded = [3,1]
+	Output: [1,2,3]
+	Explanation: If perm = [1,2,3], then encoded = [1 XOR 2,2 XOR 3] = [3,1]
+
+	Example 2:
+	Input: encoded = [6,5,4,6]
+	Output: [2,4,1,5,3]
+
+	Constraints:
+	* 3 <= n < 105
+	* n is odd.
+	* encoded.length == n - 1"""
+
+    def decode(self, encoded: List[int]) -> List[int]:
+        x = reduce(xor, list(range(1, len(encoded) + 2)))
+        for i in range(1, len(encoded), 2): x ^= encoded[i]
+        ans = [x]
+        for x in encoded: ans.append(ans[-1] ^ x)
+        return ans 
+
+
+    """1735. Count Ways to Make Array With Product (Hard)
+	You are given a 2D integer array, queries. For each queries[i], where 
+	queries[i] = [ni, ki], find the number of different ways you can place 
+	positive integers into an array of size ni such that the product of the 
+	integers is ki. As the number of ways may be too large, the answer to the 
+	ith query is the number of ways modulo 109 + 7. Return an integer array 
+	answer where answer.length == queries.length, and answer[i] is the answer 
+	to the ith query.
+
+	Example 1:
+	Input: queries = [[2,6],[5,1],[73,660]]
+	Output: [4,1,50734910]
+	Explanation: Each query is independent.
+	[2,6]: There are 4 ways to fill an array of size 2 that multiply to 6: [1,6], [2,3], [3,2], [6,1].
+	[5,1]: There is 1 way to fill an array of size 5 that multiply to 1: [1,1,1,1,1].
+	[73,660]: There are 1050734917 ways to fill an array of size 73 that multiply to 660. 1050734917 modulo 109 + 7 = 50734910.
+
+	Example 2:
+	Input: queries = [[1,1],[2,2],[3,3],[4,4],[5,5]]
+	Output: [1,2,3,10,5]
+
+	Constraints:
+	* 1 <= queries.length <= 104
+	* 1 <= ni, ki <= 104"""
+
+    def waysToFillArray(self, queries: List[List[int]]) -> List[int]:
+        spf = list(range(10001)) # spf = smallest prime factor 
+        for i in range(4, 10001, 2): spf[i] = 2
+        for i in range(3, int(sqrt(10001))+1): 
+            if spf[i] == i: 
+                for ii in range(i*i, 10001, i): 
+                    spf[ii] = min(spf[ii], i)
+        
+        ans = []
+        for n, k in queries: 
+            freq = {} # prime factorization via sieve
+            while k != 1: 
+                freq[spf[k]] = 1 + freq.get(spf[k], 0)
+                k //= spf[k]
+            val = 1
+            for x in freq.values(): 
+                val *= comb(n+x-1, x)
+            ans.append(val % 1_000_000_007)
         return ans 
 
 
@@ -20281,6 +20683,176 @@ class Fenwick:
         return ans 
 
 
+    """1758. Minimum Changes To Make Alternating Binary String (Easy)
+	You are given a string s consisting only of the characters '0' and '1'. In 
+	one operation, you can change any '0' to '1' or vice versa. The string is 
+	called alternating if no two adjacent characters are equal. For example, 
+	the string "010" is alternating, while the string "0100" is not. Return the 
+	minimum number of operations needed to make s alternating.
+
+	Example 1:
+	Input: s = "0100"
+	Output: 1
+	Explanation: If you change the last character to '1', s will be "0101", which is alternating.
+
+	Example 2:
+	Input: s = "10"
+	Output: 0
+	Explanation: s is already alternating.
+
+	Example 3:
+	Input: s = "1111"
+	Output: 2
+	Explanation: You need two operations to reach "0101" or "1010".
+
+	Constraints:
+	* 1 <= s.length <= 104
+	* s[i] is either '0' or '1'."""
+
+    def minOperations(self, s: str) -> int:
+        cnt = 0 # "010101..."
+        for i, c in enumerate(s): 
+            if i&1 == int(c): cnt += 1
+        return min(cnt, len(s) - cnt)
+
+
+    """1759. Count Number of Homogenous Substrings (Medium)
+	Given a string s, return the number of homogenous substrings of s. Since 
+	the answer may be too large, return it modulo 10^9 + 7.  string is 
+	homogenous if all the characters of the string are the same. A substring 
+	is a contiguous sequence of characters within a string.
+
+	Example 1:
+	Input: s = "abbcccaa"
+	Output: 13
+	Explanation: The homogenous substrings are listed as below:
+	"a"   appears 3 times.
+	"aa"  appears 1 time.
+	"b"   appears 2 times.
+	"bb"  appears 1 time.
+	"c"   appears 3 times.
+	"cc"  appears 2 times.
+	"ccc" appears 1 time.
+	3 + 1 + 2 + 1 + 3 + 2 + 1 = 13.
+
+	Example 2:
+	Input: s = "xy"
+	Output: 2
+	Explanation: The homogenous substrings are "x" and "y".
+
+	Example 3:
+	Input: s = "zzzzz"
+	Output: 15
+
+	Constraints:
+	* 1 <= s.length <= 105
+	* s consists of lowercase letters."""
+
+    def countHomogenous(self, s: str) -> int:
+        ans = ii = 0
+        for i in range(len(s)):
+            if s[ii] != s[i]: ii = i
+            ans += i - ii + 1
+        return ans % 1_000_000_007
+
+
+    """1760. Minimum Limit of Balls in a Bag (Medium)
+	You are given an integer array nums where the ith bag contains nums[i] 
+	balls. You are also given an integer maxOperations. You can perform the 
+	following operation at most maxOperations times:
+	* Take any bag of balls and divide it into two new bags with a positive 
+	  number of balls.
+	  + For example, a bag of 5 balls can become two new bags of 1 and 4 balls, 
+	    or two new bags of 2 and 3 balls.
+	Your penalty is the maximum number of balls in a bag. You want to minimize 
+	your penalty after the operations. Return the minimum possible penalty 
+	after performing the operations.
+
+	Example 1:
+	Input: nums = [9], maxOperations = 2
+	Output: 3
+	Explanation: 
+	- Divide the bag with 9 balls into two bags of sizes 6 and 3. [9] -> [6,3].
+	- Divide the bag with 6 balls into two bags of sizes 3 and 3. [6,3] -> [3,3,3].
+	The bag with the most number of balls has 3 balls, so your penalty is 3 and you should return 3.
+
+	Example 2:
+	Input: nums = [2,4,8,2], maxOperations = 4
+	Output: 2
+	Explanation:
+	- Divide the bag with 8 balls into two bags of sizes 4 and 4. [2,4,8,2] -> [2,4,4,4,2].
+	- Divide the bag with 4 balls into two bags of sizes 2 and 2. [2,4,4,4,2] -> [2,2,2,4,4,2].
+	- Divide the bag with 4 balls into two bags of sizes 2 and 2. [2,2,2,4,4,2] -> [2,2,2,2,2,4,2].
+	- Divide the bag with 4 balls into two bags of sizes 2 and 2. [2,2,2,2,2,4,2] -> [2,2,2,2,2,2,2,2].
+	The bag with the most number of balls has 2 balls, so your penalty is 2 an you should return 2.
+
+	Example 3:
+	Input: nums = [7,17], maxOperations = 2
+	Output: 7
+
+	Constraints:
+	* 1 <= nums.length <= 105
+	* 1 <= maxOperations, nums[i] <= 109"""
+
+    def minimumSize(self, nums: List[int], maxOperations: int) -> int:
+        lo, hi = 1, 1_000_000_000
+        while lo < hi: 
+            mid = lo + hi >> 1
+            if sum((x-1)//mid for x in nums) <= maxOperations: hi = mid
+            else: lo = mid + 1
+        return lo
+
+
+    """1761. Minimum Degree of a Connected Trio in a Graph (Hard)
+	You are given an undirected graph. You are given an integer n which is the 
+	number of nodes in the graph and an array edges, where each edges[i] = [ui, vi] 
+	indicates that there is an undirected edge between ui and vi. A connected 
+	trio is a set of three nodes where there is an edge between every pair of 
+	them. The degree of a connected trio is the number of edges where one 
+	endpoint is in the trio, and the other is not. Return the minimum degree of 
+	a connected trio in the graph, or -1 if the graph has no connected trios.
+
+	Example 1:
+	Input: n = 6, edges = [[1,2],[1,3],[3,2],[4,1],[5,2],[3,6]]
+	Output: 3
+	Explanation: There is exactly one trio, which is [1,2,3]. The edges that 
+	             form its degree are bolded in the figure above.
+
+	Example 2:
+	Input: n = 7, edges = [[1,3],[4,1],[4,3],[2,5],[5,6],[6,7],[7,5],[2,6]]
+	Output: 0
+	Explanation: There are exactly three trios:
+	1) [1,4,3] with degree 0.
+	2) [2,5,6] with degree 2.
+	3) [5,6,7] with degree 2.
+
+	Constraints:
+	* 2 <= n <= 400
+	* edges[i].length == 2
+	* 1 <= edges.length <= n * (n-1) / 2
+	* 1 <= ui, vi <= n
+	* ui != vi
+	* There are no repeated edges."""
+
+    def minTrioDegree(self, n: int, edges: List[List[int]]) -> int:
+        graph = [[False]*n for _ in range(n)]
+        degree = [0]*n
+        
+        for u, v in edges: 
+            graph[u-1][v-1] = graph[v-1][u-1] = True
+            degree[u-1] += 1
+            degree[v-1] += 1
+        
+        ans = inf
+        for i in range(n): 
+            for j in range(i+1, n):
+                if graph[i][j]: 
+                    for k in range(j+1, n):
+                        if graph[j][k] and graph[k][i]: 
+                            ans = min(ans, degree[i] + degree[j] + degree[k] - 6)
+        return ans if ans < inf else -1
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -20798,6 +21370,53 @@ class Vector2D:
 
     def hasNext(self) -> bool:
         return self.i < len(self.vals)
+
+
+"""271. Encode and Decode Strings (Medium)
+Design an algorithm to encode a list of strings to a string. The encoded string 
+is then sent over the network and is decoded back to the original list of strings.
+
+Machine 1 (sender) has the function:
+
+string encode(vector<string> strs) {
+  // ... your code
+  return encoded_string;
+}
+Machine 2 (receiver) has the function:
+vector<string> decode(string s) {
+  //... your code
+  return strs;
+}
+So Machine 1 does:
+
+string encoded_string = encode(strs);
+and Machine 2 does:
+
+vector<string> strs2 = decode(encoded_string);
+strs2 in Machine 2 should be the same as strs in Machine 1. Implement the encode 
+and decode methods.
+
+Note:
+* The string may contain any possible characters out of 256 valid ascii 
+  characters. Your algorithm should be generalized enough to work on any 
+  possible characters.
+* Do not use class member/global/static variables to store states. Your encode 
+  and decode algorithms should be stateless.
+* Do not rely on any library method such as eval or serialize methods. You 
+  should implement your own encode/decode algorithm."""
+
+class Codec:
+    def encode(self, strs: [str]) -> str:
+        return "".join(f"{len(ss)}|{ss}" for ss in strs)
+
+    def decode(self, s: str) -> [str]:
+        ans = []
+        i = 0
+        while i < len(s):
+            ii = s.find("|", i)
+            i = ii+1+int(s[i:ii])
+            ans.append(s[ii+1:i])
+        return ans 
 
 
 """281. Zigzag Iterator (Medium)
