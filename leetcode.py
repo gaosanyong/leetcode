@@ -22065,6 +22065,230 @@ class Fenwick:
         return stack 
 
 
+    """1763. Longest Nice Substring (Easy)
+	A string s is nice if, for every letter of the alphabet that s contains, it 
+	appears both in uppercase and lowercase. For example, "abABB" is nice 
+	because 'A' and 'a' appear, and 'B' and 'b' appear. However, "abA" is not 
+	because 'b' appears, but 'B' does not. Given a string s, return the longest 
+	substring of s that is nice. If there are multiple, return the substring of 
+	the earliest occurrence. If there are none, return an empty string.
+
+	Example 1:
+	Input: s = "YazaAay"
+	Output: "aAa"
+	Explanation: "aAa" is a nice string because 'A/a' is the only letter of the 
+	             alphabet in s, and both 'A' and 'a' appear. "aAa" is the 
+	             longest nice substring.
+
+	Example 2:
+	Input: s = "Bb"
+	Output: "Bb"
+	Explanation: "Bb" is a nice string because both 'B' and 'b' appear. The 
+	             whole string is a substring.
+	
+	Example 3:
+	Input: s = "c"
+	Output: ""
+	Explanation: There are no nice substrings.
+	
+	Example 4:
+	Input: s = "dDzeE"
+	Output: "dD"
+	Explanation: Both "dD" and "eE" are the longest nice substrings. As there 
+	             are multiple longest nice substrings, return "dD" since it 
+	             occurs earlier.
+
+	Constraints:
+	* 1 <= s.length <= 100
+	* s consists of uppercase and lowercase English letters."""
+
+    def longestNiceSubstring(self, s: str) -> str:
+        if not s: return "" # boundary condition 
+        ss = set(s)
+        for i, c in enumerate(s):
+            if c.swapcase() not in ss: 
+                s0 = self.longestNiceSubstring(s[:i])
+                s1 = self.longestNiceSubstring(s[i+1:])
+                return max(s0, s1, key=len)
+        return s
+
+
+    """1764. Form Array by Concatenating Subarrays of Another Array (Medium)
+	You are given a 2D integer array groups of length n. You are also given an 
+	integer array nums. You are asked if you can choose n disjoint subarrays 
+	from the array nums such that the ith subarray is equal to groups[i] 
+	(0-indexed), and if i > 0, the (i-1)th subarray appears before the ith 
+	subarray in nums (i.e. the subarrays must be in the same order as groups). 
+	Return true if you can do this task, and false otherwise. Note that the 
+	subarrays are disjoint if and only if there is no index k such that nums[k] 
+	belongs to more than one subarray. A subarray is a contiguous sequence of 
+	elements within an array.
+
+	Example 1:
+	Input: groups = [[1,-1,-1],[3,-2,0]], nums = [1,-1,0,1,-1,-1,3,-2,0]
+	Output: true
+	Explanation: You can choose the 0th subarray as [1,-1,0,1,-1,-1,3,-2,0] and 
+	             the 1st one as [1,-1,0,1,-1,-1,3,-2,0]. These subarrays are 
+	             disjoint as they share no common nums[k] element.
+
+	Example 2:
+	Input: groups = [[10,-2],[1,2,3,4]], nums = [1,2,3,4,10,-2]
+	Output: false
+	Explanation: Note that choosing the subarrays [1,2,3,4,10,-2] and 
+	             [1,2,3,4,10,-2] is incorrect because they are not in the same 
+	             order as in groups. [10,-2] must come before [1,2,3,4].
+	
+	Example 3:
+	Input: groups = [[1,2,3],[3,4]], nums = [7,7,1,2,3,4,7,7]
+	Output: false
+	Explanation: Note that choosing the subarrays [7,7,1,2,3,4,7,7] and 
+	             [7,7,1,2,3,4,7,7] is invalid because they are not disjoint. 
+	             They share a common elements nums[4] (0-indexed).
+
+	Constraints:
+	* groups.length == n
+	* 1 <= n <= 10^3
+	* 1 <= groups[i].length, sum(groups[i].length) <= 10^3
+	* 1 <= nums.length <= 10^3
+	* -10^7 <= groups[i][j], nums[k] <= 10^7"""
+
+    def canChoose(self, groups: List[List[int]], nums: List[int]) -> bool:
+        i = 0
+        for grp in groups: 
+            for ii in range(i, len(nums)):
+                if nums[ii:ii+len(grp)] == grp: 
+                    i = ii + len(grp)
+                    break 
+            else: return False
+        return True
+
+
+    """1765. Map of Highest Peak (Medium)
+	You are given an integer matrix isWater of size m x n that represents a map 
+	of land and water cells.
+	* If isWater[i][j] == 0, cell (i, j) is a land cell.
+	* If isWater[i][j] == 1, cell (i, j) is a water cell.
+	You must assign each cell a height in a way that follows these rules:
+	* The height of each cell must be non-negative.
+	* If the cell is a water cell, its height must be 0.
+	* Any two adjacent cells must have an absolute height difference of at most 
+	  1. A cell is adjacent to another cell if the former is directly north, 
+	  east, south, or west of the latter (i.e., their sides are touching).
+	Find an assignment of heights such that the maximum height in the matrix is 
+	maximized. Return an integer matrix height of size m x n where height[i][j] 
+	is cell (i, j)'s height. If there are multiple solutions, return any of them.
+
+	Example 1:
+	Input: isWater = [[0,1],[0,0]]
+	Output: [[1,0],[2,1]]
+	Explanation: The image shows the assigned heights of each cell. The blue 
+	             cell is the water cell, and the green cells are the land cells.
+
+	Example 2:
+	Input: isWater = [[0,0,1],[1,0,0],[0,0,0]]
+	Output: [[1,1,0],[0,1,1],[1,2,2]]
+	Explanation: A height of 2 is the maximum possible height of any assignment. 
+	             Any height assignment that has a maximum height of 2 while 
+	             still meeting the rules will also be accepted.
+
+	Constraints:
+	* m == isWater.length
+	* n == isWater[i].length
+	* 1 <= m, n <= 1000
+	* isWater[i][j] is 0 or 1.
+	* There is at least one water cell."""
+
+    def highestPeak(self, isWater: List[List[int]]) -> List[List[int]]:
+        m, n = len(isWater), len(isWater[0]) # dimensions 
+        
+        ans = [[-1]*n for _ in range(m)]
+        queue = deque()
+        for i in range(m): 
+            for j in range(n):
+                if isWater[i][j]:
+                    queue.append((i, j))
+                    ans[i][j] = 0
+
+        while queue: 
+            i, j = queue.popleft()
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                if 0 <= ii < m and 0 <= jj < n and ans[ii][jj] == -1: 
+                    ans[ii][jj] = 1 + ans[i][j]
+                    queue.append((ii, jj))
+        return ans 
+
+
+    """1766. Tree of Coprimes (Hard)
+	There is a tree (i.e., a connected, undirected graph that has no cycles) 
+	consisting of n nodes numbered from 0 to n - 1 and exactly n - 1 edges. 
+	Each node has a value associated with it, and the root of the tree is node 
+	0. To represent this tree, you are given an integer array nums and a 2D 
+	array edges. Each nums[i] represents the ith node's value, and each 
+	edges[j] = [uj, vj] represents an edge between nodes uj and vj in the tree. 
+	Two values x and y are coprime if gcd(x, y) == 1 where gcd(x, y) is the 
+	greatest common divisor of x and y. An ancestor of a node i is any other 
+	node on the shortest path from node i to the root. A node is not considered 
+	an ancestor of itself. Return an array ans of size n, where ans[i] is the 
+	closest ancestor to node i such that nums[i] and nums[ans[i]] are coprime, 
+	or -1 if there is no such ancestor.
+
+	Example 1:
+	Input: nums = [2,3,3,2], edges = [[0,1],[1,2],[1,3]]
+	Output: [-1,0,0,1]
+	Explanation: In the above figure, each node's value is in parentheses.
+	- Node 0 has no coprime ancestors.
+	- Node 1 has only one ancestor, node 0. Their values are coprime 
+	  (gcd(2,3) == 1).
+	- Node 2 has two ancestors, nodes 1 and 0. Node 1's value is not coprime 
+	  (gcd(3,3) == 3), but node 0's value is (gcd(2,3) == 1), so node 0 is the 
+	  closest valid ancestor.
+	- Node 3 has two ancestors, nodes 1 and 0. It is coprime with node 1 
+	  (gcd(3,2) == 1), so node 1 is its closest valid ancestor.
+
+	Example 2:
+	Input: nums = [5,6,10,2,3,6,15], edges = [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]]
+	Output: [-1,0,-1,0,0,0,-1]
+
+	Constraints:
+	* nums.length == n
+	* 1 <= nums[i] <= 50
+	* 1 <= n <= 10^5
+	* edges.length == n - 1
+	* edges[j].length == 2
+	* 0 <= uj, vj < n
+	* uj != vj"""
+
+    def getCoprimes(self, nums: List[int], edges: List[List[int]]) -> List[int]:
+        tree = {} # tree as adjacency list 
+        for u, v in edges: 
+            tree.setdefault(u, []).append(v)
+            tree.setdefault(v, []).append(u)
+        
+        ans = [-1]*len(nums)
+        path = {} # val -> list of position & depth 
+        seen = {0}
+        
+        def fn(k, i): 
+            """Populate ans via dfs."""
+            ii = -1 
+            for x in path:
+                if gcd(nums[k], x) == 1: # coprime 
+                    if path[x] and path[x][-1][1] > ii: 
+                        ans[k] = path[x][-1][0]
+                        ii = path[x][-1][1]
+                        
+            path.setdefault(nums[k], []).append((k, i))
+            for kk in tree.get(k, []): 
+                if kk not in seen: 
+                    seen.add(kk)
+                    fn(kk, i+1)
+            path[nums[k]].pop()
+            
+            
+        fn(0, 0)
+        return ans 
+
+
     """1768. Merge Strings Alternately (Easy)
 	You are given two strings word1 and word2. Merge the strings by adding 
 	letters in alternating order, starting with word1. If a string is longer 
