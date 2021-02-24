@@ -487,11 +487,11 @@ class Solution:
 	Explanation: M = 1000, CM = 900, XC = 90 and IV = 4."""
 
     def romanToInt(self, s: str) -> int:
-        val = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
+        mp = {"I": 1, "V": 5, "X": 10, "L": 50, "C": 100, "D": 500, "M": 1000}
         ans = 0
         for i in range(len(s)):
-            if i+1 < len(s) and val[s[i]] < val[s[i+1]]: ans -= val[s[i]]
-            else: ans += val[s[i]]
+            if i+1 < len(s) and mp[s[i]] < mp[s[i+1]]: ans -= mp[s[i]]
+            else: ans += mp[s[i]]
         return ans
 
 
@@ -5487,11 +5487,11 @@ class Solution:
 	Your code should preferably run in O(n) time and use only O(1) memory."""
 
     def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
-        nodeA, nodeB = headA, headB
-        while nodeA != nodeB:
-            nodeA = nodeA.next if nodeA else headB
-            nodeB = nodeB.next if nodeB else headA
-        return nodeA and nodeB
+        n0, n1 = headA, headB
+        while n0 != n1:
+            n0 = n0.next if n0 else headB
+            n1 = n1.next if n1 else headA
+        return n0
 
 
     """161. One Edit Distance (Medium)
@@ -7168,12 +7168,12 @@ class Solution:
 	p and q are different and both values will exist in the BST."""
 
     def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
-        if p.val > q.val: p, q = q, p #p always smaller
+        if p.val > q.val: p, q = q, p
         node = root
         while node: 
-            if q.val < node.val: node = node.left
-            elif node.val < p.val: node = node.right 
-            else: return node
+            if node.val < p.val: node = node.right
+            elif p.val <= node.val <= q.val: return node
+            else: node = node.left
 
 
     """236. Lowest Common Ancestor of a Binary Tree (Medium)
@@ -7311,30 +7311,41 @@ class Solution:
 
 
     """240. Search a 2D Matrix II (Medium)
-	Write an efficient algorithm that searches for a value in an m x n matrix. 
-	This matrix has the following properties:
+	Write an efficient algorithm that searches for a target value in an m x n 
+	integer matrix. The matrix has the following properties:
 	* Integers in each row are sorted in ascending from left to right.
 	* Integers in each column are sorted in ascending from top to bottom.
 
-	Example:
-	Consider the following matrix:
+	Example 1:
+	Input: matrix = [[ 1, 4, 7,11,15],
+	                 [ 2, 5, 8,12,19],
+	                 [ 3, 6, 9,16,22],
+	                 [10,13,14,17,24],
+	                 [18,21,23,26,30]], target = 5
+	Output: true
 
-	[
-	  [1,   4,  7, 11, 15],
-	  [2,   5,  8, 12, 19],
-	  [3,   6,  9, 16, 22],
-	  [10, 13, 14, 17, 24],
-	  [18, 21, 23, 26, 30]
-	]
-	Given target = 5, return true. Given target = 20, return false."""
+	Example 2:
+	Input: matrix = [[ 1, 4, 7,11,15],
+	                 [ 2, 5, 8,12,19],
+	                 [ 3, 6, 9,16,22],
+	                 [10,13,14,17,24],
+	                 [18,21,23,26,30]], target = 20
+	Output: false
 
-    def searchMatrix(self, matrix, target):
-        if not matrix: return False #edge caes 
-        
-        m, n = len(matrix), len(matrix[0])
+	Constraints:
+	* m == matrix.length
+	* n == matrix[i].length
+	* 1 <= n, m <= 300
+	* -10^9 <= matix[i][j] <= 10^9
+	* All the integers in each row are sorted in ascending order.
+	* All the integers in each column are sorted in ascending order.
+	* -10^9 <= target <= 10^9"""
+
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        m, n = len(matrix), len(matrix[0]) # dimensions
         i, j = 0, n-1
         while i < m and 0 <= j: 
-            if matrix[i][j] == target: return True 
+            if matrix[i][j] == target: return True
             elif matrix[i][j] < target: i += 1
             else: j -= 1
         return False 
@@ -10678,6 +10689,7 @@ class Solution:
         tail.right = head 
         return head 
 
+
     """481. Magical String (Medium)
 	A magical string S consists of only '1' and '2' and obeys the following 
 	rules:
@@ -10709,6 +10721,92 @@ class Solution:
             S.extend(S[i] * [3 ^ S[-1]])
             i += 1
         return S[:n].count(1)
+
+
+    """487. Max Consecutive Ones II (Medium)
+	Given a binary array, find the maximum number of consecutive 1s in this 
+	array if you can flip at most one 0.
+
+	Example 1:
+	Input: [1,0,1,1,0]
+	Output: 4
+	Explanation: Flip the first zero will get the the maximum number of 
+	             consecutive 1s. After flipping, the maximum number of 
+	             consecutive 1s is 4.
+	
+	Note:
+	* The input array will only contain 0 and 1.
+	* The length of input array is a positive integer and will not exceed 10,000
+	
+	Follow up: What if the input numbers come in one by one as an infinite 
+	           stream? In other words, you can't store all numbers coming from 
+	           the stream as it's too large to hold in memory. Could you solve 
+	           it efficiently?"""
+
+    def findMaxConsecutiveOnes(self, nums: List[int]) -> int:
+        ans = curr = 0
+        prev = -1
+        for x in nums: 
+            if x == 0: prev, curr = curr, 0
+            else: curr += 1
+            ans = max(ans, prev + 1 + curr)
+        return ans 
+
+
+    """510. Inorder Successor in BST II (Medium)
+	Given a node in a binary search tree, find the in-order successor of that 
+	node in the BST. If that node has no in-order successor, return null. The 
+	successor of a node is the node with the smallest key greater than node.val.
+	You will have direct access to the node but not to the root of the tree. 
+	Each node will have a reference to its parent node. Below is the definition 
+	for Node:
+
+	class Node {
+	    public int val;
+	    public Node left;
+	    public Node right;
+	    public Node parent;
+	}
+	Follow up: Could you solve it without looking up any of the node's values?
+
+	Example 1:
+	Input: tree = [2,1,3], node = 1
+	Output: 2
+	Explanation: 1's in-order successor node is 2. Note that both the node and 
+	             the return value is of Node type.
+
+	Example 2:
+	Input: tree = [5,3,6,2,4,null,null,1], node = 6
+	Output: null
+	Explanation: There is no in-order successor of the current node, so the 
+	             answer is null.
+	
+	Example 3:
+	Input: tree = [15,6,18,3,7,17,20,2,4,null,13,null,null,null,null,null,null,null,null,9], node = 15
+	Output: 17
+
+	Example 4:
+	Input: tree = [15,6,18,3,7,17,20,2,4,null,13,null,null,null,null,null,null,null,null,9], node = 13
+	Output: 15
+
+	Example 5:
+	Input: tree = [0], node = 0
+	Output: null
+
+	Constraints:
+	* -10^5 <= Node.val <= 10^5
+	* 1 <= Number of Nodes <= 10^4
+	* All Nodes will have unique values."""
+
+    def inorderSuccessor(self, node: 'Node') -> 'Node':
+        if node.right: 
+            node = node.right
+            while node.left: node = node.left
+            return node 
+        
+        while node.parent: 
+            if node == node.parent.left: return node.parent
+            node = node.parent 
 
 
     """513. Find Bottom Left Tree Value (Medium)
@@ -10951,17 +11049,10 @@ class Solution:
 	* The length of all the strings in the input won't exceed 1,000."""
 
     def findLongestWord(self, s: str, d: List[str]) -> str:
-        
-        def fn(word): 
-            """Return True if word is a subsequence of s."""
-            ss = iter(s)
-            return all(c in ss for c in word)
-        
-        ans = ""
-        for w in d: 
-            if (len(w) > len(ans) or len(w) == len(ans) and w < ans) and fn(w): 
-                ans = w
-        return ans 
+        for word in sorted(d, key=lambda x: (-len(x), x)): 
+            it = iter(s)
+            if all(c in it for c in word): return word
+        return ""
 
 
     """525. Contiguous Array (Medium)
@@ -11222,6 +11313,35 @@ class Solution:
         return root 
 
 
+    """562. Longest Line of Consecutive One in Matrix (Medium)
+	Given a 01 matrix M, find the longest line of consecutive one in the matrix. 
+	The line could be horizontal, vertical, diagonal or anti-diagonal.
+	
+	Example:
+	Input: [[0,1,1,0],
+	        [0,1,1,0],
+	        [0,0,0,1]]
+	Output: 3
+	Hint: The number of elements in the given matrix will not exceed 10,000."""
+
+    def longestLine(self, M: List[List[int]]) -> int:
+        ans = 0 
+        if M: 
+            m, n = len(M), len(M[0]) # dimensions 
+            rows, cols = [0]*m, [0]*n
+            diag, anti = [0]*(m+n-1), [0]*(m+n-1)
+            for i in range(m): 
+                for j in range(n): 
+                    if M[i][j]: 
+                        rows[i] += 1
+                        cols[j] += 1
+                        diag[j-i+m-1] += 1
+                        anti[i+j] += 1
+                    else: rows[i] = cols[j] = diag[j-i+m-1] = anti[i+j] = 0
+                    ans = max(ans, rows[i], cols[j], diag[j-i+m-1], anti[i+j])
+        return ans 
+
+
     """565. Array Nesting (Medium)
 	A zero-indexed array A of length N contains all integers from 0 to N-1. 
 	Find and return the longest length of set S, where 
@@ -11284,6 +11404,48 @@ class Solution:
             ans += 2*(abs(tree[0]-x) + abs(tree[1]-y))
             mn = min(mn, abs(squirrel[0]-x) + abs(squirrel[1]-y) - abs(tree[0]-x) - abs(tree[1]-y))
         return ans + mn
+
+
+    """582. Kill Process (Medium)
+	Given n processes, each process has a unique PID (process id) and its PPID 
+	(parent process id). Each process only has one parent process, but may have 
+	one or more children processes. This is just like a tree structure. Only 
+	one process has PPID that is 0, which means this process has no parent 
+	process. All the PIDs will be distinct positive integers. We use two list 
+	of integers to represent a list of processes, where the first list contains 
+	PID for each process and the second list contains the corresponding PPID. 
+	Now given the two lists, and a PID representing a process you want to kill, 
+	return a list of PIDs of processes that will be killed in the end. You 
+	should assume that when a process is killed, all its children processes 
+	will be killed. No order is required for the final answer.
+
+	Example 1:
+	Input: pid =  [1, 3, 10, 5]
+	       ppid = [3, 0, 5, 3]
+	       kill = 5
+	Output: [5,10]
+	Explanation: 
+	           3
+	         /   \
+	        1     5
+	             /
+	            10
+	Kill 5 will also kill 10.
+	Note: 
+	* The given kill id is guaranteed to be one of the given PIDs.
+	* n >= 1."""
+
+    def killProcess(self, pid: List[int], ppid: List[int], kill: int) -> List[int]:
+        tree = {}
+        for x, px in zip(pid, ppid): 
+            tree.setdefault(px, []).append(x)
+
+        ans, stack = [], [kill]
+        while stack: 
+            x = stack.pop()
+            ans.append(x)
+            stack.extend(tree.get(x, []))
+        return ans 
 
 
     """594. Longest Harmonious Subsequence (Easy)
@@ -12608,6 +12770,38 @@ class Solution:
         for x in answers: 
             if not cnt[x] % (1 + x): ans += 1 + x # reached capacity & update ans
             cnt[x] += 1
+        return ans 
+
+
+    """784. Letter Case Permutation (Medium)
+	Given a string S, we can transform every letter individually to be 
+	lowercase or uppercase to create another string. Return a list of all 
+	possible strings we could create. You can return the output in any order.
+
+	Example 1:
+	Input: S = "a1b2"
+	Output: ["a1b2","a1B2","A1b2","A1B2"]
+
+	Example 2:
+	Input: S = "3z4"
+	Output: ["3z4","3Z4"]
+
+	Example 3:
+	Input: S = "12345"
+	Output: ["12345"]
+
+	Example 4:
+	Input: S = "0"
+	Output: ["0"]
+
+	Constraints:
+	* S will be a string with length between 1 and 12.
+	* S will consist only of letters or digits."""
+
+    def letterCasePermutation(self, S: str) -> List[str]:
+        ans = [""]
+        for c in S: 
+            ans = [x + cc for x in ans for cc in {c, c.swapcase()}]
         return ans 
 
 
@@ -16035,6 +16229,41 @@ class Solution:
         return "".join(c for c in S if c not in "aeiou")
 
 
+    """1120. Maximum Average Subtree (Medium)
+	Given the root of a binary tree, find the maximum average value of any 
+	subtree of that tree. (A subtree of a tree is any node of that tree plus 
+	all its descendants. The average value of a tree is the sum of its values, 
+	divided by the number of nodes.)
+
+	Example 1:
+	Input: [5,6,1]
+	Output: 6.00000
+	Explanation: 
+	For the node with value = 5 we have an average of (5 + 6 + 1) / 3 = 4.
+	For the node with value = 6 we have an average of 6 / 1 = 6.
+	For the node with value = 1 we have an average of 1 / 1 = 1.
+	So the answer is 6 which is the maximum.
+
+	Note:
+	* The number of nodes in the tree is between 1 and 5000.
+	* Each node will have a value between 0 and 100000.
+	* Answers will be accepted as correct if they are within 10^-5 of the 
+	  correct answer."""
+
+    def maximumAverageSubtree(self, root: TreeNode) -> float:
+        
+        def fn(node): 
+            """Return sum, count and max average of subtree rooted at node."""
+            if not node: return 0, 0, 0
+            ls, ln, lv = fn(node.left)
+            rs, rn, rv = fn(node.right)
+            s = ls + node.val + rs
+            n = ln + 1 + rn 
+            return s, n, max(s/n, lv, rv)
+            
+        return fn(root)[2]
+
+
     """1133. Largest Unique Number (Easy)
 	Given an array of integers A, return the largest integer that only occurs 
 	once. If no integer occurs once, return -1.
@@ -16141,6 +16370,51 @@ class Solution:
         for c in word: 
             ans += abs(loc[c] - prev)
             prev = loc[c]
+        return ans 
+
+
+    """1167. Minimum Cost to Connect Sticks (Medium)
+	You have some number of sticks with positive integer lengths. These lengths 
+	are given as an array sticks, where sticks[i] is the length of the ith 
+	stick. You can connect any two sticks of lengths x and y into one stick by 
+	paying a cost of x + y. You must connect all the sticks until there is only 
+	one stick remaining. Return the minimum cost of connecting all the given 
+	sticks into one stick in this way.
+
+	Example 1:
+	Input: sticks = [2,4,3]
+	Output: 14
+	Explanation: You start with sticks = [2,4,3].
+	1. Combine sticks 2 and 3 for a cost of 2 + 3 = 5. Now you have sticks = [5,4].
+	2. Combine sticks 5 and 4 for a cost of 5 + 4 = 9. Now you have sticks = [9].
+	There is only one stick left, so you are done. The total cost is 5 + 9 = 14.
+
+	Example 2:
+	Input: sticks = [1,8,3,5]
+	Output: 30
+	Explanation: You start with sticks = [1,8,3,5].
+	1. Combine sticks 1 and 3 for a cost of 1 + 3 = 4. Now you have sticks = [4,8,5].
+	2. Combine sticks 4 and 5 for a cost of 4 + 5 = 9. Now you have sticks = [9,8].
+	3. Combine sticks 9 and 8 for a cost of 9 + 8 = 17. Now you have sticks = [17].
+	There is only one stick left, so you are done. The total cost is 4 + 9 + 17 = 30.
+
+	Example 3:
+	Input: sticks = [5]
+	Output: 0
+	Explanation: There is only one stick, so you don't need to do anything. The total cost is 0.
+
+	Constraints:
+	* 1 <= sticks.length <= 104
+	* 1 <= sticks[i] <= 104"""
+
+    def connectSticks(self, sticks: List[int]) -> int:
+        heapify(sticks)
+        ans = 0 
+        while len(sticks) > 1: 
+            x = heappop(sticks)
+            y = heappop(sticks)
+            heappush(sticks, x + y)
+            ans += x + y 
         return ans 
 
 
@@ -16253,6 +16527,63 @@ class Solution:
         return ans 
 
 
+    """1197. Minimum Knight Moves (Medium)
+	In an infinite chess board with coordinates from -infinity to +infinity, 
+	you have a knight at square [0, 0]. A knight has 8 possible moves it can 
+	make, as illustrated below. Each move is two squares in a cardinal 
+	direction, then one square in an orthogonal direction. Return the minimum 
+	number of steps needed to move the knight to the square [x, y].  It is 
+	guaranteed the answer exists.
+
+	Example 1:
+	Input: x = 2, y = 1
+	Output: 1
+	Explanation: [0, 0] → [2, 1]
+
+	Example 2:
+	Input: x = 5, y = 5
+	Output: 4
+	Explanation: [0, 0] → [2, 1] → [4, 2] → [3, 4] → [5, 5]
+
+	Constraints: |x| + |y| <= 300"""
+
+    def minKnightMoves(self, x: int, y: int) -> int:
+        
+        @cache
+        def fn(x, y): 
+            """Return minimum moves from (x, y) to (0, 0)."""
+            x, y = abs(x), abs(y) # symmetry 
+            if x == y == 0: return 0 
+            if x + y == 2: return 2
+            return 1 + min(fn(x-2, y-1), fn(x-1, y-2))
+        
+        return fn(x, y)
+
+
+    """1198. Find Smallest Common Element in All Rows (Medium)
+	Given a matrix mat where every row is sorted in strictly increasing order, 
+	return the smallest common element in all rows. If there is no common 
+	element, return -1.
+
+	Example 1:
+	Input: mat = [[1,2,3,4,5],[2,4,5,8,10],[3,5,7,9,11],[1,3,5,7,9]]
+	Output: 5
+
+	Constraints:
+	* 1 <= mat.length, mat[i].length <= 500
+	* 1 <= mat[i][j] <= 10^4
+	* mat[i] is sorted in strictly increasing order."""
+
+    def smallestCommonElement(self, mat: List[List[int]]) -> int:
+        m, n = len(mat), len(mat[0]) # dimensions
+        freq = {}
+        for j in range(n):
+            for i in range(m): 
+                freq[mat[i][j]] = 1 + freq.get(mat[i][j], 0)
+                if freq[mat[i][j]] == m: return mat[i][j]
+        return -1 
+
+
     """1213. Intersection of Three Sorted Arrays (Easy)
 	Given three integer arrays arr1, arr2 and arr3 sorted in strictly 
 	increasing order, return a sorted array of only the integers that 
@@ -16285,6 +16616,48 @@ class Solution:
             if arr2[i2] == mn: i2 += 1
             if arr3[i3] == mn: i3 += 1
         return ans 
+
+
+    """1214. Two Sum BSTs (Medium)
+	Given the roots of two binary search trees, root1 and root2, return true if 
+	and only if there is a node in the first tree and a node in the second tree 
+	whose values sum up to a given integer target.
+
+	Example 1:
+	Input: root1 = [2,1,4], root2 = [1,0,3], target = 5
+	Output: true
+	Explanation: 2 and 3 sum up to 5.
+
+	Example 2:
+	Input: root1 = [0,-10,10], root2 = [5,1,7,0,2], target = 18
+	Output: false
+
+	Constraints:
+	* The number of nodes in each tree is in the range [1, 5000].
+	* -10^9 <= Node.val, target <= 10^9"""
+
+    def twoSumBSTs(self, root1: TreeNode, root2: TreeNode, target: int) -> bool:
+        
+        def fn(node): 
+            """Return inorder traversal of binary tree."""
+            ans, stack = [], []
+            while stack or node: 
+                if node: 
+                    stack.append(node)
+                    node = node.left
+                else: 
+                    node = stack.pop()
+                    ans.append(node.val)
+                    node = node.right 
+            return ans 
+        
+        val1, val2 = fn(root1), fn(root2)
+        lo, hi = 0, len(val2)-1
+        while lo < len(val1) and 0 <= hi:
+            if val1[lo] + val2[hi] < target: lo += 1
+            elif val1[lo] + val2[hi] == target: return True 
+            else: hi -= 1
+        return False 
 
 
     """1228. Missing Number In Arithmetic Progression (Easy)
@@ -16356,6 +16729,49 @@ class Solution:
         return arr
 
 
+    """1249. Minimum Remove to Make Valid Parentheses (Medium)
+	Given a string s of '(' , ')' and lowercase English characters. Your task 
+	is to remove the minimum number of parentheses ( '(' or ')', in any 
+	positions ) so that the resulting parentheses string is valid and return 
+	any valid string. Formally, a parentheses string is valid if and only if:
+	* It is the empty string, contains only lowercase characters, or
+	* It can be written as AB (A concatenated with B), where A and B are valid strings, or
+	* It can be written as (A), where A is a valid string.
+
+	Example 1:
+	Input: s = "lee(t(c)o)de)"
+	Output: "lee(t(c)o)de"
+	Explanation: "lee(t(co)de)" , "lee(t(c)ode)" would also be accepted.
+
+	Example 2:
+	Input: s = "a)b(c)d"
+	Output: "ab(c)d"
+
+	Example 3:
+	Input: s = "))(("
+	Output: ""
+	Explanation: An empty string is also valid.
+
+	Example 4:
+	Input: s = "(a(b(c)d)"
+	Output: "a(b(c)d)"
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s[i] is one of  '(' , ')' and lowercase English letters."""
+
+    def minRemoveToMakeValid(self, s: str) -> str:
+        s = list(s)
+        stack = []
+        for i, c in enumerate(s): 
+            if c == "(": stack.append(i)
+            elif c == ")": 
+                if stack: stack.pop() # matching 
+                else: s[i] = "" # extra 
+        while stack: s[stack.pop()] = ""
+        return "".join(s)
+
+
     """1271. Hexspeak (Easy)
 	A decimal number can be converted to its Hexspeak representation by first 
 	converting it to an uppercase hexadecimal string, then replacing all 
@@ -16382,6 +16798,92 @@ class Solution:
     def toHexspeak(self, num: str) -> str:
         s = hex(int(num))[2:].upper().translate(str.maketrans("01", "OI"))
         return s if all(c.isalpha() for c in s) else "ERROR"
+
+
+    """1272. Remove Interval (Medium)
+	A set of real numbers can be represented as the union of several disjoint 
+	intervals, where each interval is in the form [a, b). A real number x is in 
+	the set if one of its intervals [a, b) contains x (i.e. a <= x < b). You 
+	are given a sorted list of disjoint intervals intervals representing a set 
+	of real numbers as described above, where intervals[i] = [ai, bi] represents 
+	the interval [ai, bi). You are also given another interval toBeRemoved. 
+	Return the set of real numbers with the interval toBeRemoved removed from 
+	intervals. In other words, return the set of real numbers such that every x 
+	in the set is in intervals but not in toBeRemoved. Your answer should be a 
+	sorted list of disjoint intervals as described above.
+
+	Example 1:
+	Input: intervals = [[0,2],[3,4],[5,7]], toBeRemoved = [1,6]
+	Output: [[0,1],[6,7]]
+
+	Example 2:
+	Input: intervals = [[0,5]], toBeRemoved = [2,3]
+	Output: [[0,2],[3,5]]
+
+	Example 3:
+	Input: intervals = [[-5,-4],[-3,-2],[1,2],[3,5],[8,9]], toBeRemoved = [-1,4]
+	Output: [[-5,-4],[-3,-2],[4,5],[8,9]]
+
+	Constraints:
+	* 1 <= intervals.length <= 10^4
+	* -10^9 <= ai < bi <= 10^9"""
+
+    def removeInterval(self, intervals: List[List[int]], toBeRemoved: List[int]) -> List[List[int]]:
+        ans = []
+        for x, y in intervals: 
+            if x < toBeRemoved[0]: ans.append([x, min(toBeRemoved[0], y)])
+            if toBeRemoved[1] < y: ans.append([max(x, toBeRemoved[1]), y])
+        return ans 
+
+
+    """1273. Delete Tree Nodes (Medium)
+	A tree rooted at node 0 is given as follows:
+	* The number of nodes is nodes;
+	* The value of the i-th node is value[i];
+	* The parent of the i-th node is parent[i].
+	Remove every subtree whose sum of values of nodes is zero. After doing so, 
+	return the number of nodes remaining in the tree.
+
+	Example 1:
+	Input: nodes = 7, parent = [-1,0,0,1,2,2,2], value = [1,-2,4,0,-2,-1,-1]
+	Output: 2
+
+	Example 2:
+	Input: nodes = 7, parent = [-1,0,0,1,2,2,2], value = [1,-2,4,0,-2,-1,-2]
+	Output: 6
+
+	Example 3:
+	Input: nodes = 5, parent = [-1,0,1,0,0], value = [-672,441,18,728,378]
+	Output: 5
+
+	Example 4:
+	Input: nodes = 5, parent = [-1,0,0,1,1], value = [-686,-842,616,-739,-746]
+	Output: 5
+
+	Constraints:
+	* 1 <= nodes <= 10^4
+	* parent.length == nodes
+	* 0 <= parent[i] <= nodes - 1
+	* parent[0] == -1 which indicates that 0 is the root.
+	* value.length == nodes
+	* -10^5 <= value[i] <= 10^5
+	* The given input is guaranteed to represent a valid tree."""
+
+    def deleteTreeNodes(self, nodes: int, parent: List[int], value: List[int]) -> int:
+        tree = {} # tree as adjacency list 
+        for i, x in enumerate(parent): 
+            tree.setdefault(x, []).append(i)
+        
+        def fn(n): 
+            """Return sum and count of sub-tree rooted at n."""
+            s, c = value[n], 1
+            for nn in tree.get(n, []): 
+                ss, cc = fn(nn)
+                s += ss
+                c += cc 
+            return (s, c) if s != 0 else (0, 0)
+        
+        return fn(0)[1]
 
 
     """1329. Sort the Matrix Diagonally (Medium)
@@ -16416,6 +16918,157 @@ class Solution:
                 i, j = i-1, j-1
                 mat[i][j] = vals.pop()
         return mat
+
+
+    """1387. Sort Integers by The Power Value (Medium)
+	The power of an integer x is defined as the number of steps needed to 
+	transform x into 1 using the following steps:
+	* if x is even then x = x / 2
+	* if x is odd then x = 3 * x + 1
+	For example, the power of x = 3 is 7 because 3 needs 7 steps to become 1 
+	(3 --> 10 --> 5 --> 16 --> 8 --> 4 --> 2 --> 1). Given three integers lo, 
+	hi and k. The task is to sort all integers in the interval [lo, hi] by the 
+	power value in ascending order, if two or more integers have the same power 
+	value sort them by ascending order. Return the k-th integer in the range 
+	[lo, hi] sorted by the power value. Notice that for any integer x 
+	(lo <= x <= hi) it is guaranteed that x will transform into 1 using these 
+	steps and that the power of x is will fit in 32 bit signed integer.
+
+	Example 1:
+	Input: lo = 12, hi = 15, k = 2
+	Output: 13
+	Explanation: The power of 12 is 9 (12 --> 6 --> 3 --> 10 --> 5 --> 16 --> 8 --> 4 --> 2 --> 1)
+	             The power of 13 is 9
+	             The power of 14 is 17
+	             The power of 15 is 17
+	             The interval sorted by the power value [12,13,14,15]. For 
+	             k = 2 answer is the second element which is 13. Notice that 12 
+	             and 13 have the same power value and we sorted them in 
+	             ascending order. Same for 14 and 15.
+
+	Example 2:
+	Input: lo = 1, hi = 1, k = 1
+	Output: 1
+	
+	Example 3:
+	Input: lo = 7, hi = 11, k = 4
+	Output: 7
+	Explanation: The power array corresponding to the interval [7, 8, 9, 10, 11] 
+	             is [16, 3, 19, 6, 14]. The interval sorted by power is 
+	             [8, 10, 11, 7, 9]. The fourth number in the sorted array is 7.
+	
+	Example 4:
+	Input: lo = 10, hi = 20, k = 5
+	Output: 13
+
+	Example 5:
+	Input: lo = 1, hi = 1000, k = 777
+	Output: 570
+
+	Constraints:
+	* 1 <= lo <= hi <= 1000
+	* 1 <= k <= hi - lo + 1"""
+
+    def getKth(self, lo: int, hi: int, k: int) -> int:
+        pq = [] # min heap (size hi - lo - k + 2)
+        for x in range(lo, hi+1): 
+            cnt, xx = 0, x
+            while xx > 1: 
+                xx = 3*xx + 1 if xx&1 else xx//2
+                cnt += 1
+            heappush(pq, (cnt, x))
+            if len(pq) > hi - lo - k + 2: heappop(pq)
+        return pq[0][1]
+
+
+    """1395. Count Number of Teams (Medium)
+	There are n soldiers standing in a line. Each soldier is assigned a unique 
+	rating value. You have to form a team of 3 soldiers amongst them under the 
+	following rules:
+	* Choose 3 soldiers with index (i, j, k) with rating (rating[i], rating[j], rating[k]).
+	* A team is valid if: (rating[i] < rating[j] < rating[k]) or (rating[i] > rating[j] > rating[k]) where (0 <= i < j < k < n).
+	Return the number of teams you can form given the conditions. (soldiers can 
+	be part of multiple teams).
+
+	Example 1:
+	Input: rating = [2,5,3,4,1]
+	Output: 3
+	Explanation: We can form three teams given the conditions. (2,3,4), (5,4,1), (5,3,1). 
+
+	Example 2:
+	Input: rating = [2,1,3]
+	Output: 0
+	Explanation: We can't form any team given the conditions.
+
+	Example 3:
+	Input: rating = [1,2,3,4]
+	Output: 4
+
+	Constraints:
+	* n == rating.length
+	* 3 <= n <= 1000
+	* 1 <= rating[i] <= 10^5
+	* All the integers in rating are unique."""
+
+    def numTeams(self, rating: List[int]) -> int:
+        ans = 0
+        seen = [[0]*2 for _ in rating]
+        for i in range(len(rating)): 
+            for ii in range(i): 
+                if rating[ii] < rating[i]: 
+                    ans += seen[ii][0]
+                    seen[i][0] += 1
+                elif rating[ii] > rating[i]: 
+                    ans += seen[ii][1]
+                    seen[i][1] += 1
+        return ans 
+
+
+    """1400. Construct K Palindrome Strings (Medium)
+	Given a string s and an integer k. You should construct k non-empty 
+	palindrome strings using all the characters in s. Return True if you can 
+	use all the characters in s to construct k palindrome strings or False 
+	otherwise.
+
+	Example 1:
+	Input: s = "annabelle", k = 2
+	Output: true
+	Explanation: You can construct two palindromes using all characters in s. 
+	             Some possible constructions "anna" + "elble", "anbna" + "elle", 
+	             "anellena" + "b"
+
+	Example 2:
+	Input: s = "leetcode", k = 3
+	Output: false
+	Explanation: It is impossible to construct 3 palindromes using all the 
+	             characters of s.
+	
+	Example 3:
+	Input: s = "true", k = 4
+	Output: true
+	Explanation: The only possible solution is to put each character in a 
+	             separate string.
+	
+	Example 4:
+	Input: s = "yzyzyzyzyzyzyzy", k = 2
+	Output: true
+	Explanation: Simply you can put all z's in one string and all y's in the 
+	             other string. Both strings will be palindrome.
+	
+	Example 5:
+	Input: s = "cr", k = 7
+	Output: false
+	Explanation: We don't have enough characters in s to construct 7 palindromes.
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* All characters in s are lower-case English letters.
+	* 1 <= k <= 10^5"""
+
+    def canConstruct(self, s: str, k: int) -> bool:
+        freq = {}
+        for c in s: freq[c] = 1 + freq.get(c, 0)
+        return sum(freq[c]&1 for c in freq) <= k <= len(s)
 
 
     """1426. Counting Elements (Easy)
@@ -16641,6 +17294,123 @@ class Solution:
             i -= 1
         
         return -1 
+
+
+    """1564. Put Boxes Into the Warehouse I (Medium)
+	You are given two arrays of positive integers, boxes and warehouse, 
+	representing the heights of some boxes of unit width and the heights of n 
+	rooms in a warehouse respectively. The warehouse's rooms are labelled from 
+	0 to n - 1 from left to right where warehouse[i] (0-indexed) is the height 
+	of the ith room. Boxes are put into the warehouse by the following rules:
+	* Boxes cannot be stacked.
+	* You can rearrange the insertion order of the boxes.
+	* Boxes can only be pushed into the warehouse from left to right only.
+	* If the height of some room in the warehouse is less than the height of a 
+	  box, then that box and all other boxes behind it will be stopped before 
+	  that room.
+	Return the maximum number of boxes you can put into the warehouse.
+
+	Example 1:
+	Input: boxes = [4,3,4,1], warehouse = [5,3,3,4,1]
+	Output: 3
+	Explanation: We can first put the box of height 1 in room 4. Then we can 
+	             put the box of height 3 in either of the 3 rooms 1, 2, or 3. 
+	             Lastly, we can put one box of height 4 in room 0. There is no 
+	             way we can fit all 4 boxes in the warehouse.
+
+	Example 2:
+	Input: boxes = [1,2,2,3,4], warehouse = [3,4,1,2]
+	Output: 3
+	Explanation: Notice that it's not possible to put the box of height 4 into 
+	             the warehouse since it cannot pass the first room of height 3. 
+	             Also, for the last two rooms, 2 and 3, only boxes of height 1 
+	             can fit. We can fit 3 boxes maximum as shown above. The yellow 
+	             box can also be put in room 2 instead. Swapping the orange and 
+	             green boxes is also valid, or swapping one of them with the 
+	             red box.
+	
+	Example 3:
+	Input: boxes = [1,2,3], warehouse = [1,2,3,4]
+	Output: 1
+	Explanation: Since the first room in the warehouse is of height 1, we can only put boxes of height 1.
+
+	Example 4:
+	Input: boxes = [4,5,6], warehouse = [3,3,3,3,3]
+	Output: 0
+
+	Constraints:
+	* n == warehouse.length
+	* 1 <= boxes.length, warehouse.length <= 10^5
+	* 1 <= boxes[i], warehouse[i] <= 10^9"""
+
+    def maxBoxesInWarehouse(self, boxes: List[int], warehouse: List[int]) -> int:
+        k = 0
+        for box in sorted(boxes, reverse=True): 
+            if k < len(warehouse) and box <= warehouse[k]: 
+                k += 1
+        return k 
+
+
+    """1580. Put Boxes Into the Warehouse II (Medium)
+	You are given two arrays of positive integers, boxes and warehouse, 
+	representing the heights of some boxes of unit width and the heights of n 
+	rooms in a warehouse respectively. The warehouse's rooms are labeled from 
+	0 to n - 1 from left to right where warehouse[i] (0-indexed) is the height 
+	of the ith room. Boxes are put into the warehouse by the following rules:
+	* Boxes cannot be stacked.
+	* You can rearrange the insertion order of the boxes.
+	* Boxes can be pushed into the warehouse from either side (left or right)
+	* If the height of some room in the warehouse is less than the height of a 
+	  box, then that box and all other boxes behind it will be stopped before 
+	  that room.
+	Return the maximum number of boxes you can put into the warehouse.
+
+	Example 1:
+	Input: boxes = [1,2,2,3,4], warehouse = [3,4,1,2]
+	Output: 4
+	Explanation:
+	We can store the boxes in the following order:
+	1- Put the yellow box in room 2 from either the left or right side.
+	2- Put the orange box in room 3 from the right side.
+	3- Put the green box in room 1 from the left side.
+	4- Put the red box in room 0 from the left side.
+	Notice that there are other valid ways to put 4 boxes such as swapping the 
+	red and green boxes or the red and orange boxes.
+
+	Example 2:
+	Input: boxes = [3,5,5,2], warehouse = [2,1,3,4,5]
+	Output: 3
+	Explanation: It's not possible to put the two boxes of height 5 in the 
+	             warehouse since there's only 1 room of height >= 5. Other 
+	             valid solutions are to put the green box in room 2 or to put 
+	             the orange box first in room 2 before putting the green and 
+	             red boxes.
+
+	Example 3:
+	Input: boxes = [1,2,3], warehouse = [1,2,3,4]
+	Output: 3
+	
+	Example 4:
+	Input: boxes = [4,5,6], warehouse = [3,3,3,3,3]
+	Output: 0
+
+	Constraints:
+	* n == warehouse.length
+	* 1 <= boxes.length, warehouse.length <= 10^5
+	* 1 <= boxes[i], warehouse[i] <= 10^9"""
+
+    def maxBoxesInWarehouse(self, boxes: List[int], warehouse: List[int]) -> int:
+        ans = lo = 0
+        hi = len(warehouse) - 1
+        for box in sorted(boxes, reverse=True): 
+            if lo <= hi: 
+                if box <= warehouse[lo]: 
+                    ans += 1
+                    lo += 1
+                elif box <= warehouse[hi]:
+                    ans += 1
+                    hi -= 1
+        return ans 
 
 
     """1588. Sum of All Odd Length Subarrays (Easy)
@@ -17061,6 +17831,49 @@ class Solution:
         return fn(0, 0)
 
 
+    """1602. Find Nearest Right Node in Binary Tree (Medium)
+	Given the root of a binary tree and a node u in the tree, return the 
+	nearest node on the same level that is to the right of u, or return null 
+	if u is the rightmost node in its level.
+
+	Example 1:
+	Input: root = [1,2,3,null,4,5,6], u = 4
+	Output: 5
+	Explanation: The nearest node on the same level to the right of node 4 is 
+	             node 5.
+
+	Example 2:
+	Input: root = [3,null,4,2], u = 2
+	Output: null
+	Explanation: There are no nodes to the right of 2.
+
+	Example 3:
+	Input: root = [1], u = 1
+	Output: null
+
+	Example 4:
+	Input: root = [3,4,2,null,null,null,1], u = 4
+	Output: 2
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 105].
+	* 1 <= Node.val <= 105
+	* All values in the tree are distinct.
+	* u is a node in the binary tree rooted at root."""
+
+    def findNearestRightNode(self, root: TreeNode, u: TreeNode) -> TreeNode:
+        queue = [root]
+        while queue: 
+            prev = None 
+            newq = []
+            for node in queue: 
+                if node == u: return prev 
+                prev = node 
+                if node.right: newq.append(node.right)
+                if node.left: newq.append(node.left)
+            queue = newq
+
+
     """1608. Special Array With X Elements Greater Than or Equal X (Easy)
 	You are given an array nums of non-negative integers. nums is considered 
 	special if there exists a number x such that there are exactly x numbers in 
@@ -17272,6 +18085,69 @@ class Solution:
         if not (n & (n-1)): return 2*n-1
         b = 1 << n.bit_length()-1 # most significant set bit 
         return self.minimumOneBitOperations((b>>1)^b^n) + b
+
+
+    """1618. Maximum Font to Fit a Sentence in a Screen (Medium)
+	You are given a string text. We want to display text on a screen of width w 
+	and height h. You can choose any font size from array fonts, which contains 
+	the available font sizes in ascending order. You can use the FontInfo 
+	interface to get the width and height of any character at any available 
+	font size.
+
+	The FontInfo interface is defined as such:
+
+	interface FontInfo {
+	  // Returns the width of character ch on the screen using font size fontSize.
+	  // O(1) per call
+	  public int getWidth(int fontSize, char ch);
+
+	  // Returns the height of any character on the screen using font size fontSize.
+	  // O(1) per call
+	  public int getHeight(int fontSize);
+	}
+	The calculated width of text for some fontSize is the sum of every 
+	getWidth(fontSize, text[i]) call for each 0 <= i < text.length (0-indexed). 
+	The calculated height of text for some fontSize is getHeight(fontSize). 
+	Note that text is displayed on a single line. It is guaranteed that 
+	FontInfo will return the same value if you call getHeight or getWidth with 
+	the same parameters. It is also guaranteed that for any font size fontSize 
+	and any character ch:
+	* getHeight(fontSize) <= getHeight(fontSize+1)
+	* getWidth(fontSize, ch) <= getWidth(fontSize+1, ch)
+	Return the maximum font size you can use to display text on the screen. If 
+	text cannot fit on the display with any font size, return -1.
+
+	Example 1:
+	Input: text = "helloworld", w = 80, h = 20, fonts = [6,8,10,12,14,16,18,24,36]
+	Output: 6
+
+	Example 2:
+	Input: text = "leetcode", w = 1000, h = 50, fonts = [1,2,4]
+	Output: 4
+
+	Example 3:
+	Input: text = "easyquestion", w = 100, h = 100, fonts = [10,15,20,25]
+	Output: -1
+
+	Constraints:
+	* 1 <= text.length <= 50000
+	* text contains only lowercase English letters.
+	* 1 <= w <= 10^7
+	* 1 <= h <= 10^4
+	* 1 <= fonts.length <= 10^5
+	* 1 <= fonts[i] <= 10^5
+	* fonts is sorted in ascending order and does not contain duplicates."""
+
+    def maxFont(self, text: str, w: int, h: int, fonts: List[int], fontInfo : 'FontInfo') -> int:
+        # last True binary search 
+        lo, hi = -1, len(fonts)-1
+        while lo < hi: 
+            mid = lo + hi + 1 >> 1
+            hh = fontInfo.getHeight(fonts[mid])
+            ww = sum(fontInfo.getWidth(fonts[mid], c) for c in text)
+            if hh <= h and ww <= w : lo = mid
+            else: hi = mid - 1 
+        return fonts[lo] if lo >= 0 else -1  
 
 
     """1619. Mean of Array After Removing Some Elements (Easy)
@@ -17787,6 +18663,68 @@ class Solution:
         return ans 
 
 
+    """1634. Add Two Polynomials Represented as Linked Lists (Medium)
+	A polynomial linked list is a special type of linked list where every node 
+	represents a term in a polynomial expression. Each node has three attributes:
+	* coefficient: an integer representing the number multiplier of the term. 
+	  The coefficient of the term 9x4 is 9.
+	* power: an integer representing the exponent. The power of the term 9x4 is 
+	  4.
+	* next: a pointer to the next node in the list, or null if it is the last 
+	  node of the list.
+	The polynomial linked list must be in its standard form: the polynomial 
+	must be in strictly descending order by its power value. Also, terms with a 
+	coefficient of 0 are omitted. Given two polynomial linked list heads, poly1 
+	and poly2, add the polynomials together and return the head of the sum of 
+	the polynomials.
+
+	PolyNode format: The input/output format is as a list of n nodes, where 
+	                 each node is represented as its [coefficient, power]. For 
+	                 example, the polynomial 5x3 + 4x - 7 would be represented 
+	                 as: [[5,3],[4,1],[-7,0]].
+
+	Example 1:
+	Input: poly1 = [[1,1]], poly2 = [[1,0]]
+	Output: [[1,1],[1,0]]
+	Explanation: poly1 = x. poly2 = 1. The sum is x + 1.
+
+	Example 2:
+	Input: poly1 = [[2,2],[4,1],[3,0]], poly2 = [[3,2],[-4,1],[-1,0]]
+	Output: [[5,2],[2,0]]
+	Explanation: poly1 = 2x2 + 4x + 3. 
+	             poly2 = 3x2 - 4x - 1. 
+	             The sum is 5x2 + 2. Notice that we omit the "0x" term.
+
+	Example 3:
+	Input: poly1 = [[1,2]], poly2 = [[-1,2]]
+	Output: []
+	Explanation: The sum is 0. We return an empty list.
+	 
+	Constraints:
+	* 0 <= n <= 10^4
+	* -10^9 <= PolyNode.coefficient <= 10^9
+	* PolyNode.coefficient != 0
+	* 0 <= PolyNode.power <= 10^9
+	* PolyNode.power > PolyNode.next.power"""
+
+    def addPoly(self, poly1: 'PolyNode', poly2: 'PolyNode') -> 'PolyNode':
+        dummy = node = PolyNode() 
+        while poly1 and poly2: 
+            if poly1.power > poly2.power: 
+                node.next = node = poly1
+                poly1 = poly1.next 
+            elif poly1.power < poly2.power: 
+                node.next = node = poly2
+                poly2 = poly2.next 
+            else: 
+                coef = poly1.coefficient + poly2.coefficient
+                if coef: node.next = node = PolyNode(coef, poly1.power)
+                poly1 = poly1.next 
+                poly2 = poly2.next 
+        node.next = poly1 or poly2
+        return dummy.next 
+
+
     """1636. Sort Array by Increasing Frequency (Easy)
 	Given an array of integers nums, sort the array in increasing order based 
 	on the frequency of the values. If multiple values have the same frequency, 
@@ -17994,6 +18932,56 @@ class Solution:
                 m -= 1
                 k -= kk 
         return ans + m*"V"
+
+
+    """1644. Lowest Common Ancestor of a Binary Tree II (Medium)
+	Given the root of a binary tree, return the lowest common ancestor (LCA) 
+	of two given nodes, p and q. If either node p or q does not exist in the 
+	tree, return null. All values of the nodes in the tree are unique. 
+	According to the definition of LCA on Wikipedia: "The lowest common 
+	ancestor of two nodes p and q in a binary tree T is the lowest node that 
+	has both p and q as descendants (where we allow a node to be a descendant 
+	of itself)". A descendant of a node x is a node y that is on the path from 
+	node x to some leaf node.
+
+	Example 1:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+	Output: 3
+	Explanation: The LCA of nodes 5 and 1 is 3.
+
+	Example 2:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+	Output: 5
+	Explanation: The LCA of nodes 5 and 4 is 5. A node can be a descendant of 
+	             itself according to the definition of LCA.
+
+	Example 3:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 10
+	Output: null
+	Explanation: Node 10 does not exist in the tree, so return null.
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 104].
+	* -10^9 <= Node.val <= 10^9
+	* All Node.val are unique.
+	* p != q
+
+	Follow up: Can you find the LCA traversing the tree, without checking nodes 
+	           existence?"""
+
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+        
+        def fn(node):
+            """Return LCA of p and q in sub-tree rooted at node (if found)."""
+            if node: 
+                (ln, lx), (rn, rx) = fn(node.left), fn(node.right)
+                if node in (p, q): return node, 1 + lx + rx
+                if ln and rn: return node, lx + rx
+                return (ln, lx) if ln else (rn, rx)
+            return None, 0
+            
+        ans, x = fn(root)
+        return ans if x == 2 else None 
 
 
     """1646. Get Maximum in Generated Array (Easy)
@@ -18231,6 +19219,50 @@ class Fenwick:
         return ans % 1_000_000_007
 
 
+    """1650. Lowest Common Ancestor of a Binary Tree III (Medium)
+	Given two nodes of a binary tree p and q, return their lowest common 
+	ancestor (LCA). Each node will have a reference to its parent node. The 
+	definition for Node is below:
+	class Node {
+	    public int val;
+	    public Node left;
+	    public Node right;
+	    public Node parent;
+	}
+	According to the definition of LCA on Wikipedia: "The lowest common 
+	ancestor of two nodes p and q in a tree T is the lowest node that has both 
+	p and q as descendants (where we allow a node to be a descendant of itself)."
+
+	Example 1:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 1
+	Output: 3
+	Explanation: The LCA of nodes 5 and 1 is 3.
+
+	Example 2:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], p = 5, q = 4
+	Output: 5
+	Explanation: The LCA of nodes 5 and 4 is 5 since a node can be a descendant 
+	             of itself according to the LCA definition.
+
+	Example 3:
+	Input: root = [1,2], p = 1, q = 2
+	Output: 1
+
+	Constraints:
+	* The number of nodes in the tree is in the range [2, 10^5].
+	* -10^9 <= Node.val <= 10^9
+	* All Node.val are unique.
+	* p != q
+	* p and q exist in the tree."""
+
+    def lowestCommonAncestor(self, p: 'Node', q: 'Node') -> 'Node':
+        n0, n1 = p, q
+        while n0 != n1: 
+            n0 = n0.parent if n0 else q
+            n1 = n1.parent if n1 else p
+        return n0 
+
+
     """1652. Defuse the Bomb (Easy)
 	You have a bomb to defuse, and your time is running out! Your informer will 
 	provide you with a circular array code of length of n and a key k. To 
@@ -18332,6 +19364,55 @@ class Fenwick:
         return cnt1.keys() == cnt2.keys() and sorted(cnt1.values()) == sorted(cnt2.values())
 
 
+    """1660. Correct a Binary Tree (Medium)
+	You have a binary tree with a small defect. There is exactly one invalid 
+	node where its right child incorrectly points to another node at the same 
+	depth but to the invalid node's right. Given the root of the binary tree 
+	with this defect, root, return the root of the binary tree after removing 
+	this invalid node and every node underneath it (minus the node it 
+	incorrectly points to).
+
+	Custom testing:
+	The test input is read as 3 lines:
+	* TreeNode root
+	* int fromNode (not available to correctBinaryTree)
+	* int toNode (not available to correctBinaryTree)
+	After the binary tree rooted at root is parsed, the TreeNode with value of 
+	fromNode will have its right child pointer pointing to the TreeNode with a 
+	value of toNode. Then, root is passed to correctBinaryTree.
+
+	Example 1:
+	Input: root = [1,2,3], fromNode = 2, toNode = 3
+	Output: [1,null,3]
+	Explanation: The node with value 2 is invalid, so remove it.
+
+	Example 2:
+	Input: root = [8,3,1,7,null,9,4,2,null,null,null,5,6], fromNode = 7, toNode = 4
+	Output: [8,3,1,null,null,9,4,null,null,5,6]
+	Explanation: The node with value 7 is invalid, so remove it and the node underneath it, node 2.
+
+	Constraints:
+	* The number of nodes in the tree is in the range [3, 10^4].
+	* -10^9 <= Node.val <= 10^9
+	* All Node.val are unique.
+	* fromNode != toNode
+	* fromNode and toNode will exist in the tree and will be on the same depth.
+	* toNode is to the right of fromNode.
+	* fromNode.right is null in the initial tree from the test data."""
+
+    def correctBinaryTree(self, root: TreeNode) -> TreeNode:
+        queue = [(root, None)]
+        seen = set()
+        for node, prev in queue: 
+            if node.right and node.right.val in seen: 
+                if node == prev.left: prev.left = None
+                if node == prev.right: prev.right = None
+                return root 
+            seen.add(node.val)
+            if node.right: queue.append((node.right, node))
+            if node.left: queue.append((node.left, node))
+
+
     """1663. Smallest String With A Given Numeric Value (Medium)
 	The numeric value of a lowercase character is defined as its position 
 	(1-indexed) in the alphabet, so the numeric value of a is 1, the numeric 
@@ -18366,6 +19447,47 @@ class Fenwick:
             ans.append(chr(val + 96))
             k -= val
         return "".join(ans)
+
+
+    """1666. Change the Root of a Binary Tree (Medium)
+	Given the root of a binary tree and a leaf node, reroot the tree so that 
+	the leaf is the new root. You can reroot the tree with the following steps 
+	for each node cur on the path starting from the leaf up to the root​​​ 
+	excluding the root:
+	* If cur has a left child, then that child becomes cur's right child.
+	* cur's original parent becomes cur's left child. Note that in this process 
+	  the original parent's pointer to cur becomes null, making it have at most 
+	  one child.
+	Return the new root of the rerooted tree.
+
+	Note: Ensure that your solution sets the Node.parent pointers correctly 
+	      after rerooting or you will receive "Wrong Answer".
+
+	Example 1:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], leaf = 7
+	Output: [7,2,null,5,4,3,6,null,null,null,1,null,null,0,8]
+
+	Example 2:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], leaf = 0
+	Output: [0,1,null,3,8,5,null,null,null,6,2,null,null,7,4]
+
+	Constraints:
+	* The number of nodes in the tree is in the range [2, 100].
+	* -109 <= Node.val <= 109
+	* All Node.val are unique.
+	* leaf exist in the tree."""
+
+    def flipBinaryTree(self, root: 'Node', leaf: 'Node') -> 'Node':        
+        prev, node = None, leaf
+        while node: 
+            if node == root:
+                if prev == node.right: node.right = None
+                else: node.left = None
+            else: 
+                if prev == node.right: node.right = node.left 
+                node.left = node.parent
+            node.parent, node, prev = prev, node.parent, node 
+        return leaf
 
 
     """1672. Richest Customer Wealth (Easy)
@@ -18538,6 +19660,55 @@ class Fenwick:
             mn = min(mn, -x//2)
             ans = min(ans, -pq[0] - mn)
         return ans 
+
+
+    """1676. Lowest Common Ancestor of a Binary Tree IV (Medium)
+	Given the root of a binary tree and an array of TreeNode objects nodes, 
+	return the lowest common ancestor (LCA) of all the nodes in nodes. All the 
+	nodes will exist in the tree, and all values of the tree's nodes are unique.
+	Extending the definition of LCA on Wikipedia: "The lowest common ancestor 
+	of n nodes p1, p2, ..., pn in a binary tree T is the lowest node that has 
+	every pi as a descendant (where we allow a node to be a descendant of 
+	itself) for every valid i". A descendant of a node x is a node y that is on 
+	the path from node x to some leaf node.
+
+	Example 1:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], nodes = [4,7]
+	Output: 2
+	Explanation: The lowest common ancestor of nodes 4 and 7 is node 2.
+
+	Example 2:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], nodes = [1]
+	Output: 1
+	Explanation: The lowest common ancestor of a single node is the node itself.
+
+	Example 3:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], nodes = [7,6,2,4]
+	Output: 5
+	Explanation: The lowest common ancestor of the nodes 7, 6, 2, and 4 is node 5.
+
+	Example 4:
+	Input: root = [3,5,1,6,2,0,8,null,null,7,4], nodes = [0,1,2,3,4,5,6,7,8]
+	Output: 3
+	Explanation: The lowest common ancestor of all the nodes is the root node.
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 104].
+	* -109 <= Node.val <= 109
+	* All Node.val are unique.
+	* All nodes[i] will exist in the tree.
+	* All nodes[i] are distinct."""
+
+    def lowestCommonAncestor(self, root: 'TreeNode', nodes: 'List[TreeNode]') -> 'TreeNode':
+        nodes = set(nodes)
+        
+        @cache
+        def fn(node):
+            if not node: return # edge case 
+            if node in nodes or fn(node.left) and fn(node.right): return node
+            return fn(node.left) or fn(node.right)
+        
+        return fn(root)
 
 
     """1678. Goal Parser Interpretation (Easy)
@@ -20853,6 +22024,230 @@ class Fenwick:
         return ans if ans < inf else -1
 
 
+    """1762. Buildings With an Ocean View (Medium)
+	There are n buildings in a line. You are given an integer array heights of 
+	size n that represents the heights of the buildings in the line. The ocean 
+	is to the right of the buildings. A building has an ocean view if the 
+	building can see the ocean without obstructions. Formally, a building has 
+	an ocean view if all the buildings to its right have a smaller height. 
+	Return a list of indices (0-indexed) of buildings that have an ocean view, 
+	sorted in increasing order.
+
+	Example 1:
+	Input: heights = [4,2,3,1]
+	Output: [0,2,3]
+	Explanation: Building 1 (0-indexed) does not have an ocean view because building 2 is taller.
+
+	Example 2:
+	Input: heights = [4,3,2,1]
+	Output: [0,1,2,3]
+	Explanation: All the buildings have an ocean view.
+
+	Example 3:
+	Input: heights = [1,3,2,4]
+	Output: [3]
+	Explanation: Only building 3 has an ocean view.
+
+	Example 4:
+	Input: heights = [2,2,2,2]
+	Output: [3]
+	Explanation: Buildings cannot see the ocean if there are buildings of the same height to its right.
+
+	Constraints:
+	* 1 <= heights.length <= 105
+	* 1 <= heights[i] <= 109"""
+
+    def findBuildings(self, heights: List[int]) -> List[int]:
+        stack = []
+        for i, x in enumerate(heights): 
+            while stack and heights[stack[-1]] <= x: stack.pop()
+            stack.append(i)
+        return stack 
+
+
+    """1768. Merge Strings Alternately (Easy)
+	You are given two strings word1 and word2. Merge the strings by adding 
+	letters in alternating order, starting with word1. If a string is longer 
+	than the other, append the additional letters onto the end of the merged 
+	string. Return the merged string.
+
+	Example 1:
+	Input: word1 = "abc", word2 = "pqr"
+	Output: "apbqcr"
+	Explanation: The merged string will be merged as so:
+	             word1:  a   b   c
+	             word2:    p   q   r
+	             merged: a p b q c r
+
+	Example 2:
+	Input: word1 = "ab", word2 = "pqrs"
+	Output: "apbqrs"
+	Explanation: Notice that as word2 is longer, "rs" is appended to the end.
+	             word1:  a   b 
+	             word2:    p   q   r   s
+	             merged: a p b q   r   s
+
+	Example 3:
+	Input: word1 = "abcd", word2 = "pq"
+	Output: "apbqcd"
+	Explanation: Notice that as word1 is longer, "cd" is appended to the end.
+	             word1:  a   b   c   d
+	             word2:    p   q 
+	             merged: a p b q c   d
+	 
+	Constraints:
+	* 1 <= word1.length, word2.length <= 100
+	* word1 and word2 consist of lowercase English letters."""
+
+    def mergeAlternately(self, word1: str, word2: str) -> str:
+        return "".join(x+y for x, y in zip_longest(word1, word2, fillvalue=""))
+
+
+    """1769. Minimum Number of Operations to Move All Balls to Each Box (Medium)
+	You have n boxes. You are given a binary string boxes of length n, where 
+	boxes[i] is '0' if the ith box is empty, and '1' if it contains one ball. 
+	In one operation, you can move one ball from a box to an adjacent box. Box 
+	i is adjacent to box j if abs(i - j) == 1. Note that after doing so, there 
+	may be more than one ball in some boxes. Return an array answer of size n, 
+	where answer[i] is the minimum number of operations needed to move all the 
+	balls to the ith box. Each answer[i] is calculated considering the initial 
+	state of the boxes.
+
+	Example 1:
+	Input: boxes = "110"
+	Output: [1,1,3]
+	Explanation: The answer for each box is as follows:
+	             1) First box: you will have to move one ball from the second box to the first box in one operation.
+	             2) Second box: you will have to move one ball from the first box to the second box in one operation.
+	             3) Third box: you will have to move one ball from the first box to the third box in two operations, and move one ball from the second box to the third box in one operation.
+	
+	Example 2:
+	Input: boxes = "001011"
+	Output: [11,8,5,4,3,4]
+
+	Constraints:
+	* n == boxes.length
+	* 1 <= n <= 2000
+	* boxes[i] is either '0' or '1'."""
+
+    def minOperations(self, boxes: str) -> List[int]:
+        ans = []
+        ops = cnt = 0 # count of remaining "1"s
+        for i, x in enumerate(boxes):
+            if x == "1": 
+                ops += i
+                cnt += 1
+        
+        for i, x in enumerate(boxes): 
+            ans.append(ops)
+            if x == "1": cnt -= 2
+            ops -= cnt
+        return ans 
+
+
+    """1770. Maximum Score from Performing Multiplication Operations (Medium)
+	You are given two integer arrays nums and multipliers of size n and m 
+	respectively, where n >= m. The arrays are 1-indexed. You begin with a 
+	score of 0. You want to perform exactly m operations. On the ith operation 
+	(1-indexed), you will:
+	* Choose one integer x from either the start or the end of the array nums.
+	* Add multipliers[i] * x to your score.
+	* Remove x from the array nums.
+	Return the maximum score after performing m operations.
+
+	Example 1:
+	Input: nums = [1,2,3], multipliers = [3,2,1]
+	Output: 14
+	Explanation: An optimal solution is as follows:
+	- Choose from the end, [1,2,3], adding 3 * 3 = 9 to the score.
+	- Choose from the end, [1,2], adding 2 * 2 = 4 to the score.
+	- Choose from the end, [1], adding 1 * 1 = 1 to the score.
+	The total score is 9 + 4 + 1 = 14.
+
+	Example 2:
+	Input: nums = [-5,-3,-3,-2,7,1], multipliers = [-10,-5,3,4,6]
+	Output: 102
+	Explanation: An optimal solution is as follows:
+	- Choose from the start, [-5,-3,-3,-2,7,1], adding -5 * -10 = 50 to the score.
+	- Choose from the start, [-3,-3,-2,7,1], adding -3 * -5 = 15 to the score.
+	- Choose from the start, [-3,-2,7,1], adding -3 * 3 = -9 to the score.
+	- Choose from the end, [-2,7,1], adding 1 * 4 = 4 to the score.
+	- Choose from the end, [-2,7], adding 7 * 6 = 42 to the score. 
+	The total score is 50 + 15 - 9 + 4 + 42 = 102.
+
+	Constraints:
+	* n == nums.length
+	* m == multipliers.length
+	* 1 <= m <= 103
+	* m <= n <= 105
+	* -1000 <= nums[i], multipliers[i] <= 1000"""
+
+    def maximumScore(self, nums: List[int], multipliers: List[int]) -> int:
+        n, m = len(nums), len(multipliers)
+        dp = [[0]*m for _ in range(m+1)]
+        
+        for i in reversed(range(m)):
+            for j in range(i, m): 
+                k = i + m - j - 1
+                dp[i][j] = max(nums[i] * multipliers[k] + dp[i+1][j], nums[j-m+n] * multipliers[k] + dp[i][j-1])
+        
+        return dp[0][-1]
+
+
+    """1771. Maximize Palindrome Length From Subsequences (Hard)
+	You are given two strings, word1 and word2. You want to construct a string 
+	in the following manner:
+	* Choose some non-empty subsequence subsequence1 from word1.
+	* Choose some non-empty subsequence subsequence2 from word2.
+	* Concatenate the subsequences: subsequence1 + subsequence2, to make the 
+	  string.
+	Return the length of the longest palindrome that can be constructed in the 
+	described manner. If no palindromes can be constructed, return 0. A 
+	subsequence of a string s is a string that can be made by deleting some 
+	(possibly none) characters from s without changing the order of the 
+	remaining characters. A palindrome is a string that reads the same forward 
+	as well as backward.
+
+	Example 1:
+	Input: word1 = "cacb", word2 = "cbba"
+	Output: 5
+	Explanation: Choose "ab" from word1 and "cba" from word2 to make "abcba", 
+	             which is a palindrome.
+
+	Example 2:
+	Input: word1 = "ab", word2 = "ab"
+	Output: 3
+	Explanation: Choose "ab" from word1 and "a" from word2 to make "aba", which 
+	             is a palindrome.
+
+	Example 3:
+	Input: word1 = "aa", word2 = "bb"
+	Output: 0
+	Explanation: You cannot construct a palindrome from the described method, 
+	             so return 0.
+
+	Constraints:
+	* 1 <= word1.length, word2.length <= 1000
+	* word1 and word2 consist of lowercase English letters."""
+
+    def longestPalindrome(self, word1: str, word2: str) -> int:
+        
+        @cache
+        def fn(lo, hi):
+            """Return length of longest palindromic subsequence."""
+            if lo >= hi: return int(lo == hi)
+            if word[lo] == word[hi]: return 2 + fn(lo+1, hi-1)
+            return max(fn(lo+1, hi), fn(lo, hi-1))
+        
+        ans = 0
+        word = word1 + word2
+        for x in ascii_lowercase: 
+            i = word1.find(x) 
+            j = word2.rfind(x)
+            if i != -1 and j != -1: ans = max(ans, fn(i, j+len(word1)))
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -22742,6 +24137,82 @@ class CBTInserter:
         return self.root
 
 
+"""1396. Design Underground System (Medium)
+Implement the UndergroundSystem class:
+* void checkIn(int id, string stationName, int t)
+  + A customer with a card id equal to id, gets in the station stationName at time t.
+  + A customer can only be checked into one place at a time.
+* void checkOut(int id, string stationName, int t)
+  + A customer with a card id equal to id, gets out from the station stationName at time t.
+* double getAverageTime(string startStation, string endStation)
+  + Returns the average time to travel between the startStation and the endStation.
+  + The average time is computed from all the previous traveling from startStation to endStation that happened directly.
+  + Call to getAverageTime is always valid.
+You can assume all calls to checkIn and checkOut methods are consistent. If a 
+customer gets in at time t1 at some station, they get out at time t2 with 
+t2 > t1. All events happen in chronological order.
+
+Example 1:
+Input: ["UndergroundSystem","checkIn","checkIn","checkIn","checkOut","checkOut","checkOut","getAverageTime","getAverageTime","checkIn","getAverageTime","checkOut","getAverageTime"]
+       [[],[45,"Leyton",3],[32,"Paradise",8],[27,"Leyton",10],[45,"Waterloo",15],[27,"Waterloo",20],[32,"Cambridge",22],["Paradise","Cambridge"],["Leyton","Waterloo"],[10,"Leyton",24],["Leyton","Waterloo"],[10,"Waterloo",38],["Leyton","Waterloo"]]
+Output: [null,null,null,null,null,null,null,14.00000,11.00000,null,11.00000,null,12.00000]
+Explanation:
+UndergroundSystem undergroundSystem = new UndergroundSystem();
+undergroundSystem.checkIn(45, "Leyton", 3);
+undergroundSystem.checkIn(32, "Paradise", 8);
+undergroundSystem.checkIn(27, "Leyton", 10);
+undergroundSystem.checkOut(45, "Waterloo", 15);
+undergroundSystem.checkOut(27, "Waterloo", 20);
+undergroundSystem.checkOut(32, "Cambridge", 22);
+undergroundSystem.getAverageTime("Paradise", "Cambridge");       // return 14.00000. There was only one travel from "Paradise" (at time 8) to "Cambridge" (at time 22)
+undergroundSystem.getAverageTime("Leyton", "Waterloo");          // return 11.00000. There were two travels from "Leyton" to "Waterloo", a customer with id=45 from time=3 to time=15 and a customer with id=27 from time=10 to time=20. So the average time is ( (15-3) + (20-10) ) / 2 = 11.00000
+undergroundSystem.checkIn(10, "Leyton", 24);
+undergroundSystem.getAverageTime("Leyton", "Waterloo");          // return 11.00000
+undergroundSystem.checkOut(10, "Waterloo", 38);
+undergroundSystem.getAverageTime("Leyton", "Waterloo");          // return 12.00000
+
+Example 2:
+Input: ["UndergroundSystem","checkIn","checkOut","getAverageTime","checkIn","checkOut","getAverageTime","checkIn","checkOut","getAverageTime"]
+       [[],[10,"Leyton",3],[10,"Paradise",8],["Leyton","Paradise"],[5,"Leyton",10],[5,"Paradise",16],["Leyton","Paradise"],[2,"Leyton",21],[2,"Paradise",30],["Leyton","Paradise"]]
+Output: [null,null,null,5.00000,null,null,5.50000,null,null,6.66667]
+Explanation:
+UndergroundSystem undergroundSystem = new UndergroundSystem();
+undergroundSystem.checkIn(10, "Leyton", 3);
+undergroundSystem.checkOut(10, "Paradise", 8);
+undergroundSystem.getAverageTime("Leyton", "Paradise"); // return 5.00000
+undergroundSystem.checkIn(5, "Leyton", 10);
+undergroundSystem.checkOut(5, "Paradise", 16);
+undergroundSystem.getAverageTime("Leyton", "Paradise"); // return 5.50000
+undergroundSystem.checkIn(2, "Leyton", 21);
+undergroundSystem.checkOut(2, "Paradise", 30);
+undergroundSystem.getAverageTime("Leyton", "Paradise"); // return 6.66667
+ 
+Constraints:
+* There will be at most 20000 operations.
+* 1 <= id, t <= 10^6
+* All strings consist of uppercase and lowercase English letters, and digits.
+* 1 <= stationName.length <= 10
+* Answers within 10-5 of the actual value will be accepted as correct."""
+
+class UndergroundSystem:
+
+    def __init__(self):
+        self.in_ = {}
+        self.out = defaultdict(lambda: defaultdict(lambda: [0, 0]))
+
+    def checkIn(self, id: int, stationName: str, t: int) -> None:
+        self.in_[id] = (stationName, t)
+
+    def checkOut(self, id: int, stationName: str, t: int) -> None:
+        ss, tt = self.in_[id]
+        self.out[stationName][ss][0] += t - tt
+        self.out[stationName][ss][1] += 1
+
+    def getAverageTime(self, startStation: str, endStation: str) -> float:
+        s, c = self.out[endStation][startStation]
+        return s/c 
+
+
 """1603. Design Parking System (Easy)
 Design a parking system for a parking lot. The parking lot has three kinds of 
 parking spaces: big, medium, and small, with a fixed number of slots for each 
@@ -22829,3 +24300,42 @@ class OrderedStream:
         if id == self.ptr: 
             while self.ptr < len(self.data) and self.data[self.ptr]: self.ptr += 1 # update self.ptr 
         return self.data[id:self.ptr]
+
+
+"""1756. Design Most Recently Used Queue (Medium)
+Design a queue-like data structure that moves the most recently used element to 
+the end of the queue. Implement the MRUQueue class:
+* MRUQueue(int n) constructs the MRUQueue with n elements: [1,2,3,...,n].
+* fetch(int k) moves the kth element (1-indexed) to the end of the queue and returns it.
+
+Example 1:
+Input: ["MRUQueue", "fetch", "fetch", "fetch", "fetch"]
+       [[8], [3], [5], [2], [8]]
+Output: [null, 3, 6, 2, 2]
+Explanation:
+MRUQueue mRUQueue = new MRUQueue(8); // Initializes the queue to [1,2,3,4,5,6,7,8].
+mRUQueue.fetch(3); // Moves the 3rd element (3) to the end of the queue to become [1,2,4,5,6,7,8,3] and returns it.
+mRUQueue.fetch(5); // Moves the 5th element (6) to the end of the queue to become [1,2,4,5,7,8,3,6] and returns it.
+mRUQueue.fetch(2); // Moves the 2nd element (2) to the end of the queue to become [1,4,5,7,8,3,6,2] and returns it.
+mRUQueue.fetch(8); // The 8th element (2) is already at the end of the queue so just return it.
+
+Constraints:
+* 1 <= n <= 2000
+* 1 <= k <= n
+* At most 2000 calls will be made to fetch.
+
+Follow up: Finding an O(n) algorithm per fetch is a bit easy. Can you find an 
+           algorithm with a better complexity for each fetch call?"""
+
+from sortedcontainers import SortedList # balanced BST
+
+class MRUQueue:
+
+    def __init__(self, n: int):
+        self.data = SortedList((i, i) for i in range(1, n+1))
+
+    def fetch(self, k: int) -> int:
+        _, x = self.data.pop(k-1)
+        i = self.data[-1][0] + 1 if self.data else 0
+        self.data.add((i, x))
+        return x
