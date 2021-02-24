@@ -13915,10 +13915,8 @@ class Solution:
             if c == "(": 
                 stack.append(ans)
                 ans = 0
-            elif c == ")": 
-                ans = 2*ans if ans else 1
-                if stack: ans += stack.pop()
-        return ans 
+            else: ans = max(1, 2*ans) + stack.pop()
+        return ans
 
 
     """865. Smallest Subtree with all the Deepest Nodes (Medium)
@@ -16337,6 +16335,151 @@ class Solution:
         if nums[(len(nums)-1)//2] != target: return False
         k = bisect_left(nums, target, 0, len(nums)//2)
         return nums[k + len(nums)//2] == target 
+
+
+    """1160. Find Words That Can Be Formed by Characters (Easy)
+	You are given an array of strings words and a string chars. A string is 
+	good if it can be formed by characters from chars (each character can only 
+	be used once). Return the sum of lengths of all good strings in words.
+
+	Example 1:
+	Input: words = ["cat","bt","hat","tree"], chars = "atach"
+	Output: 6
+	Explanation: The strings that can be formed are "cat" and "hat" so the 
+	             answer is 3 + 3 = 6.
+
+	Example 2:
+	Input: words = ["hello","world","leetcode"], chars = "welldonehoneyr"
+	Output: 10
+	Explanation: The strings that can be formed are "hello" and "world" so the 
+	             answer is 5 + 5 = 10.
+
+	Note:
+	* 1 <= words.length <= 1000
+	* 1 <= words[i].length, chars.length <= 100
+	* All strings contain lowercase English letters only."""
+
+    def countCharacters(self, words: List[str], chars: str) -> int:
+        fc = {}
+        for c in chars: fc[c] = 1 + fc.get(c, 0)
+        
+        ans = 0
+        for word in words: 
+            fw = {}
+            for c in word: fw[c] = 1 + fw.get(c, 0)
+            if all(fw[c] <= fc.get(c, 0) for c in fw): ans += len(word)
+        return ans 
+
+
+    """1161. Maximum Level Sum of a Binary Tree (Medium)
+	Given the root of a binary tree, the level of its root is 1, the level of 
+	its children is 2, and so on. Return the smallest level x such that the sum 
+	of all the values of nodes at level x is maximal.
+
+	Example 1:
+	Input: root = [1,7,0,7,-8,null,null]
+	Output: 2
+	Explanation: 
+	Level 1 sum = 1.
+	Level 2 sum = 7 + 0 = 7.
+	Level 3 sum = 7 + -8 = -1.
+	So we return the level with the maximum sum which is level 2.
+	
+	Example 2:
+	Input: root = [989,null,10250,98693,-89388,null,null,null,-32127]
+	Output: 2
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 10^4].
+	* -10^5 <= Node.val <= 10^5"""
+
+    def maxLevelSum(self, root: TreeNode) -> int:
+        ans = level = 0
+        val = -inf
+        queue = [root]
+        while queue: 
+            level += 1
+            newq = []
+            tmp = 0
+            for node in queue: 
+                tmp += node.val
+                if node.left: newq.append(node.left)
+                if node.right: newq.append(node.right)
+            if tmp > val: ans, val = level, tmp
+            queue = newq
+        return ans 
+
+
+    """1162. As Far from Land as Possible (Medium)
+	Given an n x n grid containing only values 0 and 1, where 0 represents 
+	water and 1 represents land, find a water cell such that its distance to 
+	the nearest land cell is maximized, and return the distance. If no land or 
+	water exists in the grid, return -1. The distance used in this problem is 
+	the Manhattan distance: the distance between two cells (x0, y0) and (x1, y1) 
+	is |x0 - x1| + |y0 - y1|.
+
+	Example 1:
+	Input: grid = [[1,0,1],[0,0,0],[1,0,1]]
+	Output: 2
+	Explanation: The cell (1, 1) is as far as possible from all the land with distance 2.
+
+	Example 2:
+	Input: grid = [[1,0,0],[0,0,0],[0,0,0]]
+	Output: 4
+	Explanation: The cell (2, 2) is as far as possible from all the land with distance 4.
+
+	Constraints:
+	* n == grid.length
+	* n == grid[i].length
+	* 1 <= n <= 100
+	* grid[i][j] is 0 or 1"""
+
+    def maxDistance(self, grid: List[List[int]]) -> int:
+        n = len(grid) # dimension
+        
+        ans = -1
+        queue = [(i, j) for i in range(n) for j in range(n) if grid[i][j]]
+        while queue: 
+            newq = []
+            for i, j in queue: 
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
+                    if 0 <= ii < n and 0 <= jj < n and not grid[ii][jj]: 
+                        newq.append((ii, jj))
+                        grid[ii][jj] = 1 # mark as visited 
+            queue = newq
+            ans += 1
+        return ans or -1
+
+
+    """1163. Last Substring in Lexicographical Order (Hard)
+	Given a string s, return the last substring of s in lexicographical order.
+
+	Example 1:
+	Input: s = "abab"
+	Output: "bab"
+	Explanation: The substrings are ["a", "ab", "aba", "abab", "b", "ba", "bab"]. 
+	             The lexicographically maximum substring is "bab".
+
+	Example 2:
+	Input: s = "leetcode"
+	Output: "tcode"
+
+	Constraints:
+	* 1 <= s.length <= 4 * 105
+	* s contains only lowercase English letters."""
+
+    def lastSubstring(self, s: str) -> str:
+        ii = k = 0 # anchor
+        i = 1 # pointer 
+        while i + k < len(s): 
+            if s[ii+k] == s[i+k]: k += 1
+            else: 
+                if s[ii+k] > s[i+k]: i += k+1
+                else: 
+                    ii = max(ii+k+1, i)
+                    i = ii+1
+                k = 0
+        return s[ii:]
 
 
     """1165. Single-Row Keyboard (Easy)
@@ -22283,7 +22426,6 @@ class Fenwick:
                     seen.add(kk)
                     fn(kk, i+1)
             path[nums[k]].pop()
-            
             
         fn(0, 0)
         return ans 
