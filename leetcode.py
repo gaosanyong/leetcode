@@ -952,11 +952,11 @@ class Solution:
 	when the division result overflows."""
     
     def divide(self, dividend: int, divisor: int) -> int:
-        if dividend == -2147483648 and divisor == 1: return -2147483648 #edge case 
+        if dividend == -2147483648 and divisor == -1: return 2147483647 #edge case 
         
         neg = (dividend > 0) ^ (divisor > 0)
         ans, dividend, divisor = 0, abs(dividend), abs(divisor)
-        for i in reversed(range(31)):
+        for i in reversed(range(32)):
             if dividend >= divisor << i: 
                 ans |= 1 << i
                 dividend -= divisor << i
@@ -22611,6 +22611,211 @@ class Fenwick:
             i = word1.find(x) 
             j = word2.rfind(x)
             if i != -1 and j != -1: ans = max(ans, fn(i, j+len(word1)))
+        return ans 
+
+
+    """1773. Count Items Matching a Rule (Easy)
+	You are given an array items, where each items[i] = [typei, colori, namei] 
+	describes the type, color, and name of the ith item. You are also given a 
+	rule represented by two strings, ruleKey and ruleValue. The ith item is 
+	said to match the rule if one of the following is true:
+	* ruleKey == "type" and ruleValue == typei.
+	* ruleKey == "color" and ruleValue == colori.
+	* ruleKey == "name" and ruleValue == namei.
+	Return the number of items that match the given rule.
+
+	Example 1:
+	Input: items = [["phone","blue","pixel"],["computer","silver","lenovo"],["phone","gold","iphone"]], ruleKey = "color", ruleValue = "silver"
+	Output: 1
+	Explanation: There is only one item matching the given rule, which is ["computer","silver","lenovo"].
+	
+	Example 2:
+	Input: items = [["phone","blue","pixel"],["computer","silver","phone"],["phone","gold","iphone"]], ruleKey = "type", ruleValue = "phone"
+	Output: 2
+	Explanation: There are only two items matching the given rule, which are ["phone","blue","pixel"] and ["phone","gold","iphone"]. Note that the item ["computer","silver","phone"] does not match.
+
+	Constraints:
+	* 1 <= items.length <= 104
+	* 1 <= typei.length, colori.length, namei.length, ruleValue.length <= 10
+	* ruleKey is equal to either "type", "color", or "name".
+	* All strings consist only of lowercase letters."""
+
+    def countMatches(self, items: List[List[str]], ruleKey: str, ruleValue: str) -> int:
+        return sum(1 for t, c, n in items if (ruleKey, ruleValue) in (("type", t), ("color", c), ("name", n)))
+
+
+    """1774. Closest Dessert Cost (Medium)
+	You would like to make dessert and are preparing to buy the ingredients. 
+	You have n ice cream base flavors and m types of toppings to choose from. 
+	You must follow these rules when making your dessert:
+	* There must be exactly one ice cream base.
+	* You can add one or more types of topping or have no toppings at all.
+	* There are at most two of each type of topping.
+	You are given three inputs:
+	* baseCosts, an integer array of length n, where each baseCosts[i] 
+	  represents the price of the ith ice cream base flavor.
+	* toppingCosts, an integer array of length m, where each toppingCosts[i] is 
+	  the price of one of the ith topping.
+	* target, an integer representing your target price for dessert.
+	You want to make a dessert with a total cost as close to target as possible. 
+	Return the closest possible cost of the dessert to target. If there are 
+	multiple, return the lower one.
+
+	Example 1:
+	Input: baseCosts = [1,7], toppingCosts = [3,4], target = 10
+	Output: 10
+	Explanation: Consider the following combination (all 0-indexed):
+	- Choose base 1: cost 7
+	- Take 1 of topping 0: cost 1 x 3 = 3
+	- Take 0 of topping 1: cost 0 x 4 = 0
+	Total: 7 + 3 + 0 = 10.
+
+	Example 2:
+	Input: baseCosts = [2,3], toppingCosts = [4,5,100], target = 18
+	Output: 17
+	Explanation: Consider the following combination (all 0-indexed):
+	- Choose base 1: cost 3
+	- Take 1 of topping 0: cost 1 x 4 = 4
+	- Take 2 of topping 1: cost 2 x 5 = 10
+	- Take 0 of topping 2: cost 0 x 100 = 0
+	Total: 3 + 4 + 10 + 0 = 17. You cannot make a dessert with a total cost of 18.
+
+	Example 3:
+	Input: baseCosts = [3,10], toppingCosts = [2,5], target = 9
+	Output: 8
+	Explanation: It is possible to make desserts with cost 8 and 10. Return 8 as it is the lower cost.
+
+	Example 4:
+	Input: baseCosts = [10], toppingCosts = [1], target = 1
+	Output: 10
+	Explanation: Notice that you don't have to have any toppings, but you must have exactly one base.
+
+	Constraints:
+	* n == baseCosts.length
+	* m == toppingCosts.length
+	* 1 <= n, m <= 10
+	* 1 <= baseCosts[i], toppingCosts[i] <= 10^4
+	* 1 <= target <= 10^4"""
+
+    def closestCost(self, baseCosts: List[int], toppingCosts: List[int], target: int) -> int:
+        
+        @cache
+        def fn(i, cost):
+            """Return sum of subsequence closest to target."""
+            if cost >= target or i == len(toppingCosts): return cost
+            return min(fn(i+1, cost), fn(i+1, cost+toppingCosts[i]), key=lambda x: (abs(x-target), x))
+        
+        ans = inf
+        toppingCosts *= 2
+        for cost in baseCosts: 
+            ans = min(ans, fn(0, cost), key=lambda x: (abs(x-target), x))
+        return ans 
+
+
+    """1775. Equal Sum Arrays With Minimum Number of Operations (Medium)
+	You are given two arrays of integers nums1 and nums2, possibly of different 
+	lengths. The values in the arrays are between 1 and 6, inclusive. In one 
+	operation, you can change any integer's value in any of the arrays to any 
+	value between 1 and 6, inclusive. Return the minimum number of operations 
+	required to make the sum of values in nums1 equal to the sum of values in 
+	nums2. Return -1​​​​​ if it is not possible to make the sum of the two arrays 
+	equal.
+
+	Example 1:
+	Input: nums1 = [1,2,3,4,5,6], nums2 = [1,1,2,2,2,2]
+	Output: 3
+	Explanation: You can make the sums of nums1 and nums2 equal with 3 
+	operations. All indices are 0-indexed.
+	- Change nums2[0] to 6. nums1 = [1,2,3,4,5,6], nums2 = [6,1,2,2,2,2].
+	- Change nums1[5] to 1. nums1 = [1,2,3,4,5,1], nums2 = [6,1,2,2,2,2].
+	- Change nums1[2] to 2. nums1 = [1,2,2,4,5,1], nums2 = [6,1,2,2,2,2].
+
+	Example 2:
+	Input: nums1 = [1,1,1,1,1,1,1], nums2 = [6]
+	Output: -1
+	Explanation: There is no way to decrease the sum of nums1 or to increase 
+	the sum of nums2 to make them equal.
+
+	Example 3:
+	Input: nums1 = [6,6], nums2 = [1]
+	Output: 3
+	Explanation: You can make the sums of nums1 and nums2 equal with 3 
+	operations. All indices are 0-indexed. 
+	- Change nums1[0] to 2. nums1 = [2,6], nums2 = [1].
+	- Change nums1[1] to 2. nums1 = [2,2], nums2 = [1].
+	- Change nums2[0] to 4. nums1 = [2,2], nums2 = [4].
+
+	Constraints:
+	* 1 <= nums1.length, nums2.length <= 10^5
+	* 1 <= nums1[i], nums2[i] <= 6"""
+
+    def minOperations(self, nums1: List[int], nums2: List[int]) -> int:
+        if 6*len(nums1) < len(nums2) or 6*len(nums2) < len(nums1): return -1 # impossible 
+        
+        if sum(nums1) < sum(nums2): nums1, nums2 = nums2, nums1
+        s1, s2 = sum(nums1), sum(nums2) # s1 >= s2
+            
+        nums1.sort()
+        nums2.sort()
+        
+        ans = j = 0
+        i = len(nums1)-1
+        
+        while s1 > s2: 
+            if j >= len(nums2) or 0 <= i and nums1[i] - 1 > 6 - nums2[j]: 
+                s1 += 1 - nums1[i]
+                i -= 1
+            else: 
+                s2 += 6 - nums2[j]
+                j += 1
+            ans += 1
+        return ans 
+
+
+    """1776. Car Fleet II (Hard)
+	There are n cars traveling at different speeds in the same direction along 
+	a one-lane road. You are given an array cars of length n, where 
+	cars[i] = [position_i, speed_i] represents:
+	* positioni is the distance between the ith car and the beginning of the 
+	  road in meters. It is guaranteed that position_i < position_{i+1}.
+	* speedi is the initial speed of the ith car in meters per second.
+	For simplicity, cars can be considered as points moving along the number 
+	line. Two cars collide when they occupy the same position. Once a car 
+	collides with another car, they unite and form a single car fleet. The cars 
+	in the formed fleet will have the same position and the same speed, which 
+	is the initial speed of the slowest car in the fleet. Return an array 
+	answer, where answer[i] is the time, in seconds, at which the ith car 
+	collides with the next car, or -1 if the car does not collide with the next 
+	car. Answers within 10^-5 of the actual answers are accepted.
+
+	Example 1:
+	Input: cars = [[1,2],[2,1],[4,3],[7,2]]
+	Output: [1.00000,-1.00000,3.00000,-1.00000]
+	Explanation: After exactly one second, the first car will collide with the 
+	             second car, and form a car fleet with speed 1 m/s. After 
+	             exactly 3 seconds, the third car will collide with the fourth 
+	             car, and form a car fleet with speed 2 m/s.
+
+	Example 2:
+	Input: cars = [[3,4],[5,4],[6,3],[9,1]]
+	Output: [2.00000,1.00000,1.50000,-1.00000]
+
+	Constraints:
+	* 1 <= cars.length <= 10^5
+	* 1 <= position_i, speedi <= 10^6
+	* position_i < position_{i+1}"""
+
+    def getCollisionTimes(self, cars: List[List[int]]) -> List[float]:
+        ans = [-1]*len(cars)
+        stack = []
+        for i, (x, v) in enumerate(reversed(cars)): 
+            while stack and (v <= stack[-1][1] or (stack[-1][0] - x)/(v - stack[-1][1]) >= stack[-1][2]): stack.pop()
+            if stack: 
+                t = (stack[-1][0] - x)/(v - stack[-1][1])
+                stack.append((x, v, t))
+                ans[~i] = t
+            else: 
+                stack.append((x, v, inf))
         return ans 
 
 
