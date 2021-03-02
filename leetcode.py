@@ -16842,6 +16842,167 @@ class Solution:
         return False 
 
 
+    """1217. Minimum Cost to Move Chips to The Same Position (Easy)
+	We have n chips, where the position of the ith chip is position[i]. We need 
+	to move all the chips to the same position. In one step, we can change the 
+	position of the ith chip from position[i] to:
+	* position[i] + 2 or position[i] - 2 with cost = 0.
+	* position[i] + 1 or position[i] - 1 with cost = 1.
+	Return the minimum cost needed to move all the chips to the same position.
+
+	Example 1:
+	Input: position = [1,2,3]
+	Output: 1
+	Explanation: First step: Move the chip at position 3 to position 1 with cost = 0.
+          	     Second step: Move the chip at position 2 to position 1 with cost = 1.
+	             Total cost is 1.
+
+	Example 2:
+	Input: position = [2,2,2,3,3]
+	Output: 2
+	Explanation: We can move the two chips at position  3 to position 2. Each 
+	             move has cost = 1. The total cost = 2.
+	
+	Example 3:
+	Input: position = [1,1000000000]
+	Output: 1
+
+	Constraints:
+	* 1 <= position.length <= 100
+	* 1 <= position[i] <= 10^9"""
+
+    def minCostToMoveChips(self, position: List[int]) -> int:
+        odd = even = 0
+        for x in position: 
+            if x&1: odd += 1
+            else: even += 1
+        return min(odd, even)
+
+
+    """1218. Longest Arithmetic Subsequence of Given Difference (Medium)
+	Given an integer array arr and an integer difference, return the length of 
+	the longest subsequence in arr which is an arithmetic sequence such that 
+	the difference between adjacent elements in the subsequence equals 
+	difference. A subsequence is a sequence that can be derived from arr by 
+	deleting some or no elements without changing the order of the remaining 
+	elements.
+
+	Example 1:
+	Input: arr = [1,2,3,4], difference = 1
+	Output: 4
+	Explanation: The longest arithmetic subsequence is [1,2,3,4].
+
+	Example 2:
+	Input: arr = [1,3,5,7], difference = 1
+	Output: 1
+	Explanation: The longest arithmetic subsequence is any single element.
+
+	Example 3:
+	Input: arr = [1,5,7,8,5,3,4,2,1], difference = -2
+	Output: 4
+	Explanation: The longest arithmetic subsequence is [7,5,3,1].
+
+	Constraints:
+	* 1 <= arr.length <= 10^5
+	* -10^4 <= arr[i], difference <= 10^4"""
+
+    def longestSubsequence(self, arr: List[int], difference: int) -> int:
+        ans = 0 
+        seen = {}
+        for x in arr: 
+            seen[x] = 1 + seen.get(x-difference, 0)
+            ans = max(ans, seen[x])
+        return ans 
+
+
+    """1219. Path with Maximum Gold (Medium)
+	In a gold mine grid of size m * n, each cell in this mine has an integer 
+	representing the amount of gold in that cell, 0 if it is empty. Return the 
+	maximum amount of gold you can collect under the conditions:
+	* Every time you are located in a cell you will collect all the gold in 
+	  that cell.
+	* From your position you can walk one step to the left, right, up or down.
+	* You can't visit the same cell more than once.
+	* Never visit a cell with 0 gold.
+	* You can start and stop collecting gold from any position in the grid that 
+	  has some gold.
+
+	Example 1:
+	Input: grid = [[0,6,0],[5,8,7],[0,9,0]]
+	Output: 24
+	Explanation:
+	[[0,6,0],
+	 [5,8,7],
+	 [0,9,0]]
+	Path to get the maximum gold, 9 -> 8 -> 7.
+
+	Example 2:
+	Input: grid = [[1,0,7],[2,0,6],[3,4,5],[0,3,0],[9,0,20]]
+	Output: 28
+	Explanation:
+	[[1,0,7],
+	 [2,0,6],
+	 [3,4,5],
+	 [0,3,0],
+	 [9,0,20]]
+	Path to get the maximum gold, 1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 7.
+
+	Constraints:
+	* 1 <= grid.length, grid[i].length <= 15
+	* 0 <= grid[i][j] <= 100
+	* There are at most 25 cells containing gold."""
+
+    def getMaximumGold(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        
+        def fn(i, j): 
+            """Collect maximum gold from (i, j) via backtracking."""
+            if grid[i][j] <= 0: return 0
+            grid[i][j] *= -1 # mark as visited 
+            ans = 0
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                if 0 <= ii < m and 0 <= jj < n: 
+                    ans = max(ans, fn(ii, jj) - grid[i][j])
+            grid[i][j] *= -1 # backtracking 
+            return ans 
+        
+        return max(fn(i, j) for i in range(m) for j in range(n) if grid[i][j])
+
+
+    """1220. Count Vowels Permutation (Hard)
+	Given an integer n, your task is to count how many strings of length n can 
+	be formed under the following rules:
+	* Each character is a lower case vowel ('a', 'e', 'i', 'o', 'u')
+	* Each vowel 'a' may only be followed by an 'e'.
+	* Each vowel 'e' may only be followed by an 'a' or an 'i'.
+	* Each vowel 'i' may not be followed by another 'i'.
+	* Each vowel 'o' may only be followed by an 'i' or a 'u'.
+	* Each vowel 'u' may only be followed by an 'a'.
+	Since the answer may be too large, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: n = 1
+	Output: 5
+	Explanation: All possible strings are: "a", "e", "i" , "o" and "u".
+
+	Example 2:
+	Input: n = 2
+	Output: 10
+	Explanation: All possible strings are: "ae", "ea", "ei", "ia", "ie", "io", "iu", "oi", "ou" and "ua".
+
+	Example 3: 
+	Input: n = 5
+	Output: 68
+
+	Constraints: 1 <= n <= 2 * 10^4"""
+
+    def countVowelPermutation(self, n: int) -> int:
+        a = e = i = o = u = 1
+        for _ in range(n-1): 
+            a, e, i, o, u = e, a+i, a+e+o+u, i+u, a
+        return (a+e+i+o+u) % 1_000_000_007
+
+
     """1228. Missing Number In Arithmetic Progression (Easy)
 	In some array arr, the values were in arithmetic progression: the values 
 	arr[i+1] - arr[i] are all equal for every 0 <= i < arr.length - 1. Then, a 
