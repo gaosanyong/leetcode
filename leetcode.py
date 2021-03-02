@@ -11406,6 +11406,45 @@ class Solution:
         return ans + mn
 
 
+    """575. Distribute Candies (Easy)
+	Alice has n candies, where the ith candy is of type candyType[i]. Alice 
+	noticed that she started to gain weight, so she visited a doctor. The 
+	doctor advised Alice to only eat n / 2 of the candies she has (n is always 
+	even). Alice likes her candies very much, and she wants to eat the maximum 
+	number of different types of candies while still following the doctor's 
+	advice. Given the integer array candyType of length n, return the maximum 
+	number of different types of candies she can eat if she only eats n / 2 of 
+	them.
+
+	Example 1:
+	Input: candyType = [1,1,2,2,3,3]
+	Output: 3
+	Explanation: Alice can only eat 6 / 2 = 3 candies. Since there are only 3 
+	             types, she can eat one of each type.
+
+	Example 2:
+	Input: candyType = [1,1,2,3]
+	Output: 2
+	Explanation: Alice can only eat 4 / 2 = 2 candies. Whether she eats types 
+	             [1,2], [1,3], or [2,3], she still can only eat 2 different 
+	             types.
+	
+	Example 3:
+	Input: candyType = [6,6,6,6]
+	Output: 1
+	Explanation: Alice can only eat 4 / 2 = 2 candies. Even though she can eat 
+	             2 candies, she only has 1 type.
+
+	Constraints:
+	* n == candyType.length
+	* 2 <= n <= 10^4
+	* n is even.
+	* -10^5 <= candyType[i] <= 10^5"""
+
+    def distributeCandies(self, candyType: List[int]) -> int:
+        return min(len(candyType)//2, len(set(candyType)))
+
+
     """582. Kill Process (Medium)
 	Given n processes, each process has a unique PID (process id) and its PPID 
 	(parent process id). Each process only has one parent process, but may have 
@@ -18015,6 +18054,201 @@ class Solution:
                 if node.right: newq.append(node.right)
                 if node.left: newq.append(node.left)
             queue = newq
+
+
+    """1604. Alert Using Same Key-Card Three or More Times in a One Hour Period (Medium)
+	LeetCode company workers use key-cards to unlock office doors. Each time a 
+	worker uses their key-card, the security system saves the worker's name and 
+	the time when it was used. The system emits an alert if any worker uses the 
+	key-card three or more times in a one-hour period. You are given a list of 
+	strings keyName and keyTime where [keyName[i], keyTime[i]] corresponds to a 
+	person's name and the time when their key-card was used in a single day. 
+	Access times are given in the 24-hour time format "HH:MM", such as "23:51" 
+	and "09:49". Return a list of unique worker names who received an alert for 
+	frequent keycard use. Sort the names in ascending order alphabetically. 
+	Notice that "10:00" - "11:00" is considered to be within a one-hour period, 
+	while "22:51" - "23:52" is not considered to be within a one-hour period.
+
+	Example 1:
+	Input: keyName = ["daniel","daniel","daniel","luis","luis","luis","luis"], 
+	       keyTime = ["10:00","10:40","11:00","09:00","11:00","13:00","15:00"]
+	Output: ["daniel"]
+	Explanation: "daniel" used the keycard 3 times in a one-hour period ("10:00","10:40", "11:00").
+	
+	Example 2:
+	Input: keyName = ["alice","alice","alice","bob","bob","bob","bob"], 
+	       keyTime = ["12:01","12:00","18:00","21:00","21:20","21:30","23:00"]
+	Output: ["bob"]
+	Explanation: "bob" used the keycard 3 times in a one-hour period ("21:00","21:20", "21:30").
+	
+	Example 3:
+	Input: keyName = ["john","john","john"], keyTime = ["23:58","23:59","00:01"]
+	Output: []
+
+	Example 4:
+	Input: keyName = ["leslie","leslie","leslie","clare","clare","clare","clare"], 
+	       keyTime = ["13:00","13:20","14:00","18:00","18:51","19:30","19:49"]
+	Output: ["clare","leslie"]
+
+	Constraints:
+	* 1 <= keyName.length, keyTime.length <= 10^5
+	* keyName.length == keyTime.length
+	* keyTime[i] is in the format "HH:MM".
+	* [keyName[i], keyTime[i]] is unique.
+	* 1 <= keyName[i].length <= 10
+	* keyName[i] contains only lowercase English letters."""
+
+    def alertNames(self, keyName: List[str], keyTime: List[str]) -> List[str]:
+        ans = set()
+        seen = {}
+        for key, time in sorted(zip(keyName, keyTime)): 
+            if key not in ans: 
+                h, m = time.split(":")
+                time = int(h) * 60 + int(m)
+                seen.setdefault(key, deque()).append(time)
+                if len(seen[key]) == 3: 
+                    if seen[key][-1] <= seen[key][0] + 60: ans.add(key)
+                    seen[key].popleft()
+        return sorted(ans)
+
+
+    """1605. Find Valid Matrix Given Row and Column Sums (Medium)
+	You are given two arrays rowSum and colSum of non-negative integers where 
+	rowSum[i] is the sum of the elements in the ith row and colSum[j] is the 
+	sum of the elements of the jth column of a 2D matrix. In other words, you 
+	do not know the elements of the matrix, but you do know the sums of each 
+	row and column. Find any matrix of non-negative integers of size 
+	rowSum.length x colSum.length that satisfies the rowSum and colSum 
+	requirements. Return a 2D array representing any matrix that fulfills the 
+	requirements. It's guaranteed that at least one matrix that fulfills the 
+	requirements exists.
+
+	Example 1:
+	Input: rowSum = [3,8], colSum = [4,7]
+	Output: [[3,0],
+	         [1,7]]
+	Explanation:
+	0th row: 3 + 0 = 3 == rowSum[0]
+	1st row: 1 + 7 = 8 == rowSum[1]
+	0th column: 3 + 1 = 4 == colSum[0]
+	1st column: 0 + 7 = 7 == colSum[1]
+	The row and column sums match, and all matrix elements are non-negative.
+	Another possible matrix is: [[1,2],
+	                             [3,5]]
+
+	Example 2:
+	Input: rowSum = [5,7,10], colSum = [8,6,8]
+	Output: [[0,5,0],
+	         [6,1,0],
+	         [2,0,8]]
+
+	Example 3:
+	Input: rowSum = [14,9], colSum = [6,9,8]
+	Output: [[0,9,5],
+	         [6,0,3]]
+
+	Example 4:
+	Input: rowSum = [1,0], colSum = [1]
+	Output: [[1],
+	         [0]]
+
+	Example 5:
+	Input: rowSum = [0], colSum = [0]
+	Output: [[0]]
+
+	Constraints:
+	* 1 <= rowSum.length, colSum.length <= 500
+	* 0 <= rowSum[i], colSum[i] <= 10^8
+	* sum(rows) == sum(columns)"""
+
+    def restoreMatrix(self, rowSum: List[int], colSum: List[int]) -> List[List[int]]:
+        m, n = len(rowSum), len(colSum) # dimensions 
+        ans = [[0]*n for _ in range(m)] 
+        
+        i = j = 0
+        while i < len(rowSum) and j < len(colSum):
+            ans[i][j] = min(rowSum[i], colSum[j])
+            rowSum[i] -= ans[i][j]
+            colSum[j] -= ans[i][j]
+            if rowSum[i] == 0: i += 1
+            if colSum[j] == 0: j += 1
+        return ans 
+
+
+    """1606. Find Servers That Handled Most Number of Requests (Hard)
+	You have k servers numbered from 0 to k-1 that are being used to handle 
+	multiple requests simultaneously. Each server has infinite computational 
+	capacity but cannot handle more than one request at a time. The requests 
+	are assigned to servers according to a specific algorithm:
+	* The ith (0-indexed) request arrives.
+	* If all servers are busy, the request is dropped (not handled at all).
+	* If the (i % k)th server is available, assign the request to that server.
+	* Otherwise, assign the request to the next available server (wrapping 
+	  around the list of servers and starting from 0 if necessary). For example, 
+	  if the ith server is busy, try to assign the request to the (i+1)th 
+	  server, then the (i+2)th server, and so on.
+	You are given a strictly increasing array arrival of positive integers, 
+	where arrival[i] represents the arrival time of the ith request, and 
+	another array load, where load[i] represents the load of the ith request 
+	(the time it takes to complete). Your goal is to find the busiest server(s). 
+	A server is considered busiest if it handled the most number of requests 
+	successfully among all the servers. Return a list containing the IDs 
+	(0-indexed) of the busiest server(s). You may return the IDs in any order.
+
+	Example 1:
+	Input: k = 3, arrival = [1,2,3,4,5], load = [5,2,3,3,3] 
+	Output: [1] 
+	Explanation:
+	All of the servers start out available.
+	The first 3 requests are handled by the first 3 servers in order.
+	Request 3 comes in. Server 0 is busy, so it's assigned to the next available server, which is 1.
+	Request 4 comes in. It cannot be handled since all servers are busy, so it is dropped.
+	Servers 0 and 2 handled one request each, while server 1 handled two requests. Hence server 1 is the busiest server.
+
+	Example 2:
+	Input: k = 3, arrival = [1,2,3,4], load = [1,2,1,2]
+	Output: [0]
+	Explanation:
+	The first 3 requests are handled by first 3 servers.
+	Request 3 comes in. It is handled by server 0 since the server is available.
+	Server 0 handled two requests, while servers 1 and 2 handled one request each. Hence server 0 is the busiest server.
+
+	Example 3:
+	Input: k = 3, arrival = [1,2,3], load = [10,12,11]
+	Output: [0,1,2]
+	Explanation: Each server handles a single request, so they are all considered the busiest.
+
+	Example 4:
+	Input: k = 3, arrival = [1,2,3,4,8,9,10], load = [5,2,10,3,1,2,2]
+	Output: [1]
+
+	Example 5:
+	Input: k = 1, arrival = [1], load = [1]
+	Output: [0]
+
+	Constraints:
+	* 1 <= k <= 10^5
+	* 1 <= arrival.length, load.length <= 10^5
+	* arrival.length == load.length
+	* 1 <= arrival[i], load[i] <= 10^9
+	* arrival is strictly increasing."""
+
+    def busiestServers(self, k: int, arrival: List[int], load: List[int]) -> List[int]:
+        busy = [] # min-heap
+        free = list(range(k)) # min-heap 
+        freq = [0]*k
+        
+        for i, (ta, tl) in enumerate(zip(arrival, load)): 
+            while busy and busy[0][0] <= ta: 
+                _, ii = heappop(busy)
+                heappush(free, i + (ii - i) % k) # circularly relocate it
+            if free: 
+                ii = heappop(free) % k 
+                freq[ii] += 1
+                heappush(busy, (ta+tl, ii))
+        
+        mx = max(freq)
+        return [i for i, x in enumerate(freq) if x == mx]
 
 
     """1608. Special Array With X Elements Greater Than or Equal X (Easy)
