@@ -11551,6 +11551,38 @@ class Solution:
         return n <= 0
 
 
+    """645. Set Mismatch (Easy)
+	You have a set of integers s, which originally contains all the numbers 
+	from 1 to n. Unfortunately, due to some error, one of the numbers in s got 
+	duplicated to another number in the set, which results in repetition of one 
+	number and loss of another number. You are given an integer array nums 
+	representing the data status of this set after the error. Find the number 
+	that occurs twice and the number that is missing and return them in the 
+	form of an array.
+
+	Example 1:
+	Input: nums = [1,2,2,4]
+	Output: [2,3]
+
+	Example 2:
+	Input: nums = [1,1]
+	Output: [1,2]
+
+	Constraints:
+	* 2 <= nums.length <= 10^4
+	* 1 <= nums[i] <= 10^4"""
+
+    def findErrorNums(self, nums: List[int]) -> List[int]:
+        freq = [0]*len(nums)
+        for x in nums: freq[x-1] += 1
+        
+        ans = [0]*2
+        for i, x in enumerate(freq): 
+            if x == 2: ans[0] = i+1
+            elif x == 0: ans[1] = i+1
+        return ans 
+
+
     """650. 2 Keys Keyboard (Medium)
 	Initially on a notepad only one character 'A' is present. You can perform 
 	two operations on this notepad for each step:
@@ -17001,6 +17033,229 @@ class Solution:
         for _ in range(n-1): 
             a, e, i, o, u = e, a+i, a+e+o+u, i+u, a
         return (a+e+i+o+u) % 1_000_000_007
+
+
+    """1221. Split a String in Balanced Strings (Easy)
+	Balanced strings are those that have an equal quantity of 'L' and 'R' 
+	characters. Given a balanced string s, split it in the maximum amount of 
+	balanced strings. Return the maximum amount of split balanced strings.
+
+	Example 1:
+	Input: s = "RLRRLLRLRL"
+	Output: 4
+	Explanation: s can be split into "RL", "RRLL", "RL", "RL", each substring 
+	             contains same number of 'L' and 'R'.
+
+	Example 2:
+	Input: s = "RLLLLRRRLR"
+	Output: 3
+	Explanation: s can be split into "RL", "LLLRRR", "LR", each substring 
+	             contains same number of 'L' and 'R'.
+	
+	Example 3:
+	Input: s = "LLLLRRRR"
+	Output: 1
+	Explanation: s can be split into "LLLLRRRR".
+
+	Example 4:
+	Input: s = "RLRRRLLRLL"
+	Output: 2
+	Explanation: s can be split into "RL", "RRRLLRLL", since each substring 
+	             contains an equal number of 'L' and 'R'
+
+	Constraints:
+	* 1 <= s.length <= 1000
+	* s[i] is either 'L' or 'R'.
+	* s is a balanced string."""
+
+    def balancedStringSplit(self, s: str) -> int:
+        ans = prefix = 0
+        for c in s: 
+            prefix += 1 if c == "R" else -1
+            if not prefix: ans += 1
+        return ans 
+
+
+    """1221. Split a String in Balanced Strings (Easy)
+	Balanced strings are those that have an equal quantity of 'L' and 'R' 
+	characters. Given a balanced string s, split it in the maximum amount of 
+	balanced strings. Return the maximum amount of split balanced strings.
+
+	Example 1:
+	Input: s = "RLRRLLRLRL"
+	Output: 4
+	Explanation: s can be split into "RL", "RRLL", "RL", "RL", each substring 
+	             contains same number of 'L' and 'R'.
+
+	Example 2:
+	Input: s = "RLLLLRRRLR"
+	Output: 3
+	Explanation: s can be split into "RL", "LLLRRR", "LR", each substring 
+	             contains same number of 'L' and 'R'.
+	
+	Example 3:
+	Input: s = "LLLLRRRR"
+	Output: 1
+	Explanation: s can be split into "LLLLRRRR".
+
+	Example 4:
+	Input: s = "RLRRRLLRLL"
+	Output: 2
+	Explanation: s can be split into "RL", "RRRLLRLL", since each substring 
+	             contains an equal number of 'L' and 'R'
+
+	Constraints:
+	* 1 <= s.length <= 1000
+	* s[i] is either 'L' or 'R'.
+	* s is a balanced string."""
+
+    def balancedStringSplit(self, s: str) -> int:
+        ans = prefix = 0
+        for c in s: 
+            prefix += 1 if c == "R" else -1
+            if not prefix: ans += 1
+        return ans 
+
+
+    """1222. Queens That Can Attack the King (Medium)
+	On an 8x8 chessboard, there can be multiple Black Queens and one White King. 
+	Given an array of integer coordinates queens that represents the positions 
+	of the Black Queens, and a pair of coordinates king that represent the 
+	position of the White King, return the coordinates of all the queens (in any 
+	order) that can attack the King.
+
+	Example 1:
+	Input: queens = [[0,1],[1,0],[4,0],[0,4],[3,3],[2,4]], king = [0,0]
+	Output: [[0,1],[1,0],[3,3]]
+	Explanation:  
+	The queen at [0,1] can attack the king cause they're in the same row. 
+	The queen at [1,0] can attack the king cause they're in the same column. 
+	The queen at [3,3] can attack the king cause they're in the same diagnal. 
+	The queen at [0,4] can't attack the king cause it's blocked by the queen at [0,1]. 
+	The queen at [4,0] can't attack the king cause it's blocked by the queen at [1,0]. 
+	The queen at [2,4] can't attack the king cause it's not in the same row/column/diagnal as the king.
+
+	Example 2:
+	Input: queens = [[0,0],[1,1],[2,2],[3,4],[3,5],[4,4],[4,5]], king = [3,3]
+	Output: [[2,2],[3,4],[4,4]]
+
+	Example 3:
+	Input: queens = [[5,6],[7,7],[2,1],[0,7],[1,6],[5,1],[3,7],[0,3],[4,0],
+	                 [1,2],[6,3],[5,0],[0,4],[2,2],[1,1],[6,4],[5,4],[0,0],
+	                 [2,6],[4,5],[5,2],[1,4],[7,5],[2,3],[0,5],[4,2],[1,0],
+	                 [2,7],[0,1],[4,6],[6,1],[0,6],[4,3],[1,7]], king = [3,4]
+	Output: [[2,3],[1,4],[1,6],[3,7],[4,3],[5,4],[4,5]]
+
+	Constraints:
+	* 1 <= queens.length <= 63
+	* queens[i].length == 2
+	* 0 <= queens[i][j] < 8
+	* king.length == 2
+	* 0 <= king[0], king[1] < 8
+	* At most one piece is allowed in a cell."""
+
+    def queensAttacktheKing(self, queens: List[List[int]], king: List[int]) -> List[List[int]]:
+        ans = []
+        x, y = king
+        queens = {(x, y) for x, y in queens}
+        for dx in (-1, 0, 1):
+            for dy in (-1, 0, 1):
+                for k in range(1, 8):
+                    xx, yy = x+k*dx, y+k*dy
+                    if (xx, yy) in queens: 
+                        ans.append([xx, yy])
+                        break 
+        return ans 
+
+
+    """1223. Dice Roll Simulation (Hard)
+	A die simulator generates a random number from 1 to 6 for each roll. You 
+	introduced a constraint to the generator such that it cannot roll the 
+	number i more than rollMax[i] (1-indexed) consecutive times.  Given an 
+	array of integers rollMax and an integer n, return the number of distinct 
+	sequences that can be obtained with exact n rolls. Two sequences are 
+	considered different if at least one element differs from each other. Since 
+	the answer may be too large, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: n = 2, rollMax = [1,1,2,2,2,3]
+	Output: 34
+	Explanation: There will be 2 rolls of die, if there are no constraints on 
+	             the die, there are 6 * 6 = 36 possible combinations. In this 
+	             case, looking at rollMax array, the numbers 1 and 2 appear at 
+	             most once consecutively, therefore sequences (1,1) and (2,2) 
+	             cannot occur, so the final answer is 36-2 = 34.
+
+	Example 2:
+	Input: n = 2, rollMax = [1,1,1,1,1,1]
+	Output: 30
+	
+	Example 3:
+	Input: n = 3, rollMax = [1,1,1,2,2,3]
+	Output: 181
+
+	Constraints:
+	* 1 <= n <= 5000
+	* rollMax.length == 6
+	* 1 <= rollMax[i] <= 15"""
+
+    def dieSimulator(self, n: int, rollMax: List[int]) -> int:
+        
+        @cache
+        def fn(n, x, r):
+            """Return number of sequences with n rolls left with r occurrences of x."""
+            if n == 0: return 1
+            ans = 0
+            for xx in range(6): 
+                if xx != x: ans += fn(n-1, xx, 1)
+                elif xx == x and r < rollMax[x]: ans += fn(n-1, x, r+1)
+            return ans 
+        
+        return sum(fn(n-1, x, 1) for x in range(6)) % 1_000_000_007
+
+
+    """1224. Maximum Equal Frequency (Hard)
+	Given an array nums of positive integers, return the longest possible 
+	length of an array prefix of nums, such that it is possible to remove 
+	exactly one element from this prefix so that every number that has appeared 
+	in it will have the same number of occurrences. If after removing one 
+	element there are no remaining elements, it's still considered that every 
+	appeared number has the same number of ocurrences (0).
+
+	Example 1:
+	Input: nums = [2,2,1,1,5,3,3,5]
+	Output: 7
+	Explanation: For the subarray [2,2,1,1,5,3,3] of length 7, if we remove 
+	             nums[4]=5, we will get [2,2,1,1,3,3], so that each number 
+	             will appear exactly twice.
+
+	Example 2:
+	Input: nums = [1,1,1,2,2,2,3,3,3,4,4,4,5]
+	Output: 13
+
+	Example 3:
+	Input: nums = [1,1,1,2,2,2]
+	Output: 5
+
+	Example 4:
+	Input: nums = [10,2,8,9,3,8,1,5,2,3,7,6]
+	Output: 8
+
+	Constraints:
+	* 2 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^5"""
+
+    def maxEqualFreq(self, nums: List[int]) -> int:
+        ans = most = 0
+        cnt = defaultdict(int)
+        freq = defaultdict(int)
+        for i, x in enumerate(nums):
+            cnt[x] += 1
+            freq[cnt[x]-1] -= 1
+            freq[cnt[x]] += 1
+            most = max(most, cnt[x])
+            if most == 1 or most * freq[most] == i or (most-1)*freq[most-1] + most == i+1: ans = i+1
+        return ans 
 
 
     """1228. Missing Number In Arithmetic Progression (Easy)
