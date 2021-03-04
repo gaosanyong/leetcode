@@ -7992,7 +7992,10 @@ class Solution:
 	implement it using only constant extra space complexity?"""
 
     def missingNumber(self, nums: List[int]) -> int:
-        return reduce(xor, (i^x for i, x in enumerate(nums, 1)))
+        ans = 0
+        for i, x in enumerate(nums):
+            ans ^= i+1 ^ x
+        return ans 
 
 
     """270. Closest Binary Search Tree Value (Easy)
@@ -20439,6 +20442,146 @@ class Fenwick:
         return leaf
 
 
+    """1668. Maximum Repeating Substring (Easy)
+	For a string sequence, a string word is k-repeating if word concatenated k 
+	times is a substring of sequence. The word's maximum k-repeating value is 
+	the highest value k where word is k-repeating in sequence. If word is not a 
+	substring of sequence, word's maximum k-repeating value is 0. Given strings 
+	sequence and word, return the maximum k-repeating value of word in sequence.
+
+	Example 1:
+	Input: sequence = "ababc", word = "ab"
+	Output: 2
+	Explanation: "abab" is a substring in "ababc".
+
+	Example 2:
+	Input: sequence = "ababc", word = "ba"
+	Output: 1
+	Explanation: "ba" is a substring in "ababc". "baba" is not a substring in 
+	             "ababc".
+
+	Example 3:
+	Input: sequence = "ababc", word = "ac"
+	Output: 0
+	Explanation: "ac" is not a substring in "ababc". 
+
+	Constraints:
+	* 1 <= sequence.length <= 100
+	* 1 <= word.length <= 100
+	* sequence and word contains only lowercase English letters."""
+
+    def maxRepeating(self, sequence: str, word: str) -> int:
+        if len(sequence) < len(word): return 0 # edge case 
+        
+        pattern = word * (len(sequence)//len(word))
+        lps = [0] # longest proper prefix also suffix (KMP)
+        k = 0
+        for i in range(1, len(pattern)):
+            while k and pattern[k] != pattern[i]: k = lps[k-1]
+            if pattern[i] == pattern[k]: k += 1
+            lps.append(k)
+        
+        ans = k = 0
+        for i in range(len(sequence)):
+            while k and pattern[k] != sequence[i]: k = lps[k-1]
+            if pattern[k] == sequence[i]: k += 1
+            ans = max(ans, k//len(word))
+            if k == len(pattern): return ans
+        return ans 
+
+
+    """1669. Merge In Between Linked Lists (Medium)
+	You are given two linked lists: list1 and list2 of sizes n and m 
+	respectively. Remove list1's nodes from the ath node to the bth node, and 
+	put list2 in their place. Build the result list and return its head.
+
+	Example 1:
+	Input: list1 = [0,1,2,3,4,5], a = 3, b = 4, list2 = [1000000,1000001,1000002]
+	Output: [0,1,2,1000000,1000001,1000002,5]
+	Explanation: We remove the nodes 3 and 4 and put the entire list2 in their 
+	             place. The blue edges and nodes in the above figure indicate 
+	             the result.
+
+	Example 2:
+	Input: list1 = [0,1,2,3,4,5,6], a = 2, b = 5, 
+	       list2 = [1000000,1000001,1000002,1000003,1000004]
+	Output: [0,1,1000000,1000001,1000002,1000003,1000004,6]
+	Explanation: The blue edges and nodes in the above figure indicate the result.
+
+	Constraints:
+	* 3 <= list1.length <= 10^4
+	* 1 <= a <= b < list1.length - 1
+	* 1 <= list2.length <= 10^4"""
+
+    def mergeInBetween(self, list1: ListNode, a: int, b: int, list2: ListNode) -> ListNode:
+        node = list1
+        for k in range(b+1): 
+            if k == a-1: start = node 
+            node = node.next 
+        end = node 
+        
+        start.next = node = list2
+        while node.next: node = node.next 
+        node.next = end
+        return list1 
+
+
+    """1671. Minimum Number of Removals to Make Mountain Array (Hard)
+	You may recall that an array arr is a mountain array if and only if:
+	* arr.length >= 3
+	* There exists some index i (0-indexed) with 0 < i < arr.length - 1 such 
+	  that:
+	  + arr[0] < arr[1] < ... < arr[i - 1] < arr[i]
+	  + arr[i] > arr[i + 1] > ... > arr[arr.length - 1]
+	Given an integer array nums​​​, return the minimum number of elements to 
+	remove to make nums​​​ a mountain array.
+
+	Example 1:
+	Input: nums = [1,3,1]
+	Output: 0
+	Explanation: The array itself is a mountain array so we do not need to 
+	             remove any elements.
+
+	Example 2:
+	Input: nums = [2,1,1,5,6,2,3,1]
+	Output: 3
+	Explanation: One solution is to remove the elements at indices 0, 1, and 5, 
+	             making the array nums = [1,5,6,3,1].
+	
+	Example 3:
+	Input: nums = [4,3,2,1,1,2,3,1]
+	Output: 4
+
+	Example 4:
+	Input: nums = [1,2,3,4,4,3,2,1]
+	Output: 1
+
+	Constraints:
+	* 3 <= nums.length <= 1000
+	* 1 <= nums[i] <= 10^9
+	* It is guaranteed that you can make a mountain array out of nums."""
+
+    def minimumMountainRemovals(self, nums: List[int]) -> int:
+        
+        def fn(nums): 
+            """Return length of LIS (excluding x) ending at x."""
+            ans, vals = [], []
+            for i, x in enumerate(nums): 
+                k = bisect_left(vals, x)
+                if k == len(vals): vals.append(x)
+                else: vals[k] = x
+                ans.append(k)
+            return ans 
+        
+        left, right = fn(nums), fn(nums[::-1])[::-1]
+        
+        ans = inf
+        for i in range(1, len(nums)-1): 
+            if left[i] and right[i]:
+                ans = min(ans, len(nums) - left[i] - right[i] - 1)
+        return ans 
+
+
     """1672. Richest Customer Wealth (Easy)
 	You are given an m x n integer grid accounts where accounts[i][j] is the 
 	amount of money the i​​​​​​​​​​​th​​​​ customer has in the j​​​​​​​​​​​th​​​​ bank. Return the wealth 
@@ -25677,6 +25820,86 @@ class OrderedStream:
         if id == self.ptr: 
             while self.ptr < len(self.data) and self.data[self.ptr]: self.ptr += 1 # update self.ptr 
         return self.data[id:self.ptr]
+
+
+"""1670. Design Front Middle Back Queue (Medium)
+Design a queue that supports push and pop operations in the front, middle, and 
+back. Implement the FrontMiddleBack class:
+* FrontMiddleBack() Initializes the queue.
+* void pushFront(int val) Adds val to the front of the queue.
+* void pushMiddle(int val) Adds val to the middle of the queue.
+* void pushBack(int val) Adds val to the back of the queue.
+* int popFront() Removes the front element of the queue and returns it. If the 
+  queue is empty, return -1.
+* int popMiddle() Removes the middle element of the queue and returns it. If 
+  the queue is empty, return -1.
+* int popBack() Removes the back element of the queue and returns it. If the 
+  queue is empty, return -1.
+Notice that when there are two middle position choices, the operation is 
+performed on the frontmost middle position choice. For example:
+* Pushing 6 into the middle of [1, 2, 3, 4, 5] results in [1, 2, 6, 3, 4, 5].
+* Popping the middle from [1, 2, 3, 4, 5, 6] returns 3 and results in [1, 2, 4, 5, 6].
+
+Example 1:
+Input: ["FrontMiddleBackQueue", "pushFront", "pushBack", "pushMiddle", "pushMiddle", "popFront", "popMiddle", "popMiddle", "popBack", "popFront"]
+       [[], [1], [2], [3], [4], [], [], [], [], []]
+Output: [null, null, null, null, null, 1, 3, 4, 2, -1]
+Explanation:
+FrontMiddleBackQueue q = new FrontMiddleBackQueue();
+q.pushFront(1);   // [1]
+q.pushBack(2);    // [1, 2]
+q.pushMiddle(3);  // [1, 3, 2]
+q.pushMiddle(4);  // [1, 4, 3, 2]
+q.popFront();     // return 1 -> [4, 3, 2]
+q.popMiddle();    // return 3 -> [4, 2]
+q.popMiddle();    // return 4 -> [2]
+q.popBack();      // return 2 -> []
+q.popFront();     // return -1 -> [] (The queue is empty)
+ 
+Constraints:
+* 1 <= val <= 109
+* At most 1000 calls will be made to pushFront, pushMiddle, pushBack, popFront, 
+  popMiddle, and popBack."""
+
+class FrontMiddleBackQueue:
+
+    def __init__(self):
+        self.d0 = deque()
+        self.d1 = deque()
+        
+    def _balance(self):
+        if len(self.d0) > len(self.d1): self.d1.appendleft(self.d0.pop())
+        elif len(self.d0) + 1 < len(self.d1): self.d0.append(self.d1.popleft())
+
+    def pushFront(self, val: int) -> None:
+        self.d0.appendleft(val)
+        self._balance()
+
+    def pushMiddle(self, val: int) -> None:
+        self.d0.append(val)
+        self._balance()
+
+    def pushBack(self, val: int) -> None:
+        self.d1.append(val)
+        self._balance()
+        
+    def popFront(self) -> int:
+        if self.d0: 
+            ans = self.d0.popleft()
+            self._balance()
+            return ans 
+        elif self.d1: return self.d1.pop()
+        else: return -1
+
+    def popMiddle(self) -> int:
+        if self.d0 and len(self.d0) == len(self.d1): return self.d0.pop()
+        elif self.d1: return self.d1.popleft()
+        return -1
+
+    def popBack(self) -> int:
+        ans = (self.d1 or [-1]).pop()
+        self._balance()
+        return ans 
 
 
 """1756. Design Most Recently Used Queue (Medium)
