@@ -23954,6 +23954,167 @@ class Fenwick:
         return ans
 
 
+    """1784. Check if Binary String Has at Most One Segment of Ones (Easy)
+	Given a binary string s ​​​​​without leading zeros, return true​​​ if s contains 
+	at most one contiguous segment of ones. Otherwise, return false.
+
+	Example 1:
+	Input: s = "1001"
+	Output: false
+	Explanation: The ones do not form a contiguous segment.
+
+	Example 2:
+	Input: s = "110"
+	Output: true
+
+	Constraints:
+	* 1 <= s.length <= 100
+	* s[i]​​​​ is either '0' or '1'.
+	* s[0] is '1'."""
+
+    def checkOnesSegment(self, s: str) -> bool:
+        return "01" not in s
+
+
+    """1785. Minimum Elements to Add to Form a Given Sum (Medium)
+	You are given an integer array nums and two integers limit and goal. The 
+	array nums has an interesting property that abs(nums[i]) <= limit. Return 
+	the minimum number of elements you need to add to make the sum of the array 
+	equal to goal. The array must maintain its property that 
+	abs(nums[i]) <= limit. Note that abs(x) equals x if x >= 0, and -x 
+	otherwise.
+
+	Example 1:
+	Input: nums = [1,-1,1], limit = 3, goal = -4
+	Output: 2
+	Explanation: You can add -2 and -3, then the sum of the array will be 
+	             1 - 1 + 1 - 2 - 3 = -4.
+
+	Example 2:
+	Input: nums = [1,-10,9,1], limit = 100, goal = 0
+	Output: 1
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= limit <= 10^6
+	* -limit <= nums[i] <= limit
+	* -10^9 <= goal <= 10^9"""
+
+    def minElements(self, nums: List[int], limit: int, goal: int) -> int:
+        return ceil(abs(goal - sum(nums))/limit)
+
+
+    """1786. Number of Restricted Paths From First to Last Node (Medium)
+	There is an undirected weighted connected graph. You are given a positive 
+	integer n which denotes that the graph has n nodes labeled from 1 to n, and 
+	an array edges where each edges[i] = [ui, vi, weighti] denotes that there 
+	is an edge between nodes ui and vi with weight equal to weighti. A path 
+	from node start to node end is a sequence of nodes [z0, z1, z2, ..., zk] 
+	such that z0 = start and zk = end and there is an edge between zi and zi+1 
+	where 0 <= i <= k-1. The distance of a path is the sum of the weights on 
+	the edges of the path. Let distanceToLastNode(x) denote the shortest 
+	distance of a path between node n and node x. A restricted path is a path 
+	that also satisfies that distanceToLastNode(zi) > distanceToLastNode(zi+1) 
+	where 0 <= i <= k-1. Return the number of restricted paths from node 1 to 
+	node n. Since that number may be too large, return it modulo 109 + 7.
+
+	Example 1:
+	Input: n = 5, edges = [[1,2,3],[1,3,3],[2,3,1],[1,4,2],[5,2,2],[3,5,1],[5,4,10]]
+	Output: 3
+	Explanation: Each circle contains the node number in black and its 
+	             distanceToLastNode value in blue. The three restricted paths 
+	             are:
+ 				 1) 1 --> 2 --> 5
+ 				 2) 1 --> 2 --> 3 --> 5
+				 3) 1 --> 3 --> 5
+
+	Example 2:
+	Input: n = 7, edges = [[1,3,1],[4,1,2],[7,3,4],[2,5,3],[5,6,1],[6,7,2],[7,5,3],[2,6,4]]
+	Output: 1
+	Explanation: Each circle contains the node number in black and its 
+	             distanceToLastNode value in blue. The only restricted path is 
+	             1 --> 3 --> 7.
+
+	Constraints:
+	* 1 <= n <= 2 * 10^4
+	* n - 1 <= edges.length <= 4 * 10^4
+	* edges[i].length == 3
+	* 1 <= ui, vi <= n
+	* ui != vi
+	* 1 <= weighti <= 10^5
+	* There is at most one edge between any two nodes.
+	* There is at least one path between any two nodes."""
+
+    def countRestrictedPaths(self, n: int, edges: List[List[int]]) -> int:
+        graph = {} # graph as adjacency list 
+        for u, v, w in edges: 
+            graph.setdefault(u-1, []).append((v-1, w))
+            graph.setdefault(v-1, []).append((u-1, w))
+        
+        # dijkstra's algo
+        pq = [(0, n-1)]
+        dist = [inf]*(n-1) + [0]
+        while pq: 
+            d, u = heappop(pq)
+            for v, w in graph[u]: 
+                if dist[u] + w < dist[v]: 
+                    dist[v] = dist[u] + w
+                    heappush(pq, (dist[v], v))
+        
+        @cache
+        def fn(u): 
+            """Return number of restricted paths from u to n."""
+            if u == n-1: return 1 # boundary condition 
+            ans = 0
+            for v, _ in graph[u]: 
+                if dist[u] > dist[v]: ans += fn(v)
+            return ans 
+        
+        return fn(0) % 1_000_000_007
+
+
+    """1787. Make the XOR of All Segments Equal to Zero (Hard)
+	You are given an array nums​​​ and an integer k​​​​​. The XOR of a segment [left, right] 
+	where left <= right is the XOR of all the elements with indices between 
+	left and right, inclusive: nums[left] XOR nums[left+1] XOR ... XOR nums[right]. 
+	Return the minimum number of elements to change in the array such that the 
+	XOR of all segments of size k​​​​​​ is equal to zero.
+
+	Example 1:
+	Input: nums = [1,2,0,3,0], k = 1
+	Output: 3
+	Explanation: Modify the array from [1,2,0,3,0] to from [0,0,0,0,0].
+
+	Example 2:
+	Input: nums = [3,4,5,2,1,7,3,4,7], k = 3
+	Output: 3
+	Explanation: Modify the array from [3,4,5,2,1,7,3,4,7] to [3,4,7,3,4,7,3,4,7].
+
+	Example 3:
+	Input: nums = [1,2,4,1,2,5,1,2,6], k = 3
+	Output: 3
+	Explanation: Modify the array from [1,2,4,1,2,5,1,2,6] to [1,2,3,1,2,3,1,2,3].
+
+	Constraints:
+	* 1 <= k <= nums.length <= 2000
+	* ​​​​​​0 <= nums[i] < 2^10"""
+
+    def minChanges(self, nums: List[int], k: int) -> int:
+        freq = defaultdict(lambda: defaultdict(int))
+        for i, x in enumerate(nums): freq[i%k][x] += 1 # freq by row
+        
+        n = 1 << 10
+        dp = [0] + [-inf]*(n-1)
+        for i in range(k): 
+            mx = max(dp)
+            tmp = [0]*n
+            for x, c in enumerate(dp): 
+                for xx, cc in freq[i].items(): 
+                    tmp[x^xx] = max(tmp[x^xx], c + cc, mx)
+            dp = tmp 
+        return len(nums) - dp[0]
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
