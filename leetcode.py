@@ -20255,16 +20255,43 @@ class Fenwick:
     def decrypt(self, code: List[int], k: int) -> List[int]:
         if k < 0: return self.decrypt(code[::-1], -k)[::-1] 
         
-        n = len(code)
-        code *= 2 # augmenting array 
-        
         prefix = [0] # prefix sum (w/ leading 0)
-        for x in code: prefix.append(prefix[-1] + x)
+        for x in code*2: prefix.append(prefix[-1] + x)
         
         ans = []
-        for i in range(n): 
+        for i in range(len(code)): 
             ans.append(prefix[i+k+1] - prefix[i+1])
         return ans 
+
+
+    """1653. Minimum Deletions to Make String Balanced (Medium)
+	You are given a string s consisting only of characters 'a' and 'b'​​​​. You 
+	can delete any number of characters in s to make s balanced. s is balanced 
+	if there is no pair of indices (i,j) such that i < j and s[i] = 'b' and 
+	s[j]= 'a'. Return the minimum number of deletions needed to make s balanced.
+	 
+	Example 1:
+	Input: s = "aababbab"
+	Output: 2
+	Explanation: You can either delete the characters at 0-indexed positions 2 
+	             and 6 ("aababbab" -> "aaabbb"), or delete the characters at 
+	             0-indexed positions 3 and 6 ("aababbab" -> "aabbbb").
+
+	Example 2:
+	Input: s = "bbaaaaabb"
+	Output: 2
+	Explanation: The only solution is to delete the first two characters.
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s[i] is 'a' or 'b'​​."""
+
+    def minimumDeletions(self, s: str) -> int:
+        ans = suffix = 0
+        for c in reversed(s):
+            if c == "a": suffix += 1
+            else: ans = min(1 + ans, suffix)
+        return ans
 
 
     """1657. Determine if Two Strings Are Close (Medium)
@@ -23768,6 +23795,165 @@ class Fenwick:
         return ans 
 
 
+    """1779. Find Nearest Point That Has the Same X or Y Coordinate (Easy)
+	You are given two integers, x and y, which represent your current location 
+	on a Cartesian grid: (x, y). You are also given an array points where each 
+	points[i] = [ai, bi] represents that a point exists at (ai, bi). A point is 
+	valid if it shares the same x-coordinate or the same y-coordinate as your 
+	location. Return the index (0-indexed) of the valid point with the smallest 
+	Manhattan distance from your current location. If there are multiple, 
+	return the valid point with the smallest index. If there are no valid 
+	points, return -1. The Manhattan distance between two points (x1, y1) and 
+	(x2, y2) is abs(x1 - x2) + abs(y1 - y2).
+
+	Example 1:
+	Input: x = 3, y = 4, points = [[1,2],[3,1],[2,4],[2,3],[4,4]]
+	Output: 2
+	Explanation: Of all the points, only [3,1], [2,4] and [4,4] are valid. Of 
+	             the valid points, [2,4] and [4,4] have the smallest Manhattan 
+	             distance from your current location, with a distance of 1. 
+	             [2,4] has the smallest index, so return 2.
+
+	Example 2:
+	Input: x = 3, y = 4, points = [[3,4]]
+	Output: 0
+	Explanation: The answer is allowed to be on the same location as your 
+	             current location.
+	
+	Example 3:
+	Input: x = 3, y = 4, points = [[2,3]]
+	Output: -1
+	Explanation: There are no valid points.
+
+	Constraints:
+	* 1 <= points.length <= 10^4
+	* points[i].length == 2
+	* 1 <= x, y, ai, bi <= 10^4"""
+
+    def nearestValidPoint(self, x: int, y: int, points: List[List[int]]) -> int:
+        ans = -1
+        dist = inf
+        for i, (xx, yy) in enumerate(points): 
+            if (x == xx or y == yy) and abs(x-xx) + abs(y-yy) < dist: 
+                ans = i
+                dist = abs(x-xx) + abs(y-yy)
+        return ans
+
+
+    """1780. Check if Number is a Sum of Powers of Three (Medium)
+	Given an integer n, return true if it is possible to represent n as the sum 
+	of distinct powers of three. Otherwise, return false. An integer y is a 
+	power of three if there exists an integer x such that y == 3x.
+
+	Example 1:
+	Input: n = 12
+	Output: true
+	Explanation: 12 = 31 + 32
+
+	Example 2:
+	Input: n = 91
+	Output: true
+	Explanation: 91 = 30 + 32 + 34
+
+	Example 3:
+	Input: n = 21
+	Output: false
+
+	Constraints: 1 <= n <= 10^7"""
+
+    def checkPowersOfThree(self, n: int) -> bool:
+        while n: 
+            n, r = divmod(n, 3)
+            if r == 2: return False 
+        return True 
+
+
+    """1781. Sum of Beauty of All Substrings (Medium)
+	The beauty of a string is the difference in frequencies between the most 
+	frequent and least frequent characters. For example, the beauty of "abaacc" 
+	is 3 - 1 = 2. Given a string s, return the sum of beauty of all of its 
+	substrings.
+
+	Example 1:
+	Input: s = "aabcb"
+	Output: 5
+	Explanation: The substrings with non-zero beauty are 
+	             ["aab","aabc","aabcb","abcb","bcb"], each with beauty equal to 1.
+
+	Example 2:
+	Input: s = "aabcbaa"
+	Output: 17
+
+	Constraints:
+	* 1 <= s.length <= 500
+	* s consists of only lowercase English letters."""
+
+    def beautySum(self, s: str) -> int:
+        ans = 0
+        for i in range(len(s)):
+            freq = [0]*26
+            for ii in range(i, len(s)): 
+                freq[ord(s[ii])-97] += 1
+                ans += max(freq) - min(x for x in freq if x)
+        return ans  
+
+
+    """1782. Count Pairs Of Nodes (Hard)
+	You are given an undirected graph represented by an integer n, which is the 
+	number of nodes, and edges, where edges[i] = [ui, vi] which indicates that 
+	there is an undirected edge between ui and vi. You are also given an integer 
+	array queries. The answer to the jth query is the number of pairs of nodes 
+	(a, b) that satisfy the following conditions:
+	* a < b
+	* cnt is strictly greater than queries[j], where cnt is the number of edges 
+	  incident to a or b.
+	Return an array answers such that answers.length == queries.length and 
+	answers[j] is the answer of the jth query. Note that there can be repeated 
+	edges.
+
+	Example 1:
+	Input: n = 4, edges = [[1,2],[2,4],[1,3],[2,3],[2,1]], queries = [2,3]
+	Output: [6,5]
+	Explanation: The number of edges incident to at least one of each pair is 
+	             shown above.
+
+	Example 2:
+	Input: n = 5, edges = [[1,5],[1,5],[3,4],[2,5],[1,3],[5,1],[2,3],[2,5]], queries = [1,2,3,4,5]
+	Output: [10,10,9,8,6]
+
+	Constraints:
+	* 2 <= n <= 2 * 10^4
+	* 1 <= edges.length <= 10^5
+	* 1 <= ui, vi <= n
+	* ui != vi
+	* 1 <= queries.length <= 20
+	* 0 <= queries[j] < edges.length"""
+
+    def countPairs(self, n: int, edges: List[List[int]], queries: List[int]) -> List[int]:
+        degree = [0]*n
+        freq = defaultdict(int)
+        for u, v in edges: 
+            degree[u-1] += 1
+            degree[v-1] += 1
+            freq[min(u-1, v-1), max(u-1, v-1)] += 1
+        
+        vals = sorted(degree)
+        
+        ans = []
+        for query in queries: 
+            cnt = 0 
+            lo, hi = 0, n-1
+            while lo < hi: 
+                if query < vals[lo] + vals[hi]: 
+                    cnt += hi - lo # (lo, hi), (lo+1, hi), ..., (hi-1, hi) all valid
+                    hi -= 1
+                else: lo += 1
+            for u, v in freq: 
+                if degree[u] + degree[v] - freq[u, v] <= query < degree[u] + degree[v]: cnt -= 1
+            ans.append(cnt)
+        return ans
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -25425,6 +25611,69 @@ class StringIterator:
 
     def hasNext(self) -> bool:
         return self.i < len(self.data) or self.n 
+
+
+"""706. Design HashMap (Easy)
+Design a HashMap without using any built-in hash table libraries. To be 
+specific, your design should include these functions:
+* put(key, value) : Insert a (key, value) pair into the HashMap. If the value 
+  already exists in the HashMap, update the value.
+* get(key): Returns the value to which the specified key is mapped, or -1 if 
+  this map contains no mapping for the key.
+* remove(key) : Remove the mapping for the value key if this map contains the 
+  mapping for the key.
+
+Example:
+MyHashMap hashMap = new MyHashMap();
+hashMap.put(1, 1);          
+hashMap.put(2, 2);         
+hashMap.get(1);            // returns 1
+hashMap.get(3);            // returns -1 (not found)
+hashMap.put(2, 1);         // update the existing value
+hashMap.get(2);            // returns 1 
+hashMap.remove(2);         // remove the mapping for 2
+hashMap.get(2);            // returns -1 (not found) 
+
+Note:
+* All keys and values will be in the range of [0, 1000000].
+* The number of operations will be in the range of [1, 10000].
+* Please do not use the built-in HashMap library."""
+
+class ListNode:
+    def __init__(self, key=None, val=None, next=None): 
+        self.key = key
+        self.val = val
+        self.next = next
+        
+        
+class MyHashMap:
+
+    def __init__(self):
+        self.data = [ListNode()] * 1000
+
+    def put(self, key: int, value: int) -> None:
+        node = self.data[key % len(self.data)]
+        while node.next: 
+            if node.next.key == key: 
+                node.next.val = value
+                return 
+            node = node.next 
+        node.next = ListNode(key, value)
+
+    def get(self, key: int) -> int:
+        node = self.data[key % len(self.data)]
+        while node: 
+            if node.key == key: return node.val
+            node = node.next 
+        return -1 
+
+    def remove(self, key: int) -> None:
+        node = self.data[key % len(self.data)]
+        while node.next: 
+            if node.next.key == key: 
+                node.next = node.next.next
+                return 
+            node = node.next 
 
 
 """716. Max Stack (Easy)
