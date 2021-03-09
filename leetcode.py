@@ -19708,6 +19708,163 @@ class Solution:
         return sorted(nums, key=lambda x: (freq[x], -x))
 
 
+    """1637. Widest Vertical Area Between Two Points Containing No Points (Medium)
+	Given n points on a 2D plane where points[i] = [xi, yi], Return the widest 
+	vertical area between two points such that no points are inside the area. A 
+	vertical area is an area of fixed-width extending infinitely along the y-axis 
+	(i.e., infinite height). The widest vertical area is the one with the maximum 
+	width. Note that points on the edge of a vertical area are not considered 
+	included in the area.
+
+	Example 1:
+	Input: points = [[8,7],[9,9],[7,4],[9,7]]
+	Output: 1
+	Explanation: Both the red and the blue area are optimal.
+
+	Example 2:
+	Input: points = [[3,1],[9,0],[1,0],[1,4],[5,3],[8,8]]
+	Output: 3
+
+	Constraints:
+	* n == points.length
+	* 2 <= n <= 10^5
+	* points[i].length == 2
+	* 0 <= xi, yi <= 10^9"""
+
+    def maxWidthOfVerticalArea(self, points: List[List[int]]) -> int:
+        vals = sorted(x for x, _ in points)
+        return max(vals[i] - vals[i-1] for i in range(1, len(vals)))
+
+
+    """1638. Count Substrings That Differ by One Character (Medium)
+	Given two strings s and t, find the number of ways you can choose a non-
+	empty substring of s and replace a single character by a different 
+	character such that the resulting substring is a substring of t. In other 
+	words, find the number of substrings in s that differ from some substring 
+	in t by exactly one character. For example, the underlined substrings in 
+	"computer" and "computation" only differ by the 'e'/'a', so this is a valid 
+	way. Return the number of substrings that satisfy the condition above. A 
+	substring is a contiguous sequence of characters within a string.
+
+	Example 1:
+	Input: s = "aba", t = "baba"
+	Output: 6
+	Explanation: The following are the pairs of substrings from s and t that differ by exactly 1 character:
+	("aba", "baba")
+	("aba", "baba")
+	("aba", "baba")
+	("aba", "baba")
+	("aba", "baba")
+	("aba", "baba")
+	The underlined portions are the substrings that are chosen from s and t.
+
+	​​Example 2:
+	Input: s = "ab", t = "bb"
+	Output: 3
+	Explanation: The following are the pairs of substrings from s and t that differ by 1 character:
+	("ab", "bb")
+	("ab", "bb")
+	("ab", "bb")
+	​​​​The underlined portions are the substrings that are chosen from s and t.
+
+	Example 3:
+	Input: s = "a", t = "a"
+	Output: 0
+
+	Example 4:
+	Input: s = "abe", t = "bbc"
+	Output: 10
+
+	Constraints:
+	* 1 <= s.length, t.length <= 100
+	* s and t consist of lowercase English letters only."""
+
+    def countSubstrings(self, s: str, t: str) -> int:
+        m, n = len(s), len(t)
+        dp0 = [[0]*(n+1) for _ in range(m+1)] # 0-mismatch
+        dp1 = [[0]*(n+1) for _ in range(m+1)] # 1-mismatch
+        
+        ans = 0
+        for i in range(m):
+            for j in range(n):
+                if s[i] == t[j]: 
+                    dp0[i+1][j+1] = 1 + dp0[i][j]
+                    dp1[i+1][j+1] = dp1[i][j]
+                else: 
+                    dp0[i+1][j+1] = 0
+                    dp1[i+1][j+1] = 1 + dp0[i][j]
+                ans += dp1[i+1][j+1]
+        return ans 
+
+
+    """1639. Number of Ways to Form a Target String Given a Dictionary (Hard)
+	You are given a list of strings of the same length words and a string 
+	target. Your task is to form target using the given words under the 
+	following rules:
+	* target should be formed from left to right.
+	* To form the ith character (0-indexed) of target, you can choose the kth 
+	  character of the jth string in words if target[i] = words[j][k].
+	* Once you use the kth character of the jth string of words, you can no 
+	  longer use the xth character of any string in words where x <= k. In 
+	  other words, all characters to the left of or at index k become unusuable 
+	  for every string.
+	* Repeat the process until you form the string target.
+	Notice that you can use multiple characters from the same string in words 
+	provided the conditions above are met. Return the number of ways to form 
+	target from words. Since the answer may be too large, return it modulo 
+	10^9 + 7.
+
+	Example 1:
+	Input: words = ["acca","bbbb","caca"], target = "aba"
+	Output: 6
+	Explanation: There are 6 ways to form target.
+	"aba" -> index 0 ("acca"), index 1 ("bbbb"), index 3 ("caca")
+	"aba" -> index 0 ("acca"), index 2 ("bbbb"), index 3 ("caca")
+	"aba" -> index 0 ("acca"), index 1 ("bbbb"), index 3 ("acca")
+	"aba" -> index 0 ("acca"), index 2 ("bbbb"), index 3 ("acca")
+	"aba" -> index 1 ("caca"), index 2 ("bbbb"), index 3 ("acca")
+	"aba" -> index 1 ("caca"), index 2 ("bbbb"), index 3 ("caca")
+
+	Example 2:
+	Input: words = ["abba","baab"], target = "bab"
+	Output: 4
+	Explanation: There are 4 ways to form target.
+	"bab" -> index 0 ("baab"), index 1 ("baab"), index 2 ("abba")
+	"bab" -> index 0 ("baab"), index 1 ("baab"), index 3 ("baab")
+	"bab" -> index 0 ("baab"), index 2 ("baab"), index 3 ("baab")
+	"bab" -> index 1 ("abba"), index 2 ("baab"), index 3 ("baab")
+
+	Example 3:
+	Input: words = ["abcd"], target = "abcd"
+	Output: 1
+
+	Example 4:
+	Input: words = ["abab","baba","abba","baab"], target = "abba"
+	Output: 16
+
+	Constraints:
+	* 1 <= words.length <= 1000
+	* 1 <= words[i].length <= 1000
+	* All strings in words have the same length.
+	* 1 <= target.length <= 1000
+	* words[i] and target contain only lowercase English letters."""
+
+    def numWays(self, words: List[str], target: str) -> int:
+        freq = [defaultdict(int) for _ in range(len(words[0]))]
+        for word in words: 
+            for i, c in enumerate(word): 
+                freq[i][c] += 1
+        
+        @cache
+        def fn(i, k): 
+            """Return number of ways to form target[i:] w/ col k."""
+            if i == len(target): return 1
+            if k == len(words[0]): return 0 
+            return freq[k][target[i]]*fn(i+1, k+1) + fn(i, k+1)
+        
+        return fn(0, 0) % 1_000_000_007
+
+
     """1640. Check Array Formation Through Concatenation (Easy)
 	You are given an array of distinct integers arr and an array of integer 
 	arrays pieces, where the integers in pieces are distinct. Your goal is to 
