@@ -4,9 +4,9 @@ For more details, the readers are suggested to explore on their own effort.
 """
 
 from functools import lru_cache, reduce
-from heapq import heappush, heappop
+from heapq import heappush, heappop, heapify
 from itertools import groupby, zip_longest
-from math import inf, sqrt
+from math import inf, sqrt, ceil
 from operator import gt, lt, or_, xor
 
 class Solution:
@@ -10171,6 +10171,58 @@ class Solution:
         if n == 1: return 1
         if n&1: n -= 1
         return n + 2 - 2*self.lastRemaining(n//2)
+
+
+    """391. Perfect Rectangle (Hard)
+	Given N axis-aligned rectangles where N > 0, determine if they all together 
+	form an exact cover of a rectangular region. Each rectangle is represented 
+	as a bottom-left point and a top-right point. For example, a unit square is 
+	represented as [1,1,2,2]. (coordinate of bottom-left point is (1, 1) and 
+	top-right point is (2, 2)).
+
+	Example 1:
+	rectangles = [[1,1,3,3],
+	              [3,1,4,2],
+	              [3,2,4,4],
+	              [1,3,2,4],
+	              [2,3,3,4]]
+	Return true. All 5 rectangles together form an exact cover of a rectangular 
+	region.
+
+	Example 2:
+	rectangles = [[1,1,2,3],
+	              [1,3,2,4],
+	              [3,1,4,2],
+	              [3,2,4,4]]
+	Return false. Because there is a gap between the two rectangular regions.
+
+	Example 3:
+	rectangles = [[1,1,3,3],
+	              [3,1,4,2],
+	              [1,3,2,4],
+	              [3,2,4,4]]
+	Return false. Because there is a gap in the top center.
+
+	Example 4:
+	rectangles = [[1,1,3,3],
+	              [3,1,4,2],
+	              [1,3,2,4],
+	              [2,2,4,4]]
+	Return false. Because two of the rectangles overlap with each other."""
+
+    def isRectangleCover(self, rectangles: List[List[int]]) -> bool:
+        area = 0
+        corner = set()
+        X0 = Y0 = inf
+        X1 = Y1 = -inf
+        for x0, y0, x1, y1 in rectangles: 
+            area += (x1-x0)*(y1-y0)
+            X0 = min(x0, X0)
+            Y0 = min(y0, Y0)
+            X1 = max(x1, X1)
+            Y1 = max(y1, Y1)
+            corner ^= {(x0, y0), (x0, y1), (x1, y0), (x1, y1)}
+        return area == (X1-X0)*(Y1-Y0) and corner == {(X0, Y0), (X0, Y1), (X1, Y0), (X1, Y1)}
 
 
     """393. UTF-8 Validation (Medium)
