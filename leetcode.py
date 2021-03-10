@@ -429,9 +429,9 @@ class Solution:
 	Explanation: M = 1000, CM = 900, XC = 90 and IV = 4."""
 
     def intToRoman(self, num: int) -> str:
-        roman = {1000:"M", 900:"CM", 500:"D", 400:"CD", 100:"C", 90:"XC", 50:"L", 40:"XL", 10:"X", 9:"IX", 5:"V", 4:"IV", 1:"I"}
+        mp = {1000:"M", 900:"CM", 500:"D", 400:"CD", 100:"C", 90:"XC", 50:"L", 40:"XL", 10:"X", 9:"IX", 5:"V", 4:"IV", 1:"I"}
         ans = []
-        for k, v in roman.items(): 
+        for k, v in mp.items(): 
             ans.append(num//k * v)
             num %= k
         return "".join(ans)
@@ -20501,6 +20501,133 @@ class Fenwick:
             if c == "a": suffix += 1
             else: ans = min(1 + ans, suffix)
         return ans
+
+
+    """1654. Minimum Jumps to Reach Home (Medium)
+	A certain bug's home is on the x-axis at position x. Help them get there 
+	from position 0. The bug jumps according to the following rules:
+	* It can jump exactly a positions forward (to the right).
+	* It can jump exactly b positions backward (to the left).
+	* It cannot jump backward twice in a row.
+	* It cannot jump to any forbidden positions.
+	The bug may jump forward beyond its home, but it cannot jump to positions 
+	numbered with negative integers. Given an array of integers forbidden, 
+	where forbidden[i] means that the bug cannot jump to the position 
+	forbidden[i], and integers a, b, and x, return the minimum number of jumps 
+	needed for the bug to reach its home. If there is no possible sequence of 
+	jumps that lands the bug on position x, return -1.
+
+	Example 1:
+	Input: forbidden = [14,4,18,1,15], a = 3, b = 15, x = 9
+	Output: 3
+	Explanation: 3 jumps forward (0 -> 3 -> 6 -> 9) will get the bug home.
+
+	Example 2:
+	Input: forbidden = [8,3,16,6,12,20], a = 15, b = 13, x = 11
+	Output: -1
+
+	Example 3:
+	Input: forbidden = [1,6,2,14,5,17,4], a = 16, b = 9, x = 7
+	Output: 2
+	Explanation: One jump forward (0 -> 16) then one jump backward (16 -> 7) 
+	             will get the bug home.
+
+	Constraints:
+	* 1 <= forbidden.length <= 1000
+	* 1 <= a, b, forbidden[i] <= 2000
+	* 0 <= x <= 2000
+	* All the elements in forbidden are distinct.
+	* Position x is not forbidden."""
+
+    def minimumJumps(self, forbidden: List[int], a: int, b: int, x: int) -> int:
+        forbidden = set(forbidden)
+        upper = max(forbidden | {x}) + a + b
+        
+        ans = 0
+        queue = [(0, 0)]
+        forbidden.add(0)
+        while queue: 
+            newq = []
+            for n, k in queue: 
+                if n == x: return ans
+                if n+a <= upper and n+a not in forbidden: 
+                    newq.append((n+a, 0))
+                    forbidden.add(n+a)
+                if k == 0 and 0 <= n-b and n-b not in forbidden: 
+                    newq.append((n-b, 1))
+            ans += 1
+            queue = newq
+        return -1 
+
+
+    """1655. Distribute Repeating Integers (Hard)
+	You are given an array of n integers, nums, where there are at most 50 
+	unique values in the array. You are also given an array of m customer order 
+	quantities, quantity, where quantity[i] is the amount of integers the ith 
+	customer ordered. Determine if it is possible to distribute nums such that:
+	* The ith customer gets exactly quantity[i] integers,
+	* The integers the ith customer gets are all equal, and
+	* Every customer is satisfied.
+	Return true if it is possible to distribute nums according to the above 
+	conditions.
+
+	Example 1:
+	Input: nums = [1,2,3,4], quantity = [2]
+	Output: false
+	Explanation: The 0th customer cannot be given two different integers.
+
+	Example 2:
+	Input: nums = [1,2,3,3], quantity = [2]
+	Output: true
+	Explanation: The 0th customer is given [3,3]. The integers [1,2] are not 
+	             used.
+
+	Example 3:
+	Input: nums = [1,1,2,2], quantity = [2,2]
+	Output: true
+	Explanation: The 0th customer is given [1,1], and the 1st customer is given 
+	             [2,2].
+
+	Example 4:
+	Input: nums = [1,1,2,3], quantity = [2,2]
+	Output: false
+	Explanation: Although the 0th customer could be given [1,1], the 1st 
+	             customer cannot be satisfied.
+
+	Example 5:
+	Input: nums = [1,1,1,1,1], quantity = [2,3]
+	Output: true
+	Explanation: The 0th customer is given [1,1], and the 1st customer is given 
+	             [1,1,1].
+
+	Constraints:
+	* n == nums.length
+	* 1 <= n <= 10^5
+	* 1 <= nums[i] <= 1000
+	* m == quantity.length
+	* 1 <= m <= 10
+	* 1 <= quantity[i] <= 10^5
+	* There are at most 50 unique values in nums."""
+
+    def canDistribute(self, nums: List[int], quantity: List[int]) -> bool:
+        freq = {}
+        for x in nums: freq[x] = 1 + freq.get(x, 0)
+        
+        vals = sorted(freq.values(), reverse=True)
+        quantity.sort(reverse=True) # handling large values first 
+        
+        def fn(i): 
+            """Return True if possible to distribute quantity[i:] to remaining."""
+            if i == len(quantity): return True 
+            seen = set()
+            for k in range(len(vals)): 
+                if vals[k] >= quantity[i] and vals[k] not in seen: 
+                    seen.add(vals[k])
+                    vals[k] -= quantity[i]
+                    if fn(i+1): return True 
+                    vals[k] += quantity[i] # backtracking
+                    
+        return fn(0)
 
 
     """1657. Determine if Two Strings Are Close (Medium)
