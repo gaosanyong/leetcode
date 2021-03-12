@@ -9044,9 +9044,9 @@ class Solution:
 
     def coinChange(self, coins: List[int], amount: int) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(x):
-            """Return fewest number of coins to make to x."""
+            """Return fewest number of coins to make up to x."""
             if x == 0: return 0
             if x < 0: return inf
             return min(1 + fn(x - coin) for coin in coins)
@@ -19190,6 +19190,115 @@ class Solution:
         return sum(sorted(arr)[len(arr)//20:-len(arr)//20])/(len(arr)*0.9)
 
 
+    """1620. Coordinate With Maximum Network Quality (Medium)
+	You are given an array of network towers towers and an integer radius, 
+	where towers[i] = [xi, yi, qi] denotes the ith network tower with location 
+	(xi, yi) and quality factor qi. All the coordinates are integral 
+	coordinates on the X-Y plane, and the distance between two coordinates is 
+	the Euclidean distance. The integer radius denotes the maximum distance in 
+	which the tower is reachable. The tower is reachable if the distance is 
+	less than or equal to radius. Outside that distance, the signal becomes 
+	garbled, and the tower is not reachable. The signal quality of the ith 
+	tower at a coordinate (x, y) is calculated with the formula ⌊qi / (1 + d)⌋, 
+	where d is the distance between the tower and the coordinate. The network 
+	quality at a coordinate is the sum of the signal qualities from all the 
+	reachable towers. Return the integral coordinate where the network quality 
+	is maximum. If there are multiple coordinates with the same network quality, 
+	return the lexicographically minimum coordinate.
+
+	Note:
+	A coordinate (x1, y1) is lexicographically smaller than (x2, y2) if either 
+	x1 < x2 or x1 == x2 and y1 < y2. ⌊val⌋ is the greatest integer less than or 
+	equal to val (the floor function).
+
+	Example 1:
+	Input: towers = [[1,2,5],[2,1,7],[3,1,9]], radius = 2
+	Output: [2,1]
+	Explanation: 
+	At coordinate (2, 1) the total quality is 13
+	- Quality of 7 from (2, 1) results in ⌊7 / (1 + sqrt(0)⌋ = ⌊7⌋ = 7
+	- Quality of 5 from (1, 2) results in ⌊5 / (1 + sqrt(2)⌋ = ⌊2.07⌋ = 2
+	- Quality of 9 from (3, 1) results in ⌊9 / (1 + sqrt(1)⌋ = ⌊4.5⌋ = 4
+	No other coordinate has higher quality.
+
+	Example 2:
+	Input: towers = [[23,11,21]], radius = 9
+	Output: [23,11]
+
+	Example 3:
+	Input: towers = [[1,2,13],[2,1,7],[0,1,9]], radius = 2
+	Output: [1,2]
+
+	Example 4:
+	Input: towers = [[2,1,9],[0,1,9]], radius = 2
+	Output: [0,1]
+	Explanation: Both (0, 1) and (2, 1) are optimal in terms of quality but 
+	             (0, 1) is lexicograpically minimal.
+
+	Constraints:
+	* 1 <= towers.length <= 50
+	* towers[i].length == 3
+	* 0 <= xi, yi, qi <= 50
+	* 1 <= radius <= 50"""
+
+    def bestCoordinate(self, towers: List[List[int]], radius: int) -> List[int]:
+        mx = -inf
+        for x in range(51):
+            for y in range(51): 
+                val = 0
+                for xi, yi, qi in towers: 
+                    d = sqrt((x-xi)**2 + (y-yi)**2)
+                    if d <= radius: val += int(qi/(1 + d))
+                if val > mx: 
+                    ans = [x, y]
+                    mx = val
+        return ans 
+
+
+    """1621. Number of Sets of K Non-Overlapping Line Segments (Medium)
+	Given n points on a 1-D plane, where the ith point (from 0 to n-1) is at 
+	x = i, find the number of ways we can draw exactly k non-overlapping line 
+	segments such that each segment covers two or more points. The endpoints of 
+	each segment must have integral coordinates. The k line segments do not 
+	have to cover all n points, and they are allowed to share endpoints. Return 
+	the number of ways we can draw k non-overlapping line segments. Since this 
+	number can be huge, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: n = 4, k = 2
+	Output: 5
+	Explanation: The two line segments are shown in red and blue. The image 
+	             above shows the 5 different ways {(0,2),(2,3)}, {(0,1),(1,3)}, 
+	             {(0,1),(2,3)}, {(1,2),(2,3)}, {(0,1),(1,2)}.
+
+	Example 2:
+	Input: n = 3, k = 1
+	Output: 3
+	Explanation: The 3 ways are {(0,1)}, {(0,2)}, {(1,2)}.
+	
+	Example 3:
+	Input: n = 30, k = 7
+	Output: 796297179
+	Explanation: The total number of possible ways to draw 7 line segments is 
+	             3796297200. Taking this number modulo 10^9 + 7 gives us 
+	             796297179.
+
+	Example 4:
+	Input: n = 5, k = 3
+	Output: 7
+	
+	Example 5:
+	Input: n = 3, k = 2
+	Output: 1
+
+	Constraints:
+	* 2 <= n <= 1000
+	* 1 <= k <= n-1"""
+
+    def numberOfSets(self, n: int, k: int) -> int:
+        return comb(n+k-1, 2*k) % 1_000_000_007
+
+
     """1624. Largest Substring Between Two Equal Characters (Easy)
 	Given a string s, return the length of the longest substring between two 
 	equal characters, excluding the two characters. If there is no such 
@@ -26653,6 +26762,69 @@ class ParkingSystem:
     def addCar(self, carType: int) -> bool:
         self.space[carType-1] -= 1 # space taken 
         return self.space[carType-1] >= 0
+
+
+"""1622. Fancy Sequence (Hard)
+Write an API that generates fancy sequences using the append, addAll, and 
+multAll operations. Implement the Fancy class:
+* Fancy() Initializes the object with an empty sequence.
+* void append(val) Appends an integer val to the end of the sequence.
+* void addAll(inc) Increments all existing values in the sequence by an integer 
+  inc.
+* void multAll(m) Multiplies all existing values in the sequence by an integer 
+  m.
+* int getIndex(idx) Gets the current value at index idx (0-indexed) of the 
+  sequence modulo 109 + 7. If the index is greater or equal than the length of 
+  the sequence, return -1.
+
+Example 1:
+Input: ["Fancy", "append", "addAll", "append", "multAll", "getIndex", "addAll", "append", "multAll", "getIndex", "getIndex", "getIndex"]
+       [[], [2], [3], [7], [2], [0], [3], [10], [2], [0], [1], [2]]
+Output: [null, null, null, null, null, 10, null, null, null, 26, 34, 20]
+Explanation
+Fancy fancy = new Fancy();
+fancy.append(2);   // fancy sequence: [2]
+fancy.addAll(3);   // fancy sequence: [2+3] -> [5]
+fancy.append(7);   // fancy sequence: [5, 7]
+fancy.multAll(2);  // fancy sequence: [5*2, 7*2] -> [10, 14]
+fancy.getIndex(0); // return 10
+fancy.addAll(3);   // fancy sequence: [10+3, 14+3] -> [13, 17]
+fancy.append(10);  // fancy sequence: [13, 17, 10]
+fancy.multAll(2);  // fancy sequence: [13*2, 17*2, 10*2] -> [26, 34, 20]
+fancy.getIndex(0); // return 26
+fancy.getIndex(1); // return 34
+fancy.getIndex(2); // return 20
+
+Constraints:
+* 1 <= val, inc, m <= 100
+* 0 <= idx <= 10^5
+* At most 10^5 calls total will be made to append, addAll, multAll, and getIndex."""
+
+class Fancy:
+    
+    def __init__(self):
+        self.data = []
+        self.cmul = [1]
+        self.csum = [0]
+        self.mod = 1_000_000_007
+
+    def append(self, val: int) -> None:
+        self.data.append(val)
+        self.cmul.append(self.cmul[-1])
+        self.csum.append(self.csum[-1])
+
+    def addAll(self, inc: int) -> None:
+        self.csum[-1] += inc
+
+    def multAll(self, m: int) -> None:
+        self.cmul[-1] = (self.cmul[-1] * m) % self.mod
+        self.csum[-1] = (self.csum[-1] * m) % self.mod
+        
+    def getIndex(self, idx: int) -> int:
+        if idx < len(self.data): 
+            ratio = self.cmul[-1] * pow(self.cmul[idx], self.mod-2, self.mod) # Fermat's little theorem
+            return ((self.data[idx] - self.csum[idx]) * ratio + self.csum[-1]) % self.mod
+        return -1 
 
 
 """1656. Design an Ordered Stream (Easy)
