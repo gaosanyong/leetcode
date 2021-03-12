@@ -18105,6 +18105,162 @@ class Solution:
         return -1 
 
 
+    """1523. Count Odd Numbers in an Interval Range (Easy)
+	Given two non-negative integers low and high. Return the count of odd 
+	numbers between low and high (inclusive).
+
+	Example 1:
+	Input: low = 3, high = 7
+	Output: 3
+	Explanation: The odd numbers between 3 and 7 are [3,5,7].
+
+	Example 2:
+	Input: low = 8, high = 10
+	Output: 1
+	Explanation: The odd numbers between 8 and 10 are [9].
+
+	Constraints: 0 <= low <= high <= 10^9"""
+
+    def countOdds(self, low: int, high: int) -> int:
+        return (high+1)//2 - low//2
+
+
+    """1524. Number of Sub-arrays With Odd Sum (Medium)
+	Given an array of integers arr. Return the number of sub-arrays with odd 
+	sum. As the answer may grow large, the answer must be computed modulo 
+	10^9 + 7.
+
+	Example 1:
+	Input: arr = [1,3,5]
+	Output: 4
+	Explanation: All sub-arrays are [[1],[1,3],[1,3,5],[3],[3,5],[5]]
+	All sub-arrays sum are [1,4,9,3,8,5].
+	Odd sums are [1,9,3,5] so the answer is 4.
+
+	Example 2:
+	Input: arr = [2,4,6]
+	Output: 0
+	Explanation: All sub-arrays are [[2],[2,4],[2,4,6],[4],[4,6],[6]]
+	All sub-arrays sum are [2,6,12,4,10,6].
+	All sub-arrays have even sum and the answer is 0.
+
+	Example 3:
+	Input: arr = [1,2,3,4,5,6,7]
+	Output: 16
+
+	Example 4:
+	Input: arr = [100,100,99,99]
+	Output: 4
+
+	Example 5:
+	Input: arr = [7]
+	Output: 1
+
+	Constraints:
+	* 1 <= arr.length <= 10^5
+	* 1 <= arr[i] <= 100"""
+
+    def numOfSubarrays(self, arr: List[int]) -> int:
+        freq = [1, 0]
+        ans = prefix = 0
+        for x in arr: 
+            prefix += x 
+            ans += freq[1 ^ prefix&1]
+            freq[prefix&1] += 1
+        return ans % 1_000_000_007
+
+
+    """1525. Number of Good Ways to Split a String (Medium)
+	You are given a string s, a split is called good if you can split s into 2 
+	non-empty strings p and q where its concatenation is equal to s and the 
+	number of distinct letters in p and q are the same. Return the number of 
+	good splits you can make in s.
+
+	Example 1:
+	Input: s = "aacaba"
+	Output: 2
+	Explanation: There are 5 ways to split "aacaba" and 2 of them are good. 
+	("a", "acaba") Left string and right string contains 1 and 3 different letters respectively.
+	("aa", "caba") Left string and right string contains 1 and 3 different letters respectively.
+	("aac", "aba") Left string and right string contains 2 and 2 different letters respectively (good split).
+	("aaca", "ba") Left string and right string contains 2 and 2 different letters respectively (good split).
+	("aacab", "a") Left string and right string contains 3 and 1 different letters respectively.
+
+	Example 2:
+	Input: s = "abcd"
+	Output: 1
+	Explanation: Split the string as follows ("ab", "cd").
+
+	Example 3:
+	Input: s = "aaaaa"
+	Output: 4
+	Explanation: All possible splits are good.
+
+	Example 4:
+	Input: s = "acbadbaada"
+	Output: 2
+
+	Constraints:
+	* s contains only lowercase English letters.
+	* 1 <= s.length <= 10^5"""
+
+    def numSplits(self, s: str) -> int:
+        freq = {}
+        for c in s: freq[c] = 1 + freq.get(c, 0)
+        
+        ans = 0
+        seen = set()
+        for i, c in enumerate(s):
+            seen.add(c)
+            freq[c] -= 1
+            if not freq[c]: freq.pop(c)
+            if len(seen) == len(freq): ans += 1
+        return ans 
+
+
+    """1526. Minimum Number of Increments on Subarrays to Form a Target Array (Hard)
+	Given an array of positive integers target and an array initial of same 
+	size with all zeros. Return the minimum number of operations to form a 
+	target array from initial if you are allowed to do the following operation:
+	* Choose any subarray from initial and increment each value by one.
+	The answer is guaranteed to fit within the range of a 32-bit signed integer.
+
+	Example 1:
+	Input: target = [1,2,3,2,1]
+	Output: 3
+	Explanation: We need at least 3 operations to form the target array from the initial array.
+	[0,0,0,0,0] increment 1 from index 0 to 4 (inclusive).
+	[1,1,1,1,1] increment 1 from index 1 to 3 (inclusive).
+	[1,2,2,2,1] increment 1 at index 2.
+	[1,2,3,2,1] target array is formed.
+
+	Example 2:
+	Input: target = [3,1,1,2]
+	Output: 4
+	Explanation: (initial)[0,0,0,0] -> [1,1,1,1] -> [1,1,1,2] -> [2,1,1,2] -> [3,1,1,2] (target).
+
+	Example 3:
+	Input: target = [3,1,5,4,2]
+	Output: 7
+	Explanation: (initial)[0,0,0,0,0] -> [1,1,1,1,1] -> [2,1,1,1,1] -> [3,1,1,1,1] 
+	                                  -> [3,1,2,2,2] -> [3,1,3,3,2] -> [3,1,4,4,2] -> [3,1,5,4,2] (target).
+
+	Example 4:
+	Input: target = [1,1,1,1]
+	Output: 1
+
+	Constraints:
+	* 1 <= target.length <= 10^5
+	* 1 <= target[i] <= 10^5"""
+
+    def minNumberOperations(self, target: List[int]) -> int:
+        ans = prev = 0
+        for x in target: 
+            ans += max(x - prev, 0)
+            prev = x
+        return ans 
+
+
     """1564. Put Boxes Into the Warehouse I (Medium)
 	You are given two arrays of positive integers, boxes and warehouse, 
 	representing the heights of some boxes of unit width and the heights of n 
