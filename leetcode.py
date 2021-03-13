@@ -17695,6 +17695,199 @@ class Solution:
         return fn(0)[1]
 
 
+    """1317. Convert Integer to the Sum of Two No-Zero Integers (Easy)
+	Given an integer n. No-Zero integer is a positive integer which doesn't 
+	contain any 0 in its decimal representation. Return a list of two integers 
+	[A, B] where:
+	* A and B are No-Zero integers.
+	* A + B = n
+	It's guarateed that there is at least one valid solution. If there are many 
+	valid solutions you can return any of them.
+
+	Example 1:
+	Input: n = 2
+	Output: [1,1]
+	Explanation: A = 1, B = 1. A + B = n and both A and B don't contain any 0 
+	             in their decimal representation.
+
+	Example 2:
+	Input: n = 11
+	Output: [2,9]
+	
+	Example 3:
+	Input: n = 10000
+	Output: [1,9999]
+
+	Example 4:
+	Input: n = 69
+	Output: [1,68]
+
+	Example 5:
+	Input: n = 1010
+	Output: [11,999]
+
+	Constraints: 2 <= n <= 10^4"""
+
+    def getNoZeroIntegers(self, n: int) -> List[int]:
+        for x in range(1, n//2+1): 
+            if "0" not in str(x) and "0" not in str(n-x): 
+                return [x, n-x]
+
+
+    """1318. Minimum Flips to Make a OR b Equal to c (Medium)
+	Given 3 positives numbers a, b and c. Return the minimum flips required in 
+	some bits of a and b to make ( a OR b == c ). (bitwise OR operation). Flip 
+	operation consists of change any single bit 1 to 0 or change the bit 0 to 1 
+	in their binary representation.
+
+	Example 1:
+	Input: a = 2, b = 6, c = 5
+	Output: 3
+	Explanation: After flips a = 1 , b = 4 , c = 5 such that (a OR b == c)
+
+	Example 2:
+	Input: a = 4, b = 2, c = 7
+	Output: 1
+
+	Example 3:
+	Input: a = 1, b = 2, c = 3
+	Output: 0
+
+	Constraints:
+	* 1 <= a <= 10^9
+	* 1 <= b <= 10^9
+	* 1 <= c <= 10^9"""
+
+    def minFlips(self, a: int, b: int, c: int) -> int:
+        return bin((a | b) ^ c).count("1") + bin(a & b & ((a | b) ^ c)).count("1")
+
+
+	"""1319. Number of Operations to Make Network Connected (Medium)
+	There are n computers numbered from 0 to n-1 connected by ethernet cables 
+	connections forming a network where connections[i] = [a, b] represents a 
+	connection between computers a and b. Any computer can reach any other 
+	computer directly or indirectly through the network. Given an initial 
+	computer network connections. You can extract certain cables between two 
+	directly connected computers, and place them between any pair of 
+	disconnected computers to make them directly connected. Return the minimum 
+	number of times you need to do this in order to make all the computers 
+	connected. If it's not possible, return -1. 
+
+	Example 1:
+	Input: n = 4, connections = [[0,1],[0,2],[1,2]]
+	Output: 1
+	Explanation: Remove cable between computer 1 and 2 and place between 
+	             computers 1 and 3.
+
+	Example 2:
+	Input: n = 6, connections = [[0,1],[0,2],[0,3],[1,2],[1,3]]
+	Output: 2
+	
+	Example 3:
+	Input: n = 6, connections = [[0,1],[0,2],[0,3],[1,2]]
+	Output: -1
+	Explanation: There are not enough cables.
+
+	Example 4:
+	Input: n = 5, connections = [[0,1],[0,2],[3,4],[2,3]]
+	Output: 0
+
+	Constraints:
+	* 1 <= n <= 10^5
+	* 1 <= connections.length <= min(n*(n-1)/2, 10^5)
+	* connections[i].length == 2
+	* 0 <= connections[i][0], connections[i][1] < n
+	* connections[i][0] != connections[i][1]
+	* There are no repeated connections.
+	* No two computers are connected by more than one cable.
+
+	class UnionFind:
+	    def __init__(self, n):
+	        self.parent = list(range(n))
+	        self.rank = [1] * n
+	    
+	    def find(self, p):
+	        if p != self.parent[p]: 
+	            self.parent[p] = self.find(self.parent[p])
+	        return self.parent[p]
+	    
+	    def union(self, p, q): 
+	        prt, qrt = self.find(p), self.find(q) 
+	        if prt == qrt: return False # already connected 
+	        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
+	        self.parent[prt] = qrt
+	        self.rank[qrt] += self.rank[prt]
+	        return True"""
+
+    def makeConnected(self, n: int, connections: List[List[int]]) -> int:
+        if len(connections) < n-1: return -1 # not enough cables 
+        uf = UnionFind(n)
+        for u, v in connections: 
+        	uf.union(u, v)
+        grp = {uf.find(i) for i in range(n)}
+        return len(grp) - 1
+
+
+    """1320. Minimum Distance to Type a Word Using Two Fingers (Hard)
+	You have a keyboard layout as shown above in the XY plane, where each 
+	English uppercase letter is located at some coordinate, for example, the 
+	letter A is located at coordinate (0,0), the letter B is located at 
+	coordinate (0,1), the letter P is located at coordinate (2,3) and the 
+	letter Z is located at coordinate (4,1). Given the string word, return the 
+	minimum total distance to type such string using only two fingers. The 
+	distance between coordinates (x1,y1) and (x2,y2) is |x1 - x2| + |y1 - y2|. 
+	Note that the initial positions of your two fingers are considered free so 
+	don't count towards your total distance, also your two fingers do not have 
+	to start at the first letter or the first two letters.
+
+	Example 1:
+	Input: word = "CAKE"
+	Output: 3
+	Explanation: 
+	Using two fingers, one optimal way to type "CAKE" is: 
+	Finger 1 on letter 'C' -> cost = 0 
+	Finger 1 on letter 'A' -> cost = Distance from letter 'C' to letter 'A' = 2 
+	Finger 2 on letter 'K' -> cost = 0 
+	Finger 2 on letter 'E' -> cost = Distance from letter 'K' to letter 'E' = 1 
+	Total distance = 3
+
+	Example 2:
+	Input: word = "HAPPY"
+	Output: 6
+	Explanation: 
+	Using two fingers, one optimal way to type "HAPPY" is:
+	Finger 1 on letter 'H' -> cost = 0
+	Finger 1 on letter 'A' -> cost = Distance from letter 'H' to letter 'A' = 2
+	Finger 2 on letter 'P' -> cost = 0
+	Finger 2 on letter 'P' -> cost = Distance from letter 'P' to letter 'P' = 0
+	Finger 1 on letter 'Y' -> cost = Distance from letter 'A' to letter 'Y' = 4
+	Total distance = 6
+
+	Example 3:
+	Input: word = "NEW"
+	Output: 3
+
+	Example 4:
+	Input: word = "YEAR"
+	Output: 7
+
+	Constraints:
+	* 2 <= word.length <= 300
+	* Each word[i] is an English uppercase letter."""
+
+    def minimumDistance(self, word: str) -> int:
+        word = [ord(c)-65 for c in word]
+        dist = lambda x, y: 0 if -1 in (x, y) else abs(x//6-y//6) + abs(x%6-y%6)
+        
+        @cache
+        def fn(i, f1=-1, f2=-1): 
+            """Return minimum distance to type word[i:] with fingers at f1 and f2."""
+            if i == len(word): return 0 
+            return min(dist(f1, word[i]) + fn(i+1, word[i], f2), dist(f2, word[i]) + fn(i+1, f1, word[i]))
+        
+        return fn(0)
+
+
     """1329. Sort the Matrix Diagonally (Medium)
 	A matrix diagonal is a diagonal line of cells starting from some cell in 
 	either the topmost row or leftmost column and going in the bottom-right 
