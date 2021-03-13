@@ -13450,11 +13450,13 @@ class Solution:
 	* 1 <= A.length <= 1000.
 	* 2 <= A[i] <= 10 ^ 9."""
 
-    def numFactoredBinaryTrees(self, A: List[int]) -> int:
-        cnt = {}
-        for x in sorted(A): 
-            cnt[x] = 1 + sum(cnt[xx]*cnt[x//xx] for xx in cnt if not x%xx and x//xx in cnt)
-        return sum(cnt.values()) % 1_000_000_007
+    def numFactoredBinaryTrees(self, arr: List[int]) -> int:
+        freq = {}
+        for x in sorted(arr): 
+            freq[x] = 1
+            for xx in freq: 
+                freq[x] += freq[xx] * freq.get(x/xx, 0)
+        return sum(freq.values()) % 1_000_000_007
 
 
     """825. Friends Of Appropriate Ages (Medium)
@@ -17920,6 +17922,113 @@ class Solution:
                 i, j = i-1, j-1
                 mat[i][j] = vals.pop()
         return mat
+
+
+    """1356. Sort Integers by The Number of 1 Bits (Easy)
+	Given an integer array arr. You have to sort the integers in the array in 
+	ascending order by the number of 1's in their binary representation and in 
+	case of two or more integers have the same number of 1's you have to sort 
+	them in ascending order. Return the sorted array.
+
+	Example 1:
+	Input: arr = [0,1,2,3,4,5,6,7,8]
+	Output: [0,1,2,4,8,3,5,6,7]
+	Explantion: [0] is the only integer with 0 bits.
+	[1,2,4,8] all have 1 bit.
+	[3,5,6] have 2 bits.
+	[7] has 3 bits.
+	The sorted array by bits is [0,1,2,4,8,3,5,6,7]
+
+	Example 2:
+	Input: arr = [1024,512,256,128,64,32,16,8,4,2,1]
+	Output: [1,2,4,8,16,32,64,128,256,512,1024]
+	Explantion: All integers have 1 bit in the binary representation, you should 
+	            just sort them in ascending order.
+
+	Example 3:
+	Input: arr = [10000,10000]
+	Output: [10000,10000]
+	
+	Example 4:
+	Input: arr = [2,3,5,7,11,13,17,19]
+	Output: [2,3,5,17,7,11,13,19]
+
+	Example 5:
+	Input: arr = [10,100,1000,10000]
+	Output: [10,100,10000,1000]
+
+	Constraints:
+	* 1 <= arr.length <= 500
+	* 0 <= arr[i] <= 10^4"""
+
+    def sortByBits(self, arr: List[int]) -> List[int]:
+        return sorted(arr, key=lambda x: (bin(x).count("1"), x))
+
+
+    """1358. Number of Substrings Containing All Three Characters (Medium)
+	Given a string s consisting only of characters a, b and c. Return the 
+	number of substrings containing at least one occurrence of all these 
+	characters a, b and c.
+
+	Example 1:
+	Input: s = "abcabc"
+	Output: 10
+	Explanation: The substrings containing at least one occurrence of the 
+	             characters a, b and c are "abc", "abca", "abcab", "abcabc", 
+	             "bca", "bcab", "bcabc", "cab", "cabc" and "abc" (again). 
+
+	Example 2:
+	Input: s = "aaacb"
+	Output: 3
+	Explanation: The substrings containing at least one occurrence of the 
+	             characters a, b and c are "aaacb", "aacb" and "acb". 
+	
+	Example 3:
+	Input: s = "abc"
+	Output: 1
+
+	Constraints:
+	* 3 <= s.length <= 5 x 10^4
+	* s only consists of a, b or c characters."""
+
+    def numberOfSubstrings(self, s: str) -> int:
+        ans = 0
+        loc = [-1]*3
+        for i, c in enumerate(s): 
+            loc[ord(c)-97] = i 
+            ans += max(0, min(loc)+1)
+        return ans 
+
+
+    """1359. Count All Valid Pickup and Delivery Options (Hard)
+	Given n orders, each order consist in pickup and delivery services. Count 
+	all valid pickup/delivery possible sequences such that delivery(i) is 
+	always after of pickup(i). Since the answer may be too large, return it 
+	modulo 10^9 + 7.
+
+	Example 1:
+	Input: n = 1
+	Output: 1
+	Explanation: Unique order (P1, D1), Delivery 1 always is after of Pickup 1.
+
+	Example 2:
+	Input: n = 2
+	Output: 6
+	Explanation: All possible orders: 
+	(P1,P2,D1,D2), (P1,P2,D2,D1), (P1,D1,P2,D2), (P2,P1,D1,D2), (P2,P1,D2,D1) and (P2,D2,P1,D1).
+	This is an invalid order (P1,D2,P2,D1) because Pickup 2 is after of Delivery 2.
+
+	Example 3:
+	Input: n = 3
+	Output: 90
+
+	Constraints: 1 <= n <= 500"""
+
+    def countOrders(self, n: int) -> int:
+        ans = 1
+        for x in range(2, n+1): 
+            ans = (ans*x*(2*x-1)) % 1_000_000_007
+        return ans 
 
 
     """1387. Sort Integers by The Power Value (Medium)
@@ -26995,6 +27104,70 @@ class CBTInserter:
 
     def get_root(self) -> TreeNode:
         return self.root
+
+
+"""1357. Apply Discount Every n Orders (Medium)
+There is a sale in a supermarket, there will be a discount every n customer. 
+There are some products in the supermarket where the id of the i-th product is 
+products[i] and the price per unit of this product is prices[i]. The system 
+will count the number of customers and when the n-th customer arrive he/she 
+will have a discount on the bill. (i.e if the cost is x the new cost is 
+x - (discount * x) / 100). Then the system will start counting customers again. 
+The customer orders a certain amount of each product where product[i] is the id 
+of the i-th product the customer ordered and amount[i] is the number of units 
+the customer ordered of that product. Implement the Cashier class:
+* Cashier(int n, int discount, int[] products, int[] prices) Initializes the 
+  object with n, the discount, the products and their prices.
+* double getBill(int[] product, int[] amount) returns the value of the bill and 
+  apply the discount if needed. Answers within 10^-5 of the actual value will 
+  be accepted as correct.
+
+Example 1:
+Input
+["Cashier","getBill","getBill","getBill","getBill","getBill","getBill","getBill"]
+[[3,50,[1,2,3,4,5,6,7],[100,200,300,400,300,200,100]],[[1,2],[1,2]],[[3,7],[10,10]],[[1,2,3,4,5,6,7],[1,1,1,1,1,1,1]],[[4],[10]],[[7,3],[10,10]],[[7,5,3,1,6,4,2],[10,10,10,9,9,9,7]],[[2,3,5],[5,3,2]]]
+Output
+[null,500.0,4000.0,800.0,4000.0,4000.0,7350.0,2500.0]
+Explanation
+Cashier cashier = new Cashier(3,50,[1,2,3,4,5,6,7],[100,200,300,400,300,200,100]);
+cashier.getBill([1,2],[1,2]);                        // return 500.0, bill = 1 * 100 + 2 * 200 = 500.
+cashier.getBill([3,7],[10,10]);                      // return 4000.0
+cashier.getBill([1,2,3,4,5,6,7],[1,1,1,1,1,1,1]);    // return 800.0, The bill was 1600.0 but as this is the third customer, he has a discount of 50% which means his bill is only 1600 - 1600 * (50 / 100) = 800.
+cashier.getBill([4],[10]);                           // return 4000.0
+cashier.getBill([7,3],[10,10]);                      // return 4000.0
+cashier.getBill([7,5,3,1,6,4,2],[10,10,10,9,9,9,7]); // return 7350.0, Bill was 14700.0 but as the system counted three more customers, he will have a 50% discount and the bill becomes 7350.0
+cashier.getBill([2,3,5],[5,3,2]);                    // return 2500.0
+ 
+Constraints:
+* 1 <= n <= 10^4
+* 0 <= discount <= 100
+* 1 <= products.length <= 200
+* 1 <= products[i] <= 200
+* There are not repeated elements in the array products.
+* prices.length == products.length
+* 1 <= prices[i] <= 1000
+* 1 <= product.length <= products.length
+* product[i] exists in products.
+* amount.length == product.length
+* 1 <= amount[i] <= 1000
+* At most 1000 calls will be made to getBill.
+* Answers within 10^-5 of the actual value will be accepted as correct."""
+
+class Cashier:
+
+    def __init__(self, n: int, discount: int, products: List[int], prices: List[int]):
+        self.k = 0 # counter 
+        self.n = n
+        self.discount = discount
+        self.prices = dict(zip(products, prices))
+
+    def getBill(self, product: List[int], amount: List[int]) -> float:
+        self.k += 1
+        cost = sum(self.prices[i]*amt for i, amt in zip(product, amount))
+        if self.k == self.n: 
+            cost *= 1 - self.discount/100
+            self.k = 0
+        return cost 
 
 
 """1396. Design Underground System (Medium)
