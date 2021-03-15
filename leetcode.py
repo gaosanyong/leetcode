@@ -18359,6 +18359,41 @@ class Solution:
             node, i = node.next, i+1
         return head 
 
+    
+    """1491. Average Salary Excluding the Minimum and Maximum Salary (Easy)
+	Given an array of unique integers salary where salary[i] is the salary of 
+	the employee i. Return the average salary of employees excluding the 
+	minimum and maximum salary.
+
+	Example 1:
+	Input: salary = [4000,3000,1000,2000]
+	Output: 2500.00000
+	Explanation: Minimum salary and maximum salary are 1000 and 4000 respectively.
+	Average salary excluding minimum and maximum salary is (2000+3000)/2= 2500
+
+	Example 2:
+	Input: salary = [1000,2000,3000]
+	Output: 2000.00000
+	Explanation: Minimum salary and maximum salary are 1000 and 3000 respectively.
+	Average salary excluding minimum and maximum salary is (2000)/1= 2000
+
+	Example 3:
+	Input: salary = [6000,5000,4000,3000,2000,1000]
+	Output: 3500.00000
+
+	Example 4:
+	Input: salary = [8000,9000,2000,3000,6000,1000]
+	Output: 4750.00000
+
+	Constraints:
+	* 3 <= salary.length <= 100
+	* 10^3 <= salary[i] <= 10^6
+	* salary[i] is unique.
+	* Answers within 10^-5 of the actual value will be accepted as correct."""
+
+    def average(self, salary: List[int]) -> float:
+        return (sum(salary)-max(salary)-min(salary)) / (len(salary)-2)
+
 
     """1492. The kth Factor of n (Medium)
 	Given two positive integers n and k. A factor of an integer n is defined as 
@@ -18405,6 +18440,116 @@ class Solution:
             i -= 1
         
         return -1 
+
+
+    """1493. Longest Subarray of 1's After Deleting One Element (Medium)
+	Given a binary array nums, you should delete one element from it. Return 
+	the size of the longest non-empty subarray containing only 1's in the 
+	resulting array. Return 0 if there is no such subarray.
+
+	Example 1:
+	Input: nums = [1,1,0,1]
+	Output: 3
+	Explanation: After deleting the number in position 2, [1,1,1] contains 3 
+	             numbers with value of 1's.
+
+	Example 2:
+	Input: nums = [0,1,1,1,0,1,1,0,1]
+	Output: 5
+	Explanation: After deleting the number in position 4, [0,1,1,1,1,1,0,1] 
+	             longest subarray with value of 1's is [1,1,1,1,1].
+	
+	Example 3:
+	Input: nums = [1,1,1]
+	Output: 2
+	Explanation: You must delete one element.
+	
+	Example 4:
+	Input: nums = [1,1,0,0,1,1,1,0,1]
+	Output: 4
+
+	Example 5:
+	Input: nums = [0,0,0]
+	Output: 0
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* nums[i] is either 0 or 1."""
+
+    def longestSubarray(self, nums: List[int]) -> int:
+        ans = 0 
+        queue = deque([-1])
+        for i, x in enumerate(nums): 
+            if not x: queue.append(i)
+            if len(queue) > 2: queue.popleft()
+            ans = max(ans, i - queue[0] - 1)
+        return ans 
+
+
+    """1494. Parallel Courses II (Hard)
+	Given the integer n representing the number of courses at some university 
+	labeled from 1 to n, and the array dependencies where 
+	dependencies[i] = [xi, yi] represents a prerequisite relationship, that is, 
+	the course xi must be taken before the course yi. Also, you are given the 
+	integer k. In one semester you can take at most k courses as long as you 
+	have taken all the prerequisites for the courses you are taking. Return the 
+	minimum number of semesters to take all courses. It is guaranteed that you 
+	can take all courses in some way.
+
+	Example 1:
+	Input: n = 4, dependencies = [[2,1],[3,1],[1,4]], k = 2
+	Output: 3 
+	Explanation: The figure above represents the given graph. In this case we 
+	             can take courses 2 and 3 in the first semester, then take 
+	             course 1 in the second semester and finally take course 4 in 
+	             the third semester.
+
+	Example 2:
+	Input: n = 5, dependencies = [[2,1],[3,1],[4,1],[1,5]], k = 2
+	Output: 4 
+	Explanation: The figure above represents the given graph. In this case one 
+	             optimal way to take all courses is: take courses 2 and 3 in 
+	             the first semester and take course 4 in the second semester, 
+	             then take course 1 in the third semester and finally take 
+	             course 5 in the fourth semester.
+	
+	Example 3:
+	Input: n = 11, dependencies = [], k = 2
+	Output: 6
+
+	Constraints:
+	* 1 <= n <= 15
+	* 1 <= k <= n
+	* 0 <= dependencies.length <= n * (n-1) / 2
+	* dependencies[i].length == 2
+	* 1 <= xi, yi <= n
+	* xi != yi
+	* All prerequisite relationships are distinct, that is, dependencies[i] != dependencies[j].
+	* The given graph is a directed acyclic graph."""
+
+    def minNumberOfSemesters(self, n: int, dependencies: List[List[int]], k: int) -> int:
+        pre = [0]*n # prerequisites 
+        for u, v in dependencies: 
+            pre[v-1] |= 1 << (u-1) 
+            
+        @cache
+        def fn(mask): 
+            """Return min semesters to take remaining courses."""
+            if mask == (1 << n) - 1: return 0 # all courses taken 
+            can = [] # available courses 
+            for i in range(n): 
+                if not mask & 1 << i and mask & pre[i] == pre[i]: 
+                    can.append(i)
+            
+            ans = inf
+            for courses in combinations(can, min(k, len(can))): 
+                temp = mask 
+                for c in courses: 
+                    temp |= 1 << c
+                ans = min(ans, 1 + fn(temp))
+            return ans 
+        
+        return fn(0)
 
 
     """1523. Count Odd Numbers in an Interval Range (Easy)
@@ -23007,6 +23152,47 @@ class Fenwick:
         return ((7*q + (49+2*r))*q + r*(r+1))//2
 
 
+    """1721. Swapping Nodes in a Linked List (Medium)
+	You are given the head of a linked list, and an integer k. Return the head 
+	of the linked list after swapping the values of the kth node from the 
+	beginning and the kth node from the end (the list is 1-indexed).
+
+	Example 1:
+	Input: head = [1,2,3,4,5], k = 2
+	Output: [1,4,3,2,5]
+
+	Example 2:
+	Input: head = [7,9,6,6,7,8,3,0,9,5], k = 5
+	Output: [7,9,6,6,8,7,3,0,9,5]
+
+	Example 3:
+	Input: head = [1], k = 1
+	Output: [1]
+
+	Example 4:
+	Input: head = [1,2], k = 1
+	Output: [2,1]
+
+	Example 5:
+	Input: head = [1,2,3], k = 2
+	Output: [1,2,3]
+
+	Constraints:
+	* The number of nodes in the list is n.
+	* 1 <= k <= n <= 10^5
+	* 0 <= Node.val <= 100"""
+
+    def swapNodes(self, head: ListNode, k: int) -> ListNode:
+        node = n1 = n2 = head 
+        while node: 
+            k -= 1
+            if not k: n1 = node 
+            if k < 0: n2 = n2.next 
+            node = node.next
+        n1.val, n2.val = n2.val, n1.val
+        return head 
+
+
     """1730. Shortest Path to Get Food (Medium)
 	You are starving and you want to eat food as quickly as possible. You want 
 	to find the shortest path to arrive at any food cell. You are given an m x n 
@@ -26896,17 +27082,20 @@ work. You just need to ensure that a URL can be encoded to a tiny URL and the
 tiny URL can be decoded to the original URL."""
 
 class Codec:
+    
+    def __init__(self): 
+        self.lookup = {}
 
     def encode(self, longUrl: str) -> str:
         """Encodes a URL to a shortened URL."""
-        self.lut = {} # look up table 
-        key = hex(abs(hash(longUrl)))
-        self.lut[key] = longUrl
-        return "http://tinyurl/" + key 
+        ans = "http://tinyurl.com/" + hex(abs(hash(longUrl)))
+        self.lookup[ans] = longUrl
+        return ans 
+        
 
     def decode(self, shortUrl: str) -> str:
         """Decodes a shortened URL to its original URL."""
-        return self.lut[shortUrl.split("/")[-1]]
+        return self.lookup[shortUrl]
 
 
 """604. Design Compressed String Iterator (Easy)
