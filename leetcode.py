@@ -18359,6 +18359,163 @@ class Solution:
             node, i = node.next, i+1
         return head 
 
+
+    """1475. Final Prices With a Special Discount in a Shop (Easy)
+	Given the array prices where prices[i] is the price of the ith item in a 
+	shop. There is a special discount for items in the shop, if you buy the ith 
+	item, then you will receive a discount equivalent to prices[j] where j is 
+	the minimum index such that j > i and prices[j] <= prices[i], otherwise, 
+	you will not receive any discount at all. Return an array where the ith 
+	element is the final price you will pay for the ith item of the shop 
+	considering the special discount.
+
+	Example 1:
+	Input: prices = [8,4,6,2,3]
+	Output: [4,2,4,2,3]
+	Explanation: 
+	For item 0 with price[0]=8 you will receive a discount equivalent to prices[1]=4, therefore, the final price you will pay is 8 - 4 = 4. 
+	For item 1 with price[1]=4 you will receive a discount equivalent to prices[3]=2, therefore, the final price you will pay is 4 - 2 = 2. 
+	For item 2 with price[2]=6 you will receive a discount equivalent to prices[3]=2, therefore, the final price you will pay is 6 - 2 = 4. 
+	For items 3 and 4 you will not receive any discount at all.
+
+	Example 2:
+	Input: prices = [1,2,3,4,5]
+	Output: [1,2,3,4,5]
+	Explanation: In this case, for all items, you will not receive any discount 
+	             at all.
+
+	Example 3:
+	Input: prices = [10,1,1,6]
+	Output: [9,0,1,6]
+
+	Constraints:
+	* 1 <= prices.length <= 500
+	* 1 <= prices[i] <= 10^3"""
+
+    def finalPrices(self, prices: List[int]) -> List[int]:
+        stack = []
+        for i, x in enumerate(prices): 
+            while stack and prices[stack[-1]] >= x: 
+                prices[stack.pop()] -= x
+            stack.append(i)
+        return prices
+
+
+    """1477. Find Two Non-overlapping Sub-arrays Each With Target Sum (Medium)
+	Given an array of integers arr and an integer target. You have to find two 
+	non-overlapping sub-arrays of arr each with sum equal target. There can be 
+	multiple answers so you have to find an answer where the sum of the lengths 
+	of the two sub-arrays is minimum. Return the minimum sum of the lengths of 
+	the two required sub-arrays, or return -1 if you cannot find such two sub-
+	arrays.
+
+	Example 1:
+	Input: arr = [3,2,2,4,3], target = 3
+	Output: 2
+	Explanation: Only two sub-arrays have sum = 3 ([3] and [3]). The sum of 
+	             their lengths is 2.
+
+	Example 2:
+	Input: arr = [7,3,4,7], target = 7
+	Output: 2
+	Explanation: Although we have three non-overlapping sub-arrays of 
+	             sum = 7 ([7], [3,4] and [7]), but we will choose the first and 
+	             third sub-arrays as the sum of their lengths is 2.
+	
+	Example 3:
+	Input: arr = [4,3,2,6,2,3,4], target = 6
+	Output: -1
+	Explanation: We have only one sub-array of sum = 6.
+
+	Example 4:
+	Input: arr = [5,5,4,4,5], target = 3
+	Output: -1
+	Explanation: We cannot find a sub-array of sum = 3.
+
+	Example 5:
+	Input: arr = [3,1,1,1,5,1,2,1], target = 3
+	Output: 3
+	Explanation: Note that sub-arrays [1,2] and [2,1] cannot be an answer 
+	             because they overlap.
+
+	Constraints:
+	* 1 <= arr.length <= 10^5
+	* 1 <= arr[i] <= 1000
+	* 1 <= target <= 10^8"""
+
+    def minSumOfLengths(self, arr: List[int], target: int) -> int:
+        ans = inf 
+        best = [inf]*len(arr) # shortest subarray ending at i
+        prefix = 0
+        latest = {0: -1}
+        for i, x in enumerate(arr): 
+            prefix += x
+            if prefix - target in latest: 
+                ii = latest[prefix - target]
+                if ii >= 0: 
+                    ans = min(ans, i - ii + best[ii])
+                best[i] = i - ii
+            if i: best[i] = min(best[i-1], best[i])
+            latest[prefix] = i 
+        return ans if ans < inf else -1
+
+
+    """1478. Allocate Mailboxes (Hard)
+	Given the array houses and an integer k. where houses[i] is the location of 
+	the ith house along a street, your task is to allocate k mailboxes in the 
+	street. Return the minimum total distance between each house and its 
+	nearest mailbox. The answer is guaranteed to fit in a 32-bit signed integer.
+
+	Example 1:
+	Input: houses = [1,4,8,10,20], k = 3
+	Output: 5
+	Explanation: Allocate mailboxes in position 3, 9 and 20. Minimum total 
+	             distance from each houses to nearest mailboxes is 
+	             |3-1| + |4-3| + |9-8| + |10-9| + |20-20| = 5 
+
+	Example 2:
+	Input: houses = [2,3,5,12,18], k = 2
+	Output: 9
+	Explanation: Allocate mailboxes in position 3 and 14. Minimum total 
+	             distance from each houses to nearest mailboxes is 
+	             |2-3| + |3-3| + |5-3| + |12-14| + |18-14| = 9.
+	
+	Example 3:
+	Input: houses = [7,4,6,1], k = 1
+	Output: 8
+
+	Example 4:
+	Input: houses = [3,6,14,10], k = 4
+	Output: 0
+
+	Constraints:
+	* n == houses.length
+	* 1 <= n <= 100
+	* 1 <= houses[i] <= 10^4
+	* 1 <= k <= n
+	* Array houses contain unique integers."""
+
+    def minDistance(self, houses: List[int], k: int) -> int:
+        houses.sort() # ascending order 
+        n = len(houses)
+        
+        mdist = [[0]*n for _ in range(n)] # mdist[i][j] median distance of houses[i:j+1]
+        for i in range(n):
+            for j in range(i+1, n): 
+                mdist[i][j] = mdist[i][j-1] + houses[j] - houses[i+j >> 1]
+        
+        @cache
+        def fn(n, k):
+            """Return min distance of allocating k mailboxes to n houses."""
+            if n <= k: return 0 # one mailbox for each house
+            if k == 1: return mdist[0][n-1]
+            ans = inf 
+            for nn in range(k-1, n): 
+                ans = min(ans, fn(nn, k-1) + mdist[nn][n-1])
+            return ans 
+        
+        return fn(n, k)
+
     
     """1491. Average Salary Excluding the Minimum and Maximum Salary (Easy)
 	Given an array of unique integers salary where salary[i] is the salary of 
@@ -27582,6 +27739,87 @@ class UndergroundSystem:
     def getAverageTime(self, startStation: str, endStation: str) -> float:
         s, c = self.out[endStation][startStation]
         return s/c 
+
+
+"""1476. Subrectangle Queries (Medium)
+Implement the class SubrectangleQueries which receives a rows x cols rectangle 
+as a matrix of integers in the constructor and supports two methods:
+1. updateSubrectangle(int row1, int col1, int row2, int col2, int newValue)
+  * Updates all values with newValue in the subrectangle whose upper left 
+    coordinate is (row1,col1) and bottom right coordinate is (row2,col2).
+2. getValue(int row, int col)
+  * Returns the current value of the coordinate (row,col) from the rectangle.
+
+Example 1:
+Input
+["SubrectangleQueries","getValue","updateSubrectangle","getValue","getValue","updateSubrectangle","getValue","getValue"]
+[[[[1,2,1],[4,3,4],[3,2,1],[1,1,1]]],[0,2],[0,0,3,2,5],[0,2],[3,1],[3,0,3,2,10],[3,1],[0,2]]
+Output
+[null,1,null,5,5,null,10,5]
+Explanation
+SubrectangleQueries subrectangleQueries = new SubrectangleQueries([[1,2,1],[4,3,4],[3,2,1],[1,1,1]]);  
+// The initial rectangle (4x3) looks like:
+// 1 2 1
+// 4 3 4
+// 3 2 1
+// 1 1 1
+subrectangleQueries.getValue(0, 2); // return 1
+subrectangleQueries.updateSubrectangle(0, 0, 3, 2, 5);
+// After this update the rectangle looks like:
+// 5 5 5
+// 5 5 5
+// 5 5 5
+// 5 5 5 
+subrectangleQueries.getValue(0, 2); // return 5
+subrectangleQueries.getValue(3, 1); // return 5
+subrectangleQueries.updateSubrectangle(3, 0, 3, 2, 10);
+// After this update the rectangle looks like:
+// 5   5   5
+// 5   5   5
+// 5   5   5
+// 10  10  10 
+subrectangleQueries.getValue(3, 1); // return 10
+subrectangleQueries.getValue(0, 2); // return 5
+
+Example 2:
+Input
+["SubrectangleQueries","getValue","updateSubrectangle","getValue","getValue","updateSubrectangle","getValue"]
+[[[[1,1,1],[2,2,2],[3,3,3]]],[0,0],[0,0,2,2,100],[0,0],[2,2],[1,1,2,2,20],[2,2]]
+Output
+[null,1,null,100,100,null,20]
+Explanation
+SubrectangleQueries subrectangleQueries = new SubrectangleQueries([[1,1,1],[2,2,2],[3,3,3]]);
+subrectangleQueries.getValue(0, 0); // return 1
+subrectangleQueries.updateSubrectangle(0, 0, 2, 2, 100);
+subrectangleQueries.getValue(0, 0); // return 100
+subrectangleQueries.getValue(2, 2); // return 100
+subrectangleQueries.updateSubrectangle(1, 1, 2, 2, 20);
+subrectangleQueries.getValue(2, 2); // return 20
+ 
+Constraints:
+* There will be at most 500 operations considering both methods: updateSubrectangle and getValue.
+* 1 <= rows, cols <= 100
+* rows == rectangle.length
+* cols == rectangle[i].length
+* 0 <= row1 <= row2 < rows
+* 0 <= col1 <= col2 < cols
+* 1 <= newValue, rectangle[i][j] <= 10^9
+* 0 <= row < rows
+* 0 <= col < cols"""
+
+class SubrectangleQueries:
+
+    def __init__(self, rectangle: List[List[int]]):
+        self.rectangle = rectangle
+        self.ops = []
+
+    def updateSubrectangle(self, row1: int, col1: int, row2: int, col2: int, newValue: int) -> None:
+        self.ops.append([row1, col1, row2, col2, newValue])
+
+    def getValue(self, row: int, col: int) -> int:
+        for r1, c1, r2, c2, val in reversed(self.ops): 
+            if r1 <= row <= r2 and c1 <= col <= c2: return val
+        return self.rectangle[row][col]
 
 
 """1603. Design Parking System (Easy)
