@@ -18031,6 +18031,60 @@ class Solution:
         return ans 
 
 
+    """1373. Maximum Sum BST in Binary Tree (Hard)
+	Given a binary tree root, the task is to return the maximum sum of all keys 
+	of any sub-tree which is also a Binary Search Tree (BST). Assume a BST is 
+	defined as follows:
+	* The left subtree of a node contains only nodes with keys less than the node's key.
+	* The right subtree of a node contains only nodes with keys greater than the node's key.
+	* Both the left and right subtrees must also be binary search trees.
+
+	Example 1:
+	Input: root = [1,4,3,2,4,2,5,null,null,null,null,null,null,4,6]
+	Output: 20
+	Explanation: Maximum sum in a valid Binary search tree is obtained in root 
+	             node with key equal to 3.
+
+	Example 2:
+	Input: root = [4,3,null,1,2]
+	Output: 2
+	Explanation: Maximum sum in a valid Binary search tree is obtained in a 
+	             single root node with key equal to 2.
+
+	Example 3:
+	Input: root = [-4,-2,-5]
+	Output: 0
+	Explanation: All values are negatives. Return an empty BST.
+
+	Example 4:
+	Input: root = [2,1,3]
+	Output: 6
+
+	Example 5:
+	Input: root = [5,4,8,3,null,6,3]
+	Output: 7
+
+	Constraints:
+	* The given binary tree will have between 1 and 40000 nodes.
+	* Each node's value is between [-4 * 10^4 , 4 * 10^4]."""
+
+    def maxSumBST(self, root: TreeNode) -> int:
+        
+        def fn(node): 
+            """Collect info while traversing the tree in post-order."""
+            if not node: return True, inf, -inf, 0, 0 # bst flag | min | max | sum
+            ltf, lmn, lmx, lsm, lval = fn(node.left)
+            rtf, rmn, rmx, rsm, rval = fn(node.right)
+            lmn = min(lmn, node.val)
+            rmx = max(rmx, node.val)
+            sm = lsm + rsm + node.val 
+            if ltf and rtf and lmx < node.val < rmn: 
+                return True, lmn, rmx, sm, max(lval, rval, sm)
+            return False, lmn, rmx, sm, max(lval, rval)
+        
+        return fn(root)[-1]
+
+
     """1387. Sort Integers by The Power Value (Medium)
 	The power of an integer x is defined as the number of steps needed to 
 	transform x into 1 using the following steps:
@@ -18260,6 +18314,180 @@ class Solution:
             amount += x if d == 0 else -x
         amount %= len(s)
         return s[amount:] + s[:amount]
+
+
+    """1446. Consecutive Characters (Easy)
+	Given a string s, the power of the string is the maximum length of a non-
+	empty substring that contains only one unique character. Return the power 
+	of the string.
+
+	Example 1:
+	Input: s = "leetcode"
+	Output: 2
+	Explanation: The substring "ee" is of length 2 with the character 'e' only.
+
+	Example 2:
+	Input: s = "abbcccddddeeeeedcba"
+	Output: 5
+	Explanation: The substring "eeeee" is of length 5 with the character 'e' only.
+
+	Example 3:
+	Input: s = "triplepillooooow"
+	Output: 5
+
+	Example 4:
+	Input: s = "hooraaaaaaaaaaay"
+	Output: 11
+
+	Example 5:
+	Input: s = "tourist"
+	Output: 1
+
+	Constraints:
+	* 1 <= s.length <= 500
+	* s contains only lowercase English letters."""
+
+    def maxPower(self, s: str) -> int:
+        ans = 0
+        for i in range(len(s)):
+            if not i or s[i-1] != s[i]: cnt = 0
+            cnt += 1
+            ans = max(ans, cnt)
+        return ans 
+
+
+    """1447. Simplified Fractions (Medium)
+	Given an integer n, return a list of all simplified fractions between 0 and 
+	1 (exclusive) such that the denominator is less-than-or-equal-to n. The 
+	fractions can be in any order.
+
+	Example 1:
+	Input: n = 2
+	Output: ["1/2"]
+	Explanation: "1/2" is the only unique fraction with a denominator less-than-
+	             or-equal-to 2.
+
+	Example 2:
+	Input: n = 3
+	Output: ["1/2","1/3","2/3"]
+	
+	Example 3:
+	Input: n = 4
+	Output: ["1/2","1/3","1/4","2/3","3/4"]
+	Explanation: "2/4" is not a simplified fraction because it can be 
+	             simplified to "1/2".
+
+	Example 4:
+	Input: n = 1
+	Output: []
+
+	Constraints: 1 <= n <= 100"""
+
+    def simplifiedFractions(self, n: int) -> List[str]:
+        ans = []
+        for d in range(2, n+1): 
+            for n in range(1, d):
+                if gcd(d, n) == 1: ans.append(str(n) + "/" + str(d))
+        return ans 
+
+
+    """1448. Count Good Nodes in Binary Tree (Medium)
+	Given a binary tree root, a node X in the tree is named good if in the path 
+	from root to X there are no nodes with a value greater than X. Return the 
+	number of good nodes in the binary tree.
+
+	Example 1:
+	Input: root = [3,1,4,3,null,1,5]
+	Output: 4
+	Explanation: Nodes in blue are good.
+	Root Node (3) is always a good node.
+	Node 4 -> (3,4) is the maximum value in the path starting from the root.
+	Node 5 -> (3,4,5) is the maximum value in the path
+	Node 3 -> (3,1,3) is the maximum value in the path.
+
+	Example 2:
+	Input: root = [3,3,null,4,2]
+	Output: 3
+	Explanation: Node 2 -> (3, 3, 2) is not good, because "3" is higher than it.
+
+	Example 3:
+	Input: root = [1]
+	Output: 1
+	Explanation: Root is considered as good.
+
+	Constraints:
+	* The number of nodes in the binary tree is in the range [1, 10^5].
+	* Each node's value is between [-10^4, 10^4]."""
+
+    def goodNodes(self, root: TreeNode) -> int:
+        ans = 0 
+        stack = [(root, -inf)]
+        while stack: 
+            node, val = stack.pop()
+            if node: 
+                if node.val >= val: ans += 1
+                val = max(val, node.val)
+                stack.append((node.left, val))
+                stack.append((node.right, val))
+        return ans 
+
+
+    """1449. Form Largest Integer With Digits That Add up to Target (Hard)
+	Given an array of integers cost and an integer target. Return the maximum 
+	integer you can paint under the following rules:
+	* The cost of painting a digit (i+1) is given by cost[i] (0 indexed).
+	* The total cost used must be equal to target.
+	* Integer does not have digits 0.
+	Since the answer may be too large, return it as string. If there is no way 
+	to paint any integer given the condition, return "0".
+
+	Example 1:
+	Input: cost = [4,3,2,5,6,7,2,5,5], target = 9
+	Output: "7772"
+	Explanation:  The cost to paint the digit '7' is 2, and the digit '2' is 3. 
+	              Then cost("7772") = 2*3+ 3*1 = 9. You could also paint "977", 
+	              but "7772" is the largest number.
+	Digit    cost
+	  1  ->   4
+	  2  ->   3
+	  3  ->   2
+	  4  ->   5
+	  5  ->   6
+	  6  ->   7
+	  7  ->   2
+	  8  ->   5
+	  9  ->   5
+	
+	Example 2:
+	Input: cost = [7,6,5,5,5,6,8,7,8], target = 12
+	Output: "85"
+	Explanation: The cost to paint the digit '8' is 7, and the digit '5' is 5. 
+	             Then cost("85") = 7 + 5 = 12.
+
+	Example 3:
+	Input: cost = [2,4,6,2,4,6,4,4,4], target = 5
+	Output: "0"
+	Explanation: It's not possible to paint any integer with total cost equal to target.
+	
+	Example 4:
+	Input: cost = [6,10,15,40,40,40,40,40,40], target = 47
+	Output: "32211"
+	 
+	Constraints:
+	* cost.length == 9
+	* 1 <= cost[i] <= 5000
+	* 1 <= target <= 5000"""
+
+    def largestNumber(self, cost: List[int], target: int) -> str:
+        
+        @cache
+        def fn(x): 
+            """Return max integer given target x."""
+            if x == 0: return 0
+            if x < 0: return -inf 
+            return max(fn(x - c) * 10 + i + 1 for i, c in enumerate(cost))
+        
+        return str(max(0, fn(target)))
 
 
     """1469. Find All The Lonely Nodes (Easy)
