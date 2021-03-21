@@ -9992,13 +9992,12 @@ class Solution:
 	Follow up: Can you do it in O(n) time?"""
 
     def wiggleMaxLength(self, nums: List[int]) -> int:
-        if not nums: return 0 # edge cases 
         ans = 1
-        prev = curr = 0
+        prev = 0
         for i in range(1, len(nums)): 
-            curr = nums[i] - nums[i-1]
-            if prev * curr < 0: ans += 1
-            if curr: prev = curr 
+            diff = nums[i] - nums[i-1]
+            if prev * diff < 0: ans += 1
+            if diff: prev = diff
         return ans + bool(prev)
 
 
@@ -26288,6 +26287,133 @@ class Fenwick:
         return ans 
 
 
+    """1796. Second Largest Digit in a String (Easy)
+	Given an alphanumeric string s, return the second largest numerical digit 
+	that appears in s, or -1 if it does not exist. An alphanumeric string is a 
+	string consisting of lowercase English letters and digits.
+
+	Example 1:
+	Input: s = "dfa12321afd"
+	Output: 2
+	Explanation: The digits that appear in s are [1, 2, 3]. The second largest 
+	             digit is 2.
+
+	Example 2:
+	Input: s = "abc1111"
+	Output: -1
+	Explanation: The digits that appear in s are [1]. There is no second 
+	             largest digit. 
+
+	Constraints:
+	* 1 <= s.length <= 500
+	* s consists of only lowercase English letters and/or digits."""
+
+    def secondHighest(self, s: str) -> int:
+        seen = set()
+        for c in s: 
+            if c.isdigit(): 
+                seen.add(int(c))
+        return -1 if len(seen) < 2 else sorted(seen)[-2]
+
+
+    """1798. Maximum Number of Consecutive Values You Can Make (Medium)
+	You are given an integer array coins of length n which represents the n 
+	coins that you own. The value of the ith coin is coins[i]. You can make 
+	some value x if you can choose some of your n coins such that their values 
+	sum up to x. Return the maximum number of consecutive integer values that 
+	you can make with your coins starting from and including 0. Note that you 
+	may have multiple coins of the same value.
+
+	Example 1:
+	Input: coins = [1,3]
+	Output: 2
+	Explanation: You can make the following values:
+	- 0: take []
+	- 1: take [1]
+	You can make 2 consecutive integer values starting from 0.
+
+	Example 2:
+	Input: coins = [1,1,1,4]
+	Output: 8
+	Explanation: You can make the following values:
+	- 0: take []
+	- 1: take [1]
+	- 2: take [1,1]
+	- 3: take [1,1,1]
+	- 4: take [4]
+	- 5: take [4,1]
+	- 6: take [4,1,1]
+	- 7: take [4,1,1,1]
+	You can make 8 consecutive integer values starting from 0.
+
+	Example 3:
+	Input: nums = [1,4,10,3,1]
+	Output: 20
+
+	Constraints:
+	* coins.length == n
+	* 1 <= n <= 4 * 10^4
+	* 1 <= coins[i] <= 4 * 10^4"""
+
+    def getMaximumConsecutive(self, coins: List[int]) -> int:
+        ans = 1
+        for x in sorted(coins): 
+            if ans < x: break 
+            ans += x
+        return ans
+
+
+    """1799. Maximize Score After N Operations (Hard)
+	You are given nums, an array of positive integers of size 2 * n. You must 
+	perform n operations on this array. In the ith operation (1-indexed), you 
+	will:
+	* Choose two elements, x and y.
+	* Receive a score of i * gcd(x, y).
+	* Remove x and y from nums.
+	Return the maximum score you can receive after performing n operations. The 
+	function gcd(x, y) is the greatest common divisor of x and y.
+
+	Example 1:
+	Input: nums = [1,2]
+	Output: 1
+	Explanation: The optimal choice of operations is: (1 * gcd(1, 2)) = 1
+
+	Example 2:
+	Input: nums = [3,4,6,8]
+	Output: 11
+	Explanation: The optimal choice of operations is: 
+	             (1 * gcd(3, 6)) + (2 * gcd(4, 8)) = 3 + 8 = 11
+	
+	Example 3:
+	Input: nums = [1,2,3,4,5,6]
+	Output: 14
+	Explanation: The optimal choice of operations is:
+     	         (1 * gcd(1, 5)) + (2 * gcd(2, 4)) + (3 * gcd(3, 6)) = 1 + 4 + 9 = 14
+
+	Constraints:
+	* 1 <= n <= 7
+	* nums.length == 2 * n
+	* 1 <= nums[i] <= 10^6"""
+
+    def maxScore(self, nums: List[int]) -> int:
+        n = len(nums)
+        
+        @cache
+        def fn(mask, k): 
+            """Return maximum score at kth operation with available numbers by mask."""
+            if mask == 0: return 0 # no more numbers 
+            ans = 0
+            for i in range(n): 
+                if mask & 1 << i:
+                    for j in range(i+1, n): 
+                        if mask & 1 << j: 
+                            mask0 = mask & ~(1<<i) & ~(1<<j) # unset ith & jth bit
+                            ans = max(ans, k*gcd(nums[i], nums[j]) + fn(mask0, k+1))
+            return ans 
+        
+        return fn((1<<n) - 1, 1)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -28733,3 +28859,64 @@ class MRUQueue:
         i = self.data[-1][0] + 1 if self.data else 0
         self.data.add((i, x))
         return x
+
+
+"""1797. Design Authentication Manager (Medium)
+There is an authentication system that works with authentication tokens. For 
+each session, the user will receive a new authentication token that will expire 
+timeToLive seconds after the currentTime. If the token is renewed, the expiry 
+time will be extended to expire timeToLive seconds after the (potentially 
+different) currentTime. Implement the AuthenticationManager class:
+* AuthenticationManager(int timeToLive) constructs the AuthenticationManager 
+  and sets the timeToLive.
+* generate(string tokenId, int currentTime) generates a new token with the 
+  given tokenId at the given currentTime in seconds.
+* renew(string tokenId, int currentTime) renews the unexpired token with the 
+  given tokenId at the given currentTime in seconds. If there are no unexpired tokens with the given tokenId, the request is ignored, and nothing happens.
+* countUnexpiredTokens(int currentTime) returns the number of unexpired tokens 
+  at the given currentTime.
+Note that if a token expires at time t, and another action happens on time t 
+(renew or countUnexpiredTokens), the expiration takes place before the other 
+actions.
+
+Example 1:
+Input: ["AuthenticationManager", "renew", "generate", "countUnexpiredTokens", "generate", "renew", "renew", "countUnexpiredTokens"]
+       [[5], ["aaa", 1], ["aaa", 2], [6], ["bbb", 7], ["aaa", 8], ["bbb", 10], [15]]
+Output: [null, null, null, 1, null, null, null, 0]
+Explanation: 
+AuthenticationManager authenticationManager = new AuthenticationManager(5); // Constructs the AuthenticationManager with timeToLive = 5 seconds.
+authenticationManager.renew("aaa", 1); // No token exists with tokenId "aaa" at time 1, so nothing happens.
+authenticationManager.generate("aaa", 2); // Generates a new token with tokenId "aaa" at time 2.
+authenticationManager.countUnexpiredTokens(6); // The token with tokenId "aaa" is the only unexpired one at time 6, so return 1.
+authenticationManager.generate("bbb", 7); // Generates a new token with tokenId "bbb" at time 7.
+authenticationManager.renew("aaa", 8); // The token with tokenId "aaa" expired at time 7, and 8 >= 7, so at time 8 the renew request is ignored, and nothing happens.
+authenticationManager.renew("bbb", 10); // The token with tokenId "bbb" is unexpired at time 10, so the renew request is fulfilled and now the token will expire at time 15.
+authenticationManager.countUnexpiredTokens(15); // The token with tokenId "bbb" expires at time 15, and the token with tokenId "aaa" expired at time 7, so currently no token is unexpired, so return 0.
+
+Constraints:
+* 1 <= timeToLive <= 10^8
+* 1 <= currentTime <= 10^8
+* 1 <= tokenId.length <= 5
+* tokenId consists only of lowercase letters.
+* All calls to generate will contain unique values of tokenId.
+* The values of currentTime across all the function calls will be strictly increasing.
+* At most 2000 calls will be made to all functions combined."""
+
+class AuthenticationManager:
+
+    def __init__(self, timeToLive: int):
+        self.timeToLive = timeToLive
+        self.tokens = {}
+
+    def generate(self, tokenId: str, currentTime: int) -> None:
+        self.tokens[tokenId] = currentTime + self.timeToLive
+
+    def renew(self, tokenId: str, currentTime: int) -> None:
+        if tokenId in self.tokens and self.tokens[tokenId] > currentTime: 
+            self.tokens[tokenId] = currentTime + self.timeToLive
+
+    def countUnexpiredTokens(self, currentTime: int) -> int:
+        for token in self.tokens.copy(): 
+            if self.tokens[token] <= currentTime: # not expired yet 
+                self.tokens.pop(token)
+        return len(self.tokens)
