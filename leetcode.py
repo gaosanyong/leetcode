@@ -26505,31 +26505,18 @@ class Fenwick:
 	* orderTypei is either 0 or 1."""
 
     def getNumberOfBacklogOrders(self, orders: List[List[int]]) -> int:
-        ans = 0
         buy, sell = [], [] # max-heap & min-heap 
-        
         for p, q, t in orders: 
-            ans += q
-            if t: # sell order
-                while q and buy and -buy[0][0] >= p: # match 
-                    pb, qb = heappop(buy)
-                    ans -= 2*min(q, qb)
-                    if q < qb: 
-                        heappush(buy, (pb, qb-q))
-                        q = 0 
-                    else: q -= qb 
-                if q: heappush(sell, (p, q))
-            else: # buy order 
-                while q and sell and sell[0][0] <= p: # match 
-                    ps, qs = heappop(sell)
-                    ans -= 2*min(q, qs)
-                    if q < qs: 
-                        heappush(sell, (ps, qs-q))
-                        q = 0 
-                    else: q -= qs 
-                if q: heappush(buy, (-p, q))
+            if t: heappush(sell, [p, q])
+            else: heappush(buy, [-p, q])
             
-        return ans % 1_000_000_007
+            while buy and sell and -buy[0][0] >= sell[0][0]: 
+                qty = min(buy[0][1], sell[0][1])
+                buy[0][1] -= qty
+                sell[0][1] -= qty
+                if not buy[0][1]: heappop(buy)
+                if not sell[0][1]: heappop(sell)
+        return (sum(q for _, q in sell) + sum(q for _, q in buy)) % 1_000_000_007
 
 
     """1802. Maximum Value at a Given Index in a Bounded Array (Medium)
