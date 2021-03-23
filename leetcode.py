@@ -18235,6 +18235,208 @@ class Solution:
         return sum(freq[c]&1 for c in freq) <= k <= len(s)
 
 
+    """1403. Minimum Subsequence in Non-Increasing Order (Easy)
+	Given the array nums, obtain a subsequence of the array whose sum of 
+	elements is strictly greater than the sum of the non included elements in 
+	such subsequence.  If there are multiple solutions, return the subsequence 
+	with minimum size and if there still exist multiple solutions, return the 
+	subsequence with the maximum total sum of all its elements. A subsequence 
+	of an array can be obtained by erasing some (possibly zero) elements from 
+	the array. Note that the solution with the given constraints is guaranteed 
+	to be unique. Also return the answer sorted in non-increasing order.
+
+	Example 1:
+	Input: nums = [4,3,10,9,8]
+	Output: [10,9] 
+	Explanation: The subsequences [10,9] and [10,8] are minimal such that the 
+	             sum of their elements is strictly greater than the sum of 
+	             elements not included, however, the subsequence [10,9] has 
+	             the maximum total sum of its elements. 
+
+	Example 2:
+	Input: nums = [4,4,7,6,7]
+	Output: [7,7,6] 
+	Explanation: The subsequence [7,7] has the sum of its elements equal to 14 
+	             which is not strictly greater than the sum of elements not 
+	             included (14 = 4 + 4 + 6). Therefore, the subsequence [7,6,7] 
+	             is the minimal satisfying the conditions. Note the subsequence 
+	             has to returned in non-decreasing order.  
+	
+	Example 3:
+	Input: nums = [6]
+	Output: [6]
+
+	Constraints:
+	* 1 <= nums.length <= 500
+	* 1 <= nums[i] <= 100"""
+
+    def minSubsequence(self, nums: List[int]) -> List[int]:
+        ans = []
+        total, sm = sum(nums), 0
+        for x in sorted(nums, reverse=True):
+            ans.append(x)
+            sm += x
+            if sm > total - sm: return ans 
+
+
+    """1404. Number of Steps to Reduce a Number in Binary Representation to One(Medium)
+	Given a number s in their binary representation. Return the number of steps 
+	to reduce it to 1 under the following rules:
+	* If the current number is even, you have to divide it by 2.
+	* If the current number is odd, you have to add 1 to it.
+	It's guaranteed that you can always reach to one for all testcases.
+
+	Example 1:
+	Input: s = "1101"
+	Output: 6
+	Explanation: "1101" corressponds to number 13 in their decimal representation.
+	Step 1) 13 is odd, add 1 and obtain 14. 
+	Step 2) 14 is even, divide by 2 and obtain 7.
+	Step 3) 7 is odd, add 1 and obtain 8.
+	Step 4) 8 is even, divide by 2 and obtain 4.  
+	Step 5) 4 is even, divide by 2 and obtain 2. 
+	Step 6) 2 is even, divide by 2 and obtain 1.  
+
+	Example 2:
+	Input: s = "10"
+	Output: 1
+	Explanation: "10" corressponds to number 2 in their decimal representation.
+	Step 1) 2 is even, divide by 2 and obtain 1.  
+
+	Example 3:
+	Input: s = "1"
+	Output: 0
+
+	Constraints:
+	* 1 <= s.length <= 500
+	* s consists of characters '0' or '1'
+	* s[0] == '1'"""
+
+    def numSteps(self, s: str) -> int:
+        n = int(s, 2)
+        ans = 0
+        while n > 1: 
+            ans += 1
+            if n&1: n += 1
+            else: n //= 2
+        return ans 
+
+
+    """1405. Longest Happy String (Medium)
+	A string is called happy if it does not have any of the strings 'aaa', 'bbb' 
+	or 'ccc' as a substring. Given three integers a, b and c, return any string 
+	s, which satisfies following conditions:
+	* s is happy and longest possible.
+	* s contains at most a occurrences of the letter 'a', at most b occurrences 
+	  of the letter 'b' and at most c occurrences of the letter 'c'.
+	* s will only contain 'a', 'b' and 'c' letters.
+	If there is no such string s return the empty string "".
+
+	Example 1:
+	Input: a = 1, b = 1, c = 7
+	Output: "ccaccbcc"
+	Explanation: "ccbccacc" would also be a correct answer.
+
+	Example 2:
+	Input: a = 2, b = 2, c = 1
+	Output: "aabbc"
+
+	Example 3:
+	Input: a = 7, b = 1, c = 0
+	Output: "aabaa"
+	Explanation: It's the only correct answer in this case.
+
+	Constraints:
+	* 0 <= a, b, c <= 100
+	* a + b + c > 0"""
+
+    def longestDiverseString(self, a: int, b: int, c: int) -> str:
+        pq = [] # max-heap 
+        for x, c in zip((a, b, c), "abc"): 
+            if x: heappush(pq, (-x, c))
+        
+        ans = []
+        while pq: 
+            n, x = heappop(pq)
+            if ans[-2:] != [x, x]: 
+                ans.append(x)
+                if n+1: heappush(pq, (n+1, x))
+            else: 
+                if not pq: break 
+                nn, xx = heappop(pq)
+                ans.append(xx)
+                if nn+1: heappush(pq, (nn+1, xx))
+                heappush(pq, (n, x))
+        return "".join(ans)
+
+
+    """1406. Stone Game III (Hard)
+	Alice and Bob continue their games with piles of stones. There are several 
+	stones arranged in a row, and each stone has an associated value which is 
+	an integer given in the array stoneValue. Alice and Bob take turns, with 
+	Alice starting first. On each player's turn, that player can take 1, 2 or 3 
+	stones from the first remaining stones in the row. The score of each player 
+	is the sum of values of the stones taken. The score of each player is 0 
+	initially. The objective of the game is to end with the highest score, and 
+	the winner is the player with the highest score and there could be a tie. 
+	The game continues until all the stones have been taken. Assume Alice and 
+	Bob play optimally. Return "Alice" if Alice will win, "Bob" if Bob will win 
+	or "Tie" if they end the game with the same score.
+
+	Example 1:
+	Input: values = [1,2,3,7]
+	Output: "Bob"
+	Explanation: Alice will always lose. Her best move will be to take three 
+	             piles and the score become 6. Now the score of Bob is 7 and 
+	             Bob wins.
+
+	Example 2:
+	Input: values = [1,2,3,-9]
+	Output: "Alice"
+	Explanation: Alice must choose all the three piles at the first move to win 
+	             and leave Bob with negative score. If Alice chooses one pile 
+	             her score will be 1 and the next move Bob's score becomes 5. 
+	             The next move Alice will take the pile with value = -9 and 
+	             lose. If Alice chooses two piles her score will be 3 and the 
+	             next move Bob's score becomes 3. The next move Alice will take 
+	             the pile with value = -9 and also lose. Remember that both 
+	             play optimally so here Alice will choose the scenario that 
+	             makes her win.
+	
+	Example 3:
+	Input: values = [1,2,3,6]
+	Output: "Tie"
+	Explanation: Alice cannot win this game. She can end the game in a draw if she decided to choose all the first three piles, otherwise she will lose.
+
+	Example 4:
+	Input: values = [1,2,3,-1,-2,-3,7]
+	Output: "Alice"
+
+	Example 5:
+	Input: values = [-1,-2,-3]
+	Output: "Tie"
+
+	Constraints:
+	* 1 <= values.length <= 50000
+	* -1000 <= values[i] <= 1000"""
+
+    def stoneGameIII(self, stoneValue: List[int]) -> str:
+        
+        @cache
+        def fn(i): 
+            """Return max value obtained from stoneValue[i:]."""
+            if i >= len(stoneValue): return 0 
+            ans = -inf
+            for ii in range(i, i+3): 
+                ans = max(ans, sum(stoneValue[i:ii+1]) - fn(ii+1))
+            return ans 
+        
+        ans = fn(0)
+        if ans > 0: return "Alice"
+        if ans == 0: return "Tie"
+        return "Bob"
+
+
     """1417. Reformat The String (Easy)
 	Given alphanumeric string s. (Alphanumeric string is a string consisting of 
 	lowercase English letters and digits). You have to find a permutation of 
