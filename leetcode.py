@@ -14616,22 +14616,14 @@ class Solution:
 	* 0 <= A[i] <= 100
 	* 0 <= target <= 300"""
 
-    def threeSumMulti(self, A: List[int], target: int) -> int:
-        freq = {} # frequency table 
-        for x in A: freq[x] = 1 + freq.get(x, 0) 
-        
-        A = list(freq)
+    def threeSumMulti(self, arr: List[int], target: int) -> int:
         ans = 0
-        for i in range(len(A)):
-            for j in range(i, len(A)):
-                x = target - A[i] - A[j]
-                if x in freq: 
-                    if A[i] == A[j] == x: 
-                        ans += freq[x]*(freq[x]-1)*(freq[x]-2)//6
-                    elif A[i] == A[j]: 
-                        ans += freq[A[i]]*(freq[A[i]]-1)//2*freq[x]
-                    elif A[i] < x and A[j] < x: 
-                        ans += freq[A[i]] * freq[A[j]] * freq[x]
+        seen = {}
+        for i, x in enumerate(arr): 
+            ans += seen.get(target - x, 0)
+            for ii in range(i): 
+                sm = arr[ii] + arr[i]
+                seen[sm] = 1 + seen.get(sm, 0)
         return ans % 1_000_000_007
 
 
@@ -18084,6 +18076,105 @@ class Solution:
         return fn(root)[-1]
 
 
+    """1385. Find the Distance Value Between Two Arrays (Easy)
+	Given two integer arrays arr1 and arr2, and the integer d, return the 
+	distance value between the two arrays. The distance value is defined as the 
+	number of elements arr1[i] such that there is not any element arr2[j] where 
+	|arr1[i]-arr2[j]| <= d.
+
+	Example 1:
+	Input: arr1 = [4,5,8], arr2 = [10,9,1,8], d = 2
+	Output: 2
+	Explanation: For arr1[0]=4 we have: 
+	             |4-10|=6 > d=2 
+	             |4-9|=5 > d=2 
+	             |4-1|=3 > d=2 
+	             |4-8|=4 > d=2 
+	             For arr1[1]=5 we have: 
+	             |5-10|=5 > d=2 
+	             |5-9|=4 > d=2 
+	             |5-1|=4 > d=2 
+	             |5-8|=3 > d=2
+	             For arr1[2]=8 we have:
+	             |8-10|=2 <= d=2
+	             |8-9|=1 <= d=2
+	             |8-1|=7 > d=2
+	             |8-8|=0 <= d=2
+	
+	Example 2:
+	Input: arr1 = [1,4,2,3], arr2 = [-4,-3,6,10,20,30], d = 3
+	Output: 2
+
+	Example 3:
+	Input: arr1 = [2,1,100,3], arr2 = [-5,-2,10,-3,7], d = 6
+	Output: 1
+
+	Constraints:
+	* 1 <= arr1.length, arr2.length <= 500
+	* -10^3 <= arr1[i], arr2[j] <= 10^3
+	* 0 <= d <= 100"""
+
+    def findTheDistanceValue(self, arr1: List[int], arr2: List[int], d: int) -> int:
+        arr2.sort()
+        ans = 0
+        for x in arr1: 
+            lo = bisect_left(arr2, x - d)
+            hi = bisect_right(arr2, x + d)
+            if lo == hi: ans += 1
+        return ans 
+
+
+    """1386. Cinema Seat Allocation (Medium)
+	A cinema has n rows of seats, numbered from 1 to n and there are ten seats 
+	in each row, labelled from 1 to 10 as shown in the figure above. Given the 
+	array reservedSeats containing the numbers of seats already reserved, for 
+	example, reservedSeats[i] = [3,8] means the seat located in row 3 and 
+	labelled with 8 is already reserved. Return the maximum number of four-
+	person groups you can assign on the cinema seats. A four-person group 
+	occupies four adjacent seats in one single row. Seats across an aisle (such 
+	as [3,3] and [3,4]) are not considered to be adjacent, but there is an 
+	exceptional case on which an aisle split a four-person group, in that case, 
+	the aisle split a four-person group in the middle, which means to have two 
+	people on each side.
+
+	Example 1:
+	Input: n = 3, reservedSeats = [[1,2],[1,3],[1,8],[2,6],[3,1],[3,10]]
+	Output: 4
+	Explanation: The figure above shows the optimal allocation for four groups, 
+	             where seats mark with blue are already reserved and contiguous 
+	             seats mark with orange are for one group.
+
+	Example 2:
+	Input: n = 2, reservedSeats = [[2,1],[1,8],[2,6]]
+	Output: 2
+	
+	Example 3:
+	Input: n = 4, reservedSeats = [[4,3],[1,4],[4,6],[1,7]]
+	Output: 4
+
+	Constraints:
+	* 1 <= n <= 10^9
+	* 1 <= reservedSeats.length <= min(10*n, 10^4)
+	* reservedSeats[i].length == 2
+	* 1 <= reservedSeats[i][0] <= n
+	* 1 <= reservedSeats[i][1] <= 10
+	* All reservedSeats[i] are distinct."""
+
+    def maxNumberOfFamilies(self, n: int, reservedSeats: List[List[int]]) -> int:
+        seats = {}
+        for i, j in reservedSeats: 
+            if i not in seats: seats[i] = 0
+            seats[i] |= 1 << j-1
+        
+        ans = 2 * (n - len(seats))
+        for v in seats.values(): 
+            if not int("0111111110", 2) & v: ans += 2
+            elif not int("0111100000", 2) & v: ans += 1
+            elif not int("0001111000", 2) & v: ans += 1
+            elif not int("0000011110", 2) & v: ans += 1
+        return ans 
+
+
     """1387. Sort Integers by The Power Value (Medium)
 	The power of an integer x is defined as the number of steps needed to 
 	transform x into 1 using the following steps:
@@ -18143,6 +18234,58 @@ class Solution:
             heappush(pq, (cnt, x))
             if len(pq) > hi - lo - k + 2: heappop(pq)
         return pq[0][1]
+
+
+    """1388. Pizza With 3n Slices (Hard)
+	There is a pizza with 3n slices of varying size, you and your friends will 
+	take slices of pizza as follows:
+	* You will pick any pizza slice.
+	* Your friend Alice will pick next slice in anti clockwise direction of 
+	  your pick. 
+	* Your friend Bob will pick next slice in clockwise direction of your pick.
+	* Repeat until there are no more slices of pizzas.
+	Sizes of Pizza slices is represented by circular array slices in clockwise 
+	direction. Return the maximum possible sum of slice sizes which you can 
+	have.
+
+	Example 1:
+	Input: slices = [1,2,3,4,5,6]
+	Output: 10
+	Explanation: Pick pizza slice of size 4, Alice and Bob will pick slices 
+	             with size 3 and 5 respectively. Then Pick slices with size 6, 
+	             finally Alice and Bob will pick slice of size 2 and 1 
+	             respectively. Total = 4 + 6.
+
+	Example 2:
+	Input: slices = [8,9,8,6,1,1]
+	Output: 16
+	Output: Pick pizza slice of size 8 in each turn. If you pick slice with 
+	        size 9 your partners will pick slices of size 8.
+
+	Example 3:
+	Input: slices = [4,1,2,5,8,3,1,9,7]
+	Output: 21
+	
+	Example 4:
+	Input: slices = [3,1,2]
+	Output: 3
+
+	Constraints:
+	* 1 <= slices.length <= 500
+	* slices.length % 3 == 0
+	* 1 <= slices[i] <= 1000"""
+
+    def maxSizeSlices(self, slices: List[int]) -> int:
+        
+        @cache
+        def fn(i, k, first): 
+            """Return max sum of k pieces from slices[i:]."""
+            if k == 0: return 0 
+            if i >= len(slices) or first and i == len(slices)-1: return -inf 
+            if i == 0: return max(fn(i+1, k, False), slices[i] + fn(i+2, k-1, True))
+            return max(fn(i+1, k, first), slices[i] + fn(i+2, k-1, first))
+        
+        return fn(0, len(slices)//3, None)
 
 
     """1395. Count Number of Teams (Medium)
