@@ -24488,6 +24488,199 @@ class Fenwick:
         return ((7*q + (49+2*r))*q + r*(r+1))//2
 
 
+    """1716. Calculate Money in Leetcode Bank (Easy)
+	Hercy wants to save money for his first car. He puts money in the Leetcode 
+	bank every day. He starts by putting in $1 on Monday, the first day. Every 
+	day from Tuesday to Sunday, he will put in $1 more than the day before. On 
+	every subsequent Monday, he will put in $1 more than the previous Monday. 
+	Given n, return the total amount of money he will have in the Leetcode bank 
+	at the end of the nth day.
+
+	Example 1:
+	Input: n = 4
+	Output: 10
+	Explanation: After the 4th day, the total is 1 + 2 + 3 + 4 = 10.
+
+	Example 2:
+	Input: n = 10
+	Output: 37
+	Explanation: After the 10th day, the total is 
+	             (1 + 2 + 3 + 4 + 5 + 6 + 7) + (2 + 3 + 4) = 37. Notice that on 
+	             the 2nd Monday, Hercy only puts in $2.
+
+	Example 3:
+	Input: n = 20
+	Output: 96
+	Explanation: After the 20th day, the total is 
+	            (1 + 2 + 3 + 4 + 5 + 6 + 7) + (2 + 3 + 4 + 5 + 6 + 7 + 8) + (3 + 4 + 5 + 6 + 7 + 8) = 96.
+
+	Constraints: 1 <= n <= 1000"""
+
+    def totalMoney(self, n: int) -> int:
+        ans = val = 0
+        for x in range(n): 
+            if x % 7 == 0: val = x//7 # reset 
+            val += 1
+            ans += val
+        return ans 
+
+
+    """1717. Maximum Score From Removing Substrings (Medium)
+	You are given a string s and two integers x and y. You can perform two 
+	types of operations any number of times.
+	* Remove substring "ab" and gain x points.
+	  + For example, when removing "ab" from "cabxbae" it becomes "cxbae".
+	* Remove substring "ba" and gain y points.
+	  + For example, when removing "ba" from "cabxbae" it becomes "cabxe".
+	Return the maximum points you can gain after applying the above operations 
+	on s.
+
+	Example 1:
+	Input: s = "cdbcbbaaabab", x = 4, y = 5
+	Output: 19
+	Explanation:
+	- Remove the "ba" underlined in "cdbcbbaaabab". Now, s = "cdbcbbaaab" and 5 points are added to the score.
+	- Remove the "ab" underlined in "cdbcbbaaab". Now, s = "cdbcbbaa" and 4 points are added to the score.
+	- Remove the "ba" underlined in "cdbcbbaa". Now, s = "cdbcba" and 5 points are added to the score.
+	- Remove the "ba" underlined in "cdbcba". Now, s = "cdbc" and 5 points are added to the score.
+	Total score = 5 + 4 + 5 + 5 = 19.
+
+	Example 2:
+	Input: s = "aabbaaxybbaabb", x = 5, y = 4
+	Output: 20
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* 1 <= x, y <= 10^4
+	* s consists of lowercase English letters."""
+
+    def maximumGain(self, s: str, x: int, y: int) -> int:
+        a, b = "a", "b"
+        if x < y: 
+            x, y = y, x
+            a, b = b, a
+        ans = cnt0 = cnt1 = 0
+        for c in s: 
+            if c not in "ab": 
+                ans += min(cnt0, cnt1) * y
+                cnt0 = cnt1 = 0 
+            elif c == b:
+                if cnt0: 
+                    cnt0 -= 1
+                    ans += x
+                else: cnt1 += 1
+            else: cnt0 += 1
+        return ans + min(cnt0, cnt1) * y
+
+
+    """1718. Construct the Lexicographically Largest Valid Sequence (Medium)
+	Given an integer n, find a sequence that satisfies all of the following:
+	* The integer 1 occurs once in the sequence.
+	* Each integer between 2 and n occurs twice in the sequence.
+	* For every integer i between 2 and n, the distance between the two 
+	  occurrences of i is exactly i.
+	The distance between two numbers on the sequence, a[i] and a[j], is the 
+	absolute difference of their indices, |j - i|. Return the lexicographically 
+	largest sequence. It is guaranteed that under the given constraints, there 
+	is always a solution. A sequence a is lexicographically larger than a 
+	sequence b (of the same length) if in the first position where a and b 
+	differ, sequence a has a number greater than the corresponding number in b. 
+	For example, [0,1,9,0] is lexicographically larger than [0,1,5,6] because 
+	the first position they differ is at the third number, and 9 is greater 
+	than 5.
+
+	Example 1:
+	Input: n = 3
+	Output: [3,1,2,3,2]
+	Explanation: [2,3,2,1,3] is also a valid sequence, but [3,1,2,3,2] is the 
+	             lexicographically largest valid sequence.
+
+	Example 2:
+	Input: n = 5
+	Output: [5,3,1,4,3,5,2,4,2]
+
+	Constraints: 1 <= n <= 20"""
+
+    def constructDistancedSequence(self, n: int) -> List[int]:
+        ans = [0]*(2*n-1)
+        
+        def fn(i): 
+            """Return largest sequence after filling in ith position."""
+            if i == 2*n-1 or ans[i] and fn(i+1): return True 
+            for x in reversed(range(1, n+1)): 
+                if x not in ans: 
+                    ii = x if x > 1 else 0 
+                    if i+ii < 2*n-1 and ans[i] == ans[i+ii] == 0: 
+                        ans[i] = ans[i+ii] = x
+                        if fn(i+1): return True 
+                        ans[i] = ans[i+ii] = 0 
+        
+        fn(0)
+        return ans 
+
+
+    """1719. Number Of Ways To Reconstruct A Tree (Hard)
+	You are given an array pairs, where pairs[i] = [xi, yi], and:
+	* There are no duplicates.
+	* xi < yi
+	Let ways be the number of rooted trees that satisfy the following 
+	conditions:
+	* The tree consists of nodes whose values appeared in pairs.
+	* A pair [xi, yi] exists in pairs if and only if xi is an ancestor of yi or 
+	  yi is an ancestor of xi.
+	* Note: the tree does not have to be a binary tree.
+	Two ways are considered to be different if there is at least one node that 
+	has different parents in both ways.
+
+	Return:
+	* 0 if ways == 0
+	* 1 if ways == 1
+	* 2 if ways > 1
+	A rooted tree is a tree that has a single root node, and all edges are 
+	oriented to be outgoing from the root. An ancestor of a node is any node on 
+	the path from the root to that node (excluding the node itself). The root 
+	has no ancestors.
+
+	Example 1:
+	Input: pairs = [[1,2],[2,3]]
+	Output: 1
+	Explanation: There is exactly one valid rooted tree, which is shown in the 
+	             above figure.
+
+	Example 2:
+	Input: pairs = [[1,2],[2,3],[1,3]]
+	Output: 2
+	Explanation: There are multiple valid rooted trees. Three of them are shown 
+	             in the above figures.
+	
+	Example 3:
+	Input: pairs = [[1,2],[2,3],[2,4],[1,5]]
+	Output: 0
+	Explanation: There are no valid rooted trees.
+
+	Constraints:
+	* 1 <= pairs.length <= 10^5
+	* 1 <= xi < yi <= 500
+	* The elements in pairs are unique."""
+
+    def checkWays(self, pairs: List[List[int]]) -> int:
+        graph = {}
+        for x, y in pairs: 
+            graph.setdefault(x, set()).add(y)
+            graph.setdefault(y, set()).add(x)
+        
+        ans = 1 
+        ancestors = set()
+        for n in sorted(graph, key=lambda x: len(graph[x]), reverse=True): 
+            p = min(ancestors & graph[n], key=lambda x: len(graph[x]), default=None) # immediate ancestor 
+            ancestors.add(n)
+            if p: 
+                if graph[n] - (graph[p] | {p}): return 0 # impossible to have more than ancestor
+                if len(graph[n]) == len(graph[p]): ans = 2
+            elif len(graph[n]) != len(graph)-1: return 0
+        return ans 
+
+
     """1721. Swapping Nodes in a Linked List (Medium)
 	You are given the head of a linked list, and an integer k. Return the head 
 	of the linked list after swapping the values of the kth node from the 
