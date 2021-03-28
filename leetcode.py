@@ -27364,6 +27364,155 @@ class Fenwick:
         return ans 
 
 
+    """1805. Number of Different Integers in a String (Easy)
+	You are given a string word that consists of digits and lowercase English 
+	letters. You will replace every non-digit character with a space. For 
+	example, "a123bc34d8ef34" will become " 123  34 8  34". Notice that you are 
+	left with some integers that are separated by at least one space: "123", 
+	"34", "8", and "34". Return the number of different integers after 
+	performing the replacement operations on word. Two integers are considered 
+	different if their decimal representations without any leading zeros are 
+	different.
+
+	Example 1:
+	Input: word = "a123bc34d8ef34"
+	Output: 3
+	Explanation: The three different integers are "123", "34", and "8". Notice 
+	             that "34" is only counted once.
+
+	Example 2:
+	Input: word = "leet1234code234"
+	Output: 2
+	
+	Example 3:
+	Input: word = "a1b01c001"
+	Output: 1
+	Explanation: The three integers "1", "01", and "001" all represent the same 
+	             integer because the leading zeros are ignored when comparing 
+	             their decimal values.
+
+	Constraints:
+	* 1 <= word.length <= 1000
+	* word consists of digits and lowercase English letters."""
+
+    def numDifferentIntegers(self, word: str) -> int:
+        seen = set()
+        for key, grp in groupby(word, str.isdigit): 
+            if key: seen.add(int("".join(grp)))
+        return len(seen)
+
+
+    """1806. Minimum Number of Operations to Reinitialize a Permutation (Medium)
+	You are given an even integer n​​​​​​. You initially have a permutation 
+	perm of size n​​ where perm[i] == i​ (0-indexed)​​​​. In one operation, you 
+	will create a new array arr, and for each i:
+	* If i % 2 == 0, then arr[i] = perm[i / 2].
+	* If i % 2 == 1, then arr[i] = perm[n / 2 + (i - 1) / 2].
+	You will then assign arr​​​​ to perm. Return the minimum non-zero number of 
+	operations you need to perform on perm to return the permutation to its 
+	initial value.
+
+	Example 1:
+	Input: n = 2
+	Output: 1
+	Explanation: prem = [0,1] initially. 
+	             After the 1st operation, prem = [0,1]
+	             So it takes only 1 operation.
+
+	Example 2:
+	Input: n = 4
+	Output: 2
+	Explanation: prem = [0,1,2,3] initially. 
+	             After the 1st operation, prem = [0,2,1,3]
+	             After the 2nd operation, prem = [0,1,2,3]
+	             So it takes only 2 operations.
+	
+	Example 3:
+	Input: n = 6
+	Output: 4
+
+	Constraints:
+	* 2 <= n <= 1000
+	* n​​​​​​ is even."""
+
+    def reinitializePermutation(self, n: int) -> int:
+        ans = 0
+        perm = list(range(n))
+        while True: 
+            ans += 1
+            perm = [perm[n//2+(i-1)//2] if i&1 else perm[i//2] for i in range(n)]
+            if all(perm[i] == i for i in range(n)): return ans
+
+
+    """1807. Evaluate the Bracket Pairs of a String (Medium)
+	You are given a string s that contains some bracket pairs, with each pair 
+	containing a non-empty key. 
+	* For example, in the string "(name)is(age)yearsold", there are two bracket 
+	  pairs that contain the keys "name" and "age".
+	You know the values of a wide range of keys. This is represented by a 2D 
+	string array knowledge where each knowledge[i] = [keyi, valuei] indicates 
+	that key keyi has a value of valuei. You are tasked to evaluate all of the 
+	bracket pairs. When you evaluate a bracket pair that contains some key keyi, 
+	you will:
+	* Replace keyi and the bracket pair with the key's corresponding valuei.
+	* If you do not know the value of the key, you will replace keyi and the 
+	  bracket pair with a question mark "?" (without the quotation marks).
+	Each key will appear at most once in your knowledge. There will not be any 
+	nested brackets in s. Return the resulting string after evaluating all of 
+	the bracket pairs.
+
+	Example 1:
+	Input: s = "(name)is(age)yearsold", knowledge = [["name","bob"],["age","two"]]
+	Output: "bobistwoyearsold"
+	Explanation: The key "name" has a value of "bob", so replace "(name)" with "bob".
+	             The key "age" has a value of "two", so replace "(age)" with "two".
+
+	Example 2:
+	Input: s = "hi(name)", knowledge = [["a","b"]]
+	Output: "hi?"
+	Explanation: As you do not know the value of the key "name", replace 
+	             "(name)" with "?".
+
+	Example 3:
+	Input: s = "(a)(a)(a)aaa", knowledge = [["a","yes"]]
+	Output: "yesyesyesaaa"
+	Explanation: The same key can appear multiple times.
+	The key "a" has a value of "yes", so replace all occurrences of "(a)" with "yes".
+	Notice that the "a"s not in a bracket pair are not evaluated.
+	
+	Example 4:
+	Input: s = "(a)(b)", knowledge = [["a","b"],["b","a"]]
+	Output: "ba"
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* 0 <= knowledge.length <= 10^5
+	* knowledge[i].length == 2
+	* 1 <= keyi.length, valuei.length <= 10
+	* s consists of lowercase English letters and round brackets '(' and ')'.
+	* Every open bracket '(' in s will have a corresponding close bracket ')'.
+	* The key in each bracket pair of s will be non-empty.
+	* There will not be any nested bracket pairs in s.
+	* keyi and valuei consist of lowercase English letters.
+	* Each keyi in knowledge is unique."""
+
+    def evaluate(self, s: str, knowledge: List[List[str]]) -> str:
+        mp = dict(knowledge)
+        i = 0 
+        ans = []
+        while i < len(s): 
+            if s[i] == "(": 
+                ii = i 
+                while ii < len(s) and s[ii] != ")": 
+                    ii += 1
+                ans.append(mp.get(s[i+1:ii], "?"))
+                i = ii+1
+            else: 
+                ans.append(s[i])
+                i += 1
+        return "".join(ans)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
