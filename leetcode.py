@@ -18331,6 +18331,42 @@ class Solution:
         return ans 
 
 
+    """1399. Count Largest Group (Easy)
+	Given an integer n. Each number from 1 to n is grouped according to the sum 
+	of its digits. Return how many groups have the largest size.
+
+	Example 1:
+	Input: n = 13
+	Output: 4
+	Explanation: There are 9 groups in total, they are grouped according sum of 
+	             its digits of numbers from 1 to 13: [1,10], [2,11], [3,12], 
+	             [4,13], [5], [6], [7], [8], [9]. There are 4 groups with 
+	             largest size.
+
+	Example 2:
+	Input: n = 2
+	Output: 2
+	Explanation: There are 2 groups [1], [2] of size 1.
+	
+	Example 3:
+	Input: n = 15
+	Output: 6
+
+	Example 4:
+	Input: n = 24
+	Output: 5
+
+	Constraints: 1 <= n <= 10^4"""
+
+    def countLargestGroup(self, n: int) -> int:
+        freq = {}
+        for x in range(1, n+1): 
+            key = sum(int(d) for d in str(x))
+            freq[key] = 1 + freq.get(key, 0)
+        vals = list(freq.values())
+        return vals.count(max(vals))
+
+
     """1400. Construct K Palindrome Strings (Medium)
 	Given a string s and an integer k. You should construct k non-empty 
 	palindrome strings using all the characters in s. Return True if you can 
@@ -18376,6 +18412,101 @@ class Solution:
         freq = {}
         for c in s: freq[c] = 1 + freq.get(c, 0)
         return sum(freq[c]&1 for c in freq) <= k <= len(s)
+
+
+    """1401. Circle and Rectangle Overlapping (Medium)
+	Given a circle represented as (radius, x_center, y_center) and an axis-
+	aligned rectangle represented as (x1, y1, x2, y2), where (x1, y1) are the 
+	coordinates of the bottom-left corner, and (x2, y2) are the coordinates of 
+	the top-right corner of the rectangle. Return True if the circle and 
+	rectangle are overlapped otherwise return False. In other words, check if 
+	there are any point (xi, yi) such that belongs to the circle and the 
+	rectangle at the same time.
+
+	Example 1:
+	Input: radius = 1, x_center = 0, y_center = 0, x1 = 1, y1 = -1, x2 = 3, y2 = 1
+	Output: true
+	Explanation: Circle and rectangle share the point (1,0) 
+
+	Example 2:
+	Input: radius = 1, x_center = 0, y_center = 0, x1 = -1, y1 = 0, x2 = 0, y2 = 1
+	Output: true
+
+	Example 3:
+	Input: radius = 1, x_center = 1, y_center = 1, x1 = -3, y1 = -3, x2 = 3, y2 = 3
+	Output: true
+
+	Example 4:
+	Input: radius = 1, x_center = 1, y_center = 1, x1 = 1, y1 = -3, x2 = 2, y2 = -1
+	Output: false
+
+	Constraints:
+	* 1 <= radius <= 2000
+	* -10^4 <= x_center, y_center, x1, y1, x2, y2 <= 10^4
+	* x1 < x2
+	* y1 < y2"""
+
+    def checkOverlap(self, radius: int, x_center: int, y_center: int, x1: int, y1: int, x2: int, y2: int) -> bool:
+        if x1 <= x_center <= x2 and y1 <= y_center <= y2: return True # circle inside rectangle
+        
+        for x, y in (x1, y1), (x1, y2), (x2, y1), (x2, y2): 
+            if (x - x_center)**2 + (y - y_center)**2 <= radius**2: return True 
+        
+        # check edge 
+        for x in [x1, x2]: 
+            if x_center - radius <= x <= x_center + radius and y1 <= y_center <= y2: return True
+            
+        for y in [y1, y2]:
+            if y_center - radius <= y <= y_center + radius and x1 <= x_center <= x2: return True 
+        
+        return False 
+
+
+    """1402. Reducing Dishes (Hard)
+	A chef has collected data on the satisfaction level of his n dishes. Chef 
+	can cook any dish in 1 unit of time. Like-time coefficient of a dish is 
+	defined as the time taken to cook that dish including previous dishes 
+	multiplied by its satisfaction level i.e. time[i]*satisfaction[i]. Return 
+	the maximum sum of Like-time coefficient that the chef can obtain after 
+	dishes preparation. Dishes can be prepared in any order and the chef can 
+	discard some dishes to get this maximum value.
+
+	Example 1:
+	Input: satisfaction = [-1,-8,0,5,-9]
+	Output: 14
+	Explanation: After Removing the second and last dish, the maximum total 
+	             Like-time coefficient will be equal to (-1*1 + 0*2 + 5*3 = 14). 
+	             Each dish is prepared in one unit of time.
+
+	Example 2:
+	Input: satisfaction = [4,3,2]
+	Output: 20
+	Explanation: Dishes can be prepared in any order, (2*1 + 3*2 + 4*3 = 20)
+	
+	Example 3:
+	Input: satisfaction = [-1,-4,-5]
+	Output: 0
+	Explanation: People don't like the dishes. No dish is prepared.
+
+	Example 4:
+	Input: satisfaction = [-2,5,-1,0,3,-3]
+	Output: 35
+
+	Constraints:
+	* n == satisfaction.length
+	* 1 <= n <= 500
+	* -10^3 <= satisfaction[i] <= 10^3"""
+
+    def maxSatisfaction(self, satisfaction: List[int]) -> int:
+        satisfaction.sort() # ascending order 
+        
+        @cache
+        def fn(i, k): 
+            """Return max sum of like-time coefficient of satisfation[i:]."""
+            if i == len(satisfaction): return 0 
+            return max(satisfaction[i]*k + fn(i+1, k+1), fn(i+1, k))
+        
+        return fn(0, 1)
 
 
     """1403. Minimum Subsequence in Non-Increasing Order (Easy)
