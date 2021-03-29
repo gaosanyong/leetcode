@@ -15100,6 +15100,59 @@ class Solution:
         return fn(root1, root2)
 
 
+    """971. Flip Binary Tree To Match Preorder Traversal (Medium)
+	You are given the root of a binary tree with n nodes, where each node is 
+	uniquely assigned a value from 1 to n. You are also given a sequence of n 
+	values voyage, which is the desired pre-order traversal of the binary tree.
+	Any node in the binary tree can be flipped by swapping its left and right 
+	subtrees. Flip the smallest number of nodes so that the pre-order traversal 
+	of the tree matches voyage. Return a list of the values of all flipped 
+	nodes. You may return the answer in any order. If it is impossible to flip 
+	the nodes in the tree to make the pre-order traversal match voyage, return 
+	the list [-1].
+
+	Example 1:
+	Input: root = [1,2], voyage = [2,1]
+	Output: [-1]
+	Explanation: It is impossible to flip the nodes such that the pre-order 
+	             traversal matches voyage.
+
+	Example 2:
+	Input: root = [1,2,3], voyage = [1,3,2]
+	Output: [1]
+	Explanation: Flipping node 1 swaps nodes 2 and 3, so the pre-order 
+	             traversal matches voyage.
+	
+	Example 3:
+	Input: root = [1,2,3], voyage = [1,2,3]
+	Output: []
+	Explanation: The tree's pre-order traversal already matches voyage, so no 
+	             nodes need to be flipped.
+
+	Constraints:
+	* The number of nodes in the tree is n.
+	* n == voyage.length
+	* 1 <= n <= 100
+	* 1 <= Node.val, voyage[i] <= n
+	* All the values in the tree are unique.
+	* All the values in voyage are unique."""
+
+    def flipMatchVoyage(self, root: TreeNode, voyage: List[int]) -> List[int]:
+        ans = []
+        stack = [root]
+        i = 0 
+        while stack: 
+            node = stack.pop()
+            if node: 
+                if node.val != voyage[i]: return [-1]
+                i += 1
+                if node.left and node.right and voyage[i] == node.right.val: 
+                    ans.append(node.val)
+                    node.left, node.right = node.right, node.left 
+                stack.extend([node.right, node.left])
+        return ans 
+
+
     """1014. Best Sightseeing Pair (Medium)
 	Given an array A of positive integers, A[i] represents the value of the 
 	i-th sightseeing spot, and two sightseeing spots i and j have distance 
@@ -18288,6 +18341,46 @@ class Solution:
         return fn(0, len(slices)//3, None)
 
 
+    """1394. Find Lucky Integer in an Array (Easy)
+	Given an array of integers arr, a lucky integer is an integer which has a 
+	frequency in the array equal to its value. Return a lucky integer in the 
+	array. If there are multiple lucky integers return the largest of them. If 
+	there is no lucky integer return -1.
+
+	Example 1:
+	Input: arr = [2,2,3,4]
+	Output: 2
+	Explanation: The only lucky number in the array is 2 because frequency[2] == 2.
+
+	Example 2:
+	Input: arr = [1,2,2,3,3,3]
+	Output: 3
+	Explanation: 1, 2 and 3 are all lucky numbers, return the largest of them.
+
+	Example 3:
+	Input: arr = [2,2,2,3,3]
+	Output: -1
+	Explanation: There are no lucky numbers in the array.
+
+	Example 4:
+	Input: arr = [5]
+	Output: -1
+
+	Example 5:
+	Input: arr = [7,7,7,7,7,7,7]
+	Output: 7
+
+	Constraints:
+	* 1 <= arr.length <= 500
+	* 1 <= arr[i] <= 500"""
+
+    def findLucky(self, arr: List[int]) -> int:
+        freq = {}
+        for x in arr: 
+		    freq[x] = 1 + freq.get(x, 0)
+        return max((x for x in arr if x == freq[x]), default=-1)
+
+
     """1395. Count Number of Teams (Medium)
 	There are n soldiers standing in a line. Each soldier is assigned a unique 
 	rating value. You have to form a team of 3 soldiers amongst them under the 
@@ -18329,6 +18422,68 @@ class Solution:
                     ans += seen[ii][1]
                     seen[i][1] += 1
         return ans 
+
+
+    """1397. Find All Good Strings (Hard)
+	Given the strings s1 and s2 of size n, and the string evil. Return the 
+	number of good strings. A good string has size n, it is alphabetically 
+	greater than or equal to s1, it is alphabetically smaller than or equal to 
+	s2, and it does not contain the string evil as a substring. Since the 
+	answer can be a huge number, return this modulo 10^9 + 7.
+
+	Example 1:
+	Input: n = 2, s1 = "aa", s2 = "da", evil = "b"
+	Output: 51 
+	Explanation: There are 25 good strings starting with 'a': "aa","ac","ad",
+	             ...,"az". Then there are 25 good strings starting with 'c': 
+	             "ca","cc","cd",...,"cz" and finally there is one good string 
+	             starting with 'd': "da". 
+	
+	Example 2:
+	Input: n = 8, s1 = "leetcode", s2 = "leetgoes", evil = "leet"
+	Output: 0 
+	Explanation: All strings greater than or equal to s1 and smaller than or 
+	             equal to s2 start with the prefix "leet", therefore, there is 
+	             not any good string.
+	
+	Example 3:
+	Input: n = 2, s1 = "gx", s2 = "gz", evil = "x"
+	Output: 2
+
+	Constraints:
+	* s1.length == n
+	* s2.length == n
+	* s1 <= s2
+	* 1 <= n <= 500
+	* 1 <= evil.length <= 50
+	* All strings consist of lowercase English letters."""
+
+    def findGoodStrings(self, n: int, s1: str, s2: str, evil: str) -> int:
+        lps = [0]
+        k = 0 
+        for i in range(1, len(evil)): 
+            while k and evil[k] != evil[i]: k = lps[k-1]
+            if evil[k] == evil[i]: k += 1
+            lps.append(k)
+        
+        @cache
+        def fn(i, k, lower, upper): 
+            """Return number of good strings at position i and k prefix match."""
+            if k == len(evil): return 0 # boundary condition 
+            if i == n: return 1 
+            lo = ascii_lowercase.index(s1[i]) if lower else 0
+            hi = ascii_lowercase.index(s2[i]) if upper else 25
+            
+            ans = 0
+            for x in range(lo, hi+1): 
+                kk = k 
+                while kk and evil[kk] != ascii_lowercase[x]: 
+                    kk = lps[kk-1]
+                if evil[kk] == ascii_lowercase[x]: kk += 1
+                ans += fn(i+1, kk, lower and x == lo, upper and x == hi)
+            return ans 
+        
+        return fn(0, 0, True, True) % 1_000_000_007
 
 
     """1399. Count Largest Group (Easy)
