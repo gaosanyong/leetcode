@@ -16899,6 +16899,184 @@ class Solution:
         return -1 
 
 
+    """1207. Unique Number of Occurrences (Easy)
+	Given an array of integers arr, write a function that returns true if and 
+	only if the number of occurrences of each value in the array is unique.
+
+	Example 1:
+	Input: arr = [1,2,2,1,1,3]
+	Output: true
+	Explanation: The value 1 has 3 occurrences, 2 has 2 and 3 has 1. No two 
+	             values have the same number of occurrences.
+
+	Example 2:
+	Input: arr = [1,2]
+	Output: false
+	
+	Example 3:
+	Input: arr = [-3,0,1,-3,1,1,1,-3,10,0]
+	Output: true
+
+	Constraints:
+	* 1 <= arr.length <= 1000
+	* -1000 <= arr[i] <= 1000"""
+
+    def uniqueOccurrences(self, arr: List[int]) -> bool:
+        freq = {}
+        for x in arr: 
+            freq[x] = 1 + freq.get(x, 0)
+        return len(freq) == len(set(freq.values()))
+
+
+    """1208. Get Equal Substrings Within Budget (Medium)
+	You are given two strings s and t of the same length. You want to change s 
+	to t. Changing the i-th character of s to i-th character of t costs 
+	|s[i] - t[i]| that is, the absolute difference between the ASCII values of 
+	the characters. You are also given an integer maxCost. Return the maximum 
+	length of a substring of s that can be changed to be the same as the 
+	corresponding substring of twith a cost less than or equal to maxCost. If 
+	there is no substring from s that can be changed to its corresponding 
+	substring from t, return 0.
+
+	Example 1:
+	Input: s = "abcd", t = "bcdf", maxCost = 3
+	Output: 3
+	Explanation: "abc" of s can change to "bcd". That costs 3, so the maximum 
+	             length is 3.
+
+	Example 2:
+	Input: s = "abcd", t = "cdef", maxCost = 3
+	Output: 1
+	Explanation: Each character in s costs 2 to change to charactor in t, so 
+	             the maximum length is 1.
+
+	Example 3:
+	Input: s = "abcd", t = "acde", maxCost = 0
+	Output: 1
+	Explanation: You can't make any change, so the maximum length is 1.
+
+	Constraints:
+	* 1 <= s.length, t.length <= 10^5
+	* 0 <= maxCost <= 10^6
+	* s and t only contain lower case English letters."""
+
+    def equalSubstring(self, s: str, t: str, maxCost: int) -> int:
+        ans = ii = val = 0 
+        for i in range(len(s)): 
+            val += abs(ord(s[i]) - ord(t[i]))
+            while ii <= i and val > maxCost: 
+                val -= abs(ord(s[ii]) - ord(t[ii]))
+                ii += 1
+            ans = max(ans, i - ii + 1)
+        return ans 
+
+
+    """1209. Remove All Adjacent Duplicates in String II (Medium)
+	Given a string s, a k duplicate removal consists of choosing k adjacent and 
+	equal letters from s and removing them causing the left and the right side 
+	of the deleted substring to concatenate together. We repeatedly make k 
+	duplicate removals on s until we no longer can. Return the final string 
+	after all such duplicate removals have been made. It is guaranteed that the 
+	answer is unique.
+
+	Example 1:
+	Input: s = "abcd", k = 2
+	Output: "abcd"
+	Explanation: There's nothing to delete.
+
+	Example 2:
+	Input: s = "deeedbbcccbdaa", k = 3
+	Output: "aa"
+	Explanation: First delete "eee" and "ccc", get "ddbbbdaa"
+	             Then delete "bbb", get "dddaa"
+	             Finally delete "ddd", get "aa"
+
+	Example 3:
+	Input: s = "pbbcggttciiippooaais", k = 2
+	Output: "ps"
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* 2 <= k <= 10^4
+	* s only contains lower case English letters."""
+
+    def removeDuplicates(self, s: str, k: int) -> str:
+        stack = []
+        for i, c in enumerate(s): 
+            if stack and stack[-1][0] == c: 
+                stack[-1][1] += 1
+            else: stack.append([c, 1])
+            if stack[-1][1] == k: stack.pop()
+        return "".join(c*x for c, x in stack) 
+
+
+    """1210. Minimum Moves to Reach Target with Rotations
+	In an n*n grid, there is a snake that spans 2 cells and starts moving from 
+	the top left corner at (0, 0) and (0, 1). The grid has empty cells 
+	represented by zeros and blocked cells represented by ones. The snake wants 
+	to reach the lower right corner at (n-1, n-2) and (n-1, n-1). In one move 
+	the snake can:
+	* Move one cell to the right if there are no blocked cells there. This move 
+	  keeps the horizontal/vertical position of the snake as it is.
+	* Move down one cell if there are no blocked cells there. This move keeps 
+	  the horizontal/vertical position of the snake as it is.
+	* Rotate clockwise if it's in a horizontal position and the two cells under 
+	  it are both empty. In that case the snake moves from (r, c) and (r, c+1) 
+	  to (r, c) and (r+1, c).
+	* Rotate counterclockwise if it's in a vertical position and the two cells 
+	  to its right are both empty. In that case the snake moves from (r, c) and 
+	  (r+1, c) to (r, c) and (r, c+1).
+	Return the minimum number of moves to reach the target. If there is no way 
+	to reach the target, return -1.
+
+	Example 1:
+	Input: grid = [[0,0,0,0,0,1],
+	               [1,1,0,0,1,0],
+	               [0,0,0,0,1,1],
+	               [0,0,1,0,1,0],
+	               [0,1,1,0,0,0],
+	               [0,1,1,0,0,0]]
+	Output: 11
+	Explanation: One possible solution is [right, right, rotate clockwise, 
+	             right, down, down, down, down, rotate counterclockwise, right, 
+	             down].
+	
+	Example 2:
+	Input: grid = [[0,0,1,1,1,1],
+	               [0,0,0,0,1,1],
+	               [1,1,0,0,0,1],
+	               [1,1,1,0,0,1],
+	               [1,1,1,0,0,1],
+	               [1,1,1,0,0,0]]
+	Output: 9
+
+	Constraints:
+	* 2 <= n <= 100
+	* 0 <= grid[i][j] <= 1
+	* It is guaranteed that the snake starts at empty cells."""
+
+    def minimumMoves(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        dist = {(0, 0, 0, 1): 0}
+        pq = [(0, 0, 0, 0, 1)]
+        while pq: 
+            x, i, j, ii, jj = heappop(pq)
+            if i == n-1 and j == n-2 and ii == n-1 and jj == n-1: return x
+            if ii+1 < n and grid[i+1][j] == grid[ii+1][jj] == 0 and x+1 < dist.get((i+1, j, ii+1, jj), inf): 
+                heappush(pq, (x+1, i+1, j, ii+1, jj))
+                dist[i+1, j, ii+1, jj] = x + 1
+            if jj+1 < n and grid[i][j+1] == grid[ii][jj+1] == 0 and x+1 < dist.get((i, j+1, ii, jj+1), inf): 
+                heappush(pq, (x+1, i, j+1, ii, jj+1))
+                dist[i, j+1, ii, jj+1] = x + 1
+            if i == ii and ii+1 < n and grid[i+1][j] == grid[i+1][jj] == 0 and x+1 < dist.get((i, j, i+1, j), inf): 
+                heappush(pq, (x+1, i, j, i+1, j))
+                dist[i, j, i+1, j] = x + 1
+            if j == jj and jj+1 < n and grid[i][j+1] == grid[ii][j+1] == 0 and x+1 < dist.get((i, j, i, j+1), inf): 
+                heappush(pq, (x+1, i, j, i, j+1))
+                dist[i, j, i, j+1] = x + 1
+        return -1 
+
+
     """1213. Intersection of Three Sorted Arrays (Easy)
 	Given three integer arrays arr1, arr2 and arr3 sorted in strictly 
 	increasing order, return a sorted array of only the integers that 
