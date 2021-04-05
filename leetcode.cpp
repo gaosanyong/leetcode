@@ -445,6 +445,55 @@ public:
     }
 
 
+    /*94. Binary Tree Inorder Traversal (Medium)
+	Given the root of a binary tree, return the inorder traversal of its 
+	nodes' values.
+
+	Example 1:
+	Input: root = [1,null,2,3]
+	Output: [1,3,2]
+
+	Example 2:
+	Input: root = []
+	Output: []
+
+	Example 3:
+	Input: root = [1]
+	Output: [1]
+
+	Example 4:
+	Input: root = [1,2]
+	Output: [2,1]
+
+	Example 5:
+	Input: root = [1,null,2]
+	Output: [1,2]
+
+	Constraints:
+	* The number of nodes in the tree is in the range [0, 100].
+	* -100 <= Node.val <= 100
+
+	Follow up: Recursive solution is trivial, could you do it iteratively?*/
+
+    vector<int> inorderTraversal(TreeNode* root) {
+        vector<int> ans; 
+        TreeNode* node = root; 
+        stack<TreeNode*> stk; 
+        while (node || !stk.empty()) {
+            if (node) {
+                stk.push(node); 
+                node = node->left; 
+            } else {
+                node = stk.top(); 
+                stk.pop(); 
+                ans.push_back(node->val); 
+                node = node->right;
+            }
+        }
+        return ans; 
+    }
+
+
     /*100. Same Tree (Easy)
 	Given the roots of two binary trees p and q, write a function to check if 
 	they are the same or not. Two binary trees are considered the same if they 
@@ -624,6 +673,107 @@ public:
             }
         }
         return 0; 
+    }
+
+
+    /*144. Binary Tree Preorder Traversal (Medium)
+	Given the root of a binary tree, return the preorder traversal of its 
+	nodes' values.
+
+	Example 1:
+	Input: root = [1,null,2,3]
+	Output: [1,2,3]
+
+	Example 2:
+	Input: root = []
+	Output: []
+
+	Example 3:
+	Input: root = [1]
+	Output: [1]
+
+	Example 4:
+	Input: root = [1,2]
+	Output: [1,2]
+
+	Example 5:
+	Input: root = [1,null,2]
+	Output: [1,2]
+
+	Constraints:
+	* The number of nodes in the tree is in the range [0, 100].
+	* -100 <= Node.val <= 100
+
+	Follow up: Recursive solution is trivial, could you do it iteratively?*/
+
+    vector<int> preorderTraversal(TreeNode* root) {
+        vector<int> ans; 
+        stack<TreeNode*> stk; 
+        stk.push(root); 
+        while (!stk.empty()) {
+            TreeNode* node = stk.top(); 
+            stk.pop(); 
+            if (node) {
+                ans.push_back(node->val); 
+                stk.push(node->right);
+                stk.push(node->left); 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*145. Binary Tree Postorder Traversal (Medium)
+	Given the root of a binary tree, return the postorder traversal of its 
+	nodes' values.
+
+	Example 1:
+	Input: root = [1,null,2,3]
+	Output: [3,2,1]
+
+	Example 2:
+	Input: root = []
+	Output: []
+
+	Example 3:
+	Input: root = [1]
+	Output: [1]
+
+	Example 4:
+	Input: root = [1,2]
+	Output: [2,1]
+
+	Example 5:
+	Input: root = [1,null,2]
+	Output: [2,1]
+
+	Constraints:
+	* The number of the nodes in the tree is in the range [0, 100].
+	* -100 <= Node.val <= 100
+
+	Follow up: Recursive solution is trivial, could you do it iteratively?*/
+
+    vector<int> postorderTraversal(TreeNode* root) {
+        vector<int> ans; 
+        TreeNode *node = root, *prev = NULL; 
+        stack<TreeNode*> stk; 
+        while (node || !stk.empty()) {
+            if (node) {
+                stk.push(node); 
+                node = node->left; 
+            } else {
+                node = stk.top(); 
+                if (node->right && node->right != prev) 
+                    node = node->right; 
+                else {
+                    ans.push_back(node->val); 
+                    stk.pop(); 
+                    prev = node; 
+                    node = NULL; 
+                }
+            }
+        }
+        return ans; 
     }
 
 
@@ -1109,4 +1259,250 @@ public:
     bool canWinNim(int n) {
         return n % 4; 
     }
+
+
+
+
+    /*504. Base 7 (Easy)
+	Given an integer, return its base 7 string representation.
+
+	Example 1:
+	Input: 100
+	Output: "202"
+	
+	Example 2:
+	Input: -7
+	Output: "-10"
+	
+	Note: The input will be in range of [-1e7, 1e7].*/
+
+    string convertToBase7(int num) {
+        if (num == 0) return "0"; // edge case 
+        
+        string ans; 
+        bool neg = num < 0; 
+        num = abs(num); 
+        while (num) {
+            ans = to_string(num%7) + ans; 
+            num /= 7; 
+        }
+        return neg ? "-" + ans : ans; 
+    }
+
+
+    /*559. Maximum Depth of N-ary Tree (Easy)
+	Given a n-ary tree, find its maximum depth. The maximum depth is the number 
+	of nodes along the longest path from the root node down to the farthest 
+	leaf node. Nary-Tree input serialization is represented in their level 
+	order traversal, each group of children is separated by the null value (See 
+	examples).
+
+	Example 1:
+	Input: root = [1,null,3,2,4,null,5,6]
+	Output: 3
+
+	Example 2:
+	Input: root = [1,null,2,3,4,5,null,null,6,7,null,8,null,9,10,null,null,11,null,12,null,13,null,null,14]
+	Output: 5
+
+	Constraints:
+	* The depth of the n-ary tree is less than or equal to 1000.
+	* The total number of nodes is between [0, 10^4].*/
+
+    int maxDepth(Node* root) {
+        if (!root) return 0; // edge case 
+        
+        queue<Node*> q; 
+        q.push(root); 
+        int ans = 0; 
+        while (!q.empty()) {
+            ++ans; 
+            for (int i = 0, n = q.size(); i < n; ++i) {
+                Node* node = q.front(); 
+                q.pop(); 
+                for (auto &child : node->children) {
+                    q.push(child); 
+                }
+            }
+        }
+        return ans; 
+    }
+
+
+    /*561. Array Partition I (Easy)
+	Given an integer array nums of 2n integers, group these integers into n 
+	pairs (a1, b1), (a2, b2), ..., (an, bn) such that the sum of min(ai, bi) 
+	for all i is maximized. Return the maximized sum.
+
+	Example 1:
+	Input: nums = [1,4,3,2]
+	Output: 4
+	Explanation: All possible pairings (ignoring the ordering of elements) are:
+	1. (1, 4), (2, 3) -> min(1, 4) + min(2, 3) = 1 + 2 = 3
+	2. (1, 3), (2, 4) -> min(1, 3) + min(2, 4) = 1 + 2 = 3
+	3. (1, 2), (3, 4) -> min(1, 2) + min(3, 4) = 1 + 3 = 4
+	So the maximum possible sum is 4.
+
+	Example 2:
+	Input: nums = [6,2,6,5,1,2]
+	Output: 9
+	Explanation: The optimal pairing is (2, 1), (2, 5), (6, 6). min(2, 1) + min(2, 5) + min(6, 6) = 1 + 2 + 6 = 9.
+
+	Constraints:
+	* 1 <= n <= 10^4
+	* nums.length == 2 * n
+	* -10^4 <= nums[i] <= 10^4*/
+
+    int arrayPairSum(vector<int>& nums) {
+        sort(nums.begin(), nums.end()); 
+        int ans = 0; 
+        for (int i = 0; i < nums.size(); i += 2)
+            ans += nums[i]; 
+        return ans; 
+    }
+
+
+    /*566. Reshape the Matrix (Easy)
+	In MATLAB, there is a very useful function called 'reshape', which can 
+	reshape a matrix into a new one with different size but keep its original 
+	data. You're given a matrix represented by a two-dimensional array, and two 
+	positive integers r and c representing the row number and column number of 
+	the wanted reshaped matrix, respectively. The reshaped matrix need to be 
+	filled with all the elements of the original matrix in the same row-
+	traversing order as they were. If the 'reshape' operation with given 
+	parameters is possible and legal, output the new reshaped matrix; Otherwise, 
+	output the original matrix.
+
+	Example 1:
+	Input: nums = [[1,2], [3,4]], r = 1, c = 4
+	Output:	[[1,2,3,4]]
+	Explanation: The row-traversing of nums is [1,2,3,4]. The new reshaped 
+	             matrix is a 1 * 4 matrix, fill it row by row by using the 
+	             previous list.
+	
+	Example 2: 
+	Input: nums = [[1,2], [3,4]], r = 2, c = 4
+	Output: [[1,2],  [3,4]]
+	Explanation: There is no way to reshape a 2 * 2 matrix to a 2 * 4 matrix. 
+	             So output the original matrix.
+	
+	Note:
+	* The height and width of the given matrix is in range [1, 100].
+	* The given r and c are all positive.*/
+
+    vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) {
+        int m = nums.size(), n = nums[0].size(); 
+        if (m * n != r * c) return nums; // incompatable 
+        
+        vector<vector<int>> ans(r, vector<int>(c)); 
+        for (int i = 0; i < r*c; ++i) {
+            ans[i/c][i%c] = nums[i/n][i%n]; 
+        }
+        return ans; 
+    }
+
+
+    /*572. Subtree of Another Tree (Easy)
+	Given two non-empty binary trees s and t, check whether tree t has exactly 
+	the same structure and node values with a subtree of s. A subtree of s is a 
+	tree consists of a node in s and all of this node's descendants. The tree s 
+	could also be considered as a subtree of itself.
+
+	Example 1:
+	Given tree s:
+
+	     3
+	    / \
+	   4   5
+	  / \
+	 1   2
+	Given tree t:
+	   4 
+	  / \
+	 1   2
+	Return true, because t has the same structure and node values with a subtree of s.
+
+	Example 2:
+	Given tree s:
+
+	     3
+	    / \
+	   4   5
+	  / \
+	 1   2
+	    /
+	   0
+	Given tree t:
+	   4
+	  / \
+	 1   2
+	Return false.*/
+
+    /*
+    bool check(TreeNode* ss, TreeNode* tt) {
+        if (!ss && !tt) return true; 
+        if (!ss || !tt) return false; 
+        return (ss->val == tt->val) && check(ss->left, tt->left) && check(ss->right, tt->right); 
+    }*/
+    
+    bool isSubtree(TreeNode* s, TreeNode* t) {
+        stack<TreeNode*> stk; 
+        stk.push(s); 
+        
+        while (!stk.empty()) {
+            TreeNode* node = stk.top(); 
+            stk.pop();
+            if (node) {
+                if (check(node, t)) return true; 
+                stk.push(node->right); 
+                stk.push(node->left); 
+            }
+        }
+        return false; 
+    }
+
+
+    /*575. Distribute Candies (Easy)
+	Alice has n candies, where the ith candy is of type candyType[i]. Alice 
+	noticed that she started to gain weight, so she visited a doctor. The 
+	doctor advised Alice to only eat n / 2 of the candies she has (n is always 
+	even). Alice likes her candies very much, and she wants to eat the maximum 
+	number of different types of candies while still following the doctor's 
+	advice. Given the integer array candyType of length n, return the maximum 
+	number of different types of candies she can eat if she only eats n / 2 of 
+	them.
+
+	Example 1:
+	Input: candyType = [1,1,2,2,3,3]
+	Output: 3
+	Explanation: Alice can only eat 6 / 2 = 3 candies. Since there are only 3 
+	             types, she can eat one of each type.
+
+	Example 2:
+	Input: candyType = [1,1,2,3]
+	Output: 2
+	Explanation: Alice can only eat 4 / 2 = 2 candies. Whether she eats types 
+	             [1,2], [1,3], or [2,3], she still can only eat 2 different 
+	             types.
+	
+	Example 3:
+	Input: candyType = [6,6,6,6]
+	Output: 1
+	Explanation: Alice can only eat 4 / 2 = 2 candies. Even though she can eat 
+	             2 candies, she only has 1 type.
+
+	Constraints:
+	* n == candyType.length
+	* 2 <= n <= 10^4
+	* n is even.
+	* -10^5 <= candyType[i] <= 10^5*/
+
+    int distributeCandies(vector<int>& candyType) {
+        unordered_map<int, int> freq; 
+        for (auto &x : candyType) {
+            ++freq[x]; 
+        }
+        return min(candyType.size()/2, freq.size()); 
+    }
+
 };
