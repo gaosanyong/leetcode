@@ -1505,4 +1505,196 @@ public:
         return min(candyType.size()/2, freq.size()); 
     }
 
+
+    /*1816. Truncate Sentence (Easy)
+	A sentence is a list of words that are separated by a single space with no 
+	leading or trailing spaces. Each of the words consists of only uppercase 
+	and lowercase English letters (no punctuation). For example, "Hello World", 
+	"HELLO", and "hello world hello world" are all sentences. You are given a 
+	sentence s​​​​​​ and an integer k​​​​​​. You want to truncate s​​​​​​ such that it contains 
+	only the first k​​​​​​ words. Return s​​​​​​ after truncating it.
+
+	Example 1:
+	Input: s = "Hello how are you Contestant", k = 4
+	Output: "Hello how are you"
+	Explanation:
+	The words in s are ["Hello", "how" "are", "you", "Contestant"].
+	The first 4 words are ["Hello", "how", "are", "you"].
+	Hence, you should return "Hello how are you".
+
+	Example 2:
+	Input: s = "What is the solution to this problem", k = 4
+	Output: "What is the solution"
+	Explanation:
+	The words in s are ["What", "is" "the", "solution", "to", "this", "problem"].
+	The first 4 words are ["What", "is", "the", "solution"].
+	Hence, you should return "What is the solution".
+
+	Example 3:
+	Input: s = "chopper is not a tanuki", k = 5
+	Output: "chopper is not a tanuki"
+
+	Constraints:
+	* 1 <= s.length <= 500
+	* k is in the range [1, the number of words in s].
+	* s consist of only lowercase and uppercase English letters and spaces.
+	* The words in s are separated by a single space.
+	* There are no leading or trailing spaces.*/
+
+    string truncateSentence(string s, int k) {
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] == ' ') {
+                if (--k == 0) return s.substr(0, i); 
+            }
+        }
+        return s; 
+    }
+
+
+    /*1817. Finding the Users Active Minutes (Medium)
+	You are given the logs for users' actions on LeetCode, and an integer k. 
+	The logs are represented by a 2D integer array logs where each 
+	logs[i] = [IDi, timei] indicates that the user with IDi performed an action
+	at the minute timei. Multiple users can perform actions simultaneously, 
+	and a single user can perform multiple actions in the same minute. The 
+	user active minutes (UAM) for a given user is defined as the number of 
+	unique minutes in which the user performed an action on LeetCode. A minute 
+	can only be counted once, even if multiple actions occur during it. You 
+	are to calculate a 1-indexed array answer of size k such that, for each j 
+	(1 <= j <= k), answer[j] is the number of users whose UAM equals j. Return 
+	the array answer as described above.
+
+	Example 1:
+	Input: logs = [[0,5],[1,2],[0,2],[0,5],[1,3]], k = 5
+	Output: [0,2,0,0,0]
+	Explanation:
+	The user with ID=0 performed actions at minutes 5, 2, and 5 again. Hence, they have a UAM of 2 (minute 5 is only counted once).
+	The user with ID=1 performed actions at minutes 2 and 3. Hence, they have a UAM of 2.
+	Since both users have a UAM of 2, answer[2] is 2, and the remaining answer[j] values are 0.
+
+	Example 2:
+	Input: logs = [[1,1],[2,2],[2,3]], k = 4
+	Output: [1,1,0,0]
+	Explanation:
+	The user with ID=1 performed a single action at minute 1. Hence, they have a UAM of 1.
+	The user with ID=2 performed actions at minutes 2 and 3. Hence, they have a UAM of 2.
+	There is one user with a UAM of 1 and one with a UAM of 2.
+	Hence, answer[1] = 1, answer[2] = 1, and the remaining values are 0.
+
+	Constraints:
+	* 1 <= logs.length <= 10^4
+	* 0 <= IDi <= 10^9
+	* 1 <= timei <= 10^5
+	* k is in the range [The maximum UAM for a user, 10^5].*/
+
+    vector<int> findingUsersActiveMinutes(vector<vector<int>>& logs, int k) {
+        unordered_map<int, unordered_set<int>> mp; 
+        for (auto &log : logs) {
+            mp[log[0]].insert(log[1]); 
+        }
+        
+        vector<int> ans(k, 0); 
+        for (auto &x : mp) {
+            if (x.second.size() <= k) 
+                ++ans[x.second.size() - 1]; 
+        }
+        return ans; 
+    }
+
+
+    /*1818. Minimum Absolute Sum Difference (Medium)
+	You are given two positive integer arrays nums1 and nums2, both of length n. 
+	The absolute sum difference of arrays nums1 and nums2 is defined as the sum 
+	of |nums1[i] - nums2[i]| for each 0 <= i < n (0-indexed). You can replace 
+	at most one element of nums1 with any other element in nums1 to minimize 
+	the absolute sum difference. Return the minimum absolute sum difference 
+	after replacing at most one element in the array nums1. Since the answer 
+	may be large, return it modulo 10^9 + 7. |x| is defined as:
+	* x if x >= 0, or
+	* -x if x < 0.
+
+	Example 1:
+	Input: nums1 = [1,7,5], nums2 = [2,3,5]
+	Output: 3
+	Explanation: There are two possible optimal solutions:
+	- Replace the second element with the first: [1,7,5] => [1,1,5], or
+	- Replace the second element with the third: [1,7,5] => [1,5,5].
+	Both will yield an absolute sum difference of |1-2| + (|1-3| or |5-3|) + |5-5| = 3.
+
+	Example 2:
+	Input: nums1 = [2,4,6,8,10], nums2 = [2,4,6,8,10]
+	Output: 0
+	Explanation: nums1 is equal to nums2 so no replacement is needed. This will result in an 
+	absolute sum difference of 0.
+
+	Example 3:
+	Input: nums1 = [1,10,4,4,2,7], nums2 = [9,3,5,1,7,4]
+	Output: 20
+	Explanation: Replace the first element with the second: [1,10,4,4,2,7] => [10,10,4,4,2,7].
+	This yields an absolute sum difference of |10-9| + |10-3| + |4-5| + |4-1| + |2-7| + |7-4| = 20
+
+	Constraints:
+	* n == nums1.length
+	* n == nums2.length
+	* 1 <= n <= 10^5
+	* 1 <= nums1[i], nums2[i] <= 10^5*/
+
+    int minAbsoluteSumDiff(vector<int>& nums1, vector<int>& nums2) {
+        vector<int> s1 = nums1; 
+        sort(s1.begin(), s1.end()); 
+        
+        long ans = 0, bnft = 0; 
+        for (int i = 0; i < nums1.size(); ++i) {
+            long term = abs(nums1[i] - nums2[i]); 
+            ans += term; 
+            auto it = lower_bound(s1.begin(), s1.end(), nums2[i]); 
+            if (it < s1.end())
+                bnft = max(bnft, term - (*it - nums2[i]));
+            if (s1.begin() < it) 
+                bnft = max(bnft, term - (nums2[i] - *prev(it)));
+        }
+        return (ans - bnft) % 1'000'000'007; 
+    }
+
+
+    /*1819. Number of Different Subsequences GCDs (Hard)
+	You are given an array nums that consists of positive integers. The GCD of 
+	a sequence of numbers is defined as the greatest integer that divides all 
+	the numbers in the sequence evenly. For example, the GCD of the sequence 
+	[4,6,16] is 2. A subsequence of an array is a sequence that can be formed 
+	by removing some elements (possibly none) of the array. For example, 
+	[2,5,10] is a subsequence of [1,2,1,2,4,1,5,10]. Return the number of 
+	different GCDs among all non-empty subsequences of nums.
+
+	Example 1:
+	Input: nums = [6,10,3]
+	Output: 5
+	Explanation: The figure shows all the non-empty subsequences and their GCDs.
+	The different GCDs are 6, 10, 3, 2, and 1.
+
+	Example 2:
+	Input: nums = [5,15,40,5,6]
+	Output: 7
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 2 * 10^5*/
+
+    int countDifferentSubsequenceGCDs(vector<int>& nums) {
+        auto mx = *max_element(nums.begin(), nums.end()); 
+        vector<bool> seen (mx+1, false); 
+        for (auto& x : nums) 
+            seen[x] = true; 
+        
+        int ans = 0; 
+        for (int x = 1; x <= mx; ++x) {
+            int g = 0; 
+            for (int xx = x; xx <= mx; xx += x) {
+                if (seen[xx]) g = __gcd(g, xx);
+            }
+            if (g == x) ++ans; 
+        }
+        return ans; 
+    }
+
 };
