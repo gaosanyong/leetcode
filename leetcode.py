@@ -6406,20 +6406,23 @@ class Solution:
 	* 1 <= numCourses <= 10^5"""
 
     def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
-        #graph as adjacency list
         digraph = dict()
-        for u, v in prerequisites: digraph.setdefault(u, []).append(v)
+        for u, v in prerequisites: 
+            digraph.setdefault(v, []).append(u)
             
-        def cyclic(n):
-            """Return True if cycle is detected involving given node"""
-            if seen[n]: return seen[n] == -1
-            seen[n] = -1 #GRAY
-            if any(cyclic(nn) for nn in digraph.get(n, [])): return True
-            seen[n] = 1 #BLACK
+        def dfs(n):
+            """Return True if a cycle is detected."""
+            if visited[n]: return visited[n] == -1
+            visited[n] = -1 # GRAY
+            for nn in digraph.get(n, []):
+                if visited[nn] != 1 and dfs(nn): return True 
+            visited[n] = 1 # BLACK
             return False 
             
-        seen = [0]*numCourses #WHITE
-        return not any(cyclic(i) for i in range(numCourses))
+        visited = [0]*numCourses # WHITE
+        for n in range(numCourses): 
+            if not visited[n] and dfs(n): return False 
+        return True 
 
 
     """209. Minimum Size Subarray Sum (Medium)
@@ -16897,6 +16900,236 @@ class Solution:
                 freq[mat[i][j]] = 1 + freq.get(mat[i][j], 0)
                 if freq[mat[i][j]] == m: return mat[i][j]
         return -1 
+
+
+    """1200. Minimum Absolute Difference (Easy)
+	Given an array of distinct integers arr, find all pairs of elements with 
+	the minimum absolute difference of any two elements. Return a list of pairs 
+	in ascending order(with respect to pairs), each pair [a, b] follows
+	* a, b are from arr
+	* a < b
+	* b - a equals to the minimum absolute difference of any two elements in arr
+
+	Example 1:
+	Input: arr = [4,2,1,3]
+	Output: [[1,2],[2,3],[3,4]]
+	Explanation: The minimum absolute difference is 1. List all pairs with 
+	             difference equal to 1 in ascending order.
+	
+	Example 2:
+	Input: arr = [1,3,6,10,15]
+	Output: [[1,3]]
+
+	Example 3:
+	Input: arr = [3,8,-10,23,19,-4,-14,27]
+	Output: [[-14,-10],[19,23],[23,27]]
+
+	Constraints:
+	* 2 <= arr.length <= 10^5
+	* -10^6 <= arr[i] <= 10^6"""
+
+    def minimumAbsDifference(self, arr: List[int]) -> List[List[int]]:
+        arr.sort()
+        ans, mn = [], inf
+        for i in range(1, len(arr)): 
+            if arr[i] - arr[i-1] <= mn: 
+                if arr[i] - arr[i-1] < mn: 
+                    mn = arr[i] - arr[i-1]
+                    ans = []
+                ans.append([arr[i-1], arr[i]])
+        return ans
+
+
+    """1201. Ugly Number III (Medium)
+	Given four integers n, a, b, and c, return the nth ugly number. Ugly 
+	numbers are positive integers that are divisible by a, b, or c.
+
+	Example 1:
+	Input: n = 3, a = 2, b = 3, c = 5
+	Output: 4
+	Explanation: The ugly numbers are 2, 3, 4, 5, 6, 8, 9, 10... The 3rd is 4.
+
+	Example 2:
+	Input: n = 4, a = 2, b = 3, c = 4
+	Output: 6
+	Explanation: The ugly numbers are 2, 3, 4, 6, 8, 9, 10, 12... The 4th is 6.
+
+	Example 3:
+	Input: n = 5, a = 2, b = 11, c = 13
+	Output: 10
+	Explanation: The ugly numbers are 2, 4, 6, 8, 10, 11, 12, 13... The 5th is 10.
+
+	Example 4:
+	Input: n = 1000000000, a = 2, b = 217983653, c = 336916467
+	Output: 1999999984
+
+	Constraints:
+	* 1 <= n, a, b, c <= 109
+	* 1 <= a * b * c <= 1018
+	* It is guaranteed that the result will be in range [1, 2 * 109]."""
+
+    def nthUglyNumber(self, n: int, a: int, b: int, c: int) -> int:
+        ab = a*b//gcd(a, b)
+        bc = b*c//gcd(b, c)
+        ca = c*a//gcd(c, a)
+        abc = ab*c//gcd(ab, c)
+        
+        fn = lambda x: x//a + x//b + x//c - x//ab - x//bc - x//ca + x//abc
+        
+        lo, hi = 1, 2*10**9 + 1
+        while lo < hi: 
+            mid = lo + hi >> 1
+            if fn(mid) < n: lo = mid + 1
+            else: hi = mid 
+        return lo 
+
+
+    """1202. Smallest String With Swaps (Medium)
+	You are given a string s, and an array of pairs of indices in the string 
+	pairs where pairs[i] = [a, b] indicates 2 indices(0-indexed) of the string.
+	You can swap the characters at any pair of indices in the given pairs any 
+	number of times. Return the lexicographically smallest string that s can be 
+	changed to after using the swaps.
+
+	Example 1:
+	Input: s = "dcab", pairs = [[0,3],[1,2]]
+	Output: "bacd"
+	Explaination: 
+	Swap s[0] and s[3], s = "bcad"
+	Swap s[1] and s[2], s = "bacd"
+
+	Example 2:
+	Input: s = "dcab", pairs = [[0,3],[1,2],[0,2]]
+	Output: "abcd"
+	Explaination: 
+	Swap s[0] and s[3], s = "bcad"
+	Swap s[0] and s[2], s = "acbd"
+	Swap s[1] and s[2], s = "abcd"
+
+	Example 3:
+	Input: s = "cba", pairs = [[0,1],[1,2]]
+	Output: "abc"
+	Explaination: 
+	Swap s[0] and s[1], s = "bca"
+	Swap s[1] and s[2], s = "bac"
+	Swap s[0] and s[1], s = "abc"
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* 0 <= pairs.length <= 10^5
+	* 0 <= pairs[i][0], pairs[i][1] < s.length
+	* s only contains lower case English letters."""
+
+"""
+class UnionFind:
+    def __init__(self, n): 
+        self.parent = list(range(n))
+        self.rank = [1]*n
+    
+    def find(self, p): 
+        if self.parent[p] != p: 
+            self.parent[p] = self.find(self.parent[p])
+        return self.parent[p]
+    
+    def union(self, p, q):
+        prt, qrt = self.find(p), self.find(q)
+        if prt == qrt: return False # already connected 
+        if prt > qrt: prt, qrt = qrt, prt
+        self.parent[prt] = qrt
+        self.rank[qrt] += self.rank[prt]
+        return True
+"""
+
+    def smallestStringWithSwaps(self, s: str, pairs: List[List[int]]) -> str:
+        s = list(s)
+        
+        uf = UnionFind(len(s))
+        for u, v in pairs: 
+            uf.union(u, v)
+        
+        mp = {}
+        for n in range(len(s)):
+            mp.setdefault(uf.find(n), []).append(n)
+        
+        for v in mp.values(): 
+            vals = [s[vv] for vv in v]
+            for vv, xx in zip(v, sorted(vals)):
+                s[vv] = xx
+        return "".join(s)
+
+
+    """1203. Sort Items by Groups Respecting Dependencies (Hard)
+	There are n items each belonging to zero or one of m groups where group[i] 
+	is the group that the i-th item belongs to and it's equal to -1 if the i-th 
+	item belongs to no group. The items and the groups are zero indexed. A 
+	group can have no item belonging to it. Return a sorted list of the items 
+	such that:
+	* The items that belong to the same group are next to each other in the 
+	  sorted list.
+	* There are some relations between these items where beforeItems[i] is a 
+	  list containing all the items that should come before the i-th item in 
+	  the sorted array (to the left of the i-th item).
+	Return any solution if there is more than one solution and return an empty 
+	list if there is no solution.
+
+	Example 1:
+	Input: n = 8, m = 2, group = [-1,-1,1,0,0,1,0,-1], beforeItems = [[],[6],[5],[6],[3,6],[],[],[]]
+	Output: [6,3,4,1,5,2,0,7]
+
+	Example 2:
+	Input: n = 8, m = 2, group = [-1,-1,1,0,0,1,0,-1], beforeItems = [[],[6],[5],[6],[3],[],[4],[]]
+	Output: []
+	Explanation: This is the same as example 1 except that 4 needs to be before 6 in the sorted list.
+
+	Constraints:
+	* 1 <= m <= n <= 3 * 10^4
+	* group.length == beforeItems.length == n
+	* -1 <= group[i] <= m - 1
+	* 0 <= beforeItems[i].length <= n - 1
+	* 0 <= beforeItems[i][j] <= n - 1
+	* i != beforeItems[i][j]
+	* beforeItems[i] does not contain duplicates elements."""
+
+    def sortItems(self, n: int, m: int, group: List[int], beforeItems: List[List[int]]) -> List[int]:
+        for i in range(n): 
+            if group[i] == -1: group[i] = i + m # re-group 
+        
+        graph0 = {} # digraph of groups 
+        indeg0 = [0]*(m+n) # indegree of groups 
+        
+        graph1 = {} # digrpah of items 
+        indeg1 = [0]*n # indegree of items
+        
+        for i, x in enumerate(beforeItems): 
+            for xx in x: 
+                if group[xx] != group[i]: 
+                    graph0.setdefault(group[xx], []).append(group[i])
+                    indeg0[group[i]] += 1
+                graph1.setdefault(xx, []).append(i)
+                indeg1[i] += 1
+        
+        def fn(graph, indeg): 
+            """Return topological sort of graph using Kahn's algo."""
+            ans = []
+            stack = [k for k in range(len(indeg)) if indeg[k] == 0]
+            while stack: 
+                n = stack.pop()
+                ans.append(n)
+                for nn in graph.get(n, []):
+                    indeg[nn] -= 1
+                    if indeg[nn] == 0: stack.append(nn)
+            return ans 
+        
+        tp0 = fn(graph0, indeg0) 
+        if len(tp0) != len(indeg0): return [] 
+        
+        tp1 = fn(graph1, indeg1)
+        if len(tp1) != len(indeg1): return []
+        
+        mp0 = {x: i for i, x in enumerate(tp0)}
+        mp1 = {x: i for i, x in enumerate(tp1)}
+        
+        return sorted(range(n), key=lambda x: (mp0[group[x]], mp1[x]))
 
 
     """1207. Unique Number of Occurrences (Easy)
