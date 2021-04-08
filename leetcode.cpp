@@ -1506,6 +1506,409 @@ public:
     }
 
 
+    /*637. Average of Levels in Binary Tree (Easy)
+	Given the root of a binary tree, return the average value of the nodes on 
+	each level in the form of an array. Answers within 10-5 of the actual 
+	answer will be accepted.
+
+	Example 1:
+	Input: root = [3,9,20,null,15,7]
+	Output: [3.00000,14.50000,11.00000]
+	Explanation: The average value of nodes on level 0 is 3, on level 1 is 14.5, 
+	             and on level 2 is 11. Hence return [3, 14.5, 11].
+
+	Example 2:
+	Input: root = [3,9,20,15,7]
+	Output: [3.00000,14.50000,11.00000]
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 10^4].
+	* -2^31 <= Node.val <= 2^31 - 1*/
+
+    vector<double> averageOfLevels(TreeNode* root) {
+        vector<double> ans; 
+        
+        queue<TreeNode*> q; 
+        q.push(root); 
+        while (!q.empty()) {
+            double sm = 0, cnt = 0; 
+            for (int i = 0, n = q.size(); i < n; ++i) {
+                TreeNode* node = q.front(); 
+                q.pop(); 
+                if (node) {
+                    sm += node->val; 
+                    ++cnt; 
+                    q.push(node->left);
+                    q.push(node->right); 
+                }
+            }
+            if (cnt) ans.push_back(sm/cnt); 
+        }
+        return ans; 
+    }
+
+
+    /*643. Maximum Average Subarray I (Easy)
+	Given an array consisting of n integers, find the contiguous subarray of 
+	given length k that has the maximum average value. And you need to output 
+	the maximum average value.
+
+	Example 1:
+	Input: [1,12,-5,-6,50,3], k = 4
+	Output: 12.75
+	Explanation: Maximum average is (12-5-6+50)/4 = 51/4 = 12.75
+
+	Note:
+	* 1 <= k <= n <= 30,000.
+	* Elements of the given array will be in the range [-10,000, 10,000].*/
+
+    double findMaxAverage(vector<int>& nums, int k) {
+        int ans = INT_MIN, sm = 0; 
+        for (int i = 0; i < nums.size(); ++i) {
+            sm += nums[i]; 
+            if (i >= k) sm -= nums[i-k]; 
+            if (i >= k-1) ans = max(ans, sm);
+        }
+        return (double) ans/k; 
+    }
+
+
+    /*653. Two Sum IV - Input is a BST (Easy)
+	Given the root of a Binary Search Tree and a target number k, return true 
+	if there exist two elements in the BST such that their sum is equal to the 
+	given target.
+
+	Example 1:
+	Input: root = [5,3,6,2,4,null,7], k = 9
+	Output: true
+
+	Example 2:
+	Input: root = [5,3,6,2,4,null,7], k = 28
+	Output: false
+
+	Example 3:
+	Input: root = [2,1,3], k = 4
+	Output: true
+
+	Example 4:
+	Input: root = [2,1,3], k = 1
+	Output: false
+
+	Example 5:
+	Input: root = [2,1,3], k = 3
+	Output: true
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 10^4].
+	* -10^4 <= Node.val <= 10^4
+	* root is guaranteed to be a valid binary search tree.
+	* -10^5 <= k <= 10^5*/
+
+    bool findTarget(TreeNode* root, int k) {
+        unordered_set<int> seen; 
+        stack<TreeNode*> stk; 
+        stk.push(root); 
+        
+        while (!stk.empty()) {
+            TreeNode* node = stk.top(); 
+            stk.pop(); 
+            if (node) {
+                if (seen.count(k - node->val)) return true; 
+                seen.insert(node->val); 
+                stk.push(node->right);
+                stk.push(node->left); 
+            }
+        }
+        return false; 
+    }
+
+
+    /*680. Valid Palindrome II (Easy)
+	Given a non-empty string s, you may delete at most one character. Judge 
+	whether you can make it a palindrome.
+
+	Example 1:
+	Input: "aba"
+	Output: True
+	
+	Example 2:
+	Input: "abca"
+	Output: True
+	Explanation: You could delete the character 'c'.
+	
+	Note: The string will only contain lowercase characters a-z. The maximum 
+	length of the string is 50000.*/
+
+    bool validPalindrome(string s) {
+        for (int lo = 0, hi = s.size()-1; lo < hi; ++lo, --hi) {
+            if (s[lo] != s[hi]) {
+                for (int l = lo+1, h = hi; s[l] == s[h]; ++l, --h) 
+                    if (l >= h) return true; 
+                for (int l = lo, h = hi-1; s[l] == s[h]; ++l, --h) 
+                    if (l >= h) return true; 
+                return false; 
+            }
+        }
+        return true; 
+    }
+
+
+    /*682. Baseball Game (Easy)
+	You are keeping score for a baseball game with strange rules. The game 
+	consists of several rounds, where the scores of past rounds may affect 
+	future rounds' scores. At the beginning of the game, you start with an 
+	empty record. You are given a list of strings ops, where ops[i] is the 
+	ith operation you must apply to the record and is one of the following:
+	* An integer x - Record a new score of x.
+	* "+" - Record a new score that is the sum of the previous two scores. It 
+	  is guaranteed there will always be two previous scores.
+	* "D" - Record a new score that is double the previous score. It is 
+	  guaranteed there will always be a previous score.
+	* "C" - Invalidate the previous score, removing it from the record. It is 
+	  guaranteed there will always be a previous score.
+	Return the sum of all the scores on the record.
+
+	Example 1:
+	Input: ops = ["5","2","C","D","+"]
+	Output: 30
+	Explanation:
+	"5" - Add 5 to the record, record is now [5].
+	"2" - Add 2 to the record, record is now [5, 2].
+	"C" - Invalidate and remove the previous score, record is now [5].
+	"D" - Add 2 * 5 = 10 to the record, record is now [5, 10].
+	"+" - Add 5 + 10 = 15 to the record, record is now [5, 10, 15].
+	The total sum is 5 + 10 + 15 = 30.
+
+	Example 2:
+	Input: ops = ["5","-2","4","C","D","9","+","+"]
+	Output: 27
+	Explanation:
+	"5" - Add 5 to the record, record is now [5].
+	"-2" - Add -2 to the record, record is now [5, -2].
+	"4" - Add 4 to the record, record is now [5, -2, 4].
+	"C" - Invalidate and remove the previous score, record is now [5, -2].
+	"D" - Add 2 * -2 = -4 to the record, record is now [5, -2, -4].
+	"9" - Add 9 to the record, record is now [5, -2, -4, 9].
+	"+" - Add -4 + 9 = 5 to the record, record is now [5, -2, -4, 9, 5].
+	"+" - Add 9 + 5 = 14 to the record, record is now [5, -2, -4, 9, 5, 14].
+	The total sum is 5 + -2 + -4 + 9 + 5 + 14 = 27.
+
+	Example 3:
+	Input: ops = ["1"]
+	Output: 1
+
+	Constraints:
+	* 1 <= ops.length <= 1000
+	* ops[i] is "C", "D", "+", or a string representing an integer in the range [-3 * 104, 3 * 104].
+	* For operation "+", there will always be at least two previous scores on the record.
+	* For operations "C" and "D", there will always be at least one previous score on the record.*/
+
+    int calPoints(vector<string>& ops) {
+        vector<int> vec; 
+        for (auto& op : ops) {
+            if (op == "+") {
+                vec.push_back(vec[vec.size()-2] + vec[vec.size()-1]); 
+            } else if (op == "D") {
+                vec.push_back(vec.back() * 2); 
+            } else if (op == "C") {
+                vec.pop_back(); 
+            } else {
+                vec.push_back(stoi(op)); 
+            }
+        }
+        return accumulate(vec.begin(), vec.end(), 0); 
+    }
+
+
+    /*690. Employee Importance (Easy)
+	You are given a data structure of employee information, which includes the 
+	employee's unique id, their importance value and their direct subordinates' 
+	id. For example, employee 1 is the leader of employee 2, and employee 2 is 
+	the leader of employee 3. They have importance value 15, 10 and 5, 
+	respectively. Then employee 1 has a data structure like [1, 15, [2]], and 
+	employee 2 has [2, 10, [3]], and employee 3 has [3, 5, []]. Note that 
+	although employee 3 is also a subordinate of employee 1, the relationship 
+	is not direct. Now given the employee information of a company, and an 
+	employee id, you need to return the total importance value of this employee 
+	and all their subordinates.
+
+	Example 1:
+	Input: [[1, 5, [2, 3]], [2, 3, []], [3, 3, []]], 1
+	Output: 11
+	Explanation: Employee 1 has importance value 5, and he has two direct 
+	             subordinates: employee 2 and employee 3. They both have 
+	             importance value 3. So the total importance value of employee 
+	             1 is 5 + 3 + 3 = 11.
+
+	Note:
+	* One employee has at most one direct leader and may have several subordinates.
+	* The maximum number of employees won't exceed 2000.*/
+
+    int getImportance(vector<Employee*> employees, int id) {
+        unordered_map<int, Employee*> mp; 
+        for (auto& employee : employees) 
+            mp.insert({employee->id, employee}); 
+        
+        stack<int> stk; 
+        stk.push(id); 
+        int ans = 0; 
+        while (!stk.empty()) {
+            int id = stk.top(); 
+            stk.pop(); 
+            Employee* employee = mp[id]; 
+            ans += employee->importance; 
+            for (auto& x : employee->subordinates) 
+                stk.push(x); 
+        }
+        return ans; 
+    }
+
+
+    /*693. Binary Number with Alternating Bits (Easy)
+	Given a positive integer, check whether it has alternating bits: namely, if 
+	two adjacent bits will always have different values.
+
+	Example 1:
+	Input: n = 5
+	Output: true
+	Explanation: The binary representation of 5 is: 101
+
+	Example 2:
+	Input: n = 7
+	Output: false
+	Explanation: The binary representation of 7 is: 111.
+
+	Example 3:
+	Input: n = 11
+	Output: false
+	Explanation: The binary representation of 11 is: 1011.
+
+	Example 4:
+	Input: n = 10
+	Output: true
+	Explanation: The binary representation of 10 is: 1010.
+
+	Example 5:
+	Input: n = 3
+	Output: false
+
+	Constraints: 1 <= n <= 2^31 - 1*/
+
+    bool hasAlternatingBits(int n) {
+        long nn = n ^ (n >> 1); 
+        return (nn & (nn+1)) == 0;
+    }
+
+
+    /*696. Count Binary Substrings (Easy)
+	Give a string s, count the number of non-empty (contiguous) substrings that 
+	have the same number of 0's and 1's, and all the 0's and all the 1's in 
+	these substrings are grouped consecutively. Substrings that occur multiple 
+	times are counted the number of times they occur.
+
+	Example 1:
+	Input: "00110011"
+	Output: 6
+	Explanation: There are 6 substrings that have equal number of consecutive 
+	             1's and 0's: "0011", "01", "1100", "10", "0011", and "01". 
+	             Notice that some of these substrings repeat and are counted 
+	             the number of times they occur. Also, "00110011" is not a 
+	             valid substring because all the 0's (and 1's) are not grouped 
+	             together.
+
+	Example 2:
+	Input: "10101"
+	Output: 4
+	Explanation: There are 4 substrings: "10", "01", "10", "01" that have equal 
+	             number of consecutive 1's and 0's.
+	
+	Note:
+	* s.length will be between 1 and 50,000.
+	* s will only consist of "0" or "1" characters.*/
+
+    int countBinarySubstrings(string s) {
+        int ans = 0, prev = 0, curr = 0; 
+        for (int i = 0; i < s.size(); ++i) {
+            if (i && s[i-1] != s[i]) {
+                prev = curr; 
+                curr = 0; 
+            }
+            if (prev >= ++curr) ans += 1; 
+        }
+        return ans; 
+    }
+
+
+    /*697. Degree of an Array (Easy)
+	Given a non-empty array of non-negative integers nums, the degree of this 
+	array is defined as the maximum frequency of any one of its elements. Your 
+	task is to find the smallest possible length of a (contiguous) subarray of 
+	nums, that has the same degree as nums.
+
+	Example 1:
+	Input: nums = [1,2,2,3,1]
+	Output: 2
+	Explanation: 
+	The input array has a degree of 2 because both elements 1 and 2 appear twice.
+	Of the subarrays that have the same degree:
+	[1, 2, 2, 3, 1], [1, 2, 2, 3], [2, 2, 3, 1], [1, 2, 2], [2, 2, 3], [2, 2]
+	The shortest length is 2. So return 2.
+
+	Example 2:
+	Input: nums = [1,2,2,3,1,4,2]
+	Output: 6
+	Explanation: 
+	The degree is 3 because the element 2 is repeated 3 times.
+	So [2,2,3,1,4,2] is the shortest subarray, therefore returning 6.
+
+	Constraints:
+	* nums.length will be between 1 and 50,000.
+	* nums[i] will be an integer between 0 and 49,999.*/
+
+    int findShortestSubArray(vector<int>& nums) {
+        unordered_map<int, int> freq, seen; 
+        int ans = INT_MAX, most = 0; 
+        for (int i = 0; i < nums.size(); ++i) {
+            seen.insert({nums[i], i}); 
+            if (most <= ++freq[nums[i]]) {
+                if (most < freq[nums[i]]) ans = i - seen[nums[i]] + 1; 
+                else ans = min(ans, i - seen[nums[i]] + 1); 
+                most = freq[nums[i]]; 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*700. Search in a Binary Search Tree (Easy)
+	You are given the root of a binary search tree (BST) and an integer val. 
+	Find the node in the BST that the node's value equals val and return the 
+	subtree rooted with that node. If such a node does not exist, return null.
+
+	Example 1:
+	Input: root = [4,2,7,1,3], val = 2
+	Output: [2,1,3]
+
+	Example 2:
+	Input: root = [4,2,7,1,3], val = 5
+	Output: []
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 5000].
+	* 1 <= Node.val <= 10^7
+	* root is a binary search tree.
+	* 1 <= val <= 10^7*/
+
+    TreeNode* searchBST(TreeNode* root, int val) {
+        while (root) {
+            if (root->val == val) return root; 
+            if (root->val < val) root = root->right; 
+            else root = root->left; 
+        }
+        return NULL; 
+    }
+
+
     /*1816. Truncate Sentence (Easy)
 	A sentence is a list of words that are separated by a single space with no 
 	leading or trailing spaces. Each of the words consists of only uppercase 
@@ -1696,5 +2099,57 @@ public:
         }
         return ans; 
     }
+};
 
+
+/*703. Kth Largest Element in a Stream (Easy)
+Design a class to find the kth largest element in a stream. Note that it is the 
+kth largest element in the sorted order, not the kth distinct element. 
+Implement KthLargest class:
+* KthLargest(int k, int[] nums) Initializes the object with the integer k and 
+  the stream of integers nums.
+* int add(int val) Returns the element representing the kth largest element in 
+  the stream.
+
+Example 1:
+Input: ["KthLargest", "add", "add", "add", "add", "add"]
+       [[3, [4, 5, 8, 2]], [3], [5], [10], [9], [4]]
+Output: [null, 4, 5, 5, 8, 8]
+Explanation: 
+KthLargest kthLargest = new KthLargest(3, [4, 5, 8, 2]);
+kthLargest.add(3);   // return 4
+kthLargest.add(5);   // return 5
+kthLargest.add(10);  // return 5
+kthLargest.add(9);   // return 8
+kthLargest.add(4);   // return 8
+
+Constraints:
+* 1 <= k <= 10^4
+* 0 <= nums.length <= 10^4
+* -104 <= nums[i] <= 10^4
+* -104 <= val <= 10^4
+* At most 10^4 calls will be made to add.
+* It is guaranteed that there will be at least k elements in the array when you 
+  search for the kth element.*/
+
+class KthLargest {
+private: 
+    int k = 0; 
+    priority_queue<int, vector<int>, greater<int>> pq; // min heap 
+public:
+    KthLargest(int k, vector<int>& nums) {
+        this->k = k; 
+        for (auto& x : nums) {
+            pq.push(x); 
+            if (pq.size() > k) 
+                pq.pop(); 
+        }
+    }
+    
+    int add(int val) {
+        pq.push(val); 
+        if (pq.size() > k) 
+            pq.pop();
+        return pq.top(); 
+    }
 };
