@@ -16816,6 +16816,166 @@ class Solution:
         return ans 
 
 
+    """1189. Maximum Number of Balloons (Easy)
+	Given a string text, you want to use the characters of text to form as many 
+	instances of the word "balloon" as possible. You can use each character in 
+	text at most once. Return the maximum number of instances that can be formed.
+
+	Example 1:
+	Input: text = "nlaebolko"
+	Output: 1
+
+	Example 2:
+	Input: text = "loonbalxballpoon"
+	Output: 2
+
+	Example 3:
+	Input: text = "leetcode"
+	Output: 0
+
+	Constraints:
+	* 1 <= text.length <= 10^4
+	* text consists of lower case English letters only."""
+
+    def maxNumberOfBalloons(self, text: str) -> int:
+        ref = {"a":1, "b":1, "l":2, "n":1, "o":2}
+        freq = {}
+        for c in text: 
+            if c in ref: freq[c] = 1 + freq.get(c, 0)
+        return min(freq.get(c, 0)//ref[c] for c in ref)
+
+
+    """1190. Reverse Substrings Between Each Pair of Parentheses (Medium)
+	You are given a string s that consists of lower case English letters and 
+	brackets. Reverse the strings in each pair of matching parentheses, 
+	starting from the innermost one. Your result should not contain any 
+	brackets.
+
+	Example 1:
+	Input: s = "(abcd)"
+	Output: "dcba"
+
+	Example 2:
+	Input: s = "(u(love)i)"
+	Output: "iloveu"
+	Explanation: The substring "love" is reversed first, then the whole string 
+	             is reversed.
+
+	Example 3:
+	Input: s = "(ed(et(oc))el)"
+	Output: "leetcode"
+	Explanation: First, we reverse the substring "oc", then "etco", and finally, 
+	             the whole string.
+
+	Example 4:
+	Input: s = "a(bcdefghijkl(mno)p)q"
+	Output: "apmnolkjihgfedcbq"
+
+	Constraints:
+	* 0 <= s.length <= 2000
+	* s only contains lower case English characters and parentheses.
+	* It's guaranteed that all parentheses are balanced."""
+
+    def reverseParentheses(self, s: str) -> str:
+        stack = []
+        mp = {}
+        for i, c in enumerate(s): 
+            if c == "(": stack.append(i)
+            elif c == ")": 
+                k = stack.pop()
+                mp[i], mp[k] = k, i
+        
+        ans = []
+        i, ii = 0, 1
+        while i < len(s):
+            if s[i] in "()": 
+                i = mp[i]
+                ii *= -1 
+            else: ans.append(s[i])
+            i += ii 
+        return "".join(ans)
+
+
+    """1191. K-Concatenation Maximum Sum (Medium)
+	Given an integer array arr and an integer k, modify the array by repeating 
+	it k times. For example, if arr = [1, 2] and k = 3 then the modified array 
+	will be [1, 2, 1, 2, 1, 2]. Return the maximum sub-array sum in the 
+	modified array. Note that the length of the sub-array can be 0 and its sum 
+	in that case is 0. As the answer can be very large, return the answer 
+	modulo 10^9 + 7.
+
+	Example 1:
+	Input: arr = [1,2], k = 3
+	Output: 9
+
+	Example 2:
+	Input: arr = [1,-2,1], k = 5
+	Output: 2
+
+	Example 3:
+	Input: arr = [-1,-2], k = 7
+	Output: 0
+
+	Constraints:
+	* 1 <= arr.length <= 10^5
+	* 1 <= k <= 10^5
+	* -104 <= arr[i] <= 10^4"""
+
+    def kConcatenationMaxSum(self, arr: List[int], k: int) -> int:
+        rsm = val = 0 
+        sm = sum(arr)
+        if k > 1: arr *= 2
+        for x in arr: 
+            val = max(0, val + x)
+            rsm = max(rsm, val)
+        return max(rsm, rsm + max(0, k-2)*sm) % 1_000_000_007
+
+
+    """1192. Critical Connections in a Network (Hard)
+	There are n servers numbered from 0 to n-1 connected by undirected server-
+	to-server connections forming a network where connections[i] = [a, b] 
+	represents a connection between servers a and b. Any server can reach any 
+	other server directly or indirectly through the network. A critical 
+	connection is a connection that, if removed, will make some server unable 
+	to reach some other server. Return all critical connections in the network 
+	in any order.
+
+	Example 1:
+	Input: n = 4, connections = [[0,1],[1,2],[2,0],[1,3]]
+	Output: [[1,3]]
+	Explanation: [[3,1]] is also accepted.
+
+	Constraints:
+	* 1 <= n <= 10^5
+	* n-1 <= connections.length <= 10^5
+	* connections[i][0] != connections[i][1]
+	* There are no repeated connections."""
+
+    def criticalConnections(self, n: int, connections: List[List[int]]) -> List[List[int]]:
+        graph = {} # graph as adjacency list 
+        for u, v in connections: 
+            graph.setdefault(u, []).append(v)
+            graph.setdefault(v, []).append(u)
+        
+        def dfs(x, p, step): 
+            """Traverse the graph and collect bridges using Tarjan's algo."""
+            disc[x] = low[x] = step
+            for xx in graph.get(x, []): 
+                if disc[xx] == inf: 
+                    step += 1
+                    dfs(xx, x, step)
+                    low[x] = min(low[x], low[xx])
+                    if low[xx] > disc[x]: ans.append([x, xx]) # bridge
+                elif xx != p: low[x] = min(low[x], disc[xx])
+        
+        ans = []
+        low = [inf]*n
+        disc = [inf]*n
+        
+        dfs(0, -1, 0)
+        return ans 
+
+
     """1196. How Many Apples Can You Put into the Basket (Easy)
 	You have some apples, where arr[i] is the weight of the i-th apple. You 
 	also have a basket that can carry up to 5000 units of weight. Return the 
