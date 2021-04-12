@@ -16816,6 +16816,157 @@ class Solution:
         return ans 
 
 
+    """1184. Distance Between Bus Stops (Easy)
+	A bus has n stops numbered from 0 to n - 1 that form a circle. We know the 
+	distance between all pairs of neighboring stops where distance[i] is the 
+	distance between the stops number i and (i + 1) % n. The bus goes along 
+	both directions i.e. clockwise and counterclockwise. Return the shortest 
+	distance between the given start and destination stops.
+
+	Example 1:
+	Input: distance = [1,2,3,4], start = 0, destination = 1
+	Output: 1
+	Explanation: Distance between 0 and 1 is 1 or 9, minimum is 1.
+
+	Example 2:
+	Input: distance = [1,2,3,4], start = 0, destination = 2
+	Output: 3
+	Explanation: Distance between 0 and 2 is 3 or 7, minimum is 3.
+
+	Example 3:
+	Input: distance = [1,2,3,4], start = 0, destination = 3
+	Output: 4
+	Explanation: Distance between 0 and 3 is 6 or 4, minimum is 4.
+
+	Constraints:
+	* 1 <= n <= 10^4
+	* distance.length == n
+	* 0 <= start, destination < n
+	* 0 <= distance[i] <= 10^4"""
+
+    def distanceBetweenBusStops(self, distance: List[int], start: int, destination: int) -> int:
+        ans = 0
+        i = start
+        while i != destination: 
+            ans += distance[i]
+            i = (i+1) % len(distance)
+        return min(ans, sum(distance) - ans)
+
+
+    """1185. Day of the Week (Easy)
+	Given a date, return the corresponding day of the week for that date. The 
+	input is given as three integers representing the day, month and year 
+	respectively. Return the answer as one of the following values 
+	{"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"}.
+	 
+	Example 1:
+	Input: day = 31, month = 8, year = 2019
+	Output: "Saturday"
+
+	Example 2:
+	Input: day = 18, month = 7, year = 1999
+	Output: "Sunday"
+
+	Example 3:
+	Input: day = 15, month = 8, year = 1993
+	Output: "Sunday"
+
+	Constraints: The given dates are valid dates between the years 1971 and 2100."""
+
+    def dayOfTheWeek(self, day: int, month: int, year: int) -> str:
+        
+        def fn(y, m, d): 
+            """Return year-month-day in number format."""
+            if m < 3: 
+                y -= 1
+                m += 12
+            return 365*y + y//4 + y//400 - y//100 + (153*m + 8)//5 + d
+        
+        weekday = ("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+        return weekday[(fn(year, month, day) - fn(2021, 4, 11)) % 7]
+
+
+    """1186. Maximum Subarray Sum with One Deletion (Medium)
+	Given an array of integers, return the maximum sum for a non-empty subarray 
+	(contiguous elements) with at most one element deletion. In other words, 
+	you want to choose a subarray and optionally delete one element from it so 
+	that there is still at least one element left and the sum of the remaining 
+	elements is maximum possible. Note that the subarray needs to be non-empty 
+	after deleting one element.
+
+	Example 1:
+	Input: arr = [1,-2,0,3]
+	Output: 4
+	Explanation: Because we can choose [1, -2, 0, 3] and drop -2, thus the 
+	             subarray [1, 0, 3] becomes the maximum value.
+	
+	Example 2:
+	Input: arr = [1,-2,-2,3]
+	Output: 3
+	Explanation: We just choose [3] and it's the maximum sum.
+
+	Example 3:
+	Input: arr = [-1,-1,-1,-1]
+	Output: -1
+	Explanation: The final subarray needs to be non-empty. You can't choose [-1] 
+	             and delete -1 from it, then get an empty subarray to make the 
+	             sum equals to 0.
+
+	Constraints:
+	* 1 <= arr.length <= 10^5
+	* -10^4 <= arr[i] <= 10^4"""
+
+    def maximumSum(self, arr: List[int]) -> int:
+        ans = d0 = d1 = -inf 
+        for x in arr:
+            d0, d1 = max(x, x + d0), max(d0, x + d1)
+            ans = max(ans, d0, d1)
+        return ans 
+
+
+    """1187. Make Array Strictly Increasing (Hard)
+	Given two integer arrays arr1 and arr2, return the minimum number of 
+	operations (possibly zero) needed to make arr1 strictly increasing. In one 
+	operation, you can choose two indices 0 <= i < arr1.length and 
+	0 <= j < arr2.length and do the assignment arr1[i] = arr2[j]. If there is 
+	no way to make arr1 strictly increasing, return -1.
+
+	Example 1:
+	Input: arr1 = [1,5,3,6,7], arr2 = [1,3,2,4]
+	Output: 1
+	Explanation: Replace 5 with 2, then arr1 = [1, 2, 3, 6, 7].
+
+	Example 2:
+	Input: arr1 = [1,5,3,6,7], arr2 = [4,3,1]
+	Output: 2
+	Explanation: Replace 5 with 3 and then replace 3 with 4. arr1 = [1, 3, 4, 6, 7].
+
+	Example 3:
+	Input: arr1 = [1,5,3,6,7], arr2 = [1,6,3,3]
+	Output: -1
+	Explanation: You can't make arr1 strictly increasing.
+
+	Constraints:
+	* 1 <= arr1.length, arr2.length <= 2000
+	* 0 <= arr1[i], arr2[i] <= 10^9"""
+
+    def makeArrayIncreasing(self, arr1: List[int], arr2: List[int]) -> int:
+        arr2.sort()
+        
+        @cache
+        def fn(i, prev): 
+            """Return min ops to make arr1[i:] increasing w/ given previous element."""
+            if i == len(arr1): return 0 
+            ans = inf 
+            if (prev < arr1[i]): ans = fn(i+1, arr1[i])
+            k = bisect_right(arr2, prev)
+            if k < len(arr2): ans = min(ans, 1 + fn(i+1, arr2[k]))
+            return ans 
+        
+        ans = fn(0, -inf)
+        return ans if ans < inf else -1 
+
+
     """1189. Maximum Number of Balloons (Easy)
 	Given a string text, you want to use the characters of text to form as many 
 	instances of the word "balloon" as possible. You can use each character in 
