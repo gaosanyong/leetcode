@@ -28381,6 +28381,142 @@ class Fenwick:
         return ans 
 
 
+    """1822. Sign of the Product of an Array (Easy)
+	There is a function signFunc(x) that returns:
+	* 1 if x is positive.
+	* -1 if x is negative.
+	* 0 if x is equal to 0.
+	You are given an integer array nums. Let product be the product of all 
+	values in the array nums. Return signFunc(product).
+
+	Example 1:
+	Input: nums = [-1,-2,-3,-4,3,2,1]
+	Output: 1
+	Explanation: The product of all values in the array is 144, and signFunc(144) = 1
+	
+	Example 2:
+	Input: nums = [1,5,0,2,-3]
+	Output: 0
+	Explanation: The product of all values in the array is 0, and signFunc(0) = 0
+
+	Example 3:
+	Input: nums = [-1,1,-1,1,-1]
+	Output: -1
+	Explanation: The product of all values in the array is -1, and signFunc(-1) = -1
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* -100 <= nums[i] <= 100"""
+
+    def arraySign(self, nums: List[int]) -> int:
+        ans = 1
+        for x in nums: 
+            if x == 0: return 0 
+            if x < 0: ans *= -1
+        return ans 
+
+
+    """1823. Find the Winner of the Circular Game (Medium)
+	There are n friends that are playing a game. The friends are sitting in a 
+	circle and are numbered from 1 to n in clockwise order. More formally, 
+	moving clockwise from the ith friend brings you to the (i+1)th friend for 
+	1 <= i < n, and moving clockwise from the nth friend brings you to the 1st 
+	friend. The rules of the game are as follows:
+	* Start at the 1st friend.
+	* Count the next k friends in the clockwise direction including the friend 
+	  you started at. The counting wraps around the circle and may count some 
+	  friends more than once.
+	* The last friend you counted leaves the circle and loses the game.
+	* If there is still more than one friend in the circle, go back to step 2 
+	  starting from the friend immediately clockwise of the friend who just 
+	  lost and repeat.
+	* Else, the last friend in the circle wins the game.
+	Given the number of friends, n, and an integer k, return the winner of the 
+	game.
+
+	Example 1:
+	Input: n = 5, k = 2
+	Output: 3
+	Explanation: Here are the steps of the game:
+	1) Start at friend 1.
+	2) Count 2 friends clockwise, which are friends 1 and 2.
+	3) Friend 2 leaves the circle. Next start is friend 3.
+	4) Count 2 friends clockwise, which are friends 3 and 4.
+	5) Friend 4 leaves the circle. Next start is friend 5.
+	6) Count 2 friends clockwise, which are friends 5 and 1.
+	7) Friend 1 leaves the circle. Next start is friend 3.
+	8) Count 2 friends clockwise, which are friends 3 and 5.
+	9) Friend 5 leaves the circle. Only friend 3 is left, so they are the winner.
+
+	Example 2:
+	Input: n = 6, k = 5
+	Output: 1
+	Explanation: The friends leave in this order: 5, 4, 6, 2, 3. The winner is 
+	             friend 1.
+	 
+	Constraints: 1 <= k <= n <= 500"""
+
+    def findTheWinner(self, n: int, k: int) -> int:
+        ans = 0
+        for i in range(2, n+1): 
+            ans = (ans + k) % i
+        return ans + 1
+
+
+    """1824. Minimum Sideway Jumps (Medium)
+	There is a 3 lane road of length n that consists of n + 1 points labeled 
+	from 0 to n. A frog starts at point 0 in the second lane and wants to jump 
+	to point n. However, there could be obstacles along the way. You are given 
+	an array obstacles of length n + 1 where each obstacles[i] (ranging from 0 
+	to 3) describes an obstacle on the lane obstacles[i] at point i. If 
+	obstacles[i] == 0, there are no obstacles at point i. There will be at most 
+	one obstacle in the 3 lanes at each point. For example, if obstacles[2] == 1, 
+	then there is an obstacle on lane 1 at point 2. The frog can only travel 
+	from point i to point i + 1 on the same lane if there is not an obstacle on 
+	the lane at point i + 1. To avoid obstacles, the frog can also perform a 
+	side jump to jump to another lane (even if they are not adjacent) at the 
+	same point if there is no obstacle on the new lane. For example, the frog 
+	can jump from lane 3 at point 3 to lane 1 at point 3. Return the minimum 
+	number of side jumps the frog needs to reach any lane at point n starting 
+	from lane 2 at point 0. Note: There will be no obstacles on points 0 and n.
+
+	Example 1:
+	Input: obstacles = [0,1,2,3,0]
+	Output: 2 
+	Explanation: The optimal solution is shown by the arrows above. There are 2 
+	             side jumps (red arrows). Note that the frog can jump over 
+	             obstacles only when making side jumps (as shown at point 2).
+
+	Example 2:
+	Input: obstacles = [0,1,1,3,3,0]
+	Output: 0
+	Explanation: There are no obstacles on lane 2. No side jumps are required.
+	
+	Example 3:
+	Input: obstacles = [0,2,1,0,3,0]
+	Output: 2
+	Explanation: The optimal solution is shown by the arrows above. There are 2
+	             side jumps.
+
+	Constraints:
+	* obstacles.length == n + 1
+	* 1 <= n <= 5 * 105
+	* 0 <= obstacles[i] <= 3
+	* obstacles[0] == obstacles[n] == 0"""
+
+    def minSideJumps(self, obstacles: List[int]) -> int:
+        dp = [0]*3 
+        for i in reversed(range(len(obstacles) - 1)): 
+            tmp = [inf]*3
+            for k in range(3):
+                if obstacles[i]-1 != k: 
+                    tmp[k] = dp[k]
+                    if obstacles[i]-1 != (k+1)%3: tmp[k] = min(tmp[k], 1 + dp[(k+1)%3])
+                    if obstacles[i]-1 != (k+2)%3: tmp[k] = min(tmp[k], 1 + dp[(k+2)%3])
+            dp = tmp
+        return dp[1]
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -30887,3 +31023,107 @@ class AuthenticationManager:
             if self.tokens[token] <= currentTime: # not expired yet 
                 self.tokens.pop(token)
         return len(self.tokens)
+
+
+"""1825. Finding MK Average (Hard)
+You are given two integers, m and k, and a stream of integers. You are tasked 
+to implement a data structure that calculates the MKAverage for the stream.
+The MKAverage can be calculated using these steps:
+* If the number of the elements in the stream is less than m you should 
+  consider the MKAverage to be -1. Otherwise, copy the last m elements of the 
+  stream to a separate container.
+* Remove the smallest k elements and the largest k elements from the container.
+* Calculate the average value for the rest of the elements rounded down to the 
+  nearest integer.
+
+Implement the MKAverage class:
+* MKAverage(int m, int k) Initializes the MKAverage object with an empty stream 
+  and the two integers m and k.
+* void addElement(int num) Inserts a new element num into the stream.
+* int calculateMKAverage() Calculates and returns the MKAverage for the current 
+  stream rounded down to the nearest integer.
+
+Example 1:
+Input
+["MKAverage", "addElement", "addElement", "calculateMKAverage", "addElement", "calculateMKAverage", "addElement", "addElement", "addElement", "calculateMKAverage"]
+[[3, 1], [3], [1], [], [10], [], [5], [5], [5], []]
+Output
+[null, null, null, -1, null, 3, null, null, null, 5]
+
+Explanation
+MKAverage obj = new MKAverage(3, 1); 
+obj.addElement(3);        // current elements are [3]
+obj.addElement(1);        // current elements are [3,1]
+obj.calculateMKAverage(); // return -1, because m = 3 and only 2 elements exist.
+obj.addElement(10);       // current elements are [3,1,10]
+obj.calculateMKAverage(); // The last 3 elements are [3,1,10].
+                          // After removing smallest and largest 1 element the container will be [3].
+                          // The average of [3] equals 3/1 = 3, return 3
+obj.addElement(5);        // current elements are [3,1,10,5]
+obj.addElement(5);        // current elements are [3,1,10,5,5]
+obj.addElement(5);        // current elements are [3,1,10,5,5,5]
+obj.calculateMKAverage(); // The last 3 elements are [5,5,5].
+                          // After removing smallest and largest 1 element the container will be [5].
+                          // The average of [5] equals 5/1 = 5, return 5
+
+Constraints:
+* 3 <= m <= 10^5
+* 1 <= k*2 < m
+* 1 <= num <= 10^5
+* At most 105 calls will be made to addElement and calculateMKAverage."""
+
+"""
+class Fenwick: 
+
+    def __init__(self, n: int):
+        self.nums = [0]*(n+1)
+
+    def sum(self, k: int) -> int: 
+        k += 1
+        ans = 0
+        while k:
+            ans += self.nums[k]
+            k &= k-1 # unset last set bit 
+        return ans
+
+    def add(self, k: int, x: int) -> None: 
+        k += 1
+        while k < len(self.nums): 
+            self.nums[k] += x
+            k += k & -k 
+"""
+
+class MKAverage:
+
+    def __init__(self, m: int, k: int):
+        self.m = m
+        self.k = k 
+        self.data = deque()
+        self.value = Fenwick(10**5+1)
+        self.index = Fenwick(10**5+1)
+
+    def addElement(self, num: int) -> None:
+        self.data.append(num)
+        self.value.add(num, num)
+        self.index.add(num, 1)
+        if len(self.data) > self.m: 
+            num = self.data.popleft()
+            self.value.add(num, -num)
+            self.index.add(num, -1)
+
+    def _getindex(self, k): 
+        lo, hi = 0, 10**5 + 1
+        while lo < hi: 
+            mid = lo + hi >> 1
+            if self.index.sum(mid) < k: lo = mid + 1
+            else: hi = mid
+        return lo 
+            
+    def calculateMKAverage(self) -> int:
+        if len(self.data) < self.m: return -1 
+        lo = self._getindex(self.k)
+        hi = self._getindex(self.m-self.k)
+        ans = self.value.sum(hi) - self.value.sum(lo)
+        ans += (self.index.sum(lo) - self.k) * lo
+        ans -= (self.index.sum(hi) - (self.m-self.k)) * hi
+        return ans // (self.m - 2*self.k)
