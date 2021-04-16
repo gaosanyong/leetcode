@@ -184,6 +184,46 @@ public:
     }
 
 
+    /*17. Letter Combinations of a Phone Number (Medium)
+	Given a string containing digits from 2-9 inclusive, return all possible 
+	letter combinations that the number could represent. Return the answer in 
+	any order. A mapping of digit to letters (just like on the telephone 
+	buttons) is given below. Note that 1 does not map to any letters.
+
+	Example 1:
+	Input: digits = "23"
+	Output: ["ad","ae","af","bd","be","bf","cd","ce","cf"]
+
+	Example 2:
+	Input: digits = ""
+	Output: []
+
+	Example 3:
+	Input: digits = "2"
+	Output: ["a","b","c"]
+
+	Constraints:
+	* 0 <= digits.length <= 4
+	* digits[i] is a digit in the range ['2', '9'].*/
+
+    vector<string> letterCombinations(string digits) {
+        if (digits.empty()) return {}; 
+        
+        const vector<string> mp = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        vector<string> ans = {""}; 
+        for (auto& c : digits) {
+            vector<string> tmp; 
+            for (auto& x : ans) {
+                for (auto& xx : mp[c - '2']) {
+                    tmp.push_back(x + xx); 
+                }
+            }
+            ans = tmp; 
+        }
+        return ans; 
+    }
+
+
     /*20. Valid Parentheses (Easy)
 	Given a string s containing just the characters '(', ')', '{', '}', '[' and 
 	']', determine if the input string is valid. An input string is valid if:
@@ -409,6 +449,43 @@ public:
             }
         }
         return head; 
+    }
+
+
+    /*86. Partition List (Medium)
+	Given the head of a linked list and a value x, partition it such that all 
+	nodes less than x come before nodes greater than or equal to x. You should 
+	preserve the original relative order of the nodes in each of the two 
+	partitions.
+
+	Example 1:
+	Input: head = [1,4,3,2,5,2], x = 3
+	Output: [1,2,2,4,3,5]
+
+	Example 2:
+	Input: head = [2,1], x = 2
+	Output: [1,2]
+
+	Constraints:
+	* The number of nodes in the list is in the range [0, 200].
+	* -100 <= Node.val <= 100
+	* -200 <= x <= 200*/
+
+    ListNode* partition(ListNode* head, int x) {
+        ListNode dummy1(0), dummy2(0); 
+        ListNode *node1 = &dummy1, *node2 = &dummy2, *node = head; 
+        
+        while (node) {
+            if (node->val < x) {
+                node1 = node1->next = node;
+            } else {
+                node2 = node2->next = node;
+            }
+            node = node->next; 
+        }
+        node1->next = dummy2.next; 
+        node2->next = NULL; 
+        return dummy1.next; 
     }
 
 
@@ -909,8 +986,10 @@ public:
 	* The node to be deleted is in the list and is not a tail node*/
 
     void deleteNode(ListNode* node) {
+        ListNode* temp = node->next; 
         node->val = node->next->val;
         node->next = node->next->next; 
+        delete temp; 
     }
 
 
@@ -1906,6 +1985,1108 @@ public:
             else root = root->left; 
         }
         return NULL; 
+    }
+
+
+    /*709. To Lower Case (Easy)
+	Implement function ToLowerCase() that has a string parameter str, and 
+	returns the same string in lowercase.
+
+	Example 1:
+	Input: "Hello"
+	Output: "hello"
+
+	Example 2:
+	Input: "here"
+	Output: "here"
+
+	Example 3:
+	Input: "LOVELY"
+	Output: "lovely"*/
+
+    string toLowerCase(string str) {
+        for (auto& c : str) {
+            if ('A' <= c && c <= 'Z') 
+                c += 32; 
+        }
+        return str; 
+    }
+
+
+    /*717. 1-bit and 2-bit Characters (Easy)
+	We have two special characters. The first character can be represented by 
+	one bit 0. The second character can be represented by two bits (10 or 11).
+	Now given a string represented by several bits. Return whether the last 
+	character must be a one-bit character or not. The given string will always 
+	end with a zero.
+
+	Example 1:
+	Input: bits = [1, 0, 0]
+	Output: True
+	Explanation: The only way to decode it is two-bit character and one-bit 
+	             character. So the last character is one-bit character.
+	
+	Example 2:
+	Input: bits = [1, 1, 1, 0]
+	Output: False
+	Explanation: The only way to decode it is two-bit character and two-bit 
+	             character. So the last character is NOT one-bit character.
+	
+	Note:
+	* 1 <= len(bits) <= 1000.
+	* bits[i] is always 0 or 1.*/
+
+    bool isOneBitCharacter(vector<int>& bits) {
+        bool ans = false; 
+        for (int i = 0; i < bits.size(); ++i) {
+            if (bits[i]) {
+                ++i; 
+                ans = false; 
+            } else {
+                ans = true; 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*720. Longest Word in Dictionary (Easy)
+	Given an array of strings words representing an English Dictionary, return 
+	the longest word in words that can be built one character at a time by 
+	other words in words. If there is more than one possible answer, return the 
+	longest word with the smallest lexicographical order. If there is no answer, 
+	return the empty string.
+
+	Example 1:
+	Input: words = ["w","wo","wor","worl","world"]
+	Output: "world"
+	Explanation: The word "world" can be built one character at a time by 
+	             "w", "wo", "wor", and "worl".
+
+	Example 2:
+	Input: words = ["a","banana","app","appl","ap","apply","apple"]
+	Output: "apple"
+	Explanation: Both "apply" and "apple" can be built from other words in the 
+	             dictionary. However, "apple" is lexicographically smaller than 
+	             "apply".
+
+	Constraints:
+	* 1 <= words.length <= 1000
+	* 1 <= words[i].length <= 30
+	* words[i] consists of lowercase English letters.*/
+
+    string longestWord(vector<string>& words) {
+        sort(words.begin(), words.end()); 
+        
+        string ans; 
+        unordered_set<string> seen = {""}; 
+        for (int i = 0; i < words.size(); ++i) {
+            int n = words[i].size(); 
+            if (seen.count(words[i].substr(0, n-1))) {
+                if (n > ans.size())
+                    ans = words[i]; 
+                seen.insert(words[i]); 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*724. Find Pivot Index (Easy)
+	Given an array of integers nums, calculate the pivot index of this array. 
+	The pivot index is the index where the sum of all the numbers strictly to 
+	the left of the index is equal to the sum of all the numbers strictly to 
+	the index's right. If the index is on the left edge of the array, then the 
+	left sum is 0 because there are no elements to the left. This also applies 
+	to the right edge of the array. Return the leftmost pivot index. If no such 
+	index exists, return -1.
+
+	Example 1:
+	Input: nums = [1,7,3,6,5,6]
+	Output: 3
+	Explanation:
+	The pivot index is 3.
+	Left sum = nums[0] + nums[1] + nums[2] = 1 + 7 + 3 = 11
+	Right sum = nums[4] + nums[5] = 5 + 6 = 11
+
+	Example 2:
+	Input: nums = [1,2,3]
+	Output: -1
+	Explanation:
+	There is no index that satisfies the conditions in the problem statement.
+
+	Example 3:
+	Input: nums = [2,1,-1]
+	Output: 0
+	Explanation:
+	The pivot index is 0.
+	Left sum = 0 (no elements to the left of index 0)
+	Right sum = nums[1] + nums[2] = 1 + -1 = 0
+
+	Constraints:
+	* 1 <= nums.length <= 10^4
+	* -1000 <= nums[i] <= 1000*/
+
+    int pivotIndex(vector<int>& nums) {
+        int prefix = 0, suffix = 0; 
+        for (auto& x : nums) 
+            suffix += x; 
+        
+        for (int i = 0; i < nums.size(); ++i) {
+            suffix -= nums[i]; 
+            if (prefix == suffix) return i; 
+            prefix += nums[i]; 
+        }
+        return -1; 
+    }
+
+
+    /*728. Self Dividing Numbers (Easy)
+	A self-dividing number is a number that is divisible by every digit it 
+	contains. For example, 128 is a self-dividing number because 128 % 1 == 0, 
+	128 % 2 == 0, and 128 % 8 == 0. Also, a self-dividing number is not allowed 
+	to contain the digit zero. Given a lower and upper number bound, output a 
+	list of every possible self dividing number, including the bounds if 
+	possible.
+
+	Example 1:
+	Input: 
+	left = 1, right = 22
+	Output: [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 15, 22]
+	
+	Note: The boundaries of each input argument are 1 <= left <= right <= 10000.*/
+
+    vector<int> selfDividingNumbers(int left, int right) {
+        vector<int> ans; 
+        for (int x = left, n = 0; x <= right; ++x) {
+            for (n = x; n; n /= 10) {
+                if (n % 10 == 0 || x % (n%10) != 0) break; 
+            }
+            if (n == 0) ans.push_back(x); 
+        }
+        return ans; 
+    }
+
+
+    /*733. Flood Fill (Easy)
+	An image is represented by a 2-D array of integers, each integer 
+	representing the pixel value of the image (from 0 to 65535). Given a 
+	coordinate (sr, sc) representing the starting pixel (row and column) of the 
+	flood fill, and a pixel value newColor, "flood fill" the image. To perform 
+	a "flood fill", consider the starting pixel, plus any pixels connected 4-
+	directionally to the starting pixel of the same color as the starting pixel, 
+	plus any pixels connected 4-directionally to those pixels (also with the 
+	same color as the starting pixel), and so on. Replace the color of all of 
+	the aforementioned pixels with the newColor. At the end, return the 
+	modified image.
+
+	Example 1:
+	Input: image = [[1,1,1],[1,1,0],[1,0,1]]
+	       sr = 1, sc = 1, newColor = 2
+	Output: [[2,2,2],[2,2,0],[2,0,1]]
+	Explanation: 
+	From the center of the image (with position (sr, sc) = (1, 1)), all pixels connected 
+	by a path of the same color as the starting pixel are colored with the new color.
+	Note the bottom corner is not colored 2, because it is not 4-directionally connected
+	to the starting pixel.
+	
+	Note:
+	* The length of image and image[0] will be in the range [1, 50].
+	* The given starting pixel will satisfy 0 <= sr < image.length and 0 <= sc < image[0].length.
+	* The value of each color in image[i][j] and newColor will be an integer in [0, 65535].*/
+
+    vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int newColor) {
+        if (image[sr][sc] != newColor) {
+            int m = image.size(), n = image[0].size(), oldColor = image[sr][sc]; 
+            stack<vector<int>> stk; 
+            stk.push({sr, sc}); 
+
+            while (!stk.empty()) {
+                int i = stk.top()[0], j = stk.top()[1]; 
+                stk.pop(); 
+                for (auto& d : vector<vector<int>>{{-1, 0}, {0, -1}, {0, 1}, {1, 0}}) {
+                    int ii = i + d[0], jj = j + d[1];
+                    if (0 <= ii && ii < m && 0 <= jj && jj < n && image[ii][jj] == oldColor) {
+                        stk.push({ii, jj}); 
+                    }
+                }
+                image[i][j] = newColor; 
+            }
+        } 
+        return image; 
+    }
+
+
+    /*744. Find Smallest Letter Greater Than Target (Easy)
+	Given a list of sorted characters letters containing only lowercase 
+	letters, and given a target letter target, find the smallest element in the 
+	list that is larger than the given target. Letters also wrap around. For 
+	example, if the target is target = 'z' and letters = ['a', 'b'], the answer 
+	is 'a'.
+
+	Examples:
+	Input: letters = ["c", "f", "j"]
+	       target = "a"
+	Output: "c"
+
+	Input: letters = ["c", "f", "j"]
+	       target = "c"
+	Output: "f"
+
+	Input: letters = ["c", "f", "j"]
+	       target = "d"
+	Output: "f"
+
+	Input: letters = ["c", "f", "j"]
+	       target = "g"
+	Output: "j"
+
+	Input: letters = ["c", "f", "j"]
+	       target = "j"
+	Output: "c"
+
+	Input: letters = ["c", "f", "j"]
+	       target = "k"
+	Output: "c"
+	
+	Note:
+	* letters has a length in range [2, 10000].
+	* letters consists of lowercase letters, and contains at least 2 unique 
+	  letters.
+	* target is a lowercase letter.*/
+
+    char nextGreatestLetter(vector<char>& letters, char target) {
+        int lo = 0, hi = letters.size(); 
+        while (lo < hi) {
+            int mid = lo + (hi - lo)/2; 
+            if (letters[mid] <= target) lo = mid + 1; 
+            else hi = mid; 
+        }
+        return letters[lo % letters.size()]; 
+    }
+
+
+    /*762. Prime Number of Set Bits in Binary Representation (Easy)
+	Given two integers L and R, find the count of numbers in the range [L, R] 
+	(inclusive) having a prime number of set bits in their binary representation.
+	(Recall that the number of set bits an integer has is the number of 1s 
+	present when written in binary. For example, 21 written in binary is 10101 
+	which has 3 set bits. Also, 1 is not a prime.)
+
+	Example 1:
+	Input: L = 6, R = 10
+	Output: 4
+	Explanation:
+	6 -> 110 (2 set bits, 2 is prime)
+	7 -> 111 (3 set bits, 3 is prime)
+	9 -> 1001 (2 set bits , 2 is prime)
+	10->1010 (2 set bits , 2 is prime)
+
+	Example 2:
+	Input: L = 10, R = 15
+	Output: 5
+	Explanation:
+	10 -> 1010 (2 set bits, 2 is prime)
+	11 -> 1011 (3 set bits, 3 is prime)
+	12 -> 1100 (2 set bits, 2 is prime)
+	13 -> 1101 (3 set bits, 3 is prime)
+	14 -> 1110 (3 set bits, 3 is prime)
+	15 -> 1111 (4 set bits, 4 is not prime)
+
+	Note:
+	* L, R will be integers L <= R in the range [1, 10^6].
+	* R - L will be at most 10000.*/
+
+    int countPrimeSetBits(int L, int R) {
+        int ans = 0; 
+        for (int x = L; x <= R; ++x) {
+            int cnt = __builtin_popcount(x); 
+            if (cnt > 1) {
+                int d = 2;
+                for (; d <= sqrt(cnt); ++d) {
+                    if (cnt % d == 0) break; 
+                }
+                if (d > sqrt(cnt)) ++ans; 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*766. Toeplitz Matrix (Easy)
+	Given an m x n matrix, return true if the matrix is Toeplitz. Otherwise, 
+	return false. A matrix is Toeplitz if every diagonal from top-left to 
+	bottom-right has the same elements.
+
+	Example 1:
+	Input: matrix = [[1,2,3,4],[5,1,2,3],[9,5,1,2]]
+	Output: true
+	Explanation: In the above grid, the diagonals are:
+	"[9]", "[5, 5]", "[1, 1, 1]", "[2, 2, 2]", "[3, 3]", "[4]".
+	In each diagonal all elements are the same, so the answer is True.
+
+	Example 2:
+	Input: matrix = [[1,2],[2,2]]
+	Output: false
+	Explanation: The diagonal "[1, 2]" has different elements.
+
+	Constraints:
+	* m == matrix.length
+	* n == matrix[i].length
+	* 1 <= m, n <= 20
+	* 0 <= matrix[i][j] <= 99
+ 
+	Follow up:
+	* What if the matrix is stored on disk, and the memory is limited such that 
+	  you can only load at most one row of the matrix into the memory at once?
+	* What if the matrix is so large that you can only load up a partial row 
+	  into the memory at once?*/
+
+    bool isToeplitzMatrix(vector<vector<int>>& matrix) {
+        int m = matrix.size(), n = matrix[0].size(); 
+        for (int i = 1; i < m; ++i) {
+            for (int j = 1; j < n; ++j) {
+                if (matrix[i-1][j-1] != matrix[i][j]) return false; 
+            }
+        }
+        return true; 
+    }
+
+
+    /*819. Most Common Word (Easy)
+	Given a string paragraph and a string array of the banned words banned, 
+	return the most frequent word that is not banned. It is guaranteed there is 
+	at least one word that is not banned, and that the answer is unique. The 
+	words in paragraph are case-insensitive and the answer should be returned 
+	in lowercase.
+
+	Example 1:
+	Input: paragraph = "Bob hit a ball, the hit BALL flew far after it was hit.", banned = ["hit"]
+	Output: "ball"
+	Explanation: 
+	"hit" occurs 3 times, but it is a banned word.
+	"ball" occurs twice (and no other word does), so it is the most frequent non-banned word in the paragraph. 
+	Note that words in the paragraph are not case sensitive,
+	that punctuation is ignored (even if adjacent to words, such as "ball,"), 
+	and that "hit" isn't the answer even though it occurs more because it is banned.
+
+	Example 2:
+	Input: paragraph = "a.", banned = []
+	Output: "a"
+
+	Constraints:
+	* 1 <= paragraph.length <= 1000
+	* paragraph consists of English letters, space ' ', or one of the symbols: "!?',;.".
+	* 0 <= banned.length <= 100
+	* 1 <= banned[i].length <= 10
+	* banned[i] consists of only lowercase English letters.*/
+
+    string mostCommonWord(string paragraph, vector<string>& banned) {
+        for (auto& c : paragraph) 
+            c = isalpha(c) ? tolower(c) : ' '; 
+        
+        unordered_map<string, int> freq; 
+        unordered_set<string> ss(banned.begin(), banned.end()); 
+        
+        int cnt = 0; 
+        istringstream iss(paragraph); 
+        string ans, word; 
+        while (iss >> word) {
+            if (ss.find(word) == ss.end()) {
+                ++freq[word]; 
+                if (cnt < freq[word]) {
+                    ans = word; 
+                    cnt = freq[word]; 
+                }
+            }
+        }
+        return ans; 
+    }
+
+
+    /*821. Shortest Distance to a Character (Easy)
+	Given a string s and a character c that occurs in s, return an array of 
+	integers answer where answer.length == s.length and answer[i] is the 
+	distance from index i to the closest occurrence of character c in s. The 
+	distance between two indices i and j is abs(i - j), where abs is the 
+	absolute value function.
+
+	Example 1:
+	Input: s = "loveleetcode", c = "e"
+	Output: [3,2,1,0,1,0,0,1,2,2,1,0]
+	Explanation: The character 'e' appears at indices 3, 5, 6, and 11 (0-indexed).
+	The closest occurrence of 'e' for index 0 is at index 3, so the distance is abs(0 - 3) = 3.
+	The closest occurrence of 'e' for index 1 is at index 3, so the distance is abs(1 - 3) = 3.
+	For index 4, there is a tie between the 'e' at index 3 and the 'e' at index 5, but the distance is still the same: abs(4 - 3) == abs(4 - 5) = 1.
+	The closest occurrence of 'e' for index 8 is at index 6, so the distance is abs(8 - 6) = 2.
+
+	Example 2:
+	Input: s = "aaab", c = "b"
+	Output: [3,2,1,0]
+
+	Constraints:
+	* 1 <= s.length <= 10^4
+	* s[i] and c are lowercase English letters.
+	* It is guaranteed that c occurs at least once in s.*/
+
+    vector<int> shortestToChar(string s, char c) {
+        vector<int> loc; 
+        for (int i = 0; i < s.size(); ++i)
+            if (s[i] == c) loc.push_back(i); 
+        
+        vector<int> ans; 
+        int k = 0; 
+        for (int i = 0; i < s.size(); ++i) {
+            if (k+1 < loc.size() && abs(loc[k+1]-i) < abs(loc[k]-i)) ++k; 
+            ans.push_back(abs(loc[k]-i));
+        }
+        return ans; 
+    }
+
+
+    /*824. Goat Latin (Easy)
+	A sentence S is given, composed of words separated by spaces. Each word 
+	consists of lowercase and uppercase letters only. We would like to convert 
+	the sentence to "Goat Latin" (a made-up language similar to Pig Latin.)
+
+	The rules of Goat Latin are as follows:
+	* If a word begins with a vowel (a, e, i, o, or u), append "ma" to the end 
+	  of the word. For example, the word 'apple' becomes 'applema'.
+	* If a word begins with a consonant (i.e. not a vowel), remove the first 
+	  letter and append it to the end, then add "ma". For example, the word 
+	  "goat" becomes "oatgma".
+	* Add one letter 'a' to the end of each word per its word index in the 
+	  sentence, starting with 1. For example, the first word gets "a" added to 
+	  the end, the second word gets "aa" added to the end and so on.
+	Return the final sentence representing the conversion from S to Goat Latin. 
+
+	Example 1:
+	Input: "I speak Goat Latin"
+	Output: "Imaa peaksmaaa oatGmaaaa atinLmaaaaa"
+
+	Example 2:
+	Input: "The quick brown fox jumped over the lazy dog"
+	Output: "heTmaa uickqmaaa rownbmaaaa oxfmaaaaa umpedjmaaaaaa overmaaaaaaa hetmaaaaaaaa azylmaaaaaaaaa ogdmaaaaaaaaaa"
+
+	Notes:
+	* S contains only uppercase, lowercase and spaces. Exactly one space between each word.
+	* 1 <= S.length <= 150.*/
+
+    string toGoatLatin(string S) {
+        string ans, word, vowels = "aeiouAEIOU", suffix; 
+        istringstream iss(S); 
+        ostringstream oss; 
+        
+        while (iss >> word) {
+            suffix.push_back('a'); 
+            if (vowels.find(word[0]) == string::npos) 
+                word = word.substr(1) + word[0]; 
+            oss << " " << word << "ma" << suffix; 
+        }
+        return oss.str().substr(1); 
+    }
+
+
+    /*830. Positions of Large Groups (Easy)
+	In a string s of lowercase letters, these letters form consecutive groups 
+	of the same character. For example, a string like s = "abbxxxxzyy" has the 
+	groups "a", "bb", "xxxx", "z", and "yy". A group is identified by an 
+	interval [start, end], where start and end denote the start and end indices 
+	(inclusive) of the group. In the above example, "xxxx" has the interval 
+	[3,6]. A group is considered large if it has 3 or more characters. Return 
+	the intervals of every large group sorted in increasing order by start index.
+
+	Example 1:
+	Input: s = "abbxxxxzzy"
+	Output: [[3,6]]
+	Explanation: "xxxx" is the only large group with start index 3 and end index 6.
+
+	Example 2:
+	Input: s = "abc"
+	Output: []
+	Explanation: We have groups "a", "b", and "c", none of which are large groups.
+
+	Example 3:
+	Input: s = "abcdddeeeeaabbbcd"
+	Output: [[3,5],[6,9],[12,14]]
+	Explanation: The large groups are "ddd", "eeee", and "bbb".
+
+	Example 4:
+	Input: s = "aba"
+	Output: []
+
+	Constraints:
+	* 1 <= s.length <= 1000
+	* s contains lower-case English letters only.*/
+
+    vector<vector<int>> largeGroupPositions(string s) {
+        vector<vector<int>> ans; 
+        for (int i = 0, ii = 0; i <= s.size(); ++i) {
+            if (i == s.size() || (i > 0 && s[i-1] != s[i])) {
+                if (i - ii >= 3) 
+                    ans.push_back({ii, i-1}); 
+                ii = i; 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*832. Flipping an Image (Easy)
+	Given an n x n binary matrix image, flip the image horizontally, then 
+	invert it, and return the resulting image. To flip an image horizontally 
+	means that each row of the image is reversed. For example, flipping 
+	[1,1,0] horizontally results in [0,1,1]. To invert an image means that 
+	each 0 is replaced by 1, and each 1 is replaced by 0. For example, 
+	inverting [0,1,1] results in [1,0,0].
+
+	Example 1:
+	Input: image = [[1,1,0],[1,0,1],[0,0,0]]
+	Output: [[1,0,0],[0,1,0],[1,1,1]]
+	Explanation: First reverse each row: [[0,1,1],[1,0,1],[0,0,0]].
+	Then, invert the image: [[1,0,0],[0,1,0],[1,1,1]]
+
+	Example 2:
+	Input: image = [[1,1,0,0],[1,0,0,1],[0,1,1,1],[1,0,1,0]]
+	Output: [[1,1,0,0],[0,1,1,0],[0,0,0,1],[1,0,1,0]]
+	Explanation: First reverse each row: [[0,0,1,1],[1,0,0,1],[1,1,1,0],[0,1,0,1]].
+	Then invert the image: [[1,1,0,0],[0,1,1,0],[0,0,0,1],[1,0,1,0]]
+
+	Constraints:
+	* n == image.length
+	* n == image[i].length
+	* 1 <= n <= 20
+	* images[i][j] is either 0 or 1.*/
+
+    vector<vector<int>> flipAndInvertImage(vector<vector<int>>& image) {
+        for (auto& row : image) {
+            reverse(row.begin(), row.end()); 
+            for (auto& x : row) 
+                x ^= 1; 
+        }
+        return image; 
+    }
+
+
+    /*836. Rectangle Overlap (Easy)
+	An axis-aligned rectangle is represented as a list [x1, y1, x2, y2], where 
+	(x1, y1) is the coordinate of its bottom-left corner, and (x2, y2) is the 
+	coordinate of its top-right corner. Its top and bottom edges are parallel 
+	to the X-axis, and its left and right edges are parallel to the Y-axis. 
+	Two rectangles overlap if the area of their intersection is positive. To be 
+	clear, two rectangles that only touch at the corner or edges do not overlap.
+	Given two axis-aligned rectangles rec1 and rec2, return true if they 
+	overlap, otherwise return false.
+
+	Example 1:
+	Input: rec1 = [0,0,2,2], rec2 = [1,1,3,3]
+	Output: true
+
+	Example 2:
+	Input: rec1 = [0,0,1,1], rec2 = [1,0,2,1]
+	Output: false
+
+	Example 3:
+	Input: rec1 = [0,0,1,1], rec2 = [2,2,3,3]
+	Output: false
+
+	Constraints:
+	* rect1.length == 4
+	* rect2.length == 4
+	* -10^9 <= rec1[i], rec2[i] <= 10^9
+	* rec1[0] <= rec1[2] and rec1[1] <= rec1[3]
+	* rec2[0] <= rec2[2] and rec2[1] <= rec2[3]*/
+
+    bool isRectangleOverlap(vector<int>& rec1, vector<int>& rec2) {
+        return max(rec1[0], rec2[0]) < min(rec1[2], rec2[2]) && max(rec1[1], rec2[1]) < min(rec1[3], rec2[3]);
+    }
+
+
+    /*852. Peak Index in a Mountain Array (Easy)
+	Let's call an array arr a mountain if the following properties hold:
+	* arr.length >= 3
+	* There exists some i with 0 < i < arr.length - 1 such that:
+	  + arr[0] < arr[1] < ... arr[i-1] < arr[i]
+	  + arr[i] > arr[i+1] > ... > arr[arr.length - 1]
+	Given an integer array arr that is guaranteed to be a mountain, return any 
+	i such that arr[0] < arr[1] < ... arr[i - 1] < arr[i] > arr[i + 1] > ... > 
+	arr[arr.length - 1].
+
+	Example 1:
+	Input: arr = [0,1,0]
+	Output: 1
+
+	Example 2:
+	Input: arr = [0,2,1,0]
+	Output: 1
+
+	Example 3:
+	Input: arr = [0,10,5,2]
+	Output: 1
+
+	Example 4:
+	Input: arr = [3,4,5,1]
+	Output: 2
+
+	Example 5:
+	Input: arr = [24,69,100,99,79,78,67,36,26,19]
+	Output: 2
+
+	Constraints:
+	* 3 <= arr.length <= 10^4
+	* 0 <= arr[i] <= 10^6
+	* arr is guaranteed to be a mountain array.
+
+	Follow up: Finding the O(n) is straightforward, could you find an O(log(n)) 
+	           solution?*/
+
+    int peakIndexInMountainArray(vector<int>& arr) {
+        int i = 0; 
+        for (; arr[i] < arr[i+1]; ++i) {}
+        return i; 
+    }
+
+
+    /*859. Buddy Strings (Easy)
+	Given two strings a and b, return true if you can swap two letters in a so 
+	the result is equal to b, otherwise, return false. Swapping letters is 
+	defined as taking two indices i and j (0-indexed) such that i != j and 
+	swapping the characters at a[i] and a[j]. For example, swapping at indices 
+	0 and 2 in "abcd" results in "cbad".
+
+	Example 1:
+	Input: a = "ab", b = "ba"
+	Output: true
+	Explanation: You can swap a[0] = 'a' and a[1] = 'b' to get "ba", which is 
+	             equal to b.
+
+	Example 2:
+	Input: a = "ab", b = "ab"
+	Output: false
+	Explanation: The only letters you can swap are a[0] = 'a' and a[1] = 'b', 
+	             which results in "ba" != b.
+
+	Example 3:
+	Input: a = "aa", b = "aa"
+	Output: true
+	Explanation: You can swap a[0] = 'a' and a[1] = 'a' to get "aa", which is 
+	             equal to b.
+	
+	Example 4:
+	Input: a = "aaaaaaabc", b = "aaaaaaacb"
+	Output: true
+
+	Constraints:
+	* 1 <= a.length, b.length <= 2 * 104
+	* a and b consist of lowercase letters.*/
+
+    bool buddyStrings(string a, string b) {
+        if (a.size() != b.size()) return false; 
+        
+        int most = 0; 
+        vector<int> loc; 
+        unordered_map<char, int> freq; 
+        
+        for (int i = 0; i < a.size(); ++i) {
+            most = max(most, ++freq[a[i]]); 
+            if (a[i] != b[i]) loc.push_back(i); 
+        }
+        if (loc.size() == 0) return most > 1; 
+        if (loc.size() == 2) return a[loc[0]] == b[loc[1]] && a[loc[1]] == b[loc[0]]; 
+        return false; 
+    }
+
+
+    /*860. Lemonade Change (Easy)
+	At a lemonade stand, each lemonade costs $5. Customers are standing in a 
+	queue to buy from you, and order one at a time (in the order specified by 
+	bills). Each customer will only buy one lemonade and pay with either a $5, 
+	$10, or $20 bill.  You must provide the correct change to each customer, 
+	so that the net transaction is that the customer pays $5. Note that you 
+	don't have any change in hand at first. Return true if and only if you can 
+	provide every customer with correct change.
+
+	Example 1:
+	Input: [5,5,5,10,20]
+	Output: true
+	Explanation: 
+	From the first 3 customers, we collect three $5 bills in order.
+	From the fourth customer, we collect a $10 bill and give back a $5.
+	From the fifth customer, we give a $10 bill and a $5 bill.
+	Since all customers got correct change, we output true.
+
+	Example 2:
+	Input: [5,5,10]
+	Output: true
+
+	Example 3:
+	Input: [10,10]
+	Output: false
+
+	Example 4:
+	Input: [5,5,10,10,20]
+	Output: false
+	Explanation: 
+	From the first two customers in order, we collect two $5 bills.
+	For the next two customers in order, we collect a $10 bill and give back a $5 bill.
+	For the last customer, we can't give change of $15 back because we only have two $10 bills.
+	Since not every customer received correct change, the answer is false.
+
+	Note:
+	* 0 <= bills.length <= 10000
+	* bills[i] will be either 5, 10, or 20.*/
+
+    bool lemonadeChange(vector<int>& bills) {
+        int x05 = 0, x10 = 0; 
+        for (auto bill : bills) {
+            if (bill == 5) ++x05; 
+            else if (bill == 10) --x05, ++x10; 
+            else if (x10 > 0) --x05, --x10; 
+            else x05 -= 3; 
+            if (x05 < 0) return false; 
+        }
+        return true; 
+    }
+
+
+    /*867. Transpose Matrix (Easy)
+	Given a 2D integer array matrix, return the transpose of matrix. The 
+	transpose of a matrix is the matrix flipped over its main diagonal, 
+	switching the matrix's row and column indices.
+
+	Example 1:
+	Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+	Output: [[1,4,7],[2,5,8],[3,6,9]]
+
+	Example 2:
+	Input: matrix = [[1,2,3],[4,5,6]]
+	Output: [[1,4],[2,5],[3,6]]
+
+	Constraints:
+	* m == matrix.length
+	* n == matrix[i].length
+	* 1 <= m, n <= 1000
+	* 1 <= m * n <= 10^5
+	* -10^9 <= matrix[i][j] <= 10^9*/
+
+    vector<vector<int>> transpose(vector<vector<int>>& matrix) {
+        int m = matrix.size(), n = matrix[0].size(); 
+        vector<vector<int>> ans(n, vector<int>(m, 0)); 
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                ans[j][i] = matrix[i][j]; 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*868. Binary Gap (Easy)
+	Given a positive integer n, find and return the longest distance between 
+	any two adjacent 1's in the binary representation of n. If there are no two 
+	adjacent 1's, return 0. Two 1's are adjacent if there are only 0's 
+	separating them (possibly no 0's). The distance between two 1's is the 
+	absolute difference between their bit positions. For example, the two 1's 
+	in "1001" have a distance of 3.
+
+	Example 1:
+	Input: n = 22
+	Output: 2
+	Explanation: 22 in binary is "10110".
+	             The first adjacent pair of 1's is "10110" with a distance of 2.
+	             The second adjacent pair of 1's is "10110" with a distance of 1.
+	             The answer is the largest of these two distances, which is 2.
+	             Note that "10110" is not a valid pair since there is a 1 
+	             separating the two 1's underlined.
+
+	Example 2:
+	Input: n = 5
+	Output: 2
+	Explanation: 5 in binary is "101".
+
+	Example 3:
+	Input: n = 6
+	Output: 1
+	Explanation: 6 in binary is "110".
+
+	Example 4:
+	Input: n = 8
+	Output: 0
+	Explanation: 8 in binary is "1000". There aren't any adjacent pairs of 1's 
+	             in the binary representation of 8, so we return 0.
+
+	Example 5:
+	Input: n = 1
+	Output: 0
+
+	Constraints: 1 <= n <= 10^9*/
+
+    int binaryGap(int n) {
+        int ans = 0; 
+        for (int cnt = -1; n; n /= 2) {
+            int x = n % 2; 
+            if (x == 1) {
+                ans = max(ans, cnt); 
+                cnt = 0; 
+            }
+            if (cnt >= 0) ++cnt; 
+        }
+        return ans; 
+    }
+
+
+    /*872. Leaf-Similar Trees (Easy)
+	Consider all the leaves of a binary tree, from left to right order, the 
+	values of those leaves form a leaf value sequence. For example, in the 
+	given tree above, the leaf value sequence is (6, 7, 4, 9, 8). Two binary 
+	trees are considered leaf-similar if their leaf value sequence is the same.
+	Return true if and only if the two given trees with head nodes root1 and 
+	root2 are leaf-similar.
+
+	Example 1:
+	Input: root1 = [3,5,1,6,2,9,8,null,null,7,4], 
+	       root2 = [3,5,1,6,7,4,2,null,null,null,null,null,null,9,8]
+	Output: true
+	
+	Example 2:
+	Input: root1 = [1], root2 = [1]
+	Output: true
+
+	Example 3:
+	Input: root1 = [1], root2 = [2]
+	Output: false
+
+	Example 4:
+	Input: root1 = [1,2], root2 = [2,2]
+	Output: true
+
+	Example 5:
+	Input: root1 = [1,2,3], root2 = [1,3,2]
+	Output: false
+
+	Constraints:
+	* The number of nodes in each tree will be in the range [1, 200].
+	* Both of the given trees will have values in the range [0, 200].*/
+
+    bool leafSimilar(TreeNode* root1, TreeNode* root2) {
+        
+        function<void(TreeNode*, vector<int>&)> dfs = [&dfs](TreeNode* node, vector<int>& vec) {
+            if (node->left == NULL && node->right == NULL) vec.push_back(node->val); 
+            if (node->left) dfs(node->left, vec); 
+            if (node->right) dfs(node->right, vec); 
+        };
+        
+        vector<int> vec1, vec2; 
+        dfs(root1, vec1); 
+        dfs(root2, vec2); 
+        return vec1 == vec2; 
+    }
+
+
+    /*874. Walking Robot Simulation (Easy)
+	A robot on an infinite XY-plane starts at point (0, 0) and faces north. The 
+	robot can receive one of three possible types of commands:
+	* -2: turn left 90 degrees,
+	* -1: turn right 90 degrees, or
+	* 1 <= k <= 9: move forward k units.
+	Some of the grid squares are obstacles. The ith obstacle is at grid point 
+	obstacles[i] = (xi, yi). If the robot would try to move onto them, the robot 
+	stays on the previous grid square instead (but still continues following the 
+	rest of the route.) Return the maximum Euclidean distance that the robot will 
+	be from the origin squared (i.e. if the distance is 5, return 25).
+
+	Note:
+	North means +Y direction.
+	East means +X direction.
+	South means -Y direction.
+	West means -X direction.
+
+	Example 1:
+	Input: commands = [4,-1,3], obstacles = []
+	Output: 25
+	Explanation: The robot starts at (0, 0):
+	1. Move north 4 units to (0, 4).
+	2. Turn right.
+	3. Move east 3 units to (3, 4).
+	The furthest point away from the origin is (3, 4), which is 32 + 42 = 25 units away.
+
+	Example 2:
+	Input: commands = [4,-1,4,-2,4], obstacles = [[2,4]]
+	Output: 65
+	Explanation: The robot starts at (0, 0):
+	1. Move north 4 units to (0, 4).
+	2. Turn right.
+	3. Move east 1 unit and get blocked by the obstacle at (2, 4), robot is at (1, 4).
+	4. Turn left.
+	5. Move north 4 units to (1, 8).
+	The furthest point away from the origin is (1, 8), which is 12 + 82 = 65 units away.
+
+	Constraints:
+	* 1 <= commands.length <= 10^4
+	* commands[i] is one of the values in the list [-2,-1,1,2,3,4,5,6,7,8,9].
+	* 0 <= obstacles.length <= 10^4
+	* -3 * 10^4 <= xi, yi <= 3 * 10^4
+	* The answer is guaranteed to be less than 2^31.*/
+
+    int robotSim(vector<int>& commands, vector<vector<int>>& obstacles) {
+        struct myhash {
+            size_t operator()(const pair<int, int> &x) const {
+                return (97 * x.first + x.second) + (x.first ^ x.second); 
+            } 
+        };
+        
+        unordered_set<pair<int, int>, myhash> seen; 
+        for (auto obstacle : obstacles) {
+            seen.insert(make_pair(obstacle[0], obstacle[1])); 
+        }
+        
+        int ans = 0, x = 0, y = 0, dx = 0, dy = 1; 
+        for (auto command : commands) {
+            if (command == -2) {
+                dy *= -1; 
+                swap(dx, dy); 
+            } else if (command == -1) {
+                dx *= -1; 
+                swap(dx, dy); 
+            } else {
+                for (; command; --command) {
+                    if (seen.find(make_pair(x+dx, y+dy)) == seen.end()) {
+                        x += dx; 
+                        y += dy; 
+                    } else break; 
+                }
+            }
+            ans = max(ans, x*x + y*y);
+        }
+        return ans; 
+    }
+
+
+    /*876. Middle of the Linked List (Easy)
+	Given a non-empty, singly linked list with head node head, return a middle 
+	node of linked list. If there are two middle nodes, return the second 
+	middle node.
+
+	Example 1:
+	Input: [1,2,3,4,5]
+	Output: Node 3 from this list (Serialization: [3,4,5])
+	The returned node has value 3.  (The judge's serialization of this node is [3,4,5]).
+	Note that we returned a ListNode object ans, such that:
+	ans.val = 3, ans.next.val = 4, ans.next.next.val = 5, and ans.next.next.next = NULL.
+
+	Example 2:
+	Input: [1,2,3,4,5,6]
+	Output: Node 4 from this list (Serialization: [4,5,6])
+	Since the list has two middle nodes with values 3 and 4, we return the second one.
+
+	Note: The number of nodes in the given list will be between 1 and 100.*/
+
+    ListNode* middleNode(ListNode* head) {
+        ListNode *fast = head, *slow = head; 
+        while (fast && fast->next) {
+            fast = fast->next->next; 
+            slow = slow->next; 
+        }
+        return slow; 
+    }
+
+
+    /*953. Verifying an Alien Dictionary (Easy)
+	In an alien language, surprisingly they also use english lowercase letters, 
+	but possibly in a different order. The order of the alphabet is some 
+	permutation of lowercase letters. Given a sequence of words written in the 
+	alien language, and the order of the alphabet, return true if and only if 
+	the given words are sorted lexicographicaly in this alien language.
+
+	Example 1:
+	Input: words = ["hello","leetcode"], order = "hlabcdefgijkmnopqrstuvwxyz"
+	Output: true
+	Explanation: As 'h' comes before 'l' in this language, then the sequence is 
+	             sorted.
+
+	Example 2:
+	Input: words = ["word","world","row"], order = "worldabcefghijkmnpqstuvxyz"
+	Output: false
+	Explanation: As 'd' comes after 'l' in this language, then 
+	             words[0] > words[1], hence the sequence is unsorted.
+
+	Example 3:
+	Input: words = ["apple","app"], order = "abcdefghijklmnopqrstuvwxyz"
+	Output: false
+	Explanation: The first three characters "app" match, and the second string 
+	             is shorter (in size.) According to lexicographical rules 
+	             "apple" > "app", because 'l' > '∅', where '∅' is defined as 
+	             the blank character which is less than any other character 
+	             (More info).
+
+	Constraints:
+	* 1 <= words.length <= 100
+	* 1 <= words[i].length <= 20
+	* order.length == 26
+	* All characters in words[i] and order are English lowercase letters.*/
+
+    bool isAlienSorted(vector<string>& words, string order) {
+        unordered_map<char, int> mp; 
+        for (int i = 0; i < order.size(); ++i)
+            mp[order[i]] = i; 
+        
+        for (int i = 1; i < words.size(); ++i) {
+            for (int k; k < words[i-1].size(); ++k) {
+                if (k == words[i].size()) return false; 
+                if (mp[words[i-1][k]] < mp[words[i][k]]) break; 
+                if (mp[words[i-1][k]] > mp[words[i][k]]) return false; 
+            }
+        }
+        return true; 
+    }
+
+
+    /*1209. Remove All Adjacent Duplicates in String II (Medium)
+	Given a string s, a k duplicate removal consists of choosing k adjacent and 
+	equal letters from s and removing them causing the left and the right side 
+	of the deleted substring to concatenate together. We repeatedly make k 
+	duplicate removals on s until we no longer can. Return the final string 
+	after all such duplicate removals have been made. It is guaranteed that the 
+	answer is unique.
+
+	Example 1:
+	Input: s = "abcd", k = 2
+	Output: "abcd"
+	Explanation: There's nothing to delete.
+
+	Example 2:
+	Input: s = "deeedbbcccbdaa", k = 3
+	Output: "aa"
+	Explanation: 
+	First delete "eee" and "ccc", get "ddbbbdaa"
+	Then delete "bbb", get "dddaa"
+	Finally delete "ddd", get "aa"
+
+	Example 3:
+	Input: s = "pbbcggttciiippooaais", k = 2
+	Output: "ps"
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* 2 <= k <= 10^4
+	* s only contains lower case English letters.*/
+
+    string removeDuplicates(string s, int k) {
+        vector<vector<int>> vec; 
+        for (auto c : s) {
+            if (vec.size() && vec.back()[1] == c) {
+                ++vec.back()[0]; 
+            } else {
+                vec.push_back({1, c}); 
+            }
+            if (vec.back()[0] == k) vec.pop_back();
+        }
+        
+        string ans; 
+        for (auto x : vec) {
+            ans += string(x[0], x[1]); 
+        }
+        return ans; 
     }
 
 
