@@ -224,6 +224,41 @@ public:
     }
 
 
+    /*19. Remove Nth Node From End of List (Medium)
+	Given the head of a linked list, remove the nth node from the end of the 
+	list and return its head. Follow up: Could you do this in one pass?
+
+	Example 1:
+	Input: head = [1,2,3,4,5], n = 2
+	Output: [1,2,3,5]
+
+	Example 2:
+	Input: head = [1], n = 1
+	Output: []
+
+	Example 3:
+	Input: head = [1,2], n = 1
+	Output: [1]
+
+	Constraints:
+	* The number of nodes in the list is sz.
+	* 1 <= sz <= 30
+	* 0 <= Node.val <= 100
+	* 1 <= n <= sz*/
+
+    ListNode* removeNthFromEnd(ListNode* head, int n) {
+        ListNode dummy(0, head), *fast = &dummy, *slow = &dummy; 
+        while (fast) {
+            fast = fast->next; 
+            if (n-- < 0) slow = slow->next; 
+        }
+        ListNode* temp = slow->next; 
+        slow->next = slow->next->next; 
+        delete temp; 
+        return dummy.next; 
+    }
+
+
     /*20. Valid Parentheses (Easy)
 	Given a string s containing just the characters '(', ')', '{', '}', '[' and 
 	']', determine if the input string is valid. An input string is valid if:
@@ -1340,6 +1375,52 @@ public:
     }
 
 
+    /*377. Combination Sum IV (Medium)
+	Given an array of distinct integers nums and a target integer target, 
+	return the number of possible combinations that add up to target. The 
+	answer is guaranteed to fit in a 32-bit integer.
+
+	Example 1:
+	Input: nums = [1,2,3], target = 4
+	Output: 7
+	Explanation:
+	The possible combination ways are:
+	(1, 1, 1, 1)
+	(1, 1, 2)
+	(1, 2, 1)
+	(1, 3)
+	(2, 1, 1)
+	(2, 2)
+	(3, 1)
+	Note that different sequences are counted as different combinations.
+
+	Example 2:
+	Input: nums = [9], target = 3
+	Output: 0
+
+	Constraints:
+	* 1 <= nums.length <= 200
+	* 1 <= nums[i] <= 1000
+	* All the elements of nums are unique.
+	* 1 <= target <= 1000
+
+	Follow up: What if negative numbers are allowed in the given array? How 
+	           does it change the problem? What limitation we need to add to 
+	           the question to allow negative numbers?*/
+
+    int combinationSum4(vector<int>& nums, int target) {
+        vector<unsigned int> dp(1+target, 0); 
+        dp[0] = 1; 
+        for (int i = 0; i < dp.size(); ++i) {
+            if (dp[i]) {
+                for (auto x: nums) {
+                    if (i + x < dp.size()) 
+                        dp[i+x] += dp[i]; 
+                }
+            }
+        } 
+        return dp.back(); 
+    }
 
 
     /*504. Base 7 (Easy)
@@ -2991,6 +3072,237 @@ public:
     }
 
 
+    /*883. Projection Area of 3D Shapes (Easy)
+	You are given an n x n grid where we place some 1 x 1 x 1 cubes that are 
+	axis-aligned with the x, y, and z axes. Each value v = grid[i][j] 
+	represents a tower of v cubes placed on top of the cell (i, j). We view the 
+	projection of these cubes onto the xy, yz, and zx planes. A projection is 
+	like a shadow, that maps our 3-dimensional figure to a 2-dimensional plane. 
+	We are viewing the "shadow" when looking at the cubes from the top, the 
+	front, and the side. Return the total area of all three projections.
+
+	Example 1:
+	Input: grid = [[1,2],[3,4]]
+	Output: 17
+	Explanation: Here are the three projections ("shadows") of the shape made 
+	             with each axis-aligned plane.
+
+	Example 2:
+	Input: grid = [[2]]
+	Output: 5
+	
+	Example 3:
+	Input: grid = [[1,0],[0,2]]
+	Output: 8
+
+	Example 4:
+	Input: grid = [[1,1,1],[1,0,1],[1,1,1]]
+	Output: 14
+
+	Example 5:
+	Input: grid = [[2,2,2],[2,1,2],[2,2,2]]
+	Output: 21
+
+	Constraints:
+	* n == grid.length
+	* n == grid[i].length
+	* 1 <= n <= 50
+	* 0 <= grid[i][j] <= 50*/
+
+    int projectionArea(vector<vector<int>>& grid) {
+        int n = grid.size(), ans = 0; 
+        for (int i = 0; i < n; ++i) {
+            int cmx = 0, rmx = 0; 
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] > 0) ++ans; 
+                cmx = max(cmx, grid[j][i]); 
+                rmx = max(rmx, grid[i][j]); 
+            }
+            ans += cmx + rmx; 
+        }
+        return ans; 
+    }
+
+
+    /*884. Uncommon Words from Two Sentences (Easy)
+	We are given two sentences A and B.  (A sentence is a string of space 
+	separated words.  Each word consists only of lowercase letters.) A word is 
+	uncommon if it appears exactly once in one of the sentences, and does not 
+	appear in the other sentence. Return a list of all uncommon words. You may 
+	return the list in any order.
+
+	Example 1:
+	Input: A = "this apple is sweet", B = "this apple is sour"
+	Output: ["sweet","sour"]
+
+	Example 2:
+	Input: A = "apple apple", B = "banana"
+	Output: ["banana"]
+
+	Note:
+	* 0 <= A.length <= 200
+	* 0 <= B.length <= 200
+	* A and B both contain only spaces and lowercase letters.*/
+
+    vector<string> uncommonFromSentences(string A, string B) {
+        istringstream iss(A + " " + B); 
+        unordered_map<string, int> freq; 
+        string word; 
+        while (iss >> word) ++freq[word]; 
+        
+        vector<string> ans; 
+        for (auto x : freq) {
+            if (x.second == 1) ans.push_back(x.first); 
+        }
+        return ans; 
+    }
+
+
+    /*888. Fair Candy Swap (Easy)
+	Alice and Bob have candy bars of different sizes: A[i] is the size of the 
+	i-th bar of candy that Alice has, and B[j] is the size of the j-th bar of 
+	candy that Bob has. Since they are friends, they would like to exchange one 
+	candy bar each so that after the exchange, they both have the same total 
+	amount of candy.  (The total amount of candy a person has is the sum of the 
+	sizes of candy bars they have.) Return an integer array ans where ans[0] is 
+	the size of the candy bar that Alice must exchange, and ans[1] is the size 
+	of the candy bar that Bob must exchange. If there are multiple answers, you 
+	may return any one of them.  It is guaranteed an answer exists.
+
+	Example 1:
+	Input: A = [1,1], B = [2,2]
+	Output: [1,2]
+
+	Example 2:
+	Input: A = [1,2], B = [2,3]
+	Output: [1,2]
+	
+	Example 3:
+	Input: A = [2], B = [1,3]
+	Output: [2,3]
+
+	Example 4:
+	Input: A = [1,2,5], B = [2,4]
+	Output: [5,4]
+
+	Note:
+	* 1 <= A.length <= 10000
+	* 1 <= B.length <= 10000
+	* 1 <= A[i] <= 100000
+	* 1 <= B[i] <= 100000
+	* It is guaranteed that Alice and Bob have different total amounts of candy.
+	* It is guaranteed there exists an answer.*/
+
+    vector<int> fairCandySwap(vector<int>& A, vector<int>& B) {
+        int diff = accumulate(A.begin(), A.end(), 0) - accumulate(B.begin(), B.end(), 0); 
+        unordered_set<int> seen(A.begin(), A.end()); 
+        for (auto x : B) {
+            if (seen.find(x + diff/2) != seen.end()) {
+                return {x + diff/2, x}; 
+            }
+        }
+        return {}; 
+    }
+
+
+    /*892. Surface Area of 3D Shapes (Easy)
+	You are given an n x n grid where you have placed some 1 x 1 x 1 cubes. 
+	Each value v = grid[i][j] represents a tower of v cubes placed on top of 
+	cell (i, j). After placing these cubes, you have decided to glue any 
+	directly adjacent cubes to each other, forming several irregular 3D shapes.
+	Return the total surface area of the resulting shapes. Note: The bottom 
+	face of each shape counts toward its surface area.
+
+	Example 1:
+	Input: grid = [[2]]
+	Output: 10
+
+	Example 2:
+	Input: grid = [[1,2],[3,4]]
+	Output: 34
+
+	Example 3:
+	Input: grid = [[1,0],[0,2]]
+	Output: 16
+
+	Example 4:
+	Input: grid = [[1,1,1],[1,0,1],[1,1,1]]
+	Output: 32
+
+	Example 5:
+	Input: grid = [[2,2,2],[2,1,2],[2,2,2]]
+	Output: 46
+
+	Constraints:
+	* n == grid.length
+	* n == grid[i].length
+	* 1 <= n <= 50
+	* 0 <= grid[i][j] <= 50*/
+
+    int surfaceArea(vector<vector<int>>& grid) {
+        int ans = 0, n = grid.size(); 
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j]) {
+                    ans += 4*grid[i][j] + 2; 
+                    if (i) ans -= 2*min(grid[i][j], grid[i-1][j]); 
+                    if (j) ans -= 2*min(grid[i][j], grid[i][j-1]); 
+                }
+            }
+        }
+        return ans; 
+    }
+
+
+    /*893. Groups of Special-Equivalent Strings (Easy)
+	You are given an array A of strings. A move onto S consists of swapping any 
+	two even indexed characters of S, or any two odd indexed characters of S. 
+	Two strings S and T are special-equivalent if after any number of moves 
+	onto S, S == T. For example, S = "zzxy" and T = "xyzz" are special-
+	equivalent because we may make the moves "zzxy" -> "xzzy" -> "xyzz" that 
+	swap S[0] and S[2], then S[1] and S[3]. Now, a group of special-equivalent 
+	strings from A is a non-empty subset of A such that:
+	1) Every pair of strings in the group are special equivalent, and;
+	2) The group is the largest size possible (ie., there isn't a string S not 
+	   in the group such that S is special equivalent to every string in the 
+	   group)
+	Return the number of groups of special-equivalent strings from A.
+	 
+	Example 1:
+	Input: ["abcd","cdab","cbad","xyzz","zzxy","zzyx"]
+	Output: 3
+	Explanation: One group is ["abcd", "cdab", "cbad"], since they are all 
+	             pairwise special equivalent, and none of the other strings are 
+	             all pairwise special equivalent to these. The other two groups 
+	             are ["xyzz", "zzxy"] and ["zzyx"].  Note that in particular, 
+	             "zzxy" is not special equivalent to "zzyx".
+	
+	Example 2:
+	Input: ["abc","acb","bac","bca","cab","cba"]
+	Output: 3
+
+	Note:
+	* 1 <= A.length <= 1000
+	* 1 <= A[i].length <= 20
+	* All A[i] have the same length.
+	* All A[i] consist of only lowercase letters.*/
+
+    int numSpecialEquivGroups(vector<string>& A) {
+        unordered_set<string> seen; 
+        for (auto word : A) {
+            string even, odd; 
+            for (int i = 0; i < word.size(); ++i) {
+                if (i&1) odd.push_back(word[i]); 
+                else even.push_back(word[i]); 
+            }
+            sort(even.begin(), even.end()); 
+            sort(odd.begin(), odd.end()); 
+            seen.insert(even+odd); 
+        }
+        return seen.size(); 
+    }
+
+
     /*953. Verifying an Alien Dictionary (Easy)
 	In an alien language, surprisingly they also use english lowercase letters, 
 	but possibly in a different order. The order of the alphabet is some 
@@ -3038,6 +3350,55 @@ public:
             }
         }
         return true; 
+    }
+
+
+    /*1074. Number of Submatrices That Sum to Target (Hard)
+	Given a matrix and a target, return the number of non-empty submatrices 
+	that sum to target. A submatrix x1, y1, x2, y2 is the set of all cells 
+	matrix[x][y] with x1 <= x <= x2 and y1 <= y <= y2. Two submatrices 
+	(x1, y1, x2, y2) and (x1', y1', x2', y2') are different if they have some 
+	coordinate that is different: for example, if x1 != x1'.
+
+	Example 1:
+	Input: matrix = [[0,1,0],[1,1,1],[0,1,0]], target = 0
+	Output: 4
+	Explanation: The four 1x1 submatrices that only contain 0.
+
+	Example 2:
+	Input: matrix = [[1,-1],[-1,1]], target = 0
+	Output: 5
+	Explanation: The two 1x2 submatrices, plus the two 2x1 submatrices, plus the 2x2 submatrix.
+
+	Example 3:
+	Input: matrix = [[904]], target = 0
+	Output: 0
+
+	Constraints:
+	* 1 <= matrix.length <= 100
+	* 1 <= matrix[0].length <= 100
+	* -1000 <= matrix[i] <= 1000
+	* -10^8 <= target <= 10^8*/
+
+    int numSubmatrixSumTarget(vector<vector<int>>& matrix, int target) {
+        int ans = 0, m = matrix.size(), n = matrix[0].size(); // dimensions 
+        vector<vector<int>> prefix(m+1, vector<int>(n+1, 0)); 
+        
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) 
+                prefix[i+1][j+1] = matrix[i][j] + prefix[i][j+1] + prefix[i+1][j] - prefix[i][j]; 
+            
+            for (int ii = 0; ii <= i; ++ii) {
+                unordered_map<int, int> freq; 
+                freq[0] = 1; 
+                for (int j = 0; j < n; ++j) {
+                    int diff = prefix[i+1][j+1] - prefix[ii][j+1]; 
+                    ans += freq[diff - target]; 
+                    ++freq[diff]; 
+                }
+            }
+        }
+        return ans;         
     }
 
 
@@ -3279,6 +3640,180 @@ public:
             if (g == x) ++ans; 
         }
         return ans; 
+    }
+
+
+    /*1832. Check if the Sentence Is Pangram (Easy)
+	A pangram is a sentence where every letter of the English alphabet appears 
+	at least once. Given a string sentence containing only lowercase English 
+	letters, return true if sentence is a pangram, or false otherwise.
+
+	Example 1:
+	Input: sentence = "thequickbrownfoxjumpsoverthelazydog"
+	Output: true
+	Explanation: sentence contains at least one of every letter of the English alphabet.
+
+	Example 2:
+	Input: sentence = "leetcode"
+	Output: false
+
+	Constraints:
+	* 1 <= sentence.length <= 1000
+	* sentence consists of lowercase English letters.*/
+
+    bool checkIfPangram(string sentence) {
+        unordered_set<char> seen; 
+        for (auto x : sentence) {
+            seen.insert(x); 
+        }
+        return seen.size() == 26; 
+    }
+
+
+    /*1833. Maximum Ice Cream Bars (Medium)
+	It is a sweltering summer day, and a boy wants to buy some ice cream bars. 
+	At the store, there are n ice cream bars. You are given an array costs of 
+	length n, where costs[i] is the price of the ith ice cream bar in coins. 
+	The boy initially has coins coins to spend, and he wants to buy as many ice 
+	cream bars as possible. Return the maximum number of ice cream bars the boy 
+	can buy with coins coins. Note: The boy can buy the ice cream bars in any 
+	order.
+
+	Example 1:
+	Input: costs = [1,3,2,4,1], coins = 7
+	Output: 4
+	Explanation: The boy can buy ice cream bars at indices 0,1,2,4 for a total 
+	             price of 1 + 3 + 2 + 1 = 7.
+
+	Example 2:
+	Input: costs = [10,6,8,7,7,8], coins = 5
+	Output: 0
+	Explanation: The boy cannot afford any of the ice cream bars.
+
+	Example 3:
+	Input: costs = [1,6,3,1,2,5], coins = 20
+	Output: 6
+	Explanation: The boy can buy all the ice cream bars for a total price of 
+	             1 + 6 + 3 + 1 + 2 + 5 = 18.
+
+	Constraints:
+	* costs.length == n
+	* 1 <= n <= 10^5
+	* 1 <= costs[i] <= 10^5
+	* 1 <= coins <= 10^8*/
+
+    int maxIceCream(vector<int>& costs, int coins) {
+        int ans = 0; 
+        sort(costs.begin(), costs.end()); 
+        for (int i = 0; i < costs.size(); ++i) {
+            if (costs[i] <= coins) {
+                ++ans; 
+                coins -= costs[i]; 
+            } else break; 
+        }
+        return ans; 
+    }
+
+
+    /*1834. Single-Threaded CPU (Medium)
+	You are given n​​​​​​ tasks labeled from 0 to n - 1 represented by a 2D 
+	integer array tasks, where tasks[i] = [enqueueTimei, processingTimei] 
+	means that the i​​​​​​th​​​​ task will be available to process at enqueueTimei 
+	and will take processingTimei to finish processing. You have a single-
+	threaded CPU that can process at most one task at a time and will act in 
+	the following way:
+	* If the CPU is idle and there are no available tasks to process, the CPU 
+	  remains idle.
+	* If the CPU is idle and there are available tasks, the CPU will choose the 
+	  one with the shortest processing time. If multiple tasks have the same 
+	  shortest processing time, it will choose the task with the smallest index.
+	* Once a task is started, the CPU will process the entire task without stopping.
+	* The CPU can finish a task then start a new one instantly.
+	Return the order in which the CPU will process the tasks.
+
+	Example 1:
+	Input: tasks = [[1,2],[2,4],[3,2],[4,1]]
+	Output: [0,2,3,1]
+	Explanation: The events go as follows: 
+	- At time = 1, task 0 is available to process. Available tasks = {0}.
+	- Also at time = 1, the idle CPU starts processing task 0. Available tasks = {}.
+	- At time = 2, task 1 is available to process. Available tasks = {1}.
+	- At time = 3, task 2 is available to process. Available tasks = {1, 2}.
+	- Also at time = 3, the CPU finishes task 0 and starts processing task 2 as it is the shortest. Available tasks = {1}.
+	- At time = 4, task 3 is available to process. Available tasks = {1, 3}.
+	- At time = 5, the CPU finishes task 2 and starts processing task 3 as it is the shortest. Available tasks = {1}.
+	- At time = 6, the CPU finishes task 3 and starts processing task 1. Available tasks = {}.
+	- At time = 10, the CPU finishes task 1 and becomes idle.
+	
+	Example 2:
+	Input: tasks = [[7,10],[7,12],[7,5],[7,4],[7,2]]
+	Output: [4,3,2,0,1]
+	Explanation: The events go as follows:
+	- At time = 7, all the tasks become available. Available tasks = {0,1,2,3,4}.
+	- Also at time = 7, the idle CPU starts processing task 4. Available tasks = {0,1,2,3}.
+	- At time = 9, the CPU finishes task 4 and starts processing task 3. Available tasks = {0,1,2}.
+	- At time = 13, the CPU finishes task 3 and starts processing task 2. Available tasks = {0,1}.
+	- At time = 18, the CPU finishes task 2 and starts processing task 0. Available tasks = {1}.
+	- At time = 28, the CPU finishes task 0 and starts processing task 1. Available tasks = {}.
+	- At time = 40, the CPU finishes task 1 and becomes idle.
+
+	Constraints:
+	* tasks.length == n
+	* 1 <= n <= 10^5
+	* 1 <= enqueueTimei, processingTimei <= 10^9*/
+
+    vector<int> getOrder(vector<vector<int>>& tasks) {
+        for (int i = 0; i < tasks.size(); ++i) tasks[i].push_back(i); 
+        sort(tasks.begin(), tasks.end()); // ascending order 
+        
+        vector<int> ans; 
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq; // min-heap 
+        
+        for (long i = 0, time = 0; pq.size() || i < tasks.size(); ) {
+            for ( ; i < tasks.size() && tasks[i][0] <= time; ++i) {
+                pq.emplace(tasks[i][1], tasks[i][2]); 
+            }
+            
+            if (pq.size()) {
+                auto [prc, index] = pq.top(); 
+                pq.pop(); 
+                ans.push_back(index); 
+                time += prc; 
+            } else {
+                time = tasks[i][0]; 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*1835. Find XOR Sum of All Pairs Bitwise AND (Hard)
+	The XOR sum of a list is the bitwise XOR of all its elements. If the list 
+	only contains one element, then its XOR sum will be equal to this element.
+	For example, the XOR sum of [1,2,3,4] is equal to 1 XOR 2 XOR 3 XOR 4 = 4, 
+	and the XOR sum of [3] is equal to 3. You are given two 0-indexed arrays 
+	arr1 and arr2 that consist only of non-negative integers. Consider the list 
+	containing the result of arr1[i] AND arr2[j] (bitwise AND) for every (i, j) 
+	pair where 0 <= i < arr1.length and 0 <= j < arr2.length. Return the XOR 
+	sum of the aforementioned list.
+
+	Example 1:
+	Input: arr1 = [1,2,3], arr2 = [6,5]
+	Output: 0
+	Explanation: The list = [1 AND 6, 1 AND 5, 2 AND 6, 2 AND 5, 3 AND 6, 3 AND 5] = [0,1,2,0,2,1].
+	The XOR sum = 0 XOR 1 XOR 2 XOR 0 XOR 2 XOR 1 = 0.
+
+	Example 2:
+	Input: arr1 = [12], arr2 = [4]
+	Output: 4
+	Explanation: The list = [12 AND 4] = [4]. The XOR sum = 4.
+
+	Constraints:
+	* 1 <= arr1.length, arr2.length <= 10^5
+	* 0 <= arr1[i], arr2[j] <= 10^9*/
+
+    int getXORSum(vector<int>& arr1, vector<int>& arr2) {
+        return accumulate(arr1.begin(), arr1.end(), 0, bit_xor()) & accumulate(arr2.begin(), arr2.end(), 0, bit_xor());
     }
 };
 
