@@ -2939,18 +2939,15 @@ class Solution:
     def partition(self, head: ListNode, x: int) -> ListNode:
         dummy1 = node1 = ListNode()
         dummy2 = node2 = ListNode()
+        node = head
         
-        while head: 
-            if head.val < x: 
-                node1.next = head
-                node1 = node1.next
-            else:
-                node2.next = head
-                node2 = node2.next
-            head = head.next 
-        node2.next = None #terminate list (no cycle)
+        while node: 
+            if node.val < x: node1.next = node1 = node
+            else: node2.next = node2 = node
+            node = node.next 
         node1.next = dummy2.next
-        return dummy1.next 
+        node2.next = None
+        return dummy1.next
 
 
     """87. Scramble String (Hard)
@@ -9170,6 +9167,48 @@ class Solution:
         return head 
 
 
+    """329. Longest Increasing Path in a Matrix (Hard)
+	Given an m x n integers matrix, return the length of the longest increasing 
+	path in matrix. From each cell, you can either move in four directions: 
+	left, right, up, or down. You may not move diagonally or move outside the 
+	boundary (i.e., wrap-around is not allowed).
+
+	Example 1:
+	Input: matrix = [[9,9,4],[6,6,8],[2,1,1]]
+	Output: 4
+	Explanation: The longest increasing path is [1, 2, 6, 9].
+
+	Example 2:
+	Input: matrix = [[3,4,5],[3,2,6],[2,2,1]]
+	Output: 4
+	Explanation: The longest increasing path is [3, 4, 5, 6]. Moving diagonally 
+	             is not allowed.
+
+	Example 3:
+	Input: matrix = [[1]]
+	Output: 1
+
+	Constraints:
+	* m == matrix.length
+	* n == matrix[i].length
+	* 1 <= m, n <= 200
+	* 0 <= matrix[i][j] <= 2^31 - 1"""
+
+    def longestIncreasingPath(self, matrix: List[List[int]]) -> int:
+        m, n = len(matrix), len(matrix[0]) # dimensions 
+        
+        @cache
+        def fn(i, j): 
+            """Return max increasing path starting from (i, j)."""
+            ans = 1
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                if 0 <= ii < m and 0 <= jj < n and matrix[i][j] < matrix[ii][jj]: 
+                    ans = max(ans, 1 + fn(ii, jj))
+            return ans 
+        
+        return max(fn(i, j) for i in range(m) for j in range(n))
+
+
     """331. Verify Preorder Serialization of a Binary Tree (Medium)
 	One way to serialize a binary tree is to use pre-order traversal. When we 
 	encounter a non-null node, we record the node's value. If it is a null 
@@ -11903,6 +11942,43 @@ class Solution:
                 if node.left: newq.append((node.left, 2*i))
                 if node.right: newq.append((node.right, 2*i+1))
             queue = newq
+        return ans 
+
+
+    """667. Beautiful Arrangement II (Medium)
+	Given two integers n and k, you need to construct a list which contains n 
+	different positive integers ranging from 1 to n and obeys the following 
+	requirement:
+	Suppose this list is [a1, a2, a3, ... , an], then the list 
+	[|a1 - a2|, |a2 - a3|, |a3 - a4|, ... , |an-1 - an|] has exactly k distinct 
+	integers. If there are multiple answers, print any of them.
+
+	Example 1:
+	Input: n = 3, k = 1
+	Output: [1, 2, 3]
+	Explanation: The [1, 2, 3] has three different positive integers ranging 
+	             from 1 to 3, and the [1, 1] has exactly 1 distinct integer: 1.
+	
+	Example 2:
+	Input: n = 3, k = 2
+	Output: [1, 3, 2]
+	Explanation: The [1, 3, 2] has three different positive integers ranging 
+	             from 1 to 3, and the [2, 1] has exactly 2 distinct integers: 1 
+	             and 2.
+	
+	Note: The n and k are in the range 1 <= k < n <= 104."""
+
+    def constructArray(self, n: int, k: int) -> List[int]:
+        lo, hi = 1, n 
+        ans = []
+        while lo <= hi: 
+            if k&1: 
+                ans.append(lo)
+                lo += 1
+            else: 
+                ans.append(hi)
+                hi -= 1
+            if k > 1: k -= 1
         return ans 
 
 
@@ -16109,6 +16185,51 @@ class Solution:
             carry = -(carry >> 1)
         while ans and not ans[-1]: ans.pop()
         return ans[::-1] or [0]
+
+
+    """1074. Number of Submatrices That Sum to Target (Hard)
+	Given a matrix and a target, return the number of non-empty submatrices 
+	that sum to target. A submatrix x1, y1, x2, y2 is the set of all cells 
+	matrix[x][y] with x1 <= x <= x2 and y1 <= y <= y2. Two submatrices 
+	(x1, y1, x2, y2) and (x1', y1', x2', y2') are different if they have some 
+	coordinate that is different: for example, if x1 != x1'.
+
+	Example 1:
+	Input: matrix = [[0,1,0],[1,1,1],[0,1,0]], target = 0
+	Output: 4
+	Explanation: The four 1x1 submatrices that only contain 0.
+
+	Example 2:
+	Input: matrix = [[1,-1],[-1,1]], target = 0
+	Output: 5
+	Explanation: The two 1x2 submatrices, plus the two 2x1 submatrices, plus the 2x2 submatrix.
+
+	Example 3:
+	Input: matrix = [[904]], target = 0
+	Output: 0
+
+	Constraints:
+	* 1 <= matrix.length <= 100
+	* 1 <= matrix[0].length <= 100
+	* -1000 <= matrix[i] <= 1000
+	* -10^8 <= target <= 10^8"""
+
+    def numSubmatrixSumTarget(self, matrix: List[List[int]], target: int) -> int:
+        ans = 0 
+        m, n = len(matrix), len(matrix[0]) # dimensions 
+        prefix = [[0]*(n+1) for _ in range(m+1)]
+        
+        for i in range(m): 
+            for j in range(n): 
+                prefix[i+1][j+1] = matrix[i][j] + prefix[i+1][j] + prefix[i][j+1] - prefix[i][j]
+                
+            for ii in range(i+1):
+                freq = {0: 1}
+                for j in range(n): 
+                    diff = prefix[i+1][j+1] - prefix[ii][j+1] 
+                    ans += freq.get(diff - target, 0)
+                    freq[diff] = 1 + freq.get(diff, 0)
+        return ans 
 
 
     """1080. Insufficient Nodes in Root to Leaf Paths (Medium)
@@ -28826,6 +28947,164 @@ class Fenwick:
                     if obstacles[i]-1 != (k+2)%3: tmp[k] = min(tmp[k], 1 + dp[(k+2)%3])
             dp = tmp
         return dp[1]
+
+
+    """1832. Check if the Sentence Is Pangram (Easy)
+	A pangram is a sentence where every letter of the English alphabet appears 
+	at least once. Given a string sentence containing only lowercase English 
+	letters, return true if sentence is a pangram, or false otherwise.
+
+	Example 1:
+	Input: sentence = "thequickbrownfoxjumpsoverthelazydog"
+	Output: true
+	Explanation: sentence contains at least one of every letter of the English alphabet.
+
+	Example 2:
+	Input: sentence = "leetcode"
+	Output: false
+
+	Constraints:
+	* 1 <= sentence.length <= 1000
+	* sentence consists of lowercase English letters."""
+
+    def checkIfPangram(self, sentence: str) -> bool:
+        freq = [0]*26
+        for x in sentence: 
+            freq[ord(x) - 97] += 1
+        return min(freq) > 0 
+
+
+    """1833. Maximum Ice Cream Bars (Medium)
+	It is a sweltering summer day, and a boy wants to buy some ice cream bars. 
+	At the store, there are n ice cream bars. You are given an array costs of 
+	length n, where costs[i] is the price of the ith ice cream bar in coins. 
+	The boy initially has coins coins to spend, and he wants to buy as many ice 
+	cream bars as possible. Return the maximum number of ice cream bars the boy 
+	can buy with coins coins. Note: The boy can buy the ice cream bars in any 
+	order.
+
+	Example 1:
+	Input: costs = [1,3,2,4,1], coins = 7
+	Output: 4
+	Explanation: The boy can buy ice cream bars at indices 0,1,2,4 for a total 
+	             price of 1 + 3 + 2 + 1 = 7.
+
+	Example 2:
+	Input: costs = [10,6,8,7,7,8], coins = 5
+	Output: 0
+	Explanation: The boy cannot afford any of the ice cream bars.
+	
+	Example 3:
+	Input: costs = [1,6,3,1,2,5], coins = 20
+	Output: 6
+	Explanation: The boy can buy all the ice cream bars for a total price of 1 + 6 + 3 + 1 + 2 + 5 = 18.
+
+	Constraints:
+	* costs.length == n
+	* 1 <= n <= 10^5
+	* 1 <= costs[i] <= 10^5
+	* 1 <= coins <= 10^8"""
+
+    def maxIceCream(self, costs: List[int], coins: int) -> int:
+        ans = 0
+        for x in sorted(costs): 
+            if x <= coins: 
+                ans += 1
+                coins -= x
+            else: break 
+        return ans 
+
+
+    """1834. Single-Threaded CPU (Medium)
+	You are given n​​​​​​ tasks labeled from 0 to n - 1 represented by a 2D 
+	integer array tasks, where tasks[i] = [enqueueTimei, processingTimei] 
+	means that the i​​​​​​th​​​​ task will be available to process at enqueueTimei 
+	and will take processingTimei to finish processing. You have a single-
+	threaded CPU that can process at most one task at a time and will act in 
+	the following way:
+	* If the CPU is idle and there are no available tasks to process, the CPU 
+	  remains idle.
+	* If the CPU is idle and there are available tasks, the CPU will choose the 
+	  one with the shortest processing time. If multiple tasks have the same 
+	  shortest processing time, it will choose the task with the smallest index.
+	* Once a task is started, the CPU will process the entire task without 
+	  stopping.
+	* The CPU can finish a task then start a new one instantly.
+	Return the order in which the CPU will process the tasks.
+
+	Example 1:
+	Input: tasks = [[1,2],[2,4],[3,2],[4,1]]
+	Output: [0,2,3,1]
+	Explanation: The events go as follows: 
+	- At time = 1, task 0 is available to process. Available tasks = {0}.
+	- Also at time = 1, the idle CPU starts processing task 0. Available tasks = {}.
+	- At time = 2, task 1 is available to process. Available tasks = {1}.
+	- At time = 3, task 2 is available to process. Available tasks = {1, 2}.
+	- Also at time = 3, the CPU finishes task 0 and starts processing task 2 as it is the shortest. Available tasks = {1}.
+	- At time = 4, task 3 is available to process. Available tasks = {1, 3}.
+	- At time = 5, the CPU finishes task 2 and starts processing task 3 as it is the shortest. Available tasks = {1}.
+	- At time = 6, the CPU finishes task 3 and starts processing task 1. Available tasks = {}.
+	- At time = 10, the CPU finishes task 1 and becomes idle.
+
+	Example 2:
+	Input: tasks = [[7,10],[7,12],[7,5],[7,4],[7,2]]
+	Output: [4,3,2,0,1]
+	Explanation: The events go as follows:
+	- At time = 7, all the tasks become available. Available tasks = {0,1,2,3,4}.
+	- Also at time = 7, the idle CPU starts processing task 4. Available tasks = {0,1,2,3}.
+	- At time = 9, the CPU finishes task 4 and starts processing task 3. Available tasks = {0,1,2}.
+	- At time = 13, the CPU finishes task 3 and starts processing task 2. Available tasks = {0,1}.
+	- At time = 18, the CPU finishes task 2 and starts processing task 0. Available tasks = {1}.
+	- At time = 28, the CPU finishes task 0 and starts processing task 1. Available tasks = {}.
+	- At time = 40, the CPU finishes task 1 and becomes idle.
+
+	Constraints:
+	* tasks.length == n
+	* 1 <= n <= 10^5
+	* 1 <= enqueueTimei, processingTimei <= 10^9"""
+
+    def getOrder(self, tasks: List[List[int]]) -> List[int]:
+        ans = []
+        pq = [] # min-heap 
+        t = 0 # end of prev task 
+        
+        tasks.append([inf, inf])
+        for (enq, prc), i in sorted(zip(tasks, range(len(tasks)))): # adding a sentinel
+            while pq and t < enq: 
+                tp, ii, te = heappop(pq)
+                ans.append(ii)
+                t = max(t, te) + tp # time finish processing this task
+            heappush(pq, (prc, i, enq))
+        return ans 
+
+
+    """1835. Find XOR Sum of All Pairs Bitwise AND (Hard)
+	The XOR sum of a list is the bitwise XOR of all its elements. If the list 
+	only contains one element, then its XOR sum will be equal to this element.
+	For example, the XOR sum of [1,2,3,4] is equal to 1 XOR 2 XOR 3 XOR 4 = 4, 
+	and the XOR sum of [3] is equal to 3. You are given two 0-indexed arrays 
+	arr1 and arr2 that consist only of non-negative integers. Consider the list 
+	containing the result of arr1[i] AND arr2[j] (bitwise AND) for every (i, j) 
+	pair where 0 <= i < arr1.length and 0 <= j < arr2.length. Return the XOR 
+	sum of the aforementioned list.
+
+	Example 1:
+	Input: arr1 = [1,2,3], arr2 = [6,5]
+	Output: 0
+	Explanation: The list = [1 AND 6, 1 AND 5, 2 AND 6, 2 AND 5, 3 AND 6, 3 AND 5] = [0,1,2,0,2,1].
+	             The XOR sum = 0 XOR 1 XOR 2 XOR 0 XOR 2 XOR 1 = 0.
+
+	Example 2:
+	Input: arr1 = [12], arr2 = [4]
+	Output: 4
+	Explanation: The list = [12 AND 4] = [4]. The XOR sum = 4.
+
+	Constraints:
+	* 1 <= arr1.length, arr2.length <= 10^5
+	* 0 <= arr1[i], arr2[j] <= 10^9"""
+
+    def getXORSum(self, arr1: List[int], arr2: List[int]) -> int:
+        return reduce(xor, arr1) & reduce(xor, arr2)
 
 
 """146. LRU Cache (Medium)
