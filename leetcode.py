@@ -16605,6 +16605,158 @@ class Solution:
         return sum(int(x)**len(s) for x in s) == N
 
 
+    """1137. N-th Tribonacci Number (Easy)
+	The Tribonacci sequence Tn is defined as follows: 
+	T0 = 0, T1 = 1, T2 = 1, and Tn+3 = Tn + Tn+1 + Tn+2 for n >= 0.
+	Given n, return the value of Tn.
+
+	Example 1:
+	Input: n = 4
+	Output: 4
+	Explanation:
+	T_3 = 0 + 1 + 1 = 2
+	T_4 = 1 + 1 + 2 = 4
+
+	Example 2:
+	Input: n = 25
+	Output: 1389537
+
+	Constraints:
+	* 0 <= n <= 37
+	* The answer is guaranteed to fit within a 32-bit integer, ie. answer <= 2^31 - 1."""
+
+    def tribonacci(self, n: int) -> int:
+        t0, t1, t2 = 0, 1, 1
+        for i in range(n): 
+            t0, t1, t2 = t1, t2, t0+t1+t2
+        return t0
+
+
+    """1138. Alphabet Board Path (Medium)
+	On an alphabet board, we start at position (0, 0), corresponding to 
+	character board[0][0]. Here, 
+	board = ["abcde", "fghij", "klmno", "pqrst", "uvwxy", "z"], as shown in the 
+	diagram below. We may make the following moves:
+	* 'U' moves our position up one row, if the position exists on the board;
+	* 'D' moves our position down one row, if the position exists on the board;
+	* 'L' moves our position left one column, if the position exists on the board;
+	* 'R' moves our position right one column, if the position exists on the board;
+	* '!' adds the character board[r][c] at our current position (r, c) to the answer.
+	(Here, the only positions that exist on the board are positions with letters on them.)
+	Return a sequence of moves that makes our answer equal to target in the 
+	minimum number of moves.  You may return any path that does so.
+
+	Example 1:
+	Input: target = "leet"
+	Output: "DDR!UURRR!!DDD!"
+
+	Example 2:
+	Input: target = "code"
+	Output: "RR!DDRR!UUL!R!"
+
+	Constraints:
+	* 1 <= target.length <= 100
+	* target consists only of English lowercase letters."""
+
+    def alphabetBoardPath(self, target: str) -> str:
+        ans = []
+        x = y = 0
+        for c in target:
+            xx, yy = divmod(ord(c)-97, 5)
+            if x > xx: ans.append((x-xx)*"U")
+            if y > yy: ans.append((y-yy)*"L")
+            if x < xx: ans.append((xx-x)*"D")
+            if y < yy: ans.append((yy-y)*"R")
+            ans.append("!")
+            x, y = xx, yy
+        return "".join(ans)
+
+
+    """1139. Largest 1-Bordered Square (Medium)
+	Given a 2D grid of 0s and 1s, return the number of elements in the largest 
+	square subgrid that has all 1s on its border, or 0 if such a subgrid doesn't 
+	exist in the grid.
+
+	Example 1:
+	Input: grid = [[1,1,1],[1,0,1],[1,1,1]]
+	Output: 9
+
+	Example 2:
+	Input: grid = [[1,1,0,0]]
+	Output: 1
+
+	Constraints:
+	* 1 <= grid.length <= 100
+	* 1 <= grid[0].length <= 100
+	* grid[i][j] is 0 or 1"""
+
+    def largest1BorderedSquare(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0]) # dimensions 
+        
+        hori = deepcopy(grid)
+        vert = deepcopy(grid)
+        for i in range(m):
+            for j in range(n): 
+                if grid[i][j]: 
+                    if j: hori[i][j] += hori[i][j-1] # horizontal precipitation
+                    if i: vert[i][j] += vert[i-1][j] # vertical precipitation 
+        
+        ans = 0
+        for i in reversed(range(m)):
+            for j in reversed(range(n)): 
+                val = min(hori[i][j], vert[i][j])
+                while val > ans: 
+                    if vert[i][j-val+1] >= val and hori[i-val+1][j] >= val: 
+                        ans = val 
+                    val -= 1
+        return ans*ans
+
+
+    """1140. Stone Game II (Medium)
+	Alice and Bob continue their games with piles of stones. There are a number 
+	of piles arranged in a row, and each pile has a positive integer number of 
+	stones piles[i].  The objective of the game is to end with the most stones. 
+	Alice and Bob take turns, with Alice starting first.  Initially, M = 1. On 
+	each player's turn, that player can take all the stones in the first X 
+	remaining piles, where 1 <= X <= 2M.  Then, we set M = max(M, X). The game 
+	continues until all the stones have been taken. Assuming Alice and Bob play 
+	optimally, return the maximum number of stones Alice can get.
+
+	Example 1:
+	Input: piles = [2,7,9,4,4]
+	Output: 10
+	Explanation:  If Alice takes one pile at the beginning, Bob takes two piles, 
+	              then Alice takes 2 piles again. Alice can get 2 + 4 + 4 = 10 
+	              piles in total. If Alice takes two piles at the beginning, 
+	              then Bob can take all three piles left. In this case, Alice 
+	              get 2 + 7 = 9 piles in total. So we return 10 since it's 
+	              larger. 
+
+	Example 2:
+	Input: piles = [1,2,3,4,5,100]
+	Output: 104
+
+	Constraints:
+	* 1 <= piles.length <= 100
+	* 1 <= piles[i] <= 10^4"""
+
+    def stoneGameII(self, piles: List[int]) -> int:
+        prefix = [0]
+        for x in piles: prefix.append(prefix[-1] + x)
+            
+        @cache
+        def fn(i, m):
+            """Return the net stones one could get at position i with m."""
+            if i + 2*m >= len(piles): return prefix[-1] - prefix[i]
+            ans = -inf 
+            for ii in range(1, 2*m+1): 
+                if i+ii < len(prefix): 
+                    ans = max(ans, prefix[i+ii] - prefix[i] - fn(i+ii, max(m, ii)))
+            return ans 
+        
+        return (fn(0, 1) + sum(piles))//2
+
+
     """1144. Decrease Elements To Make Array Zigzag (Medium)
 	Given an array nums of integers, a move consists of choosing any element 
 	and decreasing it by 1. An array A is a zigzag array if either:
