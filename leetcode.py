@@ -16605,6 +16605,126 @@ class Solution:
         return sum(int(x)**len(s) for x in s) == N
 
 
+    """1144. Decrease Elements To Make Array Zigzag (Medium)
+	Given an array nums of integers, a move consists of choosing any element 
+	and decreasing it by 1. An array A is a zigzag array if either:
+	* Every even-indexed element is greater than adjacent elements, ie. 
+	  A[0] > A[1] < A[2] > A[3] < A[4] > ...
+	* OR, every odd-indexed element is greater than adjacent elements, ie. 
+	  A[0] < A[1] > A[2] < A[3] > A[4] < ...
+	Return the minimum number of moves to transform the given array nums into a 
+	zigzag array.
+
+	Example 1:
+	Input: nums = [1,2,3]
+	Output: 2
+	Explanation: We can decrease 2 to 0 or 3 to 1.
+
+	Example 2:
+	Input: nums = [9,6,1,6,2]
+	Output: 4
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* 1 <= nums[i] <= 1000"""
+
+    def movesToMakeZigzag(self, nums: List[int]) -> int:
+        ans = [0, 0] 
+        for i in range(len(nums)): 
+            val = 0 
+            if i: val = max(val, nums[i] - nums[i-1] + 1)
+            if i+1 < len(nums): val = max(val, nums[i] - nums[i+1] + 1)
+            ans[i&1] += val
+        return min(ans)
+
+
+    """1145. Binary Tree Coloring Game (Medium)
+	Two players play a turn based game on a binary tree.  We are given the root 
+	of this binary tree, and the number of nodes n in the tree.  n is odd, and 
+	each node has a distinct value from 1 to n. Initially, the first player 
+	names a value x with 1 <= x <= n, and the second player names a value y 
+	with 1 <= y <= n and y != x.  The first player colors the node with value x 
+	red, and the second player colors the node with value y blue. Then, the 
+	players take turns starting with the first player.  In each turn, that 
+	player chooses a node of their color (red if player 1, blue if player 2) 
+	and colors an uncolored neighbor of the chosen node (either the left child, 
+	right child, or parent of the chosen node.) If (and only if) a player 
+	cannot choose such a node in this way, they must pass their turn.  If both 
+	players pass their turn, the game ends, and the winner is the player that 
+	colored more nodes. You are the second player.  If it is possible to choose 
+	such a y to ensure you win the game, return true.  If it is not possible, 
+	return false.
+
+	Example 1:
+	Input: root = [1,2,3,4,5,6,7,8,9,10,11], n = 11, x = 3
+	Output: true
+	Explanation: The second player can choose the node with value 2.
+
+	Constraints:
+	* root is the root of a binary tree with n nodes and distinct node values 
+	  from 1 to n.
+	* n is odd.
+	* 1 <= x <= n <= 100"""
+
+    def btreeGameWinningMove(self, root: TreeNode, n: int, x: int) -> bool:
+        
+        def fn(node): 
+            """Return size of subtree rooted at node."""
+            if not node: return 0 
+            left, right = fn(node.left), fn(node.right)
+            if node.val == x: 
+                cnt[0], cnt[1] = left, right
+            return 1 + left + right
+        
+        cnt = [0, 0]
+        fn(root)
+        return max(max(cnt), n-1-sum(cnt)) > n//2
+
+
+    """1147. Longest Chunked Palindrome Decomposition (Hard)
+	You are given a string text. You should split it to k substrings 
+	(subtext1, subtext2, ..., subtextk) such that:
+	* subtexti is a non-empty string.
+	* The concatenation of all the substrings is equal to text (i.e., 
+	  subtext1 + subtext2 + ... + subtextk == text).
+	* subtexti == subtextk - i + 1 for all valid values of i (i.e., 1 <= i <= k).
+	Return the largest possible value of k.
+
+	Example 1:
+	Input: text = "ghiabcdefhelloadamhelloabcdefghi"
+	Output: 7
+	Explanation: We can split the string on "(ghi)(abcdef)(hello)(adam)(hello)(abcdef)(ghi)".
+
+	Example 2:
+	Input: text = "merchant"
+	Output: 1
+	Explanation: We can split the string on "(merchant)".
+
+	Example 3:
+	Input: text = "antaprezatepzapreanta"
+	Output: 11
+	Explanation: We can split the string on "(a)(nt)(a)(pre)(za)(tpe)(za)(pre)(a)(nt)(a)".
+
+	Example 4:
+	Input: text = "aaa"
+	Output: 3
+	Explanation: We can split the string on "(a)(a)(a)".
+
+	Constraints:
+	* 1 <= text.length <= 1000
+	* text consists only of lowercase English characters."""
+
+    def longestDecomposition(self, text: str) -> int:
+        ii = i = ans = 0
+        jj = j = len(text)-1
+        while i < j: 
+            if text[ii:i+1] == text[j:jj+1]: 
+                ans += 2
+                ii, jj = i+1, j-1 # reset anchor ptr
+            i, j = i+1, j-1 
+        return ans + int(ii <= jj)
+
+
     """1150. Check If a Number Is Majority Element in a Sorted Array (Easy)
 	Given an array nums sorted in non-decreasing order, and a number target, 
 	return True if and only if target is a majority element. A majority element 
@@ -31060,6 +31180,57 @@ class CBTInserter:
 
     def get_root(self) -> TreeNode:
         return self.root
+
+
+"""1146. Snapshot Array (Medium)
+Implement a SnapshotArray that supports the following interface:
+* SnapshotArray(int length) initializes an array-like data structure with the 
+  given length. Initially, each element equals 0.
+* void set(index, val) sets the element at the given index to be equal to val.
+* int snap() takes a snapshot of the array and returns the snap_id: the total 
+  number of times we called snap() minus 1.
+* int get(index, snap_id) returns the value at the given index, at the time we 
+  took the snapshot with the given snap_id
+
+Example 1:
+Input: ["SnapshotArray","set","snap","set","get"]
+[[3],[0,5],[],[0,6],[0,0]]
+Output: [null,null,0,null,5]
+Explanation: 
+SnapshotArray snapshotArr = new SnapshotArray(3); // set the length to be 3
+snapshotArr.set(0,5);  // Set array[0] = 5
+snapshotArr.snap();  // Take a snapshot, return snap_id = 0
+snapshotArr.set(0,6);
+snapshotArr.get(0,0);  // Get the value of array[0] with snap_id = 0, return 5
+
+Constraints:
+* 1 <= length <= 50000
+* At most 50000 calls will be made to set, snap, and get.
+* 0 <= index < length
+* 0 <= snap_id < (the total number of times we call snap())
+* 0 <= val <= 10^9"""
+
+class SnapshotArray:
+
+    def __init__(self, length: int):
+        self.data = [[[0, 0]] for _ in range(length)]
+        self.id = 0 
+
+    def set(self, index: int, val: int) -> None:
+        if self.data[index][-1][0] == self.id: self.data[index][-1][1] = val 
+        else: self.data[index].append([self.id, val])
+
+    def snap(self) -> int:
+        self.id += 1
+        return self.id - 1        
+
+    def get(self, index: int, snap_id: int) -> int:
+        lo, hi = 0, len(self.data[index])
+        while lo < hi: 
+            mid = lo + hi >> 1
+            if self.data[index][mid][0] <= snap_id: lo = mid + 1
+            else: hi = mid
+        return self.data[index][lo-1][1]
 
 
 """1357. Apply Discount Every n Orders (Medium)
