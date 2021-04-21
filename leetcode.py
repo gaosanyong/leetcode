@@ -16558,6 +16558,158 @@ class Solution:
         return fn(root)[2]
 
 
+    """1128. Number of Equivalent Domino Pairs (Easy)
+	Given a list of dominoes, dominoes[i] = [a, b] is equivalent to 
+	dominoes[j] = [c, d] if and only if either (a==c and b==d), or 
+	(a==d and b==c) - that is, one domino can be rotated to be equal to another 
+	domino. Return the number of pairs (i, j) for which 
+	0 <= i < j < dominoes.length, and dominoes[i] is equivalent to dominoes[j].
+
+	Example 1:
+	Input: dominoes = [[1,2],[2,1],[3,4],[5,6]]
+	Output: 1
+
+	Constraints:
+	* 1 <= dominoes.length <= 40000
+	* 1 <= dominoes[i][j] <= 9"""
+
+    def numEquivDominoPairs(self, dominoes: List[List[int]]) -> int:
+        ans = 0 
+        freq = defaultdict(int)
+        for x, y in dominoes: 
+            ans += freq[x, y]
+            if x != y: ans += freq[y, x]
+            freq[x, y] += 1
+        return ans 
+
+
+    """1129. Shortest Path with Alternating Colors (Medium)
+	Consider a directed graph, with nodes labelled 0, 1, ..., n-1. In this 
+	graph, each edge is either red or blue, and there could be self-edges or 
+	parallel edges. Each [i, j] in red_edges denotes a red directed edge from 
+	node i to node j.  Similarly, each [i, j] in blue_edges denotes a blue 
+	directed edge from node i to node j. Return an array answer of length n, 
+	where each answer[X] is the length of the shortest path from node 0 to node 
+	X such that the edge colors alternate along the path (or -1 if such a path 
+	doesn't exist).
+
+	Example 1:
+	Input: n = 3, red_edges = [[0,1],[1,2]], blue_edges = []
+	Output: [0,1,-1]
+
+	Example 2:
+	Input: n = 3, red_edges = [[0,1]], blue_edges = [[2,1]]
+	Output: [0,1,-1]
+
+	Example 3:
+	Input: n = 3, red_edges = [[1,0]], blue_edges = [[2,1]]
+	Output: [0,-1,-1]
+
+	Example 4:
+	Input: n = 3, red_edges = [[0,1]], blue_edges = [[1,2]]
+	Output: [0,1,2]
+
+	Example 5:
+	Input: n = 3, red_edges = [[0,1],[0,2]], blue_edges = [[1,0]]
+	Output: [0,1,1]
+
+	Constraints:
+	* 1 <= n <= 100
+	* red_edges.length <= 400
+	* blue_edges.length <= 400
+	* red_edges[i].length == blue_edges[i].length == 2
+	* 0 <= red_edges[i][j], blue_edges[i][j] < n"""
+
+    def shortestAlternatingPaths(self, n: int, red_edges: List[List[int]], blue_edges: List[List[int]]) -> List[int]:
+        graph = {}
+        for u, v in red_edges: graph.setdefault(u, []).append((v, 0))
+        for u, v in blue_edges: graph.setdefault(u, []).append((v, 1))
+        
+        queue = [(0, -1)]
+        dist = [[inf]*2 for _ in range(n)]
+        k = 0 
+        while queue: 
+            newq = []
+            for n, c in queue: 
+                if dist[n][c] > k: 
+                    dist[n][c] = k 
+                    for nn, cc in graph.get(n, []): 
+                        if cc != c: newq.append((nn, cc))
+            queue = newq 
+            k += 1
+        return [x if x < inf else -1 for x in map(min, dist)]
+
+
+    """1130. Minimum Cost Tree From Leaf Values (Medium)
+	Given an array arr of positive integers, consider all binary trees such 
+	that:
+	* Each node has either 0 or 2 children;
+	* The values of arr correspond to the values of each leaf in an in-order 
+	  traversal of the tree.  (Recall that a node is a leaf if and only if it 
+	  has 0 children.)
+	* The value of each non-leaf node is equal to the product of the largest 
+	  leaf value in its left and right subtree respectively.
+	Among all possible binary trees considered, return the smallest possible 
+	sum of the values of each non-leaf node.  It is guaranteed this sum fits 
+	into a 32-bit integer.
+
+	Example 1:
+	Input: arr = [6,2,4]
+	Output: 32
+	Explanation: There are two possible trees. The first has non-leaf node sum 
+	             36, and the second has non-leaf node sum 32.
+
+	    24            24
+	   /  \          /  \
+	  12   4        6    8
+	 /  \               / \
+	6    2             2   4
+
+	Constraints:
+	* 2 <= arr.length <= 40
+	* 1 <= arr[i] <= 15
+	* It is guaranteed that the answer fits into a 32-bit signed integer (ie. 
+	  it is less than 2^31)."""
+
+    def mctFromLeafValues(self, arr: List[int]) -> int:
+        ans = 0 
+        stack = []
+        for x in arr: 
+            while stack and stack[-1] <= x: 
+                val = stack.pop()
+                ans += val * min(stack[-1] if stack else inf, x)
+            stack.append(x)
+        return ans + sum(stack[i-1]*stack[i] for i in range(1, len(stack)))
+
+
+    """1131. Maximum of Absolute Value Expression (Medium)
+	Given two arrays of integers with equal lengths, return the maximum value 
+	of:
+	|arr1[i] - arr1[j]| + |arr2[i] - arr2[j]| + |i - j|
+	where the maximum is taken over all 0 <= i, j < arr1.length.
+
+	Example 1:
+	Input: arr1 = [1,2,3,4], arr2 = [-1,4,5,6]
+	Output: 13
+
+	Example 2:
+	Input: arr1 = [1,-2,-5,0,10], arr2 = [0,-2,-1,-7,-4]
+	Output: 20
+
+	Constraints:
+	* 2 <= arr1.length == arr2.length <= 40000
+	* -10^6 <= arr1[i], arr2[i] <= 10^6"""
+
+    def maxAbsValExpr(self, arr1: List[int], arr2: List[int]) -> int:
+        ans = 0
+        for p, q in (1, 1), (1, -1), (-1, 1), (-1, -1): 
+            val = low = inf 
+            for i, (x, y) in enumerate(zip(arr1, arr2)): 
+                ans = max(ans, p*x + q*y + i - low)
+                low = min(low, p*x + q*y + i)
+        return ans 
+
+
     """1133. Largest Unique Number (Easy)
 	Given an array of integers A, return the largest integer that only occurs 
 	once. If no integer occurs once, return -1.
