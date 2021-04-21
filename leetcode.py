@@ -29066,6 +29066,180 @@ class Fenwick:
         return "".join(ans)
 
 
+    """1812. Determine Color of a Chessboard Square (Easy)
+	You are given coordinates, a string that represents the coordinates of a 
+	square of the chessboard. Below is a chessboard for your reference. Return 
+	true if the square is white, and false if the square is black. The 
+	coordinate will always represent a valid chessboard square. The coordinate 
+	will always have the letter first, and the number second.
+
+	Example 1:
+	Input: coordinates = "a1"
+	Output: false
+	Explanation: From the chessboard above, the square with coordinates "a1" is 
+	             black, so return false.
+
+	Example 2:
+	Input: coordinates = "h3"
+	Output: true
+	Explanation: From the chessboard above, the square with coordinates "h3" is 
+	             white, so return true.
+	
+	Example 3:
+	Input: coordinates = "c7"
+	Output: false
+
+	Constraints:
+	* coordinates.length == 2
+	* 'a' <= coordinates[0] <= 'h'
+	* '1' <= coordinates[1] <= '8'"""
+
+    def squareIsWhite(self, coordinates: str) -> bool:
+        return (ord(coordinates[0])-97)&1 == int(coordinates[1])&1	
+
+
+    """1813. Sentence Similarity III (Medium)
+	A sentence is a list of words that are separated by a single space with no 
+	leading or trailing spaces. For example, "Hello World", "HELLO", "hello 
+	world hello world" are all sentences. Words consist of only uppercase and 
+	lowercase English letters. Two sentences sentence1 and sentence2 are 
+	similar if it is possible to insert an arbitrary sentence (possibly empty) 
+	inside one of these sentences such that the two sentences become equal. For 
+	example, sentence1 = "Hello my name is Jane" and sentence2 = "Hello Jane" 
+	can be made equal by inserting "my name is" between "Hello" and "Jane" in 
+	sentence2. Given two sentences sentence1 and sentence2, return true if 
+	sentence1 and sentence2 are similar. Otherwise, return false.
+
+	Example 1:
+	Input: sentence1 = "My name is Haley", sentence2 = "My Haley"
+	Output: true
+	Explanation: sentence2 can be turned to sentence1 by inserting "name is" 
+	             between "My" and "Haley".
+
+	Example 2:
+	Input: sentence1 = "of", sentence2 = "A lot of words"
+	Output: false
+	Explanation: No single sentence can be inserted inside one of the sentences 
+	             to make it equal to the other.
+	
+	Example 3:
+	Input: sentence1 = "Eating right now", sentence2 = "Eating"
+	Output: true
+	Explanation: sentence2 can be turned to sentence1 by inserting "right now" 
+	             at the end of the sentence.
+	
+	Example 4:
+	Input: sentence1 = "Luky", sentence2 = "Lucccky"
+	Output: false
+
+	Constraints:
+	* 1 <= sentence1.length, sentence2.length <= 100
+	* sentence1 and sentence2 consist of lowercase and uppercase English letters 
+	  and spaces.
+	* The words in sentence1 and sentence2 are separated by a single space."""
+
+    def areSentencesSimilar(self, sentence1: str, sentence2: str) -> bool:
+        if len(sentence1) < len(sentence2): 
+            sentence1, sentence2 = sentence2, sentence1 
+        words1 = sentence1.split()
+        words2 = sentence2.split()
+        
+        lo = 0 
+        while lo < len(words2) and words1[lo] == words2[lo]: lo += 1
+        
+        hi = -1 
+        while -len(words2) <= hi and words1[hi] == words2[hi]: hi -= 1
+        
+        return lo - hi -1 >= len(words2)
+
+    
+    """1814. Count Nice Pairs in an Array (Medium)
+	You are given an array nums that consists of non-negative integers. Let us 
+	define rev(x) as the reverse of the non-negative integer x. For example, 
+	rev(123) = 321, and rev(120) = 21. A pair of indices (i, j) is nice if it 
+	satisfies all of the following conditions:
+	* 0 <= i < j < nums.length
+	* nums[i] + rev(nums[j]) == nums[j] + rev(nums[i])
+	Return the number of nice pairs of indices. Since that number can be too 
+	large, return it modulo 109 + 7.
+
+	Example 1:
+	Input: nums = [42,11,1,97]
+	Output: 2
+	Explanation: The two pairs are:
+	 - (0,3) : 42 + rev(97) = 42 + 79 = 121, 97 + rev(42) = 97 + 24 = 121.
+	 - (1,2) : 11 + rev(1) = 11 + 1 = 12, 1 + rev(11) = 1 + 11 = 12.
+
+	Example 2:
+	Input: nums = [13,10,35,24,76]
+	Output: 4
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 0 <= nums[i] <= 10^9"""
+
+    def countNicePairs(self, nums: List[int]) -> int:
+        ans = 0 
+        freq = defaultdict(int)
+        for x in nums: 
+            x -= int(str(x)[::-1])
+            ans += freq[x]
+            freq[x] += 1
+        return ans % 1_000_000_007
+
+
+    """1815. Maximum Number of Groups Getting Fresh Donuts (Hard)
+	There is a donuts shop that bakes donuts in batches of batchSize. They have 
+	a rule where they must serve all of the donuts of a batch before serving 
+	any donuts of the next batch. You are given an integer batchSize and an 
+	integer array groups, where groups[i] denotes that there is a group of 
+	groups[i] customers that will visit the shop. Each customer will get 
+	exactly one donut. When a group visits the shop, all customers of the group 
+	must be served before serving any of the following groups. A group will be 
+	happy if they all get fresh donuts. That is, the first customer of the 
+	group does not receive a donut that was left over from the previous group. 
+	You can freely rearrange the ordering of the groups. Return the maximum 
+	possible number of happy groups after rearranging the groups.
+
+	Example 1:
+	Input: batchSize = 3, groups = [1,2,3,4,5,6]
+	Output: 4
+	Explanation: You can arrange the groups as [6,2,4,5,1,3]. Then the 1st, 2nd, 
+	             4th, and 6th groups will be happy.
+
+	Example 2:
+	Input: batchSize = 4, groups = [1,3,2,5,2,2,1,6]
+	Output: 4
+
+	Constraints:
+	* 1 <= batchSize <= 9
+	* 1 <= groups.length <= 30
+	* 1 <= groups[i] <= 10^9"""
+
+    def maxHappyGroups(self, batchSize: int, groups: List[int]) -> int:
+        ans = 0 
+        freq = [0]*batchSize
+        for x in groups: 
+            x %= batchSize 
+            if x == 0: ans += 1
+            elif freq[batchSize-x]: 
+                ans += 1
+                freq[batchSize-x] -= 1
+            else: freq[x] += 1
+            
+        @cache
+        def fn(freq, r): 
+            """Return max group getting fresh donuts."""
+            ans = 0 
+            if any(freq): 
+                for i, x in enumerate(freq):  
+                    if x: ans = max(ans, fn(freq[:i] + (x-1,) + freq[i+1:], (r+i)%batchSize))
+                if r == 0: ans += 1
+            return ans
+        
+        return fn(tuple(freq), 0) + ans
+
+
     """1816. Truncate Sentence (Easy)
 	A sentence is a list of words that are separated by a single space with no 
 	leading or trailing spaces. Each of the words consists of only uppercase 
