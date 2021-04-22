@@ -788,6 +788,46 @@ public:
     }
 
 
+    /*120. Triangle (Medium)
+	Given a triangle array, return the minimum path sum from top to bottom. For 
+	each step, you may move to an adjacent number of the row below. More 
+	formally, if you are on index i on the current row, you may move to either 
+	index i or index i + 1 on the next row.
+
+	Example 1:
+	Input: triangle = [[2],[3,4],[6,5,7],[4,1,8,3]]
+	Output: 11
+	Explanation: The triangle looks like:
+	   2
+	  3 4
+	 6 5 7
+	4 1 8 3
+	The minimum path sum from top to bottom is 2 + 3 + 5 + 1 = 11 (underlined above).
+
+	Example 2:
+	Input: triangle = [[-10]]
+	Output: -10
+
+	Constraints:
+	* 1 <= triangle.length <= 200
+	* triangle[0].length == 1
+	* triangle[i].length == triangle[i - 1].length + 1
+	* -104 <= triangle[i][j] <= 104
+
+	Follow up: Could you do this using only O(n) extra space, where n is the 
+	           total number of rows in the triangle?*/
+
+    int minimumTotal(vector<vector<int>>& triangle) {
+        vector<int> ans(triangle.back()); 
+        for (int i = triangle.size()-2; i >= 0; --i) {
+            for (int j = 0; j <= i; ++j) {
+                ans[j] = triangle[i][j] + min(ans[j], ans[j+1]); 
+            }
+        }
+        return ans[0]; 
+    }
+
+
     /*144. Binary Tree Preorder Traversal (Medium)
 	Given the root of a binary tree, return the preorder traversal of its 
 	nodes' values.
@@ -1375,6 +1415,59 @@ public:
     }
 
 
+    /*329. Longest Increasing Path in a Matrix (Hard)
+	Given an m x n integers matrix, return the length of the longest increasing 
+	path in matrix. From each cell, you can either move in four directions: 
+	left, right, up, or down. You may not move diagonally or move outside the 
+	boundary (i.e., wrap-around is not allowed).
+
+	Example 1:
+	Input: matrix = [[9,9,4],[6,6,8],[2,1,1]]
+	Output: 4
+	Explanation: The longest increasing path is [1, 2, 6, 9].
+
+	Example 2:
+	Input: matrix = [[3,4,5],[3,2,6],[2,2,1]]
+	Output: 4
+	Explanation: The longest increasing path is [3, 4, 5, 6]. Moving diagonally is not allowed.
+
+	Example 3:
+	Input: matrix = [[1]]
+	Output: 1
+
+	Constraints:
+	* m == matrix.length
+	* n == matrix[i].length
+	* 1 <= m, n <= 200
+	* 0 <= matrix[i][j] <= 2^31 - 1*/
+
+    int longestIncreasingPath(vector<vector<int>>& matrix) {
+        int m = matrix.size(), n = matrix[0].size(); 
+        
+        vector<vector<int>> memo(m, vector<int>(n, 0)); 
+        function<int(int, int)> fn = [&](int i, int j) {
+            if (memo[i][j] == 0) {
+                memo[i][j] = 1; 
+                for (auto &d : vector<vector<int>>{{-1, 0}, {0, -1}, {0, 1}, {1, 0}}) {
+                    int ii = i + d[0], jj = j + d[1]; 
+                    if (0 <= ii && ii < m && 0 <= jj && jj < n && matrix[i][j] < matrix[ii][jj]) {
+                        memo[i][j] = max(memo[i][j], 1 + fn(ii, jj)); 
+                    }
+                }
+            } 
+            return memo[i][j]; 
+        };
+        
+        int ans = 0; 
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                ans = max(ans, fn(i, j)); 
+            }
+        }
+        return ans; 
+    }
+
+
     /*377. Combination Sum IV (Medium)
 	Given an array of distinct integers nums and a target integer target, 
 	return the number of possible combinations that add up to target. The 
@@ -1447,6 +1540,49 @@ public:
             num /= 7; 
         }
         return neg ? "-" + ans : ans; 
+    }
+
+
+    /*554. Brick Wall (Medium)
+	There is a brick wall in front of you. The wall is rectangular and has 
+	several rows of bricks. The bricks have the same height but different width. 
+	You want to draw a vertical line from the top to the bottom and cross the 
+	least bricks. The brick wall is represented by a list of rows. Each row is 
+	a list of integers representing the width of each brick in this row from 
+	left to right. If your line go through the edge of a brick, then the brick 
+	is not considered as crossed. You need to find out how to draw the line to 
+	cross the least bricks and return the number of crossed bricks. You cannot 
+	draw a line just along one of the two vertical edges of the wall, in which 
+	case the line will obviously cross no bricks.
+
+	Example:
+	Input: [[1,2,2,1],
+	        [3,1,2],
+	        [1,3,2],
+	        [2,4],
+	        [3,1,2],
+	        [1,3,1,1]]
+
+	Output: 2
+
+	Note:
+	* The width sum of bricks in different rows are the same and won't exceed 
+	  INT_MAX.
+	* The number of bricks in each row is in range [1,10,000]. The height of 
+	  wall is in range [1,10,000]. Total number of bricks of the wall won't 
+	  exceed 20,000.*/
+
+    int leastBricks(vector<vector<int>>& wall) {
+        int mx = 0; 
+        unordered_map<int, int> freq; 
+        for (auto row : wall) {
+            int prefix = 0; 
+            for (int i = 0; i < row.size()-1; ++i) {
+                prefix += row[i]; 
+                mx = max(mx, ++freq[prefix]); 
+            }
+        }
+        return wall.size() - mx; 
     }
 
 
@@ -1663,6 +1799,44 @@ public:
             ++freq[x]; 
         }
         return min(candyType.size()/2, freq.size()); 
+    }
+
+
+    /*589. N-ary Tree Preorder Traversal (Easy)
+	Given the root of an n-ary tree, return the preorder traversal of its nodes' 
+	values. Nary-Tree input serialization is represented in their level order 
+	traversal. Each group of children is separated by the null value (See examples)
+
+	Example 1:
+	Input: root = [1,null,3,2,4,null,5,6]
+	Output: [1,3,5,6,2,4]
+
+	Example 2:
+	Input: root = [1,null,2,3,4,5,null,null,6,7,null,8,null,9,10,null,null,11,null,12,null,13,null,null,14]
+	Output: [1,2,3,6,7,11,14,4,8,12,5,9,13,10]
+
+	Constraints:
+	* The number of nodes in the tree is in the range [0, 104].
+	* 0 <= Node.val <= 104
+	* The height of the n-ary tree is less than or equal to 1000.
+
+	Follow up: Recursive solution is trivial, could you do it iteratively? */
+
+    vector<int> preorder(Node* root) {
+        vector<int> ans; 
+        if (root) {
+            stack<Node*> stk; 
+            stk.push(root); 
+            while (stk.size()) {
+                Node* node = stk.top(); 
+                stk.pop(); 
+                ans.push_back(node->val); 
+                for (int i = (node->children).size()-1; i >= 0; --i) {
+                    stk.push(node->children[i]); 
+                }
+            }
+        }
+        return ans; 
     }
 
 
