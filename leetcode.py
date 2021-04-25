@@ -3,11 +3,13 @@ Python3. No algorithm or reasoning is provided for the sake of saving spaces.
 For more details, the readers are suggested to explore on their own effort.
 """
 
-from functools import lru_cache, reduce
-from heapq import heappush, heappop, heapify
+from functools import cache, lru_cache, reduce
+from heapq import heapify, heappop, heappush
 from itertools import groupby, zip_longest
-from math import inf, sqrt, ceil
+from math import ceil, inf, sqrt
 from operator import gt, lt, or_, xor
+from threading import Lock
+
 
 class Solution:
 
@@ -29705,6 +29707,180 @@ class Fenwick:
         return reduce(xor, arr1) & reduce(xor, arr2)
 
 
+    """1837. Sum of Digits in Base K (Easy)
+	Given an integer n (in base 10) and a base k, return the sum of the digits 
+	of n after converting n from base 10 to base k. After converting, each 
+	digit should be interpreted as a base 10 number, and the sum should be 
+	returned in base 10.
+
+	Example 1:
+	Input: n = 34, k = 6
+	Output: 9
+	Explanation: 34 (base 10) expressed in base 6 is 54. 5 + 4 = 9.
+
+	Example 2:
+	Input: n = 10, k = 10
+	Output: 1
+	Explanation: n is already in base 10. 1 + 0 = 1.
+
+	Constraints:
+	* 1 <= n <= 100
+	* 2 <= k <= 10"""
+
+    def sumBase(self, n: int, k: int) -> int:
+        ans = 0
+        while n: 
+            n, x = divmod(n, k)
+            ans += x
+        return ans 
+
+
+    """1838. Frequency of the Most Frequent Element (Medium)
+	The frequency of an element is the number of times it occurs in an array. 
+	You are given an integer array nums and an integer k. In one operation, you 
+	can choose an index of nums and increment the element at that index by 1. 
+	Return the maximum possible frequency of an element after performing at 
+	most k operations.
+
+	Example 1:
+	Input: nums = [1,2,4], k = 5
+	Output: 3
+	Explanation: Increment the first element three times and the second element 
+	             two times to make nums = [4,4,4]. 4 has a frequency of 3.
+
+	Example 2:
+	Input: nums = [1,4,8,13], k = 5
+	Output: 2
+	Explanation: There are multiple optimal solutions:
+	- Increment the first element three times to make nums = [4,4,8,13]. 4 has a frequency of 2.
+	- Increment the second element four times to make nums = [1,8,8,13]. 8 has a frequency of 2.
+	- Increment the third element five times to make nums = [1,4,13,13]. 13 has a frequency of 2.
+	
+	Example 3:
+	Input: nums = [3,9,6], k = 2
+	Output: 1
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^5
+	* 1 <= k <= 10^5"""
+
+    def maxFrequency(self, nums: List[int], k: int) -> int:
+        nums.sort()
+        ans = ii = sm = 0 
+        for i in range(len(nums)): 
+            sm += nums[i]
+            while k < nums[i]*(i-ii+1) - sm: 
+                sm -= nums[ii]
+                ii += 1
+            ans = max(ans, i - ii + 1)
+        return ans 
+
+
+    """1839. Longest Substring Of All Vowels in Order (Medium)
+	A string is considered beautiful if it satisfies the following conditions:
+	* Each of the 5 English vowels ('a', 'e', 'i', 'o', 'u') must appear at 
+	  least once in it.
+	* The letters must be sorted in alphabetical order (i.e. all 'a's before 
+	  'e's, all 'e's before 'i's, etc.).
+	For example, strings "aeiou" and "aaaaaaeiiiioou" are considered beautiful, 
+	but "uaeio", "aeoiu", and "aaaeeeooo" are not beautiful. Given a string 
+	word consisting of English vowels, return the length of the longest 
+	beautiful substring of word. If no such substring exists, return 0. A 
+	substring is a contiguous sequence of characters in a string.
+
+	Example 1:
+	Input: word = "aeiaaioaaaaeiiiiouuuooaauuaeiu"
+	Output: 13
+	Explanation: The longest beautiful substring in word is "aaaaeiiiiouuu" of 
+	             length 13.
+
+	Example 2:
+	Input: word = "aeeeiiiioooauuuaeiou"
+	Output: 5
+	Explanation: The longest beautiful substring in word is "aeiou" of length 5.
+	
+	Example 3:
+	Input: word = "a"
+	Output: 0
+	Explanation: There is no beautiful substring, so return 0.
+
+	Constraints:
+	* 1 <= word.length <= 5 * 10^5
+	* word consists of characters 'a', 'e', 'i', 'o', and 'u'."""
+
+    def longestBeautifulSubstring(self, word: str) -> int:
+        ans = 0
+        cnt = unique = 1
+        for i in range(1, len(word)): 
+            if word[i-1] <= word[i]: 
+                cnt += 1
+                if word[i-1] < word[i]: unique += 1
+            else: cnt = unique = 1
+            if unique == 5: ans = max(ans, cnt)
+        return ans 
+
+
+    """1840. Maximum Building Height (Hard)
+	You want to build n new buildings in a city. The new buildings will be 
+	built in a line and are labeled from 1 to n. However, there are city 
+	restrictions on the heights of the new buildings:
+	* The height of each building must be a non-negative integer.
+	* The height of the first building must be 0.
+	* The height difference between any two adjacent buildings cannot exceed 1.
+	Additionally, there are city restrictions on the maximum height of specific 
+	buildings. These restrictions are given as a 2D integer array restrictions 
+	where restrictions[i] = [idi, maxHeighti] indicates that building idi must 
+	have a height less than or equal to maxHeighti. It is guaranteed that each 
+	building will appear at most once in restrictions, and building 1 will not 
+	be in restrictions. Return the maximum possible height of the tallest 
+	building.
+
+	Example 1:
+	Input: n = 5, restrictions = [[2,1],[4,1]]
+	Output: 2
+	Explanation: The green area in the image indicates the maximum allowed 
+	             height for each building. We can build the buildings with 
+	             heights [0,1,2,1,2], and the tallest building has a height of 
+	             2.
+
+	Example 2:
+	Input: n = 6, restrictions = []
+	Output: 5
+	Explanation: The green area in the image indicates the maximum allowed 
+	             height for each building. We can build the buildings with 
+	             heights [0,1,2,3,4,5], and the tallest building has a height 
+	             of 5.
+	
+	Example 3:
+	Input: n = 10, restrictions = [[5,3],[2,5],[7,4],[10,3]]
+	Output: 5
+	Explanation: The green area in the image indicates the maximum allowed 
+	             height for each building. We can build the buildings with 
+	             heights [0,1,2,3,3,4,4,5,4,3], and the tallest building has a 
+	             height of 5.
+
+	Constraints:
+	* 2 <= n <= 10^9
+	* 0 <= restrictions.length <= min(n - 1, 10^5)
+	* 2 <= idi <= n
+	* idi is unique.
+	* 0 <= maxHeighti <= 10^9"""
+
+    def maxBuilding(self, n: int, restrictions: List[List[int]]) -> int:
+        restrictions.extend([[1, 0], [n, n-1]])
+        restrictions.sort()
+        
+        for i in reversed(range(len(restrictions)-1)): 
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i+1][1] + restrictions[i+1][0] - restrictions[i][0])
+        
+        ans = 0 
+        for i in range(1, len(restrictions)): 
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i-1][1] + restrictions[i][0] - restrictions[i-1][0])
+            ans = max(ans, (restrictions[i-1][1] + restrictions[i][0] - restrictions[i-1][0] + restrictions[i][1])//2)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -31658,6 +31834,62 @@ class CBTInserter:
 
     def get_root(self) -> TreeNode:
         return self.root
+
+
+"""1115. Print FooBar Alternately (Medium)
+Suppose you are given the following code:
+
+class FooBar {
+  public void foo() {
+    for (int i = 0; i < n; i++) {
+      print("foo");
+    }
+  }
+
+  public void bar() {
+    for (int i = 0; i < n; i++) {
+      print("bar");
+    }
+  }
+}
+The same instance of FooBar will be passed to two different threads. Thread A 
+will call foo() while thread B will call bar(). Modify the given program to 
+output "foobar" n times.
+
+Example 1:
+Input: n = 1
+Output: "foobar"
+Explanation: There are two threads being fired asynchronously. One of them 
+             calls foo(), while the other calls bar(). "foobar" is being output 
+             1 time.
+
+Example 2:
+Input: n = 2
+Output: "foobarfoobar"
+Explanation: "foobar" is being output 2 times."""
+
+class FooBar:
+    def __init__(self, n):
+        self.n = n
+        self.lock0 = Lock()
+        self.lock1 = Lock()
+        self.lock1.acquire()
+
+
+    def foo(self, printFoo: 'Callable[[], None]') -> None:
+        for i in range(self.n):
+            # printFoo() outputs "foo". Do not change or remove this line.
+            self.lock0.acquire()
+            printFoo()
+            self.lock1.release()
+
+
+    def bar(self, printBar: 'Callable[[], None]') -> None:
+        for i in range(self.n):
+            # printBar() outputs "bar". Do not change or remove this line.
+            self.lock1.acquire()
+            printBar()
+            self.lock0.release()
 
 
 """1146. Snapshot Array (Medium)
