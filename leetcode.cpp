@@ -4170,6 +4170,193 @@ public:
     int getXORSum(vector<int>& arr1, vector<int>& arr2) {
         return accumulate(arr1.begin(), arr1.end(), 0, bit_xor()) & accumulate(arr2.begin(), arr2.end(), 0, bit_xor());
     }
+
+
+    /*1837. Sum of Digits in Base K (Easy)
+	Given an integer n (in base 10) and a base k, return the sum of the digits 
+	of n after converting n from base 10 to base k. After converting, each 
+	digit should be interpreted as a base 10 number, and the sum should be 
+	returned in base 10.
+
+	Example 1:
+	Input: n = 34, k = 6
+	Output: 9
+	Explanation: 34 (base 10) expressed in base 6 is 54. 5 + 4 = 9.
+
+	Example 2:
+	Input: n = 10, k = 10
+	Output: 1
+	Explanation: n is already in base 10. 1 + 0 = 1.
+
+	Constraints:
+	* 1 <= n <= 100
+	* 2 <= k <= 10*/
+
+    int sumBase(int n, int k) {
+        int ans = 0; 
+        while (n) {
+            ans += n % k; 
+            n /= k; 
+        }
+        return ans; 
+    }
+
+
+    /*1838. Frequency of the Most Frequent Element (Medium)
+	The frequency of an element is the number of times it occurs in an array. 
+	You are given an integer array nums and an integer k. In one operation, you 
+	can choose an index of nums and increment the element at that index by 1. 
+	Return the maximum possible frequency of an element after performing at 
+	most k operations.
+
+	Example 1:
+	Input: nums = [1,2,4], k = 5
+	Output: 3
+	Explanation: Increment the first element three times and the second element 
+	             two times to make nums = [4,4,4]. 4 has a frequency of 3.
+
+	Example 2:
+	Input: nums = [1,4,8,13], k = 5
+	Output: 2
+	Explanation: There are multiple optimal solutions:
+	- Increment the first element three times to make nums = [4,4,8,13]. 4 has a frequency of 2.
+	- Increment the second element four times to make nums = [1,8,8,13]. 8 has a frequency of 2.
+	- Increment the third element five times to make nums = [1,4,13,13]. 13 has a frequency of 2.
+
+	Example 3:
+	Input: nums = [3,9,6], k = 2
+	Output: 1
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^5
+	* 1 <= k <= 10^5*/
+
+    int maxFrequency(vector<int>& nums, int k) {
+        sort(nums.begin(), nums.end()); 
+        
+        int ans = 0, ii = 0; 
+        long sm = 0; 
+        for (int i = 0; i < nums.size(); ++i) {
+            sm += nums[i]; 
+            while (sm + k < (long) nums[i]*(i-ii+1)) {
+                sm -= nums[ii]; 
+                ii += 1; 
+            }
+            ans = max(ans, i - ii + 1); 
+        }
+        return ans; 
+    }
+
+
+    /*1839. Longest Substring Of All Vowels in Order (Medium)
+	A string is considered beautiful if it satisfies the following conditions:
+	* Each of the 5 English vowels ('a', 'e', 'i', 'o', 'u') must appear at 
+	  least once in it.
+	* The letters must be sorted in alphabetical order (i.e. all 'a's before 
+	  'e's, all 'e's before 'i's, etc.).
+	For example, strings "aeiou" and "aaaaaaeiiiioou" are considered beautiful, 
+	but "uaeio", "aeoiu", and "aaaeeeooo" are not beautiful. Given a string 
+	word consisting of English vowels, return the length of the longest 
+	beautiful substring of word. If no such substring exists, return 0. A 
+	substring is a contiguous sequence of characters in a string.
+
+	Example 1:
+	Input: word = "aeiaaioaaaaeiiiiouuuooaauuaeiu"
+	Output: 13
+	Explanation: The longest beautiful substring in word is "aaaaeiiiiouuu" of 
+	             length 13.
+
+	Example 2:
+	Input: word = "aeeeiiiioooauuuaeiou"
+	Output: 5
+	Explanation: The longest beautiful substring in word is "aeiou" of length 5.
+	
+	Example 3:
+	Input: word = "a"
+	Output: 0
+	Explanation: There is no beautiful substring, so return 0.
+
+	Constraints:
+	* 1 <= word.length <= 5 * 10^5
+	* word consists of characters 'a', 'e', 'i', 'o', and 'u'.*/
+
+    int longestBeautifulSubstring(string word) {
+        int ans = 0, cnt = 1, unique = 1; 
+        for (int i = 1; i < word.size(); ++i) {
+            if (word[i-1] <= word[i]) {
+                ++cnt; 
+                if (word[i-1] < word[i]) ++unique; 
+            } else {
+                cnt = unique = 1; 
+            }
+            if (unique == 5) ans = max(ans, cnt); 
+        }
+        return ans; 
+    }
+
+
+    /*1840. Maximum Building Height (Hard)
+	You want to build n new buildings in a city. The new buildings will be 
+	built in a line and are labeled from 1 to n. However, there are city 
+	restrictions on the heights of the new buildings:
+	* The height of each building must be a non-negative integer.
+	* The height of the first building must be 0.
+	* The height difference between any two adjacent buildings cannot exceed 1.
+	Additionally, there are city restrictions on the maximum height of specific 
+	buildings. These restrictions are given as a 2D integer array restrictions 
+	where restrictions[i] = [idi, maxHeighti] indicates that building idi must 
+	have a height less than or equal to maxHeighti. It is guaranteed that each 
+	building will appear at most once in restrictions, and building 1 will not 
+	be in restrictions. Return the maximum possible height of the tallest 
+	building.
+
+	Example 1:
+	Input: n = 5, restrictions = [[2,1],[4,1]]
+	Output: 2
+	Explanation: The green area in the image indicates the maximum allowed 
+	             height for each building. We can build the buildings with 
+	             heights [0,1,2,1,2], and the tallest building has a height of
+	             2.
+
+	Example 2:
+	Input: n = 6, restrictions = []
+	Output: 5
+	Explanation: The green area in the image indicates the maximum allowed 
+	             height for each building. We can build the buildings with 
+	             heights [0,1,2,3,4,5], and the tallest building has a height 
+	             of 5.
+	
+	Example 3:
+	Input: n = 10, restrictions = [[5,3],[2,5],[7,4],[10,3]]
+	Output: 5
+	Explanation: The green area in the image indicates the maximum allowed 
+	             height for each building. We can build the buildings with 
+	             heights [0,1,2,3,3,4,4,5,4,3], and the tallest building has a 
+	             height of 5.
+
+	Constraints:
+	* 2 <= n <= 10^9
+	* 0 <= restrictions.length <= min(n - 1, 10^5)
+	* 2 <= idi <= n
+	* idi is unique.
+	* 0 <= maxHeighti <= 10^9*/
+
+    int maxBuilding(int n, vector<vector<int>>& restrictions) {
+        restrictions.push_back({1, 0});
+        restrictions.push_back({n, n-1}); 
+        sort(restrictions.begin(), restrictions.end()); 
+        for (int i = restrictions.size()-2; i >= 0; --i) {
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i+1][1] + restrictions[i+1][0] - restrictions[i][0]); 
+        }
+        
+        int ans = 0; 
+        for (int i = 1; i < restrictions.size(); ++i) {
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i-1][1] + restrictions[i][0] - restrictions[i-1][0]); 
+            ans = max(ans, (restrictions[i-1][1] + restrictions[i][0] - restrictions[i-1][0] + restrictions[i][1])/2); 
+        }
+        return ans; 
+    }
 };
 
 
