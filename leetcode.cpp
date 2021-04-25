@@ -3303,6 +3303,187 @@ public:
     }
 
 
+    /*896. Monotonic Array (Easy)
+	An array is monotonic if it is either monotone increasing or monotone 
+	decreasing. An array A is monotone increasing if for all i <= j, A[i] <= A[j].  
+	An array A is monotone decreasing if for all i <= j, A[i] >= A[j]. Return 
+	true if and only if the given array A is monotonic.
+
+	Example 1:
+	Input: [1,2,2,3]
+	Output: true
+
+	Example 2:
+	Input: [6,5,4,4]
+	Output: true
+
+	Example 3:
+	Input: [1,3,2]
+	Output: false
+
+	Example 4:
+	Input: [1,2,4,5]
+	Output: true
+
+	Example 5:
+	Input: [1,1,1]
+	Output: true
+
+	Note:
+	* 1 <= A.length <= 50000
+	* -100000 <= A[i] <= 100000*/
+
+    bool isMonotonic(vector<int>& A) {
+        bool increase = true, decrease = true; 
+        for (int i = 1; i < A.size(); ++i) {
+            if (A[i-1] < A[i]) decrease = false; 
+            if (A[i-1] > A[i]) increase = false; 
+        }
+        return increase || decrease; 
+    }
+
+
+    /*897. Increasing Order Search Tree (Easy)
+	Given the root of a binary search tree, rearrange the tree in in-order so 
+	that the leftmost node in the tree is now the root of the tree, and every 
+	node has no left child and only one right child.
+
+	Example 1:
+	Input: root = [5,3,6,2,4,null,8,1,null,null,null,7,9]
+	Output: [1,null,2,null,3,null,4,null,5,null,6,null,7,null,8,null,9]
+
+	Example 2:
+	Input: root = [5,1,7]
+	Output: [1,null,5,null,7]
+
+	Constraints:
+	* The number of nodes in the given tree will be in the range [1, 100].
+	* 0 <= Node.val <= 1000*/
+
+    TreeNode* increasingBST(TreeNode* root) {
+        stack<TreeNode*> stk;
+        TreeNode *node = root, *prev = NULL, *head = NULL; 
+        
+        while (stk.size() || node) {
+            if (node) {
+                stk.push(node); 
+                node = node->left; 
+            } else {
+                node = stk.top(); 
+                stk.pop(); 
+                if (prev == NULL) {
+                    head = prev = node; 
+                } else {
+                    prev = prev->right = node; 
+                }
+                node->left = NULL; 
+                node = node->right; 
+            }
+        }
+        return head; 
+    }
+
+
+    /*905. Sort Array By Parity (Easy)
+	Given an array A of non-negative integers, return an array consisting of 
+	all the even elements of A, followed by all the odd elements of A. You may 
+	return any answer array that satisfies this condition.
+
+	Example 1:
+	Input: [3,1,2,4]
+	Output: [2,4,3,1]
+	The outputs [4,2,3,1], [2,4,1,3], and [4,2,1,3] would also be accepted.
+
+	Note:
+	* 1 <= A.length <= 5000
+	* 0 <= A[i] <= 5000*/
+
+    vector<int> sortArrayByParity(vector<int>& A) {
+        sort(A.begin(), A.end(), [](int i, int j){return (i&1) < (j&1);});
+        return A; 
+    }
+
+
+    /*908. Smallest Range I (Easy)
+	Given an array A of integers, for each integer A[i] we may choose any x 
+	with -K <= x <= K, and add x to A[i]. After this process, we have some 
+	array B. Return the smallest possible difference between the maximum value 
+	of B and the minimum value of B.
+
+	Example 1:
+	Input: A = [1], K = 0
+	Output: 0
+	Explanation: B = [1]
+
+	Example 2:
+	Input: A = [0,10], K = 2
+	Output: 6
+	Explanation: B = [2,8]
+
+	Example 3:
+	Input: A = [1,3,6], K = 3
+	Output: 0
+	Explanation: B = [3,3,3] or B = [4,4,4]
+
+	Note:
+	* 1 <= A.length <= 10000
+	* 0 <= A[i] <= 10000
+	* 0 <= K <= 10000*/
+
+    int smallestRangeI(vector<int>& A, int K) {
+        int mn = *min_element(A.begin(), A.end());
+        int mx = *max_element(A.begin(), A.end()); 
+        return max(0, mx - mn - 2*K); 
+    }
+
+
+    /*914. X of a Kind in a Deck of Cards (Easy)
+	In a deck of cards, each card has an integer written on it. Return true if 
+	and only if you can choose X >= 2 such that it is possible to split the 
+	entire deck into 1 or more groups of cards, where:
+	* Each group has exactly X cards.
+	* All the cards in each group have the same integer.
+
+	Example 1:
+	Input: deck = [1,2,3,4,4,3,2,1]
+	Output: true
+	Explanation: Possible partition [1,1],[2,2],[3,3],[4,4].
+
+	Example 2:
+	Input: deck = [1,1,1,2,2,2,3,3]
+	Output: false
+	Explanation: No possible partition.
+
+	Example 3:
+	Input: deck = [1]
+	Output: false
+	Explanation: No possible partition.
+
+	Example 4:
+	Input: deck = [1,1]
+	Output: true
+	Explanation: Possible partition [1,1].
+
+	Example 5:
+	Input: deck = [1,1,2,2,2,2]
+	Output: true
+	Explanation: Possible partition [1,1],[2,2],[2,2].
+
+	Constraints:
+	* 1 <= deck.length <= 10^4
+	* 0 <= deck[i] < 10^4*/
+
+    bool hasGroupsSizeX(vector<int>& deck) {
+        unordered_map<int, int> freq; 
+        for (auto x : deck) ++freq[x]; 
+        
+        int ans = 0; 
+        for (auto x : freq) 
+            ans = gcd(ans, x.second);
+        return ans >= 2; 
+    }
+
+
     /*953. Verifying an Alien Dictionary (Easy)
 	In an alien language, surprisingly they also use english lowercase letters, 
 	but possibly in a different order. The order of the alphabet is some 
