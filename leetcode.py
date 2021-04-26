@@ -16481,6 +16481,177 @@ class Solution:
         return ans
 
 
+    """1103. Distribute Candies to People (Easy)
+	We distribute some number of candies, to a row of n = num_people people in 
+	the following way: 
+	We then give 1 candy to the first person, 2 candies to the second person, 
+	and so on until we give n candies to the last person. Then, we go back to 
+	the start of the row, giving n + 1 candies to the first person, n + 2 
+	candies to the second person, and so on until we give 2 * n candies to the 
+	last person. This process repeats (with us giving one more candy each time, 
+	and moving to the start of the row after we reach the end) until we run out 
+	of candies.  The last person will receive all of our remaining candies (not 
+	necessarily one more than the previous gift). Return an array (of length 
+	num_people and sum candies) that represents the final distribution of 
+	candies.
+
+	Example 1:
+	Input: candies = 7, num_people = 4
+	Output: [1,2,3,1]
+	Explanation:
+	On the first turn, ans[0] += 1, and the array is [1,0,0,0].
+	On the second turn, ans[1] += 2, and the array is [1,2,0,0].
+	On the third turn, ans[2] += 3, and the array is [1,2,3,0].
+	On the fourth turn, ans[3] += 1 (because there is only one candy left), and 
+	the final array is [1,2,3,1].
+
+	Example 2:
+	Input: candies = 10, num_people = 3
+	Output: [5,2,3]
+	Explanation: 
+	On the first turn, ans[0] += 1, and the array is [1,0,0].
+	On the second turn, ans[1] += 2, and the array is [1,2,0].
+	On the third turn, ans[2] += 3, and the array is [1,2,3].
+	On the fourth turn, ans[0] += 4, and the final array is [5,2,3].
+
+	Constraints:
+	* 1 <= candies <= 10^9
+	* 1 <= num_people <= 1000"""
+
+    def distributeCandies(self, candies: int, num_people: int) -> List[int]:
+        ans = [0]*num_people
+        i = 0
+        while candies > 0: 
+            i += 1
+            ans[(i-1)%num_people] += min(i, candies)
+            candies -= i
+        return ans 
+
+
+    """1104. Path In Zigzag Labelled Binary Tree (Medium)
+	In an infinite binary tree where every node has two children, the nodes are 
+	labelled in row order. In the odd numbered rows (ie., the first, third, 
+	fifth,...), the labelling is left to right, while in the even numbered rows 
+	(second, fourth, sixth,...), the labelling is right to left. Given the 
+	label of a node in this tree, return the labels in the path from the root 
+	of the tree to the node with that label.
+
+	Example 1:
+	Input: label = 14
+	Output: [1,3,4,14]
+
+	Example 2:
+	Input: label = 26
+	Output: [1,2,6,10,26]
+
+	Constraints: 1 <= label <= 10^6"""
+
+    def pathInZigZagTree(self, label: int) -> List[int]:
+        level = int(log2(label))
+        compl = 3*2**level - 1 - label # complement 
+        
+        ans = []
+        while label: 
+            ans.append(label)
+            label //= 2
+            compl //= 2
+            label, compl = compl, label
+        return ans[::-1]
+
+
+    """1105. Filling Bookcase Shelves (Medium)
+	We have a sequence of books: the i-th book has thickness books[i][0] and 
+	height books[i][1]. We want to place these books in order onto bookcase 
+	shelves that have total width shelf_width. We choose some of the books to 
+	place on this shelf (such that the sum of their thickness is <= shelf_width), 
+	then build another level of shelf of the bookcase so that the total height 
+	of the bookcase has increased by the maximum height of the books we just 
+	put down.  We repeat this process until there are no more books to place. 
+	Note again that at each step of the above process, the order of the books 
+	we place is the same order as the given sequence of books.  For example, if 
+	we have an ordered list of 5 books, we might place the first and second 
+	book onto the first shelf, the third book on the second shelf, and the 
+	fourth and fifth book on the last shelf. Return the minimum possible height 
+	that the total bookshelf can be after placing shelves in this manner.
+
+	Example 1:
+	Input: books = [[1,1],[2,3],[2,3],[1,1],[1,1],[1,1],[1,2]], shelf_width = 4
+	Output: 6
+	Explanation: The sum of the heights of the 3 shelves are 1 + 3 + 2 = 6.
+	             Notice that book number 2 does not have to be on the first 
+	             shelf.
+
+	Constraints:
+	* 1 <= books.length <= 1000
+	* 1 <= books[i][0] <= shelf_width <= 1000
+	* 1 <= books[i][1] <= 1000"""
+
+    def minHeightShelves(self, books: List[List[int]], shelf_width: int) -> int:
+        
+        @cache
+        def fn(i):
+            """Return minimum height of stacking books[i:]."""
+            if i == len(books): return 0
+            ans = inf
+            w = h = 0
+            for j in range(i, len(books)):
+                if (w := w+books[j][0]) > shelf_width: return ans 
+                h = max(h, books[j][1])
+                ans = min(ans, h + fn(j+1))
+            return ans 
+            
+        return fn(0)
+
+
+    """1106. Parsing A Boolean Expression (Hard)
+	Return the result of evaluating a given boolean expression, represented as 
+	a string. An expression can either be:
+	* "t", evaluating to True;
+	* "f", evaluating to False;
+	* "!(expr)", evaluating to the logical NOT of the inner expression expr;
+	* "&(expr1,expr2,...)", evaluating to the logical AND of 2 or more inner expressions expr1, expr2, ...;
+	* "|(expr1,expr2,...)", evaluating to the logical OR of 2 or more inner expressions expr1, expr2, ...
+
+	Example 1:
+	Input: expression = "!(f)"
+	Output: true
+
+	Example 2:
+	Input: expression = "|(f,t)"
+	Output: true
+
+	Example 3:
+	Input: expression = "&(t,f)"
+	Output: false
+
+	Example 4:
+	Input: expression = "|(&(t,f,t),!(t))"
+	Output: false
+
+	Constraints:
+	* 1 <= expression.length <= 20000
+	* expression[i] consists of characters in {'(', ')', '&', '|', '!', 't', 'f', ','}.
+	* expression is a valid expression representing a boolean, as given in the description."""
+
+    def parseBoolExpr(self, expression: str) -> bool:
+        t = f = 0 
+        operators, operands = [], []
+        for x in expression: 
+            if x in "!&|": # operator 
+                operators.append(x)
+                operands.append([t, f])
+                t = f = 0 
+            elif x == "t": t += 1
+            elif x == "f": f += 1
+            elif x == ")": 
+                op = operators.pop()
+                if op == "!" and t or op == "&" and f or op == "|" and not t: t, f = 0, 1
+                else: t, f = 1, 0
+                tt, ff = operands.pop()
+                t, f = t+tt, f+ff
+        return t
+
+
     """1118. Number of Days in a Month (Easy)
 	Given a year Y and a month M, return how many days there are in that month.
 
