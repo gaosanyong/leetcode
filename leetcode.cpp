@@ -3477,6 +3477,187 @@ public:
     }
 
 
+    /*896. Monotonic Array (Easy)
+	An array is monotonic if it is either monotone increasing or monotone 
+	decreasing. An array A is monotone increasing if for all i <= j, A[i] <= A[j].  
+	An array A is monotone decreasing if for all i <= j, A[i] >= A[j]. Return 
+	true if and only if the given array A is monotonic.
+
+	Example 1:
+	Input: [1,2,2,3]
+	Output: true
+
+	Example 2:
+	Input: [6,5,4,4]
+	Output: true
+
+	Example 3:
+	Input: [1,3,2]
+	Output: false
+
+	Example 4:
+	Input: [1,2,4,5]
+	Output: true
+
+	Example 5:
+	Input: [1,1,1]
+	Output: true
+
+	Note:
+	* 1 <= A.length <= 50000
+	* -100000 <= A[i] <= 100000*/
+
+    bool isMonotonic(vector<int>& A) {
+        bool increase = true, decrease = true; 
+        for (int i = 1; i < A.size(); ++i) {
+            if (A[i-1] < A[i]) decrease = false; 
+            if (A[i-1] > A[i]) increase = false; 
+        }
+        return increase || decrease; 
+    }
+
+
+    /*897. Increasing Order Search Tree (Easy)
+	Given the root of a binary search tree, rearrange the tree in in-order so 
+	that the leftmost node in the tree is now the root of the tree, and every 
+	node has no left child and only one right child.
+
+	Example 1:
+	Input: root = [5,3,6,2,4,null,8,1,null,null,null,7,9]
+	Output: [1,null,2,null,3,null,4,null,5,null,6,null,7,null,8,null,9]
+
+	Example 2:
+	Input: root = [5,1,7]
+	Output: [1,null,5,null,7]
+
+	Constraints:
+	* The number of nodes in the given tree will be in the range [1, 100].
+	* 0 <= Node.val <= 1000*/
+
+    TreeNode* increasingBST(TreeNode* root) {
+        stack<TreeNode*> stk;
+        TreeNode *node = root, *prev = NULL, *head = NULL; 
+        
+        while (stk.size() || node) {
+            if (node) {
+                stk.push(node); 
+                node = node->left; 
+            } else {
+                node = stk.top(); 
+                stk.pop(); 
+                if (prev == NULL) {
+                    head = prev = node; 
+                } else {
+                    prev = prev->right = node; 
+                }
+                node->left = NULL; 
+                node = node->right; 
+            }
+        }
+        return head; 
+    }
+
+
+    /*905. Sort Array By Parity (Easy)
+	Given an array A of non-negative integers, return an array consisting of 
+	all the even elements of A, followed by all the odd elements of A. You may 
+	return any answer array that satisfies this condition.
+
+	Example 1:
+	Input: [3,1,2,4]
+	Output: [2,4,3,1]
+	The outputs [4,2,3,1], [2,4,1,3], and [4,2,1,3] would also be accepted.
+
+	Note:
+	* 1 <= A.length <= 5000
+	* 0 <= A[i] <= 5000*/
+
+    vector<int> sortArrayByParity(vector<int>& A) {
+        sort(A.begin(), A.end(), [](int i, int j){return (i&1) < (j&1);});
+        return A; 
+    }
+
+
+    /*908. Smallest Range I (Easy)
+	Given an array A of integers, for each integer A[i] we may choose any x 
+	with -K <= x <= K, and add x to A[i]. After this process, we have some 
+	array B. Return the smallest possible difference between the maximum value 
+	of B and the minimum value of B.
+
+	Example 1:
+	Input: A = [1], K = 0
+	Output: 0
+	Explanation: B = [1]
+
+	Example 2:
+	Input: A = [0,10], K = 2
+	Output: 6
+	Explanation: B = [2,8]
+
+	Example 3:
+	Input: A = [1,3,6], K = 3
+	Output: 0
+	Explanation: B = [3,3,3] or B = [4,4,4]
+
+	Note:
+	* 1 <= A.length <= 10000
+	* 0 <= A[i] <= 10000
+	* 0 <= K <= 10000*/
+
+    int smallestRangeI(vector<int>& A, int K) {
+        int mn = *min_element(A.begin(), A.end());
+        int mx = *max_element(A.begin(), A.end()); 
+        return max(0, mx - mn - 2*K); 
+    }
+
+
+    /*914. X of a Kind in a Deck of Cards (Easy)
+	In a deck of cards, each card has an integer written on it. Return true if 
+	and only if you can choose X >= 2 such that it is possible to split the 
+	entire deck into 1 or more groups of cards, where:
+	* Each group has exactly X cards.
+	* All the cards in each group have the same integer.
+
+	Example 1:
+	Input: deck = [1,2,3,4,4,3,2,1]
+	Output: true
+	Explanation: Possible partition [1,1],[2,2],[3,3],[4,4].
+
+	Example 2:
+	Input: deck = [1,1,1,2,2,2,3,3]
+	Output: false
+	Explanation: No possible partition.
+
+	Example 3:
+	Input: deck = [1]
+	Output: false
+	Explanation: No possible partition.
+
+	Example 4:
+	Input: deck = [1,1]
+	Output: true
+	Explanation: Possible partition [1,1].
+
+	Example 5:
+	Input: deck = [1,1,2,2,2,2]
+	Output: true
+	Explanation: Possible partition [1,1],[2,2],[2,2].
+
+	Constraints:
+	* 1 <= deck.length <= 10^4
+	* 0 <= deck[i] < 10^4*/
+
+    bool hasGroupsSizeX(vector<int>& deck) {
+        unordered_map<int, int> freq; 
+        for (auto x : deck) ++freq[x]; 
+        
+        int ans = 0; 
+        for (auto x : freq) 
+            ans = gcd(ans, x.second);
+        return ans >= 2; 
+    }
+
+
     /*953. Verifying an Alien Dictionary (Easy)
 	In an alien language, surprisingly they also use english lowercase letters, 
 	but possibly in a different order. The order of the alphabet is some 
@@ -3988,6 +4169,193 @@ public:
 
     int getXORSum(vector<int>& arr1, vector<int>& arr2) {
         return accumulate(arr1.begin(), arr1.end(), 0, bit_xor()) & accumulate(arr2.begin(), arr2.end(), 0, bit_xor());
+    }
+
+
+    /*1837. Sum of Digits in Base K (Easy)
+	Given an integer n (in base 10) and a base k, return the sum of the digits 
+	of n after converting n from base 10 to base k. After converting, each 
+	digit should be interpreted as a base 10 number, and the sum should be 
+	returned in base 10.
+
+	Example 1:
+	Input: n = 34, k = 6
+	Output: 9
+	Explanation: 34 (base 10) expressed in base 6 is 54. 5 + 4 = 9.
+
+	Example 2:
+	Input: n = 10, k = 10
+	Output: 1
+	Explanation: n is already in base 10. 1 + 0 = 1.
+
+	Constraints:
+	* 1 <= n <= 100
+	* 2 <= k <= 10*/
+
+    int sumBase(int n, int k) {
+        int ans = 0; 
+        while (n) {
+            ans += n % k; 
+            n /= k; 
+        }
+        return ans; 
+    }
+
+
+    /*1838. Frequency of the Most Frequent Element (Medium)
+	The frequency of an element is the number of times it occurs in an array. 
+	You are given an integer array nums and an integer k. In one operation, you 
+	can choose an index of nums and increment the element at that index by 1. 
+	Return the maximum possible frequency of an element after performing at 
+	most k operations.
+
+	Example 1:
+	Input: nums = [1,2,4], k = 5
+	Output: 3
+	Explanation: Increment the first element three times and the second element 
+	             two times to make nums = [4,4,4]. 4 has a frequency of 3.
+
+	Example 2:
+	Input: nums = [1,4,8,13], k = 5
+	Output: 2
+	Explanation: There are multiple optimal solutions:
+	- Increment the first element three times to make nums = [4,4,8,13]. 4 has a frequency of 2.
+	- Increment the second element four times to make nums = [1,8,8,13]. 8 has a frequency of 2.
+	- Increment the third element five times to make nums = [1,4,13,13]. 13 has a frequency of 2.
+
+	Example 3:
+	Input: nums = [3,9,6], k = 2
+	Output: 1
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^5
+	* 1 <= k <= 10^5*/
+
+    int maxFrequency(vector<int>& nums, int k) {
+        sort(nums.begin(), nums.end()); 
+        
+        int ans = 0, ii = 0; 
+        long sm = 0; 
+        for (int i = 0; i < nums.size(); ++i) {
+            sm += nums[i]; 
+            while (sm + k < (long) nums[i]*(i-ii+1)) {
+                sm -= nums[ii]; 
+                ii += 1; 
+            }
+            ans = max(ans, i - ii + 1); 
+        }
+        return ans; 
+    }
+
+
+    /*1839. Longest Substring Of All Vowels in Order (Medium)
+	A string is considered beautiful if it satisfies the following conditions:
+	* Each of the 5 English vowels ('a', 'e', 'i', 'o', 'u') must appear at 
+	  least once in it.
+	* The letters must be sorted in alphabetical order (i.e. all 'a's before 
+	  'e's, all 'e's before 'i's, etc.).
+	For example, strings "aeiou" and "aaaaaaeiiiioou" are considered beautiful, 
+	but "uaeio", "aeoiu", and "aaaeeeooo" are not beautiful. Given a string 
+	word consisting of English vowels, return the length of the longest 
+	beautiful substring of word. If no such substring exists, return 0. A 
+	substring is a contiguous sequence of characters in a string.
+
+	Example 1:
+	Input: word = "aeiaaioaaaaeiiiiouuuooaauuaeiu"
+	Output: 13
+	Explanation: The longest beautiful substring in word is "aaaaeiiiiouuu" of 
+	             length 13.
+
+	Example 2:
+	Input: word = "aeeeiiiioooauuuaeiou"
+	Output: 5
+	Explanation: The longest beautiful substring in word is "aeiou" of length 5.
+	
+	Example 3:
+	Input: word = "a"
+	Output: 0
+	Explanation: There is no beautiful substring, so return 0.
+
+	Constraints:
+	* 1 <= word.length <= 5 * 10^5
+	* word consists of characters 'a', 'e', 'i', 'o', and 'u'.*/
+
+    int longestBeautifulSubstring(string word) {
+        int ans = 0, cnt = 1, unique = 1; 
+        for (int i = 1; i < word.size(); ++i) {
+            if (word[i-1] <= word[i]) {
+                ++cnt; 
+                if (word[i-1] < word[i]) ++unique; 
+            } else {
+                cnt = unique = 1; 
+            }
+            if (unique == 5) ans = max(ans, cnt); 
+        }
+        return ans; 
+    }
+
+
+    /*1840. Maximum Building Height (Hard)
+	You want to build n new buildings in a city. The new buildings will be 
+	built in a line and are labeled from 1 to n. However, there are city 
+	restrictions on the heights of the new buildings:
+	* The height of each building must be a non-negative integer.
+	* The height of the first building must be 0.
+	* The height difference between any two adjacent buildings cannot exceed 1.
+	Additionally, there are city restrictions on the maximum height of specific 
+	buildings. These restrictions are given as a 2D integer array restrictions 
+	where restrictions[i] = [idi, maxHeighti] indicates that building idi must 
+	have a height less than or equal to maxHeighti. It is guaranteed that each 
+	building will appear at most once in restrictions, and building 1 will not 
+	be in restrictions. Return the maximum possible height of the tallest 
+	building.
+
+	Example 1:
+	Input: n = 5, restrictions = [[2,1],[4,1]]
+	Output: 2
+	Explanation: The green area in the image indicates the maximum allowed 
+	             height for each building. We can build the buildings with 
+	             heights [0,1,2,1,2], and the tallest building has a height of
+	             2.
+
+	Example 2:
+	Input: n = 6, restrictions = []
+	Output: 5
+	Explanation: The green area in the image indicates the maximum allowed 
+	             height for each building. We can build the buildings with 
+	             heights [0,1,2,3,4,5], and the tallest building has a height 
+	             of 5.
+	
+	Example 3:
+	Input: n = 10, restrictions = [[5,3],[2,5],[7,4],[10,3]]
+	Output: 5
+	Explanation: The green area in the image indicates the maximum allowed 
+	             height for each building. We can build the buildings with 
+	             heights [0,1,2,3,3,4,4,5,4,3], and the tallest building has a 
+	             height of 5.
+
+	Constraints:
+	* 2 <= n <= 10^9
+	* 0 <= restrictions.length <= min(n - 1, 10^5)
+	* 2 <= idi <= n
+	* idi is unique.
+	* 0 <= maxHeighti <= 10^9*/
+
+    int maxBuilding(int n, vector<vector<int>>& restrictions) {
+        restrictions.push_back({1, 0});
+        restrictions.push_back({n, n-1}); 
+        sort(restrictions.begin(), restrictions.end()); 
+        for (int i = restrictions.size()-2; i >= 0; --i) {
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i+1][1] + restrictions[i+1][0] - restrictions[i][0]); 
+        }
+        
+        int ans = 0; 
+        for (int i = 1; i < restrictions.size(); ++i) {
+            restrictions[i][1] = min(restrictions[i][1], restrictions[i-1][1] + restrictions[i][0] - restrictions[i-1][0]); 
+            ans = max(ans, (restrictions[i-1][1] + restrictions[i][0] - restrictions[i-1][0] + restrictions[i][1])/2); 
+        }
+        return ans; 
     }
 };
 
