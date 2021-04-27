@@ -15543,6 +15543,51 @@ class Solution:
         return ans 
 
 
+    """1028. Recover a Tree From Preorder Traversal (Hard)
+	We run a preorder depth-first search (DFS) on the root of a binary tree. At 
+	each node in this traversal, we output D dashes (where D is the depth of 
+	this node), then we output the value of this node.  If the depth of a node 
+	is D, the depth of its immediate child is D + 1.  The depth of the root 
+	node is 0. If a node has only one child, that child is guaranteed to be the 
+	left child. Given the output S of this traversal, recover the tree and 
+	return its root.
+
+	Example 1:
+	Input: S = "1-2--3--4-5--6--7"
+	Output: [1,2,5,3,4,6,7]
+
+	Example 2:
+	Input: S = "1-2--3---4-5--6---7"
+	Output: [1,2,5,3,null,6,null,4,null,7]
+
+	Example 3:
+	Input: S = "1-401--349---90--88"
+	Output: [1,401,null,349,88,90]
+
+	Constraints:
+	* The number of nodes in the original tree is in the range [1, 1000].
+	* 1 <= Node.val <= 10^9"""
+
+    def recoverFromPreorder(self, S: str) -> TreeNode:
+        stack = []
+        depth, val = 0, ""
+        for i, x in enumerate(S): 
+            if x == "-": 
+                depth += 1
+                val = ""
+            else: 
+                val += S[i]
+                if i+1 == len(S) or S[i+1] == "-": 
+                    node = TreeNode(int(val))
+                    while len(stack) > depth: stack.pop()
+                    if stack:
+                        if not stack[-1].left: stack[-1].left = node
+                        else: stack[-1].right = node
+                    stack.append(node)
+                    depth = 0
+        return stack[0]
+
+
     """1029. Two City Scheduling (Medium)
 	A company is planning to interview 2n people. Given the array costs where 
 	costs[i] = [aCosti, bCosti], the cost of flying the ith person to city a is 
@@ -16359,6 +16404,43 @@ class Solution:
         return sorted(ans)
 
 
+    """1089. Duplicate Zeros (Easy)
+	Given a fixed length array arr of integers, duplicate each occurrence of 
+	zero, shifting the remaining elements to the right. Note that elements 
+	beyond the length of the original array are not written. Do the above 
+	modifications to the input array in place, do not return anything from your 
+	function.
+
+	Example 1:
+	Input: [1,0,2,3,0,4,5,0]
+	Output: null
+	Explanation: After calling your function, the input array is modified to: 
+	             [1,0,0,2,3,0,0,4]
+
+	Example 2:
+	Input: [1,2,3]
+	Output: null
+	Explanation: After calling your function, the input array is modified to: 
+	             [1,2,3]
+
+	Note:
+	* 1 <= arr.length <= 10000
+	* 0 <= arr[i] <= 9"""
+
+    def duplicateZeros(self, arr: List[int]) -> None:
+        """
+        Do not return anything, modify arr in-place instead.
+        """
+        zeros = arr.count(0)
+        for i in reversed(range(len(arr))): 
+            if i + zeros < len(arr): 
+                arr[i+zeros] = arr[i]
+            if arr[i] == 0: 
+                zeros -= 1
+                if i + zeros < len(arr): 
+                    arr[i+zeros] = arr[i]
+
+
     """1090. Largest Values From Labels (Medium)
 	We have a set of items: the i-th item has value values[i] and label labels[i]. 
 	Then, we choose a subset S of these items, such that:
@@ -16444,6 +16526,51 @@ class Solution:
                 queue = newq
                 ans += 1
         return -1 
+
+
+    """1092. Shortest Common Supersequence (Hard)
+	Given two strings str1 and str2, return the shortest string that has both 
+	str1 and str2 as subsequences.  If multiple answers exist, you may return 
+	any of them. (A string S is a subsequence of string T if deleting some 
+	number of characters from T (possibly 0, and the characters are chosen 
+	anywhere from T) results in the string S.)
+
+	Example 1:
+	Input: str1 = "abac", str2 = "cab"
+	Output: "cabac"
+	Explanation: 
+	str1 = "abac" is a subsequence of "cabac" because we can delete the first "c".
+	str2 = "cab" is a subsequence of "cabac" because we can delete the last "ac".
+	The answer provided is the shortest such string that satisfies these properties.
+
+	Note:
+	* 1 <= str1.length, str2.length <= 1000
+	* str1 and str2 consist of lowercase English letters."""
+
+    def shortestCommonSupersequence(self, str1: str, str2: str) -> str:
+        
+        @lru_cache(None)
+        def fn(i, j): 
+            """Return min length of common supersequence of str1[i:] and str2[j:]."""
+            if i == len(str1): return len(str2)-j
+            if j == len(str2): return len(str1)-i
+            if str1[i] == str2[j]: return 1 + fn(i+1, j+1)
+            return 1 + min(fn(i+1, j), fn(i, j+1))
+        
+        ans = []
+        i = j = 0 
+        while i < len(str1) and j < len(str2): 
+            if str1[i] == str2[j]: 
+                ans.append(str1[i])
+                i += 1
+                j += 1
+            elif fn(i+1, j) < fn(i, j+1): 
+                ans.append(str1[i])
+                i += 1
+            else: 
+                ans.append(str2[j])
+                j += 1
+        return "".join(ans) + str1[i:] + str2[j:]
 
 
     """1099. Two Sum Less Than K (Easy)
