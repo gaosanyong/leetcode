@@ -342,7 +342,7 @@ class Solution:
 
     def isMatch(self, s: str, p: str) -> bool:
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return True if s[i:] matches p[j:]"""
             if j == len(p): return i == len(s)
@@ -1516,7 +1516,7 @@ class Solution:
 
     def isMatch(self, s: str, p: str) -> bool:
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return True if s[i:] matches p[j:]"""
             if j == len(p): return i == len(s)
@@ -2109,7 +2109,7 @@ class Solution:
     def uniquePathsWithObstacles(self, obstacleGrid: List[List[int]]) -> int:
         m, n = len(obstacleGrid), len(obstacleGrid[0])
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return number of unique paths ending at (i, j)"""
             if i < 0 or j < 0 or obstacleGrid[i][j]: return 0
@@ -2138,7 +2138,7 @@ class Solution:
     def minPathSum(self, grid: List[List[int]]) -> int:
         m, n = len(grid), len(grid[0])
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return min path sum ending at (i, j)"""
             if i == 0 and j == 0: return grid[i][j]
@@ -2351,7 +2351,7 @@ class Solution:
     def minPathSum(self, grid: List[List[int]]) -> int:
         m, n = len(grid), len(grid[0])
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return min path sum ending at (i, j)"""
             if i == 0 and j == 0: return grid[i][j]
@@ -2385,7 +2385,7 @@ class Solution:
 
     def climbStairs(self, n: int) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(k): 
             """Return kth Fibonacci number"""
             if k <= 1: return 1
@@ -2468,7 +2468,7 @@ class Solution:
     def minDistance(self, word1: str, word2: str) -> int:
         m, n = len(word1), len(word2)
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return edit distance between word1[i:] and word2[j:]"""
             if i == m or j == n: return m + n - i - j
@@ -3124,7 +3124,7 @@ class Solution:
 
     def numDecodings(self, s: str) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(i): 
             """Return decode ways of s[i:]"""
             if i >= len(s): return i == len(s) #boundary condition
@@ -3236,7 +3236,7 @@ class Solution:
 
     def generateTrees(self, n: int) -> List[TreeNode]:
         
-        @lru_cache(None)
+        @cache
         def fn(lo, hi): 
             """Return structurally uniq BST using numbers from lo (inclusive) to hi (exclusive)"""
             if lo == hi: return [None]
@@ -3268,7 +3268,7 @@ class Solution:
 
     def numTrees(self, n: int) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(n):
             """Return Catalan number in recursive form"""
             if n == 0: return 1
@@ -3291,7 +3291,7 @@ class Solution:
 
     def isInterleave(self, s1: str, s2: str, s3: str) -> bool:
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return True if s3[i+j:] is formed by interleaving s1[i:] and s2[j:]"""
             if i == len(s1) and j == len(s2): return True
@@ -4079,7 +4079,7 @@ class Solution:
 
     def minimumTotal(self, triangle: List[List[int]]) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(i, j):
             """Return minimum path sum ending at (i, j)"""
             if i < 0: return 0
@@ -4501,7 +4501,7 @@ class Solution:
                     palin.setdefault(i, []).append(j)
                     i, j = i-1, j+1
         
-        @lru_cache(None)
+        @cache
         def fn(i): 
             """Return palindrome partitioning of s[i:]"""
             if i == len(s): return [[]] 
@@ -4529,7 +4529,7 @@ class Solution:
                     palin.setdefault(i, []).append(j)
                     i, j = i-1, j+1
                 
-        @lru_cache(None)
+        @cache
         def fn(i):
             """Return minimum palindrome partitioning of s[i:]"""
             if i == len(s): return 0
@@ -4808,7 +4808,7 @@ class Solution:
 
     def wordBreak(self, s: str, wordDict: List[str]) -> bool:
         
-        @lru_cache(None)
+        @cache
         def fn(i):
             """Return True if s[i:] can be segmented"""
             if i == len(s): return True 
@@ -4855,7 +4855,7 @@ class Solution:
 
     def wordBreak(self, s: str, wordDict: List[str]) -> List[str]:
         
-        @lru_cache(None)
+        @cache
         def fn(i):
             """Return segmentation of s[i:]"""
             if i == len(s): return [[]]
@@ -5914,7 +5914,7 @@ class Solution:
     def calculateMinimumHP(self, dungeon: List[List[int]]) -> int:
         m, n = len(dungeon), len(dungeon[0])
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return minimum health at cell (i, j)"""
             if i == m-1 and j == n-1: return max(1, 1 - dungeon[i][j])
@@ -6178,7 +6178,7 @@ class Solution:
 
     def rob(self, nums: List[int]) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(i):
             """Return the maximum amount of money after robbing ith house"""
             if i < 0: return 0
@@ -6799,7 +6799,7 @@ class Solution:
 
     def maximalSquare(self, matrix: List[List[str]]) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(i, j):
             """Return the length of max square ending at (i, j)."""
             if i < 0 or j < 0 or matrix[i][j] == "0": return 0
@@ -7740,7 +7740,7 @@ class Solution:
 
     def minCost(self, costs: List[List[int]]) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return min cost of painting ith house w/ jth color."""
             if i == len(costs): return 0 # no more houses to paint 
@@ -9523,7 +9523,7 @@ class Solution:
 
     def integerBreak(self, n: int) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(n): 
             """Return the max product by splitting n."""
             if n == 1: return 1
@@ -9991,7 +9991,7 @@ class Solution:
 
     def getMoneyAmount(self, n: int) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(lo, hi): 
             """The cost of guessing a number where lo <= x <= hi."""
             if lo >= hi: return 0 # no need to guess 
@@ -10074,7 +10074,7 @@ class Solution:
 
     def combinationSum4(self, nums: List[int], target: int) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(x):
             """Return number of combinations summing up to target."""
             if x <= 0: return int(x == 0)
@@ -10431,7 +10431,7 @@ class Solution:
 
     def integerReplacement(self, n: int) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(n):
             """Return """
             if n == 1: return 0
@@ -11008,7 +11008,7 @@ class Solution:
 
     def longestPalindromeSubseq(self, s: str) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(lo, hi): 
             """Return longest palindromic subsequence."""
             if lo >= hi: return int(lo == hi)
@@ -11050,7 +11050,7 @@ class Solution:
     def change(self, amount: int, coins: List[int]) -> int:
         coins.sort(reverse=True)
         
-        @lru_cache(None)
+        @cache
         def fn(x, i=0):
             """Return number of combinations making up x."""
             if x <= 0: return int(x == 0)
@@ -12116,7 +12116,7 @@ class Solution:
 
     def knightProbability(self, N: int, K: int, r: int, c: int) -> float:
         
-        @lru_cache(None)
+        @cache
         def fn(k, i, j): 
             """Return probability in chessboard at (i, j) with k moves left."""
             if not (0 <= i < N and 0 <= j < N): return 0
@@ -12440,7 +12440,7 @@ class Solution:
         mp = {}
         for x in nums: mp[x] = x + mp.get(x, 0)
         
-        @lru_cache(None)
+        @cache
         def fn(i): 
             """Return maximum points one can earn from nums[i:]."""
             if i >= len(nums): return 0 
@@ -13281,7 +13281,7 @@ class Solution:
 
     def allPathsSourceTarget(self, graph: List[List[int]]) -> List[List[int]]:
         
-        @lru_cache(None)
+        @cache
         def fn(n): 
             """Return path from given node to dst node."""
             if n == len(graph)-1: return [[n]]
@@ -13352,7 +13352,7 @@ class Solution:
         prefix = [0]
         for x in A: prefix.append(prefix[-1] + x) # prefix sum 
         
-        @lru_cache(None)
+        @cache
         def fn(i, k): 
             """Return largest sum of average of A[lo:hi+1] with at most k groups."""
             if i == 1 or k == 1: return prefix[i]/i # boundary condition 
@@ -14040,7 +14040,7 @@ class Solution:
         graph = {} # graph as adjacency list 
         for x, y in richer: graph.setdefault(y, []).append(x)
         
-        @lru_cache(None)
+        @cache
         def fn(x): 
             """Return richer & loudest person given person."""
             ans = x
@@ -14163,7 +14163,7 @@ class Solution:
 
     def subtreeWithAllDeepest(self, root: TreeNode) -> TreeNode:
         
-        @lru_cache(None)
+        @cache
         def fn(node):
             """Return height of tree rooted at node."""
             if not node: return 0
@@ -14322,7 +14322,7 @@ class Solution:
 
     def allPossibleFBT(self, N: int) -> List[TreeNode]:
         
-        @lru_cache(None)
+        @cache
         def fn(n):
             """Return all full binary trees of n nodes."""
             if n == 1: return [TreeNode()]
@@ -14793,7 +14793,7 @@ class Solution:
     def minFallingPathSum(self, A: List[List[int]]) -> int:
         n = len(A)
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return the minimum falling path ending at (i, j)."""
             if not (0 <= i < n and 0 <= j < n): return inf
@@ -15753,7 +15753,7 @@ class Solution:
 
     def maxUncrossedLines(self, A: List[int], B: List[int]) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return maximum uncrossed lines of A[i:] and B[j:]."""
             if i == len(A) or j == len(B): return 0
@@ -15925,7 +15925,7 @@ class Solution:
 
     def maxSumAfterPartitioning(self, arr: List[int], k: int) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(i):
             """Return maximum sum of arr[:i]."""
             if i == 0: return 0 # boundary condition 
@@ -16551,7 +16551,7 @@ class Solution:
 
     def shortestCommonSupersequence(self, str1: str, str2: str) -> str:
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return min length of common supersequence of str1[i:] and str2[j:]."""
             if i == len(str1): return len(str2)-j
@@ -22359,7 +22359,7 @@ class UnionFind:
     def maxProductPath(self, grid: List[List[int]]) -> int:
         m, n = len(grid), len(grid[0])
         
-        @lru_cache(None)
+        @cache
         def fn(i, j): 
             """Return maximum & minimum products ending at (i, j)."""
             if i == 0 and j == 0: return grid[0][0], grid[0][0]
@@ -22423,7 +22423,7 @@ class UnionFind:
         m, n = len(cost), len(cost[0])
         mn = [min(x) for x in zip(*cost)] # min cost of connecting points in 2nd group 
         
-        @lru_cache(None)
+        @cache
         def fn(i, mask):
             """Return min cost of connecting group1[i:] and group2 represented as mask."""
             if i == m: return sum(mn[j] for j in range(n) if not (mask & (1<<j)))
@@ -23240,7 +23240,7 @@ class UnionFind:
     def bestTeamScore(self, scores: List[int], ages: List[int]) -> int:
         ages, scores = zip(*sorted(zip(ages, scores)))
         
-        @lru_cache(None)
+        @cache
         def fn(i): 
             """Return max score up to ith player included."""
             if i < 0: return 0 # boundary condition 
@@ -23889,7 +23889,7 @@ class UnionFind:
 
     def countVowelStrings(self, n: int) -> int:
         
-        @lru_cache(None)
+        @cache
         def fn(n, k): 
             """Return number of sorted strings of length n consisting of k vowels."""
             if n == 1: return k # base case 
@@ -25531,7 +25531,7 @@ class Fenwick:
     def maxHeight(self, cuboids: List[List[int]]) -> int:
         cuboids = sorted((sorted(x, reverse=True) for x in cuboids), reverse=True)
         
-        @lru_cache(None)
+        @cache
         def fn(i, h, l, w): 
             """Return max heights of stacking cuboids[i:]."""
             if i == len(cuboids): return 0 # no cuboids left 
