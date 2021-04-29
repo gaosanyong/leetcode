@@ -23808,17 +23808,15 @@ class UnionFind:
 	* 0 <= ladders <= heights.length"""
 
     def furthestBuilding(self, heights: List[int], bricks: int, ladders: int) -> int:
-        pq = [] # max heap (priority queue)
+        pq = [] # min heap 
         for i in range(1, len(heights)): 
-            ht = heights[i] - heights[i-1] # height diff 
-            if ht > 0:  
-                heappush(pq, -ht)
-                bricks -= ht
-                if bricks < 0: # not enough bricks
-                    if ladders == 0: return i-1 # i not reachable
-                    bricks += -heappop(pq) # swapping ladder with most bricks 
-                    ladders -= 1
-        return i 
+            diff = heights[i] - heights[i-1]
+            if diff > 0: 
+                heappush(pq, diff)
+                if len(pq) > ladders: # not enough ladders 
+                    bricks -= heappop(pq)
+                    if bricks < 0: return i-1 
+        return len(heights) - 1
 
 
     """1643. Kth Smallest Instructions (Hard)
