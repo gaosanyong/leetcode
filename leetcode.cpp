@@ -455,7 +455,6 @@ public:
     }
 
 
-<<<<<<< HEAD
     /*34. Find First and Last Position of Element in Sorted Array (Medium)
 	Given an array of integers nums sorted in ascending order, find the starting 
 	and ending position of a given target value. If target is not found in the 
@@ -525,7 +524,8 @@ public:
         
         for (auto& row : matrix) 
             reverse(row.begin(), row.end()); 
-=======
+
+
     /*63. Unique Paths II (Medium)
 	A robot is located at the top-left corner of a m x n grid (marked 'Start' 
 	in the diagram below). The robot can only move either down or right at any 
@@ -567,7 +567,6 @@ public:
             }
         }
         return dp[m-1][n-1]; 
->>>>>>> 1ba91a6f9c374f681bfd49d3461afa499600a138
     }
 
 
