@@ -455,6 +455,78 @@ public:
     }
 
 
+    /*34. Find First and Last Position of Element in Sorted Array (Medium)
+	Given an array of integers nums sorted in ascending order, find the starting 
+	and ending position of a given target value. If target is not found in the 
+	array, return [-1, -1].
+
+	Follow up: Could you write an algorithm with O(log n) runtime complexity?
+
+	Example 1:
+	Input: nums = [5,7,7,8,8,10], target = 8
+	Output: [3,4]
+
+	Example 2:
+	Input: nums = [5,7,7,8,8,10], target = 6
+	Output: [-1,-1]
+
+	Example 3:
+	Input: nums = [], target = 0
+	Output: [-1,-1]
+
+	Constraints:
+	* 0 <= nums.length <= 10^5
+	* -10^9 <= nums[i] <= 10^9
+	* nums is a non-decreasing array.
+	* -10^9 <= target <= 10^9*/
+
+    vector<int> searchRange(vector<int>& nums, int target) {
+        int lo = lower_bound(nums.begin(), nums.end(), target) - nums.begin();
+        int hi = upper_bound(nums.begin(), nums.end(), target) - nums.begin() - 1; 
+        if (lo < nums.size() && nums[lo] == target) return {lo, hi}; 
+        return {-1, -1};
+    }
+
+
+    /*48. Rotate Image (Medium)
+	You are given an n x n 2D matrix representing an image, rotate the image by 
+	90 degrees (clockwise). You have to rotate the image in-place, which means 
+	you have to modify the input 2D matrix directly. DO NOT allocate another 2D 
+	matrix and do the rotation.
+
+	Example 1:
+	Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+	Output: [[7,4,1],[8,5,2],[9,6,3]]
+
+	Example 2:
+	Input: matrix = [[5,1,9,11],[2,4,8,10],[13,3,6,7],[15,14,12,16]]
+	Output: [[15,13,2,5],[14,3,4,1],[12,6,8,9],[16,7,10,11]]
+
+	Example 3:
+	Input: matrix = [[1]]
+	Output: [[1]]
+
+	Example 4:
+	Input: matrix = [[1,2],[3,4]]
+	Output: [[3,1],[4,2]]
+
+	Constraints:
+	* matrix.length == n
+	* matrix[i].length == n
+	* 1 <= n <= 20
+	* -1000 <= matrix[i][j] <= 1000*/
+
+    void rotate(vector<vector<int>>& matrix) {
+        int n = matrix.size(); 
+        for (int i = 0; i < n; ++i) 
+            for (int j = 0; j < i; ++j) 
+                swap(matrix[i][j], matrix[j][i]); 
+        
+        for (auto& row : matrix) 
+            reverse(row.begin(), row.end()); 
+    }
+
+
 	/*83. Remove Duplicates from Sorted List (Easy)
 	Given the head of a sorted linked list, delete all duplicates such that 
 	each element appears only once. Return the linked list sorted as well.
@@ -3803,6 +3875,63 @@ public:
             ans += string(x[0], x[1]); 
         }
         return ans; 
+    }
+
+
+    /*1642. Furthest Building You Can Reach (Medium)
+	You are given an integer array heights representing the heights of 
+	buildings, some bricks, and some ladders. You start your journey from 
+	building 0 and move to the next building by possibly using bricks or 
+	ladders. While moving from building i to building i+1 (0-indexed),
+	* If the current building's height is greater than or equal to the next 
+	  building's height, you do not need a ladder or bricks.
+	* If the current building's height is less than the next building's height, 
+	  you can either use one ladder or (h[i+1] - h[i]) bricks.
+	Return the furthest building index (0-indexed) you can reach if you use the 
+	given ladders and bricks optimally.
+
+	Example 1:
+	Input: heights = [4,2,7,6,9,14,12], bricks = 5, ladders = 1
+	Output: 4
+	Explanation: Starting at building 0, you can follow these steps:
+	- Go to building 1 without using ladders nor bricks since 4 >= 2.
+	- Go to building 2 using 5 bricks. You must use either bricks or ladders because 2 < 7.
+	- Go to building 3 without using ladders nor bricks since 7 >= 6.
+	- Go to building 4 using your only ladder. You must use either bricks or ladders because 6 < 9.
+	It is impossible to go beyond building 4 because you do not have any more bricks or ladders.
+
+	Example 2:
+	Input: heights = [4,12,2,7,3,18,20,3,19], bricks = 10, ladders = 2
+	Output: 7
+
+	Example 3:
+	Input: heights = [14,3,19,3], bricks = 17, ladders = 0
+	Output: 3
+
+	Constraints:
+	* 1 <= heights.length <= 10^5
+	* 1 <= heights[i] <= 10^6
+	* 0 <= bricks <= 10^9
+	* 0 <= ladders <= heights.length*/
+
+    int furthestBuilding(vector<int>& heights, int bricks, int ladders) {
+        priority_queue<int> pq; // max heap 
+        
+        for (int i = 1; i < heights.size(); ++i) {
+            int diff = heights[i] - heights[i-1]; 
+            if (diff > 0) {
+                pq.push(diff); 
+                bricks -= diff; 
+                if (bricks < 0) {
+                    if (ladders) {
+                        bricks += pq.top(); 
+                        pq.pop(); 
+                        ladders -= 1; 
+                    } else return i-1; 
+                }
+            }
+        }
+        return heights.size() - 1; 
     }
 
 
