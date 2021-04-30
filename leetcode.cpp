@@ -3773,6 +3773,383 @@ public:
     }
 
 
+    /*917. Reverse Only Letters (Easy)
+	Given a string S, return the "reversed" string where all characters that 
+	are not a letter stay in the same place, and all letters reverse their 
+	positions.
+
+	Example 1:
+	Input: "ab-cd"
+	Output: "dc-ba"
+
+	Example 2:
+	Input: "a-bC-dEf-ghIj"
+	Output: "j-Ih-gfE-dCba"
+
+	Example 3:
+	Input: "Test1ng-Leet=code-Q!"
+	Output: "Qedo1ct-eeLg=ntse-T!"
+
+	Note:
+	* S.length <= 100
+	* 33 <= S[i].ASCIIcode <= 122 
+	* S doesn't contain \ or "*/
+
+    string reverseOnlyLetters(string S) {
+        for (int lo = 0, hi = S.size() - 1; lo < hi; ) {
+            if (!isalpha(S[lo])) ++lo; 
+            else if (!isalpha(S[hi])) --hi; 
+            else swap(S[lo++], S[hi--]);
+        }
+        return S; 
+    }
+
+
+    /*922. Sort Array By Parity II (Easy)
+	Given an array of integers nums, half of the integers in nums are odd, and 
+	the other half are even. Sort the array so that whenever nums[i] is odd, i 
+	is odd, and whenever nums[i] is even, i is even. Return any answer array 
+	that satisfies this condition.
+
+	Example 1:
+	Input: nums = [4,2,5,7]
+	Output: [4,5,2,7]
+	Explanation: [4,7,2,5], [2,5,4,7], [2,7,4,5] would also have been accepted.
+
+	Example 2:
+	Input: nums = [2,3]
+	Output: [2,3]
+
+	Constraints:
+	* 2 <= nums.length <= 2 * 10^4
+	* nums.length is even.
+	* Half of the integers in nums are even.
+	* 0 <= nums[i] <= 1000
+
+	Follow Up: Could you solve it in-place?*/
+
+    vector<int> sortArrayByParityII(vector<int>& nums) {
+        for (int i = 0, j = 1; i < nums.size() && j < nums.size(); ) {
+            if (!(nums[i]&1)) i += 2; 
+            else if (nums[j]&1) j += 2; 
+            else {
+                swap(nums[i], nums[j]); 
+                i += 2; 
+                j += 2; 
+            }
+        }
+        return nums; 
+    }
+
+
+    /*925. Long Pressed Name (Easy)
+	Your friend is typing his name into a keyboard. Sometimes, when typing a 
+	character c, the key might get long pressed, and the character will be 
+	typed 1 or more times. You examine the typed characters of the keyboard. 
+	Return True if it is possible that it was your friends name, with some 
+	characters (possibly none) being long pressed.
+
+	Example 1:
+	Input: name = "alex", typed = "aaleex"
+	Output: true
+	Explanation: 'a' and 'e' in 'alex' were long pressed.
+
+	Example 2:
+	Input: name = "saeed", typed = "ssaaedd"
+	Output: false
+	Explanation: 'e' must have been pressed twice, but it wasn't in the typed output.
+
+	Example 3:
+	Input: name = "leelee", typed = "lleeelee"
+	Output: true
+
+	Example 4:
+	Input: name = "laiden", typed = "laiden"
+	Output: true
+	Explanation: It's not necessary to long press any character.
+
+	Constraints:
+	* 1 <= name.length <= 1000
+	* 1 <= typed.length <= 1000
+	* name and typed contain only lowercase English letters.*/
+
+    bool isLongPressedName(string name, string typed) {
+        int i = 0; 
+        for (int j = 0; j < typed.size(); ++j) {
+            if (i < name.size() && name[i] == typed[j]) ++i; 
+            else if (i == 0 || name[i-1] != typed[j]) return false; 
+        }
+        return i == name.size(); 
+    }
+
+
+    /*929. Unique Email Addresses (Easy)
+	Every valid email consists of a local name and a domain name, separated by 
+	the '@' sign. Besides lowercase letters, the email may contain one or more 
+	'.' or '+'. For example, in "alice@leetcode.com", "alice" is the local name, 
+	and "leetcode.com" is the domain name. If you add periods '.' between some 
+	characters in the local name part of an email address, mail sent there will 
+	be forwarded to the same address without dots in the local name. Note that 
+	this rule does not apply to domain names. 
+
+	For example, "alice.z@leetcode.com" and "alicez@leetcode.com" forward to 
+	the same email address. If you add a plus '+' in the local name, everything 
+	after the first plus sign will be ignored. This allows certain emails to be 
+	filtered. Note that this rule does not apply to domain names. For example, 
+	"m.y+name@email.com" will be forwarded to "my@email.com". It is possible to 
+	use both of these rules at the same time. Given an array of strings emails 
+	where we send one email to each email[i], return the number of different 
+	addresses that actually receive mails.
+
+	Example 1:
+	Input: emails = ["test.email+alex@leetcode.com","test.e.mail+bob.cathy@leetcode.com","testemail+david@lee.tcode.com"]
+	Output: 2
+	Explanation: "testemail@leetcode.com" and "testemail@lee.tcode.com" actually receive mails.
+
+	Example 2:
+	Input: emails = ["a@leetcode.com","b@leetcode.com","c@leetcode.com"]
+	Output: 3
+
+	Constraints:
+	* 1 <= emails.length <= 100
+	* 1 <= emails[i].length <= 100
+	* email[i] consist of lowercase English letters, '+', '.' and '@'.
+	* Each emails[i] contains exactly one '@' character.
+	* All local and domain names are non-empty.
+	* Local names do not start with a '+' character.*/
+
+    int numUniqueEmails(vector<string>& emails) {
+        unordered_set<string> ans; 
+        for (auto email : emails) {
+            string key = ""; 
+            for (auto x : email) {
+                if (x == '+' || x == '@') break; 
+                if (x != '.') key.push_back(x); 
+            }
+            key += email.substr(email.find('@')); 
+            ans.insert(key); 
+        }
+        return ans.size(); 
+    }
+
+
+    /*937. Reorder Data in Log Files (Easy)
+	You are given an array of logs. Each log is a space-delimited string of 
+	words, where the first word is the identifier. There are two types of logs:
+	* Letter-logs: All words (except the identifier) consist of lowercase 
+	  English letters.
+	* Digit-logs: All words (except the identifier) consist of digits.
+	
+	Reorder these logs so that:
+	* The letter-logs come before all digit-logs.
+	* The letter-logs are sorted lexicographically by their contents. If their 
+	  contents are the same, then sort them lexicographically by their 
+	  identifiers.
+	* The digit-logs maintain their relative ordering.
+	Return the final order of the logs.
+
+	Example 1:
+	Input: logs = ["dig1 8 1 5 1","let1 art can","dig2 3 6","let2 own kit dig","let3 art zero"]
+	Output: ["let1 art can","let3 art zero","let2 own kit dig","dig1 8 1 5 1","dig2 3 6"]
+	Explanation:
+	The letter-log contents are all different, so their ordering is "art can", "art zero", "own kit dig".
+	The digit-logs have a relative order of "dig1 8 1 5 1", "dig2 3 6".
+
+	Example 2:
+	Input: logs = ["a1 9 2 3 1","g1 act car","zo4 4 7","ab1 off key dog","a8 act zoo"]
+	Output: ["g1 act car","a8 act zoo","ab1 off key dog","a1 9 2 3 1","zo4 4 7"]
+
+	Constraints:
+	* 1 <= logs.length <= 100
+	* 3 <= logs[i].length <= 100
+	* All the tokens of logs[i] are separated by a single space.
+	* logs[i] is guaranteed to have an identifier and at least one word after 
+	  the identifier.*/
+
+    vector<string> reorderLogFiles(vector<string>& logs) {
+        vector<pair<string, string>> letter_logs; 
+        vector<string> digit_logs; 
+        for (auto log : logs) {
+            int i = log.find(' '); 
+            if (isalpha(log[i+1])) 
+                letter_logs.emplace_back(log.substr(0, i), log.substr(i+1)); 
+            else 
+                digit_logs.push_back(log); 
+        }
+        
+        sort(letter_logs.begin(), letter_logs.end(), [&](auto& lhs, auto& rhs) {
+            return lhs.second < rhs.second || (lhs.second == rhs.second && lhs.first < rhs.first); 
+        });
+        
+        vector<string> ans; 
+        for (auto x : letter_logs) 
+            ans.push_back(x.first + " " + x.second); 
+        
+        ans.insert(ans.end(), digit_logs.begin(), digit_logs.end());
+        return ans; 
+    }
+
+
+    /*938. Range Sum of BST (Easy)
+	Given the root node of a binary search tree, return the sum of values of 
+	all nodes with a value in the range [low, high].
+
+	Example 1:
+	Input: root = [10,5,15,3,7,null,18], low = 7, high = 15
+	Output: 32
+
+	Example 2:
+	Input: root = [10,5,15,3,7,13,18,1,null,6], low = 6, high = 10
+	Output: 23
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 2 * 10^4].
+	* 1 <= Node.val <= 10^5
+	* 1 <= low <= high <= 10^5
+	* All Node.val are unique.*/
+
+    int rangeSumBST(TreeNode* root, int low, int high) {
+        int ans = 0; 
+        stack<TreeNode*> stk; 
+        stk.push(root); 
+        while (stk.size()) {
+            TreeNode* node = stk.top(); 
+            stk.pop(); 
+            if (node) {
+                if (low <= node->val && node->val <= high) ans += node->val; 
+                if (node->val < high) stk.push(node->right); 
+                if (low < node->val) stk.push(node->left); 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*941. Valid Mountain Array (Easy)
+	Given an array of integers arr, return true if and only if it is a valid 
+	mountain array. Recall that arr is a mountain array if and only if:
+	* arr.length >= 3
+	* There exists some i with 0 < i < arr.length - 1 such that:
+	  - arr[0] < arr[1] < ... < arr[i - 1] < arr[i]
+	  - arr[i] > arr[i + 1] > ... > arr[arr.length - 1]
+
+	Example 1:
+	Input: arr = [2,1]
+	Output: false
+
+	Example 2:
+	Input: arr = [3,5,5]
+	Output: false
+
+	Example 3:
+	Input: arr = [0,3,2,1]
+	Output: true
+
+	Constraints:
+	* 1 <= arr.length <= 10^4
+	* 0 <= arr[i] <= 10^4*/
+
+    bool validMountainArray(vector<int>& arr) {
+        int lo = 0, hi = arr.size() - 1; 
+        for (; lo < hi && arr[lo] < arr[lo+1]; ++lo) {}
+        for (; lo < hi && arr[hi-1] > arr[hi]; --hi) {}
+        return 0 < lo && hi < arr.size() - 1 && lo == hi; 
+    }
+
+
+    /*942. DI String Match (Easy)
+	A permutation perm of n + 1 integers of all the integers in the range [0, n] 
+	can be represented as a string s of length n where:
+	* s[i] == 'I' if perm[i] < perm[i + 1], and
+	* s[i] == 'D' if perm[i] > perm[i + 1].
+	Given a string s, reconstruct the permutation perm and return it. If there 
+	are multiple valid permutations perm, return any of them.
+
+	Example 1:
+	Input: s = "IDID"
+	Output: [0,4,1,3,2]
+
+	Example 2:
+	Input: s = "III"
+	Output: [0,1,2,3]
+
+	Example 3:
+	Input: s = "DDI"
+	Output: [3,2,0,1]
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s[i] is either 'I' or 'D'.*/
+
+    vector<int> diStringMatch(string s) {
+        vector<int> ans; 
+        for (int i = 0, lo = 0, hi = s.size(); i <= s.size(); i++) {
+            if (i == s.size() || s[i] == 'I') ans.push_back(lo++); 
+            else ans.push_back(hi--); 
+        }
+        return ans; 
+    }
+
+
+    /*944. Delete Columns to Make Sorted (Easy)
+	You are given an array of n strings strs, all of the same length. The 
+	strings can be arranged such that there is one on each line, making a grid. 
+	For example, strs = ["abc", "bce", "cae"] can be arranged as:
+	abc
+	bce
+	cae
+	You want to delete the columns that are not sorted lexicographically. In 
+	the above example (0-indexed), columns 0 ('a', 'b', 'c') and 2 
+	('c', 'e', 'e') are sorted while column 1 ('b', 'c', 'a') is not, so you 
+ 	would delete column 1. Return the number of columns that you will delete.
+
+	Example 1:
+	Input: strs = ["cba","daf","ghi"]
+	Output: 1
+	Explanation: The grid looks as follows:
+	  cba
+	  daf
+	  ghi
+	Columns 0 and 2 are sorted, but column 1 is not, so you only need to delete 
+	1 column.
+
+	Example 2:
+	Input: strs = ["a","b"]
+	Output: 0
+	Explanation: The grid looks as follows:
+	  a
+	  b
+	Column 0 is the only column and is sorted, so you will not delete any columns.
+
+	Example 3:
+	Input: strs = ["zyx","wvu","tsr"]
+	Output: 3
+	Explanation: The grid looks as follows:
+	  zyx
+	  wvu
+	  tsr
+	All 3 columns are not sorted, so you will delete all 3.
+
+	Constraints:
+	* n == strs.length
+	* 1 <= n <= 100
+	* 1 <= strs[i].length <= 1000
+	* strs[i] consists of lowercase English letters.*/
+
+    int minDeletionSize(vector<string>& strs) {
+        int ans = 0; 
+        for (int j = 0; j < strs[0].size(); ++j) {
+            for (int i = 1; i < strs.size(); ++i) {
+                if (strs[i-1][j] > strs[i][j]) {
+                    ++ans; 
+                    break; 
+                }
+            }
+        }
+        return ans; 
+    }
+
+
     /*953. Verifying an Alien Dictionary (Easy)
 	In an alien language, surprisingly they also use english lowercase letters, 
 	but possibly in a different order. The order of the alphabet is some 
@@ -4581,5 +4958,49 @@ public:
         if (pq.size() > k) 
             pq.pop();
         return pq.top(); 
+    }
+};
+
+
+/*933. Number of Recent Calls (Easy)
+You have a RecentCounter class which counts the number of recent requests 
+within a certain time frame. Implement the RecentCounter class:
+* RecentCounter() Initializes the counter with zero recent requests.
+* int ping(int t) Adds a new request at time t, where t represents some time in 
+  milliseconds, and returns the number of requests that has happened in the 
+  past 3000 milliseconds (including the new request). Specifically, return the 
+  number of requests that have happened in the inclusive range [t - 3000, t].
+It is guaranteed that every call to ping uses a strictly larger value of t than 
+the previous call.
+
+Example 1:
+Input: ["RecentCounter", "ping", "ping", "ping", "ping"]
+       [[], [1], [100], [3001], [3002]]
+Output: [null, 1, 2, 3, 3]
+Explanation: 
+RecentCounter recentCounter = new RecentCounter();
+recentCounter.ping(1);     // requests = [1], range is [-2999,1], return 1
+recentCounter.ping(100);   // requests = [1, 100], range is [-2900,100], return 2
+recentCounter.ping(3001);  // requests = [1, 100, 3001], range is [1,3001], return 3
+recentCounter.ping(3002);  // requests = [1, 100, 3001, 3002], range is [2,3002], return 3
+
+Constraints:
+* 1 <= t <= 10^9
+* Each test case will call ping with strictly increasing values of t.
+* At most 10^4 calls will be made to ping.*/
+
+class RecentCounter {
+private: 
+    queue<int> q; 
+    
+public:
+    RecentCounter() {}
+    
+    int ping(int t) {
+        q.push(t); 
+        while (q.front() < t-3000) {
+            q.pop(); 
+        }
+        return q.size(); 
     }
 };
