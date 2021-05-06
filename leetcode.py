@@ -1542,13 +1542,13 @@ class Solution:
 	Note: You can assume that you can always reach the last index."""
 
     def jump(self, nums: List[int]) -> int:
-        curr = next = jump = 0
+        ans = prev = curr = 0
         for i in range(len(nums)):
-            if i > curr: 
-                curr = next;
-                jump += 1
-            next = max(next, i + nums[i])
-        return jump 
+            if i > prev: 
+                prev = curr
+                ans += 1
+            curr = max(curr, i + nums[i])
+        return ans 
 
 
     """46. Permutations (Medium)
