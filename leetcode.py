@@ -9137,6 +9137,48 @@ class Solution:
         return ans 
 
 
+    """327. Count of Range Sum (Hard)
+	Given an integer array nums and two integers lower and upper, return the 
+	number of range sums that lie in [lower, upper] inclusive. Range sum 
+	S(i, j) is defined as the sum of the elements in nums between indices i and 
+	j inclusive, where i <= j.
+
+	Example 1:
+	Input: nums = [-2,5,-1], lower = -2, upper = 2
+	Output: 3
+	Explanation: The three ranges are: [0,0], [2,2], and [0,2] and their 
+	             respective sums are: -2, -1, 2.
+
+	Example 2:
+	Input: nums = [0], lower = 0, upper = 0
+	Output: 1
+
+	Constraints:
+	* 1 <= nums.length <= 10^4
+	* -2^31 <= nums[i] <= 2^31 - 1
+	* -10^5 <= lower <= upper <= 10^5
+	* The answer is guaranteed to fit in a 32-bit integer."""
+
+    def countRangeSum(self, nums: List[int], lower: int, upper: int) -> int:
+        prefix = [0]
+        for x in nums: prefix.append(prefix[-1] + x)
+        
+        def fn(lo, hi): 
+            """Return count of range sum between prefix[lo:hi]."""
+            if lo+1 >= hi: return 0 
+            mid = lo + hi >> 1
+            ans = fn(lo, mid) + fn(mid, hi)
+            k = kk = mid 
+            for i in range(lo, mid): 
+                while k < hi and prefix[k] - prefix[i] < lower: k += 1
+                while kk < hi and prefix[kk] - prefix[i] <= upper: kk += 1
+                ans += kk - k 
+            prefix[lo:hi] = sorted(prefix[lo:hi])
+            return ans 
+        
+        return fn(0, len(prefix))
+
+
 	"""328. Odd Even Linked List (Medium)
 	Given a singly linked list, group all odd nodes together followed by the 
 	even nodes. Please note here we are talking about the node number and not 
@@ -14803,6 +14845,32 @@ class Solution:
         return min(fn(n-1, j) for j in range(n))
 
 
+    """932. Beautiful Array (Medium)
+	For some fixed N, an array A is beautiful if it is a permutation of the 
+	integers 1, 2, ..., N, such that for every i < j, there is no k with 
+	i < k < j such that A[k] * 2 = A[i] + A[j]. Given N, return any beautiful 
+	array A.  (It is guaranteed that one exists.)
+
+	Example 1:
+	Input: 4
+	Output: [2,1,4,3]
+
+	Example 2:
+	Input: 5
+	Output: [3,1,2,5,4]
+
+	Note: 1 <= N <= 1000"""
+
+    def beautifulArray(self, N: int) -> List[int]:
+        
+        def fn(nums): 
+            """Return beautiful array by rearraning elements in nums."""
+            if len(nums) <= 1: return nums
+            return fn(nums[::2]) + fn(nums[1::2])
+        
+        return fn(list(range(1, N+1)))
+
+
     """934. Shortest Bridge (Medium)
 	In a given 2D binary array A, there are two islands.  (An island is a 4-
 	directionally connected group of 1s not connected to any other 1s.) Now, we 
@@ -15270,6 +15338,64 @@ class Solution:
                     node.left, node.right = node.right, node.left 
                 stack.extend([node.right, node.left])
         return ans 
+
+
+    """980. Unique Paths III (Hard)
+	On a 2-dimensional grid, there are 4 types of squares:
+	* 1 represents the starting square.  There is exactly one starting square.
+	* 2 represents the ending square.  There is exactly one ending square.
+	* 0 represents empty squares we can walk over.
+	* -1 represents obstacles that we cannot walk over.
+	Return the number of 4-directional walks from the starting square to the 
+	ending square, that walk over every non-obstacle square exactly once.
+
+	Example 1:
+	Input: [[1,0,0,0],[0,0,0,0],[0,0,2,-1]]
+	Output: 2
+	Explanation: We have the following two paths: 
+	1. (0,0),(0,1),(0,2),(0,3),(1,3),(1,2),(1,1),(1,0),(2,0),(2,1),(2,2)
+	2. (0,0),(1,0),(2,0),(2,1),(1,1),(0,1),(0,2),(0,3),(1,3),(1,2),(2,2)
+
+	Example 2:
+	Input: [[1,0,0,0],[0,0,0,0],[0,0,0,2]]
+	Output: 4
+	Explanation: We have the following four paths: 
+	1. (0,0),(0,1),(0,2),(0,3),(1,3),(1,2),(1,1),(1,0),(2,0),(2,1),(2,2),(2,3)
+	2. (0,0),(0,1),(1,1),(1,0),(2,0),(2,1),(2,2),(1,2),(0,2),(0,3),(1,3),(2,3)
+	3. (0,0),(1,0),(2,0),(2,1),(2,2),(1,2),(1,1),(0,1),(0,2),(0,3),(1,3),(2,3)
+	4. (0,0),(1,0),(2,0),(2,1),(1,1),(0,1),(0,2),(0,3),(1,3),(1,2),(2,2),(2,3)
+
+	Example 3:
+	Input: [[0,1],[2,0]]
+	Output: 0
+	Explanation: There is no path that walks over every empty square exactly 
+	once. Note that the starting and ending square can be anywhere in the grid.
+
+	Note: 1 <= grid.length * grid[0].length <= 20"""
+
+    def uniquePathsIII(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0]) # dimensions 
+        empty = 0 
+        for i in range(m):
+            for j in range(n): 
+                if grid[i][j] == 1: start = (i, j)
+                elif grid[i][j] == 0: empty += 1 # empty squares 
+        
+        def fn(i, j, empty): 
+            """Count paths via backtracking."""
+            nonlocal ans 
+            if grid[i][j] == 2: 
+                if empty == -1: ans += 1
+                return 
+            grid[i][j] = -1 # mark as visited 
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                if 0 <= ii < m and 0 <= jj < n and grid[ii][jj] != -1: 
+                    fn(ii, jj, empty-1)
+            grid[i][j] = 0 # backtracking
+        
+        ans = 0 
+        fn(*start, empty)
+        return ans
 
 
     """1014. Best Sightseeing Pair (Medium)
