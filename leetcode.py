@@ -1542,13 +1542,13 @@ class Solution:
 	Note: You can assume that you can always reach the last index."""
 
     def jump(self, nums: List[int]) -> int:
-        curr = next = jump = 0
+        ans = prev = curr = 0
         for i in range(len(nums)):
-            if i > curr: 
-                curr = next;
-                jump += 1
-            next = max(next, i + nums[i])
-        return jump 
+            if i > prev: 
+                prev = curr
+                ans += 1
+            curr = max(curr, i + nums[i])
+        return ans 
 
 
     """46. Permutations (Medium)
@@ -11987,6 +11987,37 @@ class Solution:
                 if node.right: newq.append((node.right, 2*i+1))
             queue = newq
         return ans 
+
+
+    """665. Non-decreasing Array (Medium)
+	Given an array nums with n integers, your task is to check if it could 
+	become non-decreasing by modifying at most one element. We define an array 
+	is non-decreasing if nums[i] <= nums[i + 1] holds for every i (0-based) 
+	such that (0 <= i <= n - 2).
+
+	Example 1:
+	Input: nums = [4,2,3]
+	Output: true
+	Explanation: You could modify the first 4 to 1 to get a non-decreasing array.
+
+	Example 2:
+	Input: nums = [4,2,1]
+	Output: false
+	Explanation: You can't get a non-decreasing array by modify at most one element.
+
+	Constraints:
+	n == nums.length
+	1 <= n <= 10^4
+	-10^5 <= nums[i] <= 10^5"""
+
+    def checkPossibility(self, nums: List[int]) -> bool:
+        cnt = 0 
+        for i in range(1, len(nums)): 
+            if nums[i-1] > nums[i]: 
+                if (i-1 == 0 or nums[i-2] <= nums[i]) or (i+1 == len(nums) or nums[i-1] <= nums[i+1]): 
+                    cnt += 1
+                else: return False 
+        return cnt <= 1
 
 
     """667. Beautiful Arrangement II (Medium)

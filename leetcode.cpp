@@ -488,6 +488,40 @@ public:
     }
 
 
+    /*45. Jump Game II (Medium)
+	Given an array of non-negative integers nums, you are initially positioned 
+	at the first index of the array. Each element in the array represents your 
+	maximum jump length at that position. Your goal is to reach the last index 
+	in the minimum number of jumps. You can assume that you can always reach 
+	the last index.
+
+	Example 1:
+	Input: nums = [2,3,1,1,4]
+	Output: 2
+	Explanation: The minimum number of jumps to reach the last index is 2. Jump 
+	             1 step from index 0 to 1, then 3 steps to the last index.
+	
+	Example 2:
+	Input: nums = [2,3,0,1,4]
+	Output: 2
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* 0 <= nums[i] <= 10^5*/
+
+    int jump(vector<int>& nums) {
+        int ans = 0, prev = 0, curr = 0; 
+        for (int i = 0; i < nums.size(); ++i) {
+            if (i > prev) {
+                prev = curr; 
+                ++ans; 
+            }
+            curr = max(curr, i + nums[i]); 
+        }
+        return ans; 
+    }
+
+
     /*48. Rotate Image (Medium)
 	You are given an n x n 2D matrix representing an image, rotate the image by 
 	90 degrees (clockwise). You have to rotate the image in-place, which means 
@@ -2069,6 +2103,41 @@ public:
             }
         }
         return false; 
+    }
+
+
+    /*665. Non-decreasing Array (Medium)
+	Given an array nums with n integers, your task is to check if it could 
+	become non-decreasing by modifying at most one element. We define an array 
+	is non-decreasing if nums[i] <= nums[i + 1] holds for every i (0-based) 
+	such that (0 <= i <= n - 2).
+
+	Example 1:
+	Input: nums = [4,2,3]
+	Output: true
+	Explanation: You could modify the first 4 to 1 to get a non-decreasing array.
+
+	Example 2:
+	Input: nums = [4,2,1]
+	Output: false
+	Explanation: You can't get a non-decreasing array by modify at most one element.
+
+	Constraints:
+	* n == nums.length
+	* 1 <= n <= 10^4
+	* -10^5 <= nums[i] <= 10^5*/
+
+    bool checkPossibility(vector<int>& nums) {
+        int cnt = 0; 
+        for (int i = 1; i < nums.size(); ++i) {
+            if (nums[i-1] > nums[i]) {
+                if ((i==1 || nums[i-2] <= nums[i]) || (i+1 == nums.size() || nums[i-1] <= nums[i+1])) 
+                    ++cnt; 
+                else
+                    return false; 
+            }
+        }
+        return cnt <= 1; 
     }
 
 
