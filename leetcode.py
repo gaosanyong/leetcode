@@ -11627,6 +11627,38 @@ class Solution:
         return ans 
 
 
+    """583. Delete Operation for Two Strings (Medium)
+	Given two strings word1 and word2, return the minimum number of steps 
+	required to make word1 and word2 the same. In one step, you can delete 
+	exactly one character in either string.
+
+	Example 1:
+	Input: word1 = "sea", word2 = "eat"
+	Output: 2
+	Explanation: You need one step to make "sea" to "ea" and another step to 
+	             make "eat" to "ea".
+
+	Example 2:
+	Input: word1 = "leetcode", word2 = "etco"
+	Output: 4
+
+	Constraints:
+	* 1 <= word1.length, word2.length <= 500
+	* word1 and word2 consist of only lowercase English letters."""
+
+    def minDistance(self, word1: str, word2: str) -> int:
+        
+        @cache
+        def fn(i1, i2): 
+            """Return minimum steps to make word1 and word2 the same."""
+            if i1 == len(word1): return len(word2) - i2
+            if i2 == len(word2): return len(word1) - i1
+            if word1[i1] == word2[i2]: return fn(i1+1, i2+1)
+            return 1 + min(fn(i1+1,i2), fn(i1, i2+1))
+        
+        return fn(0, 0)
+
+
     """594. Longest Harmonious Subsequence (Easy)
 	We define a harmonious array as an array where the difference between its 
 	maximum value and its minimum value is exactly 1. Given an integer array 
