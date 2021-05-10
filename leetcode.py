@@ -6326,12 +6326,13 @@ class Solution:
 
     def countPrimes(self, n: int) -> int:
         """Sieve of Eratosthenes"""
-        prime = [False] *2 + [True] * (n-2) #0 and 1 are not prime
+        sieve = [True]*n
+        sieve[0] = sieve[1] = False # 0 and 1 are not prime
         for i in range(int(sqrt(n))+1):
-            if prime[i]:
-                for k in range(i*i, n, i): 
-                    prime[k] = False 
-        return sum(prime)
+            if sieve[i]:
+                for ii in range(i*i, n, i): 
+                    sieve[ii] = False 
+        return sum(sieve)
 
 
     """205. Isomorphic Strings (Easy)
