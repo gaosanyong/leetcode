@@ -30611,12 +30611,12 @@ class Fenwick:
         for x, y in logs: 
             vals.append((x, 1))
             vals.append((y, -1))
-        ans = prefix = mx = 0
+        ans = prefix = most = 0
         for x, k in sorted(vals): 
             prefix += k
-            if prefix > mx: 
+            if prefix > most: 
                 ans = x
-                prefix = mx 
+                most = prefix 
         return ans 
 
 
