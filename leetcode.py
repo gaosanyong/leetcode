@@ -30582,6 +30582,208 @@ class Fenwick:
         return ans 
 
 
+    """1854. Maximum Population Year (Easy)
+	You are given a 2D integer array logs where each logs[i] = [birthi, deathi] 
+	indicates the birth and death years of the ith person. The population of 
+	some year x is the number of people alive during that year. The ith person 
+	is counted in year x's population if x is in the inclusive range 
+	[birthi, deathi - 1]. Note that the person is not counted in the year that 
+	they die. Return the earliest year with the maximum population.
+
+	Example 1:
+	Input: logs = [[1993,1999],[2000,2010]]
+	Output: 1993
+	Explanation: The maximum population is 1, and 1993 is the earliest year 
+	             with this population.
+
+	Example 2:
+	Input: logs = [[1950,1961],[1960,1971],[1970,1981]]
+	Output: 1960
+	Explanation: The maximum population is 2, and it had happened in years 1960 
+	             and 1970. The earlier year between them is 1960.
+
+	Constraints:
+	* 1 <= logs.length <= 100
+	* 1950 <= birthi < deathi <= 2050"""
+
+    def maximumPopulation(self, logs: List[List[int]]) -> int:
+        vals = []
+        for x, y in logs: 
+            vals.append((x, 1))
+            vals.append((y, -1))
+        ans = prefix = mx = 0
+        for x, k in sorted(vals): 
+            prefix += k
+            if prefix > mx: 
+                ans = x
+                prefix = mx 
+        return ans 
+
+
+    """1855. Maximum Distance Between a Pair of Values (Medium)
+	You are given two non-increasing 0-indexed integer arrays nums1​​​​​​ and 
+	nums2​​​​​​. A pair of indices (i, j), where 0 <= i < nums1.length and 
+	0 <= j < nums2.length, is valid if both i <= j and nums1[i] <= nums2[j]. 
+	The distance of the pair is j - i​​​​. Return the maximum distance of any 
+	valid pair (i, j). If there are no valid pairs, return 0. An array arr is 
+	non-increasing if arr[i-1] >= arr[i] for every 1 <= i < arr.length.
+
+	Example 1:
+	Input: nums1 = [55,30,5,4,2], nums2 = [100,20,10,10,5]
+	Output: 2
+	Explanation: The valid pairs are (0,0), (2,2), (2,3), (2,4), (3,3), (3,4), 
+	             and (4,4). The maximum distance is 2 with pair (2,4).
+
+	Example 2:
+	Input: nums1 = [2,2,2], nums2 = [10,10,1]
+	Output: 1
+	Explanation: The valid pairs are (0,0), (0,1), and (1,1). The maximum 
+	             distance is 1 with pair (0,1).
+	
+	Example 3:
+	Input: nums1 = [30,29,19,5], nums2 = [25,25,25,25,25]
+	Output: 2
+	Explanation: The valid pairs are (2,2), (2,3), (2,4), (3,3), and (3,4).
+	             The maximum distance is 2 with pair (2,4).
+	
+	Example 4:
+	Input: nums1 = [5,4], nums2 = [3,2]
+	Output: 0
+	Explanation: There are no valid pairs, so return 0.
+
+	Constraints:
+	* 1 <= nums1.length <= 10^5
+	* 1 <= nums2.length <= 10^5
+	* 1 <= nums1[i], nums2[j] <= 10^5
+	* Both nums1 and nums2 are non-increasing."""
+
+    def maxDistance(self, nums1: List[int], nums2: List[int]) -> int:
+        ans = ii = 0 
+        for i, x in enumerate(nums2): 
+            while ii < len(nums1) and nums1[ii] > nums2[i]: ii += 1
+            if ii < len(nums1): ans = max(ans, i - ii)
+        return ans 
+
+
+    """1856. Maximum Subarray Min-Product (Medium)
+	The min-product of an array is equal to the minimum value in the array 
+	multiplied by the array's sum. For example, the array [3,2,5] (minimum 
+	value is 2) has a min-product of 2 * (3+2+5) = 2 * 10 = 20. Given an array
+	of integers nums, return the maximum min-product of any non-empty subarray 
+	of nums. Since the answer may be large, return it modulo 10^9 + 7. Note 
+	that the min-product should be maximized before performing the modulo 
+	operation. Testcases are generated such that the maximum min-product 
+	without modulo will fit in a 64-bit signed integer. A subarray is a 
+	contiguous part of an array.
+
+	Example 1:
+	Input: nums = [1,2,3,2]
+	Output: 14
+	Explanation: The maximum min-product is achieved with the subarray [2,3,2] 
+	             (minimum value is 2). 2 * (2+3+2) = 2 * 7 = 14.
+	
+	Example 2:
+	Input: nums = [2,3,3,1,2]
+	Output: 18
+	Explanation: The maximum min-product is achieved with the subarray [3,3] 
+	             (minimum value is 3). 3 * (3+3) = 3 * 6 = 18.
+	
+	Example 3:
+	Input: nums = [3,1,5,6,4,2]
+	Output: 60
+	Explanation: The maximum min-product is achieved with the subarray [5,6,4] 
+	             (minimum value is 4). 4 * (5+6+4) = 4 * 15 = 60.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^7"""
+
+    def maxSumMinProduct(self, nums: List[int]) -> int:
+        prefix = [0]
+        for x in nums: prefix.append(prefix[-1] + x)
+        
+        ans = 0 
+        stack = []
+        for i, x in enumerate(nums + [-inf]): # append "-inf" to force flush all elements
+            while stack and stack[-1][1] >= x: 
+                _, xx = stack.pop()
+                ii = stack[-1][0] if stack else -1 
+                ans = max(ans, xx*(prefix[i] - prefix[ii+1]))
+            stack.append((i, x))
+        return ans % 1_000_000_007
+
+    
+    """1857. Largest Color Value in a Directed Graph (Hard)
+	There is a directed graph of n colored nodes and m edges. The nodes are 
+	numbered from 0 to n - 1. You are given a string colors where colors[i] is 
+	a lowercase English letter representing the color of the ith node in this 
+	graph (0-indexed). You are also given a 2D array edges where 
+	edges[j] = [aj, bj] indicates that there is a directed edge from node aj to 
+	node bj. A valid path in the graph is a sequence of nodes 
+	x1 -> x2 -> x3 -> ... -> xk such that there is a directed edge from xi to 
+	xi+1 for every 1 <= i < k. The color value of the path is the number of 
+	nodes that are colored the most frequently occurring color along that path. 
+	Return the largest color value of any valid path in the given graph, or -1 
+	if the graph contains a cycle.
+
+	Example 1:
+	Input: colors = "abaca", edges = [[0,1],[0,2],[2,3],[3,4]]
+	Output: 3
+	Explanation: The path 0 -> 2 -> 3 -> 4 contains 3 nodes that are colored "a" 
+	             (red in the above image).
+
+	Example 2:
+	Input: colors = "a", edges = [[0,0]]
+	Output: -1
+	Explanation: There is a cycle from 0 to 0.
+
+	Constraints:
+	* n == colors.length
+	* m == edges.length
+	* 1 <= n <= 10^5
+	* 0 <= m <= 10^5
+	* colors consists of lowercase English letters.
+	* 0 <= aj, bj < n"""
+
+    def largestPathValue(self, colors: str, edges: List[List[int]]) -> int:
+        graph = {}
+        indeg = [0] * len(colors)
+        for u, v in edges: 
+            indeg[v] += 1
+            graph.setdefault(u, []).append(v)
+            
+        roots = [x for x in range(len(colors)) if indeg[x] == 0]
+        
+        # Kahn's algo
+        stack = roots.copy()
+        nodes = []
+        while stack: 
+            x = stack.pop()
+            nodes.append(x)
+            for xx in graph.get(x, []):
+                indeg[xx] -= 1
+                if indeg[xx] == 0: stack.append(xx)
+        if len(nodes) < len(colors): return -1 # cycle detected 
+        
+        @cache
+        def fn(x): 
+            """Return distribution of (maximized) colors at given node."""
+            ans = [0]*26
+            ans[ord(colors[x]) - 97] = 1
+            for xx in graph.get(x, []): 
+                val = fn(xx)
+                for i in range(26): 
+                    if i == ord(colors[x]) - 97: ans[i] = max(ans[i], 1 + val[i])
+                    else: ans[i] = max(ans[i], val[i])
+            return ans 
+        
+        ans = [0]*26 
+        for root in roots: 
+            val = fn(root)
+            for i in range(26): ans[i] = max(ans[i], val[i])
+        return max(ans)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
