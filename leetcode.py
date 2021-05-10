@@ -9253,6 +9253,48 @@ class Solution:
         return max(fn(i, j) for i in range(m) for j in range(n))
 
 
+    """330. Patching Array (Hard)
+	Given a sorted integer array nums and an integer n, add/patch elements to 
+	the array such that any number in the range [1, n] inclusive can be formed 
+	by the sum of some elements in the array. Return the minimum number of 
+	patches required.
+
+	Example 1:
+	Input: nums = [1,3], n = 6
+	Output: 1
+	Explanation: Combinations of nums are [1], [3], [1,3], which form possible 
+	             sums of: 1, 3, 4. Now if we add/patch 2 to nums, the 
+	             combinations are: [1], [2], [3], [1,3], [2,3], [1,2,3]. 
+	             Possible sums are 1, 2, 3, 4, 5, 6, which now covers the range 
+	             [1, 6]. So we only need 1 patch.
+
+	Example 2:
+	Input: nums = [1,5,10], n = 20
+	Output: 2
+	Explanation: The two patches can be [2, 4].
+	
+	Example 3:
+	Input: nums = [1,2,2], n = 5
+	Output: 0
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* 1 <= nums[i] <= 10^4
+	* nums is sorted in ascending order.
+	* 1 <= n <= 2^31 - 1"""
+
+    def minPatches(self, nums: List[int], n: int) -> int:
+        ans = prefix = k = 0 
+        while prefix < n: 
+            if k < len(nums) and nums[k] <= prefix + 1: 
+                prefix += nums[k]
+                k += 1
+            else: 
+                ans += 1
+                prefix += prefix + 1
+        return ans 
+
+
     """331. Verify Preorder Serialization of a Binary Tree (Medium)
 	One way to serialize a binary tree is to use pre-order traversal. When we 
 	encounter a non-null node, we record the node's value. If it is a null 
@@ -12384,6 +12426,92 @@ class Solution:
             return 0
         
         return max(dfs(i, j) for i in range(m) for j in range(n))
+
+
+    """721. Accounts Merge (Medium)
+	Given a list of accounts where each element accounts[i] is a list of 
+	strings, where the first element accounts[i][0] is a name, and the rest of 
+	the elements are emails representing emails of the account. Now, we would 
+	like to merge these accounts. Two accounts definitely belong to the same 
+	person if there is some common email to both accounts. Note that even if 
+	two accounts have the same name, they may belong to different people as 
+	people could have the same name. A person can have any number of accounts 
+	initially, but all of their accounts definitely have the same name. After 
+	merging the accounts, return the accounts in the following format: the 
+	first element of each account is the name, and the rest of the elements are 
+	emails in sorted order. The accounts themselves can be returned in any order.
+
+	Example 1:
+	Input: accounts = [["John","johnsmith@mail.com","john_newyork@mail.com"],
+	                   ["John","johnsmith@mail.com","john00@mail.com"],
+	                   ["Mary","mary@mail.com"],
+	                   ["John","johnnybravo@mail.com"]]
+	Output: [["John","john00@mail.com","john_newyork@mail.com","johnsmith@mail.com"],
+	         ["Mary","mary@mail.com"],
+	         ["John","johnnybravo@mail.com"]]
+	Explanation:
+	The first and third John's are the same person as they have the common email "johnsmith@mail.com".
+	The second John and Mary are different people as none of their email addresses are used by other accounts.
+	We could return these lists in any order, for example the answer [['Mary', 'mary@mail.com'], ['John', 'johnnybravo@mail.com'], 
+	['John', 'john00@mail.com', 'john_newyork@mail.com', 'johnsmith@mail.com']] would still be accepted.
+
+	Example 2:
+	Input: accounts = [["Gabe","Gabe0@m.co","Gabe3@m.co","Gabe1@m.co"],
+	                   ["Kevin","Kevin3@m.co","Kevin5@m.co","Kevin0@m.co"],
+	                   ["Ethan","Ethan5@m.co","Ethan4@m.co","Ethan0@m.co"],
+	                   ["Hanzo","Hanzo3@m.co","Hanzo1@m.co","Hanzo0@m.co"],
+	                   ["Fern","Fern5@m.co","Fern1@m.co","Fern0@m.co"]]
+	Output: [["Ethan","Ethan0@m.co","Ethan4@m.co","Ethan5@m.co"],
+	         ["Gabe","Gabe0@m.co","Gabe1@m.co","Gabe3@m.co"],
+	         ["Hanzo","Hanzo0@m.co","Hanzo1@m.co","Hanzo3@m.co"],
+	         ["Kevin","Kevin0@m.co","Kevin3@m.co","Kevin5@m.co"],
+	         ["Fern","Fern0@m.co","Fern1@m.co","Fern5@m.co"]]
+
+	Constraints:
+	* 1 <= accounts.length <= 1000
+	* 2 <= accounts[i].length <= 10
+	* 1 <= accounts[i][j] <= 30
+	* accounts[i][0] consists of English letters.
+	* accounts[i][j] (for j > 0) is a valid email.
+
+class UnionFind:
+    def __init__(self): 
+        self.parent = {}
+        self.rank = defaultdict(lambda: 1)
+    
+    def find(self, p):
+        if p not in self.parent: 
+            self.parent[p] = p
+        elif p != self.parent[p]:
+            self.parent[p] = self.find(self.parent[p])
+        return self.parent[p]
+    
+    def union(self, p, q):
+        prt, qrt = self.find(p), self.find(q)
+        if prt == qrt: return False # already connected 
+        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt 
+        self.parent[prt] = qrt
+        self.rank[qrt] += self.rank[prt]
+        return True 
+
+	"""
+
+    def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
+        email = {}
+        uf = UnionFind()
+        for account in accounts: 
+            for i in range(1, len(account)):
+                email[account[i]] = account[0]
+                uf.union(account[1], account[i])
+        
+        groups = {}
+        for x in email: 
+            groups.setdefault(uf.find(x), []).append(x)
+        
+        ans = []
+        for value in groups.values(): 
+            ans.append([email[value[0]]] + sorted(value))
+        return ans 
 
 
     """725. Split Linked List in Parts (Medium)
@@ -19760,6 +19888,56 @@ class UnionFind:
                 i, j = i-1, j-1
                 mat[i][j] = vals.pop()
         return mat
+
+
+    """1354. Construct Target Array With Multiple Sums (Hard)
+	Given an array of integers target. From a starting array, A consisting of 
+	all 1's, you may perform the following procedure :
+	* let x be the sum of all elements currently in your array.
+	* choose index i, such that 0 <= i < target.size and set the value of A at 
+	  index i to x.
+	* You may repeat this procedure as many times as needed.
+	Return True if it is possible to construct the target array from A 
+	otherwise return False.
+
+	Example 1:
+	Input: target = [9,3,5]
+	Output: true
+	Explanation: Start with [1, 1, 1] 
+	[1, 1, 1], sum = 3 choose index 1
+	[1, 3, 1], sum = 5 choose index 2
+	[1, 3, 5], sum = 9 choose index 0
+	[9, 3, 5] Done
+
+	Example 2:
+	Input: target = [1,1,1,2]
+	Output: false
+	Explanation: Impossible to create target array from [1,1,1,1].
+
+	Example 3:
+	Input: target = [8,5]
+	Output: true
+
+	Constraints:
+	* N == target.length
+	* 1 <= target.length <= 5 * 10^4
+	* 1 <= target[i] <= 10^9"""
+
+    def isPossible(self, target: List[int]) -> bool:
+        if len(target) == 1: return target[0] == 1 # edge case 
+        
+        total = sum(target)
+        pq = [-x for x in target] # max heap 
+        heapify(pq)
+        
+        while -pq[0] > 1: 
+            x = -heappop(pq)
+            total -= x
+            if x <= total: return False 
+            x = (x-1) % total + 1
+            heappush(pq, -x)
+            total += x
+        return True
 
 
     """1356. Sort Integers by The Number of 1 Bits (Easy)
