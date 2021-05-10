@@ -1078,6 +1078,40 @@ public:
     }
 
 
+    /*204. Count Primes (Easy)
+	Count the number of prime numbers less than a non-negative number, n.
+
+	Example 1:
+	Input: n = 10
+	Output: 4
+	Explanation: There are 4 prime numbers less than 10, they are 2, 3, 5, 7.
+
+	Example 2:
+	Input: n = 0
+	Output: 0
+
+	Example 3:
+	Input: n = 1
+	Output: 0
+
+	Constraints: 0 <= n <= 5 * 10^6*/
+
+    int countPrimes(int n) {
+        if (n < 2) return false; // edge case 
+        
+        vector<bool> sieve(n, true); 
+        sieve[0] = sieve[1] = false; 
+        for (int i = 2; i < sqrt(n); ++i) {
+            if (sieve[i]) {
+                for (int ii = i*i; ii < n; ii += i) {
+                    sieve[ii] = false; 
+                }
+            }
+        }
+        return count(sieve.begin(), sieve.end(), true); 
+    }
+
+
     /*234. Palindrome Linked List (Easy)
 	Given the head of a singly linked list, return true if it is a palindrome.
 
