@@ -1617,6 +1617,51 @@ public:
     }
 
 
+    /*330. Patching Array (Hard)
+	Given a sorted integer array nums and an integer n, add/patch elements to 
+	the array such that any number in the range [1, n] inclusive can be formed 
+	by the sum of some elements in the array. Return the minimum number of 
+	patches required.
+
+	Example 1:
+	Input: nums = [1,3], n = 6
+	Output: 1
+	Explanation: Combinations of nums are [1], [3], [1,3], which form possible 
+	             sums of: 1, 3, 4. Now if we add/patch 2 to nums, the 
+	             combinations are: [1], [2], [3], [1,3], [2,3], [1,2,3]. 
+	             Possible sums are 1, 2, 3, 4, 5, 6, which now covers the range 
+	             [1, 6]. So we only need 1 patch.
+	
+	Example 2:
+	Input: nums = [1,5,10], n = 20
+	Output: 2
+	Explanation: The two patches can be [2, 4].
+
+	Example 3:
+	Input: nums = [1,2,2], n = 5
+	Output: 0
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* 1 <= nums[i] <= 10^4
+	* nums is sorted in ascending order.
+	* 1 <= n <= 2^31 - 1*/
+
+    int minPatches(vector<int>& nums, int n) {
+        int ans = 0, k = 0; 
+        long prefix = 0; 
+        while (prefix < n) {
+            if (k < nums.size() && nums[k] <= prefix + 1) {
+                prefix += nums[k++]; 
+            } else {
+                ++ans; 
+                prefix += prefix + 1; 
+            }
+        }
+        return ans; 
+    }
+
+
     /*377. Combination Sum IV (Medium)
 	Given an array of distinct integers nums and a target integer target, 
 	return the number of possible combinations that add up to target. The 
@@ -5049,6 +5094,222 @@ public:
             ans = max(ans, (restrictions[i-1][1] + restrictions[i][0] - restrictions[i-1][0] + restrictions[i][1])/2); 
         }
         return ans; 
+    }
+
+
+    /*1854. Maximum Population Year (Easy)
+	You are given a 2D integer array logs where each logs[i] = [birthi, deathi] 
+	indicates the birth and death years of the ith person. The population of 
+	some year x is the number of people alive during that year. The ith person 
+	is counted in year x's population if x is in the inclusive range 
+	[birthi, deathi - 1]. Note that the person is not counted in the year that 
+	they die. Return the earliest year with the maximum population.
+
+	Example 1:
+	Input: logs = [[1993,1999],[2000,2010]]
+	Output: 1993
+	Explanation: The maximum population is 1, and 1993 is the earliest year 
+	             with this population.
+
+	Example 2:
+	Input: logs = [[1950,1961],[1960,1971],[1970,1981]]
+	Output: 1960
+	Explanation: The maximum population is 2, and it had happened in years 1960 
+	             and 1970. The earlier year between them is 1960.
+
+	Constraints:
+	* 1 <= logs.length <= 100
+	* 1950 <= birthi < deathi <= 2050*/
+
+    int maximumPopulation(vector<vector<int>>& logs) {
+        vector<pair<int, int>> vals; 
+        for (auto log : logs) {
+            vals.push_back(make_pair(log[0], 1));
+            vals.push_back(make_pair(log[1], -1)); 
+        }
+        sort(vals.begin(), vals.end()); 
+        
+        int ans = 0, prefix = 0, most = 0; 
+        for (auto val : vals) {
+            prefix += val.second; 
+            if (prefix > most) {
+                most = prefix; 
+                ans = val.first; 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*1855. Maximum Distance Between a Pair of Values (Medium)
+	You are given two non-increasing 0-indexed integer arrays nums1​​​​​​ and 
+	nums2​​​​​​. A pair of indices (i, j), where 0 <= i < nums1.length and 
+	0 <= j < nums2.length, is valid if both i <= j and nums1[i] <= nums2[j]. 
+	The distance of the pair is j - i​​​​. Return the maximum distance of any 
+	valid pair (i, j). If there are no valid pairs, return 0. An array arr 
+	is non-increasing if arr[i-1] >= arr[i] for every 1 <= i < arr.length.
+
+	Example 1:
+	Input: nums1 = [55,30,5,4,2], nums2 = [100,20,10,10,5]
+	Output: 2
+	Explanation: The valid pairs are (0,0), (2,2), (2,3), (2,4), (3,3), (3,4), 
+	             and (4,4). The maximum distance is 2 with pair (2,4).
+
+	Example 2:
+	Input: nums1 = [2,2,2], nums2 = [10,10,1]
+	Output: 1
+	Explanation: The valid pairs are (0,0), (0,1), and (1,1). The maximum 
+	             distance is 1 with pair (0,1).
+
+	Example 3:
+	Input: nums1 = [30,29,19,5], nums2 = [25,25,25,25,25]
+	Output: 2
+	Explanation: The valid pairs are (2,2), (2,3), (2,4), (3,3), and (3,4). 
+	             The maximum distance is 2 with pair (2,4).
+	
+	Example 4:
+	Input: nums1 = [5,4], nums2 = [3,2]
+	Output: 0
+	Explanation: There are no valid pairs, so return 0.
+
+	Constraints:
+	* 1 <= nums1.length <= 10^5
+	* 1 <= nums2.length <= 10^5
+	* 1 <= nums1[i], nums2[j] <= 10^5
+	* Both nums1 and nums2 are non-increasing.*/
+
+    int maxDistance(vector<int>& nums1, vector<int>& nums2) {
+        int ans = 0, i = 0; 
+        for (int j = 0; j < nums2.size(); ++j) {
+            while (i < nums1.size() && nums1[i] > nums2[j]) ++i; 
+            if (i < nums1.size()) 
+                ans = max(ans, j - i); 
+        }
+        return ans; 
+    }
+
+
+    /*1856. Maximum Subarray Min-Product (Medium)
+	The min-product of an array is equal to the minimum value in the array 
+	multiplied by the array's sum. For example, the array [3,2,5] (minimum 
+	value is 2) has a min-product of 2 * (3+2+5) = 2 * 10 = 20. Given an array 
+	of integers nums, return the maximum min-product of any non-empty subarray 
+	of nums. Since the answer may be large, return it modulo 10^9 + 7. Note 
+	that the min-product should be maximized before performing the modulo 
+	operation. Testcases are generated such that the maximum min-product 
+	without modulo will fit in a 64-bit signed integer. A subarray is a 
+	contiguous part of an array.
+
+	Example 1:
+	Input: nums = [1,2,3,2]
+	Output: 14
+	Explanation: The maximum min-product is achieved with the subarray [2,3,2] 
+	             (minimum value is 2). 2 * (2+3+2) = 2 * 7 = 14.
+	
+	Example 2:
+	Input: nums = [2,3,3,1,2]
+	Output: 18
+	Explanation: The maximum min-product is achieved with the subarray [3,3] 
+	             (minimum value is 3). 3 * (3+3) = 3 * 6 = 18.
+	
+	Example 3:
+	Input: nums = [3,1,5,6,4,2]
+	Output: 60
+	Explanation: The maximum min-product is achieved with the subarray [5,6,4] 
+	             (minimum value is 4). 4 * (5+6+4) = 4 * 15 = 60.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^7*/
+
+    int maxSumMinProduct(vector<int>& nums) {
+        vector<long> prefix = {0}; 
+        for (auto x : nums) 
+            prefix.push_back(prefix.back() + x); 
+        
+        long ans = 0; 
+        stack<pair<int, int>> stk; 
+        nums.push_back(0); 
+        
+        for (int i = 0; i < nums.size(); ++i) {
+            int ii = i; 
+            while (stk.size() && stk.top().second >= nums[i]) {
+                ii = stk.top().first; 
+                int val = stk.top().second; 
+                ans = max(ans, val * (prefix[i] - prefix[ii])); 
+                stk.pop(); 
+            }
+            stk.push(make_pair(ii, nums[i])); 
+        }
+        return ans % 1'000'000'007; 
+    }
+
+
+    /*1857. Largest Color Value in a Directed Graph (Hard)
+	There is a directed graph of n colored nodes and m edges. The nodes are 
+	numbered from 0 to n - 1. You are given a string colors where colors[i] is 
+	a lowercase English letter representing the color of the ith node in this 
+	graph (0-indexed). You are also given a 2D array edges where 
+	edges[j] = [aj, bj] indicates that there is a directed edge from node aj to 
+	node bj. A valid path in the graph is a sequence of nodes 
+	x1 -> x2 -> x3 -> ... -> xk such that there is a directed edge from xi to 
+	xi+1 for every 1 <= i < k. The color value of the path is the number of 
+	nodes that are colored the most frequently occurring color along that path. 
+	Return the largest color value of any valid path in the given graph, or -1 
+	if the graph contains a cycle.
+
+	Example 1:
+	Input: colors = "abaca", edges = [[0,1],[0,2],[2,3],[3,4]]
+	Output: 3
+	Explanation: The path 0 -> 2 -> 3 -> 4 contains 3 nodes that are colored "a" 
+	             (red in the above image).
+
+	Example 2:
+	Input: colors = "a", edges = [[0,0]]
+	Output: -1
+	Explanation: There is a cycle from 0 to 0.
+
+	Constraints:
+	* n == colors.length
+	* m == edges.length
+	* 1 <= n <= 10^5
+	* 0 <= m <= 10^5
+	* colors consists of lowercase English letters.
+	* 0 <= aj, bj < n*/
+
+    int largestPathValue(string colors, vector<vector<int>>& edges) {
+        int n = colors.size(); 
+        
+        unordered_map<int, vector<int>> graph; 
+        vector<int> indeg(n); 
+        for (auto edge : edges) {
+            ++indeg[edge[1]]; 
+            graph[edge[0]].push_back(edge[1]); 
+        }
+        
+        stack<int> stk; 
+        for (int i = 0; i < n; ++i) {
+            if (indeg[i] == 0) stk.push(i); 
+        }
+        
+        // topological sort via Kahn's algo 
+        int ans = 0, cnt = 0; 
+        vector<vector<int>> dp(n, vector<int>(26, 0)); 
+        while (stk.size()) {
+            int node = stk.top(); 
+            stk.pop(); 
+            ++cnt; 
+            ans = max(ans, ++dp[node][colors[node] - 'a']); 
+            
+            for (auto child : graph[node]) {
+                if (--indeg[child] == 0) stk.push(child); 
+                for (int i = 0; i < 26; ++i) {
+                    dp[child][i] = max(dp[node][i], dp[child][i]); 
+                    ans = max(ans, dp[child][i]); 
+                }
+            }
+        }
+        return cnt == n ? ans : -1; 
     }
 };
 
