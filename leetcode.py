@@ -17214,6 +17214,66 @@ class UnionFind:
         return fn(root)[2]
 
 
+    """1125. Smallest Sufficient Team (Hard)
+	In a project, you have a list of required skills req_skills, and a list of 
+	people. The ith person people[i] contains a list of skills that the person 
+	has. Consider a sufficient team: a set of people such that for every 
+	required skill in req_skills, there is at least one person in the team who 
+	has that skill. We can represent these teams by the index of each person. 
+	For example, team = [0, 1, 3] represents the people with skills people[0], 
+	people[1], and people[3]. Return any sufficient team of the smallest 
+	possible size, represented by the index of each person. You may return the 
+	answer in any order. It is guaranteed an answer exists.
+
+	Example 1:
+	Input: req_skills = ["java","nodejs","reactjs"], 
+	       people = [["java"],["nodejs"],["nodejs","reactjs"]]
+	Output: [0,2]
+
+	Example 2:
+	Input: req_skills = ["algorithms","math","java","reactjs","csharp","aws"], 
+	       people = [["algorithms","math","java"],
+	                 ["algorithms","math","reactjs"],
+	                 ["java","csharp","aws"],
+	                 ["reactjs","csharp"],
+	                 ["csharp","math"],
+	                 ["aws","java"]]
+	Output: [1,2]
+
+	Constraints:
+	* 1 <= req_skills.length <= 16
+	* 1 <= req_skills[i].length <= 16
+	* req_skills[i] consists of lowercase English letters.
+	* All the strings of req_skills are unique.
+	* 1 <= people.length <= 60
+	* 0 <= people[i].length <= 16
+	* 1 <= people[i][j].length <= 16
+	* people[i][j] consists of lowercase English letters.
+	* All the strings of people[i] are unique.
+	* Every skill in people[i] is a skill in req_skills.
+	* It is guaranteed a sufficient team exists."""
+
+    def smallestSufficientTeam(self, req_skills: List[str], people: List[List[str]]) -> List[int]:
+        mp = {skill : i for i, skill in enumerate(req_skills)} # digitized skills
+        
+        cand = []
+        for skills in people: 
+            val = 0
+            for skill in skills: 
+                val |= 1 << mp[skill] # digitized skill
+            cand.append(val)
+        
+        @cache
+        def fn(i, mask): 
+            """Return smallest sufficient team of people[i:] for skills in mask."""
+            if mask == 0: return []
+            if i == len(people): return [0]*100 # impossible
+            if not (mask & cand[i]): return fn(i+1, mask)
+            return min(fn(i+1, mask), [i] + fn(i+1, mask & ~cand[i]), key=len)
+        
+        return fn(0, (1 << len(req_skills)) - 1)
+
+
     """1128. Number of Equivalent Domino Pairs (Easy)
 	Given a list of dominoes, dominoes[i] = [a, b] is equivalent to 
 	dominoes[j] = [c, d] if and only if either (a==c and b==d), or 
@@ -17984,6 +18044,46 @@ class UnionFind:
                 if val < lower: ans -= 1
                 elif val > upper: ans += 1
                 val -= calories[i-k+1]
+        return ans 
+
+
+    """1177. Can Make Palindrome from Substring (Medium)
+	Given a string s, we make queries on substrings of s. For each query 
+	queries[i] = [left, right, k], we may rearrange the substring s[left], ..., 
+	s[right], and then choose up to k of them to replace with any lowercase 
+	English letter. If the substring is possible to be a palindrome string 
+	after the operations above, the result of the query is true. Otherwise, 
+	the result is false. Return an array answer[], where answer[i] is the 
+	result of the i-th query queries[i]. Note that: Each letter is counted 
+	individually for replacement so if for example s[left..right] = "aaa", 
+	and k = 2, we can only replace two of the letters.  (Also, note that the 
+	initial string s is never modified by any query.)
+
+	Example :
+	Input: s = "abcda", queries = [[3,3,0],[1,2,0],[0,3,1],[0,3,2],[0,4,1]]
+	Output: [true,false,false,true,true]
+	Explanation:
+	queries[0] : substring = "d", is palidrome.
+	queries[1] : substring = "bc", is not palidrome.
+	queries[2] : substring = "abcd", is not palidrome after replacing only 1 character.
+	queries[3] : substring = "abcd", could be changed to "abba" which is palidrome. Also this can be changed to "baab" first rearrange it "bacd" then replace "cd" with "ab".
+	queries[4] : substring = "abcda", could be changed to "abcba" which is palidrome.
+
+	Constraints:
+	* 1 <= s.length, queries.length <= 10^5
+	* 0 <= queries[i][0] <= queries[i][1] < s.length
+	* 0 <= queries[i][2] <= s.length
+	* s only contains lowercase English letters."""
+
+    def canMakePaliQueries(self, s: str, queries: List[List[int]]) -> List[bool]:
+        prefix = [0]
+        for c in s: 
+            prefix.append(prefix[-1] ^ (1 << (ord(c)-97)))
+        
+        ans = []
+        for left, right, k in queries: 
+            cnt = bin(prefix[right+1] ^ prefix[left]).count("1")
+            ans.append(cnt <= 2*k+1)
         return ans 
 
 
@@ -21348,6 +21448,68 @@ class UnionFind:
             amount += x if d == 0 else -x
         amount %= len(s)
         return s[amount:] + s[:amount]
+
+
+    """1444. Number of Ways of Cutting a Pizza (Hard)
+	Given a rectangular pizza represented as a rows x cols matrix containing 
+	the following characters: 'A' (an apple) and '.' (empty cell) and given the 
+	integer k. You have to cut the pizza into k pieces using k-1 cuts. For each 
+	cut you choose the direction: vertical or horizontal, then you choose a cut 
+	position at the cell boundary and cut the pizza into two pieces. If you cut 
+	the pizza vertically, give the left part of the pizza to a person. If you 
+	cut the pizza horizontally, give the upper part of the pizza to a person. 
+	Give the last piece of pizza to the last person. Return the number of ways 
+	of cutting the pizza such that each piece contains at least one apple. 
+	Since the answer can be a huge number, return this modulo 10^9 + 7.
+
+	Example 1:
+	Input: pizza = ["A..","AAA","..."], k = 3
+	Output: 3 
+	Explanation: The figure above shows the three ways to cut the pizza. Note 
+	             that pieces must contain at least one apple.
+
+	Example 2:
+	Input: pizza = ["A..","AA.","..."], k = 3
+	Output: 1
+	
+	Example 3:
+	Input: pizza = ["A..","A..","..."], k = 1
+	Output: 1
+
+	Constraints:
+	* 1 <= rows, cols <= 50
+	* rows == pizza.length
+	* cols == pizza[i].length
+	* 1 <= k <= 10
+	* pizza consists of characters 'A' and '.' only."""
+
+    def ways(self, pizza: List[str], k: int) -> int:
+        m, n = len(pizza), len(pizza[0])
+        
+        prefix = [[0]*(n+1) for _ in range(m+1)] # prefix array 
+        for i in range(m):
+            for j in range(n): 
+                prefix[i+1][j+1] = prefix[i][j+1] + prefix[i+1][j] - prefix[i][j]
+                if pizza[i][j] == "A": prefix[i+1][j+1] += 1
+                
+        @cache
+        def fn(i, j, k):
+            """Return number of ways of cutting pizza[i:][j:] for k people."""
+            if i == m or j == n: return 0 # out of pizza 
+            apples = prefix[-1][-1] - prefix[-1][j] - prefix[i][-1] + prefix[i][j]
+            if apples < k+1: return 0 # not enough apple 
+            if k == 0: return 1
+            
+            ans = 0 
+            for ii in range(i, m): 
+                if prefix[ii+1][-1] - prefix[ii+1][j] - prefix[i][-1] + prefix[i][j]: 
+                    ans += fn(ii+1, j, k-1)
+            for jj in range(j, n): 
+                if prefix[-1][jj+1] - prefix[-1][j] - prefix[i][jj+1] + prefix[i][j]: 
+                    ans += fn(i, jj+1, k-1)
+            return ans % 1_000_000_007
+        
+        return fn(0, 0, k-1)
 
 
     """1446. Consecutive Characters (Easy)
@@ -30251,6 +30413,198 @@ class Fenwick:
         return dp[1]
 
 
+    """1827. Minimum Operations to Make the Array Increasing (Easy)
+	You are given an integer array nums (0-indexed). In one operation, you can 
+	choose an element of the array and increment it by 1. For example, if 
+	nums = [1,2,3], you can choose to increment nums[1] to make nums = [1,3,3].
+	Return the minimum number of operations needed to make nums strictly 
+	increasing. An array nums is strictly increasing if nums[i] < nums[i+1] for 
+	all 0 <= i < nums.length - 1. An array of length 1 is trivially strictly 
+	increasing.
+
+	Example 1:
+	Input: nums = [1,1,1]
+	Output: 3
+	Explanation: You can do the following operations:
+	1) Increment nums[2], so nums becomes [1,1,2].
+	2) Increment nums[1], so nums becomes [1,2,2].
+	3) Increment nums[2], so nums becomes [1,2,3].
+
+	Example 2:
+	Input: nums = [1,5,2,4,1]
+	Output: 14
+
+	Example 3:
+	Input: nums = [8]
+	Output: 0
+
+	Constraints:
+	* 1 <= nums.length <= 5000
+	* 1 <= nums[i] <= 10^4"""
+
+    def minOperations(self, nums: List[int]) -> int:
+        ans = 0
+        for i in range(1, len(nums)):
+            if nums[i-1] >= nums[i]: 
+                ans += 1 + nums[i-1] - nums[i]
+                nums[i] = 1 + nums[i-1]
+        return ans 
+
+
+    """1828. Queries on Number of Points Inside a Circle (Medium)
+	You are given an array points where points[i] = [xi, yi] is the coordinates 
+	of the ith point on a 2D plane. Multiple points can have the same coordinates.
+	You are also given an array queries where queries[j] = [xj, yj, rj] describes 
+	a circle centered at (xj, yj) with a radius of rj. For each query queries[j], 
+	compute the number of points inside the jth circle. Points on the border of 
+	the circle are considered inside. Return an array answer, where answer[j] is 
+	the answer to the jth query.
+
+	Example 1:
+	Input: points = [[1,3],[3,3],[5,3],[2,2]], 
+	       queries = [[2,3,1],[4,3,1],[1,1,2]]
+	Output: [3,2,2]
+	Explanation: The points and circles are shown above. queries[0] is the green 
+	             circle, queries[1] is the red circle, and queries[2] is the blue 
+	             circle.
+
+	Example 2:
+	Input: points = [[1,1],[2,2],[3,3],[4,4],[5,5]], 
+	       queries = [[1,2,2],[2,2,2],[4,3,2],[4,3,3]]
+	Output: [2,3,2,4]
+	Explanation: The points and circles are shown above. queries[0] is green, 
+	             queries[1] is red, queries[2] is blue, and queries[3] is purple.
+
+	Constraints:
+	* 1 <= points.length <= 500
+	* points[i].length == 2
+	* 0 <= x​​​​​​i, y​​​​​​i <= 500
+	* 1 <= queries.length <= 500
+	* queries[j].length == 3
+	* 0 <= xj, yj <= 500
+	* 1 <= rj <= 500
+	* All coordinates are integers.
+
+	Follow up: Could you find the answer for each query in better complexity than 
+	           O(n)?"""
+
+    def countPoints(self, points: List[List[int]], queries: List[List[int]]) -> List[int]:
+        ans = []
+        for x, y, r in queries: 
+            val = 0
+            for xx, yy in points: 
+                if (x-xx)**2 + (y-yy)**2 <= r**2: 
+                    val += 1
+            ans.append(val)
+        return ans 
+
+
+    """1829. Maximum XOR for Each Query (Medium)
+	You are given a sorted array nums of n non-negative integers and an integer 
+	maximumBit. You want to perform the following query n times:
+	* Find a non-negative integer k < 2maximumBit such that nums[0] XOR nums[1] 
+	  XOR ... XOR nums[nums.length-1] XOR k is maximized. k is the answer to 
+	  the ith query.
+	* Remove the last element from the current array nums.
+	Return an array answer, where answer[i] is the answer to the ith query.
+
+	Example 1:
+	Input: nums = [0,1,1,3], maximumBit = 2
+	Output: [0,3,2,3]
+	Explanation: The queries are answered as follows:
+	1st query: nums = [0,1,1,3], k = 0 since 0 XOR 1 XOR 1 XOR 3 XOR 0 = 3.
+	2nd query: nums = [0,1,1], k = 3 since 0 XOR 1 XOR 1 XOR 3 = 3.
+	3rd query: nums = [0,1], k = 2 since 0 XOR 1 XOR 2 = 3.
+	4th query: nums = [0], k = 3 since 0 XOR 3 = 3.
+
+	Example 2:
+	Input: nums = [2,3,4,7], maximumBit = 3
+	Output: [5,2,6,5]
+	Explanation: The queries are answered as follows:
+	1st query: nums = [2,3,4,7], k = 5 since 2 XOR 3 XOR 4 XOR 7 XOR 5 = 7.
+	2nd query: nums = [2,3,4], k = 2 since 2 XOR 3 XOR 4 XOR 2 = 7.
+	3rd query: nums = [2,3], k = 6 since 2 XOR 3 XOR 6 = 7.
+	4th query: nums = [2], k = 5 since 2 XOR 5 = 7.
+
+	Example 3:
+	Input: nums = [0,1,2,2,5,7], maximumBit = 3
+	Output: [4,3,6,4,6,7]
+
+	Constraints:
+	* nums.length == n
+	* 1 <= n <= 105
+	* 1 <= maximumBit <= 20
+	* 0 <= nums[i] < 2maximumBit
+	* nums​​​ is sorted in ascending order."""
+
+    def getMaximumXor(self, nums: List[int], maximumBit: int) -> List[int]:
+        ans = [0]*len(nums)
+        prefix = 0
+        for i, x in enumerate(nums): 
+            prefix ^= x 
+            ans[~i] = prefix ^ ((1 << maximumBit) -1)
+        return ans
+
+
+    """1830. Minimum Number of Operations to Make String Sorted (Hard)
+	You are given a string s (0-indexed)​​​​​​. You are asked to perform the 
+	following operation on s​​​​​​ until you get a sorted string:
+	* Find the largest index i such that 1 <= i < s.length and s[i] < s[i - 1].
+	* Find the largest index j such that i <= j < s.length and s[k] < s[i - 1] 
+	  for all the possible values of k in the range [i, j] inclusive.
+	* Swap the two characters at indices i - 1​​​​ and j​​​​​.
+	* Reverse the suffix starting at index i​​​​​​.
+	Return the number of operations needed to make the string sorted. Since the 
+	answer can be too large, return it modulo 109 + 7.
+
+	Example 1:
+	Input: s = "cba"
+	Output: 5
+	Explanation: The simulation goes as follows:
+	Operation 1: i=2, j=2. Swap s[1] and s[2] to get s="cab", then reverse the suffix starting at 2. Now, s="cab".
+	Operation 2: i=1, j=2. Swap s[0] and s[2] to get s="bac", then reverse the suffix starting at 1. Now, s="bca".
+	Operation 3: i=2, j=2. Swap s[1] and s[2] to get s="bac", then reverse the suffix starting at 2. Now, s="bac".
+	Operation 4: i=1, j=1. Swap s[0] and s[1] to get s="abc", then reverse the suffix starting at 1. Now, s="acb".
+	Operation 5: i=2, j=2. Swap s[1] and s[2] to get s="abc", then reverse the suffix starting at 2. Now, s="abc".
+
+	Example 2:
+	Input: s = "aabaa"
+	Output: 2
+	Explanation: The simulation goes as follows:
+	Operation 1: i=3, j=4. Swap s[2] and s[4] to get s="aaaab", then reverse the substring starting at 3. Now, s="aaaba".
+	Operation 2: i=4, j=4. Swap s[3] and s[4] to get s="aaaab", then reverse the substring starting at 4. Now, s="aaaab".
+
+	Example 3:
+	Input: s = "cdbea"
+	Output: 63
+
+	Example 4:
+	Input: s = "leetcodeleetcodeleetcode"
+	Output: 982157772
+
+	Constraints:
+	* 1 <= s.length <= 3000
+	* s​​​​​​ consists only of lowercase English letters."""
+
+    def makeStringSorted(self, s: str) -> int:
+        freq = [0]*26
+        for c in s: freq[ord(c) - 97] += 1
+        
+        MOD = 1_000_000_007
+        fac = cache(lambda x: x*fac(x-1)%MOD if x else 1)
+        ifac = cache(lambda x: pow(fac(x), MOD-2, MOD)) # Fermat's little theorem (a**(p-1) = 1 (mod p))
+        
+        ans, n = 0, len(s)
+        for c in s: 
+            val = ord(c) - 97
+            mult = fac(n-1)
+            for k in range(26): mult *= ifac(freq[k])
+            for k in range(val): ans += freq[k] * mult
+            n -= 1
+            freq[val] -= 1
+        return ans % MOD
+
+
     """1832. Check if the Sentence Is Pangram (Easy)
 	A pangram is a sentence where every letter of the English alphabet appears 
 	at least once. Given a string sentence containing only lowercase English 
@@ -32794,6 +33148,69 @@ class FooBar:
             self.lock1.acquire()
             printBar()
             self.lock0.release()
+
+
+"""1117. Building H2O (Medium)
+There are two kinds of threads, oxygen and hydrogen. Your goal is to group 
+these threads to form water molecules. There is a barrier where each thread 
+has to wait until a complete molecule can be formed. Hydrogen and oxygen 
+threads will be given releaseHydrogen and releaseOxygen methods respectively, 
+which will allow them to pass the barrier. These threads should pass the 
+barrier in groups of three, and they must be able to immediately bond with 
+each other to form a water molecule. You must guarantee that all the threads 
+from one molecule bond before any other threads from the next molecule do.
+
+In other words:
+* If an oxygen thread arrives at the barrier when no hydrogen threads are 
+  present, it has to wait for two hydrogen threads.
+* If a hydrogen thread arrives at the barrier when no other threads are 
+  present, it has to wait for an oxygen thread and another hydrogen thread.
+We don’t have to worry about matching the threads up explicitly; that is, the 
+threads do not necessarily know which other threads they are paired up with. 
+The key is just that threads pass the barrier in complete sets; thus, if we 
+examine the sequence of threads that bond and divide them into groups of three, 
+each group should contain one oxygen and two hydrogen threads. Write 
+synchronization code for oxygen and hydrogen molecules that enforces these 
+constraints.
+
+Example 1:
+Input: "HOH"
+Output: "HHO"
+Explanation: "HOH" and "OHH" are also valid answers.
+
+Example 2:
+Input: "OOHHHH"
+Output: "HHOHHO"
+Explanation: "HOHHHO", "OHHHHO", "HHOHOH", "HOHHOH", "OHHHOH", "HHOOHH", "HOHOHH" and "OHHOHH" are also valid answers.
+ 
+Constraints:
+* Total length of input string will be 3n, where 1 ≤ n ≤ 20.
+* Total number of H will be 2n in the input string.
+* Total number of O will be n in the input string."""
+
+from threading import Barrier, Semaphore
+
+class H2O:
+    def __init__(self):
+        self.bar = Barrier(3)
+        self.semH = Semaphore(2)
+        self.semO = Semaphore(1)
+
+
+    def hydrogen(self, releaseHydrogen: 'Callable[[], None]') -> None:
+        self.semH.acquire()
+        self.bar.wait()
+        # releaseHydrogen() outputs "H". Do not change or remove this line.
+        releaseHydrogen()
+        self.semH.release()
+
+
+    def oxygen(self, releaseOxygen: 'Callable[[], None]') -> None:
+        self.semO.acquire()
+        self.bar.wait()
+        # releaseOxygen() outputs "O". Do not change or remove this line.
+        releaseOxygen()
+        self.semO.release()
 
 
 """1146. Snapshot Array (Medium)
