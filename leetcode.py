@@ -22515,6 +22515,205 @@ class UnionFind:
         return ans 
 
 
+    """1528. Shuffle String (Easy)
+	Given a string s and an integer array indices of the same length. The 
+	string s will be shuffled such that the character at the ith position moves 
+	to indices[i] in the shuffled string. Return the shuffled string.
+
+	Example 1:
+	Input: s = "codeleet", indices = [4,5,6,7,0,2,1,3]
+	Output: "leetcode"
+	Explanation: As shown, "codeleet" becomes "leetcode" after shuffling.
+
+	Example 2:
+	Input: s = "abc", indices = [0,1,2]
+	Output: "abc"
+	Explanation: After shuffling, each character remains in its position.
+
+	Example 3:
+	Input: s = "aiohn", indices = [3,1,4,2,0]
+	Output: "nihao"
+
+	Example 4:
+	Input: s = "aaiougrt", indices = [4,0,2,6,7,3,1,5]
+	Output: "arigatou"
+
+	Example 5:
+	Input: s = "art", indices = [1,0,2]
+	Output: "rat"
+
+	Constraints:
+	* s.length == indices.length == n
+	* 1 <= n <= 100
+	* s contains only lower-case English letters.
+	* 0 <= indices[i] < n
+	* All values of indices are unique (i.e. indices is a permutation of the integers from 0 to n - 1)."""
+
+    def restoreString(self, s: str, indices: List[int]) -> str:
+        ans = [""]*len(s)
+        for i, x in zip(indices, s):
+            ans[i] = x
+        return "".join(ans)
+
+
+    """1529. Bulb Switcher IV (Medium)
+	There is a room with n bulbs, numbered from 0 to n - 1, arranged in a row 
+	from left to right. Initially, all the bulbs are turned off. Your task is 
+	to obtain the configuration represented by target where target[i] is '1' 
+	if the ith bulb is turned on and is '0' if it is turned off. You have a 
+	switch to flip the state of the bulb, a flip operation is defined as 
+	follows:
+	* Choose any bulb (index i) of your current configuration.
+	* Flip each bulb from index i to index n - 1.
+	When any bulb is flipped it means that if it is '0' it changes to '1' and 
+	if it is '1' it changes to '0'. Return the minimum number of flips 
+	required to form target.
+
+	Example 1:
+	Input: target = "10111"
+	Output: 3
+	Explanation: Initial configuration "00000".
+	flip from the third bulb:  "00000" -> "00111"
+	flip from the first bulb:  "00111" -> "11000"
+	flip from the second bulb:  "11000" -> "10111"
+	We need at least 3 flip operations to form target.
+
+	Example 2:
+	Input: target = "101"
+	Output: 3
+	Explanation: "000" -> "111" -> "100" -> "101".
+
+	Example 3:
+	Input: target = "00000"
+	Output: 0
+
+	Example 4:
+	Input: target = "001011101"
+	Output: 5
+
+	Constraints:
+	* 1 <= target.length <= 105
+	* target[i] is either '0' or '1'."""
+
+    def minFlips(self, target: str) -> int:
+        ans, prev = 0,"0"
+        for c in target: 
+            if prev != c: ans += 1
+            prev = c
+        return ans 
+
+
+    """1530. Number of Good Leaf Nodes Pairs (Medium)
+	Given the root of a binary tree and an integer distance. A pair of two 
+	different leaf nodes of a binary tree is said to be good if the length of 
+	the shortest path between them is less than or equal to distance. Return 
+	the number of good leaf node pairs in the tree.
+
+	Example 1:
+	Input: root = [1,2,3,null,4], distance = 3
+	Output: 1
+	Explanation: The leaf nodes of the tree are 3 and 4 and the length of the 
+	             shortest path between them is 3. This is the only good pair.
+
+	Example 2:
+	Input: root = [1,2,3,4,5,6,7], distance = 3
+	Output: 2
+	Explanation: The good pairs are [4,5] and [6,7] with shortest path = 2. The 
+	             pair [4,6] is not good because the length of ther shortest path 
+	             between them is 4.
+	
+	Example 3:
+	Input: root = [7,1,4,6,null,5,3,null,null,null,null,null,2], distance = 3
+	Output: 1
+	Explanation: The only good pair is [2,5].
+
+	Example 4:
+	Input: root = [100], distance = 1
+	Output: 0
+
+	Example 5:
+	Input: root = [1,1,1], distance = 2
+	Output: 1
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 2^10].
+	* Each node's value is between [1, 100].
+	* 1 <= distance <= 10"""
+
+    def countPairs(self, root: TreeNode, distance: int) -> int:
+        
+        def dfs(node):
+            """Return (a list of) distances to leaves of sub-tree rooted at node."""
+            nonlocal ans
+            if not node: return []
+            if node.left is node.right is None: return [0]
+            left,right = dfs(node.left), dfs(node.right)
+            ans += sum(2 + x + y <= distance for x in left for y in right)
+            return [1 + x for x in left + right]
+        
+        ans = 0
+        dfs(root)
+        return ans 
+
+
+    """1531. String Compression II (Hard)
+	Run-length encoding is a string compression method that works by replacing 
+	consecutive identical characters (repeated 2 or more times) with the 
+	concatenation of the character and the number marking the count of the 
+	characters (length of the run). For example, to compress the string 
+	"aabccc" we replace "aa" by "a2" and replace "ccc" by "c3". Thus the 
+	compressed string becomes "a2bc3". Notice that in this problem, we are not 
+	adding '1' after single characters. Given a string s and an integer k. You 
+	need to delete at most k characters from s such that the run-length encoded 
+	version of s has minimum length. Find the minimum length of the run-length 
+	encoded version of s after deleting at most k characters.
+
+	Example 1:
+	Input: s = "aaabcccd", k = 2
+	Output: 4
+	Explanation: Compressing s without deleting anything will give us "a3bc3d" 
+	             of length 6. Deleting any of the characters 'a' or 'c' would 
+	             at most decrease the length of the compressed string to 5, for 
+	             instance delete 2 'a' then we will have s = "abcccd" which 
+	             compressed is abc3d. Therefore, the optimal way is to delete 
+	             'b' and 'd', then the compressed version of s will be "a3c3" 
+	             of length 4.
+
+	Example 2:
+	Input: s = "aabbaa", k = 2
+	Output: 2
+	Explanation: If we delete both 'b' characters, the resulting compressed 
+	             string would be "a4" of length 2.
+	
+	Example 3:
+	Input: s = "aaaaaaaaaaa", k = 0
+	Output: 3
+	Explanation: Since k is zero, we cannot delete anything. The compressed 
+	             string is "a11" of length 3.
+
+	Constraints:
+	* 1 <= s.length <= 100
+	* 0 <= k <= s.length
+	* s contains only lowercase English letters."""
+
+    def getLengthOfOptimalCompression(self, s: str, k: int) -> int:
+        rle = lambda x: x if x <= 1 else int(log10(x)) + 2 # rle length of a char repeated x times
+        
+        @cache 
+        def fn(i, k, prev, cnt):
+            """Return length of rle of s[i:] with k chars to be deleted."""
+            if k < 0: return inf 
+            if i == len(s): return 0 
+            ans = fn(i+1, k-1, prev, cnt) # delete current character 
+            if prev == s[i]: 
+                ans = min(ans, fn(i+1, k, s[i], cnt+1) + rle(cnt+1) - rle(cnt))
+            else: 
+                ans = min(ans, fn(i+1, k, s[i], 1) + 1)
+            return ans 
+        
+        return fn(0, k, "", 0)
+
+
     """1564. Put Boxes Into the Warehouse I (Medium)
 	You are given two arrays of positive integers, boxes and warehouse, 
 	representing the heights of some boxes of unit width and the heights of n 
