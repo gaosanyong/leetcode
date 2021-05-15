@@ -5559,6 +5559,218 @@ public:
         }
         return cnt == n ? ans : -1; 
     }
+
+
+    /*1859. Sorting the Sentence (Easy)
+	A sentence is a list of words that are separated by a single space with no 
+	leading or trailing spaces. Each word consists of lowercase and uppercase 
+	English letters. A sentence can be shuffled by appending the 1-indexed word 
+	position to each word then rearranging the words in the sentence. For 
+	example, the sentence "This is a sentence" can be shuffled as 
+	"sentence4 a3 is2 This1" or "is2 sentence4 This1 a3". Given a shuffled 
+	sentence s containing no more than 9 words, reconstruct and return the 
+	original sentence.
+
+	Example 1:
+	Input: s = "is2 sentence4 This1 a3"
+	Output: "This is a sentence"
+	Explanation: Sort the words in s to their original positions 
+	             "This1 is2 a3 sentence4", then remove the numbers.
+
+	Example 2:
+	Input: s = "Myself2 Me1 I4 and3"
+	Output: "Me Myself and I"
+	Explanation: Sort the words in s to their original positions 
+	             "Me1 Myself2 and3 I4", then remove the numbers.
+
+	Constraints:
+	* 2 <= s.length <= 200
+	* s consists of lowercase and uppercase English letters, spaces, and digits from 1 to 9.
+	* The number of words in s is between 1 and 9.
+	* The words in s are separated by a single space.
+	* s contains no leading or trailing spaces.*/
+
+    string sortSentence(string s) {
+        vector<string> vals(9); 
+        
+        istringstream iss(s);
+        string word; 
+        while (iss >> word) {
+            vals[word.back()-'1'] = word.substr(0, word.size()-1); 
+        }
+        
+        string ans; 
+        for (int i = 0; i < vals.size() && vals[i].size(); ++i) {
+            if (i) ans += " "; 
+            ans += vals[i]; 
+        }
+        return ans; 
+    }
+
+
+    /*1860. Incremental Memory Leak (Medium)
+	You are given two integers memory1 and memory2 representing the available 
+	memory in bits on two memory sticks. There is currently a faulty program 
+	running that consumes an increasing amount of memory every second. At the 
+	ith second (starting from 1), i bits of memory are allocated to the stick 
+	with more available memory (or from the first memory stick if both have the 
+	same available memory). If neither stick has at least i bits of available 
+	memory, the program crashes. Return an array containing 
+	[crashTime, memory1crash, memory2crash], where crashTime is the time (in 
+	seconds) when the program crashed and memory1crash and memory2crash are the 
+	available bits of memory in the first and second sticks respectively.
+
+	Example 1:
+	Input: memory1 = 2, memory2 = 2
+	Output: [3,1,0]
+	Explanation: The memory is allocated as follows:
+	- At the 1st second, 1 bit of memory is allocated to stick 1. The first stick now has 1 bit of available memory.
+	- At the 2nd second, 2 bits of memory are allocated to stick 2. The second stick now has 0 bits of available memory.
+	- At the 3rd second, the program crashes. The sticks have 1 and 0 bits available respectively.
+
+	Example 2:
+	Input: memory1 = 8, memory2 = 11
+	Output: [6,0,4]
+	Explanation: The memory is allocated as follows:
+	- At the 1st second, 1 bit of memory is allocated to stick 2. The second stick now has 10 bit of available memory.
+	- At the 2nd second, 2 bits of memory are allocated to stick 2. The second stick now has 8 bits of available memory.
+	- At the 3rd second, 3 bits of memory are allocated to stick 1. The first stick now has 5 bits of available memory.
+	- At the 4th second, 4 bits of memory are allocated to stick 2. The second stick now has 4 bits of available memory.
+	- At the 5th second, 5 bits of memory are allocated to stick 1. The first stick now has 0 bits of available memory.
+	- At the 6th second, the program crashes. The sticks have 0 and 4 bits available respectively.
+
+	Constraints: 0 <= memory1, memory2 <= 231 - 1*/
+
+    vector<int> memLeak(int memory1, int memory2) {
+        int ans = 1; 
+        while (ans <= memory1 || ans <= memory2) {
+            if (memory1 < memory2)
+                memory2 -= ans; 
+            else 
+                memory1 -= ans; 
+            ans += 1; 
+        }
+        return {ans, memory1, memory2}; 
+    }
+
+
+    /*1861. Rotating the Box (Medium)
+	You are given an m x n matrix of characters box representing a side-view of 
+	a box. Each cell of the box is one of the following:
+	* A stone '#'
+	* A stationary obstacle '*'
+	* Empty '.'
+	The box is rotated 90 degrees clockwise, causing some of the stones to fall 
+	due to gravity. Each stone falls down until it lands on an obstacle, another 
+	stone, or the bottom of the box. Gravity does not affect the obstacles' 
+	positions, and the inertia from the box's rotation does not affect the 
+	stones' horizontal positions. It is guaranteed that each stone in box rests 
+	on an obstacle, another stone, or the bottom of the box. Return an n x m 
+	matrix representing the box after the rotation described above.
+
+	Example 1:
+	Input: box = [["#",".","#"]]
+	Output: [["."],
+	         ["#"],
+	         ["#"]]
+
+	Example 2:
+	Input: box = [["#",".","*","."],
+	              ["#","#","*","."]]
+	Output: [["#","."],
+	         ["#","#"],
+	         ["*","*"],
+	         [".","."]]
+
+	Example 3:
+	Input: box = [["#","#","*",".","*","."],
+	              ["#","#","#","*",".","."],
+	              ["#","#","#",".","#","."]]
+	Output: [[".","#","#"],
+	         [".","#","#"],
+	         ["#","#","*"],
+	         ["#","*","."],
+	         ["#",".","*"],
+	         ["#",".","."]]
+
+	Constraints:
+	* m == box.length
+	* n == box[i].length
+	* 1 <= m, n <= 500
+	* box[i][j] is either '#', '*', or '.'.*/
+
+    vector<vector<char>> rotateTheBox(vector<vector<char>>& box) {
+        int m = box.size(), n = box[0].size(); // dimensions 
+        vector<vector<char>> ans(n, vector<char>(m)); 
+        
+        for (int i = 0; i < m; ++i)
+            for (int j = 0; j < n; ++j)
+                ans[j][i] = box[m-1-i][j]; 
+        
+        for (int j = 0; j < m; ++j) {
+            int k = 0; 
+            for (int i = 0; i < n; ++i) {
+                if (ans[i][j] == '#') {
+                    ans[i][j] = '.';
+                    ++k; 
+                }
+                if (i+1 == n || ans[i+1][j] == '*') {
+                    while (k) {
+                        ans[i+1-k][j] = '#'; 
+                        --k; 
+                    }
+                }
+            }
+        }
+        return ans; 
+    }
+
+
+    /*1862. Sum of Floored Pairs (Hard)
+	Given an integer array nums, return the sum of floor(nums[i] / nums[j]) for 
+	all pairs of indices 0 <= i, j < nums.length in the array. Since the answer 
+	may be too large, return it modulo 10^9 + 7. The floor() function returns 
+	the integer part of the division.
+
+	Example 1:
+	Input: nums = [2,5,9]
+	Output: 10
+	Explanation:
+	floor(2 / 5) = floor(2 / 9) = floor(5 / 9) = 0
+	floor(2 / 2) = floor(5 / 5) = floor(9 / 9) = 1
+	floor(5 / 2) = 2
+	floor(9 / 2) = 4
+	floor(9 / 5) = 1
+	We calculate the floor of the division for every pair of indices in the 
+	array then sum them up.
+
+	Example 2:
+	Input: nums = [7,7,7,7,7,7,7]
+	Output: 49
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^5*/
+
+    int sumOfFlooredPairs(vector<int>& nums) {
+        int m = *max_element(nums.begin(), nums.end()); 
+        vector<int> vals(m+1); 
+        for (auto x : nums) 
+            ++vals[x]; 
+        
+        for (int x = m; x > 0; --x) 
+            for (int xx = 2*x; xx <= m; xx += x) 
+                vals[xx] += vals[x]; 
+        
+        for (int i = 1; i < vals.size(); ++i) 
+            vals[i] += vals[i-1]; 
+        
+        int ans = 0; 
+        for (auto x : nums) 
+            ans = (ans + vals[x]) % 1'000'000'007; 
+        return ans; 
+    }
+
 };
 
 
