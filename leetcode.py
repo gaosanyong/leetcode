@@ -18087,6 +18087,57 @@ class UnionFind:
         return ans 
 
 
+    """1178. Number of Valid Words for Each Puzzle (Hard)
+	With respect to a given puzzle string, a word is valid if both the 
+	following conditions are satisfied:
+	* word contains the first letter of puzzle.
+	* For each letter in word, that letter is in puzzle. For example, if the 
+	  puzzle is "abcdefg", then valid words are "faced", "cabbage", and 
+	  "baggage"; while invalid words are "beefed" (doesn't include "a") and 
+	  "based" (includes "s" which isn't in the puzzle).
+	Return an array answer, where answer[i] is the number of words in the given 
+	word list words that are valid with respect to the puzzle puzzles[i].
+
+	Example :
+	Input: words = ["aaaa","asas","able","ability","actt","actor","access"], 
+	       puzzles = ["aboveyz","abrodyz","abslute","absoryz","actresz","gaswxyz"]
+	Output: [1,1,3,2,4,0]
+	Explanation:
+	1 valid word for "aboveyz" : "aaaa" 
+	1 valid word for "abrodyz" : "aaaa"
+	3 valid words for "abslute" : "aaaa", "asas", "able"
+	2 valid words for "absoryz" : "aaaa", "asas"
+	4 valid words for "actresz" : "aaaa", "asas", "actt", "access"
+	There're no valid words for "gaswxyz" cause none of the words in the list 
+	contains letter 'g'.
+
+	Constraints:
+	* 1 <= words.length <= 10^5
+	* 4 <= words[i].length <= 50
+	* 1 <= puzzles.length <= 10^4
+	* puzzles[i].length == 7
+	* words[i][j], puzzles[i][j] are English lowercase letters.
+	* Each puzzles[i] doesn't contain repeated characters."""
+
+    def findNumOfValidWords(self, words: List[str], puzzles: List[str]) -> List[int]:
+        freq = defaultdict(int)
+        for word in words: 
+            mask = 0
+            for c in word: mask |= 1 << (ord(c) - 97)
+            freq[mask] += 1
+            
+        ans = []
+        for puzzle in puzzles: 
+            mask = val = 0 
+            for c in puzzle: mask |= 1 << (ord(c) - 97)
+            mask0 = mask # loop through sub-masks
+            while mask: 
+                if mask & (1 << ord(puzzle[0])-97): val += freq[mask]
+                mask = mask0 & (mask - 1)
+            ans.append(val)
+        return ans 
+
+
     """1180. Count Substrings with Only One Distinct Letter (Easy)
 	Given a string S, return the number of substrings that have only one 
 	distinct letter.
@@ -19989,6 +20040,71 @@ class UnionFind:
                 i, j = i-1, j-1
                 mat[i][j] = vals.pop()
         return mat
+
+
+    """1349. Maximum Students Taking Exam (Hard)
+	Given a m * n matrix seats  that represent seats distributions in a 
+	classroom. If a seat is broken, it is denoted by '#' character otherwise it 
+	is denoted by a '.' character. Students can see the answers of those sitting 
+	next to the left, right, upper left and upper right, but he cannot see the 
+	answers of the student sitting directly in front or behind him. Return the 
+	maximum number of students that can take the exam together without any 
+	cheating being possible. Students must be placed in seats in good condition.
+
+	Example 1:
+	Input: seats = [["#",".","#","#",".","#"],
+	                [".","#","#","#","#","."],
+	                ["#",".","#","#",".","#"]]
+	Output: 4
+	Explanation: Teacher can place 4 students in available seats so they don't 
+	             cheat on the exam. 
+
+	Example 2:
+	Input: seats = [[".","#"],
+	                ["#","#"],
+	                ["#","."],
+	                ["#","#"],
+	                [".","#"]]
+	Output: 3
+	Explanation: Place all students in available seats. 
+
+	Example 3:
+	Input: seats = [["#",".",".",".","#"],
+	                [".","#",".","#","."],
+	                [".",".","#",".","."],
+	                [".","#",".","#","."],
+	                ["#",".",".",".","#"]]
+	Output: 10
+	Explanation: Place students in available seats in column 1, 3 and 5.
+
+	Constraints:
+	* seats contains only characters '.' and'#'.
+	* m == seats.length
+	* n == seats[i].length
+	* 1 <= m <= 8
+	* 1 <= n <= 8"""
+
+    def maxStudents(self, seats: List[List[str]]) -> int:
+        m, n = len(seats), len(seats[0]) # dimensions 
+        
+        valid = []
+        for i in range(m): 
+            val = 0
+            for j in range(n): 
+                if seats[i][j] == ".": val |= 1 << j 
+            valid.append(val)
+        
+        @cache
+        def fn(i, mask): 
+            """Return max students taking seats[i:] given previous row as mask."""
+            if i == len(seats): return 0 
+            ans = fn(i+1, 0)
+            for x in range(1 << n): 
+                if x & valid[i] == x and (x >> 1) & x == 0 and (mask >> 1) & x == 0 and (mask << 1) & x == 0: 
+                    ans = max(ans, bin(x).count("1") + fn(i+1, x))
+            return ans 
+        
+        return fn(0, 0)
 
 
     """1354. Construct Target Array With Multiple Sums (Hard)
@@ -22357,6 +22473,78 @@ class UnionFind:
             return ans 
         
         return fn(0)
+
+
+    """1520. Maximum Number of Non-Overlapping Substrings (Hard)
+	Given a string s of lowercase letters, you need to find the maximum number 
+	of non-empty substrings of s that meet the following conditions:
+	* The substrings do not overlap, that is for any two substrings s[i..j] and 
+	  s[k..l], either j < k or i > l is true.
+	* A substring that contains a certain character c must also contain all 
+	  occurrences of c.
+	Find the maximum number of substrings that meet the above conditions. If 
+	there are multiple solutions with the same number of substrings, return the 
+	one with minimum total length. It can be shown that there exists a unique 
+	solution of minimum total length. Notice that you can return the substrings 
+	in any order.
+
+	Example 1:
+	Input: s = "adefaddaccc"
+	Output: ["e","f","ccc"]
+	Explanation: The following are all the possible substrings that meet the 
+	             conditions: ["adefaddaccc"
+	                          "adefadda",
+	                          "ef",
+	                          "e",
+	                          "f",
+	                          "ccc",]
+	             If we choose the first string, we cannot choose anything else 
+	             and we'd get only 1. If we choose "adefadda", we are left with 
+	             "ccc" which is the only one that doesn't overlap, thus 
+	             obtaining 2 substrings. Notice also, that it's not optimal to 
+	             choose "ef" since it can be split into two. Therefore, the 
+	             optimal way is to choose ["e","f","ccc"] which gives us 3 
+	             substrings. No other solution of the same number of substrings 
+	             exist.
+	
+	Example 2:
+	Input: s = "abbaccd"
+	Output: ["d","bb","cc"]
+	Explanation: Notice that while the set of substrings ["d","abba","cc"] also 
+	             has length 3, it's considered incorrect since it has larger 
+	             total length.
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s contains only lowercase English letters."""
+
+    def maxNumOfSubstrings(self, s: str) -> List[str]:
+        locs = {}
+        for i, x in enumerate(s): 
+            locs.setdefault(x, []).append(i)
+        
+        def fn(lo, hi): 
+            """Return expanded range covering all chars in s[lo:hi+1]."""
+            for xx in locs: 
+                k0 = bisect_left(locs[xx], lo)
+                k1 = bisect_left(locs[xx], hi)
+                if k0 < k1 and (locs[xx][0] < lo or hi < locs[xx][-1]): 
+                    lo = min(lo, locs[xx][0])
+                    hi = max(hi, locs[xx][-1])
+                    lo, hi = fn(lo, hi)
+            return lo, hi
+        
+        group = set()
+        for x in locs: 
+            group.add(fn(locs[x][0], locs[x][-1]))
+        
+        ans = [] # ISMP (interval scheduling maximization problem)
+        prev = -1 
+        for lo, hi in sorted(group, key=lambda x: x[1]): 
+            if prev < lo: 
+                ans.append(s[lo:hi+1])
+                prev = hi 
+        return ans 
 
 
     """1523. Count Odd Numbers in an Interval Range (Easy)
@@ -31388,6 +31576,192 @@ class Fenwick:
         return max(ans)
 
 
+    """1859. Sorting the Sentence (Easy)
+	A sentence is a list of words that are separated by a single space with no 
+	leading or trailing spaces. Each word consists of lowercase and uppercase 
+	English letters. A sentence can be shuffled by appending the 1-indexed word 
+	position to each word then rearranging the words in the sentence. For 
+	example, the sentence "This is a sentence" can be shuffled as 
+	"sentence4 a3 is2 This1" or "is2 sentence4 This1 a3". Given a shuffled 
+	sentence s containing no more than 9 words, reconstruct and return the 
+	original sentence.
+
+	Example 1:
+	Input: s = "is2 sentence4 This1 a3"
+	Output: "This is a sentence"
+	Explanation: Sort the words in s to their original positions 
+	             "This1 is2 a3 sentence4", then remove the numbers.
+
+	Example 2:
+	Input: s = "Myself2 Me1 I4 and3"
+	Output: "Me Myself and I"
+	Explanation: Sort the words in s to their original positions 
+	             "Me1 Myself2 and3 I4", then remove the numbers.
+
+	Constraints:
+	* 2 <= s.length <= 200
+	* s consists of lowercase and uppercase English letters, spaces, and digits 
+	  from 1 to 9.
+	* The number of words in s is between 1 and 9.
+	* The words in s are separated by a single space.
+	* s contains no leading or trailing spaces."""
+
+    def sortSentence(self, s: str) -> str:
+        words = s.split()
+        ans = [""]*len(words)
+        for word in words: 
+            ans[int(word[-1])-1] = word[:-1]
+        return " ".join(ans)
+
+
+    """1860. Incremental Memory Leak (Medium)
+	You are given two integers memory1 and memory2 representing the available 
+	memory in bits on two memory sticks. There is currently a faulty program 
+	running that consumes an increasing amount of memory every second. At the 
+	ith second (starting from 1), i bits of memory are allocated to the stick 
+	with more available memory (or from the first memory stick if both have the 
+	same available memory). If neither stick has at least i bits of available 
+	memory, the program crashes. Return an array containing 
+	[crashTime, memory1crash, memory2crash], where crashTime is the time (in 
+	seconds) when the program crashed and memory1crash and memory2crash are the 
+	available bits of memory in the first and second sticks respectively.
+
+	Example 1:
+	Input: memory1 = 2, memory2 = 2
+	Output: [3,1,0]
+	Explanation: The memory is allocated as follows:
+	- At the 1st second, 1 bit of memory is allocated to stick 1. The first stick now has 1 bit of available memory.
+	- At the 2nd second, 2 bits of memory are allocated to stick 2. The second stick now has 0 bits of available memory.
+	- At the 3rd second, the program crashes. The sticks have 1 and 0 bits available respectively.
+
+	Example 2:
+	Input: memory1 = 8, memory2 = 11
+	Output: [6,0,4]
+	Explanation: The memory is allocated as follows:
+	- At the 1st second, 1 bit of memory is allocated to stick 2. The second stick now has 10 bit of available memory.
+	- At the 2nd second, 2 bits of memory are allocated to stick 2. The second stick now has 8 bits of available memory.
+	- At the 3rd second, 3 bits of memory are allocated to stick 1. The first stick now has 5 bits of available memory.
+	- At the 4th second, 4 bits of memory are allocated to stick 2. The second stick now has 4 bits of available memory.
+	- At the 5th second, 5 bits of memory are allocated to stick 1. The first stick now has 0 bits of available memory.
+	- At the 6th second, the program crashes. The sticks have 0 and 4 bits available respectively.
+
+	Constraints: 0 <= memory1, memory2 <= 2^31 - 1"""
+ 
+    def memLeak(self, memory1: int, memory2: int) -> List[int]:
+        k = 1
+        while k <= memory1 or k <= memory2: 
+            if memory1 < memory2: memory2 -= k 
+            else: memory1 -= k 
+            k += 1
+        return [k, memory1, memory2]
+
+
+    """1861. Rotating the Box (Medium)
+	You are given an m x n matrix of characters box representing a side-view of 
+	a box. Each cell of the box is one of the following:
+	* A stone '#'
+	* A stationary obstacle '*'
+	* Empty '.'
+	The box is rotated 90 degrees clockwise, causing some of the stones to fall 
+	due to gravity. Each stone falls down until it lands on an obstacle, another 
+	stone, or the bottom of the box. Gravity does not affect the obstacles' 
+	positions, and the inertia from the box's rotation does not affect the 
+	stones' horizontal positions. It is guaranteed that each stone in box rests 
+	on an obstacle, another stone, or the bottom of the box. Return an n x m 
+	matrix representing the box after the rotation described above.
+
+	Example 1:
+	Input: box = [["#",".","#"]]
+	Output: [["."],
+	         ["#"],
+	         ["#"]]
+
+	Example 2:
+	Input: box = [["#",".","*","."],
+	              ["#","#","*","."]]
+	Output: [["#","."],
+	         ["#","#"],
+	         ["*","*"],
+	         [".","."]]
+
+	Example 3:
+	Input: box = [["#","#","*",".","*","."],
+	              ["#","#","#","*",".","."],
+	              ["#","#","#",".","#","."]]
+	Output: [[".","#","#"],
+	         [".","#","#"],
+	         ["#","#","*"],
+	         ["#","*","."],
+	         ["#",".","*"],
+	         ["#",".","."]]
+
+	Constraints:
+	* m == box.length
+	* n == box[i].length
+	* 1 <= m, n <= 500
+	* box[i][j] is either '#', '*', or '.'."""
+
+    def rotateTheBox(self, box: List[List[str]]) -> List[List[str]]:
+        m, n = len(box), len(box[0]) # dimensions 
+        
+        for i in range(m//2): box[i], box[~i] = box[~i], box[i]
+        box = [list(x) for x in zip(*box)]
+        
+        for j in range(m): 
+            count = 0 
+            for i in range(n): 
+                if box[i][j] == "#": 
+                    count += 1
+                    box[i][j] = "."
+                if i+1 == n or box[i+1][j] == "*": 
+                    for ii in range(count): box[i-ii][j] = "#"
+                    count = 0
+        return box
+
+
+    """1862. Sum of Floored Pairs (Hard)
+	Given an integer array nums, return the sum of floor(nums[i] / nums[j]) for 
+	all pairs of indices 0 <= i, j < nums.length in the array. Since the answer 
+	may be too large, return it modulo 10^9 + 7. The floor() function returns 
+	the integer part of the division.
+
+	Example 1:
+	Input: nums = [2,5,9]
+	Output: 10
+	Explanation:
+	floor(2 / 5) = floor(2 / 9) = floor(5 / 9) = 0
+	floor(2 / 2) = floor(5 / 5) = floor(9 / 9) = 1
+	floor(5 / 2) = 2
+	floor(9 / 2) = 4
+	floor(9 / 5) = 1
+	We calculate the floor of the division for every pair of indices in the 
+	array then sum them up.
+
+	Example 2:
+	Input: nums = [7,7,7,7,7,7,7]
+	Output: 49
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^5"""
+
+    def sumOfFlooredPairs(self, nums: List[int]) -> int:
+        m = 2*max(nums)
+        
+        freq = [0]*(m+1)
+        for x in nums: freq[x] += 1
+        prefix = [0]
+        for x in freq: prefix.append(prefix[-1] + x)
+        
+        ans = 0 
+        for i in range(1, m+1): 
+            if freq[i]:
+                for ii in range(i, m+1, i): 
+                    count = prefix[ii] - prefix[ii-i]
+                    ans += count * freq[i] * (ii//i-1)
+        return ans % 1_000_000_007
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -33511,6 +33885,83 @@ class SnapshotArray:
             if self.data[index][mid][0] <= snap_id: lo = mid + 1
             else: hi = mid
         return self.data[index][lo-1][1]
+
+
+"""1195. Fizz Buzz Multithreaded (Medium)
+Write a program that outputs the string representation of numbers from 1 to n, 
+however:
+* If the number is divisible by 3, output "fizz".
+* If the number is divisible by 5, output "buzz".
+* If the number is divisible by both 3 and 5, output "fizzbuzz".
+For example, for n = 15, we output: 1, 2, fizz, 4, buzz, fizz, 7, 8, fizz, buzz, 
+11, fizz, 13, 14, fizzbuzz. Suppose you are given the following code:
+
+class FizzBuzz {
+  public FizzBuzz(int n) { ... }               // constructor
+  public void fizz(printFizz) { ... }          // only output "fizz"
+  public void buzz(printBuzz) { ... }          // only output "buzz"
+  public void fizzbuzz(printFizzBuzz) { ... }  // only output "fizzbuzz"
+  public void number(printNumber) { ... }      // only output the numbers
+}
+
+Implement a multithreaded version of FizzBuzz with four threads. The same 
+instance of FizzBuzz will be passed to four different threads:
+* Thread A will call fizz() to check for divisibility of 3 and outputs fizz.
+* Thread B will call buzz() to check for divisibility of 5 and outputs buzz.
+* Thread C will call fizzbuzz() to check for divisibility of 3 and 5 and outputs fizzbuzz.
+* Thread D will call number() which should only output the numbers."""
+
+class FizzBuzz:
+    def __init__(self, n: int):
+        self.n = n
+        self.fizzLock = Lock(); self.fizzLock.acquire()
+        self.buzzLock = Lock(); self.buzzLock.acquire()
+        self.fzbzLock = Lock(); self.fzbzLock.acquire()
+        self.numberLock = Lock()
+
+    # printFizz() outputs "fizz"
+    def fizz(self, printFizz: 'Callable[[], None]') -> None:
+    	while True: 
+            self.fizzLock.acquire()
+            if self.n == 0: break 
+            printFizz()
+            self.numberLock.release()
+
+    # printBuzz() outputs "buzz"
+    def buzz(self, printBuzz: 'Callable[[], None]') -> None:
+    	while True: 
+            self.buzzLock.acquire()
+            if self.n == 0: break 
+            printBuzz()
+            self.numberLock.release()
+
+    # printFizzBuzz() outputs "fizzbuzz"
+    def fizzbuzz(self, printFizzBuzz: 'Callable[[], None]') -> None:
+        while True: 
+            self.fzbzLock.acquire()
+            if self.n == 0: break  
+            printFizzBuzz()
+            self.numberLock.release()
+
+    # printNumber(x) outputs "x", where x is an integer.
+    def number(self, printNumber: 'Callable[[int], None]') -> None:
+        for x in range(1, self.n+1):
+            self.numberLock.acquire()
+            if x % 15 == 0: 
+                self.fzbzLock.release()
+            elif x % 3 == 0: 
+                self.fizzLock.release()
+            elif x % 5 == 0: 
+                self.buzzLock.release()
+            else: 
+                printNumber(x)
+                self.numberLock.release()
+                
+        self.numberLock.acquire()
+        self.n = 0 
+        self.fizzLock.release()
+        self.buzzLock.release()
+        self.fzbzLock.release()
 
 
 """1357. Apply Discount Every n Orders (Medium)
