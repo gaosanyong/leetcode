@@ -31762,6 +31762,146 @@ class Fenwick:
         return ans % 1_000_000_007
 
 
+    """1863. Sum of All Subset XOR Totals (Easy)
+	The XOR total of an array is defined as the bitwise XOR of all its elements, 
+	or 0 if the array is empty. 
+	* For example, the XOR total of the array [2,5,6] is 2 XOR 5 XOR 6 = 1.
+	Given an array nums, return the sum of all XOR totals for every subset of 
+	nums. Note that subsets with the same elements should be counted multiple 
+	times. An array a is a subset of an array b if a can be obtained from b by 
+	deleting some (possibly zero) elements of b.
+
+	Example 1:
+	Input: nums = [1,3]
+	Output: 6
+	Explanation: The 4 subsets of [1,3] are:
+	- The empty subset has an XOR total of 0.
+	- [1] has an XOR total of 1.
+	- [3] has an XOR total of 3.
+	- [1,3] has an XOR total of 1 XOR 3 = 2.
+	0 + 1 + 3 + 2 = 6
+
+	Example 2:
+	Input: nums = [5,1,6]
+	Output: 28
+	Explanation: The 8 subsets of [5,1,6] are:
+	- The empty subset has an XOR total of 0.
+	- [5] has an XOR total of 5.
+	- [1] has an XOR total of 1.
+	- [6] has an XOR total of 6.
+	- [5,1] has an XOR total of 5 XOR 1 = 4.
+	- [5,6] has an XOR total of 5 XOR 6 = 3.
+	- [1,6] has an XOR total of 1 XOR 6 = 7.
+	- [5,1,6] has an XOR total of 5 XOR 1 XOR 6 = 2.
+	0 + 5 + 1 + 6 + 4 + 3 + 7 + 2 = 28
+
+	Example 3:
+	Input: nums = [3,4,5,6,7,8]
+	Output: 480
+	Explanation: The sum of all XOR totals for every subset is 480.
+
+	Constraints:
+	* 1 <= nums.length <= 12
+	* 1 <= nums[i] <= 20"""
+
+    def subsetXORSum(self, nums: List[int]) -> int:
+        ans = 0
+        for mask in range(1 << len(nums)): 
+            val = 0
+            for i in range(len(nums)): 
+                if mask & 1 << i: val ^= nums[i]
+            ans += val
+        return ans 
+
+
+    """1864. Minimum Number of Swaps to Make the Binary String Alternating (Medium)
+	Given a binary string s, return the minimum number of character swaps to 
+	make it alternating, or -1 if it is impossible. The string is called 
+	alternating if no two adjacent characters are equal. For example, the 
+	strings "010" and "1010" are alternating, while the string "0100" is not.
+	Any two characters may be swapped, even if they are not adjacent.
+
+	Example 1:
+	Input: s = "111000"
+	Output: 1
+	Explanation: Swap positions 1 and 4: "111000" -> "101010". The string is 
+	             now alternating.
+
+	Example 2:
+	Input: s = "010"
+	Output: 0
+	Explanation: The string is already alternating, no swaps are needed.
+	
+	Example 3:
+	Input: s = "1110"
+	Output: -1
+
+	Constraints:
+	* 1 <= s.length <= 1000
+	* s[i] is either '0' or '1'."""
+
+    def minSwaps(self, s: str) -> int:
+        ones = s.count("1")
+        zeros = len(s) - ones 
+        if abs(ones - zeros) > 1: return -1 # impossible
+        
+        def fn(x): 
+            """Return number of swaps if string starts with x."""
+            ans = 0 
+            for c in s: 
+                if c != x: ans += 1
+                x = "1" if x == "0" else "0"
+            return ans//2
+        
+        if ones > zeros: return fn("1")
+        elif ones < zeros: return fn("0")
+        else: return min(fn("0"), fn("1")) 
+
+
+    """1866. Number of Ways to Rearrange Sticks With K Sticks Visible (Hard)
+	There are n uniquely-sized sticks whose lengths are integers from 1 to n. 
+	You want to arrange the sticks such that exactly k sticks are visible from 
+	the left. A stick is visible from the left if there are no longer sticks to 
+	the left of it. For example, if the sticks are arranged [1,3,2,5,4], then 
+	the sticks with lengths 1, 3, and 5 are visible from the left. Given n and 
+	k, return the number of such arrangements. Since the answer may be large, 
+	return it modulo 109 + 7.
+
+	Example 1:
+	Input: n = 3, k = 2
+	Output: 3
+	Explanation: [1,3,2], [2,3,1], and [2,1,3] are the only arrangements such 
+	             that exactly 2 sticks are visible. The visible sticks are 
+	             underlined.
+	
+	Example 2:
+	Input: n = 5, k = 5
+	Output: 1
+	Explanation: [1,2,3,4,5] is the only arrangement such that all 5 sticks are 
+	             visible. The visible sticks are underlined.
+	
+	Example 3:
+	Input: n = 20, k = 11
+	Output: 647427950
+	Explanation: There are 647427950 (mod 109 + 7) ways to rearrange the sticks 
+	             such that exactly 11 sticks are visible.
+
+	Constraints:
+	* 1 <= n <= 1000
+	* 1 <= k <= n"""
+
+    def rearrangeSticks(self, n: int, k: int) -> int:
+        
+        @cache 
+        def fn(n, k): 
+            """Return number of ways to rearrange n sticks to that k are visible."""
+            if n == k: return 1
+            if k == 0: return 0
+            return ((n-1)*fn(n-1, k) + fn(n-1, k-1)) % 1_000_000_007
+        
+        return fn(n, k) 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -34619,3 +34759,63 @@ class MKAverage:
         ans += (self.index.sum(lo) - self.k) * lo
         ans -= (self.index.sum(hi) - (self.m-self.k)) * hi
         return ans // (self.m - 2*self.k)
+
+
+"""1865. Finding Pairs With a Certain Sum (Medium)
+You are given two integer arrays nums1 and nums2. You are tasked to implement a 
+data structure that supports queries of two types:
+* Add a positive integer to an element of a given index in the array nums2.
+* Count the number of pairs (i, j) such that nums1[i] + nums2[j] equals a given 
+  value (0 <= i < nums1.length and 0 <= j < nums2.length).
+
+Implement the FindSumPairs class:
+* FindSumPairs(int[] nums1, int[] nums2) Initializes the FindSumPairs object 
+  with two integer arrays nums1 and nums2.
+* void add(int index, int val) Adds val to nums2[index], i.e., apply 
+  nums2[index] += val.
+* int count(int tot) Returns the number of pairs (i, j) such that 
+  nums1[i] + nums2[j] == tot.
+
+Example 1:
+Input: ["FindSumPairs", "count", "add", "count", "count", "add", "add", "count"]
+       [[[1, 1, 2, 2, 2, 3], [1, 4, 5, 2, 5, 4]], [7], [3, 2], [8], [4], [0, 1], [1, 1], [7]]
+Output: [null, 8, null, 2, 1, null, null, 11]
+Explanation:
+FindSumPairs findSumPairs = new FindSumPairs([1, 1, 2, 2, 2, 3], [1, 4, 5, 2, 5, 4]);
+findSumPairs.count(7);  // return 8; pairs (2,2), (3,2), (4,2), (2,4), (3,4), (4,4) make 2 + 5 and pairs (5,1), (5,5) make 3 + 4
+findSumPairs.add(3, 2); // now nums2 = [1,4,5,4,5,4]
+findSumPairs.count(8);  // return 2; pairs (5,2), (5,4) make 3 + 5
+findSumPairs.count(4);  // return 1; pair (5,0) makes 3 + 1
+findSumPairs.add(0, 1); // now nums2 = [2,4,5,4,5,4]
+findSumPairs.add(1, 1); // now nums2 = [2,5,5,4,5,4]
+findSumPairs.count(7);  // return 11; pairs (2,1), (2,2), (2,4), (3,1), (3,2), (3,4), (4,1), (4,2), (4,4) make 2 + 5 and pairs (5,3), (5,5) make 3 + 4
+
+Constraints:
+* 1 <= nums1.length <= 1000
+* 1 <= nums2.length <= 10^5
+* 1 <= nums1[i] <= 10^9
+* 1 <= nums2[i] <= 10^5
+* 0 <= index < nums2.length
+* 1 <= val <= 10^5
+* 1 <= tot <= 10^9
+* At most 1000 calls are made to add and count each."""
+
+class FindSumPairs:
+
+    def __init__(self, nums1: List[int], nums2: List[int]):
+        self.nums1 = nums1
+        self.nums2 = nums2
+        
+        self.freq = defaultdict(int)
+        for x in nums2: self.freq[x] += 1
+
+    def add(self, index: int, val: int) -> None:
+        self.freq[self.nums2[index]] -= 1
+        self.nums2[index] += val
+        self.freq[self.nums2[index]] += 1
+
+    def count(self, tot: int) -> int:
+        ans = 0 
+        for x in self.nums1: 
+            ans += self.freq[tot - x]
+        return ans 
