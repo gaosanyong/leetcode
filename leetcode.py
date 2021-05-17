@@ -16318,13 +16318,14 @@ class UnionFind:
 	* words[i] only consists of English lowercase letters."""
 
     def longestStrChain(self, words: List[str]) -> int:
-        words.sort(key=len)
-        lsc = dict(zip(words, [1]*len(words)))
-        for i, word in enumerate(words): 
-            for ii in range(len(word)): 
-                key = word[:ii] + word[ii+1:]
-                if key in lsc: lsc[word] = max(lsc[word], 1 + lsc[key])
-        return max(lsc.values())
+        seen = {}
+        for word in sorted(words, key=len): 
+            seen[word] = 1
+            for i in range(len(word)): 
+                key = word[:i] + word[i+1:]
+                if key in seen: 
+                    seen[word] = max(seen[word], 1 + seen[key])
+        return max(seen.values())
 
 
     """1052. Grumpy Bookstore Owner (Medium)
