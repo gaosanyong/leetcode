@@ -4554,6 +4554,49 @@ public:
     }
 
 
+    /*968. Binary Tree Cameras (Hard)
+	Given a binary tree, we install cameras on the nodes of the tree. Each 
+	camera at a node can monitor its parent, itself, and its immediate children. 
+	Calculate the minimum number of cameras needed to monitor all nodes of the 
+	tree.
+
+	Example 1:
+	Input: [0,0,null,0,0]
+	Output: 1
+	Explanation: One camera is enough to monitor all nodes if placed as shown.
+
+	Example 2:
+	Input: [0,0,null,0,null,0,null,null,0]
+	Output: 2
+	Explanation: At least two cameras are needed to monitor all nodes of the 
+	             tree. The above image shows one of the valid configurations of 
+	             camera placement.
+
+	Note:
+	* The number of nodes in the given tree will be in the range [1, 1000].
+	* Every node has value 0.*/
+
+    int minCameraCover(TreeNode* root) {
+        int ans = 0; 
+        
+        function<int(TreeNode*)> fn = [&](TreeNode* node) {
+            if (node == NULL) return 1; 
+            int left = fn(node->left), right = fn(node->right); 
+            if (left == 0 || right == 0) {
+                ++ans; 
+                return 2; 
+            } 
+            if (left == 2 || right == 2) {
+                return 1; 
+            }
+            return 0; 
+        };
+        
+        int val = fn(root); 
+        return (val == 0) + ans; 
+    }
+
+
     /*970. Powerful Integers (Medium)
 	Given three integers x, y, and bound, return a list of all the powerful 
 	integers that have a value less than or equal to bound. An integer is 
