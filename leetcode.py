@@ -10873,6 +10873,51 @@ class Solution:
         return head 
 
 
+    """462. Minimum Moves to Equal Array Elements II (Medium)
+	Given an integer array nums of size n, return the minimum number of moves 
+	required to make all array elements equal. In one move, you can increment 
+	or decrement an element of the array by 1.
+
+	Example 1:
+	Input: nums = [1,2,3]
+	Output: 2
+	Explanation: Only two moves are needed (remember each move increments or 
+	             decrements one element): [1,2,3]  =>  [2,2,3]  =>  [2,2,2]
+	
+	Example 2:
+	Input: nums = [1,10,2,9]
+	Output: 16
+
+	Constraints:
+	* n == nums.length
+	* 1 <= nums.length <= 10^5
+	* -10^9 <= nums[i] <= 10^9"""
+
+    def minMoves2(self, nums: List[int]) -> int:
+        
+        def part(lo, hi):
+            """Partition array via a random pivot."""
+            i, j = lo+1, hi-1
+            while i <= j: 
+                if nums[i] < nums[lo]: i += 1
+                elif nums[lo] < nums[j]: j -= 1
+                else: 
+                    nums[i], nums[j] = nums[j], nums[i]
+                    i += 1
+                    j -= 1
+            nums[lo], nums[j] = nums[j], nums[lo]
+            return j
+        
+        shuffle(nums) # statistical guarantee of O(NlogN)
+        lo, hi = 0, len(nums)
+        while lo < hi: 
+            mid = part(lo, hi)
+            if mid == len(nums)//2: break 
+            if mid < len(nums)//2: lo = mid+1
+            else: hi = mid
+        return sum(abs(x-nums[mid]) for x in nums)
+
+
     """481. Magical String (Medium)
 	A magical string S consists of only '1' and '2' and obeys the following 
 	rules:
@@ -15441,6 +15486,49 @@ class UnionFind:
         return fn(root1, root2)
 
 
+    """968. Binary Tree Cameras (Hard)
+	Given a binary tree, we install cameras on the nodes of the tree. Each 
+	camera at a node can monitor its parent, itself, and its immediate children.
+	Calculate the minimum number of cameras needed to monitor all nodes of the 
+	tree.
+
+	Example 1:
+	Input: [0,0,null,0,0]
+	Output: 1
+	Explanation: One camera is enough to monitor all nodes if placed as shown.
+
+	Example 2:
+	Input: [0,0,null,0,null,0,null,null,0]
+	Output: 2
+	Explanation: At least two cameras are needed to monitor all nodes of the 
+	             tree. The above image shows one of the valid configurations of 
+	             camera placement.
+
+	Note:
+	* The number of nodes in the given tree will be in the range [1, 1000].
+	* Every node has value 0."""
+
+    def minCameraCover(self, root: TreeNode) -> int:
+        
+        def fn(node):
+            """Return color-coding of a node.
+            0 - not covered 
+            1 - covered w/o camera
+            2 - covered w/ camera 
+            """
+            nonlocal ans 
+            if not node: return 1
+            left, right = fn(node.left), fn(node.right)
+            if left == 0 or right == 0: 
+                ans += 1
+                return 2 # add a camera 
+            if left == 2 or right == 2: return 1
+            return 0 
+        
+        ans = 0 
+        return int(fn(root) == 0) + ans 
+
+
     """970. Powerful Integers (Medium)
 	Given three integers x, y, and bound, return a list of all the powerful 
 	integers that have a value less than or equal to bound. An integer is 
@@ -17134,6 +17222,45 @@ class UnionFind:
                 tt, ff = operands.pop()
                 t, f = t+tt, f+ff
         return t
+
+
+    """1111. Maximum Nesting Depth of Two Valid Parentheses Strings (Medium)
+	A string is a valid parentheses string (denoted VPS) if and only if it 
+	consists of "(" and ")" characters only, and:
+	* It is the empty string, or
+	* It can be written as AB (A concatenated with B), where A and B are VPS's, 
+	  or
+	* It can be written as (A), where A is a VPS.
+	We can similarly define the nesting depth depth(S) of any VPS S as follows:
+	* depth("") = 0
+	* depth(A + B) = max(depth(A), depth(B)), where A and B are VPS's
+	* depth("(" + A + ")") = 1 + depth(A), where A is a VPS.
+	For example,  "", "()()", and "()(()())" are VPS's (with nesting depths 0, 
+	1, and 2), and ")(" and "(()" are not VPS's. Given a VPS seq, split it into 
+	two disjoint subsequences A and B, such that A and B are VPS's (and 
+	A.length + B.length = seq.length). Now choose any such A and B such that 
+	max(depth(A), depth(B)) is the minimum possible value. Return an answer 
+	array (of length seq.length) that encodes such a choice of A and B:  
+	answer[i] = 0 if seq[i] is part of A, else answer[i] = 1.  Note that even 
+	though multiple answers may exist, you may return any of them.
+
+	Example 1:
+	Input: seq = "(()())"
+	Output: [0,1,1,1,1,0]
+
+	Example 2:
+	Input: seq = "()(())()"
+	Output: [0,0,0,1,1,0,1,1]
+
+	Constraints: 1 <= seq.size <= 10000"""
+
+    def maxDepthAfterSplit(self, seq: str) -> List[int]:
+        ans, depth = [], 0
+        for i, x in enumerate(seq): 
+            if x == "(": depth += 1
+            ans.append(depth & 1)
+            if x == ")": depth -= 1
+        return ans 
 
 
     """1118. Number of Days in a Month (Easy)
@@ -19620,6 +19747,53 @@ class UnionFind:
         return fn(0)
 
 
+    """1240. Tiling a Rectangle with the Fewest Squares (Hard)
+	Given a rectangle of size n x m, find the minimum number of integer-sided 
+	squares that tile the rectangle.
+
+	Example 1:
+	Input: n = 2, m = 3
+	Output: 3
+	Explanation: 3 squares are necessary to cover the rectangle.
+	             2 (squares of 1x1)
+	             1 (square of 2x2)
+
+	Example 2:
+	Input: n = 5, m = 8
+	Output: 5
+
+	Example 3:
+	Input: n = 11, m = 13
+	Output: 6
+
+	Constraints:
+	* 1 <= n <= 13
+	* 1 <= m <= 13"""
+
+    def tilingRectangle(self, n: int, m: int) -> int:
+        if n == m: return 1
+        depth = [0]*m
+        
+        def fn(x): 
+            """Explore tiling rectangle area via backtracking."""
+            nonlocal ans 
+            if x < ans: 
+                if min(depth) == n: ans = x # all tiled
+                else: 
+                    i = min(depth)
+                    j = jj = depth.index(i) # (i, j)
+                    while jj < m and depth[jj] == depth[j]: jj += 1
+                    k = min(n - i, jj - j)
+                    for kk in reversed(range(1, k+1)): 
+                        for jj in range(j, j+kk): depth[jj] += kk
+                        fn(x+1)
+                        for jj in range(j, j+kk): depth[jj] -= kk
+                            
+        ans = max(n, m)
+        fn(0)
+        return ans 
+
+
     """1243. Array Transformation (Easy)
 	Given an initial array arr, every day you produce a new array using the 
 	array of the previous day. On the i-th day, you do the following operations 
@@ -19814,6 +19988,73 @@ class UnionFind:
             return (s, c) if s != 0 else (0, 0)
         
         return fn(0)[1]
+
+
+    """1307. Verbal Arithmetic Puzzle (Hard)
+	Given an equation, represented by words on left side and the result on 
+	right side. You need to check if the equation is solvable under the 
+	following rules:
+	* Each character is decoded as one digit (0 - 9).
+	* Every pair of different characters they must map to different digits.
+	* Each words[i] and result are decoded as one number without leading zeros.
+	* Sum of numbers on left side (words) will equal to the number on right 
+	  side (result). 
+	Return True if the equation is solvable otherwise return False.
+
+	Example 1:
+	Input: words = ["SEND","MORE"], result = "MONEY"
+	Output: true
+	Explanation: Map 'S'-> 9, 'E'->5, 'N'->6, 'D'->7, 'M'->1, 'O'->0, 'R'->8, 'Y'->'2'
+	             Such that: "SEND" + "MORE" = "MONEY" ,  9567 + 1085 = 10652
+
+	Example 2:
+	Input: words = ["SIX","SEVEN","SEVEN"], result = "TWENTY"
+	Output: true
+	Explanation: Map 'S'-> 6, 'I'->5, 'X'->0, 'E'->8, 'V'->7, 'N'->2, 'T'->1, 'W'->'3', 'Y'->4
+	             Such that: "SIX" + "SEVEN" + "SEVEN" = "TWENTY" ,  650 + 68782 + 68782 = 138214
+	
+	Example 3:
+	Input: words = ["THIS","IS","TOO"], result = "FUNNY"
+	Output: true
+
+	Example 4:
+	Input: words = ["LEET","CODE"], result = "POINT"
+	Output: false
+
+	Constraints:
+	* 2 <= words.length <= 5
+	* 1 <= words[i].length, result.length <= 7
+	* words[i], result contain only uppercase English letters.
+	* The number of different characters used in the expression is at most 10."""
+
+    def isSolvable(self, words: List[str], result: str) -> bool:
+        if max(map(len, words)) > len(result): return False # edge case 
+        
+        words.append(result)
+        digits = [0]*10 
+        mp = {} # mapping from letter to digit 
+        
+        def fn(i, j, val): 
+            """Find proper mapping for words[i][~j] and result[~j] via backtracking."""
+            if j == len(result): return val == 0 # base condition 
+            if i == len(words): return val % 10 == 0 and fn(0, j+1, val//10)
+            
+            if j >= len(words[i]): return fn(i+1, j, val)
+            if words[i][~j] in mp: 
+                if j and j+1 == len(words[i]) and mp[words[i][~j]] == 0: return # backtrack (no leading 0 unless single digit)
+                if i+1 == len(words): return fn(i+1, j, val - mp[words[i][~j]])
+                else: return fn(i+1, j, val + mp[words[i][~j]])
+            else: 
+                for k, x in enumerate(digits): 
+                    if not x and (k or j == 0 or j+1 < len(words[i])): # (no leading 0 unless single digit)
+                        mp[words[i][~j]] = k
+                        digits[k] = 1
+                        if i+1 == len(words) and fn(i+1, j, val-k): return True 
+                        if i+1 < len(words) and fn(i+1, j, val+k): return True 
+                        digits[k] = 0
+                        mp.pop(words[i][~j])
+        
+        return fn(0, 0, 0)
 
 
     """1317. Convert Integer to the Sum of Two No-Zero Integers (Easy)
@@ -22027,6 +22268,82 @@ class UnionFind:
             return max(nums1[i]*nums2[j] + fn(i+1, j+1), nums1[i]*nums2[j], fn(i+1, j), fn(i, j+1))
         
         return fn(0, 0)
+
+    
+    """1467. Probability of a Two Boxes Having The Same Number of Distinct Balls (Hard)
+	Given 2n balls of k distinct colors. You will be given an integer array 
+	balls of size k where balls[i] is the number of balls of color i. All the 
+	balls will be shuffled uniformly at random, then we will distribute the 
+	first n balls to the first box and the remaining n balls to the other box 
+	(Please read the explanation of the second example carefully). Please note 
+	that the two boxes are considered different. For example, if we have two 
+	balls of colors a and b, and two boxes [] and (), then the distribution 
+	[a] (b) is considered different than the distribution [b] (a) (Please read 
+	the explanation of the first example carefully). We want to calculate the 
+	probability that the two boxes have the same number of distinct balls.
+
+	Example 1:
+	Input: balls = [1,1]
+	Output: 1.00000
+	Explanation: Only 2 ways to divide the balls equally:
+	- A ball of color 1 to box 1 and a ball of color 2 to box 2
+	- A ball of color 2 to box 1 and a ball of color 1 to box 2
+	In both ways, the number of distinct colors in each box is equal. The 
+	probability is 2/2 = 1
+
+	Example 2:
+	Input: balls = [2,1,1]
+	Output: 0.66667
+	Explanation: We have the set of balls [1, 1, 2, 3]. This set of balls will 
+	             be shuffled randomly and we may have one of the 12 distinct 
+	             shuffles with equale probability (i.e. 1/12):
+	             [1,1 / 2,3], [1,1 / 3,2], [1,2 / 1,3], [1,2 / 3,1], [1,3 / 1,2], [1,3 / 2,1], 
+	             [2,1 / 1,3], [2,1 / 3,1], [2,3 / 1,1], [3,1 / 1,2], [3,1 / 2,1], [3,2 / 1,1]
+	             After that we add the first two balls to the first box and the 
+	             second two balls to the second box. We can see that 8 of these 
+	             12 possible random distributions have the same number of 
+	             distinct colors of balls in each box. Probability is 8/12 = 0.66667
+	
+	Example 3:
+	Input: balls = [1,2,1,2]
+	Output: 0.60000
+	Explanation: The set of balls is [1, 2, 2, 3, 4, 4]. It is hard to display 
+	             all the 180 possible random shuffles of this set but it is 
+	             easy to check that 108 of them will have the same number of 
+	             distinct colors in each box. Probability = 108 / 180 = 0.6.
+	
+	Example 4:
+	Input: balls = [3,2,1]
+	Output: 0.30000
+	Explanation: The set of balls is [1, 1, 1, 2, 2, 3]. It is hard to display 
+	             all the 60 possible random shuffles of this set but it is easy 
+	             to check that 18 of them will have the same number of distinct 
+	             colors in each box. Probability = 18 / 60 = 0.3.
+	
+	Example 5:
+	Input: balls = [6,6,6,6,6,6]
+	Output: 0.90327
+
+	Constraints:
+	* 1 <= balls.length <= 8
+	* 1 <= balls[i] <= 6
+	* sum(balls) is even.
+	* Answers within 10^-5 of the actual value will be accepted as correct."""
+
+    def getProbability(self, balls: List[int]) -> float:
+        n = sum(balls)//2
+        
+        @cache 
+        def fn(i, s0, s1, c0, c1):
+            """Return number of ways to distribute boxes successfully (w/o considering relative order)."""
+            if s0 > n or s1 > n: return 0 # impossible 
+            if i == len(balls): return int(c0 == c1)
+            ans = 0 
+            for x in range(balls[i]+1): 
+                ans += fn(i+1, s0+x, s1+balls[i]-x, c0+(x > 0), c1+(x < balls[i])) * comb(balls[i], x)
+            return ans
+        
+        return fn(0, 0, 0, 0, 0) / comb(2*n, n)
 
 
     """1469. Find All The Lonely Nodes (Easy)
