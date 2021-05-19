@@ -31692,6 +31692,224 @@ class Fenwick:
         return ans 
 
 
+    """1848. Minimum Distance to the Target Element (Easy)
+	Given an integer array nums (0-indexed) and two integers target and start, 
+	find an index i such that nums[i] == target and abs(i - start) is minimized. 
+	Note that abs(x) is the absolute value of x. Return abs(i - start). It is 
+	guaranteed that target exists in nums.
+
+	Example 1:
+	Input: nums = [1,2,3,4,5], target = 5, start = 3
+	Output: 1
+	Explanation: nums[4] = 5 is the only value equal to target, so the answer 
+	             is abs(4 - 3) = 1.
+
+	Example 2:
+	Input: nums = [1], target = 1, start = 0
+	Output: 0
+	Explanation: nums[0] = 1 is the only value equal to target, so the answer 
+	             is abs(0 - 0) = 0.
+	
+	Example 3:
+	Input: nums = [1,1,1,1,1,1,1,1,1,1], target = 1, start = 0
+	Output: 0
+	Explanation: Every value of nums is 1, but nums[0] minimizes abs(i - start), 
+	             which is abs(0 - 0) = 0.
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* 1 <= nums[i] <= 10^4
+	* 0 <= start < nums.length
+	* target is in nums."""
+
+    def getMinDistance(self, nums: List[int], target: int, start: int) -> int:
+        ans = inf
+        for i, x in enumerate(nums): 
+            if x == target: 
+                ans = min(ans, abs(i - start))
+        return ans 
+
+
+    """1849. Splitting a String Into Descending Consecutive Values (Medium)
+	You are given a string s that consists of only digits. Check if we can 
+	split s into two or more non-empty substrings such that the numerical 
+	values of the substrings are in descending order and the difference between 
+	numerical values of every two adjacent substrings is equal to 1. 
+
+	* For example, the string s = "0090089" can be split into ["0090", "089"] 
+	  with numerical values [90,89]. The values are in descending order and 
+	  adjacent values differ by 1, so this way is valid.
+	* Another example, the string s = "001" can be split into ["0", "01"], 
+	  ["00", "1"], or ["0", "0", "1"]. However all the ways are invalid because 
+	  they have numerical values [0,1], [0,1], and [0,0,1] respectively, all of 
+	  which are not in descending order.
+	Return true if it is possible to split s​​​​​​ as described above, or false 
+	otherwise. A substring is a contiguous sequence of characters in a string.
+
+	Example 1:
+	Input: s = "1234"
+	Output: false
+	Explanation: There is no valid way to split s.
+
+	Example 2:
+	Input: s = "050043"
+	Output: true
+	Explanation: s can be split into ["05", "004", "3"] with numerical values 
+	             [5,4,3]. The values are in descending order with adjacent 
+	             values differing by 1.
+
+	Example 3:
+	Input: s = "9080701"
+	Output: false
+	Explanation: There is no valid way to split s.
+	
+	Example 4:
+	Input: s = "10009998"
+	Output: true
+	Explanation: s can be split into ["100", "099", "98"] with numerical values 
+	             [100,99,98]. The values are in descending order with adjacent 
+	             values differing by 1.
+
+	Constraints:
+	* 1 <= s.length <= 20
+	* s only consists of digits."""
+
+    def splitString(self, s: str) -> bool:
+        
+        def fn(i, x): 
+            """Return True if s[i:] can be split following x."""
+            if i == len(s): return True 
+            if x == 0: return False 
+            ans = False 
+            for ii in range(i, len(s) - int(i == 0)):
+                if x is None or int(s[i:ii+1]) == x - 1: 
+                    ans = ans or fn(ii+1, int(s[i:ii+1]))
+            return ans 
+        
+        return fn(0, None)
+
+
+    """1850. Minimum Adjacent Swaps to Reach the Kth Smallest Number (Medium)
+	You are given a string num, representing a large integer, and an integer k. 
+	We call some integer wonderful if it is a permutation of the digits in num 
+	and is greater in value than num. There can be many wonderful integers. 
+	However, we only care about the smallest-valued ones.
+
+	For example, when num = "5489355142":
+	* The 1st smallest wonderful integer is "5489355214".
+	* The 2nd smallest wonderful integer is "5489355241".
+	* The 3rd smallest wonderful integer is "5489355412".
+	* The 4th smallest wonderful integer is "5489355421".
+	Return the minimum number of adjacent digit swaps that needs to be applied 
+	to num to reach the kth smallest wonderful integer. The tests are generated 
+	in such a way that kth smallest wonderful integer exists.
+
+	Example 1:
+	Input: num = "5489355142", k = 4
+	Output: 2
+	Explanation: The 4th smallest wonderful number is "5489355421". To get this 
+	             number:
+	             - Swap index 7 with index 8: "5489355142" -> "5489355412"
+	             - Swap index 8 with index 9: "5489355412" -> "5489355421"
+	
+	Example 2:
+	Input: num = "11112", k = 4
+	Output: 4
+	Explanation: The 4th smallest wonderful number is "21111". To get this 
+	             number:
+	             - Swap index 3 with index 4: "11112" -> "11121"
+	             - Swap index 2 with index 3: "11121" -> "11211"
+	             - Swap index 1 with index 2: "11211" -> "12111"
+	             - Swap index 0 with index 1: "12111" -> "21111"
+	
+	Example 3:
+	Input: num = "00123", k = 1
+	Output: 1
+	Explanation: The 1st smallest wonderful number is "00132". To get this number:
+	             - Swap index 3 with index 4: "00123" -> "00132"
+
+	Constraints:
+	* 2 <= num.length <= 1000
+	* 1 <= k <= 1000
+	* num only consists of digits."""
+
+    def getMinSwaps(self, num: str, k: int) -> int:
+        num = list(num)
+        orig = num.copy()
+        
+        for _ in range(k): 
+            for i in reversed(range(len(num)-1)): 
+                if num[i] < num[i+1]: 
+                    ii = i+1 
+                    while ii < len(num) and num[i] < num[ii]: ii += 1
+                    num[i], num[ii-1] = num[ii-1], num[i]
+                    lo, hi = i+1, len(num)-1
+                    while lo < hi: 
+                        num[lo], num[hi] = num[hi], num[lo]
+                        lo += 1
+                        hi -= 1
+                    break 
+        
+        ans = 0
+        for i in range(len(num)): 
+            ii = i
+            while orig[i] != num[i]: 
+                ans += 1
+                ii += 1
+                num[i], num[ii] = num[ii], num[i]
+        return ans 
+
+
+    """1851. Minimum Interval to Include Each Query (Hard)
+	You are given a 2D integer array intervals, where 
+	intervals[i] = [lefti, righti] describes the ith interval starting at lefti 
+	and ending at righti (inclusive). The size of an interval is defined as the 
+	number of integers it contains, or more formally righti - lefti + 1. You 
+	are also given an integer array queries. The answer to the jth query is the 
+	size of the smallest interval i such that lefti <= queries[j] <= righti. If 
+	no such interval exists, the answer is -1. Return an array containing the 
+	answers to the queries.
+
+	Example 1:
+	Input: intervals = [[1,4],[2,4],[3,6],[4,4]], queries = [2,3,4,5]
+	Output: [3,3,1,4]
+	Explanation: The queries are processed as follows:
+	- Query = 2: The interval [2,4] is the smallest interval containing 2. The answer is 4 - 2 + 1 = 3.
+	- Query = 3: The interval [2,4] is the smallest interval containing 3. The answer is 4 - 2 + 1 = 3.
+	- Query = 4: The interval [4,4] is the smallest interval containing 4. The answer is 4 - 4 + 1 = 1.
+	- Query = 5: The interval [3,6] is the smallest interval containing 5. The answer is 6 - 3 + 1 = 4.
+
+	Example 2:
+	Input: intervals = [[2,3],[2,5],[1,8],[20,25]], queries = [2,19,5,22]
+	Output: [2,-1,4,6]
+	Explanation: The queries are processed as follows:
+	- Query = 2: The interval [2,3] is the smallest interval containing 2. The answer is 3 - 2 + 1 = 2.
+	- Query = 19: None of the intervals contain 19. The answer is -1.
+	- Query = 5: The interval [2,5] is the smallest interval containing 5. The answer is 5 - 2 + 1 = 4.
+	- Query = 22: The interval [20,25] is the smallest interval containing 22. The answer is 25 - 20 + 1 = 6.
+
+	Constraints:
+	* 1 <= intervals.length <= 10^5
+	* 1 <= queries.length <= 10^5
+	* intervals[i].length == 2
+	* 1 <= lefti <= righti <= 10^7
+	* 1 <= queries[j] <= 10^7"""
+
+    def minInterval(self, intervals: List[List[int]], queries: List[int]) -> List[int]:
+        intervals.sort()
+        pq = []
+        k = 0 
+        ans = [-1] * len(queries)
+        for query, i in sorted(zip(queries, range(len(queries)))): 
+            while k < len(intervals) and intervals[k][0] <= query: 
+                heappush(pq, (intervals[k][1] - intervals[k][0] + 1, *intervals[k]))
+                k += 1
+            while pq and pq[0][2] < query: 
+                heappop(pq)
+            if pq: ans[i] = pq[0][0]
+        return ans 
+
+
     """1854. Maximum Population Year (Easy)
 	You are given a 2D integer array logs where each logs[i] = [birthi, deathi] 
 	indicates the birth and death years of the ith person. The population of 
