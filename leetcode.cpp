@@ -824,6 +824,48 @@ public:
     }
 
 
+    /*102. Binary Tree Level Order Traversal (Medium)
+	Given the root of a binary tree, return the level order traversal of its 
+	nodes' values. (i.e., from left to right, level by level).
+
+	Example 1:
+	Input: root = [3,9,20,null,null,15,7]
+	Output: [[3],[9,20],[15,7]]
+
+	Example 2:
+	Input: root = [1]
+	Output: [[1]]
+
+	Example 3:
+	Input: root = []
+	Output: []
+
+	Constraints:
+	* The number of nodes in the tree is in the range [0, 2000].
+	* -1000 <= Node.val <= 1000*/
+
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        vector<vector<int>> ans; 
+        queue<TreeNode*> queue; 
+        queue.push(root); 
+        
+        while (queue.size()) {
+            vector<int> vals; 
+            for (int i = 0, n = queue.size(); i < n; ++i) {
+                TreeNode* node = queue.front(); 
+                queue.pop(); 
+                if (node) {
+                    vals.push_back(node->val); 
+                    queue.push(node->left);
+                    queue.push(node->right); 
+                }
+            }
+            if (vals.size()) ans.push_back(vals); 
+        }
+        return ans; 
+    }
+
+
     /*104. Maximum Depth of Binary Tree (Easy)
 	Given the root of a binary tree, return its maximum depth. A binary tree's 
 	maximum depth is the number of nodes along the longest path from the root 

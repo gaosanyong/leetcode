@@ -3495,13 +3495,13 @@ class Solution:
     def levelOrder(self, root: TreeNode) -> List[List[int]]:
         ans, queue = [], [root]
         while queue: 
-            tmp, val = [], []
+            newq, vals = [], []
             for node in queue: 
                 if node: 
-                    val.append(node.val)
-                    tmp.extend([node.left, node.right])
-            if val: ans.append(val)
-            queue = tmp 
+                    vals.append(node.val)
+                    newq.extend([node.left, node.right])
+            if vals: ans.append(vals)
+            queue = newq
         return ans 
 
 
