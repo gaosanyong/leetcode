@@ -5529,6 +5529,93 @@ public:
     }
 
 
+    /*1844. Replace All Digits with Characters (Easy)
+	You are given a 0-indexed string s that has lowercase English letters in 
+	its even indices and digits in its odd indices. There is a function 
+	shift(c, x), where c is a character and x is a digit, that returns the xth 
+	character after c.
+	* For example, shift('a', 5) = 'f' and shift('x', 0) = 'x'.
+	For every odd index i, you want to replace the digit s[i] with 
+	shift(s[i-1], s[i]). Return s after replacing all digits. It is guaranteed 
+	that shift(s[i-1], s[i]) will never exceed 'z'.
+
+	Example 1:
+	Input: s = "a1c1e1"
+	Output: "abcdef"
+	Explanation: The digits are replaced as follows:
+	             - s[1] -> shift('a',1) = 'b'
+	             - s[3] -> shift('c',1) = 'd'
+	             - s[5] -> shift('e',1) = 'f'
+
+	Example 2:
+	Input: s = "a1b2c3d4e"
+	Output: "abbdcfdhe"
+	Explanation: The digits are replaced as follows:
+	             - s[1] -> shift('a',1) = 'b'
+	             - s[3] -> shift('b',2) = 'd'
+	             - s[5] -> shift('c',3) = 'f'
+	             - s[7] -> shift('d',4) = 'h'
+
+	Constraints:
+	* 1 <= s.length <= 100
+	* s consists only of lowercase English letters and digits.
+	* shift(s[i-1], s[i]) <= 'z' for all odd indices i.*/
+
+    string replaceDigits(string s) {
+        for (int i = 1; i < s.size(); i += 2) 
+            s[i] += s[i-1] - '0'; 
+        return s; 
+    }
+
+
+    /*1846. Maximum Element After Decreasing and Rearranging (Medium)
+	You are given an array of positive integers arr. Perform some operations 
+	(possibly none) on arr so that it satisfies these conditions:
+	* The value of the first element in arr must be 1.
+	* The absolute difference between any 2 adjacent elements must be less than 
+	  or equal to 1. In other words, abs(arr[i] - arr[i - 1]) <= 1 for each i 
+	  where 1 <= i < arr.length (0-indexed). abs(x) is the absolute value of x.
+	There are 2 types of operations that you can perform any number of times:
+	* Decrease the value of any element of arr to a smaller positive integer.
+	* Rearrange the elements of arr to be in any order.
+	Return the maximum possible value of an element in arr after performing the 
+	operations to satisfy the conditions.
+
+	Example 1:
+	Input: arr = [2,2,1,2,1]
+	Output: 2
+	Explanation: We can satisfy the conditions by rearranging arr so it becomes 
+	             [1,2,2,2,1]. The largest element in arr is 2.
+	
+	Example 2:
+	Input: arr = [100,1,1000]
+	Output: 3
+	Explanation: One possible way to satisfy the conditions is by doing the 
+	             following:
+	             1. Rearrange arr so it becomes [1,100,1000].
+	             2. Decrease the value of the second element to 2.
+	             3. Decrease the value of the third element to 3.
+	             Now arr = [1,2,3], which satisfies the conditions. The largest 
+	             element in arr is 3.
+
+	Example 3:
+	Input: arr = [1,2,3,4,5]
+	Output: 5
+	Explanation: The array already satisfies the conditions, and the largest 
+	             element is 5.
+
+	Constraints:
+	* 1 <= arr.length <= 10^5
+	* 1 <= arr[i] <= 10^9*/
+
+    int maximumElementAfterDecrementingAndRearranging(vector<int>& arr) {
+        sort(arr.begin(), arr.end()); 
+        int ans = 0; 
+        for (auto& x : arr) ans = min(1 + ans, x); 
+        return ans; 
+    }
+
+
     /*1848. Minimum Distance to the Target Element (Easy)
 	Given an integer array nums (0-indexed) and two integers target and start, 
 	find an index i such that nums[i] == target and abs(i - start) is minimized. 
@@ -6462,6 +6549,58 @@ public:
             q.pop(); 
         }
         return q.size(); 
+    }
+};
+
+
+/*1845. Seat Reservation Manager (Medium)
+Design a system that manages the reservation state of n seats that are numbered 
+from 1 to n. Implement the SeatManager class:
+* SeatManager(int n) Initializes a SeatManager object that will manage n seats 
+  numbered from 1 to n. All seats are initially available.
+* int reserve() Fetches the smallest-numbered unreserved seat, reserves it, and 
+  returns its number.
+* void unreserve(int seatNumber) Unreserves the seat with the given seatNumber.
+
+Example 1:
+Input: ["SeatManager", "reserve", "reserve", "unreserve", "reserve", "reserve", "reserve", "reserve", "unreserve"]
+       [[5], [], [], [2], [], [], [], [], [5]]
+Output: [null, 1, 2, null, 2, 3, 4, 5, null]
+Explanation: 
+SeatManager seatManager = new SeatManager(5); // Initializes a SeatManager with 5 seats.
+seatManager.reserve();    // All seats are available, so return the lowest numbered seat, which is 1.
+seatManager.reserve();    // The available seats are [2,3,4,5], so return the lowest of them, which is 2.
+seatManager.unreserve(2); // Unreserve seat 2, so now the available seats are [2,3,4,5].
+seatManager.reserve();    // The available seats are [2,3,4,5], so return the lowest of them, which is 2.
+seatManager.reserve();    // The available seats are [3,4,5], so return the lowest of them, which is 3.
+seatManager.reserve();    // The available seats are [4,5], so return the lowest of them, which is 4.
+seatManager.reserve();    // The only available seat is seat 5, so return 5.
+seatManager.unreserve(5); // Unreserve seat 5, so now the available seats are [5].
+
+Constraints:
+* 1 <= n <= 10^5
+* 1 <= seatNumber <= n
+* For each call to reserve, it is guaranteed that there will be at least one unreserved seat.
+* For each call to unreserve, it is guaranteed that seatNumber will be reserved.
+* At most 10^5 calls in total will be made to reserve and unreserve.*/
+
+class SeatManager {
+private: 
+    priority_queue<int, vector<int>, greater<>> pq; // min-heap 
+public:
+    SeatManager(int n) {
+        for (int x = 1; x <= n; ++x) 
+            pq.push(x); 
+    }
+    
+    int reserve() {
+        int ans = pq.top(); 
+        pq.pop(); 
+        return ans; 
+    }
+    
+    void unreserve(int seatNumber) {
+        pq.push(seatNumber); 
     }
 };
 
