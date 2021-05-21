@@ -6406,23 +6406,21 @@ class Solution:
 	* 1 <= numCourses <= 10^5"""
 
     def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
-        digraph = dict()
+        indeg = [0]*numCourses
+        graph = {}
         for u, v in prerequisites: 
-            digraph.setdefault(v, []).append(u)
-            
-        def dfs(n):
-            """Return True if a cycle is detected."""
-            if visited[n]: return visited[n] == -1
-            visited[n] = -1 # GRAY
-            for nn in digraph.get(n, []):
-                if visited[nn] != 1 and dfs(nn): return True 
-            visited[n] = 1 # BLACK
-            return False 
-            
-        visited = [0]*numCourses # WHITE
-        for n in range(numCourses): 
-            if not visited[n] and dfs(n): return False 
-        return True 
+            indeg[u] += 1
+            graph.setdefault(v, []).append(u)
+        
+        stack = [i for i, x in enumerate(indeg) if not x]
+        seen = []
+        while stack: 
+            x = stack.pop()
+            seen.append(x)
+            for xx in graph.get(x, []): 
+                indeg[xx] -= 1
+                if indeg[xx] == 0: stack.append(xx)
+        return len(seen) == numCourses
 
 
     """209. Minimum Size Subarray Sum (Medium)
@@ -14580,8 +14578,7 @@ class UnionFind:
 	* 1 <= pattern.length = words[i].length <= 20"""
 
     def findAndReplacePattern(self, words: List[str], pattern: str) -> List[str]:
-        fn = lambda x: len(set(zip(x, pattern))) == len(set(x)) == len(set(pattern))
-        return [word for word in words if fn(word)]
+        return [word for word in words if len(set(zip(word, pattern))) == len(set(word)) == len(set(pattern))]
 
 
     """894. All Possible Full Binary Trees (Medium)
@@ -34436,6 +34433,63 @@ class MyCalendar:
         if end <= prev.val[0]: prev.left = Node((start, end))
         else: prev.right = Node((start, end))
         return True 
+
+
+"""745. Prefix and Suffix Search (Hard)
+Design a special dictionary with some words that searchs the words in it by a 
+prefix and a suffix. Implement the WordFilter class:
+* WordFilter(string[] words) Initializes the object with the words in the 
+  dictionary.
+* f(string prefix, string suffix) Returns the index of the word in the 
+  dictionary, which has the prefix prefix and the suffix suffix. If there is 
+  more than one valid index, return the largest of them. If there is no such 
+  word in the dictionary, return -1.
+
+Example 1:
+Input: ["WordFilter", "f"]
+       [[["apple"]], ["a", "e"]]
+Output: [null, 0]
+Explanation:
+WordFilter wordFilter = new WordFilter(["apple"]);
+wordFilter.f("a", "e"); // return 0, because the word at index 0 has prefix = "a" and suffix = 'e".
+
+Constraints:
+* 1 <= words.length <= 15000
+* 1 <= words[i].length <= 10
+* 1 <= prefix.length, suffix.length <= 10
+* words[i], prefix and suffix consist of lower-case English letters only.
+* At most 15000 calls will be made to the function f.
+
+class Trie: 
+    def __init__(self): 
+        self.root = {}
+    
+    def insert(self, i, word): 
+        node = self.root 
+        for c in word: 
+            node = node.setdefault(c, {})
+            node["#"] = i
+        
+    def search(self, word): 
+        node = self.root
+        for c in word: 
+            if c in node: node = node[c]
+            else: return -1 
+        return node["#"]
+"""
+
+class WordFilter:
+
+    def __init__(self, words: List[str]):
+        self.trie = Trie()
+        for i, word in enumerate(words): 
+            for k in range(len(word)): 
+                key = word[k:] + "$" + word
+                self.trie.insert(i, key)
+
+    def f(self, prefix: str, suffix: str) -> int:
+        key = suffix + "$" + prefix
+        return self.trie.search(key)
 
 
 """911. Online Election (Medium)
