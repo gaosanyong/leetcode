@@ -6924,6 +6924,89 @@ public:
 };
 
 
+/*745. Prefix and Suffix Search (Hard)
+Design a special dictionary with some words that searchs the words in it by a 
+prefix and a suffix. Implement the WordFilter class:
+* WordFilter(string[] words) Initializes the object with the words in the 
+  dictionary.
+* f(string prefix, string suffix) Returns the index of the word in the 
+  dictionary, which has the prefix prefix and the suffix suffix. If there is 
+  more than one valid index, return the largest of them. If there is no such 
+  word in the dictionary, return -1.
+
+Example 1:
+Input: ["WordFilter", "f"]
+       [[["apple"]], ["a", "e"]]
+Output: [null, 0]
+Explanation:
+WordFilter wordFilter = new WordFilter(["apple"]);
+wordFilter.f("a", "e"); // return 0, because the word at index 0 has prefix = "a" and suffix = 'e".
+
+Constraints:
+* 1 <= words.length <= 15000
+* 1 <= words[i].length <= 10
+* 1 <= prefix.length, suffix.length <= 10
+* words[i], prefix and suffix consist of lower-case English letters only.
+* At most 15000 calls will be made to the function f.
+
+class TrieNode {
+public: 
+    unordered_map<char, TrieNode*> children = {};
+    int index = 0;
+    ~TrieNode() {
+        for (auto& child : children) 
+            delete child.second; 
+    }
+};
+
+
+class Trie {
+public: 
+    TrieNode* root; 
+    Trie() { root = new TrieNode(); }
+    ~Trie() { delete root; }
+
+    void insert(string word, int index) {
+        TrieNode* node = root; 
+        for (auto& letter : word) {
+            if (!node->children[letter]) 
+                node->children[letter] = new TrieNode(); 
+            node = node->children[letter];
+            node->index = index; 
+        }
+    }
+
+    int prefix(string word) {
+        TrieNode* node = root; 
+        for (auto& letter : word) {
+            node = node->children[letter]; 
+            if (!node) return -1; 
+        }
+        return node->index; 
+    }
+}; */
+
+
+class WordFilter {
+    Trie* trie; 
+public:
+    WordFilter(vector<string>& words) {
+        trie = new Trie(); 
+        for (int i = 0; i < size(words); ++i) {
+            for (int j = 0; j < size(words[i]); ++j) {
+                string key = words[i].substr(j) + "$" + words[i]; 
+                trie->insert(key, i); 
+            }
+        }
+    }
+    
+    int f(string prefix, string suffix) {
+        string key = suffix + "$" + prefix; 
+        return trie->prefix(key); 
+    }
+};
+
+
 /*933. Number of Recent Calls (Easy)
 You have a RecentCounter class which counts the number of recent requests 
 within a certain time frame. Implement the RecentCounter class:
