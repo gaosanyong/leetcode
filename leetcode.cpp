@@ -6818,6 +6818,214 @@ public:
         return dp[n][k]; 
     }
 
+
+
+    /*1869. Longer Contiguous Segments of Ones than Zeros (Easy)
+	Given a binary string s, return true if the longest contiguous segment of 
+	1s is strictly longer than the longest contiguous segment of 0s in s. 
+	Return false otherwise. For example, in s = "110100010" the longest 
+	contiguous segment of 1s has length 2, and the longest contiguous segment 
+	of 0s has length 3. Note that if there are no 0s, then the longest 
+	contiguous segment of 0s is considered to have length 0. The same applies 
+	if there are no 1s.
+
+	Example 1:
+	Input: s = "1101"
+	Output: true
+	Explanation:
+	The longest contiguous segment of 1s has length 2: "1101"
+	The longest contiguous segment of 0s has length 1: "1101"
+	The segment of 1s is longer, so return true.
+
+	Example 2:
+	Input: s = "111000"
+	Output: false
+	Explanation:
+	The longest contiguous segment of 1s has length 3: "111000"
+	The longest contiguous segment of 0s has length 3: "111000"
+	The segment of 1s is not longer, so return false.
+
+	Example 3:
+	Input: s = "110100010"
+	Output: false
+	Explanation:
+	The longest contiguous segment of 1s has length 2: "110100010"
+	The longest contiguous segment of 0s has length 3: "110100010"
+	The segment of 1s is not longer, so return false.
+
+	Constraints:
+	* 1 <= s.length <= 100
+	* s[i] is either '0' or '1'.*/
+
+    bool checkZeroOnes(string s) {
+        int ones = 0, zeros = 0, cnt = 0; 
+        for (int i = 0; i < s.size(); ++i) {
+            if (i == 0 || s[i-1] != s[i]) cnt = 0; 
+            ++cnt; 
+            if (s[i] == '0') zeros = max(zeros, cnt); 
+            else ones = max(ones, cnt); 
+        }
+        return ones > zeros; 
+    }
+
+
+    /*1870. Minimum Speed to Arrive on Time (Medium)
+	You are given a floating-point number hour, representing the amount of time 
+	you have to reach the office. To commute to the office, you must take n 
+	trains in sequential order. You are also given an integer array dist of 
+	length n, where dist[i] describes the distance (in kilometers) of the ith 
+	train ride. Each train can only depart at an integer hour, so you may need 
+	to wait in between each train ride. For example, if the 1st train ride 
+	takes 1.5 hours, you must wait for an additional 0.5 hours before you can 
+	depart on the 2nd train ride at the 2 hour mark. Return the minimum 
+	positive integer speed (in kilometers per hour) that all the trains must 
+	travel at for you to reach the office on time, or -1 if it is impossible to 
+	be on time. Tests are generated such that the answer will not exceed 10^7 
+	and hour will have at most two digits after the decimal point.
+
+	Example 1:
+	Input: dist = [1,3,2], hour = 6
+	Output: 1
+	Explanation: At speed 1:
+	- The first train ride takes 1/1 = 1 hour.
+	- Since we are already at an integer hour, we depart immediately at the 1 hour mark. The second train takes 3/1 = 3 hours.
+	- Since we are already at an integer hour, we depart immediately at the 4 hour mark. The third train takes 2/1 = 2 hours.
+	- You will arrive at exactly the 6 hour mark.
+
+	Example 2:
+	Input: dist = [1,3,2], hour = 2.7
+	Output: 3
+	Explanation: At speed 3:
+	- The first train ride takes 1/3 = 0.33333 hours.
+	- Since we are not at an integer hour, we wait until the 1 hour mark to depart. The second train ride takes 3/3 = 1 hour.
+	- Since we are already at an integer hour, we depart immediately at the 2 hour mark. The third train takes 2/3 = 0.66667 hours.
+	- You will arrive at the 2.66667 hour mark.
+
+	Example 3:
+	Input: dist = [1,3,2], hour = 1.9
+	Output: -1
+	Explanation: It is impossible because the earliest the third train can depart is at the 2 hour mark.
+
+	Constraints:
+	* n == dist.length
+	* 1 <= n <= 10^5
+	* 1 <= dist[i] <= 10^5
+	* 1 <= hour <= 10^9
+	* There will be at most two digits after the decimal point in hour.*/
+
+    int minSpeedOnTime(vector<int>& dist, double hour) {
+        int lo = 1, hi = 10'000'001; 
+        while (lo < hi) {
+            double mid = lo + (hi - lo)/2, tm = dist.back()/mid; 
+            for (int i = 0; i < dist.size()-1; ++i) 
+                tm += ceil(dist[i]/mid); 
+            if (tm <= hour) hi = mid; 
+            else lo = mid + 1; 
+        }
+        return lo < 10'000'001 ? lo : -1; 
+    }
+
+
+    /*1871. Jump Game VII (Medium)
+	You are given a 0-indexed binary string s and two integers minJump and 
+	maxJump. In the beginning, you are standing at index 0, which is equal to 
+	'0'. You can move from index i to index j if the following conditions are 
+	fulfilled:
+	* i + minJump <= j <= min(i + maxJump, s.length - 1), and
+	* s[j] == '0'.
+	Return true if you can reach index s.length - 1 in s, or false otherwise.
+
+	Example 1:
+	Input: s = "011010", minJump = 2, maxJump = 3
+	Output: true
+	Explanation: In the first step, move from index 0 to index 3. 
+	             In the second step, move from index 3 to index 5.
+	
+	Example 2:
+	Input: s = "01101110", minJump = 2, maxJump = 3
+	Output: false
+
+	Constraints:
+	* 2 <= s.length <= 10^5
+	* s[i] is either '0' or '1'.
+	* s[0] == '0'
+	* 1 <= minJump <= maxJump < s.length*/
+
+    bool canReach(string s, int minJump, int maxJump) {
+        queue<int> q; 
+        q.push(0); 
+        int lo = 0; 
+        while (q.size()) {
+            int i = q.front(); 
+            q.pop(); 
+            if (i+1 == size(s)) return true; 
+            for (int ii = max(lo+1, i+minJump); ii < min(i+maxJump+1, (int) size(s)); ++ii) {
+                if (s[ii] == '0') q.push(ii); 
+            }
+            lo = max(lo, i+maxJump); 
+        }
+        return false; 
+    }
+
+
+    /*1872. Stone Game VIII (Hard)
+	Alice and Bob take turns playing a game, with Alice starting first. There 
+	are n stones arranged in a row. On each player's turn, while the number of 
+	stones is more than one, they will do the following:
+	* Choose an integer x > 1, and remove the leftmost x stones from the row.
+	* Add the sum of the removed stones' values to the player's score.
+	* Place a new stone, whose value is equal to that sum, on the left side of 
+	  the row.
+	The game stops when only one stone is left in the row. The score difference 
+	between Alice and Bob is (Alice's score - Bob's score). Alice's goal is to 
+	maximize the score difference, and Bob's goal is the minimize the score 
+	difference. Given an integer array stones of length n where stones[i] 
+	represents the value of the ith stone from the left, return the score 
+	difference between Alice and Bob if they both play optimally.
+
+	Example 1:
+	Input: stones = [-1,2,-3,4,-5]
+	Output: 5
+	Explanation:
+	- Alice removes the first 4 stones, adds (-1) + 2 + (-3) + 4 = 2 to her 
+	  score, and places a stone of value 2 on the left. stones = [2,-5].
+	- Bob removes the first 2 stones, adds 2 + (-5) = -3 to his score, and 
+	  places a stone of value -3 on the left. stones = [-3].
+	The difference between their scores is 2 - (-3) = 5.
+
+	Example 2:
+	Input: stones = [7,-6,5,10,5,-2,-6]
+	Output: 13
+	Explanation:
+	- Alice removes all stones, adds 7 + (-6) + 5 + 10 + 5 + (-2) + (-6) = 13 
+	  to her score, and places a stone of value 13 on the left. stones = [13].
+	The difference between their scores is 13 - 0 = 13.
+
+	Example 3:
+	Input: stones = [-10,-12]
+	Output: -22
+	Explanation: 
+	- Alice can only make one move, which is to remove both stones. She adds 
+	  (-10) + (-12) = -22 to her score and places a stone of value -22 on the 
+	  left. stones = [-22].
+	The difference between their scores is (-22) - 0 = -22.
+
+	Constraints:
+	* n == stones.length
+	* 2 <= n <= 10^5
+	* -10^4 <= stones[i] <= 10^4*/
+
+    int stoneGameVIII(vector<int>& stones) {
+        int prefix = 0; 
+        for (auto& x : stones) prefix += x; 
+        
+        int ans = prefix; 
+        for (int i = size(stones)-2; i >= 1; --i) {
+            prefix -= stones[i+1]; 
+            ans = max(ans, prefix - ans); 
+        }
+        return ans; 
+    }
 };
 
 
