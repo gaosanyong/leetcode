@@ -2789,12 +2789,10 @@ public:
 	Input: "LOVELY"
 	Output: "lovely"*/
 
-    string toLowerCase(string str) {
-        for (auto& c : str) {
-            if ('A' <= c && c <= 'Z') 
-                c += 32; 
-        }
-        return str; 
+    string toLowerCase(string s) {
+        for (auto& c : s) 
+            if (isupper(c)) c |= 32; 
+        return s; 
     }
 
 
