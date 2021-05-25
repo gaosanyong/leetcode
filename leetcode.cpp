@@ -560,6 +560,51 @@ public:
             reverse(row.begin(), row.end()); 
 
 
+    /*51. N-Queens (Hard)
+	The n-queens puzzle is the problem of placing n queens on an n x n 
+	chessboard such that no two queens attack each other. Given an integer n, 
+	return all distinct solutions to the n-queens puzzle. Each solution 
+	contains a distinct board configuration of the n-queens' placement, where 
+	'Q' and '.' both indicate a queen and an empty space, respectively.
+
+	Example 1:
+	Input: n = 4
+	Output: [[".Q..","...Q","Q...","..Q."],["..Q.","Q...","...Q",".Q.."]]
+	Explanation: There exist two distinct solutions to the 4-queens puzzle as 
+	             shown above
+
+	Example 2:
+	Input: n = 1
+	Output: [["Q"]]
+
+	Constraints: 1 <= n <= 9*/
+
+    vector<vector<string>> solveNQueens(int n) {
+        vector<string> board(n, string(n, '.')); 
+        vector<bool> cols(n, false), diag(2*n-1, false), anti(2*n-1, false); 
+        vector<vector<string>> ans; 
+        
+        function<void(int)> fn = [&](int i) {
+            if (i == n) {
+                ans.push_back(board); 
+            } else {
+                for (int j = 0; j < n; ++j) {
+                    if (!cols[j] && !diag[i-j+n-1] && !anti[i+j]) {
+                        board[i][j] = 'Q'; 
+                        cols[j] = diag[i-j+n-1] = anti[i+j] = true; 
+                        fn(i+1); 
+                        board[i][j] = '.'; 
+                        cols[j] = diag[i-j+n-1] = anti[i+j] = false; 
+                    }
+                }
+            }
+        };
+        
+        fn(0); 
+        return ans; 
+    }
+
+
     /*63. Unique Paths II (Medium)
 	A robot is located at the top-left corner of a m x n grid (marked 'Start' 
 	in the diagram below). The robot can only move either down or right at any 

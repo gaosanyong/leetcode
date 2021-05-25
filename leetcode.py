@@ -1730,22 +1730,23 @@ class Solution:
 	Explanation: There exist two distinct solutions to the 4-queens puzzle as shown above."""
 
     def solveNQueens(self, n: int) -> List[List[str]]:
+        board = [["."]*n for _ in range(n)]
         
-        def fn(i, seen):
-            """Populate ans through backtracking row by row"""
-            if i == n: ans.append(["".join(row) for row in sol])
-            for j in range(n):
-                place = {("col", j), ("diag", i-j), ("anti", i+j)}
-                if not (place & seen): 
-                    sol[i][j] = "Q"
-                    seen |= place
+        def fn(i, seen): 
+            """Recursively populate the n queens via backtracking."""
+            if i == n: return ans.append(["".join(x) for x in board])
+            for j in range(n): 
+                pos = {("col", j), ("diag", i-j), ("anti", i+j)}
+                if not pos & seen: 
+                    board[i][j] = "Q"
+                    seen |= pos
                     fn(i+1, seen)
-                    sol[i][j] = "."
-                    seen -= place 
-                    
-        ans, sol = [], [["."]*n for _ in range(n)]
+                    board[i][j] = "."
+                    seen -= pos
+        
+        ans = []
         fn(0, set())
-        return ans 
+        return ans
 
 
     """52. N-Queens II (Hard)
