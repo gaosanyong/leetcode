@@ -5183,12 +5183,14 @@ class Solution:
     def evalRPN(self, tokens: List[str]) -> int:
         stack = []
         for token in tokens: 
-            if token not in "+-*/": stack.append(int(token))
+            if token in "+-*/": 
+                rr, ll = stack.pop(), stack.pop()
+                if token == "+": stack.append(ll + rr)
+                elif token == "-": stack.append(ll - rr)
+                elif token == "*": stack.append(ll * rr)
+                else: stack.append(int(ll/rr))
             else: 
-                y, x = stack.pop(), stack.pop()
-                if token == "/": x = int(x/y)
-                else: x = eval(f"{x}{token}{y}")
-                stack.append(x)
+                stack.append(int(token))
         return stack.pop()
 
 
