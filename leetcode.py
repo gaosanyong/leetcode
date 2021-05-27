@@ -8964,12 +8964,12 @@ class Solution:
 	* words[i] consists only of lowercase English letters."""
 
     def maxProduct(self, words: List[str]) -> int:
-        mp = {} #mapping from mask to length
+        mp = defaultdict(int)
         for word in words: 
-            mask = reduce(or_, (1 << ord(c)-97 for c in word), 0)
-            mp[mask] = max(len(word), mp.get(mask, 0))
-        
-        return max((mp[x] * mp[y] for x in mp for y in mp if not x&y), default=0)
+            mask = 0 
+            for ch in word: mask |= 1 << ord(ch)-97
+            mp[mask] = max(mp[mask], len(word))
+        return max((mp[x]*mp[y] for x in mp for y in mp if not x & y), default=0)
 
 
     """319. Bulb Switcher (Medium)
