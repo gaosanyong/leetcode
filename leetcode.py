@@ -27080,15 +27080,16 @@ class Fenwick:
 	* 1 <= nums[i] <= 104"""
 
     def maximumUniqueSubarray(self, nums: List[int]) -> int:
-        prefix = [0]
-        for x in nums: prefix.append(prefix[-1] + x)
-        
-        ans = ii = 0
-        seen = {}
-        for i, x in enumerate(nums): 
-            ii = max(ii, seen.get(x, -1)+1)
-            ans = max(ans, prefix[i+1] - prefix[ii])
-            seen[x] = i
+        freq = defaultdict(int)
+        ans = ii = val = 0 
+        for x in nums: 
+            val += x
+            freq[x] += 1
+            while freq[x] > 1: 
+                val -= nums[ii]
+                freq[nums[ii]] -= 1
+                ii += 1
+            ans = max(ans, val)
         return ans 
 
 

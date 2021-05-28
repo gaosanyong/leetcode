@@ -5355,6 +5355,44 @@ public:
     }
 
 
+    /*1695. Maximum Erasure Value (Medium)
+	You are given an array of positive integers nums and want to erase a 
+	subarray containing unique elements. The score you get by erasing the 
+	subarray is equal to the sum of its elements. Return the maximum score you 
+	can get by erasing exactly one subarray. An array b is called to be a 
+	subarray of a if it forms a contiguous subsequence of a, that is, if it is 
+	equal to a[l],a[l+1],...,a[r] for some (l,r).
+
+	Example 1:
+	Input: nums = [4,2,4,5,6]
+	Output: 17
+	Explanation: The optimal subarray here is [2,4,5,6].
+
+	Example 2:
+	Input: nums = [5,2,1,2,5,2,1,2,5]
+	Output: 8
+	Explanation: The optimal subarray here is [5,2,1] or [1,2,5].
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^4*/
+
+    int maximumUniqueSubarray(vector<int>& nums) {
+        unordered_map<int, int> freq; 
+        int ans = 0, val = 0, ii = 0; 
+        for (auto& x : nums) {
+            val += x; 
+            ++freq[x]; 
+            for (; freq[x] > 1; ++ii) {
+                val -= nums[ii]; 
+                --freq[nums[ii]]; 
+            }
+            ans = max(ans, val); 
+        }
+        return ans; 
+    }
+
+
     /*1812. Determine Color of a Chessboard Square (Easy)
 	You are given coordinates, a string that represents the coordinates of a 
 	square of the chessboard. Below is a chessboard for your reference. Return
@@ -5557,8 +5595,8 @@ public:
 	leading or trailing spaces. Each of the words consists of only uppercase 
 	and lowercase English letters (no punctuation). For example, "Hello World", 
 	"HELLO", and "hello world hello world" are all sentences. You are given a 
-	sentence s​​​​​​ and an integer k​​​​​​. You want to truncate s​​​​​​ such that it contains 
-	only the first k​​​​​​ words. Return s​​​​​​ after truncating it.
+	sentence s and an integer k. You want to truncate s such that it contains 
+	only the first k words. Return s after truncating it.
 
 	Example 1:
 	Input: s = "Hello how are you Contestant", k = 4
