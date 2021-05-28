@@ -5355,6 +5355,203 @@ public:
     }
 
 
+    /*1812. Determine Color of a Chessboard Square (Easy)
+	You are given coordinates, a string that represents the coordinates of a 
+	square of the chessboard. Below is a chessboard for your reference. Return
+	true if the square is white, and false if the square is black. The 
+	coordinate will always represent a valid chessboard square. The coordinate 
+	will always have the letter first, and the number second.
+
+	Example 1:
+	Input: coordinates = "a1"
+	Output: false
+	Explanation: From the chessboard above, the square with coordinates "a1" is 
+	             black, so return false.
+	
+	Example 2:
+	Input: coordinates = "h3"
+	Output: true
+	Explanation: From the chessboard above, the square with coordinates "h3" is 
+	             white, so return true.
+	
+	Example 3:
+	Input: coordinates = "c7"
+	Output: false
+
+	Constraints:
+	* coordinates.length == 2
+	* 'a' <= coordinates[0] <= 'h'
+	* '1' <= coordinates[1] <= '8'*/
+
+    bool squareIsWhite(string coordinates) {
+        return (coordinates[0] & 1) != (coordinates[1] & 1); 
+    }
+
+
+
+    /*1814. Count Nice Pairs in an Array (Medium)
+	You are given an array nums that consists of non-negative integers. Let us 
+	define rev(x) as the reverse of the non-negative integer x. For example, 
+	rev(123) = 321, and rev(120) = 21. A pair of indices (i, j) is nice if it 
+	satisfies all of the following conditions:
+	* 0 <= i < j < nums.length
+	* nums[i] + rev(nums[j]) == nums[j] + rev(nums[i])
+	Return the number of nice pairs of indices. Since that number can be too 
+	large, return it modulo 109 + 7.
+
+	Example 1:
+	Input: nums = [42,11,1,97]
+	Output: 2
+	Explanation: The two pairs are:
+	 - (0,3) : 42 + rev(97) = 42 + 79 = 121, 97 + rev(42) = 97 + 24 = 121.
+	 - (1,2) : 11 + rev(1) = 11 + 1 = 12, 1 + rev(11) = 1 + 11 = 12.
+
+	Example 2:
+	Input: nums = [13,10,35,24,76]
+	Output: 4
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 0 <= nums[i] <= 10^9*/
+
+    int countNicePairs(vector<int>& nums) {
+        long ans = 0; 
+        unordered_map<int, int> freq; 
+        for (auto& x : nums) {
+            int rev = 0; 
+            for (int xx = x; xx; xx /= 10) rev = 10*rev + xx % 10; 
+            x -= rev; 
+            ans = (ans + freq[x]) % 1'000'000'007; 
+            ++freq[x]; 
+        }
+        return ans; 
+    }
+
+
+    /*1813. Sentence Similarity III (Medium)
+	A sentence is a list of words that are separated by a single space with no 
+	leading or trailing spaces. For example, "Hello World", "HELLO", "hello 
+	world hello world" are all sentences. Words consist of only uppercase and 
+	lowercase English letters. Two sentences sentence1 and sentence2 are 
+	similar if it is possible to insert an arbitrary sentence (possibly empty) 
+	inside one of these sentences such that the two sentences become equal. For 
+	example, sentence1 = "Hello my name is Jane" and sentence2 = "Hello Jane" 
+	can be made equal by inserting "my name is" between "Hello" and "Jane" in 
+	sentence2. Given two sentences sentence1 and sentence2, return true if 
+	sentence1 and sentence2 are similar. Otherwise, return false.
+
+	Example 1:
+	Input: sentence1 = "My name is Haley", sentence2 = "My Haley"
+	Output: true
+	Explanation: sentence2 can be turned to sentence1 by inserting "name is" 
+	             between "My" and "Haley".
+	
+	Example 2:
+	Input: sentence1 = "of", sentence2 = "A lot of words"
+	Output: false
+	Explanation: No single sentence can be inserted inside one of the sentences 
+	             to make it equal to the other.
+	
+	Example 3:
+	Input: sentence1 = "Eating right now", sentence2 = "Eating"
+	Output: true
+	Explanation: sentence2 can be turned to sentence1 by inserting "right now" 
+	             at the end of the sentence.
+	
+	Example 4:
+	Input: sentence1 = "Luky", sentence2 = "Lucccky"
+	Output: false
+
+	Constraints:
+	* 1 <= sentence1.length, sentence2.length <= 100
+	* sentence1 and sentence2 consist of lowercase and uppercase English 
+	  letters and spaces.
+	* The words in sentence1 and sentence2 are separated by a single space.*/
+
+    bool areSentencesSimilar(string sentence1, string sentence2) {
+        if (size(sentence1) < size(sentence2)) swap(sentence1, sentence2); 
+        
+        vector<string> words1, words2; 
+        
+        string word; 
+        istringstream iss1(sentence1); 
+        while (iss1 >> word) words1.push_back(word); 
+        
+        istringstream iss2(sentence2); 
+        while (iss2 >> word) words2.push_back(word); 
+        
+        int i = 0; 
+        for (; i < size(words2) && words1[i] == words2[i]; ++i); 
+        int j = size(words2)-1;
+        for (; 0 <= j && words1[size(words1)-size(words2)+j] == words2[j]; --j); 
+        return j < i; 
+    }
+
+
+    /*1815. Maximum Number of Groups Getting Fresh Donuts (Hard)
+	There is a donuts shop that bakes donuts in batches of batchSize. They have 
+	a rule where they must serve all of the donuts of a batch before serving 
+	any donuts of the next batch. You are given an integer batchSize and an 
+	integer array groups, where groups[i] denotes that there is a group of 
+	groups[i] customers that will visit the shop. Each customer will get 
+	exactly one donut. When a group visits the shop, all customers of the group 
+	must be served before serving any of the following groups. A group will be 
+	happy if they all get fresh donuts. That is, the first customer of the 
+	group does not receive a donut that was left over from the previous group.
+	You can freely rearrange the ordering of the groups. Return the maximum 
+	possible number of happy groups after rearranging the groups.
+
+	Example 1:
+	Input: batchSize = 3, groups = [1,2,3,4,5,6]
+	Output: 4
+	Explanation: You can arrange the groups as [6,2,4,5,1,3]. Then the 1st, 2nd, 
+	             4th, and 6th groups will be happy.
+	
+	Example 2:
+	Input: batchSize = 4, groups = [1,3,2,5,2,2,1,6]
+	Output: 4
+
+	Constraints:
+	* 1 <= batchSize <= 9
+	* 1 <= groups.length <= 30
+	* 1 <= groups[i] <= 10^9*/
+
+    int maxHappyGroups(int batchSize, vector<int>& groups) {
+        vector<int> freq(batchSize, 0); 
+        int ans = 0; 
+        for (auto group : groups) {
+            group %= batchSize; 
+            if (group == 0) ++ans; 
+            else if (freq[batchSize - group]) {
+                ++ans; 
+                --freq[batchSize - group]; 
+            } 
+            else ++freq[group]; 
+        }
+        
+        map<vector<int>, int> memo; 
+        
+        function<int(int)> fn = [&](int left) {
+            if (memo.find(freq) == memo.end()) {
+                int ans = 0, more = 0; 
+                for (int i = 0; i < batchSize; ++i) {
+                    if (freq[i]) {
+                        --freq[i]; 
+                        ans = max(ans, fn((left + i) % batchSize)); 
+                        ++freq[i]; 
+                        more = 1; 
+                    }
+                }
+                if (left == 0 && more) ans += 1; 
+                memo[freq] = ans;
+            }
+            return memo[freq]; 
+        };
+        
+        return ans + fn(0); 
+    }
+
+
     /*1816. Truncate Sentence (Easy)
 	A sentence is a list of words that are separated by a single space with no 
 	leading or trailing spaces. Each of the words consists of only uppercase 
