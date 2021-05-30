@@ -7501,6 +7501,193 @@ public:
         }
         return ans; 
     }
+
+
+    /*1876. Substrings of Size Three with Distinct Characters (Easy)
+	A string is good if there are no repeated characters. Given a string s, 
+	return the number of good substrings of length three in s. Note that if 
+	there are multiple occurrences of the same substring, every occurrence 
+	should be counted. A substring is a contiguous sequence of characters in a 
+	string.
+
+	Example 1:
+	Input: s = "xyzzaz"
+	Output: 1
+	Explanation: There are 4 substrings of size 3: "xyz", "yzz", "zza", and 
+	             "zaz". The only good substring of length 3 is "xyz".
+
+	Example 2:
+	Input: s = "aababcabc"
+	Output: 4
+	Explanation: There are 7 substrings of size 3: "aab", "aba", "bab", "abc", 
+	             "bca", "cab", and "abc". The good substrings are "abc", "bca", 
+	             "cab", and "abc".
+
+	Constraints:
+	* 1 <= s.length <= 100
+	* s consists of lowercase English letters.*/
+
+    int countGoodSubstrings(string s) {
+        int ans = 0; 
+        for (int i = 2; i < size(s); ++i) {
+            if (s[i-2] != s[i-1] && s[i-1] != s[i] && s[i-2] != s[i]) 
+                ++ans; 
+        }
+        return ans; 
+    }
+
+
+    /*1877. Minimize Maximum Pair Sum in Array (Medium)
+	The pair sum of a pair (a,b) is equal to a + b. The maximum pair sum is the 
+	largest pair sum in a list of pairs. 
+	* For example, if we have pairs (1,5), (2,3), and (4,4), the maximum pair 
+	  sum would be max(1+5, 2+3, 4+4) = max(6, 5, 8) = 8.
+	Given an array nums of even length n, pair up the elements of nums into 
+	n / 2 pairs such that:
+	* Each element of nums is in exactly one pair, and
+	* The maximum pair sum is minimized.
+	Return the minimized maximum pair sum after optimally pairing up the elements.
+	 
+	Example 1:
+	Input: nums = [3,5,2,3]
+	Output: 7
+	Explanation: The elements can be paired up into pairs (3,3) and (5,2). The 
+	             maximum pair sum is max(3+3, 5+2) = max(6, 7) = 7.
+	
+	Example 2:
+	Input: nums = [3,5,4,2,4,6]
+	Output: 8
+	Explanation: The elements can be paired up into pairs (3,5), (4,4), and 
+	             (6,2). The maximum pair sum is 
+	             max(3+5, 4+4, 6+2) = max(8, 8, 8) = 8.
+
+	Constraints:
+	* n == nums.length
+	* 2 <= n <= 10^5
+	* n is even.
+	* 1 <= nums[i] <= 10^5*/
+
+    int minPairSum(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        int ans = 0; 
+        for (int i = 0; i < size(nums)/2; ++i) {
+            ans = max(ans, nums[i] + nums[size(nums)-1-i]); 
+        }
+        return ans; 
+    }
+
+
+    /*1878. Get Biggest Three Rhombus Sums in a Grid (Medium)
+	You are given an m x n integer matrix grid. A rhombus sum is the sum of the 
+	elements that form the border of a regular rhombus shape in grid. The 
+	rhombus must have the shape of a square rotated 45 degrees with each of the 
+	corners centered in a grid cell. Below is an image of four valid rhombus 
+	shapes with the corresponding colored cells that should be included in each 
+	rhombus sum. Note that the rhombus can have an area of 0, which is depicted 
+	by the purple rhombus in the bottom right corner. Return the biggest three 
+	distinct rhombus sums in the grid in descending order. If there are less 
+	than three distinct values, return all of them.
+
+	Example 1:
+	Input: grid = [[3,4,5,1,3],[3,3,4,2,3],[20,30,200,40,10],[1,5,5,4,1],[4,3,2,2,5]]
+	Output: [228,216,211]
+	Explanation: The rhombus shapes for the three biggest distinct rhombus sums 
+	             are depicted above.
+	             - Blue: 20 + 3 + 200 + 5 = 228
+	             - Red: 200 + 2 + 10 + 4 = 216
+	             - Green: 5 + 200 + 4 + 2 = 211
+	
+	Example 2:
+	Input: grid = [[1,2,3],[4,5,6],[7,8,9]]
+	Output: [20,9,8]
+	Explanation: The rhombus shapes for the three biggest distinct rhombus sums 
+	             are depicted above.
+	             - Blue: 4 + 2 + 6 + 8 = 20
+	             - Red: 9 (area 0 rhombus in the bottom right corner)
+	             - Green: 8 (area 0 rhombus in the bottom middle)
+	
+	Example 3:
+	Input: grid = [[7,7,7]]
+	Output: [7]
+	Explanation: All three possible rhombus sums are the same, so return [7].
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 50
+	* 1 <= grid[i][j] <= 10^5*/
+
+    vector<int> getBiggestThree(vector<vector<int>>& grid) {
+        int m = size(grid), n = size(grid[0]); // dimensions 
+        set<int> s; 
+        
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                for (int k = 0; 0 <= i-k && i+k < m && 0 <= j-k && j+k < n; ++k) {
+                    int sm = 0, x = i-k, y = j, dx = 1, dy = 1; 
+                    if (k == 0) sm = grid[i][j]; 
+                    else {
+                        for (int d = 0; d < 4; ++d) {
+                            for (int step = 0; step < k; ++step) {
+                                sm += grid[x][y]; 
+                                x += dx; 
+                                y += dy; 
+                            }
+                            swap(dx, dy); 
+                            dy *= -1; 
+                        }
+                    }
+                    s.insert(sm);
+                    if (size(s) > 3) s.erase(begin(s)); 
+                }
+            }
+        }
+        return vector<int>(rbegin(s), rend(s)); 
+    }
+
+
+    /*1879. Minimum XOR Sum of Two Arrays (Hard)
+	You are given two integer arrays nums1 and nums2 of length n. The XOR sum 
+	of the two integer arrays is 
+	(nums1[0] XOR nums2[0]) + (nums1[1] XOR nums2[1]) + ... + (nums1[n - 1] XOR nums2[n - 1]) (0-indexed).
+	* For example, the XOR sum of [1,2,3] and [3,2,1] is equal to 
+	  (1 XOR 3) + (2 XOR 2) + (3 XOR 1) = 2 + 0 + 2 = 4.
+	Rearrange the elements of nums2 such that the resulting XOR sum is 
+	minimized. Return the XOR sum after the rearrangement.
+
+	Example 1:
+	Input: nums1 = [1,2], nums2 = [2,3]
+	Output: 2
+	Explanation: Rearrange nums2 so that it becomes [3,2]. The XOR sum is 
+	             (1 XOR 3) + (2 XOR 2) = 2 + 0 = 2.
+	
+	Example 2:
+	Input: nums1 = [1,0,3], nums2 = [5,3,4]
+	Output: 8
+	Explanation: Rearrange nums2 so that it becomes [5,4,3]. The XOR sum is 
+	             (1 XOR 5) + (0 XOR 4) + (3 XOR 3) = 4 + 4 + 0 = 8.
+
+	Constraints:
+	* n == nums1.length
+	* n == nums2.length
+	* 1 <= n <= 14
+	* 0 <= nums1[i], nums2[i] <= 10^7*/
+
+    int minimumXORSum(vector<int>& nums1, vector<int>& nums2) {
+        int n = size(nums1); 
+        vector<int> dp(1<<n, INT_MAX);
+        dp[0] = 0; 
+        
+        for (int mask = 0; mask < (1<<n); ++mask) {
+            int k = __builtin_popcount(mask); // count set bits 
+            for (int bit = 0; bit < n; ++bit) {
+                if (mask & (1<<bit)) {
+                    dp[mask] = min(dp[mask], (nums1[bit] ^ nums2[k-1]) + dp[mask ^ (1<<bit)]); 
+                }
+            }
+        }
+        return dp.back(); 
+    }
 };
 
 
