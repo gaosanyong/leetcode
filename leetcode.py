@@ -33097,6 +33097,231 @@ class Fenwick:
         return fn((1<<n)-1, 0)
 
 
+    """1880. Check if Word Equals Summation of Two Words (Easy)
+	The letter value of a letter is its position in the alphabet starting from 
+	0 (i.e. 'a' -> 0, 'b' -> 1, 'c' -> 2, etc.). The numerical value of some 
+	string of lowercase English letters s is the concatenation of the letter 
+	values of each letter in s, which is then converted into an integer. 
+	* For example, if s = "acb", we concatenate each letter's letter value, 
+	  resulting in "021". After converting it, we get 21.
+	
+	You are given three strings firstWord, secondWord, and targetWord, each 
+	consisting of lowercase English letters 'a' through 'j' inclusive. Return 
+	true if the summation of the numerical values of firstWord and secondWord 
+	equals the numerical value of targetWord, or false otherwise.
+
+	Example 1:
+	Input: firstWord = "acb", secondWord = "cba", targetWord = "cdb"
+	Output: true
+	Explanation:
+	The numerical value of firstWord is "acb" -> "021" -> 21.
+	The numerical value of secondWord is "cba" -> "210" -> 210.
+	The numerical value of targetWord is "cdb" -> "231" -> 231.
+	We return true because 21 + 210 == 231.
+
+	Example 2:
+	Input: firstWord = "aaa", secondWord = "a", targetWord = "aab"
+	Output: false
+	Explanation: 
+	The numerical value of firstWord is "aaa" -> "000" -> 0.
+	The numerical value of secondWord is "a" -> "0" -> 0.
+	The numerical value of targetWord is "aab" -> "001" -> 1.
+	We return false because 0 + 0 != 1.
+
+	Example 3:
+	Input: firstWord = "aaa", secondWord = "a", targetWord = "aaaa"
+	Output: true
+	Explanation: 
+	The numerical value of firstWord is "aaa" -> "000" -> 0.
+	The numerical value of secondWord is "a" -> "0" -> 0.
+	The numerical value of targetWord is "aaaa" -> "0000" -> 0.
+	We return true because 0 + 0 == 0.
+
+	Constraints:
+	* 1 <= firstWord.length, secondWord.length, targetWord.length <= 8
+	* firstWord, secondWord, and targetWord consist of lowercase English 
+	  letters from 'a' to 'j' inclusive."""
+
+    def isSumEqual(self, firstWord: str, secondWord: str, targetWord: str) -> bool:
+        fn = lambda w: int("".join(str(ord(c)-97) for c in w))
+        return fn(firstWord) + fn(secondWord) == fn(targetWord)
+
+
+    """1881. Maximum Value after Insertion (Medium)
+	You are given a very large integer n, represented as a string, and an 
+	integer digit x. The digits in n and the digit x are in the inclusive range 
+	[1, 9], and n may represent a negative number. You want to maximize n's 
+	numerical value by inserting x anywhere in the decimal representation of n. 
+	You cannot insert x to the left of the negative sign.
+
+	* For example, if n = 73 and x = 6, it would be best to insert it between 7 
+	  and 3, making n = 763.
+	* If n = -55 and x = 2, it would be best to insert it before the first 5, 
+	  making n = -255.
+	Return a string representing the maximum value of n after the insertion.
+
+	Example 1:
+	Input: n = "99", x = 9
+	Output: "999"
+	Explanation: The result is the same regardless of where you insert 9.
+
+	Example 2:
+	Input: n = "-13", x = 2
+	Output: "-123"
+	Explanation: You can make n one of {-213, -123, -132}, and the largest of 
+	             those three is -123.
+
+	Constraints:
+	* 1 <= n.length <= 10^5
+	* 1 <= x <= 9
+	* The digits in n are in the range [1, 9].
+	* n is a valid representation of an integer.
+	* In the case of a negative n, it will begin with '-'."""
+
+    def maxValue(self, n: str, x: int) -> str:
+        x = str(x)
+        if n[0] == "-": 
+            for i in range(1, len(n)): 
+                if x < n[i]: return n[:i] + x + n[i:]
+        else: 
+            for i in range(0, len(n)): 
+                if x > n[i]: return n[:i] + x + n[i:]
+        return n + x
+
+
+    """1882. Process Tasks Using Servers (Medium)
+	You are given two 0-indexed integer arrays servers and tasks of lengths n 
+	and m respectively. servers[i] is the weight of the ith server, and tasks[j] 
+	is the time needed to process the jth task in seconds. You are running a 
+	simulation system that will shut down after all tasks are processed. Each 
+	server can only process one task at a time. You will be able to process the 
+	jth task starting from the jth second beginning with the 0th task at second 
+	0. To process task j, you assign it to the server with the smallest weight 
+	that is free, and in case of a tie, choose the server with the smallest 
+	index. If a free server gets assigned task j at second t, it will be free 
+	again at the second t + tasks[j]. If there are no free servers, you must 
+	wait until one is free and execute the free tasks as soon as possible. If 
+	multiple tasks need to be assigned, assign them in order of increasing index.
+	You may assign multiple tasks at the same second if there are multiple free 
+	servers. Build an array ans of length m, where ans[j] is the index of the 
+	server the jth task will be assigned to. Return the array ans.
+
+	Example 1:
+	Input: servers = [3,3,2], tasks = [1,2,3,2,1,2]
+	Output: [2,2,0,2,1,2]
+	Explanation: Events in chronological order go as follows:
+	- At second 0, task 0 is added and processed using server 2 until second 1.
+	- At second 1, server 2 becomes free. Task 1 is added and processed using server 2 until second 3.
+	- At second 2, task 2 is added and processed using server 0 until second 5.
+	- At second 3, server 2 becomes free. Task 3 is added and processed using server 2 until second 5.
+	- At second 4, task 4 is added and processed using server 1 until second 5.
+	- At second 5, all servers become free. Task 5 is added and processed using server 2 until second 7.
+
+	Example 2:
+	Input: servers = [5,1,4,3,2], tasks = [2,1,2,4,5,2,1]
+	Output: [1,4,1,4,1,3,2]
+	Explanation: Events in chronological order go as follows: 
+	- At second 0, task 0 is added and processed using server 1 until second 2.
+	- At second 1, task 1 is added and processed using server 4 until second 2.
+	- At second 2, servers 1 and 4 become free. Task 2 is added and processed using server 1 until second 4. 
+	- At second 3, task 3 is added and processed using server 4 until second 7.
+	- At second 4, server 1 becomes free. Task 4 is added and processed using server 1 until second 9. 
+	- At second 5, task 5 is added and processed using server 3 until second 7.
+	- At second 6, task 6 is added and processed using server 2 until second 7.
+
+	Constraints:
+	* servers.length == n
+	* tasks.length == m
+	* 1 <= n, m <= 2 * 10^5
+	* 1 <= servers[i], tasks[j] <= 2 * 10^5"""
+
+    def assignTasks(self, servers: List[int], tasks: List[int]) -> List[int]:
+        busy = []
+        free = [(wt, i) for i, wt in enumerate(servers)]
+        heapify(free)
+        
+        ans = []
+        for t, task in enumerate(tasks): 
+            while busy and busy[0][0] == t: 
+                _, wt, i = heappop(busy)
+                heappush(free, (wt, i))
+            if free: wt, i = heappop(free)
+            else: t, wt, i = heappop(busy)
+            ans.append(i)
+            heappush(busy, (t+task, wt, i))
+        return ans 
+
+
+    """1883. Minimum Skips to Arrive at Meeting On Time (Hard)
+	You are given an integer hoursBefore, the number of hours you have to 
+	travel to your meeting. To arrive at your meeting, you have to travel 
+	through n roads. The road lengths are given as an integer array dist of 
+	length n, where dist[i] describes the length of the ith road in kilometers. 
+	In addition, you are given an integer speed, which is the speed (in km/h) 
+	you will travel at. After you travel road i, you must rest and wait for the 
+	next integer hour before you can begin traveling on the next road. Note 
+	that you do not have to rest after traveling the last road because you are 
+	already at the meeting.
+
+	* For example, if traveling a road takes 1.4 hours, you must wait until the 
+	  2 hour mark before traveling the next road. If traveling a road takes 
+	  exactly 2 hours, you do not need to wait.
+	However, you are allowed to skip some rests to be able to arrive on time, 
+	meaning you do not need to wait for the next integer hour. Note that this 
+	means you may finish traveling future roads at different hour marks.
+
+	* For example, suppose traveling the first road takes 1.4 hours and 
+	  traveling the second road takes 0.6 hours. Skipping the rest after the 
+	  first road will mean you finish traveling the second road right at the 2 
+	  hour mark, letting you start traveling the third road immediately.
+	Return the minimum number of skips required to arrive at the meeting on 
+	time, or -1 if it is impossible.
+
+	Example 1:
+	Input: dist = [1,3,2], speed = 4, hoursBefore = 2
+	Output: 1
+	Explanation: Without skipping any rests, you will arrive in 
+	             (1/4 + 3/4) + (3/4 + 1/4) + (2/4) = 2.5 hours. You can skip 
+	             the first rest to arrive in ((1/4 + 0) + (3/4 + 0)) + (2/4) = 1.5 
+	             hours. Note that the second rest is shortened because you finish 
+	             traveling the second road at an integer hour due to skipping the 
+	             first rest.
+	
+	Example 2:
+	Input: dist = [7,3,5,5], speed = 2, hoursBefore = 10
+	Output: 2
+	Explanation: Without skipping any rests, you will arrive in 
+	             (7/2 + 1/2) + (3/2 + 1/2) + (5/2 + 1/2) + (5/2) = 11.5 hours.
+	             You can skip the first and third rest to arrive in 
+	             ((7/2 + 0) + (3/2 + 0)) + ((5/2 + 0) + (5/2)) = 10 hours.
+	
+	Example 3:
+	Input: dist = [7,3,5,5], speed = 1, hoursBefore = 10
+	Output: -1
+	Explanation: It is impossible to arrive at the meeting on time even if you 
+	             skip all the rests.
+
+	Constraints:
+	* n == dist.length
+	* 1 <= n <= 1000
+	* 1 <= dist[i] <= 10^5
+	* 1 <= speed <= 10^6
+	* 1 <= hoursBefore <= 10^7"""
+
+    def minSkips(self, dist: List[int], speed: int, hoursBefore: int) -> int:
+        if sum(dist)/speed > hoursBefore: return -1 # impossible 
+        
+        @cache
+        def fn(i, k): 
+            """Return min time (in distance) of traveling first i roads with k skips."""
+            if k < 0: return inf # impossible 
+            if i == 0: return 0 
+            return min(ceil((fn(i-1, k) + dist[i-1])/speed) * speed, dist[i-1] + fn(i-1, k-1))
+        
+        for k in range(len(dist)):
+            if fn(len(dist)-1, k) + dist[-1] <= hoursBefore*speed: return k 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
