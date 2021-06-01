@@ -2807,6 +2807,67 @@ public:
     }
 
 
+    /*695. Max Area of Island (Medium)
+	You are given an m x n binary matrix grid. An island is a group of 1's 
+	(representing land) connected 4-directionally (horizontal or vertical.) You 
+	may assume all four edges of the grid are surrounded by water. The area of 
+	an island is the number of cells with a value 1 in the island. Return the 
+	maximum area of an island in grid. If there is no island, return 0.
+
+	Example 1:
+	Input: grid = [[0,0,1,0,0,0,0,1,0,0,0,0,0],
+	               [0,0,0,0,0,0,0,1,1,1,0,0,0],
+	               [0,1,1,0,1,0,0,0,0,0,0,0,0],
+	               [0,1,0,0,1,1,0,0,1,0,1,0,0],
+	               [0,1,0,0,1,1,0,0,1,1,1,0,0],
+	               [0,0,0,0,0,0,0,0,0,0,1,0,0],
+	               [0,0,0,0,0,0,0,1,1,1,0,0,0],
+	               [0,0,0,0,0,0,0,1,1,0,0,0,0]]
+	Output: 6
+	Explanation: The answer is not 11, because the island must be connected 
+	             4-directionally.
+	
+	Example 2:
+	Input: grid = [[0,0,0,0,0,0,0,0]]
+	Output: 0
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 50
+	* grid[i][j] is either 0 or 1.*/
+
+    int maxAreaOfIsland(vector<vector<int>>& grid) {
+        int ans = 0, m = size(grid), n = size(grid[0]); 
+        vector<pair<int, int>> dir = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}}; 
+        
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j]) {
+                    int val = 0; 
+                    stack<pair<int, int>> stk; 
+                    stk.push(make_pair(i, j)); 
+                    while (!stk.empty()) {
+                        auto [i, j] = stk.top(); 
+                        stk.pop(); 
+                        if (grid[i][j]) {
+                            ++val; 
+                            grid[i][j] = 0; 
+                            for (auto& [di, dj] : dir) {
+                                int ii = i + di, jj = j + dj; 
+                                if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj] == 1) 
+                                    stk.push(make_pair(ii, jj)); 
+                            }
+                        }
+                    }
+                    ans = max(ans, val); 
+                }
+            }
+        }
+        return ans; 
+    }
+
+
     /*696. Count Binary Substrings (Easy)
 	Give a string s, count the number of non-empty (contiguous) substrings that 
 	have the same number of 0's and 1's, and all the 0's and all the 1's in 
@@ -5151,6 +5212,71 @@ public:
         string ans; 
         for (auto x : vec) {
             ans += string(x[0], x[1]); 
+        }
+        return ans; 
+    }
+
+
+    /*1268. Search Suggestions System (Medium)
+	Given an array of strings products and a string searchWord. We want to 
+	design a system that suggests at most three product names from products 
+	after each character of searchWord is typed. Suggested products should have 
+	common prefix with the searchWord. If there are more than three products 
+	with a common prefix return the three lexicographically minimums products.
+	Return list of lists of the suggested products after each character of 
+	searchWord is typed. 
+
+	Example 1:
+	Input: products = ["mobile","mouse","moneypot","monitor","mousepad"], 
+	       searchWord = "mouse"
+	Output: [["mobile","moneypot","monitor"],
+	         ["mobile","moneypot","monitor"],
+	         ["mouse","mousepad"],
+	         ["mouse","mousepad"],
+	         ["mouse","mousepad"]]
+	Explanation: products sorted lexicographically = ["mobile","moneypot","monitor","mouse","mousepad"]
+	             After typing m and mo all products match and we show user ["mobile","moneypot","monitor"]
+	             After typing mou, mous and mouse the system suggests ["mouse","mousepad"]
+	
+	Example 2:
+	Input: products = ["havana"], 
+	       searchWord = "havana"
+	Output: [["havana"],["havana"],["havana"],["havana"],["havana"],["havana"]]
+
+	Example 3:
+	Input: products = ["bags","baggage","banner","box","cloths"], 
+	       searchWord = "bags"
+	Output: [["baggage","bags","banner"],
+	         ["baggage","bags","banner"],
+	         ["baggage","bags"],
+	         ["bags"]]
+	
+	Example 4:
+	Input: products = ["havana"], 
+	       searchWord = "tatiana"
+	Output: [[],[],[],[],[],[],[]]
+
+	Constraints:
+	* 1 <= products.length <= 1000
+	* There are no repeated elements in products.
+	* 1 <= Σ products[i].length <= 2 * 10^4
+	* All characters of products[i] are lower-case English letters.
+	* 1 <= searchWord.length <= 1000
+	* All characters of searchWord are lower-case English letters.*/
+
+    vector<vector<string>> suggestedProducts(vector<string>& products, string searchWord) {
+        sort(begin(products), end(products)); 
+        vector<vector<string>> ans; 
+        int lo = 0, hi = size(products)-1; 
+        for (int i = 0 ; i < size(searchWord); ++i) {
+            for (; lo < size(products) && (size(products[lo]) <= i || products[lo][i] < searchWord[i]); ++lo); 
+            for (; 0 <= hi && (size(products[hi]) <= i || products[hi][i] > searchWord[i]); --hi); 
+            if (lo <= hi) {
+                vector<string> elem; 
+                for (auto i = lo; i < min(lo+3, hi+1); ++i) elem.push_back(products[i]); 
+                ans.push_back(elem); 
+            }
+            else ans.push_back({}); 
         }
         return ans; 
     }
