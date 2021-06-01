@@ -1920,6 +1920,43 @@ public:
     }
 
 
+    /*338. Counting Bits (Easy)
+	Given an integer n, return an array ans of length n + 1 such that for each 
+	i (0 <= i <= n), ans[i] is the number of 1's in the binary representation 
+	of i.
+
+	Example 1:
+	Input: n = 2
+	Output: [0,1,1]
+	Explanation: 0 --> 0
+	             1 --> 1
+	             2 --> 10
+	
+	Example 2:
+	Input: n = 5
+	Output: [0,1,1,2,1,2]
+	Explanation: 0 --> 0
+	             1 --> 1
+	             2 --> 10
+	             3 --> 11
+	             4 --> 100
+	             5 --> 101
+
+	Constraints: 0 <= n <= 10^5
+
+	Follow up: It is very easy to come up with a solution with a runtime of 
+	           O(n log n). Can you do it in linear time O(n) and possibly in a 
+	           single pass? Can you do it without using any built-in function 
+	           (i.e., like __builtin_popcount in C++)?*/
+
+    vector<int> countBits(int n) {
+        vector<int> ans(n+1, 0); 
+        for (int x = 1; x <= n; ++x) 
+            ans[x] = 1 + ans[x&(x-1)];
+        return ans; 
+    }
+
+
     /*377. Combination Sum IV (Medium)
 	Given an array of distinct integers nums and a target integer target, 
 	return the number of possible combinations that add up to target. The 
@@ -1995,6 +2032,47 @@ public:
             ans += abs(x - m); 
         }
         return ans; 
+    }
+
+
+    /*495. Teemo Attacking (Easy)
+	Our hero Teemo is attacking an enemy Ashe with poison attacks! When Teemo 
+	attacks Ashe, Ashe gets poisoned for a exactly duration seconds. More 
+	formally, an attack at second t will mean Ashe is poisoned during the 
+	inclusive time interval [t, t + duration - 1]. If Teemo attacks again 
+	before the poison effect ends, the timer for it is reset, and the poison 
+	effect will end duration seconds after the new attack. You are given a 
+	non-decreasing integer array timeSeries, where timeSeries[i] denotes that 
+	Teemo attacks Ashe at second timeSeries[i], and an integer duration. Return 
+	the total number of seconds that Ashe is poisoned.
+
+	Example 1:
+	Input: timeSeries = [1,4], duration = 2
+	Output: 4
+	Explanation: Teemo's attacks on Ashe go as follows:
+	- At second 1, Teemo attacks, and Ashe is poisoned for seconds 1 and 2.
+	- At second 4, Teemo attacks, and Ashe is poisoned for seconds 4 and 5.
+	Ashe is poisoned for seconds 1, 2, 4, and 5, which is 4 seconds in total.
+
+	Example 2:
+	Input: timeSeries = [1,2], duration = 2
+	Output: 3
+	Explanation: Teemo's attacks on Ashe go as follows:
+	- At second 1, Teemo attacks, and Ashe is poisoned for seconds 1 and 2.
+	- At second 2 however, Teemo attacks again and resets the poison timer. 
+	  Ashe is poisoned for seconds 2 and 3.
+	Ashe is poisoned for seconds 1, 2, and 3, which is 3 seconds in total.
+
+	Constraints:
+	* 1 <= timeSeries.length <= 10^4
+	* 0 <= timeSeries[i], duration <= 10^7
+	* timeSeries is sorted in non-decreasing order.*/
+
+    int findPoisonedDuration(vector<int>& timeSeries, int duration) {
+        int ans = 0; 
+        for (int i = 0; i < size(timeSeries)-1; ++i) 
+            ans += min(duration, timeSeries[i+1] - timeSeries[i]); 
+        return ans + duration; 
     }
 
 
@@ -4991,6 +5069,63 @@ public:
             }
         }
         return true; 
+    }
+
+
+    /*961. N-Repeated Element in Size 2N Array (Easy)
+	In a array nums of size 2 * n, there are n + 1 unique elements, and exactly 
+	one of these elements is repeated n times. Return the element repeated n 
+	times.
+
+	Example 1:
+	Input: nums[1,2,3,3]
+	Output: 3
+
+	Example 2:
+	Input: nums[2,1,2,5,3,2]
+	Output: 2
+
+	Example 3:
+	Input: nums[5,1,5,2,5,3,5,4]
+	Output: 5
+
+	Note:
+	* 4 <= nums.length <= 10000
+	* 0 <= nums[i] < 10000
+	* nums.length is even*/
+
+    int repeatedNTimes(vector<int>& nums) {
+        for (int i = 0; i < size(nums); ++i) 
+            for (int k = 1; k <= 2; ++k) 
+                if (i+k < size(nums) && nums[i] == nums[i+k]) return nums[i]; 
+        return nums[0]; 
+    }
+
+
+    /*965. Univalued Binary Tree (Easy)
+	A binary tree is univalued if every node in the tree has the same value.
+	Return true if and only if the given tree is univalued.
+
+	Example 1:
+	Input: [1,1,1,1,1,null,1]
+	Output: true
+
+	Example 2:
+	Input: [2,2,2,5,2]
+	Output: false
+
+	Note:
+	* The number of nodes in the given tree will be in the range [1, 100].
+	* Each node's value will be an integer in the range [0, 99].*/
+
+    bool isUnivalTree(TreeNode* root) {
+        
+        function<bool(TreeNode*, int)> fn = [&](TreeNode* node, int val) {
+            if (!node) return true; 
+            return node->val == val && fn(node->left, val) && fn(node->right, val);
+        };
+        
+        return fn(root, root->val); 
     }
 
 
