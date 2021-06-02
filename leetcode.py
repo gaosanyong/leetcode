@@ -3291,18 +3291,14 @@ class Solution:
 	Output: false"""
 
     def isInterleave(self, s1: str, s2: str, s3: str) -> bool:
-        
-        @cache
-        def fn(i, j): 
-            """Return True if s3[i+j:] is formed by interleaving s1[i:] and s2[j:]"""
-            if i == len(s1) and j == len(s2): return True
-            ans = False
-            if i < len(s1) and s1[i] == s3[i+j]: ans = ans or fn(i+1, j)
-            if j < len(s2) and s2[j] == s3[i+j]: ans = ans or fn(i, j+1)
-            return ans 
-        
         if len(s1) + len(s2) != len(s3): return False 
-        return fn(0, 0)
+        
+        dp = [False]*len(s2) + [True]
+        for i in reversed(range(len(s1)+1)): 
+            for j in reversed(range(len(s2)+1)): 
+                if i < len(s1): dp[j] = (dp[j] and s1[i] == s3[i+j])
+                if j < len(s2): dp[j] = dp[j] or (dp[j+1] and s2[j] == s3[i+j])
+        return dp[0]
 
 
     """98. Validate Binary Search Tree (Medium)
@@ -20004,6 +20000,63 @@ class UnionFind:
                 else: s[i] = "" # extra 
         while stack: s[stack.pop()] = ""
         return "".join(s)
+
+
+    """1268. Search Suggestions System (Medium)
+	Given an array of strings products and a string searchWord. We want to 
+	design a system that suggests at most three product names from products 
+	after each character of searchWord is typed. Suggested products should have 
+	common prefix with the searchWord. If there are more than three products 
+	with a common prefix return the three lexicographically minimums products.
+	Return list of lists of the suggested products after each character of 
+	searchWord is typed. 
+
+	Example 1:
+	Input: products = ["mobile","mouse","moneypot","monitor","mousepad"], 
+	       searchWord = "mouse"
+	Output: [["mobile","moneypot","monitor"],
+	         ["mobile","moneypot","monitor"],
+	         ["mouse","mousepad"],
+	         ["mouse","mousepad"],
+	         ["mouse","mousepad"]]
+	Explanation: products sorted lexicographically = ["mobile","moneypot","monitor","mouse","mousepad"]
+	             After typing m and mo all products match and we show user ["mobile","moneypot","monitor"]
+	             After typing mou, mous and mouse the system suggests ["mouse","mousepad"]
+	
+	Example 2:
+	Input: products = ["havana"], 
+	       searchWord = "havana"
+	Output: [["havana"],["havana"],["havana"],["havana"],["havana"],["havana"]]
+
+	Example 3:
+	Input: products = ["bags","baggage","banner","box","cloths"], 
+	       searchWord = "bags"
+	Output: [["baggage","bags","banner"],
+	         ["baggage","bags","banner"],
+	         ["baggage","bags"],
+	         ["bags"]]
+
+	Example 4:
+	Input: products = ["havana"], searchWord = "tatiana"
+	Output: [[],[],[],[],[],[],[]]
+
+	Constraints:
+	* 1 <= products.length <= 1000
+	* There are no repeated elements in products.
+	* 1 <= Σ products[i].length <= 2 * 10^4
+	* All characters of products[i] are lower-case English letters.
+	* 1 <= searchWord.length <= 1000
+	* All characters of searchWord are lower-case English letters."""
+
+    def suggestedProducts(self, products: List[str], searchWord: str) -> List[List[str]]:
+        products.sort()
+        ans = []
+        lo, hi = 0, len(products)-1
+        for i, ch in enumerate(searchWord):
+            while lo < len(products) and (len(products[lo]) <= i or products[lo][i] < ch): lo += 1
+            while hi >= 0 and (len(products[hi]) <= i or ch < products[hi][i]): hi -= 1
+            ans.append(products[lo: min(lo+3, hi+1)])
+        return ans
 
 
     """1271. Hexspeak (Easy)
