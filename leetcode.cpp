@@ -5211,6 +5211,173 @@ public:
     }
 
 
+    /*976. Largest Perimeter Triangle (Easy)
+	Given an integer array nums, return the largest perimeter of a triangle 
+	with a non-zero area, formed from three of these lengths. If it is 
+	impossible to form any triangle of a non-zero area, return 0.
+
+	Example 1:
+	Input: nums = [2,1,2]
+	Output: 5
+
+	Example 2:
+	Input: nums = [1,2,1]
+	Output: 0
+
+	Example 3:
+	Input: nums = [3,2,3,4]
+	Output: 10
+
+	Example 4:
+	Input: nums = [3,6,2,3]
+	Output: 8
+
+	Constraints:
+	* 3 <= nums.length <= 10^4
+	* 1 <= nums[i] <= 10^6*/
+
+    int largestPerimeter(vector<int>& nums) {
+        sort(begin(nums), end(nums)); 
+        for (int i = size(nums)-1; i >= 2; --i) 
+            if (nums[i-2] + nums[i-1] > nums[i]) 
+                return nums[i-2] + nums[i-1] + nums[i]; 
+        return 0; 
+    }
+
+
+    /*985. Sum of Even Numbers After Queries (Easy)
+	We have an array nums of integers, and an array queries of queries. For the 
+	i-th query val = queries[i][0], index = queries[i][1], we add val to 
+	nums[index].  Then, the answer to the i-th query is the sum of the even 
+	values of A. (Here, the given index = queries[i][1] is a 0-based index, and 
+	each query permanently modifies the array nums.) Return the answer to all 
+	queries.  Your answer array should have answer[i] as the answer to the i-th 
+	query.
+
+	Example 1:
+	Input: nums = [1,2,3,4], queries = [[1,0],[-3,1],[-4,0],[2,3]]
+	Output: [8,6,2,4]
+	Explanation: 
+	At the beginning, the array is [1,2,3,4].
+	After adding 1 to nums[0], the array is [2,2,3,4], and the sum of even values is 2 + 2 + 4 = 8.
+	After adding -3 to nums[1], the array is [2,-1,3,4], and the sum of even values is 2 + 4 = 6.
+	After adding -4 to nums[0], the array is [-2,-1,3,4], and the sum of even values is -2 + 4 = 2.
+	After adding 2 to nums[3], the array is [-2,-1,3,6], and the sum of even values is -2 + 6 = 4.
+	 
+	Note:
+	* 1 <= nums.length <= 10000
+	* -10000 <= nums[i] <= 10000
+	* 1 <= queries.length <= 10000
+	* -10000 <= queries[i][0] <= 10000
+	* 0 <= queries[i][1] < nums.length*/
+
+    vector<int> sumEvenAfterQueries(vector<int>& nums, vector<vector<int>>& queries) {
+        int sm = accumulate(begin(nums), end(nums), 0, [](int s, int x) {return x%2 == 0 ? s + x : s; }); 
+
+        vector<int> ans; 
+        for (auto& query : queries) {
+            int val = query[0], i = query[1]; 
+            if (nums[i]%2 == 0) sm -= nums[i]; 
+            nums[i] += val; 
+            if (nums[i]%2 == 0) sm += nums[i]; 
+            ans.push_back(sm); 
+        }
+        return ans; 
+    }
+
+
+    /*989. Add to Array-Form of Integer (Easy)
+	The array-form of an integer num is an array representing its digits in 
+	left to right order. 
+	* For example, for num = 1321, the array form is [1,3,2,1].
+	Given num, the array-form of an integer, and an integer k, return the 
+	array-form of the integer num + k.
+
+	Example 1:
+	Input: num = [1,2,0,0], k = 34
+	Output: [1,2,3,4]
+	Explanation: 1200 + 34 = 1234
+
+	Example 2:
+	Input: num = [2,7,4], k = 181
+	Output: [4,5,5]
+	Explanation: 274 + 181 = 455
+
+	Example 3:
+	Input: num = [2,1,5], k = 806
+	Output: [1,0,2,1]
+	Explanation: 215 + 806 = 1021
+
+	Example 4:
+	Input: num = [9,9,9,9,9,9,9,9,9,9], k = 1
+	Output: [1,0,0,0,0,0,0,0,0,0,0]
+	Explanation: 9999999999 + 1 = 10000000000
+
+	Constraints:
+	* 1 <= num.length <= 10^4
+	* 0 <= num[i] <= 9
+	* num does not contain any leading zeros except for the zero itself.
+	* 1 <= k <= 10^4*/
+
+    vector<int> addToArrayForm(vector<int>& num, int k) {
+        reverse(begin(num), end(num)); 
+        for (int i = 0; k; ++i) {
+            if (i == size(num)) num.push_back(0); 
+            num[i] += k; 
+            k = num[i]/10; 
+            num[i] %= 10; 
+        }
+        reverse(begin(num), end(num)); 
+        return num; 
+    }
+
+
+    /*993. Cousins in Binary Tree (Easy)
+	In a binary tree, the root node is at depth 0, and children of each depth k 
+	node are at depth k+1. Two nodes of a binary tree are cousins if they have 
+	the same depth, but have different parents. We are given the root of a 
+	binary tree with unique values, and the values x and y of two different 
+	nodes in the tree. Return true if and only if the nodes corresponding to 
+	the values x and y are cousins.
+
+	Example 1:
+	Input: root = [1,2,3,4], x = 4, y = 3
+	Output: false
+
+	Example 2:
+	Input: root = [1,2,3,null,4,null,5], x = 5, y = 4
+	Output: true
+
+	Example 3:
+	Input: root = [1,2,3,null,4], x = 2, y = 3
+	Output: false
+
+	Constraints:
+	* The number of nodes in the tree will be between 2 and 100.
+	* Each node has a unique integer value from 1 to 100.*/
+
+    bool isCousins(TreeNode* root, int x, int y) {
+        queue<pair<TreeNode*, TreeNode*>> q; 
+        q.push(make_pair(root, nullptr)); 
+        
+        while (q.size()) {
+            queue<pair<TreeNode*, TreeNode*>> newq; 
+            TreeNode* seen = nullptr; 
+            for (int i = 0, n = size(q); i < n; ++i) {
+                auto [node, par] = q.front(); q.pop(); 
+                if (node->val == x || node->val == y) {
+                    if (seen) return seen != par; 
+                    else seen = par; 
+                } 
+                if (node->left) q.push(make_pair(node->left, node));
+                if (node->right) q.push(make_pair(node->right, node)); 
+            }
+            if (seen) return false; 
+        }
+        return false; 
+    }
+
+
     /*1048. Longest String Chain (Medium)
 	Given a list of words, each word consists of English lowercase letters. 
 	Let's say word1 is a predecessor of word2 if and only if we can add exactly 
