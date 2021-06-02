@@ -5378,6 +5378,208 @@ public:
     }
 
 
+    /*997. Find the Town Judge (Easy)
+	In a town, there are n people labelled from 1 to n. There is a rumor that 
+	one of these people is secretly the town judge. If the town judge exists, 
+	then:
+	* The town judge trusts nobody.
+	* Everybody (except for the town judge) trusts the town judge.
+	* There is exactly one person that satisfies properties 1 and 2.
+	You are given trust, an array of pairs trust[i] = [a, b] representing that 
+	the person labelled a trusts the person labelled b. If the town judge 
+	exists and can be identified, return the label of the town judge. Otherwise, 
+	return -1.
+
+	Example 1:
+	Input: n = 2, trust = [[1,2]]
+	Output: 2
+
+	Example 2:
+	Input: n = 3, trust = [[1,3],[2,3]]
+	Output: 3
+
+	Example 3:
+	Input: n = 3, trust = [[1,3],[2,3],[3,1]]
+	Output: -1
+
+	Example 4:
+	Input: n = 3, trust = [[1,2],[2,3]]
+	Output: -1
+
+	Example 5:
+	Input: n = 4, trust = [[1,3],[1,4],[2,3],[2,4],[4,3]]
+	Output: 3
+
+	Constraints:
+	* 1 <= n <= 1000
+	* 0 <= trust.length <= 10^4
+	* trust[i].length == 2
+	* trust[i] are all different
+	* trust[i][0] != trust[i][1]
+	* 1 <= trust[i][0], trust[i][1] <= n*/
+
+    int findJudge(int n, vector<vector<int>>& trust) {
+        vector<int> degree(n+1, 0); 
+        for (auto& x : trust) {
+            --degree[x[0]]; 
+            ++degree[x[1]]; 
+        }
+        for (int i = 1; i <= n; ++i) 
+            if (degree[i] == n-1) return i; 
+        return -1; 
+    }
+
+
+    /*999. Available Captures for Rook (Easy)
+	On an 8 x 8 chessboard, there is exactly one white rook 'R' and some number 
+	of white bishops 'B', black pawns 'p', and empty squares '.'. When the rook 
+	moves, it chooses one of four cardinal directions (north, east, south, or 
+	west), then moves in that direction until it chooses to stop, reaches the 
+	edge of the board, captures a black pawn, or is blocked by a white bishop. 
+	A rook is considered attacking a pawn if the rook can capture the pawn on 
+	the rook's turn. The number of available captures for the white rook is the 
+	number of pawns that the rook is attacking. Return the number of available 
+	captures for the white rook.
+
+	Example 1:
+	Input: board = [[".",".",".",".",".",".",".","."],
+	                [".",".",".","p",".",".",".","."],
+	                [".",".",".","R",".",".",".","p"],
+	                [".",".",".",".",".",".",".","."],
+	                [".",".",".",".",".",".",".","."],
+	                [".",".",".","p",".",".",".","."],
+	                [".",".",".",".",".",".",".","."],
+	                [".",".",".",".",".",".",".","."]]
+	Output: 3
+	Explanation: In this example, the rook is attacking all the pawns.
+	
+	Example 2:
+	Input: board = [[".",".",".",".",".",".",".","."],
+	                [".","p","p","p","p","p",".","."],
+	                [".","p","p","B","p","p",".","."],
+	                [".","p","B","R","B","p",".","."],
+	                [".","p","p","B","p","p",".","."],
+	                [".","p","p","p","p","p",".","."],
+	                [".",".",".",".",".",".",".","."],
+	                [".",".",".",".",".",".",".","."]]
+	Output: 0
+	Explanation: The bishops are blocking the rook from attacking any of the pawns.
+	
+	Example 3:
+	Input: board = [[".",".",".",".",".",".",".","."],
+	                [".",".",".","p",".",".",".","."],
+	                [".",".",".","p",".",".",".","."],
+	                ["p","p",".","R",".","p","B","."],
+	                [".",".",".",".",".",".",".","."],
+	                [".",".",".","B",".",".",".","."],
+	                [".",".",".","p",".",".",".","."],
+	                [".",".",".",".",".",".",".","."]]
+	Output: 3
+	Explanation: The rook is attacking the pawns at positions b5, d6, and f5.
+
+	Constraints:
+	* board.length == 8
+	* board[i].length == 8
+	* board[i][j] is either 'R', '.', 'B', or 'p'
+	* There is exactly one cell with board[i][j] == 'R'*/
+
+    int numRookCaptures(vector<vector<char>>& board) {
+        for (int i = 0; i < 8; ++i) 
+            for (int j = 0; j < 8; ++j) 
+                if (board[i][j] == 'R') {
+                    int ans = 0; 
+                    vector<pair<int, int>> dir = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}}; 
+                    for (auto& [di, dj] : dir) {
+                        for (int ii = i, jj = j; 0 <= ii && ii < 8 && 0 <= jj && jj < 8; ii += di, jj += dj) {
+                            if (board[ii][jj] == 'B') break; 
+                            if (board[ii][jj] == 'p') {
+                                ++ans; 
+                                break; 
+                            }
+                        }
+                    }
+                    return ans; 
+                }
+        return 0; 
+    }
+
+
+    /*1002. Find Common Characters (Easy)
+	Given an array words of strings made only from lowercase letters, return a 
+	list of all characters that show up in all strings within the list 
+	(including duplicates).  For example, if a character occurs 3 times in all 
+	strings but not 4 times, you need to include that character three times in 
+	the final answer. You may return the answer in any order.
+
+	Example 1:
+	Input: ["bella","label","roller"]
+	Output: ["e","l","l"]
+
+	Example 2:
+	Input: ["cool","lock","cook"]
+	Output: ["c","o"]
+
+	Note:
+	* 1 <= words.length <= 100
+	* 1 <= words[i].length <= 100
+	* words[i] consists of lowercase English letters.*/
+
+    vector<string> commonChars(vector<string>& words) {
+        vector<int> freq(26, INT_MAX); 
+        
+        for (auto& word : words) {
+            vector<int> temp(26, 0); 
+            for (auto& ch : word) 
+                ++temp[ch - 'a']; 
+            for (int i = 0; i < 26; ++i) 
+                freq[i] = min(freq[i], temp[i]); 
+        }
+        vector<string> ans; 
+        for (int i = 0; i < 26; ++i) {
+            while (freq[i]--) 
+                ans.push_back(string(1, 'a' + i)); 
+        }
+        return ans; 
+    }
+
+
+    /*1005. Maximize Sum Of Array After K Negations (Easy)
+	Given an array nums of integers, we must modify the array in the following 
+	way: we choose an i and replace nums[i] with -nums[i], and we repeat this 
+	process k times in total.  (We may choose the same index i multiple times.)
+	Return the largest possible sum of the array after modifying it in this way.
+
+	Example 1:
+	Input: nums = [4,2,3], k = 1
+	Output: 5
+	Explanation: Choose indices (1,) and nums becomes [4,-2,3].
+
+	Example 2:
+	Input: nums = [3,-1,0,2], k = 3
+	Output: 6
+	Explanation: Choose indices (1, 2, 2) and nums becomes [3,1,0,2].
+
+	Example 3:
+	Input: nums = [2,-3,-1,5,-4], k = 2
+	Output: 13
+	Explanation: Choose indices (1, 4) and nums becomes [2,3,-1,5,4].
+
+	Note:
+	* 1 <= nums.length <= 10000
+	* 1 <= k <= 10000
+	* -100 <= nums[i] <= 100*/
+
+    int largestSumAfterKNegations(vector<int>& nums, int k) {
+        sort(begin(nums), end(nums)); 
+        for (int i = 0; i < size(nums) && k; ++i, --k) {
+            if (nums[i] >= 0) break; 
+            nums[i] *= -1; 
+        }
+        int sm = accumulate(begin(nums), end(nums), 0), mn = *min_element(begin(nums), end(nums)); 
+        return sm - 2 * mn * (k%2); 
+    }
+
+
     /*1048. Longest String Chain (Medium)
 	Given a list of words, each word consists of English lowercase letters. 
 	Let's say word1 is a predecessor of word2 if and only if we can add exactly 
