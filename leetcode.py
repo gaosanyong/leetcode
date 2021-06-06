@@ -13207,6 +13207,65 @@ class UnionFind:
         return ans 
 
 
+    """773. Sliding Puzzle (Hard)
+	On a 2x3 board, there are 5 tiles represented by the integers 1 through 5, 
+	and an empty square represented by 0. A move consists of choosing 0 and a 
+	4-directionally adjacent number and swapping it. The state of the board is 
+	solved if and only if the board is [[1,2,3],[4,5,0]]. Given a puzzle board, 
+	return the least number of moves required so that the state of the board is 
+	solved. If it is impossible for the state of the board to be solved, return 
+	-1.
+
+	Examples:
+	Input: board = [[1,2,3],[4,0,5]]
+	Output: 1
+	Explanation: Swap the 0 and the 5 in one move.
+
+	Input: board = [[1,2,3],[5,4,0]]
+	Output: -1
+	Explanation: No number of moves will make the board solved.
+
+	Input: board = [[4,1,2],[5,0,3]]
+	Output: 5
+	Explanation: 5 is the smallest number of moves that solves the board.
+	An example path:
+	After move 0: [[4,1,2],[5,0,3]]
+	After move 1: [[4,1,2],[0,5,3]]
+	After move 2: [[0,1,2],[4,5,3]]
+	After move 3: [[1,0,2],[4,5,3]]
+	After move 4: [[1,2,0],[4,5,3]]
+	After move 5: [[1,2,3],[4,5,0]]
+
+	Input: board = [[3,2,4],[1,5,0]]
+	Output: 14
+
+	Note:
+	* board will be a 2 x 3 array as described above.
+	* board[i][j] will be a permutation of [0, 1, 2, 3, 4, 5]."""
+
+    def slidingPuzzle(self, board: List[List[int]]) -> int:
+        board = board[0] + board[1] # flatten into vector 
+        
+        ans = 0 
+        seen = set([tuple(board)])
+        queue = [board]
+        while queue: 
+            newq = []
+            for x in queue: 
+                if x == [1,2,3,4,5,0]: return ans 
+                k = x.index(0)
+                for kk in (k-1, k+1, k-3, k+3): 
+                    if 0 <= kk < 6 and (k, kk) not in ((2, 3), (3, 2)):
+                        xx = x.copy()
+                        xx[k], xx[kk] = xx[kk], xx[k]
+                        if tuple(xx) not in seen: 
+                            seen.add(tuple(xx))
+                            newq.append(xx)
+            queue = newq 
+            ans += 1
+        return -1 
+
+
     """777. Swap Adjacent in LR String (Medium)
 	In a string composed of 'L', 'R', and 'X' characters, like "RXXLRXRXL", a 
 	move consists of either replacing one occurrence of "XL" with "LX", or 
@@ -20741,6 +20800,54 @@ class UnionFind:
             return False, lmn, rmx, sm, max(lval, rval)
         
         return fn(root)[-1]
+
+
+    """1383. Maximum Performance of a Team (Hard)
+	You are given two integers n and k and two integer arrays speed and 
+	efficiency both of length n. There are n engineers numbered from 1 to n. 
+	speed[i] and efficiency[i] represent the speed and efficiency of the ith 
+	engineer respectively. Choose at most k different engineers out of the n 
+	engineers to form a team with the maximum performance. The performance of 
+	a team is the sum of their engineers' speeds multiplied by the minimum 
+	efficiency among their engineers. Return the maximum performance of this 
+	team. Since the answer can be a huge number, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: n = 6, speed = [2,10,3,1,5,8], efficiency = [5,4,3,9,7,2], k = 2
+	Output: 60
+	Explanation: We have the maximum performance of the team by selecting 
+	             engineer 2 (with speed=10 and efficiency=4) and engineer 5 
+	             (with speed=5 and efficiency=7). That is, 
+	             performance = (10 + 5) * min(4, 7) = 60.
+
+	Example 2:
+	Input: n = 6, speed = [2,10,3,1,5,8], efficiency = [5,4,3,9,7,2], k = 3
+	Output: 68
+	Explanation: This is the same example as the first but k = 3. We can select 
+	             engineer 1, engineer 2 and engineer 5 to get the maximum 
+	             performance of the team. That is, 
+	             performance = (2 + 10 + 5) * min(5, 4, 7) = 68.
+	
+	Example 3:
+	Input: n = 6, speed = [2,10,3,1,5,8], efficiency = [5,4,3,9,7,2], k = 4
+	Output: 72
+
+	Constraints:
+	* 1 <= <= k <= n <= 10^5
+	* speed.length == n
+	* efficiency.length == n
+	* 1 <= speed[i] <= 10^5
+	* 1 <= efficiency[i] <= 10^8"""
+
+    def maxPerformance(self, n: int, speed: List[int], efficiency: List[int], k: int) -> int:
+        ans = rsm = 0 
+        pq = []
+        for x, y in sorted(zip(efficiency, speed), reverse=True): 
+            rsm += y
+            heappush(pq, y)
+            if len(pq) > k: rsm -= heappop(pq) 
+            ans = max(ans, rsm * x)
+        return ans % 1_000_000_007
 
 
     """1385. Find the Distance Value Between Two Arrays (Easy)
@@ -33470,6 +33577,202 @@ class Fenwick:
             return ans 
         
         return fn(n, 2)
+
+
+    """1886. Determine Whether Matrix Can Be Obtained By Rotation (Easy)
+	Given two n x n binary matrices mat and target, return true if it is 
+	possible to make mat equal to target by rotating mat in 90-degree 
+	increments, or false otherwise.
+
+	Example 1:
+	Input: mat = [[0,1],[1,0]], target = [[1,0],[0,1]]
+	Output: true
+	Explanation: We can rotate mat 90 degrees clockwise to make mat equal 
+	             target.
+	
+	Example 2:
+	Input: mat = [[0,1],[1,1]], target = [[1,0],[0,1]]
+	Output: false
+	Explanation: It is impossible to make mat equal to target by rotating mat.
+
+	Example 3:
+	Input: mat = [[0,0,0],[0,1,0],[1,1,1]], target = [[1,1,1],[0,1,0],[0,0,0]]
+	Output: true
+	Explanation: We can rotate mat 90 degrees clockwise two times to make mat 
+	             equal target.
+
+	Constraints:
+	* n == mat.length == target.length
+	* n == mat[i].length == target[i].length
+	* 1 <= n <= 10
+	* mat[i][j] and target[i][j] are either 0 or 1."""
+
+    def findRotation(self, mat: List[List[int]], target: List[List[int]]) -> bool:
+        for _ in range(4): 
+            if mat == target: return True
+            mat = [list(x) for x in zip(*mat[::-1])]
+        return False 
+
+
+    """1887. Reduction Operations to Make the Array Elements Equal (Medium)
+	Given an integer array nums, your goal is to make all elements in nums 
+	equal. To complete one operation, follow these steps:
+	* Find the largest value in nums. Let its index be i (0-indexed) and its 
+	  value be largest. If there are multiple elements with the largest value, 
+	  pick the smallest i.
+	* Find the next largest value in nums strictly smaller than largest. Let 
+	  its value be nextLargest.
+	Reduce nums[i] to nextLargest. Return the number of operations to make all 
+	elements in nums equal.
+
+	Example 1:
+	Input: nums = [5,1,3]
+	Output: 3
+	Explanation: It takes 3 operations to make all elements in nums equal:
+	1. largest = 5 at index 0. nextLargest = 3. Reduce nums[0] to 3. nums = [3,1,3].
+	2. largest = 3 at index 0. nextLargest = 1. Reduce nums[0] to 1. nums = [1,1,3].
+	3. largest = 3 at index 2. nextLargest = 1. Reduce nums[2] to 1. nums = [1,1,1].
+
+	Example 2:
+	Input: nums = [1,1,1]
+	Output: 0
+	Explanation: All elements in nums are already equal.
+
+	Example 3:
+	Input: nums = [1,1,2,2,3]
+	Output: 4
+	Explanation: It takes 4 operations to make all elements in nums equal:
+	1. largest = 3 at index 4. nextLargest = 2. Reduce nums[4] to 2. nums = [1,1,2,2,2].
+	2. largest = 2 at index 2. nextLargest = 1. Reduce nums[2] to 1. nums = [1,1,1,2,2].
+	3. largest = 2 at index 3. nextLargest = 1. Reduce nums[3] to 1. nums = [1,1,1,1,2].
+	4. largest = 2 at index 4. nextLargest = 1. Reduce nums[4] to 1. nums = [1,1,1,1,1].
+
+	Constraints:
+	* 1 <= nums.length <= 5 * 10^4
+	* 1 <= nums[i] <= 5 * 10^4"""
+
+    def reductionOperations(self, nums: List[int]) -> int:
+        ans = val = 0
+        nums.sort()
+        for i in range(1, len(nums)): 
+            if nums[i-1] < nums[i]: val += 1
+            ans += val
+        return ans 
+
+
+    """1888. Minimum Number of Flips to Make the Binary String Alternating (Medium)
+	You are given a binary string s. You are allowed to perform two types of 
+	operations on the string in any sequence:
+	* Type-1: Remove the character at the start of the string s and append it 
+	  to the end of the string.
+	* Type-2: Pick any character in s and flip its value, i.e., if its value is 
+	  '0' it becomes '1' and vice-versa.
+	Return the minimum number of type-2 operations you need to perform such 
+	that s becomes alternating. The string is called alternating if no two 
+	adjacent characters are equal. For example, the strings "010" and "1010" 
+	are alternating, while the string "0100" is not.
+
+	Example 1:
+	Input: s = "111000"
+	Output: 2
+	Explanation: Use the first operation two times to make s = "100011". Then, 
+	             use the second operation on the third and sixth elements to 
+	             make s = "101010".
+	
+	Example 2:
+	Input: s = "010"
+	Output: 0
+	Explanation: The string is already alternating.
+
+	Example 3:
+	Input: s = "1110"
+	Output: 1
+	Explanation: Use the second operation on the second element to make 
+	             s = "1010".
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s[i] is either '0' or '1'."""
+
+    def minFlips(self, s: str) -> int:
+        s = [int(x) for x in s]
+        ans = inf
+        x01 = x10 = 0 
+        for i in range(2*len(s)): 
+            x01 += s[i%len(s)]^i&1
+            x10 += s[i%len(s)]^(i+1)&1
+            if i+1 >= len(s): 
+                if i >= len(s):
+                    x01 -= s[i-len(s)]^(i-len(s))&1
+                    x10 -= s[i-len(s)]^(i-len(s)+1)&1
+                ans = min(ans, x01, x10)
+        return ans 
+
+
+    """1889. Minimum Space Wasted From Packaging (Hard)
+	You have n packages that you are trying to place in boxes, one package in 
+	each box. There are m suppliers that each produce boxes of different sizes 
+	(with infinite supply). A package can be placed in a box if the size of the 
+	package is less than or equal to the size of the box. The package sizes are 
+	given as an integer array packages, where packages[i] is the size of the 
+	ith package. The suppliers are given as a 2D integer array boxes, where 
+	boxes[j] is an array of box sizes that the jth supplier produces. You want 
+	to choose a single supplier and use boxes from them such that the total 
+	wasted space is minimized. For each package in a box, we define the space 
+	wasted to be size of the box - size of the package. The total wasted space 
+	is the sum of the space wasted in all the boxes. For example, if you have 
+	to fit packages with sizes [2,3,5] and the supplier offers boxes of sizes 
+	[4,8], you can fit the packages of size-2 and size-3 into two boxes of 
+	size-4 and the package with size-5 into a box of size-8. This would result 
+	in a waste of (4-2) + (4-3) + (8-5) = 6. Return the minimum total wasted 
+	space by choosing the box supplier optimally, or -1 if it is impossible to 
+	fit all the packages inside boxes. Since the answer may be large, return 
+	it modulo 10^9 + 7.
+
+	Example 1:
+	Input: packages = [2,3,5], boxes = [[4,8],[2,8]]
+	Output: 6
+	Explanation: It is optimal to choose the first supplier, using two size-4 
+	             boxes and one size-8 box. The total waste is 
+	             (4-2) + (4-3) + (8-5) = 6.
+	
+	Example 2:
+	Input: packages = [2,3,5], boxes = [[1,4],[2,3],[3,4]]
+	Output: -1
+	Explanation: There is no box that the package of size 5 can fit in.
+
+	Example 3:
+	Input: packages = [3,5,8,10,11,12], boxes = [[12],[11,9],[10,5,14]]
+	Output: 9
+	Explanation: It is optimal to choose the third supplier, using two size-5 
+	             boxes, two size-10 boxes, and two size-14 boxes. The total 
+	             waste is (5-3) + (5-5) + (10-8) + (10-10) + (14-11) + (14-12) = 9.
+
+	Constraints:
+	* n == packages.length
+	* m == boxes.length
+	* 1 <= n <= 10^5
+	* 1 <= m <= 10^5
+	* 1 <= packages[i] <= 10^5
+	* 1 <= boxes[j].length <= 10^5
+	* 1 <= boxes[j][k] <= 10^5
+	* sum(boxes[j].length) <= 10^5
+	* The elements in boxes[j] are distinct."""
+
+    def minWastedSpace(self, packages: List[int], boxes: List[List[int]]) -> int:
+        packages.sort()
+        
+        ans = inf 
+        for box in boxes: 
+            box.sort()
+            if packages[-1] <= box[-1]: 
+                kk = val = 0 
+                for x in box: 
+                    k = bisect_right(packages, x)
+                    val += (k - kk) * x
+                    kk = k
+                ans = min(ans, val)
+        return (ans - sum(packages)) % 1_000_000_007 if ans < inf else -1 
 
 
 """146. LRU Cache (Medium)
