@@ -9151,9 +9151,9 @@ public:
             if (packages.back() <= box.back()) {
                 int kk = 0; 
                 long val = 0; 
-                for (long x : box) {
+                for (auto& x : box) {
                     long k = upper_bound(begin(packages), end(packages), x) - begin(packages); 
-                    val += (long) (k - kk) * x; 
+                    val += (long) x * (k - kk); 
                     kk = k; 
                 }
                 ans = min(ans, val); 
