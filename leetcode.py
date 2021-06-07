@@ -15892,6 +15892,52 @@ class UnionFind:
         return ans
 
 
+    """982. Triples with Bitwise AND Equal To Zero (Hard)
+	Given an array of integers nums, find the number of triples of indices 
+	(i, j, k) such that:
+	* 0 <= i < nums.length
+	* 0 <= j < nums.length
+	* 0 <= k < nums.length
+	* nums[i] & nums[j] & nums[k] == 0, where & represents the bitwise-AND 
+	  operator.
+
+	Example 1:
+	Input: nums = [2,1,3]
+	Output: 12
+	Explanation: We could choose the following i, j, k triples:
+	(i=0, j=0, k=1) : 2 & 2 & 1
+	(i=0, j=1, k=0) : 2 & 1 & 2
+	(i=0, j=1, k=1) : 2 & 1 & 1
+	(i=0, j=1, k=2) : 2 & 1 & 3
+	(i=0, j=2, k=1) : 2 & 3 & 1
+	(i=1, j=0, k=0) : 1 & 2 & 2
+	(i=1, j=0, k=1) : 1 & 2 & 1
+	(i=1, j=0, k=2) : 1 & 2 & 3
+	(i=1, j=1, k=0) : 1 & 1 & 2
+	(i=1, j=2, k=0) : 1 & 3 & 2
+	(i=2, j=0, k=1) : 3 & 2 & 1
+	(i=2, j=1, k=0) : 3 & 1 & 2
+	 
+	Note:
+	* 1 <= nums.length <= 1000
+	* 0 <= nums[i] < 2^16"""
+
+    def countTriplets(self, nums: List[int]) -> int:
+        freq = defaultdict(int)
+        for x in nums: 
+            for y in nums: 
+                freq[x&y] += 1
+        
+        ans = 0
+        for x in nums: 
+            mask = x = x ^ 0xffff
+            while x: 
+                ans += freq[x]
+                x = mask & (x-1)
+            ans += freq[0]
+        return ans 
+
+
     """1014. Best Sightseeing Pair (Medium)
 	Given an array A of positive integers, A[i] represents the value of the 
 	i-th sightseeing spot, and two sightseeing spots i and j have distance 

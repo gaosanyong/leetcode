@@ -5357,6 +5357,52 @@ public:
     }
 
 
+    /*982. Triples with Bitwise AND Equal To Zero (Hard)
+	Given an array of integers nums, find the number of triples of indices 
+	(i, j, k) such that:
+	* 0 <= i < nums.length
+	* 0 <= j < nums.length
+	* 0 <= k < nums.length
+	* nums[i] & nums[j] & nums[k] == 0, where & represents the bitwise-AND 
+	  operator.
+
+	Example 1:
+	Input: nums = [2,1,3]
+	Output: 12
+	Explanation: We could choose the following i, j, k triples:
+	(i=0, j=0, k=1) : 2 & 2 & 1
+	(i=0, j=1, k=0) : 2 & 1 & 2
+	(i=0, j=1, k=1) : 2 & 1 & 1
+	(i=0, j=1, k=2) : 2 & 1 & 3
+	(i=0, j=2, k=1) : 2 & 3 & 1
+	(i=1, j=0, k=0) : 1 & 2 & 2
+	(i=1, j=0, k=1) : 1 & 2 & 1
+	(i=1, j=0, k=2) : 1 & 2 & 3
+	(i=1, j=1, k=0) : 1 & 1 & 2
+	(i=1, j=2, k=0) : 1 & 3 & 2
+	(i=2, j=0, k=1) : 3 & 2 & 1
+	(i=2, j=1, k=0) : 3 & 1 & 2
+
+	Note:
+	* 1 <= nums.length <= 1000
+	* 0 <= nums[i] < 2^16*/
+
+    int countTriplets(vector<int>& nums) {
+        unordered_map<int, int> freq; 
+        for (auto& x : nums) 
+            for (auto& y : nums) 
+                ++freq[x&y]; 
+        
+        int ans = 0; 
+        for (auto& x : nums) {
+            x ^= 0xffff; 
+            for (int mask = x; x; x = mask & (x-1)) 
+                ans += freq[x]; 
+        }
+        return ans + size(nums)*freq[0]; 
+    }
+
+
     /*985. Sum of Even Numbers After Queries (Easy)
 	We have an array nums of integers, and an array queries of queries. For the 
 	i-th query val = queries[i][0], index = queries[i][1], we add val to 
