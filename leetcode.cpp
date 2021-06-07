@@ -8952,6 +8952,215 @@ public:
                 dp[i][1] = min(dp[i][1], 1 + max(dp[ii-1][0], dp[i-ii][1])); 
         return dp[n][1]; 
     }
+
+
+    /*1886. Determine Whether Matrix Can Be Obtained By Rotation (Easy)
+	Given two n x n binary matrices mat and target, return true if it is 
+	possible to make mat equal to target by rotating mat in 90-degree 
+	increments, or false otherwise.
+
+	Example 1:
+	Input: mat = [[0,1],[1,0]], target = [[1,0],[0,1]]
+	Output: true
+	Explanation: We can rotate mat 90 degrees clockwise to make mat equal target.
+
+	Example 2:
+	Input: mat = [[0,1],[1,1]], target = [[1,0],[0,1]]
+	Output: false
+	Explanation: It is impossible to make mat equal to target by rotating mat.
+
+	Example 3:
+	Input: mat = [[0,0,0],[0,1,0],[1,1,1]], target = [[1,1,1],[0,1,0],[0,0,0]]
+	Output: true
+	Explanation: We can rotate mat 90 degrees clockwise two times to make mat equal target.
+
+	Constraints:
+	* n == mat.length == target.length
+	* n == mat[i].length == target[i].length
+	* 1 <= n <= 10
+	* mat[i][j] and target[i][j] are either 0 or 1.*/
+
+    bool findRotation(vector<vector<int>>& mat, vector<vector<int>>& target) {
+        int n = size(target); 
+        vector<bool> can(4, true); 
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (target[i][j] != mat[i][j]) can[0] = false; 
+                if (target[i][j] != mat[n-1-j][i]) can[1] = false; 
+                if (target[i][j] != mat[n-1-i][n-1-j]) can[2] = false; 
+                if (target[i][j] != mat[j][n-1-i]) can[3] = false; 
+            }
+        }
+        return can[0] || can[1] || can[2] || can[3]; 
+    }
+
+
+    /*1887. Reduction Operations to Make the Array Elements Equal (Medium)
+	Given an integer array nums, your goal is to make all elements in nums 
+	equal. To complete one operation, follow these steps:
+	* Find the largest value in nums. Let its index be i (0-indexed) and its 
+	  value be largest. If there are multiple elements with the largest value, 
+	  pick the smallest i.
+	* Find the next largest value in nums strictly smaller than largest. Let 
+	  its value be nextLargest.
+	Reduce nums[i] to nextLargest. Return the number of operations to make all 
+	elements in nums equal.
+
+	Example 1:
+	Input: nums = [5,1,3]
+	Output: 3
+	Explanation: It takes 3 operations to make all elements in nums equal:
+	1. largest = 5 at index 0. nextLargest = 3. Reduce nums[0] to 3. nums = [3,1,3].
+	2. largest = 3 at index 0. nextLargest = 1. Reduce nums[0] to 1. nums = [1,1,3].
+	3. largest = 3 at index 2. nextLargest = 1. Reduce nums[2] to 1. nums = [1,1,1].
+
+	Example 2:
+	Input: nums = [1,1,1]
+	Output: 0
+	Explanation: All elements in nums are already equal.
+
+	Example 3:
+	Input: nums = [1,1,2,2,3]
+	Output: 4
+	Explanation: It takes 4 operations to make all elements in nums equal:
+	1. largest = 3 at index 4. nextLargest = 2. Reduce nums[4] to 2. nums = [1,1,2,2,2].
+	2. largest = 2 at index 2. nextLargest = 1. Reduce nums[2] to 1. nums = [1,1,1,2,2].
+	3. largest = 2 at index 3. nextLargest = 1. Reduce nums[3] to 1. nums = [1,1,1,1,2].
+	4. largest = 2 at index 4. nextLargest = 1. Reduce nums[4] to 1. nums = [1,1,1,1,1].
+
+	Constraints:
+	* 1 <= nums.length <= 5 * 10^4
+	* 1 <= nums[i] <= 5 * 10^4*/
+
+    int reductionOperations(vector<int>& nums) {
+        sort(begin(nums), end(nums)); 
+        int ans = 0, chg = 0; 
+        for (int i = 1; i < size(nums); ++i) {
+            if (nums[i-1] < nums[i]) ++chg; 
+            ans += chg; 
+        }
+        return ans; 
+    }
+
+
+    /*1888. Minimum Number of Flips to Make the Binary String Alternating (Medium)
+	You are given a binary string s. You are allowed to perform two types of 
+	operations on the string in any sequence:
+	* Type-1: Remove the character at the start of the string s and append it 
+	  to the end of the string.
+	* Type-2: Pick any character in s and flip its value, i.e., if its value is 
+	  '0' it becomes '1' and vice-versa.
+	Return the minimum number of type-2 operations you need to perform such 
+	that s becomes alternating. The string is called alternating if no two 
+	adjacent characters are equal. For example, the strings "010" and "1010" 
+	are alternating, while the string "0100" is not.
+
+	Example 1:
+	Input: s = "111000"
+	Output: 2
+	Explanation: Use the first operation two times to make s = "100011". Then, 
+	             use the second operation on the third and sixth elements to 
+	             make s = "101010".
+	
+	Example 2:
+	Input: s = "010"
+	Output: 0
+	Explanation: The string is already alternating.
+
+	Example 3:
+	Input: s = "1110"
+	Output: 1
+	Explanation: Use the second operation on the second element to make s = "1010".
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s[i] is either '0' or '1'.*/
+
+    int minFlips(string s) {
+        int ans = INT_MAX, x01 = 0, x10 = 0; 
+        for (int i = 0; i < 2*size(s); ++i) {
+            x01 += (s[i%size(s)]^i)&1; 
+            x10 += (s[i%size(s)]^(i+1))&1; 
+            if (i+1 >= size(s)) {
+                if (i >= size(s)) {
+                    x01 -= (s[i-size(s)]^(i-size(s)))&1; 
+                    x10 -= (s[i-size(s)]^(i-size(s)+1))&1; 
+                }
+                ans = min(ans, min(x01, x10)); 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*1889. Minimum Space Wasted From Packaging (Hard)
+	You have n packages that you are trying to place in boxes, one package in 
+	each box. There are m suppliers that each produce boxes of different sizes 
+	(with infinite supply). A package can be placed in a box if the size of the 
+	package is less than or equal to the size of the box. The package sizes are 
+	given as an integer array packages, where packages[i] is the size of the 
+	ith package. The suppliers are given as a 2D integer array boxes, where 
+	boxes[j] is an array of box sizes that the jth supplier produces. You want 
+	to choose a single supplier and use boxes from them such that the total 
+	wasted space is minimized. For each package in a box, we define the space 
+	wasted to be size of the box - size of the package. The total wasted space 
+	is the sum of the space wasted in all the boxes. For example, if you have 
+	to fit packages with sizes [2,3,5] and the supplier offers boxes of sizes 
+	[4,8], you can fit the packages of size-2 and size-3 into two boxes of 
+	size-4 and the package with size-5 into a box of size-8. This would result 
+	in a waste of (4-2) + (4-3) + (8-5) = 6. Return the minimum total wasted 
+	space by choosing the box supplier optimally, or -1 if it is impossible to 
+	fit all the packages inside boxes. Since the answer may be large, return it 
+	modulo 10^9 + 7.
+
+	Example 1:
+	Input: packages = [2,3,5], boxes = [[4,8],[2,8]]
+	Output: 6
+	Explanation: It is optimal to choose the first supplier, using two size-4 
+	             boxes and one size-8 box. The total waste is 
+	             (4-2) + (4-3) + (8-5) = 6.
+	
+	Example 2:
+	Input: packages = [2,3,5], boxes = [[1,4],[2,3],[3,4]]
+	Output: -1
+	Explanation: There is no box that the package of size 5 can fit in.
+
+	Example 3:
+	Input: packages = [3,5,8,10,11,12], boxes = [[12],[11,9],[10,5,14]]
+	Output: 9
+	Explanation: It is optimal to choose the third supplier, using two size-5 
+	             boxes, two size-10 boxes, and two size-14 boxes. The total 
+	             waste is (5-3) + (5-5) + (10-8) + (10-10) + (14-11) + (14-12) = 9.
+
+	Constraints:
+	* n == packages.length
+	* m == boxes.length
+	* 1 <= n <= 10^5
+	* 1 <= m <= 10^5
+	* 1 <= packages[i] <= 10^5
+	* 1 <= boxes[j].length <= 10^5
+	* 1 <= boxes[j][k] <= 10^5
+	* sum(boxes[j].length) <= 10^5
+	* The elements in boxes[j] are distinct.*/
+
+    int minWastedSpace(vector<int>& packages, vector<vector<int>>& boxes) {
+        sort(begin(packages), end(packages)); 
+        long ans = LONG_MAX; 
+        for (auto& box : boxes) {
+            sort(begin(box), end(box)); 
+            if (packages.back() <= box.back()) {
+                int kk = 0; 
+                long val = 0; 
+                for (long x : box) {
+                    long k = upper_bound(begin(packages), end(packages), x) - begin(packages); 
+                    val += (long) (k - kk) * x; 
+                    kk = k; 
+                }
+                ans = min(ans, val); 
+            }
+        }
+        return ans < LONG_MAX ? (ans - accumulate(begin(packages), end(packages), (long) 0)) % 1'000'000'007 : -1; 
+    }
 };
 
 
