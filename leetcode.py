@@ -4382,12 +4382,12 @@ class Solution:
 
     def longestConsecutive(self, nums: List[int]) -> int:
         nums = set(nums)
-        ans = val = 0
+        ans = 0
         for x in nums: 
             if x-1 not in nums: 
-                val = 0
-                while x in nums: val, x = val+1, x+1
-            ans = max(ans, val)
+                xx = x + 1
+                while xx in nums: xx += 1
+                ans = max(ans, xx-x)
         return ans 
 
 
