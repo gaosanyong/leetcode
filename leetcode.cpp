@@ -988,6 +988,52 @@ public:
     }
 
 
+    /*105. Construct Binary Tree from Preorder and Inorder Traversal (Medium)
+	Given two integer arrays preorder and inorder where preorder is the 
+	preorder traversal of a binary tree and inorder is the inorder traversal of 
+	the same tree, construct and return the binary tree.
+
+	Example 1:
+	Input: preorder = [3,9,20,15,7], inorder = [9,3,15,20,7]
+	Output: [3,9,20,null,null,15,7]
+
+	Example 2:
+	Input: preorder = [-1], inorder = [-1]
+	Output: [-1]
+
+	Constraints:
+	* 1 <= preorder.length <= 3000
+	* inorder.length == preorder.length
+	* -3000 <= preorder[i], inorder[i] <= 3000
+	* preorder and inorder consist of unique values.
+	* Each value of inorder also appears in preorder.
+	* preorder is guaranteed to be the preorder traversal of the tree.
+	* inorder is guaranteed to be the inorder traversal of the tree.*/
+
+    TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
+        unordered_map<int, int> loc; 
+        for (int i = 0; i < size(inorder); ++i) loc[inorder[i]] = i; 
+        
+        TreeNode *root = NULL, *node = NULL; 
+        stack<TreeNode*> stk; 
+        
+        for (auto& x : preorder) {
+            if (!root) {
+                node = root = new TreeNode(x); 
+            } else if (loc[x] < loc[node->val]) {
+                stk.push(node); 
+                node = node->left = new TreeNode(x); 
+            } else {
+                while (size(stk) && loc[stk.top()->val] < loc[x]) {
+                    node = stk.top(); stk.pop(); 
+                }
+                node = node->right = new TreeNode(x); 
+            }
+        }
+        return root; 
+    }
+
+
     /*108. Convert Sorted Array to Binary Search Tree (Easy)
 	Given an integer array nums where the elements are sorted in ascending 
 	order, convert it to a height-balanced binary search tree. A height-
@@ -3527,6 +3573,72 @@ public:
             }
         }
         return true; 
+    }
+
+
+    /*778. Swim in Rising Water (Hard)
+	On an N x N grid, each square grid[i][j] represents the elevation at that 
+	point (i,j). Now rain starts to fall. At time t, the depth of the water 
+	everywhere is t. You can swim from a square to another 4-directionally 
+	adjacent square if and only if the elevation of both squares individually 
+	are at most t. You can swim infinite distance in zero time. Of course, you 
+	must stay within the boundaries of the grid during your swim. You start at 
+	the top left square (0, 0). What is the least time until you can reach the 
+	bottom right square (N-1, N-1)?
+
+	Example 1:
+	Input: [[0,2],[1,3]]
+	Output: 3
+	Explanation: At time 0, you are in grid location (0, 0). You cannot go 
+	             anywhere else because 4-directionally adjacent neighbors have 
+	             a higher elevation than t = 0. You cannot reach point (1, 1) 
+	             until time 3. When the depth of water is 3, we can swim 
+	             anywhere inside the grid.
+	
+	Example 2:
+	Input: [[ 0, 1, 2, 3, 4],
+	        [24,23,22,21, 5],
+	        [12,13,14,15,16],
+	        [11,17,18,19,20],
+	        [10, 9, 8, 7, 6]]
+	Output: 16
+	Explanation:
+	 0  1  2  3  4
+	24 23 22 21  5
+	12 13 14 15 16
+	11 17 18 19 20
+	10  9  8  7  6
+
+	The final route is marked in bold. We need to wait until time 16 so that 
+	(0, 0) and (4, 4) are connected.
+	
+	Note:
+	* 2 <= N <= 50.
+	* grid[i][j] is a permutation of [0, ..., N*N - 1].*/
+
+    int swimInWater(vector<vector<int>>& grid) {
+        int n = size(grid), dir[5] = {-1, 0, 1, 0, -1}; 
+        
+        struct Compare{
+            bool operator()(array<int,3>& lhs, array<int,3>& rhs) { return lhs[0] > rhs[0]; } // greater<>
+        };
+
+        priority_queue<array<int,3>, vector<array<int,3>>, Compare> pq; // min-heap 
+        pq.push({grid[0][0], 0, 0}); 
+        grid[0][0] = -1; // mark as visited 
+        
+        while (size(pq)) {
+            auto [v, i, j] = pq.top(); pq.pop(); 
+            if (i == n-1 && j == n-1) return v; 
+            for (int k = 0; k < 4; ++k) {
+                int ii = i + dir[k], jj = j + dir[k+1]; 
+                if (0 <= ii && ii < n && 0 <= jj && jj < n && grid[ii][jj] >= 0) {
+                    pq.push({max(v, grid[ii][jj]), ii, jj}); 
+                    grid[ii][jj] = -1; 
+                }
+            }
+        }
+        return -1; 
     }
 
 
