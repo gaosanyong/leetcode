@@ -6344,6 +6344,250 @@ public:
     }
 
 
+    /*1800. Maximum Ascending Subarray Sum (Easy)
+	Given an array of positive integers nums, return the maximum possible sum 
+	of an ascending subarray in nums. A subarray is defined as a contiguous 
+	sequence of numbers in an array. A subarray [numsl, numsl+1, ..., numsr-1, numsr] 
+	is ascending if for all i where l <= i < r, numsi < numsi+1. Note that a 
+	subarray of size 1 is ascending.
+
+	Example 1:
+	Input: nums = [10,20,30,5,10,50]
+	Output: 65
+	Explanation: [5,10,50] is the ascending subarray with the maximum sum of 65.
+
+	Example 2:
+	Input: nums = [10,20,30,40,50]
+	Output: 150
+	Explanation: [10,20,30,40,50] is the ascending subarray with the maximum sum of 150.
+
+	Example 3:
+	Input: nums = [12,17,15,13,10,11,12]
+	Output: 33
+	Explanation: [10,11,12] is the ascending subarray with the maximum sum of 33.
+
+	Example 4:
+	Input: nums = [100,10,1]
+	Output: 100
+
+	Constraints:
+	* 1 <= nums.length <= 100
+	* 1 <= nums[i] <= 100*/
+
+    int maxAscendingSum(vector<int>& nums) {
+        int ans = 0, val = 0; 
+        for (int i = 0; i < size(nums); ++i) {
+            if (i == 0 || nums[i-1] >= nums[i]) val = 0; 
+            val += nums[i]; 
+            ans = max(ans, val); 
+        }
+        return ans; 
+    }
+
+
+    /*1801. Number of Orders in the Backlog (Medium)
+	You are given a 2D integer array orders, where each 
+	orders[i] = [pricei, amounti, orderTypei] denotes that amounti orders have 
+	been placed of type orderTypei at the price pricei. The orderTypei is:
+	* 0 if it is a batch of buy orders, or
+	* 1 if it is a batch of sell orders.
+	Note that orders[i] represents a batch of amounti independent orders with 
+	the same price and order type. All orders represented by orders[i] will be 
+	placed before all orders represented by orders[i+1] for all valid i. There 
+	is a backlog that consists of orders that have not been executed. The 
+	backlog is initially empty. When an order is placed, the following happens:
+	* If the order is a buy order, you look at the sell order with the smallest 
+	  price in the backlog. If that sell order's price is smaller than or equal 
+	  to the current buy order's price, they will match and be executed, and 
+	  that sell order will be removed from the backlog. Else, the buy order is 
+	  added to the backlog.
+	* Vice versa, if the order is a sell order, you look at the buy order with 
+	  the largest price in the backlog. If that buy order's price is larger 
+	  than or equal to the current sell order's price, they will match and be 
+	  executed, and that buy order will be removed from the backlog. Else, the 
+	  sell order is added to the backlog.
+	Return the total amount of orders in the backlog after placing all the 
+	orders from the input. Since this number can be large, return it modulo 
+	10^9 + 7.
+
+	Example 1:
+	Input: orders = [[10,5,0],[15,2,1],[25,1,1],[30,4,0]]
+	Output: 6
+	Explanation: Here is what happens with the orders:
+	- 5 orders of type buy with price 10 are placed. There are no sell orders, so the 5 orders are added to the backlog.
+	- 2 orders of type sell with price 15 are placed. There are no buy orders with prices larger than or equal to 15, so the 2 orders are added to the backlog.
+	- 1 order of type sell with price 25 is placed. There are no buy orders with prices larger than or equal to 25 in the backlog, so this order is added to the backlog.
+	- 4 orders of type buy with price 30 are placed. The first 2 orders are matched with the 2 sell orders of the least price, which is 15 and these 2 sell orders are removed from the backlog. The 3rd order is matched with the sell order of the least price, which is 25 and this sell order is removed from the backlog. Then, there are no more sell orders in the backlog, so the 4th order is added to the backlog.
+	Finally, the backlog has 5 buy orders with price 10, and 1 buy order with price 30. So the total number of orders in the backlog is 6.
+
+	Example 2:
+	Input: orders = [[7,1000000000,1],[15,3,0],[5,999999995,0],[5,1,1]]
+	Output: 999999984
+	Explanation: Here is what happens with the orders:
+	- 109 orders of type sell with price 7 are placed. There are no buy orders, so the 109 orders are added to the backlog.
+	- 3 orders of type buy with price 15 are placed. They are matched with the 3 sell orders with the least price which is 7, and those 3 sell orders are removed from the backlog.
+	- 999999995 orders of type buy with price 5 are placed. The least price of a sell order is 7, so the 999999995 orders are added to the backlog.
+	- 1 order of type sell with price 5 is placed. It is matched with the buy order of the highest price, which is 5, and that buy order is removed from the backlog.
+	Finally, the backlog has (1000000000-3) sell orders with price 7, and (999999995-1) buy orders with price 5. So the total number of orders = 1999999991, which is equal to 999999984 % (109 + 7).
+
+	Constraints:
+	* 1 <= orders.length <= 10^5
+	* orders[i].length == 3
+	* 1 <= pricei, amounti <= 10^9
+	* orderTypei is either 0 or 1.*/
+
+    int getNumberOfBacklogOrders(vector<vector<int>>& orders) {
+        priority_queue<pair<int, int>> buy; // max-heap 
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> sell; // min-heap 
+        
+        for (auto& order : orders) {
+            auto price = order[0], qty = order[1], type = order[2]; 
+            if (type == 0) buy.emplace(price, qty); 
+            else sell.emplace(price, qty); 
+            
+            while (size(buy) && size(sell) && buy.top().first >= sell.top().first) {
+                auto [bp, bq] = buy.top(); buy.pop(); 
+                auto [sp, sq] = sell.top(); sell.pop(); 
+                if (bq > sq) {
+                    bq -= sq; 
+                    buy.emplace(bp, bq); 
+                } else if (bq < sq) {
+                    sq -= bq; 
+                    sell.emplace(sp, sq); 
+                }
+            }
+        }
+        
+        int ans = 0; 
+        while (size(buy)) { ans = (ans + buy.top().second) % 1'000'000'007; buy.pop(); }
+        while (size(sell)) { ans = (ans + sell.top().second) % 1'000'000'007; sell.pop(); }
+        return ans; 
+    }
+
+
+    /*1802. Maximum Value at a Given Index in a Bounded Array (Medium)
+	You are given three positive integers: n, index, and maxSum. You want to 
+	construct an array nums (0-indexed) that satisfies the following conditions:
+	* nums.length == n
+	* nums[i] is a positive integer where 0 <= i < n.
+	* abs(nums[i] - nums[i+1]) <= 1 where 0 <= i < n-1.
+	* The sum of all the elements of nums does not exceed maxSum.
+	* nums[index] is maximized.
+	Return nums[index] of the constructed array. Note that abs(x) equals x if 
+	x >= 0, and -x otherwise.
+
+	Example 1:
+	Input: n = 4, index = 2,  maxSum = 6
+	Output: 2
+	Explanation: nums = [1,2,2,1] is one array that satisfies all the conditions.
+ 	             There are no arrays that satisfy all the conditions and have 
+ 	             nums[2] == 3, so 2 is the maximum nums[2].
+	
+	Example 2:
+	Input: n = 6, index = 1,  maxSum = 10
+	Output: 3
+
+	Constraints:
+	* 1 <= n <= maxSum <= 10^9
+	* 0 <= index < n*/
+
+    int maxValue(int n, int index, int maxSum) {
+        auto fn = [](int n, long x) { return n <= x ? n*(2*x - n + 1)/2 : x*(1+x)/2 + n - x; };
+        
+        long lo = 0, hi = maxSum; 
+        while (lo < hi) {
+            long mid = lo + (hi - lo + 1)/2; 
+            if (fn(index, mid-1) + fn(n - index, mid) > maxSum) hi = mid-1; 
+            else lo = mid; 
+        }
+        return lo; 
+    }
+
+
+    /*1803. Count Pairs With XOR in a Range (Hard)
+	Given a (0-indexed) integer array nums and two integers low and high, 
+	return the number of nice pairs. A nice pair is a pair (i, j) where 
+	0 <= i < j < nums.length and low <= (nums[i] XOR nums[j]) <= high.
+
+	Example 1:
+	Input: nums = [1,4,2,7], low = 2, high = 6
+	Output: 6
+	Explanation: All nice pairs (i, j) are as follows:
+	    - (0, 1): nums[0] XOR nums[1] = 5 
+	    - (0, 2): nums[0] XOR nums[2] = 3
+	    - (0, 3): nums[0] XOR nums[3] = 6
+	    - (1, 2): nums[1] XOR nums[2] = 6
+	    - (1, 3): nums[1] XOR nums[3] = 3
+	    - (2, 3): nums[2] XOR nums[3] = 5
+
+	Example 2:
+	Input: nums = [9,8,4,2,1], low = 5, high = 14
+	Output: 8
+	Explanation: All nice pairs (i, j) are as follows:
+        - (0, 2): nums[0] XOR nums[2] = 13
+	    - (0, 3): nums[0] XOR nums[3] = 11
+	    - (0, 4): nums[0] XOR nums[4] = 8
+	    - (1, 2): nums[1] XOR nums[2] = 12
+	    - (1, 3): nums[1] XOR nums[3] = 10
+	    - (1, 4): nums[1] XOR nums[4] = 9
+	    - (2, 3): nums[2] XOR nums[3] = 6
+	    - (2, 4): nums[2] XOR nums[4] = 5
+	 
+	Constraints:
+	* 1 <= nums.length <= 2 * 10^4
+	* 1 <= nums[i] <= 2 * 10^4
+	* 1 <= low <= high <= 2 * 10^4
+
+	class TrieNode {
+	    TrieNode* child[2] = {nullptr}; 
+	    int cnt = 0; 
+	    friend class Trie; 
+	};
+
+
+	class Trie {
+	    TrieNode* root; 
+	public: 
+	    Trie() {root = new TrieNode(); }
+	    
+	    void insert(int val) {
+	        TrieNode* node = root; 
+	        for (int i = 14; i >= 0; --i) {
+	            int bit = (val >> i) & 1; 
+	            if (!node->child[bit]) node->child[bit] = new TrieNode(); 
+	            node = node->child[bit]; 
+	            ++node->cnt; 
+	        }
+	    }
+	    
+	    int count(int val, int high) {
+	        int ans = 0; 
+	        TrieNode* node = root; 
+	        for (int i = 14; i >= 0; --i) {
+	            if (!node) break; 
+	            int bit = (val >> i) & 1, cmp = (high >> i) & 1; 
+	            if (cmp) {
+	                if (node->child[bit]) ans += node->child[bit]->cnt; 
+	                node = node->child[1^bit]; 
+	            } else {
+	                node = node->child[bit]; 
+	            }
+	        }
+	        return ans; 
+	    }
+	};*/
+
+    int countPairs(vector<int>& nums, int low, int high) {
+        Trie* trie = new Trie(); 
+        int ans = 0; 
+        for (auto& x : nums) {
+            ans += trie->count(x, high+1) - trie->count(x, low); 
+            trie->insert(x); 
+        }
+        return ans; 
+    }
+
+
     /*1805. Number of Different Integers in a String (Easy)
 	You are given a string word that consists of digits and lowercase English 
 	letters. You will replace every non-digit character with a space. For 
