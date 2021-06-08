@@ -13176,6 +13176,43 @@ class UnionFind:
         return max(map(max, dp))
 
 
+    """765. Couples Holding Hands (Hard)
+	N couples sit in 2N seats arranged in a row and want to hold hands. We want 
+	to know the minimum number of swaps so that every couple is sitting side by 
+	side. A swap consists of choosing any two people, then they stand up and 
+	switch seats. The people and seats are represented by an integer from 0 to 
+	2N-1, the couples are numbered in order, the first couple being (0, 1), the 
+	second couple being (2, 3), and so on with the last couple being (2N-2, 2N-1).
+	The couples' initial seating is given by row[i] being the value of the person 
+	who is initially sitting in the i-th seat.
+
+	Example 1:
+	Input: row = [0, 2, 1, 3]
+	Output: 1
+	Explanation: We only need to swap the second (row[1]) and third (row[2]) person.
+
+	Example 2:
+	Input: row = [3, 2, 0, 1]
+	Output: 0
+	Explanation: All couples are already seated side by side.
+
+	Note:
+	* len(row) is even and in the range of [4, 60].
+	* row is guaranteed to be a permutation of 0...len(row)-1."""
+
+    def minSwapsCouples(self, row: List[int]) -> int:
+        loc = {x: i for i, x in enumerate(row)}
+        ans = 0
+        for i in range(0, len(row), 2): 
+            p = row[i] - 1 if row[i]&1 else row[i]+1
+            if row[i+1] != p: 
+                ans += 1
+                ii = loc[p]
+                loc[row[i+1]], loc[row[ii]] = loc[row[ii]], loc[row[i+1]] # swap mappings
+                row[i+1], row[ii] = row[ii], row[i+1] # swap values 
+        return ans 
+
+
     """767. Reorganize String (Medium)
 	Given a string S, check if the letters can be rearranged so that two 
 	characters that are adjacent to each other are not the same. If possible, 
@@ -13344,6 +13381,59 @@ class UnionFind:
             if s == e == "L" and i < j: return False 
             if s == e == "R" and i > j: return False 
         return True 
+
+
+    """778. Swim in Rising Water (Hard)
+	On an N x N grid, each square grid[i][j] represents the elevation at that 
+	point (i,j). Now rain starts to fall. At time t, the depth of the water 
+	everywhere is t. You can swim from a square to another 4-directionally 
+	adjacent square if and only if the elevation of both squares individually 
+	are at most t. You can swim infinite distance in zero time. Of course, you 
+	must stay within the boundaries of the grid during your swim. You start at 
+	the top left square (0, 0). What is the least time until you can reach the 
+	bottom right square (N-1, N-1)?
+
+	Example 1:
+	Input: [[0,2],[1,3]]
+	Output: 3
+	Explanation: At time 0, you are in grid location (0, 0). You cannot go 
+	             anywhere else because 4-directionally adjacent neighbors have 
+	             a higher elevation than t = 0. You cannot reach point (1, 1) 
+	             until time 3. When the depth of water is 3, we can swim 
+	             anywhere inside the grid.
+	
+	Example 2:
+	Input: [[ 0, 1, 2, 3, 4],
+	        [24,23,22,21, 5],
+	        [12,13,14,15,16],
+	        [11,17,18,19,20],
+	        [10, 9, 8, 7, 6]]
+	Output: 16
+	Explanation:
+	 0  1  2  3  4
+	24 23 22 21  5
+	12 13 14 15 16
+	11 17 18 19 20
+	10  9  8  7  6
+
+	The final route is marked in bold. We need to wait until time 16 so that 
+	(0, 0) and (4, 4) are connected.
+	
+	Note:
+	* 2 <= N <= 50.
+	* grid[i][j] is a permutation of [0, ..., N*N - 1]."""
+
+    def swimInWater(self, grid: List[List[int]]) -> int:
+        n = len(grid) # dimension
+        pq = [(grid[0][0], 0, 0)]
+        seen = {(0, 0)}
+        while pq: 
+            k, i, j = heappop(pq)
+            if i == j == n-1: return k
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                if 0 <= ii < n and 0 <= jj < n and (ii, jj) not in seen:
+                    heappush(pq, (max(k, grid[ii][jj]), ii, jj))
+                    seen.add((ii, jj))
 
 
     """779. K-th Symbol in Grammar (Medium)
@@ -17278,6 +17368,72 @@ class UnionFind:
                 ans.append(str2[j])
                 j += 1
         return "".join(ans) + str1[i:] + str2[j:]
+
+    
+    """1096. Brace Expansion II (Hard)
+	Under a grammar given below, strings can represent a set of lowercase words.  
+	Let's use R(expr) to denote the set of words the expression represents. 
+	Grammar can best be understood through simple examples:
+	* Single letters represent a singleton set containing that word.
+	  + R("a") = {"a"}
+	  + R("w") = {"w"}
+	* When we take a comma delimited list of 2 or more expressions, we take the 
+	  union of possibilities.
+	  + R("{a,b,c}") = {"a","b","c"}
+	  + R("{{a,b},{b,c}}") = {"a","b","c"} (notice the final set only contains 
+	    each word at most once)
+	* When we concatenate two expressions, we take the set of possible 
+	  concatenations between two words where the first word comes from the 
+	  first expression and the second word comes from the second expression.
+	  + R("{a,b}{c,d}") = {"ac","ad","bc","bd"}
+	  + R("a{b,c}{d,e}f{g,h}") = {"abdfg", "abdfh", "abefg", "abefh", "acdfg", "acdfh", "acefg", "acefh"}
+	Formally, the 3 rules for our grammar:
+	* For every lowercase letter x, we have R(x) = {x}
+	* For expressions e_1, e_2, ... , e_k with k >= 2, we have 
+	  R({e_1,e_2,...}) = R(e_1) ∪ R(e_2) ∪ ...
+	* For expressions e_1 and e_2, we have R(e_1 + e_2) = {a + b for (a, b) in R(e_1) × R(e_2)}, 
+	  where + denotes concatenation, and × denotes the cartesian product.
+	Given an expression representing a set of words under the given grammar, 
+	return the sorted list of words that the expression represents.
+
+	Example 1:
+	Input: "{a,b}{c,{d,e}}"
+	Output: ["ac","ad","ae","bc","bd","be"]
+
+	Example 2:
+	Input: "{{a,z},a{b,c},{ab,z}}"
+	Output: ["a","ab","ac","z"]
+	Explanation: Each distinct word is written only once in the final answer.
+
+	Constraints:
+	* 1 <= expression.length <= 60
+	* expression[i] consists of '{', '}', ','or lowercase English letters.
+	* The given expression represents a set of words based on the grammar given 
+	  in the description."""
+
+    def braceExpansionII(self, expression: str) -> List[str]:
+        mp, stack = {}, []
+        for i, x in enumerate(expression): 
+            if x == "{": stack.append(i)
+            elif x == "}": mp[stack.pop()] = i 
+        
+        def fn(lo, hi): 
+            """Return expanded outcome of expression[lo:hi]."""
+            ans = [[""]]
+            if lo+1 < hi: 
+                i = lo
+                while i < hi: 
+                    if expression[i] == ",": ans.append([""])
+                    else: 
+                        if expression[i] == "{": 
+                            y = fn(i+1, mp[i])
+                            i = mp[i]
+                        else: y = expression[i]
+                        ans.append([xx+yy for xx in ans.pop() for yy in y])
+                    i += 1
+            return sorted({xx for x in ans for xx in x}) 
+        
+        return fn(0, len(expression))
 
 
     """1099. Two Sum Less Than K (Easy)
@@ -36107,6 +36263,106 @@ class FizzBuzz:
         self.fizzLock.release()
         self.buzzLock.release()
         self.fzbzLock.release()
+
+
+"""1206. Design Skiplist (Hard)
+Design a Skiplist without using any built-in libraries. A Skiplist is a data 
+structure that takes O(log(n)) time to add, erase and search. Comparing with 
+treap and red-black tree which has the same function and performance, the code 
+length of Skiplist can be comparatively short and the idea behind Skiplists are 
+just simple linked lists. For example: we have a Skiplist containing 
+[30,40,50,60,70,90] and we want to add 80 and 45 into it. You can see there are 
+many layers in the Skiplist. Each layer is a sorted linked list. With the help 
+of the top layers, add , erase and search can be faster than O(n). It can be 
+proven that the average time complexity for each operation is O(log(n)) and 
+space complexity is O(n). To be specific, your design should include these 
+functions:
+* bool search(int target) : Return whether the target exists in the Skiplist or 
+  not.
+* void add(int num): Insert a value into the SkipList. 
+* bool erase(int num): Remove a value in the Skiplist. If num does not exist in 
+  the Skiplist, do nothing and return false. If there exists multiple num 
+  values, removing any one of them is fine.
+See more about Skiplist : https://en.wikipedia.org/wiki/Skip_list. Note that 
+duplicates may exist in the Skiplist, your code needs to handle this situation.
+
+Example:
+Skiplist skiplist = new Skiplist();
+skiplist.add(1);
+skiplist.add(2);
+skiplist.add(3);
+skiplist.search(0);   // return false.
+skiplist.add(4);
+skiplist.search(1);   // return true.
+skiplist.erase(0);    // return false, 0 is not in skiplist.
+skiplist.erase(1);    // return true.
+skiplist.search(1);   // return false, 1 has already been erased.
+
+Constraints:
+* 0 <= num, target <= 20000
+* At most 50000 calls will be made to search, add, and erase."""
+
+class ListNode: 
+    def __init__(self, val, cnt=1, next=None, down=None): 
+        self.val = val
+        self.cnt = cnt
+        self.next = next
+        self.down = down
+
+        
+class Skiplist:
+
+    def __init__(self):
+        self.head = ListNode(-inf)
+        self.p = 1/4 
+            
+    def search(self, target: int) -> bool:
+        node = self.head 
+        while node and node.val < target: 
+            if node.next and node.next.val <= target: node = node.next 
+            else: node = node.down 
+        return node
+
+    def add(self, num: int) -> None:
+        node = self.head 
+        stack = []
+        while node and node.val < num: 
+            if node.next and node.next.val <= num: node = node.next 
+            else: 
+                stack.append(node)
+                node = node.down
+        if node: 
+            while node: 
+                node.cnt += 1
+                node = node.down 
+        else: 
+            prev = None
+            while True: 
+                if stack: 
+                    node = stack.pop()
+                    node.next = prev = ListNode(num, down=prev, next=node.next)
+                else: 
+                    self.head = ListNode(-inf, down=self.head)
+                    self.head.next = prev = ListNode(num, down=prev)
+                if random.random() >= self.p: break 
+
+    def erase(self, num: int) -> bool:
+        node = self.head 
+        stack = []
+        ans = False
+        while node: 
+            if node.next and node.next.val < num: node = node.next
+            else: 
+                stack.append(node)
+                node = node.down 
+        while stack: 
+            node = stack.pop()
+            if node.next and node.next.val == num: 
+                ans = True
+                if node.next.cnt > 1: node.next.cnt -= 1
+                else: node.next = node.next.next 
+            else: break 
+        return ans 
 
 
 """1357. Apply Discount Every n Orders (Medium)
