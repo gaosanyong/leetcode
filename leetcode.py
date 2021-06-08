@@ -31076,11 +31076,9 @@ class Fenwick:
 	        node = self.root 
 	        for i in reversed(range(15)):
 	            bit = (val >> i) & 1
-	            if bit not in node: 
-	                node[bit] = {"cnt": 1}
-	            else: 
-	                node[bit]["cnt"] += 1
+	            if bit not in node: node[bit] = {"cnt": 0}
 	            node = node[bit]
+	            node["cnt"] += 1
 	        
 	    def count(self, val, high): 
 	        ans = 0 
@@ -31090,11 +31088,9 @@ class Fenwick:
 	            bit = (val >> i) & 1 
 	            cmp = (high >> i) & 1
 	            if cmp: 
-	                if node.get(bit, {}): 
-	                    ans += node[bit]["cnt"]
+	                if node.get(bit, {}): ans += node[bit]["cnt"]
 	                node = node.get(1^bit, {})
-	            else: 
-	                node = node.get(bit, {})
+	            else: node = node.get(bit, {})
 	        return ans"""
 
     def countPairs(self, nums: List[int], low: int, high: int) -> int:
