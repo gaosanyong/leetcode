@@ -6387,6 +6387,136 @@ public:
     }
 
 
+    /*1796. Second Largest Digit in a String (Easy)
+	Given an alphanumeric string s, return the second largest numerical digit 
+	that appears in s, or -1 if it does not exist. An alphanumeric string is a 
+	string consisting of lowercase English letters and digits.
+
+	Example 1:
+	Input: s = "dfa12321afd"
+	Output: 2
+	Explanation: The digits that appear in s are [1, 2, 3]. The second largest 
+	             digit is 2.
+	
+	Example 2:
+	Input: s = "abc1111"
+	Output: -1
+	Explanation: The digits that appear in s are [1]. There is no second 
+	             largest digit. 
+
+	Constraints:
+	* 1 <= s.length <= 500
+	* s consists of only lowercase English letters and/or digits.*/
+
+    int secondHighest(string s) {
+        set<char> ss; 
+        for (auto& ch : s) 
+            if ('0' <= ch && ch <= '9') ss.insert(ch); 
+        return size(ss) > 1 ? *next(rbegin(ss)) - '0' : -1; 
+    }
+
+
+    /*1798. Maximum Number of Consecutive Values You Can Make (Medium)
+	You are given an integer array coins of length n which represents the n 
+	coins that you own. The value of the ith coin is coins[i]. You can make 
+	some value x if you can choose some of your n coins such that their values 
+	sum up to x. Return the maximum number of consecutive integer values that 
+	you can make with your coins starting from and including 0. Note that you 
+	may have multiple coins of the same value.
+
+	Example 1:
+	Input: coins = [1,3]
+	Output: 2
+	Explanation: You can make the following values:
+	             - 0: take []
+	             - 1: take [1]
+	             You can make 2 consecutive integer values starting from 0.
+
+	Example 2:
+	Input: coins = [1,1,1,4]
+	Output: 8
+	Explanation: You can make the following values:
+	             - 0: take []
+	             - 1: take [1]
+	             - 2: take [1,1]
+	             - 3: take [1,1,1]
+	             - 4: take [4]
+	             - 5: take [4,1]
+	             - 6: take [4,1,1]
+	             - 7: take [4,1,1,1]
+	             You can make 8 consecutive integer values starting from 0.
+	
+	Example 3:
+	Input: nums = [1,4,10,3,1]
+	Output: 20
+
+	Constraints:
+	* coins.length == n
+	* 1 <= n <= 4 * 10^4
+	* 1 <= coins[i] <= 4 * 10^4*/
+
+    int getMaximumConsecutive(vector<int>& coins) {
+        sort(begin(coins), end(coins)); 
+        int ans = 1; 
+        for (auto& x : coins) {
+            if (ans < x) break; 
+            ans += x; 
+        }
+        return ans; 
+    }
+
+
+    /*1799. Maximize Score After N Operations (Hard)
+	You are given nums, an array of positive integers of size 2 * n. You must 
+	perform n operations on this array. In the ith operation (1-indexed), you 
+	will:
+	* Choose two elements, x and y.
+	* Receive a score of i * gcd(x, y).
+	* Remove x and y from nums.
+	Return the maximum score you can receive after performing n operations. The 
+	function gcd(x, y) is the greatest common divisor of x and y.
+
+	Example 1:
+	Input: nums = [1,2]
+	Output: 1
+	Explanation: The optimal choice of operations is: (1 * gcd(1, 2)) = 1
+	
+	Example 2:
+	Input: nums = [3,4,6,8]
+	Output: 11
+	Explanation: The optimal choice of operations is:
+	             (1 * gcd(3, 6)) + (2 * gcd(4, 8)) = 3 + 8 = 11
+	
+	Example 3:
+	Input: nums = [1,2,3,4,5,6]
+	Output: 14
+	Explanation: The optimal choice of operations is:
+	             (1 * gcd(1, 5)) + (2 * gcd(2, 4)) + (3 * gcd(3, 6)) = 1 + 4 + 9 = 14
+
+	Constraints:
+	* 1 <= n <= 7
+	* nums.length == 2 * n
+	* 1 <= nums[i] <= 10^6*/
+
+    int maxScore(vector<int>& nums) {
+        int n = size(nums); 
+        map<pair<int, int>, int> memo; 
+        
+        function<int(int, int)> fn = [&](int k, int mask) {
+            pair<int, int> key = make_pair(k, mask); 
+            if (!memo.count(key)) 
+                for (int i = 0; i < n; ++i) 
+                    if (mask & (1 << i)) 
+                        for (int j = i+1; j < n; ++j)
+                            if (mask & (1 << j)) 
+                                memo[key] = max(memo[key], k*gcd(nums[i], nums[j]) + fn(k+1, mask^(1<<i)^(1<<j))); 
+            return memo[key]; 
+        };
+        
+        return fn(1, (1 << n)-1); 
+    }
+
+
     /*1800. Maximum Ascending Subarray Sum (Easy)
 	Given an array of positive integers nums, return the maximum possible sum 
 	of an ascending subarray in nums. A subarray is defined as a contiguous 
@@ -9868,6 +9998,77 @@ public:
             q.pop(); 
         }
         return q.size(); 
+    }
+};
+
+
+/*1797. Design Authentication Manager (Medium)
+There is an authentication system that works with authentication tokens. For 
+each session, the user will receive a new authentication token that will expire 
+timeToLive seconds after the currentTime. If the token is renewed, the expiry 
+time will be extended to expire timeToLive seconds after the (potentially 
+different) currentTime. Implement the AuthenticationManager class:
+* AuthenticationManager(int timeToLive) constructs the AuthenticationManager 
+  and sets the timeToLive.
+* generate(string tokenId, int currentTime) generates a new token with the 
+  given tokenId at the given currentTime in seconds.
+* renew(string tokenId, int currentTime) renews the unexpired token with the 
+  given tokenId at the given currentTime in seconds. If there are no unexpired 
+  tokens with the given tokenId, the request is ignored, and nothing happens.
+* countUnexpiredTokens(int currentTime) returns the number of unexpired tokens 
+  at the given currentTime.
+Note that if a token expires at time t, and another action happens on time t 
+(renew or countUnexpiredTokens), the expiration takes place before the other 
+actions.
+
+Example 1:
+Input: ["AuthenticationManager", "renew", "generate", "countUnexpiredTokens", "generate", "renew", "renew", "countUnexpiredTokens"]
+       [[5], ["aaa", 1], ["aaa", 2], [6], ["bbb", 7], ["aaa", 8], ["bbb", 10], [15]]
+Output: [null, null, null, 1, null, null, null, 0]
+Explanation: 
+AuthenticationManager authenticationManager = new AuthenticationManager(5); // Constructs the AuthenticationManager with timeToLive = 5 seconds.
+authenticationManager.renew("aaa", 1); // No token exists with tokenId "aaa" at time 1, so nothing happens.
+authenticationManager.generate("aaa", 2); // Generates a new token with tokenId "aaa" at time 2.
+authenticationManager.countUnexpiredTokens(6); // The token with tokenId "aaa" is the only unexpired one at time 6, so return 1.
+authenticationManager.generate("bbb", 7); // Generates a new token with tokenId "bbb" at time 7.
+authenticationManager.renew("aaa", 8); // The token with tokenId "aaa" expired at time 7, and 8 >= 7, so at time 8 the renew request is ignored, and nothing happens.
+authenticationManager.renew("bbb", 10); // The token with tokenId "bbb" is unexpired at time 10, so the renew request is fulfilled and now the token will expire at time 15.
+authenticationManager.countUnexpiredTokens(15); // The token with tokenId "bbb" expires at time 15, and the token with tokenId "aaa" expired at time 7, so currently no token is unexpired, so return 0.
+
+Constraints:
+* 1 <= timeToLive <= 10^8
+* 1 <= currentTime <= 10^8
+* 1 <= tokenId.length <= 5
+* tokenId consists only of lowercase letters.
+* All calls to generate will contain unique values of tokenId.
+* The values of currentTime across all the function calls will be strictly increasing.
+* At most 2000 calls will be made to all functions combined.*/
+
+class AuthenticationManager {
+    int timeToLive = 0; 
+    unordered_map<string, int> expiry; 
+    
+public:
+    AuthenticationManager(int timeToLive) : timeToLive(timeToLive) {}
+    
+    void generate(string tokenId, int currentTime) {
+        expiry[tokenId] = currentTime + timeToLive; 
+    }
+    
+    void renew(string tokenId, int currentTime) {
+        if (expiry.count(tokenId) && expiry[tokenId] > currentTime) 
+            expiry[tokenId] = currentTime + timeToLive; 
+    }
+    
+    int countUnexpiredTokens(int currentTime) {
+        int ans = 0; 
+        vector<string> expired; 
+        for (auto& x : expiry) {
+            if (x.second > currentTime) ++ans; 
+            else expired.push_back(x.first); 
+        }
+        for (auto& x : expired) expiry.erase(x); 
+        return ans; 
     }
 };
 
