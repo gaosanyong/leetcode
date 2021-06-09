@@ -8291,7 +8291,7 @@ class Solution:
 	Output: ["2*3+2", "2+3*2"]
 
 	Example 3:
-	Input: num = "105", target = 5
+	Input: num = "10^5", target = 5
 	Output: ["1*0+5","10-5"]
 
 	Example 4:
@@ -10477,7 +10477,7 @@ class Solution:
 
 	Calculate the maximum value of F(0), F(1), ..., F(n-1).
 
-	Note: n is guaranteed to be less than 105.
+	Note: n is guaranteed to be less than 10^5.
 
 	Example:
 	A = [4, 3, 2, 6]
@@ -16283,7 +16283,7 @@ class UnionFind:
 
 	Constraints:
 	* The number of nodes in the tree is in the range [2, 5000].
-	* 0 <= Node.val <= 105"""
+	* 0 <= Node.val <= 10^5"""
 
     def maxAncestorDiff(self, root: TreeNode) -> int:
         
@@ -18446,7 +18446,7 @@ class UnionFind:
 	Output: "tcode"
 
 	Constraints:
-	* 1 <= s.length <= 4 * 105
+	* 1 <= s.length <= 4 * 10^5
 	* s contains only lowercase English letters."""
 
     def lastSubstring(self, s: str) -> str:
@@ -23666,7 +23666,7 @@ class UnionFind:
 	Output: 5
 
 	Constraints:
-	* 1 <= target.length <= 105
+	* 1 <= target.length <= 10^5
 	* target[i] is either '0' or '1'."""
 
     def minFlips(self, target: str) -> int:
@@ -23974,9 +23974,9 @@ class UnionFind:
 
 	Constraints:
 	* n == nums.length
-	* 1 <= n <= 105
-	* 0 <= nums[i] <= 105
-	* 1 <= requests.length <= 105
+	* 1 <= n <= 10^5
+	* 0 <= nums[i] <= 10^5
+	* 1 <= requests.length <= 10^5
 	* requests[i].length == 2
 	* 0 <= starti <= endi < n"""
 
@@ -24027,9 +24027,9 @@ class UnionFind:
 	Output: 0
 
 	Constraints:
-	* 1 <= nums.length <= 105
-	* 1 <= nums[i] <= 109
-	* 1 <= p <= 109"""
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^9
+	* 1 <= p <= 10^9"""
 
     def minSubarray(self, nums: List[int], p: int) -> int:
         target = sum(nums) % p # targetted remainder 
@@ -24348,8 +24348,8 @@ class UnionFind:
 	Output: 2
 
 	Constraints:
-	* The number of nodes in the tree is in the range [1, 105].
-	* 1 <= Node.val <= 105
+	* The number of nodes in the tree is in the range [1, 10^5].
+	* 1 <= Node.val <= 10^5
 	* All values in the tree are distinct.
 	* u is a node in the binary tree rooted at root."""
 
@@ -24649,8 +24649,8 @@ class UnionFind:
 	Output: true
 
 	Constraints:
-	* The number of nodes in the tree is in the range [1, 105].
-	* 1 <= Node.val <= 106"""
+	* The number of nodes in the tree is in the range [1, 10^5].
+	* 1 <= Node.val <= 10^6"""
 
     def isEvenOddTree(self, root: TreeNode) -> bool:
         queue = [root]
@@ -24705,7 +24705,7 @@ class UnionFind:
 	Explanation: You can only see one of the two points, as shown above.
 
 	Constraints:
-	* 1 <= points.length <= 105
+	* 1 <= points.length <= 10^5
 	* points[i].length == 2
 	* location.length == 2
 	* 0 <= angle < 360
@@ -24867,7 +24867,7 @@ class UnionFind:
 	Constraints:
 	* 20 <= arr.length <= 1000
 	* arr.length is a multiple of 20.
-	* 0 <= arr[i] <= 105"""
+	* 0 <= arr[i] <= 10^5"""
 
     def trimMean(self, arr: List[int]) -> float:
         return sum(sorted(arr)[len(arr)//20:-len(arr)//20])/(len(arr)*0.9)
@@ -25193,7 +25193,7 @@ class UnionFind:
 	Constraints:
 	* 2 <= n <= 104
 	* 0 <= threshold <= n
-	* 1 <= queries.length <= 105
+	* 1 <= queries.length <= 10^5
 	* queries[i].length == 2
 	* 1 <= ai, bi <= cities
 	* ai != bi"""
@@ -25820,9 +25820,9 @@ class UnionFind:
 	Output: 3
 
 	Constraints:
-	* 1 <= heights.length <= 105
-	* 1 <= heights[i] <= 106
-	* 0 <= bricks <= 109
+	* 1 <= heights.length <= 10^5
+	* 1 <= heights[i] <= 10^6
+	* 0 <= bricks <= 10^9
 	* 0 <= ladders <= heights.length"""
 
     def furthestBuilding(self, heights: List[int], bricks: int, ladders: int) -> int:
@@ -26010,7 +26010,7 @@ class UnionFind:
 	             string at the end (i.e. frequency of 0 is ignored).
 
 	Constraints:
-	* 1 <= s.length <= 105
+	* 1 <= s.length <= 10^5
 	* s contains only lowercase English letters."""
 
     def minDeletions(self, s: str) -> int:
@@ -26066,8 +26066,8 @@ class UnionFind:
 	             500000000500000000. 500000000500000000 modulo 109 + 7 = 21.
 	 
 	Constraints:
-	* 1 <= inventory.length <= 105
-	* 1 <= inventory[i] <= 109
+	* 1 <= inventory.length <= 10^5
+	* 1 <= inventory[i] <= 10^9
 	* 1 <= orders <= min(sum(inventory[i]), 109)"""
 
     def maxProfit(self, inventory: List[int], orders: int) -> int:
@@ -26461,7 +26461,7 @@ class Fenwick:
 	             any amount of operations.
 
 	Constraints:
-	* 1 <= word1.length, word2.length <= 105
+	* 1 <= word1.length, word2.length <= 10^5
 	* word1 and word2 contain only lowercase English letters."""
 
     def closeStrings(self, word1: str, word2: str) -> bool:
@@ -26572,7 +26572,7 @@ class Fenwick:
 	Output: "aaszz"
 
 	Constraints:
-	* 1 <= n <= 105
+	* 1 <= n <= 10^5
 	* n <= k <= 26 * n"""
 
     def getSmallestString(self, n: int, k: int) -> str:
@@ -26931,8 +26931,8 @@ class Fenwick:
 	Output: [2,3,3,4]
 	 
 	Constraints:
-	* 1 <= nums.length <= 105
-	* 0 <= nums[i] <= 109
+	* 1 <= nums.length <= 10^5
+	* 0 <= nums[i] <= 10^9
 	* 1 <= k <= nums.length"""
 
     def mostCompetitive(self, nums: List[int], k: int) -> List[int]:
@@ -26974,8 +26974,8 @@ class Fenwick:
 
 	Constraints:
 	* n == nums.length
-	* 2 <= n <= 105
-	* 1 <= nums[i] <= limit <= 105
+	* 2 <= n <= 10^5
+	* 1 <= nums[i] <= limit <= 10^5
 	* n is even."""
 
     def minMoves(self, nums: List[int], limit: int) -> int:
@@ -27026,8 +27026,8 @@ class Fenwick:
 
 	Constraints:
 	* n == nums.length
-	* 2 <= n <= 105
-	* 1 <= nums[i] <= 109"""
+	* 2 <= n <= 10^5
+	* 1 <= nums[i] <= 10^9"""
 
     def minimumDeviation(self, nums: List[int]) -> int:
         pq = [-2*x if x&1 else -x for x in nums] # max-heap 
@@ -27147,9 +27147,9 @@ class Fenwick:
 	There are no more pairs that sum up to 6, hence a total of 1 operation.
 
 	Constraints:
-	* 1 <= nums.length <= 105
-	* 1 <= nums[i] <= 109
-	* 1 <= k <= 109"""
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^9
+	* 1 <= k <= 10^9"""
 
     def maxOperations(self, nums: List[int], k: int) -> int:
         freq = {}
@@ -27186,7 +27186,7 @@ class Fenwick:
 	             The decimal value of that is 118505380540. After modulo 10^9 + 7, 
 	             the result is 505379714.
 
-	Constraints: 1 <= n <= 105"""
+	Constraints: 1 <= n <= 10^5"""
 
     def concatenatedBinary(self, n: int) -> int:
         ans = k = 0
@@ -27325,7 +27325,7 @@ class Fenwick:
 	Output: 9
 
 	Constraints:
-	* 1 <= n.length <= 105
+	* 1 <= n.length <= 10^5
 	* n consists of only digits.
 	* n does not contain any leading zeros and represents a positive integer."""
 
@@ -27514,8 +27514,8 @@ class Fenwick:
 	Explanation: The optimal subarray here is [5,2,1] or [1,2,5].
 
 	Constraints:
-	* 1 <= nums.length <= 105
-	* 1 <= nums[i] <= 104"""
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^4"""
 
     def maximumUniqueSubarray(self, nums: List[int]) -> int:
         freq = defaultdict(int)
@@ -27557,8 +27557,8 @@ class Fenwick:
 	Output: 0
 
 	Constraints:
-	* 1 <= nums.length, k <= 105
-	* -104 <= nums[i] <= 104"""
+	* 1 <= nums.length, k <= 10^5
+	* -104 <= nums[i] <= 10^4"""
 
     def maxResult(self, nums: List[int], k: int) -> int:
         queue = deque()
@@ -27603,8 +27603,8 @@ class Fenwick:
 	Exaplanation: The above figure shows the given graph.
 
 	Constraints:
-	* 2 <= n <= 105
-	* 1 <= edgeList.length, queries.length <= 105
+	* 2 <= n <= 10^5
+	* 1 <= edgeList.length, queries.length <= 10^5
 	* edgeList[i].length == 3
 	* queries[j].length == 3
 	* 0 <= ui, vi, pj, qj <= n - 1
@@ -27711,8 +27711,8 @@ class Fenwick:
 	So the average waiting time = (2 + 6 + 4 + 1) / 4 = 3.25.
 	 
 	Constraints:
-	* 1 <= customers.length <= 105
-	* 1 <= arrivali, timei <= 104
+	* 1 <= customers.length <= 10^5
+	* 1 <= arrivali, timei <= 10^4
 	* arrivali <= arrivali+1"""
 
     def averageWaitingTime(self, customers: List[List[int]]) -> float:
@@ -27750,7 +27750,7 @@ class Fenwick:
 	Explanation: "01" cannot be transformed any further.
 
 	Constraints:
-	* 1 <= binary.length <= 105
+	* 1 <= binary.length <= 10^5
 	* binary consist of '0' and '1'."""
 
     def maximumBinaryString(self, binary: str) -> str:
@@ -27781,7 +27781,7 @@ class Fenwick:
 	Explanation: nums already has 2 consecutive 1's.
 
 	Constraints:
-	* 1 <= nums.length <= 105
+	* 1 <= nums.length <= 10^5
 	* nums[i] is 0 or 1.
 	* 1 <= k <= sum(nums)"""
 
@@ -27968,7 +27968,7 @@ class Fenwick:
 	Output: [15,-1,5]
 
 	Constraints:
-	* 1 <= nums.length, queries.length <= 105
+	* 1 <= nums.length, queries.length <= 10^5
 	* queries[i].length == 2
 	* 0 <= nums[j], xi, mi <= 10^9"""
 
@@ -28031,8 +28031,8 @@ class Fenwick:
 	Output: [5]
 
 	Constraints:
-	* 1 <= k <= nums.length <= 105
-	* 1 <= nums[i] <= 109
+	* 1 <= k <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^9
 	* All the integers of nums are unique.
 
 	Follow up: What if the integers in nums are not distinct?"""
@@ -28104,8 +28104,8 @@ class Fenwick:
 	Explanation: The good meals are (1,1) with 3 ways, (1,3) with 9 ways, and (1,7) with 3 ways.
 
 	Constraints:
-	* 1 <= deliciousness.length <= 105
-	* 0 <= deliciousness[i] <= 220"""
+	* 1 <= deliciousness.length <= 10^5
+	* 0 <= deliciousness[i] <= 2^20"""
 
     def countPairs(self, deliciousness: List[int]) -> int:
         ans = 0
@@ -28145,8 +28145,8 @@ class Fenwick:
 	Explanation: There is no good way to split nums.
 
 	Constraints:
-	* 3 <= nums.length <= 105
-	* 0 <= nums[i] <= 104"""
+	* 3 <= nums.length <= 10^5
+	* 0 <= nums[i] <= 10^4"""
 
     def waysToSplit(self, nums: List[int]) -> int:
         prefix = [0]
@@ -28184,8 +28184,8 @@ class Fenwick:
 	Output: 3
 
 	Constraints:
-	* 1 <= target.length, arr.length <= 105
-	* 1 <= target[i], arr[i] <= 109
+	* 1 <= target.length, arr.length <= 10^5
+	* 1 <= target[i], arr[i] <= 10^9
 	* target contains no duplicates."""
 
     def minOperations(self, target: List[int], arr: List[int]) -> int:
@@ -28677,7 +28677,7 @@ class Fenwick:
 	Output: [2,4,1,5,3]
 
 	Constraints:
-	* 3 <= n < 105
+	* 3 <= n < 10^5
 	* n is odd.
 	* encoded.length == n - 1"""
 
@@ -28797,7 +28797,7 @@ class Fenwick:
 	Explanation: The best way is to make condition 1 true by changing b to "eee".
 
 	Constraints:
-	* 1 <= a.length, b.length <= 105
+	* 1 <= a.length, b.length <= 10^5
 	* a and b consist only of lowercase letters."""
 
     def minCharacters(self, a: str, b: str) -> int:
@@ -28979,7 +28979,7 @@ class Fenwick:
 	* nums.length == n
 	* adjacentPairs.length == n - 1
 	* adjacentPairs[i].length == 2
-	* 2 <= n <= 105
+	* 2 <= n <= 10^5
 	* -10^5 <= nums[i], ui, vi <= 10^5
 	* There exists some nums that has adjacentPairs as its pairs."""
 
@@ -29103,8 +29103,8 @@ class Fenwick:
 	             1 + 1 + 1 + 1 = 4.
 
 	Constraints:
-	* 1 <= nums.length <= 105
-	* -104 <= nums[i] <= 104"""
+	* 1 <= nums.length <= 10^5
+	* -10^4 <= nums[i] <= 10^4"""
 
     def maxSumAfterOperation(self, nums: List[int]) -> int:
         ans = f0 = f1 = 0 
@@ -29164,8 +29164,8 @@ class Fenwick:
 	Explanation: The subarray [-5,1,-4] has absolute sum = abs(-5+1-4) = abs(-8) = 8.
 
 	Constraints:
-	* 1 <= nums.length <= 105
-	* -104 <= nums[i] <= 104"""
+	* 1 <= nums.length <= 10^5
+	* -10^4 <= nums[i] <= 10^4"""
 
     def maxAbsoluteSum(self, nums: List[int]) -> int:
         ans = mx = mn = 0
@@ -29211,7 +29211,7 @@ class Fenwick:
 	- Take prefix = "b" and suffix = "bb" and remove them, s = "cca".
 
 	Constraints:
-	* 1 <= s.length <= 105
+	* 1 <= s.length <= 10^5
 	* s only consists of characters 'a', 'b', and 'c'."""
 
     def minimumLength(self, s: str) -> int:
@@ -29361,7 +29361,7 @@ class Fenwick:
 	             for 8 turns until they are empty. After that, there are fewer 
 	             than two non-empty piles, so the game ends.
 
-	Constraints: 1 <= a, b, c <= 105"""
+	Constraints: 1 <= a, b, c <= 10^5"""
 
     def maximumScore(self, a: int, b: int, c: int) -> int:
         a, b, c = sorted((a, b, c))
@@ -29533,7 +29533,7 @@ class Fenwick:
 	Output: 15
 
 	Constraints:
-	* 1 <= s.length <= 105
+	* 1 <= s.length <= 10^5
 	* s consists of lowercase letters."""
 
     def countHomogenous(self, s: str) -> int:
@@ -29579,8 +29579,8 @@ class Fenwick:
 	Output: 7
 
 	Constraints:
-	* 1 <= nums.length <= 105
-	* 1 <= maxOperations, nums[i] <= 109"""
+	* 1 <= nums.length <= 10^5
+	* 1 <= maxOperations, nums[i] <= 10^9"""
 
     def minimumSize(self, nums: List[int], maxOperations: int) -> int:
         lo, hi = 1, 1_000_000_000
@@ -29671,8 +29671,8 @@ class Fenwick:
 	Explanation: Buildings cannot see the ocean if there are buildings of the same height to its right.
 
 	Constraints:
-	* 1 <= heights.length <= 105
-	* 1 <= heights[i] <= 109"""
+	* 1 <= heights.length <= 10^5
+	* 1 <= heights[i] <= 10^9"""
 
     def findBuildings(self, heights: List[int]) -> List[int]:
         stack = []
@@ -30018,8 +30018,8 @@ class Fenwick:
 	Constraints:
 	* n == nums.length
 	* m == multipliers.length
-	* 1 <= m <= 103
-	* m <= n <= 105
+	* 1 <= m <= 10^3
+	* m <= n <= 10^5
 	* -1000 <= nums[i], multipliers[i] <= 1000"""
 
     def maximumScore(self, nums: List[int], multipliers: List[int]) -> int:
@@ -31717,7 +31717,7 @@ class Fenwick:
 
 	Constraints:
 	* obstacles.length == n + 1
-	* 1 <= n <= 5 * 105
+	* 1 <= n <= 5 * 10^5
 	* 0 <= obstacles[i] <= 3
 	* obstacles[0] == obstacles[n] == 0"""
 
@@ -31853,7 +31853,7 @@ class Fenwick:
 
 	Constraints:
 	* nums.length == n
-	* 1 <= n <= 105
+	* 1 <= n <= 10^5
 	* 1 <= maximumBit <= 20
 	* 0 <= nums[i] < 2maximumBit
 	* nums​​​ is sorted in ascending order."""
@@ -34147,9 +34147,9 @@ twoSum.find(4);  // 1 + 3 = 4, return true
 twoSum.find(7);  // No two integers sum up to 7, return false
 
 Constraints:
-* -105 <= number <= 105
-* -231 <= value <= 231 - 1
-* At most 5 * 104 calls will be made to add and find."""
+* -10^5 <= number <= 10^5
+* -2^31 <= value <= 2^31 - 1
+* At most 5 * 10^4 calls will be made to add and find."""
 
 class TwoSum:
 
@@ -37012,7 +37012,7 @@ Constraints:
 * 3 <= m <= 10^5
 * 1 <= k*2 < m
 * 1 <= num <= 10^5
-* At most 105 calls will be made to addElement and calculateMKAverage."""
+* At most 10^5 calls will be made to addElement and calculateMKAverage."""
 
 """
 class Fenwick: 

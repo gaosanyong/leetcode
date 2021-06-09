@@ -2630,9 +2630,9 @@ public:
 	Output: [["root/a/2.txt","root/c/d/4.txt"],["root/a/1.txt","root/c/3.txt"]]
 
 	Constraints:
-	* 1 <= paths.length <= 2 * 104
+	* 1 <= paths.length <= 2 * 10^4
 	* 1 <= paths[i].length <= 3000
-	* 1 <= sum(paths[i].length) <= 5 * 105
+	* 1 <= sum(paths[i].length) <= 5 * 10^5
 	* paths[i] consist of English letters, digits, '/', '.', '(', ')', and ' '.
 	* You may assume no files or directories share the same name in the same directory.
 	* You may assume each given directory info represents a unique directory. A single blank space separates the directory path and file info.
@@ -9224,7 +9224,7 @@ public:
 	             those three is -123.
 
 	Constraints:
-	* 1 <= n.length <= 105
+	* 1 <= n.length <= 10^5
 	* 1 <= x <= 9
 	* The digits in n are in the range [1, 9].
 	* n is a valid representation of an integer.
