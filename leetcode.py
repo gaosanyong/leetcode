@@ -27561,10 +27561,11 @@ class Fenwick:
 	* -104 <= nums[i] <= 104"""
 
     def maxResult(self, nums: List[int], k: int) -> int:
-        queue = deque() # (decreasing) mono-queue 
+        queue = deque()
         for i in reversed(range(len(nums))): 
-            if queue and queue[0][1] - i > k: queue.popleft() # expired max 
-            ans = nums[i] + queue[0][0] if queue else nums[i] # max as of i
+            while queue and queue[0][1] - i > k: queue.popleft()
+            ans = nums[i]
+            if queue: ans += queue[0][0]
             while queue and queue[-1][0] <= ans: queue.pop()
             queue.append((ans, i))
         return ans 
