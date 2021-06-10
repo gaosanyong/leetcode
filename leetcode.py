@@ -14931,6 +14931,46 @@ class UnionFind:
             ans |= vals
         return len(ans)
 
+
+    """903. Valid Permutations for DI Sequence (Hard)
+	We are given s, a length n string of characters from the set {'D', 'I'}. 
+	(These letters stand for "decreasing" and "increasing".) A valid 
+	permutation is a permutation p[0], p[1], ..., p[n] of integers 
+	{0, 1, ..., n}, such that for all i:
+	* If s[i] == 'D', then p[i] > p[i+1], and;
+	* If s[i] == 'I', then p[i] < p[i+1].
+	How many valid permutations are there?  Since the answer may be large, 
+	return your answer modulo 109 + 7.
+
+	Example 1:
+	Input: s = "DID"
+	Output: 5
+	Explanation: The 5 valid permutations of (0, 1, 2, 3) are:
+	             (1, 0, 3, 2)
+	             (2, 0, 3, 1)
+	             (2, 1, 3, 0)
+	             (3, 0, 2, 1)
+	             (3, 1, 2, 0)
+
+	Note:
+	* 1 <= s.length <= 200
+	* s consists only of characters from the set {'D', 'I'}."""
+
+    def numPermsDISequence(self, s: str) -> int:
+        
+        @cache 
+        def fn(i, x): 
+            """Return number of valid permutations for s[i:] given x numbers smaller than previous one."""
+            if i == len(s): return 1 
+            if s[i] == "D": 
+                if x == 0: return 0 # cannot decrease
+                return fn(i, x-1) + fn(i+1, x-1)
+            else: 
+                if x == len(s)-i: return 0 # cannot increase 
+                return fn(i, x+1) + fn(i+1, x)
+        
+        return sum(fn(0, x) for x in range(len(s)+1)) % 1_000_000_007
+
     
     """909. Snakes and Ladders (Medium)
 	On an N x N board, the numbers from 1 to N*N are written boustrophedonically 
@@ -35834,11 +35874,11 @@ Note:
   range [0, 10^9].
 
 class Node: 
-    def __init__(self, val=0, left=None, right=None): 
+    def __init__(self, val=(0,0), left=None, right=None): 
         self.val = val
         self.left = left
         self.right = right 
-"""
+"""        
 
 class MyCalendar:
 
@@ -35846,17 +35886,21 @@ class MyCalendar:
         self.root = None
 
     def book(self, start: int, end: int) -> bool:
-        if not self.root: 
-            self.root = Node((start, end))
-            return True 
-        prev = node = self.root 
-        while node: 
-            prev = node 
-            if end <= node.val[0]: node = node.left 
-            elif node.val[1] <= start: node = node.right 
-            else: return False # double booking 
-        if end <= prev.val[0]: prev.left = Node((start, end))
-        else: prev.right = Node((start, end))
+        if not self.root: self.root = Node((start, end))
+        else: 
+            node = self.root 
+            while node: 
+                if end <= node.val[0]: 
+                    if node.left: node = node.left 
+                    else: 
+                        node.left = Node((start, end))
+                        break 
+                elif node.val[1] <= start: 
+                    if node.right: node = node.right
+                    else: 
+                        node.right = Node((start, end))
+                        break 
+                else: return False # double booking 
         return True 
 
 
