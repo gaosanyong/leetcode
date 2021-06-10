@@ -6387,6 +6387,170 @@ public:
     }
 
 
+    /*1790. Check if One String Swap Can Make Strings Equal (Easy)
+	You are given two strings s1 and s2 of equal length. A string swap is an 
+	operation where you choose two indices in a string (not necessarily 
+	different) and swap the characters at these indices. Return true if it is 
+	possible to make both strings equal by performing at most one string swap 
+	on exactly one of the strings. Otherwise, return false.
+
+	Example 1:
+	Input: s1 = "bank", s2 = "kanb"
+	Output: true
+	Explanation: For example, swap the first character with the last character 
+	             of s2 to make "bank".
+	
+	Example 2:
+	Input: s1 = "attack", s2 = "defend"
+	Output: false
+	Explanation: It is impossible to make them equal with one string swap.
+
+	Example 3:
+	Input: s1 = "kelb", s2 = "kelb"
+	Output: true
+	Explanation: The two strings are already equal, so no string swap operation is required.
+
+	Example 4:
+	Input: s1 = "abcd", s2 = "dcba"
+	Output: false
+
+	Constraints:
+	* 1 <= s1.length, s2.length <= 100
+	* s1.length == s2.length
+	* s1 and s2 consist of only lowercase English letters.*/
+
+    bool areAlmostEqual(string s1, string s2) {
+        vector<int> diff; 
+        for (int i = 0; i < size(s1); ++i) 
+            if (s1[i] != s2[i]) diff.push_back(i); 
+        return size(diff) == 0 || (size(diff) == 2 && s1[diff[0]] == s2[diff[1]] && s1[diff[1]] == s2[diff[0]]); 
+    }
+
+
+    /*1791. Find Center of Star Graph (Medium)
+	There is an undirected star graph consisting of n nodes labeled from 1 to n. 
+	A star graph is a graph where there is one center node and exactly n - 1 
+	edges that connect the center node with every other node. You are given a 
+	2D integer array edges where each edges[i] = [ui, vi] indicates that there 
+	is an edge between the nodes ui and vi. Return the center of the given star 
+	graph.
+
+	Example 1:
+	Input: edges = [[1,2],[2,3],[4,2]]
+	Output: 2
+	Explanation: As shown in the figure above, node 2 is connected to every 
+	             other node, so 2 is the center.
+	
+	Example 2:
+	Input: edges = [[1,2],[5,1],[1,3],[1,4]]
+	Output: 1
+
+	Constraints:
+	* 3 <= n <= 10^5
+	* edges.length == n - 1
+	* edges[i].length == 2
+	* 1 <= ui, vi <= n
+	* ui != vi
+	* The given edges represent a valid star graph.*/
+
+    int findCenter(vector<vector<int>>& edges) {
+        if (edges[0][0] == edges[1][0] || edges[0][0] == edges[1][1]) return edges[0][0]; 
+        return edges[0][1]; 
+    }
+
+
+    /*1792. Maximum Average Pass Ratio (Medium)
+	There is a school that has classes of students and each class will be 
+	having a final exam. You are given a 2D integer array classes, where 
+	classes[i] = [passi, totali]. You know beforehand that in the ith class, 
+	there are totali total students, but only passi number of students will 
+	pass the exam. You are also given an integer extraStudents. There are 
+	another extraStudents brilliant students that are guaranteed to pass the 
+	exam of any class they are assigned to. You want to assign each of the 
+	extraStudents students to a class in a way that maximizes the average pass 
+	ratio across all the classes. The pass ratio of a class is equal to the 
+	number of students of the class that will pass the exam divided by the 
+	total number of students of the class. The average pass ratio is the sum of 
+	pass ratios of all the classes divided by the number of the classes. Return 
+	the maximum possible average pass ratio after assigning the extraStudents 
+	students. Answers within 10-5 of the actual answer will be accepted.
+
+	Example 1:
+	Input: classes = [[1,2],[3,5],[2,2]], extraStudents = 2
+	Output: 0.78333
+	Explanation: You can assign the two extra students to the first class. The 
+	             average pass ratio will be equal to 
+	             (3/4 + 3/5 + 2/2) / 3 = 0.78333.
+	
+	Example 2:
+	Input: classes = [[2,4],[3,9],[4,5],[2,10]], extraStudents = 4
+	Output: 0.53485
+
+	Constraints:
+	* 1 <= classes.length <= 10^5
+	* classes[i].length == 2
+	* 1 <= passi <= totali <= 10^5
+	* 1 <= extraStudents <= 10^5*/
+
+    double maxAverageRatio(vector<vector<int>>& classes, int extraStudents) {
+        auto diff = [](int pass, int total) { return (double)(pass+1)/(total+1) - (double)pass/total; };
+        
+        double ans = 0; 
+        priority_queue<pair<double, array<int,2>>> pq; 
+        for (auto& cls : classes) {
+            ans += (double) cls[0]/cls[1]; 
+            pq.push({diff(cls[0], cls[1]), {cls[0], cls[1]}}); 
+        }
+        
+        while (extraStudents--) {
+            auto [chg, elem] = pq.top(); pq.pop(); 
+            ans += chg;  
+            pq.push({diff(elem[0]+1, elem[1]+1), {elem[0]+1, elem[1]+1}}); 
+        }
+        
+        return ans/size(classes); 
+    }
+
+
+    /*1793. Maximum Score of a Good Subarray (Hard)
+	You are given an array of integers nums (0-indexed) and an integer k. The 
+	score of a subarray (i, j) is defined as 
+	
+	min(nums[i], nums[i+1], ..., nums[j]) * (j - i + 1). 
+	
+	A good subarray is a subarray where i <= k <= j. Return the maximum 
+	possible score of a good subarray.
+
+	Example 1:
+	Input: nums = [1,4,3,7,4,5], k = 3
+	Output: 15
+	Explanation: The optimal subarray is (1, 5) with a score of 
+	             min(4,3,7,4,5) * (5-1+1) = 3 * 5 = 15. 
+	
+	Example 2:
+	Input: nums = [5,5,4,5,4,1,1,1], k = 0
+	Output: 20
+	Explanation: The optimal subarray is (0, 4) with a score of 
+	             min(5,5,4,5,4) * (4-0+1) = 4 * 5 = 20.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 2 * 10^4
+	* 0 <= k < nums.length*/
+
+    int maximumScore(vector<int>& nums, int k) {
+        int i = k, j = k, ans = nums[k], val = nums[k]; ; 
+        while (0 <= i-1 || j+1 < size(nums)) {
+            if (j+1 == size(nums) || (0 < i && nums[i-1] > nums[j+1])) 
+                val = min(val, nums[--i]); 
+            else 
+                val = min(val, nums[++j]); 
+            ans = max(ans, val * (j-i+1)); 
+        }
+        return ans; 
+    }
+
+
     /*1796. Second Largest Digit in a String (Easy)
 	Given an alphanumeric string s, return the second largest numerical digit 
 	that appears in s, or -1 if it does not exist. An alphanumeric string is a 
