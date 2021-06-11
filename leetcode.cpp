@@ -2723,6 +2723,70 @@ public:
     }
 
 
+    /*632. Smallest Range Covering Elements from K Lists (Hard)
+	You have k lists of sorted integers in non-decreasing order. Find the 
+	smallest range that includes at least one number from each of the k lists.
+	We define the range [a, b] is smaller than range [c, d] if b - a < d - c or 
+	a < c if b - a == d - c.
+
+	Example 1:
+	Input: nums = [[4,10,15,24,26],[0,9,12,20],[5,18,22,30]]
+	Output: [20,24]
+	Explanation: List 1: [4, 10, 15, 24,26], 24 is in range [20,24].
+	             List 2: [0, 9, 12, 20], 20 is in range [20,24].
+	             List 3: [5, 18, 22, 30], 22 is in range [20,24].
+	
+	Example 2:
+	Input: nums = [[1,2,3],[1,2,3],[1,2,3]]
+	Output: [1,1]
+
+	Example 3:
+	Input: nums = [[10,10],[11,11]]
+	Output: [10,11]
+
+	Example 4:
+	Input: nums = [[10],[11]]
+	Output: [10,11]
+
+	Example 5:
+	Input: nums = [[1],[2],[3],[4],[5],[6],[7]]
+	Output: [1,7]
+
+	Constraints:
+	* nums.length == k
+	* 1 <= k <= 3500
+	* 1 <= nums[i].length <= 50
+	* -10^5 <= nums[i][j] <= 10^5
+	* nums[i] is sorted in non-decreasing order.*/
+
+    vector<int> smallestRange(vector<vector<int>>& nums) {
+        
+        struct Compare {
+            bool operator() (array<int,3>&lhs, array<int,3>&rhs) { return lhs[0] > rhs[0]; }
+        };
+        
+        priority_queue<array<int,3>, vector<array<int,3>>, Compare> pq; 
+        int mx = INT_MIN, lo = -100'000, hi = 100'000; 
+        for (int i = 0; i < size(nums); ++i) {
+            pq.push({nums[i][0], i, 0}); 
+            mx = max(mx, nums[i][0]); 
+        }
+        
+        while (size(pq)) {
+            if (mx - pq.top()[0] < hi - lo) {
+                lo = pq.top()[0]; 
+                hi = mx; 
+            }
+            auto elem = pq.top(); pq.pop(); 
+            int i = elem[1], j = elem[2]; 
+            if (j+1 == size(nums[i])) break;
+            mx = max(mx, nums[i][j+1]); 
+            pq.push({nums[i][j+1], i, j+1}); 
+        }
+        return {lo, hi}; 
+    }
+
+
     /*643. Maximum Average Subarray I (Easy)
 	Given an array consisting of n integers, find the contiguous subarray of 
 	given length k that has the maximum average value. And you need to output 
