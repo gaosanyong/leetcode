@@ -16203,6 +16203,51 @@ class UnionFind:
         return ans 
 
 
+    """995. Minimum Number of K Consecutive Bit Flips (Hard)
+	In an array nums containing only 0s and 1s, a k-bit flip consists of 
+	choosing a (contiguous) subarray of length k and simultaneously changing 
+	every 0 in the subarray to 1, and every 1 in the subarray to 0. Return the 
+	minimum number of k-bit flips required so that there is no 0 in the array.  
+	If it is not possible, return -1.
+
+	Example 1:
+	Input: nums = [0,1,0], k = 1
+	Output: 2
+	Explanation: Flip nums[0], then flip nums[2].
+
+	Example 2:
+	Input: nums = [1,1,0], k = 2
+	Output: -1
+	Explanation: No matter how we flip subarrays of size 2, we can't make the 
+	             array become [1,1,1].
+	
+	Example 3:
+	Input: nums = [0,0,0,1,0,1,1,0], k = 3
+	Output: 3
+	Explanation:
+	Flip nums[0],nums[1],nums[2]: nums becomes [1,1,1,1,0,1,1,0]
+	Flip nums[4],nums[5],nums[6]: nums becomes [1,1,1,1,1,0,0,0]
+	Flip nums[5],nums[6],nums[7]: nums becomes [1,1,1,1,1,1,1,1]
+
+	Note:
+	* 1 <= nums.length <= 30000
+	* 1 <= k <= nums.length"""
+
+    def minKBitFlips(self, nums: List[int], k: int) -> int:
+        ans = flip = 0 
+        queue = deque()
+        for i, x in enumerate(nums):
+            if queue and i == queue[0]: 
+                flip ^= 1
+                queue.popleft()
+            if x == flip: 
+                if len(nums) - i < k: return -1
+                ans += 1
+                flip ^= 1
+                queue.append(i+k)
+        return ans
+
+
     """1014. Best Sightseeing Pair (Medium)
 	Given an array A of positive integers, A[i] represents the value of the 
 	i-th sightseeing spot, and two sightseeing spots i and j have distance 
