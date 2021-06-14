@@ -10235,6 +10235,238 @@ public:
         }
         return ans < LONG_MAX ? (ans - accumulate(begin(packages), end(packages), (long) 0)) % 1'000'000'007 : -1; 
     }
+
+
+    /*1893. Check if All the Integers in a Range Are Covered (Easy)
+	You are given a 2D integer array ranges and two integers left and right. 
+	Each ranges[i] = [starti, endi] represents an inclusive interval between 
+	starti and endi. Return true if each integer in the inclusive range 
+	[left, right] is covered by at least one interval in ranges. Return false 
+	otherwise. An integer x is covered by an interval ranges[i] = [starti, endi] 
+	if starti <= x <= endi.
+
+	Example 1:
+	Input: ranges = [[1,2],[3,4],[5,6]], left = 2, right = 5
+	Output: true
+	Explanation: Every integer between 2 and 5 is covered:
+	             - 2 is covered by the first range.
+	             - 3 and 4 are covered by the second range.
+	             - 5 is covered by the third range.
+	
+	Example 2:
+	Input: ranges = [[1,10],[10,20]], left = 21, right = 21
+	Output: false
+	Explanation: 21 is not covered by any range.
+
+	Constraints:
+	* 1 <= ranges.length <= 50
+	* 1 <= starti <= endi <= 50
+	* 1 <= left <= right <= 50*/
+
+    bool isCovered(vector<vector<int>>& ranges, int left, int right) {
+        vector<int> vals(52); 
+        for (auto& rng : ranges) 
+            ++vals[rng[0]], --vals[rng[1]+1]; 
+        for (int i = 0, prefix = 0; i < size(vals); ++i) {
+            prefix += vals[i]; 
+            if (left <= i && i <= right && prefix == 0) return false;  
+        }
+        return true; 
+    }
+
+
+    /*1894. Find the Student that Will Replace the Chalk (Medium)
+	There are n students in a class numbered from 0 to n - 1. The teacher will 
+	give each student a problem starting with the student number 0, then the 
+	student number 1, and so on until the teacher reaches the student number 
+	n - 1. After that, the teacher will restart the process, starting with the 
+	student number 0 again. You are given a 0-indexed integer array chalk and 
+	an integer k. There are initially k pieces of chalk. When the student 
+	number i is given a problem to solve, they will use chalk[i] pieces of 
+	chalk to solve that problem. However, if the current number of chalk pieces 
+	is strictly less than chalk[i], then the student number i will be asked to 
+	replace the chalk. Return the index of the student that will replace the 
+	chalk.
+
+	Example 1:
+	Input: chalk = [5,1,5], k = 22
+	Output: 0
+	Explanation: The students go in turns as follows:
+	             - Student number 0 uses 5 chalk, so k = 17.
+	             - Student number 1 uses 1 chalk, so k = 16.
+	             - Student number 2 uses 5 chalk, so k = 11.
+	             - Student number 0 uses 5 chalk, so k = 6.
+	             - Student number 1 uses 1 chalk, so k = 5.
+	             - Student number 2 uses 5 chalk, so k = 0.
+	             Student number 0 does not have enough chalk, so they will have 
+	             to replace it.
+	
+	Example 2:
+	Input: chalk = [3,4,1,2], k = 25
+	Output: 1
+	Explanation: The students go in turns as follows:
+	             - Student number 0 uses 3 chalk so k = 22.
+	             - Student number 1 uses 4 chalk so k = 18.
+	             - Student number 2 uses 1 chalk so k = 17.
+	             - Student number 3 uses 2 chalk so k = 15.
+	             - Student number 0 uses 3 chalk so k = 12.
+	             - Student number 1 uses 4 chalk so k = 8.
+	             - Student number 2 uses 1 chalk so k = 7.
+	             - Student number 3 uses 2 chalk so k = 5.
+	             - Student number 0 uses 3 chalk so k = 2.
+	             Student number 1 does not have enough chalk, so they will have 
+	             to replace it.
+
+	Constraints:
+	* chalk.length == n
+	* 1 <= n <= 10^5
+	* 1 <= chalk[i] <= 10^5
+	* 1 <= k <= 10^9*/
+
+    int chalkReplacer(vector<int>& chalk, int k) {
+        k %= accumulate(begin(chalk), end(chalk), 0l); 
+        for (int i = 0; i < size(chalk); ++i) {
+            if ((k -= chalk[i]) < 0) return i; 
+        }
+        return -1; 
+    }
+
+
+    /*1895. Largest Magic Square (Medium)
+	A k x k magic square is a k x k grid filled with integers such that every 
+	row sum, every column sum, and both diagonal sums are all equal. The 
+	integers in the magic square do not have to be distinct. Every 1 x 1 grid 
+	is trivially a magic square. Given an m x n integer grid, return the size 
+	(i.e., the side length k) of the largest magic square that can be found 
+	within this grid.
+
+	Example 1:
+	Input: grid = [[7,1,4,5,6],[2,5,1,6,4],[1,5,4,3,2],[1,2,7,3,4]]
+	Output: 3
+	Explanation: The largest magic square has a size of 3. Every row sum, 
+	             column sum, and diagonal sum of this magic square is equal to 
+	             12.
+	             - Row sums: 5+1+6 = 5+4+3 = 2+7+3 = 12
+	             - Column sums: 5+5+2 = 1+4+7 = 6+3+3 = 12
+	             - Diagonal sums: 5+4+3 = 6+4+2 = 12
+	
+	Example 2:
+	Input: grid = [[5,1,3,1],[9,3,3,1],[1,3,3,8]]
+	Output: 2
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 50
+	* 1 <= grid[i][j] <= 10^6*/
+
+    int largestMagicSquare(vector<vector<int>>& grid) {
+        int m = size(grid), n = size(grid[0]); // dimensions 
+        
+        vector<vector<int>> rows (m, vector<int>(n+1, 0)), cols (m+1, vector<int>(n, 0)); 
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                rows[i][j+1] = grid[i][j] + rows[i][j]; 
+                cols[i+1][j] = grid[i][j] + cols[i][j]; 
+            }
+        }
+        
+        int ans = 1; 
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                int diag = grid[i][j]; 
+                for (int k = 1; k <= min(i, j); ++k) {
+                    int ii = i-k, jj = j-k; 
+                    diag += grid[ii][jj]; 
+                    if (k >= ans) {
+                        unordered_set<int> seen = {diag}; 
+                        for (int r = ii; r <= i; ++r) seen.insert(rows[r][j+1] - rows[r][jj]); 
+                        for (int c = jj; c <= j; ++c) seen.insert(cols[i+1][c] - cols[ii][c]); 
+                        int anti = 0; 
+                        for (int d = 0; d <= k; ++d) anti += grid[ii+d][j-d]; 
+                        seen.insert(anti); 
+                        if (size(seen) == 1) ans = max(ans, k+1); 
+                    }
+                }
+            }
+        }
+        return ans; 
+    }
+
+
+    /*1896. Minimum Cost to Change the Final Value of Expression (Hard)
+	You are given a valid boolean expression as a string expression consisting 
+	of the characters '1','0','&' (bitwise AND operator),'|' (bitwise OR 
+	operator),'(', and ')'. For example, "()1|1" and "(1)&()" are not valid 
+	while "1", "(((1))|(0))", and "1|(0&(1))" are valid expressions. Return the 
+	minimum cost to change the final value of the expression. For example, if 
+	expression = "1|1|(0&0)&1", its value is 1|1|(0&0)&1 = 1|1|0&1 = 1|0&1 = 1&1 = 1. 
+	We want to apply operations so that the new expression evaluates to 0. The 
+	cost of changing the final value of an expression is the number of 
+	operations performed on the expression. The types of operations are 
+	described as follows:
+	* Turn a '1' into a '0'.
+	* Turn a '0' into a '1'.
+	* Turn a '&' into a '|'.
+	* Turn a '|' into a '&'.
+	Note: '&' does not take precedence over '|' in the order of calculation. 
+	Evaluate parentheses first, then in left-to-right order.
+
+	Example 1:
+	Input: expression = "1&(0|1)"
+	Output: 1
+	Explanation: We can turn "1&(0|1)" into "1&(0&1)" by changing the '|' to a 
+	             '&' using 1 operation. The new expression evaluates to 0. 
+	
+	Example 2:
+	Input: expression = "(0&0)&(0&0&0)"
+	Output: 3
+	Explanation: We can turn "(0&0)&(0&0&0)" into "(0|1)|(0&0&0)" using 3 
+	             operations. The new expression evaluates to 1.
+	
+	Example 3:
+	Input: expression = "(0|(1|0&1))"
+	Output: 1
+	Explanation: We can turn "(0|(1|0&1))" into "(0|(0|0&1))" using 1 operation.
+	             The new expression evaluates to 0.
+
+	Constraints:
+	* 1 <= expression.length <= 10^5
+	* expression only contains '1','0','&','|','(', and ')'
+	* All parentheses are properly matched.
+	* There will be no empty parentheses (i.e: "()" is not a substring of expression).*/
+
+    int minOperationsToFlip(string expression) {
+        unordered_map<int, int> mp; 
+        stack<int> stk; 
+        for (int i = size(expression)-1; i >= 0; --i) {
+            if (expression[i] == ')') stk.push(i); 
+            else if (expression[i] == '(') mp[stk.top()] = i, stk.pop(); 
+        }
+        
+        function<pair<int, int>(int, int)> fn = [&](int lo, int hi) {
+            if (lo == hi) return make_pair(expression[lo]-'0', 1); // single number 
+            if (expression[hi] == ')' && lo == mp[hi]) return fn(lo+1, hi-1); // single parenthesis
+            int mid = (mp.count(hi) ? mp[hi] : hi) - 1; 
+            auto [v, c] = fn(mid+1, hi); 
+            auto [vv, cc] = fn(lo, mid-1); 
+            int val = 0, chg = 0; 
+            if (expression[mid] == '|') {
+                val = v | vv; 
+                if (v == 1 && vv == 1) chg = 1 + min(c, cc); 
+                else if (v == 0 && vv == 0) chg = min(c, cc); 
+                else chg = 1; 
+            } else {
+                val = v & vv; 
+                if (v == 1 && vv == 1) chg = min(c, cc); 
+                else if (v == 0 && vv == 0) chg = 1 + min(c, cc); 
+                else chg = 1; 
+            }
+            return make_pair(val, chg); 
+        };
+        
+        return fn(0, size(expression)-1).second; 
+    }
 };
 
 
