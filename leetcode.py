@@ -34219,6 +34219,225 @@ class Fenwick:
         return (ans - sum(packages)) % 1_000_000_007 if ans < inf else -1 
 
 
+    """1893. Check if All the Integers in a Range Are Covered (Easy)
+	You are given a 2D integer array ranges and two integers left and right. 
+	Each ranges[i] = [starti, endi] represents an inclusive interval between 
+	starti and endi. Return true if each integer in the inclusive range 
+	[left, right] is covered by at least one interval in ranges. Return false 
+	otherwise. An integer x is covered by an interval ranges[i] = [starti, endi] 
+	if starti <= x <= endi.
+
+	Example 1:
+	Input: ranges = [[1,2],[3,4],[5,6]], left = 2, right = 5
+	Output: true
+	Explanation: Every integer between 2 and 5 is covered:
+	             - 2 is covered by the first range.
+	             - 3 and 4 are covered by the second range.
+	             - 5 is covered by the third range.
+	
+	Example 2:
+	Input: ranges = [[1,10],[10,20]], left = 21, right = 21
+	Output: false
+	Explanation: 21 is not covered by any range.
+
+	Constraints:
+	* 1 <= ranges.length <= 50
+	* 1 <= starti <= endi <= 50
+	* 1 <= left <= right <= 50"""
+
+    def isCovered(self, ranges: List[List[int]], left: int, right: int) -> bool:
+        vals = [0]*52 
+        for x, y in ranges: 
+            vals[x] += 1
+            vals[y+1] -= 1
+        prefix = 0 
+        for i, x in enumerate(vals): 
+            prefix += x
+            if left <= i <= right and prefix == 0: return False 
+        return True 
+
+
+    """1894. Find the Student that Will Replace the Chalk (Medium)
+	There are n students in a class numbered from 0 to n - 1. The teacher will 
+	give each student a problem starting with the student number 0, then the 
+	student number 1, and so on until the teacher reaches the student number 
+	n - 1. After that, the teacher will restart the process, starting with the 
+	student number 0 again. You are given a 0-indexed integer array chalk and 
+	an integer k. There are initially k pieces of chalk. When the student 
+	number i is given a problem to solve, they will use chalk[i] pieces of 
+	chalk to solve that problem. However, if the current number of chalk pieces 
+	is strictly less than chalk[i], then the student number i will be asked to 
+	replace the chalk. Return the index of the student that will replace the 
+	chalk.
+
+	Example 1:
+	Input: chalk = [5,1,5], k = 22
+	Output: 0
+	Explanation: The students go in turns as follows:
+	             - Student number 0 uses 5 chalk, so k = 17.
+	             - Student number 1 uses 1 chalk, so k = 16.
+	             - Student number 2 uses 5 chalk, so k = 11.
+	             - Student number 0 uses 5 chalk, so k = 6.
+	             - Student number 1 uses 1 chalk, so k = 5.
+	             - Student number 2 uses 5 chalk, so k = 0.
+	             Student number 0 does not have enough chalk, so they will have 
+	             to replace it.
+	
+	Example 2:
+	Input: chalk = [3,4,1,2], k = 25
+	Output: 1
+	Explanation: The students go in turns as follows:
+	             - Student number 0 uses 3 chalk so k = 22.
+	             - Student number 1 uses 4 chalk so k = 18.
+	             - Student number 2 uses 1 chalk so k = 17.
+	             - Student number 3 uses 2 chalk so k = 15.
+	             - Student number 0 uses 3 chalk so k = 12.
+	             - Student number 1 uses 4 chalk so k = 8.
+	             - Student number 2 uses 1 chalk so k = 7.
+	             - Student number 3 uses 2 chalk so k = 5.
+	             - Student number 0 uses 3 chalk so k = 2.
+	             Student number 1 does not have enough chalk, so they will have 
+	             to replace it.
+
+	Constraints:
+	* chalk.length == n
+	* 1 <= n <= 10^5
+	* 1 <= chalk[i] <= 10^5
+	* 1 <= k <= 10^9"""
+
+    def chalkReplacer(self, chalk: List[int], k: int) -> int:
+        k %= sum(chalk)
+        for i, x in enumerate(chalk): 
+            k -= x
+            if k < 0: return i 
+
+
+    """1895. Largest Magic Square (Medium)
+	A k x k magic square is a k x k grid filled with integers such that every 
+	row sum, every column sum, and both diagonal sums are all equal. The 
+	integers in the magic square do not have to be distinct. Every 1 x 1 grid 
+	is trivially a magic square. Given an m x n integer grid, return the size 
+	(i.e., the side length k) of the largest magic square that can be found 
+	within this grid.
+
+	Example 1:
+	Input: grid = [[7,1,4,5,6],[2,5,1,6,4],[1,5,4,3,2],[1,2,7,3,4]]
+	Output: 3
+	Explanation: The largest magic square has a size of 3. Every row sum, 
+	             column sum, and diagonal sum of this magic square is equal to 
+	             12.
+	             - Row sums: 5+1+6 = 5+4+3 = 2+7+3 = 12
+	             - Column sums: 5+5+2 = 1+4+7 = 6+3+3 = 12
+	             - Diagonal sums: 5+4+3 = 6+4+2 = 12
+	
+	Example 2:
+	Input: grid = [[5,1,3,1],[9,3,3,1],[1,3,3,8]]
+	Output: 2
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 50
+	* 1 <= grid[i][j] <= 10^6"""
+
+    def largestMagicSquare(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0]) # dimensions 
+        rows = [[0]*(n+1) for _ in range(m)] # prefix sum along row
+        cols = [[0]*n for _ in range(m+1)] # prefix sum along column
+        
+        for i in range(m):
+            for j in range(n): 
+                rows[i][j+1] = grid[i][j] + rows[i][j]
+                cols[i+1][j] = grid[i][j] + cols[i][j]
+        
+        ans = 1
+        for i in range(m): 
+            for j in range(n): 
+                diag = grid[i][j]
+                for k in range(min(i, j)): 
+                    ii, jj = i-k-1, j-k-1
+                    diag += grid[ii][jj]
+                    ss = {diag}
+                    for r in range(ii, i+1): ss.add(rows[r][j+1] - rows[r][jj])
+                    for c in range(jj, j+1): ss.add(cols[i+1][c] - cols[ii][c])
+                    ss.add(sum(grid[ii+kk][j-kk] for kk in range(k+2))) # anti-diagonal
+                    if len(ss) == 1: ans = max(ans, k+2)
+        return ans 
+
+
+    """1896. Minimum Cost to Change the Final Value of Expression (Hard)
+	You are given a valid boolean expression as a string expression consisting 
+	of the characters '1','0','&' (bitwise AND operator),'|' (bitwise OR 
+	operator),'(', and ')'. For example, "()1|1" and "(1)&()" are not valid 
+	while "1", "(((1))|(0))", and "1|(0&(1))" are valid expressions. Return the 
+	minimum cost to change the final value of the expression. For example, if 
+	expression = "1|1|(0&0)&1", its value is 1|1|(0&0)&1 = 1|1|0&1 = 1|0&1 = 1&1 = 1. 
+	We want to apply operations so that the new expression evaluates to 0. The 
+	cost of changing the final value of an expression is the number of 
+	operations performed on the expression. The types of operations are 
+	described as follows:
+	* Turn a '1' into a '0'.
+	* Turn a '0' into a '1'.
+	* Turn a '&' into a '|'.
+	* Turn a '|' into a '&'.
+	Note: '&' does not take precedence over '|' in the order of calculation. 
+	Evaluate parentheses first, then in left-to-right order.
+
+	Example 1:
+	Input: expression = "1&(0|1)"
+	Output: 1
+	Explanation: We can turn "1&(0|1)" into "1&(0&1)" by changing the '|' to a 
+	             '&' using 1 operation. The new expression evaluates to 0. 
+	
+	Example 2:
+	Input: expression = "(0&0)&(0&0&0)"
+	Output: 3
+	Explanation: We can turn "(0&0)&(0&0&0)" into "(0|1)|(0&0&0)" using 3 
+	             operations. The new expression evaluates to 1.
+	
+	Example 3:
+	Input: expression = "(0|(1|0&1))"
+	Output: 1
+	Explanation: We can turn "(0|(1|0&1))" into "(0|(0|0&1))" using 1 operation.
+	             The new expression evaluates to 0.
+
+	Constraints:
+	* 1 <= expression.length <= 10^5
+	* expression only contains '1','0','&','|','(', and ')'
+	* All parentheses are properly matched.
+	* There will be no empty parentheses (i.e: "()" is not a substring of 
+	  expression)."""
+
+    def minOperationsToFlip(self, expression: str) -> int:
+        loc = {}
+        stack = []
+        for i in reversed(range(len(expression))):
+            if expression[i] == ")": stack.append(i)
+            elif expression[i] == "(": loc[stack.pop()] = i 
+        
+        def fn(lo, hi): 
+            """Return value and min op to change value."""
+            if lo == hi: return int(expression[lo]), 1
+            if expression[hi] == ")" and loc[hi] == lo: return fn(lo+1, hi-1) # strip parenthesis 
+            mid = loc.get(hi, hi) - 1 
+            v, c = fn(mid+1, hi)
+            if mid < lo: return v, c 
+            vv, cc = fn(lo, mid-1)
+            if expression[mid] == "|": 
+                val = v | vv 
+                if v == vv == 0: chg = min(c, cc)
+                elif v == vv == 1: chg = 1 + min(c, cc)
+                else: chg = 1 
+            else: # expression[k] == "&"
+                val = v & vv
+                if v == vv == 0: chg = 1 + min(c, cc)
+                elif v == vv == 1: chg = min(c, cc)
+                else: chg = 1
+            return val, chg
+                    
+        return fn(0, len(expression)-1)[1]
+
+
     """1897. Redistribute Characters to Make All Strings Equal (Easy)
 	You are given an array of strings words (0-indexed). In one operation, pick 
 	two distinct indices i and j, where words[i] is a non-empty string, and 
