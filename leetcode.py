@@ -34220,6 +34220,231 @@ class Fenwick:
         return (ans - sum(packages)) % 1_000_000_007 if ans < inf else -1 
 
 
+    """1897. Redistribute Characters to Make All Strings Equal (Easy)
+	You are given an array of strings words (0-indexed). In one operation, pick 
+	two distinct indices i and j, where words[i] is a non-empty string, and 
+	move any character from words[i] to any position in words[j]. Return true 
+	if you can make every string in words equal using any number of operations, 
+	and false otherwise.
+
+	Example 1:
+	Input: words = ["abc","aabc","bc"]
+	Output: true
+	Explanation: Move the first 'a' in words[1] to the front of words[2], to 
+	             make words[1] = "abc" and words[2] = "abc". All the strings 
+	             are now equal to "abc", so return true.
+	
+	Example 2:
+	Input: words = ["ab","a"]
+	Output: false
+	Explanation: It is impossible to make all the strings equal using the 
+	             operation.
+
+	Constraints:
+	* 1 <= words.length <= 100
+	* 1 <= words[i].length <= 100
+	* words[i] consists of lowercase English letters."""
+
+    def makeEqual(self, words: List[str]) -> bool:
+        freq = defaultdict(int)
+        for word in words: 
+            for ch in word: freq[ord(ch)-97] += 1
+        return all(x % len(words) == 0 for x in freq.values())
+
+
+    """1898. Maximum Number of Removable Characters (Medium)
+	You are given two strings s and p where p is a subsequence of s. You are 
+	also given a distinct 0-indexed integer array removable containing a subset 
+	of indices of s (s is also 0-indexed). You want to choose an integer k 
+	(0 <= k <= removable.length) such that, after removing k characters from s 
+	using the first k indices in removable, p is still a subsequence of s. More 
+	formally, you will mark the character at s[removable[i]] for each 0 <= i < k, 
+	then remove all marked characters and check if p is still a subsequence.
+	Return the maximum k you can choose such that p is still a subsequence of s 
+	after the removals. A subsequence of a string is a new string generated 
+	from the original string with some characters (can be none) deleted without 
+	changing the relative order of the remaining characters.
+
+	Example 1:
+	Input: s = "abcacb", p = "ab", removable = [3,1,0]
+	Output: 2
+	Explanation: After removing the characters at indices 3 and 1, "abcacb" 
+	             becomes "accb". "ab" is a subsequence of "accb". If we remove 
+	             the characters at indices 3, 1, and 0, "abcacb" becomes "ccb", 
+	             and "ab" is no longer a subsequence. Hence, the maximum k is 2.
+	
+	Example 2:
+	Input: s = "abcbddddd", p = "abcd", removable = [3,2,1,4,5,6]
+	Output: 1
+	Explanation: After removing the character at index 3, "abcbddddd" becomes 
+	             "abcddddd". "abcd" is a subsequence of "abcddddd".
+	
+	Example 3:
+	Input: s = "abcab", p = "abc", removable = [0,1,2,3,4]
+	Output: 0
+	Explanation: If you remove the first index in the array removable, "abc" is 
+	             no longer a subsequence.
+
+	Constraints:
+	* 1 <= p.length <= s.length <= 10^5
+	* 0 <= removable.length < s.length
+	* 0 <= removable[i] < s.length
+	* p is a subsequence of s.
+	* s and p both consist of lowercase English letters.
+	* The elements in removable are distinct."""
+
+    def maximumRemovals(self, s: str, p: str, removable: List[int]) -> int:
+        mp = {x: i for i, x in enumerate(removable)}
+        
+        def fn(x):
+            """Return True if p is a subseq of s after x removals."""
+            k = 0 
+            for i, ch in enumerate(s): 
+                if mp.get(i, inf) < x: continue 
+                if k < len(p) and ch == p[k]: k += 1
+            return k == len(p)
+        
+        lo, hi = -1, len(removable)
+        while lo < hi: 
+            mid = lo + hi + 1 >> 1
+            if fn(mid): lo = mid
+            else: hi = mid - 1
+        return lo 
+
+
+    """1899. Merge Triplets to Form Target Triplet (Medium)
+	A triplet is an array of three integers. You are given a 2D integer array 
+	triplets, where triplets[i] = [ai, bi, ci] describes the ith triplet. You 
+	are also given an integer array target = [x, y, z] that describes the 
+	triplet you want to obtain. To obtain target, you may apply the following 
+	operation on triplets any number of times (possibly zero):
+	* Choose two indices (0-indexed) i and j (i != j) and update triplets[j] to 
+	  become [max(ai, aj), max(bi, bj), max(ci, cj)].
+	* For example, if triplets[i] = [2, 5, 3] and triplets[j] = [1, 7, 5], 
+	  triplets[j] will be updated to [max(2, 1), max(5, 7), max(3, 5)] = [2, 7, 5].
+	Return true if it is possible to obtain the target triplet [x, y, z] as an 
+	element of triplets, or false otherwise.
+
+	Example 1:
+	Input: triplets = [[2,5,3],[1,8,4],[1,7,5]], target = [2,7,5]
+	Output: true
+	Explanation: Perform the following operations:
+	             - Choose the first and last triplets [[2,5,3],[1,8,4],[1,7,5]]. 
+	               Update the last triplet to be [max(2,1), max(5,7), max(3,5)] = [2,7,5]. 
+	               triplets = [[2,5,3],[1,8,4],[2,7,5]]. 
+	             The target triplet [2,7,5] is now an element of triplets.
+	
+	Example 2:
+	Input: triplets = [[1,3,4],[2,5,8]], target = [2,5,8]
+	Output: true
+	Explanation: The target triplet [2,5,8] is already an element of triplets.
+
+	Example 3:
+	Input: triplets = [[2,5,3],[2,3,4],[1,2,5],[5,2,3]], target = [5,5,5]
+	Output: true
+	Explanation: Perform the following operations:
+	             - Choose the first and third triplets [[2,5,3],[2,3,4],[1,2,5],[5,2,3]]. 
+	               Update the third triplet to be [max(2,1), max(5,2), max(3,5)] = [2,5,5]. 
+	               triplets = [[2,5,3],[2,3,4],[2,5,5],[5,2,3]].
+	             - Choose the third and fourth triplets [[2,5,3],[2,3,4],[2,5,5],[5,2,3]]. 
+	               Update the fourth triplet to be [max(2,5), max(5,2), max(5,3)] = [5,5,5]. 
+	               triplets = [[2,5,3],[2,3,4],[2,5,5],[5,5,5]].
+	             The target triplet [5,5,5] is now an element of triplets.
+	
+	Example 4:
+	Input: triplets = [[3,4,5],[4,5,6]], target = [3,2,5]
+	Output: false
+	Explanation: It is impossible to have [3,2,5] as an element because there 
+	             is no 2 in any of the triplets.
+
+	Constraints:
+	* 1 <= triplets.length <= 10^5
+	* triplets[i].length == target.length == 3
+	* 1 <= ai, bi, ci, x, y, z <= 1000"""
+
+    def mergeTriplets(self, triplets: List[List[int]], target: List[int]) -> bool:
+        x = y = z = -inf 
+        for a, b, c in triplets: 
+            if a <= target[0] and b <= target[1] and c <= target[2]: 
+                x, y, z = max(x, a), max(y, b), max(z, c)
+        return [x, y, z] == target
+
+
+    """1900. The Earliest and Latest Rounds Where Players Compete (Hard)
+	There is a tournament where n players are participating. The players are 
+	standing in a single row and are numbered from 1 to n based on their 
+	initial standing position (player 1 is the first player in the row, player 
+	2 is the second player in the row, etc.). The tournament consists of 
+	multiple rounds (starting from round number 1). In each round, the ith 
+	player from the front of the row competes against the ith player from the 
+	end of the row, and the winner advances to the next round. When the number 
+	of players is odd for the current round, the player in the middle 
+	automatically advances to the next round.
+
+	* For example, if the row consists of players 1, 2, 4, 6, 7
+	  - Player 1 competes against player 7.
+	  - Player 2 competes against player 6.
+	  - Player 4 automatically advances to the next round.
+	After each round is over, the winners are lined back up in the row based on 
+	the original ordering assigned to them initially (ascending order). The 
+	players numbered firstPlayer and secondPlayer are the best in the 
+	tournament. They can win against any other player before they compete 
+	against each other. If any two other players compete against each other, 
+	either of them might win, and thus you may choose the outcome of this round.
+	Given the integers n, firstPlayer, and secondPlayer, return an integer array 
+	containing two values, the earliest possible round number and the latest 
+	possible round number in which these two players will compete against each 
+	other, respectively.
+
+	Example 1:
+	Input: n = 11, firstPlayer = 2, secondPlayer = 4
+	Output: [3,4]
+	Explanation: One possible scenario which leads to the earliest round number:
+	             - First round: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+	             - Second round: 2, 3, 4, 5, 6, 11
+	             - Third round: 2, 3, 4
+	             One possible scenario which leads to the latest round number:
+	             - First round: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
+	             - Second round: 1, 2, 3, 4, 5, 6
+	             - Third round: 1, 2, 4
+	             - Fourth round: 2, 4
+	
+	Example 2:
+	Input: n = 5, firstPlayer = 1, secondPlayer = 5
+	Output: [1,1]
+	Explanation: The players numbered 1 and 5 compete in the first round. There 
+	             is no way to make them compete in any other round.
+
+	Constraints:
+	* 2 <= n <= 28
+	* 1 <= firstPlayer < secondPlayer <= n"""
+
+    def earliestAndLatest(self, n: int, firstPlayer: int, secondPlayer: int) -> List[int]:
+        firstPlayer, secondPlayer = firstPlayer-1, secondPlayer-1 # 0-indexed
+        
+        @cache
+        def fn(k, mask): 
+            """Return earliest and latest rounds."""
+            can = [i for i in range(n) if mask & (1 << i)]
+            cand = [] # eliminated player
+            for i in range(len(can)//2): 
+                p1, p2 = can[i], can[~i]
+                if p1 == firstPlayer and p2 == secondPlayer or p1 == secondPlayer and p2 == firstPlayer: return [k, k] # game of interest 
+                if p1 in (firstPlayer, secondPlayer): cand.append([p2]) # p2 eliminated 
+                elif p2 in (firstPlayer, secondPlayer): cand.append([p1]) # p1 eliminated 
+                else: cand.append([p1, p2]) # both could be elimited 
+            
+            minn, maxx = inf, -inf
+            for x in product(*cand): 
+                mask0 = mask
+                for i in x: mask0 ^= 1 << i
+                mn, mx = fn(k+1, mask0)
+                minn, maxx = min(minn, mn), max(maxx, mx)
+            return minn, maxx
+        
+        return fn(1, (1<<n)-1)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
