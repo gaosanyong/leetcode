@@ -28290,12 +28290,11 @@ class Fenwick:
 	* 1 <= truckSize <= 106"""
 
     def maximumUnits(self, boxTypes: List[List[int]], truckSize: int) -> int:
-        boxTypes.sort(key=lambda x: x[1], reverse=True)
-        ans = 0
-        for box, unit in boxTypes: 
-            box = min(box, truckSize)
-            truckSize -= box
-            ans += box * unit
+        ans = 0 
+        for boxes, units in sorted(boxTypes, key=lambda x: x[1], reverse=True): 
+            boxes = min(boxes, truckSize)
+            ans += boxes * units
+            truckSize -= boxes
         return ans 
 
 
