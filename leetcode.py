@@ -730,15 +730,18 @@ class Solution:
 
     def generateParenthesis(self, n: int) -> List[str]:
         
-        def fn(s, op, cl):
-            """Backtracking to collect parentheses"""
-            if cl == n: return ans.append(s)
-            if op <  n: fn(s+"(", op+1, cl)
-            if cl < op: fn(s+")", op, cl+1)
-                
-        ans = []
-        fn("", 0, 0)
-        return ans 
+        @cache
+        def fn(n): 
+            """Return n pairs of well-formed parenthesis."""
+            if n == 0: return [""]
+            ans = []
+            for k in range(n): 
+                for x in fn(k): 
+                    for y in fn(n-k-1): 
+                        ans.append(f"{x}({y})")
+            return ans 
+        
+        return fn(n)
 
 
     """23. Merge k Sorted Lists (Hard)

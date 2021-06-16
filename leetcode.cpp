@@ -355,6 +355,33 @@ public:
     }
 
 
+    /*22. Generate Parentheses (Medium)
+	Given n pairs of parentheses, write a function to generate all combinations 
+	of well-formed parentheses.
+
+	Example 1:
+	Input: n = 3
+	Output: ["((()))","(()())","(())()","()(())","()()()"]
+
+	Example 2:
+	Input: n = 1
+	Output: ["()"]
+
+	Constraints: 1 <= n <= 8*/
+
+    vector<string> generateParenthesis(int n) {
+        vector<vector<string>> ans = {{""}}; 
+        for (int k = 1; k <= n; ++k) {
+            ans.push_back({}); 
+            for (int i = 0; i < k; ++i) 
+                for (auto& x : ans[i]) 
+                    for (auto& y : ans[k-i-1]) 
+                        ans.back().push_back(x + "(" + y + ")"); 
+        }
+        return ans.back(); 
+    }
+
+
     /*26. Remove Duplicates from Sorted Array (Easy)
 	Given a sorted array nums, remove the duplicates in-place such that each 
 	element appears only once and returns the new length. Do not allocate extra 
