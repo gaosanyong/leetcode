@@ -10416,29 +10416,27 @@ public:
     int largestMagicSquare(vector<vector<int>>& grid) {
         int m = size(grid), n = size(grid[0]); // dimensions 
         
-        vector<vector<int>> rows (m, vector<int>(n+1, 0)), cols (m+1, vector<int>(n, 0)); 
+        vector<vector<int>> rows(m, vector<int>(n+1)), cols(m+1, vector<int>(n)), diag(m+1, vector<int>(n+1)), anti(m+1, vector<int>(n+1)); 
         for (int i = 0; i < m; ++i) {
             for (int j = 0; j < n; ++j) {
                 rows[i][j+1] = grid[i][j] + rows[i][j]; 
                 cols[i+1][j] = grid[i][j] + cols[i][j]; 
+                diag[i+1][j+1] = grid[i][j] + diag[i][j]; 
+                anti[i+1][j] = grid[i][j] + anti[i][j+1]; 
             }
         }
         
         int ans = 1; 
         for (int i = 0; i < m; ++i) {
             for (int j = 0; j < n; ++j) {
-                int diag = grid[i][j]; 
                 for (int k = 1; k <= min(i, j); ++k) {
                     int ii = i-k, jj = j-k; 
-                    diag += grid[ii][jj]; 
                     if (k >= ans) {
-                        unordered_set<int> seen = {diag}; 
-                        for (int r = ii; r <= i; ++r) seen.insert(rows[r][j+1] - rows[r][jj]); 
-                        for (int c = jj; c <= j; ++c) seen.insert(cols[i+1][c] - cols[ii][c]); 
-                        int anti = 0; 
-                        for (int d = 0; d <= k; ++d) anti += grid[ii+d][j-d]; 
-                        seen.insert(anti); 
-                        if (size(seen) == 1) ans = max(ans, k+1); 
+                        int val = diag[i+1][j+1] - diag[ii][jj]; 
+                        bool match = val == anti[i+1][jj] - anti[ii][j+1]; 
+                        for (int r = ii; r <= i; ++r) match &= val == rows[r][j+1] - rows[r][jj]; 
+                        for (int c = jj; c <= j; ++c) match &= val == cols[i+1][c] - cols[ii][c]; 
+                        if (match) ans = max(ans, k+1); 
                     }
                 }
             }
