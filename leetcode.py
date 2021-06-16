@@ -14870,6 +14870,59 @@ class UnionFind:
         return any(Counter(str(N)) == Counter(str(1 << i)) for i in range(30))
 
 
+    """871. Minimum Number of Refueling Stops (Hard)
+	A car travels from a starting position to a destination which is target 
+	miles east of the starting position. Along the way, there are gas stations.  
+	Each station[i] represents a gas station that is station[i][0] miles east 
+	of the starting position, and has station[i][1] liters of gas. The car 
+	starts with an infinite tank of gas, which initially has startFuel liters 
+	of fuel in it.  It uses 1 liter of gas per 1 mile that it drives. When the 
+	car reaches a gas station, it may stop and refuel, transferring all the gas 
+	from the station into the car. What is the least number of refueling stops 
+	the car must make in order to reach its destination?  If it cannot reach 
+	the destination, return -1. Note that if the car reaches a gas station with 
+	0 fuel left, the car can still refuel there.  If the car reaches the 
+	destination with 0 fuel left, it is still considered to have arrived.
+
+	Example 1:
+	Input: target = 1, startFuel = 1, stations = []
+	Output: 0
+	Explanation: We can reach the target without refueling.
+
+	Example 2:
+	Input: target = 100, startFuel = 1, stations = [[10,100]]
+	Output: -1
+	Explanation: We can't reach the target (or even the first gas station).
+
+	Example 3:
+	Input: target = 100, startFuel = 10, stations = [[10,60],[20,30],[30,30],[60,40]]
+	Output: 2
+	Explanation: We start with 10 liters of fuel. We drive to position 10, 
+	             expending 10 liters of fuel.  We refuel from 0 liters to 60 
+	             liters of gas. Then, we drive from position 10 to position 60 
+	             (expending 50 liters of fuel), and refuel from 10 liters to 50 
+	             liters of gas.  We then drive to and reach the target. We made 
+	             2 refueling stops along the way, so we return 2.
+
+	Note:
+	* 1 <= target, startFuel, stations[i][1] <= 10^9
+	* 0 <= stations.length <= 500
+	* 0 < stations[0][0] < stations[1][0] < ... < stations[stations.length-1][0] < target"""
+
+    def minRefuelStops(self, target: int, startFuel: int, stations: List[List[int]]) -> int:
+        ans = k = 0 
+        total = startFuel 
+        pq = [] 
+        while total < target: 
+            while k < len(stations) and stations[k][0] <= total: 
+                heappush(pq, -stations[k][1]) 
+                k += 1
+            if not pq: return -1 
+            total -= heappop(pq)
+            ans += 1
+        return ans 
+
+
     """881. Boats to Save People (Medium)
 	The i-th person has weight people[i], and each boat can carry a maximum 
 	weight of limit. Each boat carries at most 2 people at the same time, 
@@ -34342,26 +34395,28 @@ class Fenwick:
 
     def largestMagicSquare(self, grid: List[List[int]]) -> int:
         m, n = len(grid), len(grid[0]) # dimensions 
-        rows = [[0]*(n+1) for _ in range(m)] # prefix sum along row
-        cols = [[0]*n for _ in range(m+1)] # prefix sum along column
+        rows = [[0]*(n+1) for _ in range(m)]
+        cols = [[0]*n for _ in range(m+1)]
+        diag = [[0]*(n+1) for _ in range(m+1)]
+        anti = [[0]*(n+1) for _ in range(m+1)]
         
         for i in range(m):
             for j in range(n): 
                 rows[i][j+1] = grid[i][j] + rows[i][j]
                 cols[i+1][j] = grid[i][j] + cols[i][j]
+                diag[i+1][j+1] = grid[i][j] + diag[i][j]
+                anti[i+1][j] = grid[i][j] + anti[i][j+1]
         
         ans = 1
         for i in range(m): 
             for j in range(n): 
-                diag = grid[i][j]
-                for k in range(min(i, j)): 
-                    ii, jj = i-k-1, j-k-1
-                    diag += grid[ii][jj]
-                    ss = {diag}
-                    for r in range(ii, i+1): ss.add(rows[r][j+1] - rows[r][jj])
-                    for c in range(jj, j+1): ss.add(cols[i+1][c] - cols[ii][c])
-                    ss.add(sum(grid[ii+kk][j-kk] for kk in range(k+2))) # anti-diagonal
-                    if len(ss) == 1: ans = max(ans, k+2)
+                for k in range(1, min(i, j)+1): 
+                    ii, jj = i-k, j-k
+                    val = diag[i+1][j+1] - diag[ii][jj]
+                    match = (val == anti[i+1][jj] - anti[ii][j+1])
+                    for r in range(ii, i+1): match &= (val == rows[r][j+1] - rows[r][jj])
+                    for c in range(jj, j+1): match &= (val == cols[i+1][c] - cols[ii][c])
+                    if match: ans = max(ans, k+1)
         return ans 
 
 
@@ -34421,7 +34476,6 @@ class Fenwick:
             if expression[hi] == ")" and loc[hi] == lo: return fn(lo+1, hi-1) # strip parenthesis 
             mid = loc.get(hi, hi) - 1 
             v, c = fn(mid+1, hi)
-            if mid < lo: return v, c 
             vv, cc = fn(lo, mid-1)
             if expression[mid] == "|": 
                 val = v | vv 
