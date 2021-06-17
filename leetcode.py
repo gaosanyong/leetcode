@@ -8,6 +8,7 @@ from heapq import heapify, heappop, heappush
 from itertools import groupby, zip_longest
 from math import ceil, inf, sqrt
 from operator import gt, lt, or_, xor
+from sortedcontainers import SortedList 
 from threading import Lock
 
 
@@ -35798,6 +35799,61 @@ class TicTacToe:
         if row + col == self.n-1: self.anti[player-1] += 1
         if self.n in (self.rows[player-1][row], self.cols[player-1][col], self.diag[player-1], self.anti[player-1]): return player
         return 0 
+
+
+"""352. Data Stream as Disjoint Intervals (Hard)
+Given a data stream input of non-negative integers a1, a2, ..., an, summarize 
+the numbers seen so far as a list of disjoint intervals. Implement the 
+SummaryRanges class:
+* SummaryRanges() Initializes the object with an empty stream.
+* void addNum(int val) Adds the integer val to the stream.
+* int[][] getIntervals() Returns a summary of the integers in the stream 
+  currently as a list of disjoint intervals [starti, endi].
+
+Example 1:
+Input: ["SummaryRanges", "addNum", "getIntervals", "addNum", "getIntervals", "addNum", "getIntervals", "addNum", "getIntervals", "addNum", "getIntervals"]
+       [[], [1], [], [3], [], [7], [], [2], [], [6], []]
+Output: [null, null, [[1, 1]], null, [[1, 1], [3, 3]], null, [[1, 1], [3, 3], [7, 7]], null, [[1, 3], [7, 7]], null, [[1, 3], [6, 7]]]
+Explanation
+SummaryRanges summaryRanges = new SummaryRanges();
+summaryRanges.addNum(1);      // arr = [1]
+summaryRanges.getIntervals(); // return [[1, 1]]
+summaryRanges.addNum(3);      // arr = [1, 3]
+summaryRanges.getIntervals(); // return [[1, 1], [3, 3]]
+summaryRanges.addNum(7);      // arr = [1, 3, 7]
+summaryRanges.getIntervals(); // return [[1, 1], [3, 3], [7, 7]]
+summaryRanges.addNum(2);      // arr = [1, 2, 3, 7]
+summaryRanges.getIntervals(); // return [[1, 3], [7, 7]]
+summaryRanges.addNum(6);      // arr = [1, 2, 3, 6, 7]
+summaryRanges.getIntervals(); // return [[1, 3], [6, 7]]
+
+Constraints:
+* 0 <= val <= 10^4
+* At most 3 * 10^4 calls will be made to addNum and getIntervals.
+
+Follow up: What if there are lots of merges and the number of disjoint 
+           intervals is small compared to the size of the data stream?"""
+
+class SummaryRanges:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.data = SortedList() 
+
+    def addNum(self, val: int) -> None:
+        k = self.data.bisect_left([val, val])
+        if k and val <= self.data[k-1][1] or k < len(self.data) and self.data[k][0] == val: return 
+        if (k == 0 or self.data[k-1][1]+1 < val) and (k == len(self.data) or val+1 < self.data[k][0]): self.data.add([val, val])
+        elif k and self.data[k-1][1]+1 == val: 
+            self.data[k-1][1] += 1
+            if k < len(self.data) and val+1 == self.data[k][0]: 
+                self.data[k-1][1] = self.data.pop(k)[1]
+        elif k < len(self.data) and val+1 == self.data[k][0]: self.data[k][0] -= 1
+
+    def getIntervals(self) -> List[List[int]]:
+        return list(self.data)
 
 
 """353. Design Snake Game (Medium)
