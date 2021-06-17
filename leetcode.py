@@ -13946,13 +13946,13 @@ class UnionFind:
 	* L, R  and A[i] will be an integer in the range [0, 10^9].
 	* The length of A will be in the range of [1, 50000]."""
 
-    def numSubarrayBoundedMax(self, A: List[int], L: int, R: int) -> int:
-        ans = val = cnt = 0
-        for x in A: 
-            if x < L: cnt += 1 # count of <= R
-            elif L <= x <= R: val = cnt = cnt + 1
-            else: val = cnt = 0 
-            ans += val 
+    def numSubarrayBoundedMax(self, nums: List[int], left: int, right: int) -> int:
+        ans = inc = cnt = 0 
+        for x in nums: 
+            if x < left: cnt += 1
+            elif left <= x <= right: inc = cnt = cnt + 1
+            else: inc = cnt = 0 
+            ans += inc 
         return ans 
 
 
