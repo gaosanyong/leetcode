@@ -4039,8 +4039,8 @@ class Solution:
         ans, row = [], []
         for i in range(numRows): 
             row.append(1)
-            for j in range(i-1, 0, -1): row[j] += row[j-1]
-            ans.append(row.copy())
+            for j in reversed(range(1, i)): row[j] += row[j-1]
+            ans.append(row[:])
         return ans
 
 
