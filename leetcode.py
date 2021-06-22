@@ -36638,6 +36638,101 @@ class Solution:
         return ans 
 
 
+"""432. All O`one Data Structure (Hard)
+Design a data structure to store the strings' count with the ability to return 
+the strings with minimum and maximum counts. Implement the AllOne class:
+* AllOne() Initializes the object of the data structure.
+* inc(String key) Increments the count of the string key by 1. If key does not 
+  exist in the data structure, insert it with count 1.
+* dec(String key) Decrements the count of the string key by 1. If the count of 
+  key is 0 after the decrement, remove it from the data structure. It is guaranteed that key exists in the data structure before the decrement.
+* getMaxKey() Returns one of the keys with the maximal count. If no element 
+  exists, return an empty string "".
+* getMinKey() Returns one of the keys with the minimum count. If no element 
+  exists, return an empty string "".
+
+Example 1:
+Input: ["AllOne", "inc", "inc", "getMaxKey", "getMinKey", "inc", "getMaxKey", "getMinKey"]
+       [[], ["hello"], ["hello"], [], [], ["leet"], [], []]
+Output: [null, null, null, "hello", "hello", null, "hello", "leet"]
+Explanation
+AllOne allOne = new AllOne();
+allOne.inc("hello");
+allOne.inc("hello");
+allOne.getMaxKey(); // return "hello"
+allOne.getMinKey(); // return "hello"
+allOne.inc("leet");
+allOne.getMaxKey(); // return "hello"
+allOne.getMinKey(); // return "leet"
+
+Constraints:
+* 1 <= key.length <= 10
+* key consists of lowercase English letters.
+* It is guaranteed that for each call to dec, key is existing in the data structure.
+* At most 5 * 10^4 calls will be made to inc, dec, getMaxKey, and getMinKey."""
+
+class ListNode: 
+    
+    def __init__(self, keys, freq=0, next=None, prev=None):
+        self.keys = keys
+        self.freq = freq
+        self.next = next
+        self.prev = prev 
+        
+
+class AllOne:
+
+    def __init__(self):
+        self.mp = {}
+        self.head = ListNode(set())
+        self.tail = ListNode(set())
+        self.head.next = self.tail
+        self.tail.prev = self.head 
+
+    def inc(self, key: str) -> None:
+        if key in self.mp: 
+            node = self.mp[key]
+            node.keys.remove(key)
+        else: node = self.head 
+        if node.next.freq == node.freq + 1: 
+            self.mp[key] = node.next 
+            node.next.keys.add(key)
+        else: 
+            newn = ListNode({key}, node.freq+1, next=node.next, prev=node)
+            node.next.prev = node.next = newn
+            self.mp[key] = newn
+        if node != self.head and not node.keys: 
+            node.prev.next = node.next
+            node.next.prev = node.prev
+
+    def dec(self, key: str) -> None:
+        node = self.mp[key] 
+        node.keys.remove(key)
+        if node.freq == 1: self.mp.pop(key)
+        elif node.prev.freq + 1 == node.freq: 
+            node.prev.keys.add(key)
+            self.mp[key] = node.prev 
+        else: 
+            newn = ListNode({key}, node.freq-1, next=node, prev=node.prev)
+            node.prev.next = node.prev = newn
+            self.mp[key] = newn
+        if not node.keys: 
+            node.prev.next = node.next
+            node.next.prev = node.prev 
+
+    def getMaxKey(self) -> str:
+        if self.tail.prev == self.head: return ""
+        ans = self.tail.prev.keys.pop()
+        self.tail.prev.keys.add(ans)
+        return ans 
+
+    def getMinKey(self) -> str:
+        if self.head.next == self.tail: return ""
+        ans = self.head.next.keys.pop()
+        self.head.next.keys.add(ans)
+        return ans 
+
+
 """519. Random Flip Matrix (Medium)
 You are given the number of rows n_rows and number of columns n_cols of a 2D 
 binary matrix where all values are initially 0. Write a function flip which 
