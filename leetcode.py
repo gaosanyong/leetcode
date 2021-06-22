@@ -17807,6 +17807,61 @@ class UnionFind:
                 j += 1
         return "".join(ans) + str1[i:] + str2[j:]
 
+
+    """1095. Find in Mountain Array (Hard)
+	(This problem is an interactive problem.)
+	You may recall that an array A is a mountain array if and only if:
+	* A.length >= 3
+	* There exists some i with 0 < i < A.length - 1 such that:
+	  * A[0] < A[1] < ... A[i-1] < A[i]
+	  * A[i] > A[i+1] > ... > A[A.length - 1]
+	Given a mountain array mountainArr, return the minimum index such that 
+	mountainArr.get(index) == target.  If such an index doesn't exist, return 
+	-1. You can't access the mountain array directly.  You may only access the 
+	array using a MountainArray interface:
+	* MountainArray.get(k) returns the element of the array at index k (0-
+	  indexed).
+	* MountainArray.length() returns the length of the array.
+	Submissions making more than 100 calls to MountainArray.get will be judged 
+	Wrong Answer.  Also, any solutions that attempt to circumvent the judge 
+	will result in disqualification.
+
+	Example 1:
+	Input: array = [1,2,3,4,5,3,1], target = 3
+	Output: 2
+	Explanation: 3 exists in the array, at index=2 and index=5. Return the 
+	             minimum index, which is 2.
+	
+	Example 2:
+	Input: array = [0,1,2,4,2,1], target = 3
+	Output: -1
+	Explanation: 3 does not exist in the array, so we return -1.
+
+	Constraints:
+	* 3 <= mountain_arr.length() <= 10000
+	* 0 <= target <= 10^9
+	* 0 <= mountain_arr.get(index) <= 10^9"""
+
+    def findInMountainArray(self, target: int, mountain_arr: 'MountainArray') -> int:
+        
+        def fn(lo, hi, mult): 
+            """Return index of target between lo (inclusive) and hi (exlusive)."""
+            while lo < hi: 
+                mid = lo + hi >> 1
+                if mountain_arr.get(mid) == target: return mid 
+                elif mountain_arr.get(mid)*mult < target*mult: lo = mid + 1
+                else: hi = mid 
+            return -1 
+        
+        lo, hi = 0, mountain_arr.length()
+        while lo < hi: 
+            mid = lo + hi >> 1
+            if mid and mountain_arr.get(mid-1) < mountain_arr.get(mid): lo = mid + 1
+            else: hi = mid 
+        if (x := fn(0, lo, 1)) != -1: return x 
+        if (x := fn(lo, mountain_arr.length(), -1)) != -1: return x 
+        return -1 
+
     
     """1096. Brace Expansion II (Hard)
 	Under a grammar given below, strings can represent a set of lowercase words.  
