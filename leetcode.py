@@ -10962,6 +10962,51 @@ class Solution:
         return head 
 
 
+    """446. Arithmetic Slices II - Subsequence (Hard)
+	Given an integer array nums, return the number of all the arithmetic 
+	subsequences of nums. A sequence of numbers is called arithmetic if it 
+	consists of at least three elements and if the difference between any two 
+	consecutive elements is the same.
+	* For example, [1, 3, 5, 7, 9], [7, 7, 7, 7], and [3, -1, -5, -9] are 
+	  arithmetic sequences.
+	* For example, [1, 1, 2, 5, 7] is not an arithmetic sequence.
+	A subsequence of an array is a sequence that can be formed by removing some 
+	elements (possibly none) of the array.
+	* For example, [2,5,10] is a subsequence of [1,2,1,2,4,1,5,10].
+	The answer is guaranteed to fit in 32-bit integer.
+
+	Example 1:
+	Input: nums = [2,4,6,8,10]
+	Output: 7
+	Explanation: All arithmetic subsequence slices are:
+	             [2,4,6]
+	             [4,6,8]
+	             [6,8,10]
+	             [2,4,6,8]
+	             [4,6,8,10]
+	             [2,4,6,8,10]
+	             [2,6,10]
+	
+	Example 2:
+	Input: nums = [7,7,7,7,7]
+	Output: 16
+	Explanation: Any subsequence of this array is arithmetic.
+
+	Constraints:
+	* 1  <= nums.length <= 1000
+	* -2^31 <= nums[i] <= 2^31 - 1"""
+
+    def numberOfArithmeticSlices(self, nums: List[int]) -> int:
+        ans = 0 
+        freq = [defaultdict(int) for _ in range(len(nums))] # arithmetic sub-seqs
+        for i, x in enumerate(nums): 
+            for ii in range(i): 
+                diff = x - nums[ii]
+                ans += freq[ii].get(diff, 0)
+                freq[i][diff] += 1 + freq[ii][diff]
+        return ans 
+
+
     """462. Minimum Moves to Equal Array Elements II (Medium)
 	Given an integer array nums of size n, return the minimum number of moves 
 	required to make all array elements equal. In one move, you can increment 
