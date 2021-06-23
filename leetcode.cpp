@@ -6519,6 +6519,71 @@ public:
     }
 
 
+    /*1036. Escape a Large Maze (Hard)
+	There is a 1 million by 1 million grid on an XY-plane, and the coordinates 
+	of each grid square are (x, y). We start at the source = [sx, sy] square 
+	and want to reach the target = [tx, ty] square. There is also an array of 
+	blocked squares, where each blocked[i] = [xi, yi] represents a blocked 
+	square with coordinates (xi, yi). Each move, we can walk one square north, 
+	east, south, or west if the square is not in the array of blocked squares. 
+	We are also not allowed to walk outside of the grid. Return true if and 
+	only if it is possible to reach the target square from the source square 
+	through a sequence of valid moves.
+
+	Example 1:
+	Input: blocked = [[0,1],[1,0]], source = [0,0], target = [0,2]
+	Output: false
+	Explanation: The target square is inaccessible starting from the source 
+	             square because we cannot move. We cannot move north or east 
+	             because those squares are blocked. We cannot move south or 
+	             west because we cannot go outside of the grid.
+	
+	Example 2:
+	Input: blocked = [], source = [0,0], target = [999999,999999]
+	Output: true
+	Explanation: Because there are no blocked cells, it is possible to reach 
+	             the target square.
+
+	Constraints:
+	* 0 <= blocked.length <= 200
+	* blocked[i].length == 2
+	* 0 <= xi, yi < 10^6
+	* source.length == target.length == 2
+	* 0 <= sx, sy, tx, ty < 10^6
+	* source != target
+	* It is guaranteed that source and target are not blocked.*/
+
+    bool isEscapePossible(vector<vector<int>>& blocked, vector<int>& source, vector<int>& target) {
+        vector<int> dir = {1, 0, -1, 0, 1}; 
+        
+        unordered_set<long long> forbid; 
+        for (auto blk : blocked) forbid.insert(((long long)blk[0] << 32) + blk[1]); 
+        
+        function<bool(int, int, int, int)> dfs = [&](int sx, int sy, int tx, int ty) {
+            stack<pair<int, int>> stk; 
+            stk.emplace(sx, sy); 
+            unordered_set<long long> seen = {((long long)sx << 32) + sy}; 
+            while (stk.size()) {
+                auto [x, y] = stk.top(); stk.pop(); 
+                if (abs(x - sx) + abs(y - sy) > 200 || x == tx && y == ty) return true; 
+                for (int k = 0; k < 4; ++k) {
+                    int xx = x + dir[k], yy = y + dir[k+1]; 
+                    if (0 <= xx && xx < 1e6 && 0 <= yy && yy < 1e6) {
+                        long long key = ((long long)xx << 32) + yy; 
+                        if (forbid.find(key) == forbid.end() && seen.find(key) == seen.end()) {
+                            stk.emplace(xx, yy); 
+                            seen.emplace(key); 
+                        }
+                    }
+                }
+            }
+            return false; 
+        }; 
+        
+        return dfs(source[0], source[1], target[0], target[1]) && dfs(target[0], target[1], source[0], source[1]); 
+    }
+
+
     /*1048. Longest String Chain (Medium)
 	Given a list of words, each word consists of English lowercase letters. 
 	Let's say word1 is a predecessor of word2 if and only if we can add exactly 
