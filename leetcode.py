@@ -3147,15 +3147,14 @@ class Solution:
 	Input: 1->2->3->4->5->NULL, m = 2, n = 4
 	Output: 1->4->3->2->5->NULL"""
 
-    def reverseBetween(self, head: ListNode, m: int, n: int) -> ListNode:
+    def reverseBetween(self, head: ListNode, left: int, right: int) -> ListNode:
         dummy = node = ListNode(next=head)
-        for _ in range(m-1): node = node.next 
-            
-        prev, curr = None, node.next 
-        for _ in range(m, n+1): curr.next, curr, prev = prev, curr.next, curr
-            
-        node.next.next = curr
-        node.next = prev
+        prev = None
+        for _ in range(left): node, prev = node.next, node 
+        pp, nn = prev, node 
+        
+        for _ in range(left, right+1): node.next, node, prev = prev, node.next, node 
+        pp.next, nn.next = prev, node
         
         return dummy.next 
 
