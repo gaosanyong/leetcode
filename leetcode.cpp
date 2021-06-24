@@ -2829,6 +2829,45 @@ public:
     }
 
 
+    /*576. Out of Boundary Paths (Medium)
+	There is an m x n grid with a ball. The ball is initially at the position 
+	[startRow, startColumn]. You are allowed to move the ball to one of the 
+	four adjacent four cells in the grid (possibly out of the grid crossing the 
+	grid boundary). You can apply at most maxMove moves to the ball. Given the 
+	five integers m, n, maxMove, startRow, startColumn, return the number of 
+	paths to move the ball out of the grid boundary. Since the answer can be 
+	very large, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: m = 2, n = 2, maxMove = 2, startRow = 0, startColumn = 0
+	Output: 6
+
+	Example 2:
+	Input: m = 1, n = 3, maxMove = 3, startRow = 0, startColumn = 1
+	Output: 12
+
+	Constraints:
+	* 1 <= m, n <= 50
+	* 0 <= maxMove <= 50
+	* 0 <= startRow <= m
+	* 0 <= startColumn <= n*/
+
+    int findPaths(int m, int n, int maxMove, int startRow, int startColumn) {
+        long memo[m][n][maxMove+1]; 
+        memset(memo, -1, sizeof(memo)); 
+        
+        function<long(int, int, int)> fn = [&](int i, int j, int mv) {
+            if (i < 0 || i >= m || j < 0 || j >= n) return 1l; 
+            if (mv == 0) return 0l; 
+            if (memo[i][j][mv] < 0) 
+                memo[i][j][mv] = (fn(i-1, j, mv-1) + fn(i, j-1, mv-1) + fn(i, j+1, mv-1) + fn(i+1, j, mv-1)) % 1'000'000'007; 
+            return memo[i][j][mv]; 
+        }; 
+        
+        return fn(startRow, startColumn, maxMove); 
+    }
+
+
     /*583. Delete Operation for Two Strings (Medium)
 	Given two strings word1 and word2, return the minimum number of steps 
 	required to make word1 and word2 the same. In one step, you can delete 
