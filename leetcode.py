@@ -37259,6 +37259,61 @@ class StringIterator:
         return self.i < len(self.data) or self.n 
 
 
+"""684. Redundant Connection (Medium)
+In this problem, a tree is an undirected graph that is connected and has no 
+cycles. You are given a graph that started as a tree with n nodes labeled from 
+1 to n, with one additional edge added. The added edge has two different 
+vertices chosen from 1 to n, and was not an edge that already existed. The 
+graph is represented as an array edges of length n where edges[i] = [ai, bi] 
+indicates that there is an edge between nodes ai and bi in the graph. Return an 
+edge that can be removed so that the resulting graph is a tree of n nodes. If 
+there are multiple answers, return the answer that occurs last in the input.
+
+Example 1:
+Input: edges = [[1,2],[1,3],[2,3]]
+Output: [2,3]
+
+Example 2:
+Input: edges = [[1,2],[2,3],[3,4],[1,4],[1,5]]
+Output: [1,4]
+
+Constraints:
+* n == edges.length
+* 3 <= n <= 1000
+* edges[i].length == 2
+* 1 <= ai < bi <= edges.length
+* ai != bi
+* There are no repeated edges.
+* The given graph is connected."""
+
+class UnionFind:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [1]*n
+        
+    def find(self, p): 
+        """Find with path compression"""
+        if self.parent[p] != p: 
+            self.parent[p] = self.find(self.parent[p])
+        return self.parent[p]
+    
+    def union(self, p, q): 
+        """Union with rank"""
+        prt, qrt = self.find(p), self.find(q)
+        if prt == qrt: return False
+        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
+        self.parent[prt] = qrt
+        self.rank[qrt] += self.rank[prt]
+        return True 
+    
+
+class Solution:
+    def findRedundantConnection(self, edges: List[List[int]]) -> List[int]:
+        uf = UnionFind(len(edges))
+        for u, v in edges: 
+            if not uf.union(u-1, v-1): return [u, v]
+
+
 """706. Design HashMap (Easy)
 Design a HashMap without using any built-in hash table libraries. To be 
 specific, your design should include these functions:

@@ -11915,6 +11915,72 @@ public:
 };
 
 
+/*684. Redundant Connection (Medium)
+In this problem, a tree is an undirected graph that is connected and has no 
+cycles. You are given a graph that started as a tree with n nodes labeled from 
+1 to n, with one additional edge added. The added edge has two different 
+vertices chosen from 1 to n, and was not an edge that already existed. The 
+graph is represented as an array edges of length n where edges[i] = [ai, bi] 
+indicates that there is an edge between nodes ai and bi in the graph. Return an 
+edge that can be removed so that the resulting graph is a tree of n nodes. If 
+there are multiple answers, return the answer that occurs last in the input.
+
+Example 1:
+Input: edges = [[1,2],[1,3],[2,3]]
+Output: [2,3]
+
+Example 2:
+Input: edges = [[1,2],[2,3],[3,4],[1,4],[1,5]]
+Output: [1,4]
+
+Constraints:
+* n == edges.length
+* 3 <= n <= 1000
+* edges[i].length == 2
+* 1 <= ai < bi <= edges.length
+* ai != bi
+* There are no repeated edges.
+* The given graph is connected.*/
+
+class UnionFind {
+    vector<int> parent, rank; 
+public: 
+    UnionFind(int n) {
+        parent.resize(n); 
+        iota(begin(parent), end(parent), 0); 
+        rank = vector<int>(n, 1); 
+    } 
+    
+    int find(int p) {
+        /* find with path compression */
+        if (parent[p] != p) 
+            parent[p] = find(parent[p]); 
+        return parent[p]; 
+    }
+    
+    bool connect(int p, int q) {
+        /* union with rank */
+        int prt = find(p), qrt = find(q); 
+        if (prt == qrt) return false; 
+        if (rank[prt] > rank[qrt]) swap(prt, qrt);
+        parent[prt] = qrt; 
+        rank[qrt] += rank[prt]; 
+        return true; 
+    }
+};
+
+
+class Solution {
+public:
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+        UnionFind uf = UnionFind(size(edges)); 
+        for (auto& edge : edges) 
+            if (!uf.connect(edge[0]-1, edge[1]-1)) return edge; 
+        return {}; 
+    }
+};
+
+
 /*703. Kth Largest Element in a Stream (Easy)
 Design a class to find the kth largest element in a stream. Note that it is the 
 kth largest element in the sorted order, not the kth distinct element. 
