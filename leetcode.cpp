@@ -11867,6 +11867,219 @@ public:
         }
         return ans + nums.back(); 
     }
+
+
+    /*1913. Maximum Product Difference Between Two Pairs (Easy)
+	The product difference between two pairs (a, b) and (c, d) is defined as 
+	(a * b) - (c * d). For example, the product difference between (5, 6) and 
+	(2, 7) is (5 * 6) - (2 * 7) = 16. Given an integer array nums, choose four 
+	distinct indices w, x, y, and z such that the product difference between 
+	pairs (nums[w], nums[x]) and (nums[y], nums[z]) is maximized. Return the 
+	maximum such product difference.
+
+	Example 1:
+	Input: nums = [5,6,2,7,4]
+	Output: 34
+	Explanation: We can choose indices 1 and 3 for the first pair (6, 7) and 
+	             indices 2 and 4 for the second pair (2, 4). The product 
+	             difference is (6 * 7) - (2 * 4) = 34.
+	
+	Example 2:
+	Input: nums = [4,2,5,9,7,4,8]
+	Output: 64
+	Explanation: We can choose indices 3 and 6 for the first pair (9, 8) and 
+	             indices 1 and 5 for the second pair (2, 4). The product 
+	             difference is (9 * 8) - (2 * 4) = 64.
+
+	Constraints:
+	* 4 <= nums.length <= 10^4
+	* 1 <= nums[i] <= 10^4*/
+
+    int maxProductDifference(vector<int>& nums) {
+        sort(begin(nums), end(nums)); 
+        int n = size(nums); 
+        return nums[n-1] * nums[n-2] - nums[1] * nums[0]; 
+    }
+
+
+    /*1914. Cyclically Rotating a Grid (Medium)
+	You are given an m x n integer matrix grid, where m and n are both even 
+	integers, and an integer k. The matrix is composed of several layers, which 
+	is shown in the below image, where each color is its own layer.
+	A cyclic rotation of the matrix is done by cyclically rotating each layer 
+	in the matrix. To cyclically rotate a layer once, each element in the layer 
+	will take the place of the adjacent element in the counter-clockwise 
+	direction. Return the matrix after applying k cyclic rotations to it.
+
+	Example 1:
+	Input: grid = [[40,10],[30,20]], k = 1
+	Output: [[10,20],[40,30]]
+	Explanation: The figures above represent the grid at every state.
+
+	Example 2:
+	Input: grid = [[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]], k = 2
+	Output: [[3,4,8,12],[2,11,10,16],[1,7,6,15],[5,9,13,14]]
+	Explanation: The figures above represent the grid at every state.
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 2 <= m, n <= 50
+	* Both m and n are even integers.
+	* 1 <= grid[i][j] <= 5000
+	* 1 <= k <= 10^9*/
+
+    vector<vector<int>> rotateGrid(vector<vector<int>>& grid, int k) {
+        int m = size(grid), n = size(grid[0]); 
+        vector<vector<int>> ans(m, vector<int>(n)); 
+        
+        for (int r = 0; r < min(m, n)/2; ++r) {
+            int i = r, j = r; 
+            vector<int> vals; 
+            for (int jj = j; jj < n-1-j; ++jj) vals.push_back(grid[i][jj]); 
+            for (int ii = i; ii < m-1-i; ++ii) vals.push_back(grid[ii][n-1-j]);
+            for (int jj = n-1-j; jj > j; --jj) vals.push_back(grid[m-1-j][jj]); 
+            for (int ii = m-1-i; ii > i; --ii) vals.push_back(grid[ii][j]); 
+            
+            int kk = k % size(vals); 
+            for (int jj = j; jj < n-1-j; ++jj) ans[i][jj]     = vals[kk++ % size(vals)]; 
+            for (int ii = i; ii < m-1-i; ++ii) ans[ii][n-1-j] = vals[kk++ % size(vals)]; 
+            for (int jj = n-1-j; jj > j; --jj) ans[m-1-j][jj] = vals[kk++ % size(vals)]; 
+            for (int ii = m-1-i; ii > i; --ii) ans[ii][j]     = vals[kk++ % size(vals)]; 
+        }
+        return ans; 
+    }
+
+
+    /*1915. Number of Wonderful Substrings (Medium)
+	A wonderful string is a string where at most one letter appears an odd 
+	number of times. For example, "ccjjc" and "abab" are wonderful, but "ab" is 
+	not. Given a string word that consists of the first ten lowercase English 
+	letters ('a' through 'j'), return the number of wonderful non-empty 
+	substrings in word. If the same substring appears multiple times in word, 
+	then count each occurrence separately. A substring is a contiguous sequence 
+	of characters in a string.
+
+	Example 1:
+	Input: word = "aba"
+	Output: 4
+	Explanation: The four wonderful substrings are underlined below:
+	             - "aba" -> "a"
+	             - "aba" -> "b"
+	             - "aba" -> "a"
+	             - "aba" -> "aba"
+	
+	Example 2:
+	Input: word = "aabb"
+	Output: 9
+	Explanation: The nine wonderful substrings are underlined below:
+	             - "aabb" -> "a"
+	             - "aabb" -> "aa"
+	             - "aabb" -> "aab"
+	             - "aabb" -> "aabb"
+	             - "aabb" -> "a"
+	             - "aabb" -> "abb"
+	             - "aabb" -> "b"
+	             - "aabb" -> "bb"
+	             - "aabb" -> "b"
+	
+	Example 3:
+	Input: word = "he"
+	Output: 2
+	Explanation: The two wonderful substrings are underlined below:
+	             - "he" -> "h"
+	             - "he" -> "e"
+
+	Constraints:
+	* 1 <= word.length <= 10^5
+	* word consists of lowercase English letters from 'a' to 'j'.*/
+
+    long long wonderfulSubstrings(string word) {
+        long long ans = 0; 
+        int mask = 0; 
+        unordered_map<int, long long> freq = {{0, 1}}; 
+        
+        for (auto& ch : word) {
+            mask ^= 1 << (ch - 'a'); 
+            ans += freq[mask]; 
+            for (int i = 0; i < 10; ++i) 
+                ans += freq[mask ^ (1 << i)]; 
+            ++freq[mask]; 
+        }
+        return ans; 
+    }
+
+
+    /*1916. Count Ways to Build Rooms in an Ant Colony (Hard)
+	You are an ant tasked with adding n new rooms numbered 0 to n-1 to your 
+	colony. You are given the expansion plan as a 0-indexed integer array of 
+	length n, prevRoom, where prevRoom[i] indicates that you must build room 
+	prevRoom[i] before building room i, and these two rooms must be connected 
+	directly. Room 0 is already built, so prevRoom[0] = -1. The expansion plan 
+	is given such that once all the rooms are built, every room will be 
+	reachable from room 0. You can only build one room at a time, and you can 
+	travel freely between rooms you have already built only if they are 
+	connected. You can choose to build any room as long as its previous room is 
+	already built. Return the number of different orders you can build all the 
+	rooms in. Since the answer may be large, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: prevRoom = [-1,0,1]
+	Output: 1
+	Explanation: There is only one way to build the additional rooms: 0 → 1 → 2
+
+	Example 2:
+	Input: prevRoom = [-1,0,0,1,2]
+	Output: 6
+	Explanation: The 6 ways are:
+	             0 → 1 → 3 → 2 → 4
+	             0 → 2 → 4 → 1 → 3
+	             0 → 1 → 2 → 3 → 4
+	             0 → 1 → 2 → 4 → 3
+	             0 → 2 → 1 → 3 → 4
+	             0 → 2 → 1 → 4 → 3
+
+	Constraints:
+	* n == prevRoom.length
+	* 2 <= n <= 10^5
+	* prevRoom[0] == -1
+	* 0 <= prevRoom[i] < n for all 1 <= i < n
+	* Every room is reachable from room 0 once all the rooms are built.*/
+
+    int waysToBuildRooms(vector<int>& prevRoom) {
+        int n = size(prevRoom); 
+        unordered_map<int, vector<int>> tree(n); 
+        for (int i = 0; i < size(prevRoom); ++i) 
+            if (prevRoom[i] >= 0) tree[prevRoom[i]].push_back(i); 
+        
+        const int MOD = 1'000'000'007, N = 100001; 
+        int inv[N], fact[N], ifact[N]; 
+        inv[1] = 1; 
+        
+        for (int i = 2; i < N; ++i) 
+            inv[i] = (long long) (MOD - MOD/i) * inv[MOD % i] % MOD; 
+        
+        fact[0] = ifact[0] = 1; 
+        for (int i = 1; i < N; ++i) {
+            fact[i] = (long long) fact[i-1] * i % MOD; 
+            ifact[i] = (long long) ifact[i-1] * inv[i] % MOD; 
+        }
+        
+        function<pair<int, long long>(int)> fn = [&](int x) {
+            if (size(tree[x]) == 0) return make_pair(1, 1ll); 
+            int c = 0; 
+            long long m = 1; 
+            for (auto& xx : tree[x]) {
+                auto [cc, mm] = fn(xx); 
+                c += cc; 
+                m = m * mm % MOD * ifact[cc] % MOD; 
+            }
+            m = m * fact[c] % MOD; 
+            return make_pair(c+1, m); 
+        };
+        
+        return fn(0).second; 
+    }
 };
 
 
