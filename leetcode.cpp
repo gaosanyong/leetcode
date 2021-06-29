@@ -4165,6 +4165,67 @@ public:
     }
 
 
+    /*782. Transform to Chessboard (Hard)
+	You are given an n x n binary grid board. In each move, you can swap any 
+	two rows with each other, or any two columns with each other. Return the 
+	minimum number of moves to transform the board into a chessboard board. If 
+	the task is impossible, return -1. A chessboard board is a board where no 
+	0's and no 1's are 4-directionally adjacent.
+
+	Example 1:
+	Input: board = [[0,1,1,0],[0,1,1,0],[1,0,0,1],[1,0,0,1]]
+	Output: 2
+	Explanation: One potential sequence of moves is shown. The first move swaps 
+	             the first and second column. The second move swaps the second 
+	             and third row.
+	
+	Example 2:
+	Input: board = [[0,1],[1,0]]
+	Output: 0
+	Explanation: Also note that the board with 0 in the top left corner, is 
+	             also a valid chessboard.
+	
+	Example 3:
+	Input: board = [[1,0],[1,0]]
+	Output: -1
+	Explanation: No matter what sequence of moves you make, you cannot end with 
+	             a valid chessboard.
+
+	Constraints:
+	* n == board.length
+	* n == board[i].length
+	* 2 <= n <= 30
+	* board[i][j] is either 0 or 1.*/
+
+    int movesToChessboard(vector<vector<int>>& board) {
+        int n = size(board); 
+        
+        auto fn = [&](vector<int>& vals) {
+            int total = 0, odd = 0; 
+            for (int i = 0; i < size(vals); ++i) {
+                if (vals[0] == vals[i]) {
+                    ++total; 
+                    if (i&1) ++odd; 
+                } else if ((vals[0] ^ vals[i]) != (1 << n) - 1) return 100; 
+            }
+            int ans = 100; 
+            if (size(vals) <= 2*total && 2*total <= size(vals)+1) ans = min(ans, odd); 
+            if (size(vals)-1 <= 2*total && 2*total <= size(vals)) ans = min(ans, total - odd); 
+            return ans; 
+        }; 
+        
+        vector<int> rows(n), cols(n); 
+        for (int i = 0; i < n; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if (board[i][j]) {
+                    rows[i] ^= 1 << j; 
+                    cols[j] ^= 1 << i; 
+                }
+        int ans = fn(rows) + fn(cols); 
+        return ans < 100 ? ans : -1; 
+    }
+
+
     /*792. Number of Matching Subsequences (Medium)
 	Given a string s and an array of strings words, return the number of 
 	words[i] that is a subsequence of s. A subsequence of a string is a new 
