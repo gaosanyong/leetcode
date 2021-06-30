@@ -7206,11 +7206,12 @@ class Solution:
 
     def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
         
-        def fn(node): 
-            """Return LCA of p and q in the tree rooted at node."""
+        def fn(node):
+            """Return LCA of p and q in subtree rooted at node (if found)."""
             if not node or node in (p, q): return node
             left, right = fn(node.left), fn(node.right)
-            return node if left and right else left or right
+            if left and right: return node 
+            return left or right
         
         return fn(root)
 
