@@ -4352,6 +4352,42 @@ public:
     }
 
 
+    /*793. Preimage Size of Factorial Zeroes Function (Hard)
+	Let f(x) be the number of zeroes at the end of x!. (Recall that 
+	x! = 1 * 2 * 3 * ... * x, and by convention, 0! = 1.) For example, f(3) = 0 
+	because 3! = 6 has no zeroes at the end, while f(11) = 2 because 
+	11! = 39916800 has 2 zeroes at the end. Given k, find how many non-negative 
+	integers x have the property that f(x) = k.
+
+	Example 1:
+	Input: k = 0
+	Output: 5
+	Explanation: 0!, 1!, 2!, 3!, and 4! end with k = 0 zeroes.
+
+	Example 2:
+	Input: k = 5
+	Output: 0
+	Explanation: There is no x such that x! ends in k = 5 zeroes.
+	
+	Note: k will be an integer in the range [0, 10^9].*/
+
+    int preimageSizeFZF(int k) {
+        
+        auto fn = [](int k) {
+            long lo = 0, hi = 1l << 32; 
+            while (lo < hi) {
+                long mid = lo + (hi - lo)/2, y = 0; 
+                for (long x = mid/5; x; x /= 5) y += x; 
+                if (y < k) lo = mid + 1; 
+                else hi = mid; 
+            }
+            return lo; 
+        }; 
+        
+        return fn(k+1) - fn(k); 
+    }
+
+
     /*795. Number of Subarrays with Bounded Maximum (Medium)
 	We are given an array nums of positive integers, and two positive integers 
 	left and right (left <= right). Return the number of (contiguous, non-empty) 
