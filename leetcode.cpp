@@ -4797,6 +4797,79 @@ public:
     }
 
 
+    /*827. Making A Large Island (Hard)
+	You are given an n x n binary matrix grid. You are allowed to change at 
+	most one 0 to be 1. Return the size of the largest island in grid after 
+	applying this operation. An island is a 4-directionally connected group 
+	of 1s.
+
+	Example 1:
+	Input: grid = [[1,0],[0,1]]
+	Output: 3
+	Explanation: Change one 0 to 1 and connect two 1s, then we get an island 
+	             with area = 3.
+	
+	Example 2:
+	Input: grid = [[1,1],[1,0]]
+	Output: 4
+	Explanation: Change the 0 to 1 and make the island bigger, only one island 
+	             with area = 4.
+	
+	Example 3:
+	Input: grid = [[1,1],[1,1]]
+	Output: 4
+	Explanation: Can't change any 0 to 1, only one island with area = 4.
+
+	Constraints:
+	* n == grid.length
+	* n == grid[i].length
+	* 1 <= n <= 500
+	* grid[i][j] is either 0 or 1.*/
+
+    int largestIsland(vector<vector<int>>& grid) {
+        int ans = 0, n = grid.size(), v = 2; 
+        unordered_map<int, int> freq; 
+        int d[5] = {1, 0, -1, 0, 1}; 
+        
+        for (int i = 0; i < n; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if (grid[i][j] == 1) {
+                    stack<pair<int, int>> stk; 
+                    stk.emplace(i, j); 
+                    grid[i][j] = v; 
+                    while (stk.size()) {
+                        auto [i, j] = stk.top(); stk.pop(); 
+                        ++freq[v]; 
+                        for (int k = 0; k < 4; ++k) {
+                            int ii = i + d[k], jj = j + d[k+1]; 
+                            if (0 <= ii && ii < n && 0 <= jj && jj < n && grid[ii][jj] == 1) {
+                                stk.push({ii, jj}); 
+                                grid[ii][jj] = v; 
+                            }
+                        }
+                    }
+                    ++v; 
+                }
+        
+        for (int i = 0; i < n; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if (grid[i][j] == 0) {
+                    int cand = 1; 
+                    unordered_set<int> seen; 
+                    for (int k = 0; k < 4; ++k) {
+                        int ii = i + d[k], jj = j + d[k+1]; 
+                        if (0 <= ii && ii < n && 0 <= jj && jj < n && grid[ii][jj] && !seen.count(grid[ii][jj])) {
+                            seen.insert(grid[ii][jj]); 
+                            cand += freq[grid[ii][jj]]; 
+                        }
+                    }
+                    ans = max(ans, cand); 
+                } else 
+                    ans = max(ans, freq[grid[i][j]]); 
+        return ans; 
+    }
+
+
     /*830. Positions of Large Groups (Easy)
 	In a string s of lowercase letters, these letters form consecutive groups 
 	of the same character. For example, a string like s = "abbxxxxzyy" has the 

@@ -14815,6 +14815,67 @@ class UnionFind:
         return ans 
 
 
+    """827. Making A Large Island (Hard)
+	You are given an n x n binary matrix grid. You are allowed to change at 
+	most one 0 to be 1. Return the size of the largest island in grid after 
+	applying this operation. An island is a 4-directionally connected group 
+	of 1s.
+
+	Example 1:
+	Input: grid = [[1,0],[0,1]]
+	Output: 3
+	Explanation: Change one 0 to 1 and connect two 1s, then we get an island 
+	             with area = 3.
+	
+	Example 2:
+	Input: grid = [[1,1],[1,0]]
+	Output: 4
+	Explanation: Change the 0 to 1 and make the island bigger, only one island 
+	             with area = 4.
+	
+	Example 3:
+	Input: grid = [[1,1],[1,1]]
+	Output: 4
+	Explanation: Can't change any 0 to 1, only one island with area = 4.
+
+	Constraints:
+	* n == grid.length
+	* n == grid[i].length
+	* 1 <= n <= 500
+	* grid[i][j] is either 0 or 1."""
+
+    def largestIsland(self, grid: List[List[int]]) -> int:
+        n = len(grid) 
+        v = 2 
+        freq = defaultdict(int)
+        for r in range(n): 
+            for c in range(n): 
+                if grid[r][c] == 1: 
+                    stack = [(r, c)]
+                    grid[r][c] = v
+                    while stack: 
+                        i, j = stack.pop()
+                        freq[v] += 1
+                        for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                            if 0 <= ii < n and 0 <= jj < n and grid[ii][jj] == 1: 
+                                stack.append((ii, jj))
+                                grid[ii][jj] = v
+                    v += 1
+                    
+        ans = max(freq.values(), default=0)
+        for i in range(n): 
+            for j in range(n): 
+                if grid[i][j] == 0: 
+                    cand = 1
+                    seen = set()
+                    for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                        if 0 <= ii < n and 0 <= jj < n and grid[ii][jj] and grid[ii][jj] not in seen: 
+                            seen.add(grid[ii][jj])
+                            cand += freq[grid[ii][jj]]
+                    ans = max(ans, cand)
+        return ans 
+
+
     """831. Masking Personal Information (Medium)
 	We are given a personal information string S, which may represent either an 
 	email address or a phone number. We would like to mask this personal 
