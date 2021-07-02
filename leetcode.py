@@ -15025,6 +15025,56 @@ class UnionFind:
         return S
 
 
+    """834. Sum of Distances in Tree (Hard)
+	An undirected, connected tree with n nodes labelled 0...n-1 and n-1 edges 
+	are given. The ith edge connects nodes edges[i][0] and edges[i][1] together.
+	Return a list ans, where ans[i] is the sum of the distances between node i 
+	and all other nodes.
+
+	Example 1:
+	Input: n = 6, edges = [[0,1],[0,2],[2,3],[2,4],[2,5]]
+	Output: [8,12,6,10,10,10]
+	Explanation: Here is a diagram of the given tree:
+	  0
+	 / \
+	1   2
+	   /|\
+	  3 4 5
+	We can see that dist(0,1) + dist(0,2) + dist(0,3) + dist(0,4) + dist(0,5)
+	equals 1 + 1 + 2 + 2 + 2 = 8.  Hence, answer[0] = 8, and so on.
+	Note: 1 <= n <= 10000"""
+
+    def sumOfDistancesInTree(self, n: int, edges: List[List[int]]) -> List[int]:
+        graph = {}
+        for u, v in edges: 
+            graph.setdefault(u, []).append(v)
+            graph.setdefault(v, []).append(u)
+        
+        size = [0]*n
+        
+        def fn(x, par): 
+            """Return size and sum of distances in sub-tree."""
+            c = s = 0
+            for xx in graph.get(x, []): 
+                if xx != par: 
+                    cc, ss = fn(xx, x)
+                    c, s = c + cc, s + ss + cc
+            size[x] = c + 1
+            return c + 1, s
+        
+        ans = [0]*n
+        ans[0] = fn(0, -1)[1]
+        
+        stack = [0]
+        while stack: 
+            x = stack.pop()
+            for xx in graph.get(x, []): 
+                if not ans[xx]: 
+                    ans[xx] = ans[x] + n - 2*size[xx]
+                    stack.append(xx)
+        return ans 
+
+
     """837. New 21 Game (Medium)
 	Alice plays the following game, loosely based on the card game "21". Alice 
 	starts with 0 points, and draws numbers while she has less than K points. 

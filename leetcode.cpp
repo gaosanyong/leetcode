@@ -4985,6 +4985,65 @@ public:
     }
 
 
+    /*834. Sum of Distances in Tree (Hard)
+	An undirected, connected tree with n nodes labelled 0...n-1 and n-1 edges 
+	are given. The ith edge connects nodes edges[i][0] and edges[i][1] together.
+	Return a list ans, where ans[i] is the sum of the distances between node i 
+	and all other nodes.
+
+	Example 1:
+	Input: n = 6, edges = [[0,1],[0,2],[2,3],[2,4],[2,5]]
+	Output: [8,12,6,10,10,10]
+	Explanation: Here is a diagram of the given tree:
+	  0
+	 / \
+	1   2
+	   /|\
+	  3 4 5
+	We can see that dist(0,1) + dist(0,2) + dist(0,3) + dist(0,4) + dist(0,5)
+	equals 1 + 1 + 2 + 2 + 2 = 8.  Hence, answer[0] = 8, and so on.
+	Note: 1 <= n <= 10000*/
+
+    vector<int> sumOfDistancesInTree(int n, vector<vector<int>>& edges) {
+        unordered_map<int, vector<int>> graph; 
+        for (auto& edge : edges) {
+            graph[edge[0]].push_back(edge[1]); 
+            graph[edge[1]].push_back(edge[0]); 
+        }
+        
+        vector<int> size(n); 
+        
+        function<pair<int, int>(int, int)> fn = [&](int x, int p) {
+            int c = 1, s = 0; 
+            for (auto& xx : graph[x]) {
+                if (xx != p) {
+                    auto [cc, ss] = fn(xx, x); 
+                    c += cc; 
+                    s += ss + cc; 
+                }
+            }
+            size[x] = c; 
+            return make_pair(c, s); 
+        };
+        
+        vector<int> ans(n); 
+        ans[0] = fn(0, -1).second; 
+        
+        stack<int> stk; 
+        stk.push(0); 
+        while (stk.size()) {
+            int x = stk.top(); stk.pop(); 
+            for (auto& xx : graph[x]) {
+                if (!ans[xx]) {
+                    ans[xx] = ans[x] + n - 2*size[xx]; 
+                    stk.push(xx); 
+                }
+            }
+        }
+        return ans; 
+    }
+
+
     /*836. Rectangle Overlap (Easy)
 	An axis-aligned rectangle is represented as a list [x1, y1, x2, y2], where 
 	(x1, y1) is the coordinate of its bottom-left corner, and (x2, y2) is the 
