@@ -17040,6 +17040,45 @@ class UnionFind:
         return ans 
 
 
+    """992. Subarrays with K Different Integers (Hard)
+	Given an array nums of positive integers, call a (contiguous, not 
+	necessarily distinct) subarray of nums good if the number of different 
+	integers in that subarray is exactly k. (For example, [1,2,3,1,2] has 3 
+	different integers: 1, 2, and 3.) Return the number of good subarrays of 
+	nums.
+
+	Example 1:
+	Input: nums = [1,2,1,2,3], k = 2
+	Output: 7
+	Explanation: Subarrays formed with exactly 2 different integers: 
+	             [1,2], [2,1], [1,2], [2,3], [1,2,1], [2,1,2], [1,2,1,2].
+	
+	Example 2:
+	Input: nums = [1,2,1,3,4], k = 3
+	Output: 3
+	Explanation: Subarrays formed with exactly 3 different integers: 
+	             [1,2,1,3], [2,1,3], [1,3,4].
+
+	Note:
+	* 1 <= nums.length <= 20000
+	* 1 <= nums[i] <= nums.length
+	* 1 <= k <= nums.length"""
+
+    def subarraysWithKDistinct(self, nums: List[int], k: int) -> int:
+        ans = ii = 0 
+        freq = defaultdict(int)
+        queue = deque()
+        for i, x in enumerate(nums): 
+            freq[x] += 1
+            queue.append(i)
+            if len(freq) > k: 
+                ii = queue[0]+1
+                freq.pop(nums[queue.popleft()])
+            while freq[nums[queue[0]]] > 1: freq[nums[queue.popleft()]] -= 1
+            if len(freq) == k: ans += queue[0] - ii + 1
+        return ans 
+
+
     """995. Minimum Number of K Consecutive Bit Flips (Hard)
 	In an array nums containing only 0s and 1s, a k-bit flip consists of 
 	choosing a (contiguous) subarray of length k and simultaneously changing 
