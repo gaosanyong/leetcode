@@ -2790,14 +2790,11 @@ public:
 	* The height and width of the given matrix is in range [1, 100].
 	* The given r and c are all positive.*/
 
-    vector<vector<int>> matrixReshape(vector<vector<int>>& nums, int r, int c) {
-        int m = nums.size(), n = nums[0].size(); 
-        if (m * n != r * c) return nums; // incompatable 
-        
+    vector<vector<int>> matrixReshape(vector<vector<int>>& mat, int r, int c) {
+        int m = mat.size(), n = mat[0].size(); 
+        if (m * n != r * c) return mat; 
         vector<vector<int>> ans(r, vector<int>(c)); 
-        for (int i = 0; i < r*c; ++i) {
-            ans[i/c][i%c] = nums[i/n][i%n]; 
-        }
+        for (int i = 0; i < m * n; ++i) ans[i/c][i%c] = mat[i/n][i%n]; 
         return ans; 
     }
 
