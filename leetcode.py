@@ -10232,12 +10232,11 @@ class Solution:
 
     def kthSmallest(self, matrix: List[List[int]], k: int) -> int:
         n = len(matrix)
-        hp = [(matrix[i][0], i, 0) for i in range(n)] # heap 
-        heapify(hp)
+        pq = [(matrix[i][0], i, 0) for i in range(n)] # min-heap 
         for _ in range(k): 
-            v, i, j = heappop(hp)
-            if j+1 < n: heappush(hp, (matrix[i][j+1], i, j+1))
-        return v
+            ans, i, j = heappop(pq)
+            if j+1 < n: heappush(pq, (matrix[i][j+1], i, j+1))
+        return ans 
 
 
     """386. Lexicographical Numbers (Medium)
