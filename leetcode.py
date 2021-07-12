@@ -36941,19 +36941,18 @@ Follow up:
 class MedianFinder:
 
     def __init__(self):
-        self.lo = [] #max heap for smaller half
-        self.hi = [] #min heap for larger half
+        self.small = [] # min-heap
+        self.large = [] # max-heap
 
     def addNum(self, num: int) -> None:
-        heappush(self.lo, -num)
-        heappush(self.hi, -heappop(self.lo))
-        if len(self.lo) < len(self.hi):
-            heappush(self.lo, -heappop(self.hi))
+        if not self.small or num >= self.small[0]: heappush(self.small, num)
+        else: heappush(self.large, -num)
+        if len(self.small) > 1 + len(self.large): heappush(self.large, -heappop(self.small))
+        elif len(self.small) < len(self.large): heappush(self.small, -heappop(self.large))
 
     def findMedian(self) -> float:
-        if len(self.lo) == len(self.hi): 
-            return (-self.lo[0] + self.hi[0])/2
-        return -self.lo[0]
+        if len(self.small) > len(self.large): return self.small[0]
+        return (self.small[0] - self.large[0])/2
 
 
 """304. Range Sum Query 2D - Immutable (Medium)
