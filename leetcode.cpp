@@ -12980,6 +12980,234 @@ public:
         
         return fn(0).second; 
     }
+
+
+    /*1925. Count Square Sum Triples (Easy)
+	A square triple (a,b,c) is a triple where a, b, and c are integers and 
+	a^2 + b^2 = c^2. Given an integer n, return the number of square triples 
+	such that 1 <= a, b, c <= n.
+
+	Example 1:
+	Input: n = 5
+	Output: 2
+	Explanation: The square triples are (3,4,5) and (4,3,5).
+
+	Example 2:
+	Input: n = 10
+	Output: 4
+	Explanation: The square triples are (3,4,5), (4,3,5), (6,8,10), and (8,6,10).
+
+	Constraints: 1 <= n <= 250*/
+
+    int countTriples(int n) {
+        int ans = 0; 
+        for (int a = 1; a < n; ++a) {
+            for (int b = a+1; b < n; ++b) {
+                int cc = a*a + b*b, c = sqrt(cc); 
+                if (c*c == cc && c <= n) ans += 2; 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*1926. Nearest Exit from Entrance in Maze (Medium)
+	You are given an m x n matrix maze (0-indexed) with empty cells 
+	(represented as '.') and walls (represented as '+'). You are also given the 
+	entrance of the maze, where entrance = [entrancerow, entrancecol] denotes 
+	the row and column of the cell you are initially standing at. In one step, 
+	you can move one cell up, down, left, or right. You cannot step into a cell 
+	with a wall, and you cannot step outside the maze. Your goal is to find the 
+	nearest exit from the entrance. An exit is defined as an empty cell that is 
+	at the border of the maze. The entrance does not count as an exit. Return 
+	the number of steps in the shortest path from the entrance to the nearest 
+	exit, or -1 if no such path exists.
+
+	Example 1:
+	Input: maze = [["+","+",".","+"],[".",".",".","+"],["+","+","+","."]], entrance = [1,2]
+	Output: 1
+	Explanation: There are 3 exits in this maze at [1,0], [0,2], and [2,3].
+	             Initially, you are at the entrance cell [1,2].
+	             - You can reach [1,0] by moving 2 steps left.
+	             - You can reach [0,2] by moving 1 step up.
+	             It is impossible to reach [2,3] from the entrance.
+	             Thus, the nearest exit is [0,2], which is 1 step away.
+	
+	Example 2:
+	Input: maze = [["+","+","+"],[".",".","."],["+","+","+"]], entrance = [1,0]
+	Output: 2
+	Explanation: There is 1 exit in this maze at [1,2].
+	             [1,0] does not count as an exit since it is the entrance cell.
+	             Initially, you are at the entrance cell [1,0].
+	             - You can reach [1,2] by moving 2 steps right.
+	             Thus, the nearest exit is [1,2], which is 2 steps away.
+	
+	Example 3:
+	Input: maze = [[".","+"]], entrance = [0,0]
+	Output: -1
+	Explanation: There are no exits in this maze.
+
+	Constraints:
+	* maze.length == m
+	* maze[i].length == n
+	* 1 <= m, n <= 100
+	* maze[i][j] is either '.' or '+'.
+	* entrance.length == 2
+	* 0 <= entrancerow < m
+	* 0 <= entrancecol < n
+	* entrance will always be an empty cell.*/
+
+    int nearestExit(vector<vector<char>>& maze, vector<int>& entrance) {
+        int ans = 0, m = maze.size(), n = maze[0].size(), d[5] = {1, 0, -1, 0, 1}; 
+        queue<int> q; 
+        q.push(entrance[0]*n + entrance[1]); 
+        while (q.size()) {
+            for (int k = q.size(); k; --k) {
+                int x = q.front()/n, y = q.front()%n; 
+                q.pop();
+                if ((x == 0 || x == m-1 || y == 0 || y == n-1) && (x != entrance[0] || y != entrance[1])) return ans; 
+                for (int i = 0; i < 4; ++i) {
+                    int xx = x + d[i], yy = y + d[i+1]; 
+                    if (0 <= xx && xx < m && 0 <= yy && yy < n && maze[xx][yy] == '.') {
+                        maze[xx][yy] = '+'; 
+                        q.push(xx*n + yy); 
+                    }
+                }
+            }
+            ++ans; 
+        }
+        return -1; 
+    }
+
+
+    /*1927. Sum Game (Medium)
+	Alice and Bob take turns playing a game, with Alice starting first. You are 
+	given a string num of even length consisting of digits and '?' characters. 
+	On each turn, a player will do the following if there is still at least one 
+	'?' in num:
+	* Choose an index i where num[i] == '?'.
+	* Replace num[i] with any digit between '0' and '9'.
+	The game ends when there are no more '?' characters in num. For Bob to win, 
+	the sum of the digits in the first half of num must be equal to the sum of 
+	the digits in the second half. For Alice to win, the sums must not be equal.
+	* For example, if the game ended with num = "243801", then Bob wins because 
+	  2+4+3 = 8+0+1. If the game ended with num = "243803", then Alice wins 
+	  because 2+4+3 != 8+0+3.
+	Assuming Alice and Bob play optimally, return true if Alice will win and 
+	false if Bob will win.
+
+	Example 1:
+	Input: num = "5023"
+	Output: false
+	Explanation: There are no moves to be made. The sum of the first half is 
+	             equal to the sum of the second half: 5 + 0 = 2 + 3.
+	
+	Example 2:
+	Input: num = "25??"
+	Output: true
+	Explanation: Alice can replace one of the '?'s with '9' and it will be 
+	             impossible for Bob to make the sums equal.
+	
+	Example 3:
+	Input: num = "?3295???"
+	Output: false
+	Explanation: It can be proven that Bob will always win. One possible outcome is:
+	             - Alice replaces the first '?' with '9'. num = "93295???".
+	             - Bob replaces one of the '?' in the right half with '9'. num = "932959??".
+	             - Alice replaces one of the '?' in the right half with '2'. num = "9329592?".
+	             - Bob replaces the last '?' in the right half with '7'. num = "93295927".
+	             Bob wins because 9 + 3 + 2 + 9 = 5 + 9 + 2 + 7.
+
+	Constraints:
+	* 2 <= num.length <= 10^5
+	* num.length is even.
+	* num consists of only digits and '?'.*/
+
+    bool sumGame(string num) {
+        int diff = 0, qm = 0; 
+        for (int i = 0; i < num.size(); ++i) {
+            if (num[i] == '?') qm += i < num.size()/2 ? 1 : -1; 
+            else diff += i < num.size()/2 ? num[i] - '0' : '0' - num[i]; 
+        }
+        return diff * 2 + qm * 9 != 0; 
+    }
+
+
+    /*1928. Minimum Cost to Reach Destination in Time (Hard)
+	There is a country of n cities numbered from 0 to n - 1 where all the 
+	cities are connected by bi-directional roads. The roads are represented as 
+	a 2D integer array edges where edges[i] = [xi, yi, timei] denotes a road 
+	between cities xi and yi that takes timei minutes to travel. There may be 
+	multiple roads of differing travel times connecting the same two cities, 
+	but no road connects a city to itself. Each time you pass through a city, 
+	you must pay a passing fee. This is represented as a 0-indexed integer 
+	array passingFees of length n where passingFees[j] is the amount of dollars 
+	you must pay when you pass through city j. In the beginning, you are at 
+	city 0 and want to reach city n - 1 in maxTime minutes or less. The cost of 
+	your journey is the summation of passing fees for each city that you passed 
+	through at some moment of your journey (including the source and 
+	destination cities). Given maxTime, edges, and passingFees, return the 
+	minimum cost to complete your journey, or -1 if you cannot complete it 
+	within maxTime minutes.
+
+	Example 1:
+	Input: maxTime = 30, 
+	       edges = [[0,1,10],[1,2,10],[2,5,10],[0,3,1],[3,4,10],[4,5,15]], 
+	       passingFees = [5,1,2,20,20,3]
+	Output: 11
+	Explanation: The path to take is 0 -> 1 -> 2 -> 5, which takes 30 minutes 
+	             and has $11 worth of passing fees.
+
+	Example 2:
+	Input: maxTime = 29, 
+	       edges = [[0,1,10],[1,2,10],[2,5,10],[0,3,1],[3,4,10],[4,5,15]], 
+	       passingFees = [5,1,2,20,20,3]
+	Output: 48
+	Explanation: The path to take is 0 -> 3 -> 4 -> 5, which takes 26 minutes 
+	             and has $48 worth of passing fees. You cannot take path 
+	             0 -> 1 -> 2 -> 5 since it would take too long.
+	
+	Example 3:
+	Input: maxTime = 25, 
+	       edges = [[0,1,10],[1,2,10],[2,5,10],[0,3,1],[3,4,10],[4,5,15]], 
+	       passingFees = [5,1,2,20,20,3]
+	Output: -1
+	Explanation: There is no way to reach city 5 from city 0 within 25 minutes.
+
+	Constraints:
+	* 1 <= maxTime <= 1000
+	* n == passingFees.length
+	* 2 <= n <= 1000
+	* n - 1 <= edges.length <= 1000
+	* 0 <= xi, yi <= n - 1
+	* 1 <= timei <= 1000
+	* 1 <= passingFees[j] <= 1000 
+	* The graph may contain multiple edges between two nodes.
+	* The graph does not contain self loops.*/
+
+    int minCost(int maxTime, vector<vector<int>>& edges, vector<int>& passingFees) {
+        unordered_map<int, vector<pair<int, int>>> graph; 
+        for (auto& edge : edges) {
+            graph[edge[0]].emplace_back(edge[1], edge[2]); 
+            graph[edge[1]].emplace_back(edge[0], edge[2]); 
+        }
+        
+        // Dijkstra's algo
+        priority_queue<array<int, 3>, vector<array<int, 3>>, greater<>> pq; // min-heap 
+        pq.push({passingFees[0], 0, 0}); 
+        unordered_map<int, int> dist = {{0, passingFees[0]}}; 
+        while (pq.size()) {
+            auto [cost, k, t] = pq.top(); pq.pop(); 
+            if (k == passingFees.size()-1) return cost; 
+            for (auto& [kk, tt] : graph[k]) {
+                if (t + tt <= maxTime && (!dist.count(kk) || t + tt < dist[kk])) {
+                    dist[kk] = t + tt; 
+                    pq.push({cost + passingFees[kk], kk, t + tt}); 
+                }
+            }
+        }
+        return -1; 
+    }
 };
 
 
