@@ -14244,9 +14244,14 @@ class UnionFind:
 	* T has length at most 200.
 	* S and T consist of lowercase letters only."""
 
-    def customSortString(self, S: str, T: str) -> str:
-        mp = {c: i for i, c in enumerate(S)}
-        return "".join(sorted(T, key=lambda x: mp.get(x, 26)))
+    def customSortString(self, order: str, str: str) -> str:
+        freq = {}
+        for c in str: freq[c] = 1 + freq.get(c, 0)
+        
+        ans = []
+        for c in order: 
+            if c in freq: ans.append(c * freq.pop(c))
+        return "".join(ans) + "".join(k*v for k, v in freq.items())
 
 
     """792. Number of Matching Subsequences (Medium)
