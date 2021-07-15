@@ -36426,6 +36426,230 @@ class Fenwick:
         return -1 
 
 
+    """1929. Concatenation of Array (Easy)
+	Given an integer array nums of length n, you want to create an array ans of 
+	length 2n where ans[i] == nums[i] and ans[i + n] == nums[i] for 0 <= i < n 
+	(0-indexed). Specifically, ans is the concatenation of two nums arrays. 
+	Return the array ans.
+
+	Example 1:
+	Input: nums = [1,2,1]
+	Output: [1,2,1,1,2,1]
+	Explanation: The array ans is formed as follows:
+	             - ans = [nums[0],nums[1],nums[2],nums[0],nums[1],nums[2]]
+	             - ans = [1,2,1,1,2,1]
+	
+	Example 2:
+	Input: nums = [1,3,2,1]
+	Output: [1,3,2,1,1,3,2,1]
+	Explanation: The array ans is formed as follows:
+	             - ans = [nums[0],nums[1],nums[2],nums[3],nums[0],nums[1],nums[2],nums[3]]
+	             - ans = [1,3,2,1,1,3,2,1]
+
+	Constraints:
+	* n == nums.length
+	* 1 <= n <= 1000
+	* 1 <= nums[i] <= 1000"""
+
+    def getConcatenation(self, nums: List[int]) -> List[int]:
+        return nums * 2
+
+
+    """1930. Unique Length-3 Palindromic Subsequences (Medium)
+	Given a string s, return the number of unique palindromes of length three 
+	that are a subsequence of s. Note that even if there are multiple ways to 
+	obtain the same subsequence, it is still only counted once. A palindrome is 
+	a string that reads the same forwards and backwards. A subsequence of a 
+	string is a new string generated from the original string with some 
+	characters (can be none) deleted without changing the relative order of the 
+	remaining characters. For example, "ace" is a subsequence of "abcde".
+
+	Example 1:
+	Input: s = "aabca"
+	Output: 3
+	Explanation: The 3 palindromic subsequences of length 3 are:
+	             - "aba" (subsequence of "aabca")
+	             - "aaa" (subsequence of "aabca")
+	             - "aca" (subsequence of "aabca")
+	
+	Example 2:
+	Input: s = "adc"
+	Output: 0
+	Explanation: There are no palindromic subsequences of length 3 in "adc".
+
+	Example 3:
+	Input: s = "bbcbaba"
+	Output: 4
+	Explanation: The 4 palindromic subsequences of length 3 are:
+	             - "bbb" (subsequence of "bbcbaba")
+	             - "bcb" (subsequence of "bbcbaba")
+	             - "bab" (subsequence of "bbcbaba")
+	             - "aba" (subsequence of "bbcbaba")
+
+	Constraints:
+	* 3 <= s.length <= 10^5
+	* s consists of only lowercase English letters."""
+
+    def countPalindromicSubsequence(self, s: str) -> int:
+        locs = defaultdict(list)
+        for i, ch in enumerate(s): locs[ch].append(i)
+        
+        ans = 0 
+        for x in ascii_lowercase: 
+            if len(locs[x]) > 1: 
+                if len(locs[x]) > 2: ans += 1
+                for xx in ascii_lowercase:
+                    if x != xx and bisect_left(locs[xx], locs[x][0]) != bisect_left(locs[xx], locs[x][-1]): ans += 1
+        return ans 
+
+
+    """1931. Painting a Grid With Three Different Colors (Hard)
+	You are given two integers m and n. Consider an m x n grid where each cell 
+	is initially white. You can paint each cell red, green, or blue. All cells 
+	must be painted. Return the number of ways to color the grid with no two 
+	adjacent cells having the same color. Since the answer can be very large, 
+	return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: m = 1, n = 1
+	Output: 3
+	Explanation: The three possible colorings are shown in the image above.
+
+	Example 2:
+	Input: m = 1, n = 2
+	Output: 6
+	Explanation: The six possible colorings are shown in the image above.
+
+	Example 3:
+	Input: m = 5, n = 5
+	Output: 580986
+
+	Constraints:
+	* 1 <= m <= 5
+	* 1 <= n <= 1000"""
+
+    def colorTheGrid(self, m: int, n: int) -> int:
+        
+        @cache
+        def fn(i, j, mask): 
+            """Return number of ways to color grid."""
+            if j == n: return 1 
+            if i == m: return fn(0, j+1, mask)
+            ans = 0 
+            for x in 1<<2*i, 1<<2*i+1, 0b11<<2*i: 
+                mask0 = mask ^ x
+                if mask0 & 0b11<<2*i and (i == 0 or (mask0 >> 2*i) & 0b11 != (mask0 >> 2*i-2) & 0b11): 
+                    ans += fn(i+1, j, mask0)
+            return ans % 1_000_000_007
+        
+        return fn(0, 0, 0)
+
+
+    """1932. Merge BSTs to Create Single BST (Hard)
+	You are given n BST (binary search tree) root nodes for n separate BSTs 
+	stored in an array trees (0-indexed). Each BST in trees has at most 3 nodes, 
+	and no two roots have the same value. In one operation, you can:
+	* Select two distinct indices i and j such that the value stored at one of 
+	  the leaves of trees[i] is equal to the root value of trees[j].
+	* Replace the leaf node in trees[i] with trees[j].
+	* Remove trees[j] from trees.
+	Return the root of the resulting BST if it is possible to form a valid BST 
+	after performing n - 1 operations, or null if it is impossible to create a 
+	valid BST. A BST (binary search tree) is a binary tree where each node 
+	satisfies the following property:
+	* Every node in the node's left subtree has a value strictly less than the 
+	  node's value.
+	* Every node in the node's right subtree has a value strictly greater than 
+	  the node's value.
+	A leaf is a node that has no children.
+
+	Example 1:
+	Input: trees = [[2,1],[3,2,5],[5,4]]
+	Output: [3,2,5,1,null,4]
+	Explanation: In the first operation, pick i=1 and j=0, and merge trees[0] 
+	             into trees[1]. Delete trees[0], so trees = [[3,2,5,1],[5,4]].
+	             In the second operation, pick i=0 and j=1, and merge trees[1] 
+	             into trees[0]. Delete trees[1], so trees = [[3,2,5,1,null,4]].
+	             The resulting tree is a valid BST, so return its root.
+	
+	Example 2:
+	Input: trees = [[5,3,8],[3,2,6]]
+	Output: []
+	Explanation: Pick i=0 and j=1 and merge trees[1] into trees[0]. Delete 
+	             trees[1], so trees = [[5,3,8,2,6]]. This is the only valid 
+	             operation that can be performed, but the resulting tree is not 
+	             a valid BST, so return null.
+	
+	Example 3:
+	Input: trees = [[5,4],[3]]
+	Output: []
+	Explanation: It is impossible to perform any operations.
+
+	Example 4:
+	Input: trees = [[2,1,3]]
+	Output: [2,1,3]
+	Explanation: There is only one tree, and it is already a valid BST, so 
+	             return its root.
+
+	Constraints:
+	* n == trees.length
+	* 1 <= n <= 5 * 10^4
+	* The number of nodes in each tree is in the range [1, 3].
+	* Each node in the input may have children but no grandchildren.
+	* No two roots of trees have the same value.
+	* All the trees in the input are valid BSTs.
+	* 1 <= TreeNode.val <= 5 * 10^4."""
+
+    def canMerge(self, trees: List[TreeNode]) -> TreeNode:
+        freq = defaultdict(int)
+        for tree in trees: 
+            stack = [tree]
+            while stack: 
+                x = stack.pop()
+                if x: 
+                    freq[x.val] += 1
+                    stack.append(x.left)
+                    stack.append(x.right)
+        
+        cnt, root = 0, None
+        mp = {}
+        for tree in trees: 
+            if freq[tree.val] & 1: cnt, root = cnt+1, tree
+            mp[tree.val] = tree
+        if cnt != 1: return None 
+        
+        stack = [(root, None, 0)]
+        total = len(trees)
+        while stack: 
+            node, parent, left = stack.pop()
+            if not node.left and not node.right and node.val in mp: 
+                total -= 1
+                if not parent: 
+                    if len(trees) > 1: return None 
+                    return root
+                if left: parent.left = node = mp[node.val]
+                else: parent.right = node = mp[node.val]
+            if node.left: stack.append((node.left, node, 1))
+            if node.right: stack.append((node.right, node, 0))
+        
+        if total > 1: return None 
+        
+        # in-order traversal 
+        prev = -inf
+        node = root 
+        stack = []
+        while stack or node: 
+            if node: 
+                stack.append(node)
+                node = node.left 
+            else: 
+                node = stack.pop()
+                if prev >= node.val: return None
+                prev = node.val
+                node = node.right
+        return root
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 

@@ -13208,6 +13208,262 @@ public:
         }
         return -1; 
     }
+
+
+    /*1929. Concatenation of Array (Easy)
+	Given an integer array nums of length n, you want to create an array ans of 
+	length 2n where ans[i] == nums[i] and ans[i + n] == nums[i] for 0 <= i < n 
+	(0-indexed). Specifically, ans is the concatenation of two nums arrays. 
+	Return the array ans.
+
+	Example 1:
+	Input: nums = [1,2,1]
+	Output: [1,2,1,1,2,1]
+	Explanation: The array ans is formed as follows:
+	             - ans = [nums[0],nums[1],nums[2],nums[0],nums[1],nums[2]]
+	             - ans = [1,2,1,1,2,1]
+	
+	Example 2:
+	Input: nums = [1,3,2,1]
+	Output: [1,3,2,1,1,3,2,1]
+	Explanation: The array ans is formed as follows:
+	             - ans = [nums[0],nums[1],nums[2],nums[3],nums[0],nums[1],nums[2],nums[3]]
+	             - ans = [1,3,2,1,1,3,2,1]
+
+	Constraints:
+	* n == nums.length
+	* 1 <= n <= 1000
+	* 1 <= nums[i] <= 1000*/
+
+    vector<int> getConcatenation(vector<int>& nums) {
+        vector<int> ans; 
+        for (int i = 0; i < 2*nums.size(); ++i) 
+            ans.push_back(nums[i % nums.size()]); 
+        return ans; 
+    }
+
+
+    /*1930. Unique Length-3 Palindromic Subsequences (Medium)
+	Given a string s, return the number of unique palindromes of length three 
+	that are a subsequence of s. Note that even if there are multiple ways to 
+	obtain the same subsequence, it is still only counted once. A palindrome is 
+	a string that reads the same forwards and backwards. A subsequence of a 
+	string is a new string generated from the original string with some 
+	characters (can be none) deleted without changing the relative order of the 
+	remaining characters. For example, "ace" is a subsequence of "abcde".
+
+	Example 1:
+	Input: s = "aabca"
+	Output: 3
+	Explanation: The 3 palindromic subsequences of length 3 are:
+	             - "aba" (subsequence of "aabca")
+	             - "aaa" (subsequence of "aabca")
+	             - "aca" (subsequence of "aabca")
+	
+	Example 2:
+	Input: s = "adc"
+	Output: 0
+	Explanation: There are no palindromic subsequences of length 3 in "adc".
+
+	Example 3:
+	Input: s = "bbcbaba"
+	Output: 4
+	Explanation: The 4 palindromic subsequences of length 3 are:
+	             - "bbb" (subsequence of "bbcbaba")
+	             - "bcb" (subsequence of "bbcbaba")
+	             - "bab" (subsequence of "bbcbaba")
+	             - "aba" (subsequence of "bbcbaba")
+
+	Constraints:
+	* 3 <= s.length <= 10^5
+	* s consists of only lowercase English letters.*/
+
+    int countPalindromicSubsequence(string s) {
+        unordered_map<char, vector<int>> locs; 
+        for (int i = 0; i < s.size(); ++i) locs[s[i]].push_back(i); 
+        
+        int ans = 0; 
+        string ascii_lowercase = "abcdefghijklmnopqrstuvwxyz"; 
+        for (auto& c : ascii_lowercase) 
+            if (locs[c].size() > 1) {
+                if (locs[c].size() > 2) ++ans; 
+                for (auto& cc : ascii_lowercase) 
+                    if (c != cc) {
+                        auto lo = lower_bound(locs[cc].begin(), locs[cc].end(), locs[c].front()); 
+                        auto hi = lower_bound(locs[cc].begin(), locs[cc].end(), locs[c].back()); 
+                        if (lo != hi) ++ans; 
+                    }
+            }
+        return ans; 
+    }
+
+
+    /*1931. Painting a Grid With Three Different Colors (Hard)
+	You are given two integers m and n. Consider an m x n grid where each cell 
+	is initially white. You can paint each cell red, green, or blue. All cells 
+	must be painted. Return the number of ways to color the grid with no two 
+	adjacent cells having the same color. Since the answer can be very large, 
+	return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: m = 1, n = 1
+	Output: 3
+	Explanation: The three possible colorings are shown in the image above.
+
+	Example 2:
+	Input: m = 1, n = 2
+	Output: 6
+	Explanation: The six possible colorings are shown in the image above.
+
+	Example 3:
+	Input: m = 5, n = 5
+	Output: 580986
+
+	Constraints:
+	* 1 <= m <= 5
+	* 1 <= n <= 1000*/
+
+    int colorTheGrid(int m, int n) {
+        long memo[m][n][1<<2*m]; 
+        memset(memo, 0, sizeof(memo));
+        
+        function<long(int, int, int)> fn = [&](int i, int j, int mask) {
+            if (j == n) return 1l; 
+            if (i == m) return fn(0, j+1, mask); 
+            if (!memo[i][j][mask]) 
+                for (const int& x : {1<<(2*i), 1<<(2*i+1), 3<<(2*i)}) {
+                    int mask0 = mask ^ x; 
+                    if ((mask0 & 3<<2*i) != 0 && (i == 0 || (mask0>>2*i & 3) != (mask0>>2*i-2 & 3))) {
+                        memo[i][j][mask] = (memo[i][j][mask] + fn(i+1, j, mask0)) % 1'000'000'007; 
+                    }
+                }
+            return memo[i][j][mask]; 
+        };
+        
+        return fn(0, 0, 0); 
+    }
+
+
+    /*1932. Merge BSTs to Create Single BST (Hard)
+	You are given n BST (binary search tree) root nodes for n separate BSTs 
+	stored in an array trees (0-indexed). Each BST in trees has at most 3 nodes, 
+	and no two roots have the same value. In one operation, you can:
+	* Select two distinct indices i and j such that the value stored at one of 
+	  the leaves of trees[i] is equal to the root value of trees[j].
+	* Replace the leaf node in trees[i] with trees[j].
+	* Remove trees[j] from trees.
+	Return the root of the resulting BST if it is possible to form a valid BST 
+	after performing n - 1 operations, or null if it is impossible to create a 
+	valid BST. A BST (binary search tree) is a binary tree where each node 
+	satisfies the following property:
+	* Every node in the node's left subtree has a value strictly less than the 
+	  node's value.
+	* Every node in the node's right subtree has a value strictly greater than 
+	  the node's value.
+	A leaf is a node that has no children.
+
+	Example 1:
+	Input: trees = [[2,1],[3,2,5],[5,4]]
+	Output: [3,2,5,1,null,4]
+	Explanation: In the first operation, pick i=1 and j=0, and merge trees[0] 
+	             into trees[1]. Delete trees[0], so trees = [[3,2,5,1],[5,4]].
+ 	             In the second operation, pick i=0 and j=1, and merge trees[1] 
+ 	             into trees[0]. Delete trees[1], so trees = [[3,2,5,1,null,4]].
+	             The resulting tree, shown above, is a valid BST, so return its 
+	             root.
+	
+	Example 2:
+	Input: trees = [[5,3,8],[3,2,6]]
+	Output: []
+	Explanation: Pick i=0 and j=1 and merge trees[1] into trees[0]. Delete 
+	             trees[1], so trees = [[5,3,8,2,6]]. The resulting tree is 
+	             shown above. This is the only valid operation that can be 
+	             performed, but the resulting tree is not a valid BST, so 
+	             return null.
+	
+	Example 3:
+	Input: trees = [[5,4],[3]]
+	Output: []
+	Explanation: It is impossible to perform any operations.
+
+	Example 4:
+	Input: trees = [[2,1,3]]
+	Output: [2,1,3]
+	Explanation: There is only one tree, and it is already a valid BST, so 
+	             return its root.
+
+	Constraints:
+	* n == trees.length
+	* 1 <= n <= 5 * 10^4
+	* The number of nodes in each tree is in the range [1, 3].
+	* Each node in the input may have children but no grandchildren.
+	* No two roots of trees have the same value.
+	* All the trees in the input are valid BSTs.
+	* 1 <= TreeNode.val <= 5 * 10^4.*/
+
+    TreeNode* canMerge(vector<TreeNode*>& trees) {
+        unordered_map<int, int> freq; 
+        stack<TreeNode*> stk; 
+        
+        for (auto& tree : trees) {
+            stk.push(tree); 
+            while (stk.size()) {
+                TreeNode* node = stk.top(); stk.pop(); 
+                if (node) {
+                    ++freq[node->val]; 
+                    stk.push(node->left); 
+                    stk.push(node->right); 
+                }
+            }
+        }
+        
+        int cnt = 0; 
+        TreeNode* root = NULL; 
+        unordered_map<int, TreeNode*> mp; 
+        
+        for (auto& tree : trees) {
+            mp[tree->val] = tree; 
+            if (freq[tree->val] & 1) {
+                ++cnt; 
+                root = tree; 
+            }
+        }
+        
+        if (cnt != 1) return NULL; 
+        
+        stk.push(root); 
+        int total = trees.size(); 
+        while (stk.size()) {
+            TreeNode* node = stk.top(); stk.pop(); 
+            if (node->left && !node->left->left && !node->left->right && mp.count(node->left->val)) {
+                node->left = mp[node->left->val]; 
+                --total; 
+            }
+            if (node->right && !node->right->left && !node->right->right && mp.count(node->right->val)) {
+                node->right = mp[node->right->val]; 
+                --total; 
+            }
+            if (node->left) stk.push(node->left); 
+            if (node->right) stk.push(node->right); 
+        }
+        
+        if (total != 1) return NULL; 
+        
+        int prev = INT_MIN; 
+        TreeNode* node = root; 
+        while (stk.size() || node) {
+            if (node) {
+                stk.push(node); 
+                node = node->left; 
+            } else {
+                node = stk.top(); stk.pop(); 
+                if (prev >= node->val) return NULL; 
+                prev = node->val; 
+                node = node->right; 
+            }
+        }
+        return root; 
+    }
 };
 
 
