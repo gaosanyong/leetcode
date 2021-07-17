@@ -3822,6 +3822,52 @@ public:
     }
 
 
+    /*689. Maximum Sum of 3 Non-Overlapping Subarrays (Hard)
+	Given an integer array nums and an integer k, find three non-overlapping 
+	subarrays of length k with maximum sum and return them. Return the result 
+	as a list of indices representing the starting position of each interval 
+	(0-indexed). If there are multiple answers, return the lexicographically 
+	smallest one.
+
+	Example 1:
+	Input: nums = [1,2,1,2,6,7,5,1], k = 2
+	Output: [0,3,5]
+	Explanation: Subarrays [1, 2], [2, 6], [7, 5] correspond to the starting 
+	             indices [0, 3, 5]. We could have also taken [2, 1], but an 
+	             answer of [1, 3, 5] would be lexicographically larger.
+	
+	Example 2:
+	Input: nums = [1,2,1,2,1,2,1,2,1], k = 2
+	Output: [0,2,4]
+
+	Constraints:
+	* 1 <= nums.length <= 2 * 10^4
+	* 1 <= nums[i] < 2^16
+	* 1 <= k <= floor(nums.length / 3)*/
+
+    vector<int> maxSumOfThreeSubarrays(vector<int>& nums, int k) {
+        int rs0 = 0, rs1 = 0, rs2 = 0; 
+        for (int i = 0; i < k*3; ++i) {
+            if (i < k) rs0 += nums[i]; 
+            else if (i < 2*k) rs1 += nums[i]; 
+            else rs2 += nums[i]; 
+        }
+        
+        int m0 = rs0, m1 = m0 + rs1, m2 = m1 + rs2; 
+        vector<int> i0 = {0}, i1 = {0, k}, i2 = {0, k, 2*k}; 
+        
+        for (int i = 0; i < nums.size() - 3*k; ++i) {
+            rs0 += nums[i+k] - nums[i]; 
+            rs1 += nums[i+2*k] - nums[i+k]; 
+            rs2 += nums[i+3*k] - nums[i+2*k]; 
+            if (rs0 > m0) { m0 = rs0; i0 = {i+1}; }
+            if (m0 + rs1 > m1) { m1 = m0 + rs1; i1 = {i0[0], i+k+1}; }
+            if (m1 + rs2 > m2) { m2 = m1 + rs2; i2 = {i1[0], i1[1], i+2*k+1}; }
+        }
+        return i2; 
+    }
+
+
     /*690. Employee Importance (Easy)
 	You are given a data structure of employee information, which includes the 
 	employee's unique id, their importance value and their direct subordinates' 
