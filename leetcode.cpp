@@ -1740,20 +1740,12 @@ public:
 	* p and q will exist in the BST.*/
 
     TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
-        if (p->val > q->val) {
-            TreeNode* temp = p; 
-            p = q; 
-            q = temp; 
-        }
-        
+        if (p->val > q->val) swap(p, q); 
         TreeNode* node = root; 
         while (node) {
-            if (node->val < p->val) 
-                node = node->right; 
-            else if (q->val < node->val)
-                node = node->left;
-            else 
-                break; 
+            if (node->val < p->val) node = node->right; 
+            else if (p->val <= node->val && node->val <= q->val) break; 
+            else node = node->left; 
         }
         return node; 
     }
