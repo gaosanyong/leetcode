@@ -38415,14 +38415,14 @@ solution.shuffle();"""
 class Solution:
 
     def __init__(self, nums: List[int]):
-        self.nums = nums
-        self.orig = nums.copy() # original array 
+        self.orig = nums # original array 
+        self.nums = nums.copy()
 
     def reset(self) -> List[int]:
         return self.orig
 
     def shuffle(self) -> List[int]:
-        for i in range(1, len(self.nums)): 
+        for i in range(len(self.nums)): 
             ii = randint(0, i)
             self.nums[ii], self.nums[i] = self.nums[i], self.nums[ii]
         return self.nums
