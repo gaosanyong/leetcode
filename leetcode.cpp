@@ -4501,6 +4501,52 @@ public:
     }
 
 
+    /*753. Cracking the Safe (Hard)
+	There is a box protected by a password. The password is a sequence of n 
+	digits where each digit can be in the range [0, k - 1]. While entering a 
+	password, the last n digits entered will automatically be matched against 
+	the correct password. For example, assuming the correct password is "345", 
+	if you type "012345", the box will open because the correct password 
+	matches the suffix of the entered password. Return any password of minimum 
+	length that is guaranteed to open the box at some point of entering it.
+
+	Example 1:
+	Input: n = 1, k = 2
+	Output: "10"
+	Explanation: "01" will be accepted too.
+
+	Example 2:
+	Input: n = 2, k = 2
+	Output: "01100"
+	Explanation: "01100", "10011", "11001" will be accepted too.
+
+	Constraints:
+	* 1 <= n <= 4
+	* 1 <= k <= 10
+	* 1 <= kn <= 4096*/
+
+    string crackSafe(int n, int k) {
+        string ans; // De Bruijn sequence
+        if (n == 1) {
+            for (int x = k-1; x >= 0; --x) 
+                ans.push_back(x + '0'); 
+        } else {
+            unordered_map<string, int> mp; 
+            
+            /* Return Eulerian path via Hierholzer algo */
+            function<void(string)> fn = [&](string s) {
+                while (mp[s]++ < k) 
+                    fn(s.substr(1) + to_string(mp[s]-1)); 
+                if (ans.empty()) ans += s; 
+                else ans.push_back(s[0]); 
+            };
+            
+            fn(string(n-1, '0')); 
+        }
+        return ans; 
+    }
+
+
     /*762. Prime Number of Set Bits in Binary Representation (Easy)
 	Given two integers L and R, find the count of numbers in the range [L, R] 
 	(inclusive) having a prime number of set bits in their binary representation.
