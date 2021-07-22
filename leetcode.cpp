@@ -5607,23 +5607,27 @@ public:
 
     string pushDominoes(string dominoes) {
         int n = dominoes.size(); 
-        vector<int> bal(n); 
-        for (int i = n-1, val = 0; i >= 0; --i) {
-            if (dominoes[i] == 'L') val = n; 
-            else if (dominoes[i] == 'R') val = 0; 
-            else val = max(0, val - 1); 
-            bal[i] = val; 
+        vector<int> mp(n); 
+        for (int i = n-1, ii = n; i >= 0; --i) {
+            if (dominoes[i] != '.') ii = i; 
+            mp[i] = ii; 
         }
         
         string ans; 
-        for (int i = 0, val = 0; i < n; ++i) {
-            if (dominoes[i] == 'R') val = n; 
-            else if (dominoes[i] == 'L') val = 0; 
-            else val = max(0, val - 1); 
-            
-            if (bal[i] - val < 0) ans.push_back('R'); 
-            else if (bal[i] - val > 0) ans.push_back('L'); 
-            else ans.push_back('.'); 
+        for (int i = 0, ii = -1; i < n; ++i) {
+            if (dominoes[i] == 'L' || dominoes[i] == 'R') {
+                ans.push_back(dominoes[i]); 
+                ii = i; 
+            } else {
+                char ll = ii == -1 ? 'L' : dominoes[ii], rr = mp[i] == n ? 'R' : dominoes[mp[i]]; 
+                if (ll == rr) ans.push_back(ll); 
+                else if (ll == 'L') ans.push_back('.'); 
+                else {
+                    if (i - ii < mp[i] - i) ans.push_back('R'); 
+                    else if (i - ii > mp[i] - i) ans.push_back('L'); 
+                    else ans.push_back('.'); 
+                }
+            }
         }
         return ans; 
     }
