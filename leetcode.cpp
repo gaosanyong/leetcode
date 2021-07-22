@@ -5574,6 +5574,61 @@ public:
     }
 
 
+    /*838. Push Dominoes (Medium)
+	There are n dominoes in a line, and we place each domino vertically upright. 
+	In the beginning, we simultaneously push some of the dominoes either to the 
+	left or to the right. After each second, each domino that is falling to the 
+	left pushes the adjacent domino on the left. Similarly, the dominoes 
+	falling to the right push their adjacent dominoes standing on the right.
+	When a vertical domino has dominoes falling on it from both sides, it stays 
+	still due to the balance of the forces. For the purposes of this question, 
+	we will consider that a falling domino expends no additional force to a 
+	falling or already fallen domino. You are given a string dominoes 
+	representing the initial state where:
+	* dominoes[i] = 'L', if the ith domino has been pushed to the left,
+	* dominoes[i] = 'R', if the ith domino has been pushed to the right, and
+	* dominoes[i] = '.', if the ith domino has not been pushed.
+	Return a string representing the final state.
+
+	Example 1:
+	Input: dominoes = "RR.L"
+	Output: "RR.L"
+	Explanation: The first domino expends no additional force on the second 
+	             domino.
+	
+	Example 2:
+	Input: dominoes = ".L.R...LR..L.."
+	Output: "LL.RR.LLRRLL.."
+
+	Constraints:
+	* n == dominoes.length
+	* 1 <= n <= 10^5
+	* dominoes[i] is either 'L', 'R', or '.'.*/
+
+    string pushDominoes(string dominoes) {
+        int n = dominoes.size(); 
+        vector<int> bal(n); 
+        for (int i = n-1, val = 0; i >= 0; --i) {
+            if (dominoes[i] == 'L') val = n; 
+            else if (dominoes[i] == 'R') val = 0; 
+            else val = max(0, val - 1); 
+            bal[i] = val; 
+        }
+        
+        string ans; 
+        for (int i = 0, val = 0; i < n; ++i) {
+            if (dominoes[i] == 'R') val = n; 
+            else if (dominoes[i] == 'L') val = 0; 
+            else val = max(0, val - 1); 
+            
+            if (bal[i] - val < 0) ans.push_back('R'); 
+            else if (bal[i] - val > 0) ans.push_back('L'); 
+            else ans.push_back('.'); 
+        }
+        return ans; 
+    }
+
+
     /*847. Shortest Path Visiting All Nodes (Hard)
 	You have an undirected, connected graph of n nodes labeled from 0 to n - 1. 
 	You are given an array graph where graph[i] is a list of all the nodes 
