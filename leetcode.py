@@ -16515,15 +16515,15 @@ class UnionFind:
 	* 0 <= A[i] <= 10^6
 	* It is guaranteed there is at least one way to partition A as described."""
 
-    def partitionDisjoint(self, A: List[int]) -> int:
-        ans = 0
-        mx, val = -inf, inf
-        for i, x in enumerate(A, 1): 
-            mx = max(mx, x)
-            if x < val: 
+    def partitionDisjoint(self, nums: List[int]) -> int:
+        ans = 0 
+        mx = threshold = nums[0]
+        for i, x in enumerate(nums): 
+            mx = max(mx, x) 
+            if x < threshold: # threshold to partition the array
                 ans = i 
-                val = mx 
-        return ans
+                threshold = mx
+        return ans + 1
 
 
     """916. Word Subsets (Medium)
