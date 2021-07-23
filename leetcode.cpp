@@ -13995,6 +13995,272 @@ public:
         }
         return root; 
     }
+
+
+    /*1935. Maximum Number of Words You Can Type (Easy)
+	There is a malfunctioning keyboard where some letter keys do not work. All 
+	other keys on the keyboard work properly. Given a string text of words 
+	separated by a single space (no leading or trailing spaces) and a string 
+	brokenLetters of all distinct letter keys that are broken, return the 
+	number of words in text you can fully type using this keyboard.
+
+	Example 1:
+	Input: text = "hello world", brokenLetters = "ad"
+	Output: 1
+	Explanation: We cannot type "world" because the 'd' key is broken.
+
+	Example 2:
+	Input: text = "leet code", brokenLetters = "lt"
+	Output: 1
+	Explanation: We cannot type "leet" because the 'l' and 't' keys are broken.
+
+	Example 3:
+	Input: text = "leet code", brokenLetters = "e"
+	Output: 0
+	Explanation: We cannot type either word because the 'e' key is broken.
+
+	Constraints:
+	* 1 <= text.length <= 10^4
+	* 0 <= brokenLetters.length <= 26
+	* text consists of words separated by a single space without any leading or 
+	  trailing spaces.
+	* Each word only consists of lowercase English letters.
+	* brokenLetters consists of distinct lowercase English letters.*/
+
+    int canBeTypedWords(string text, string brokenLetters) {
+        unordered_set<char> broken(brokenLetters.begin(), brokenLetters.end()); 
+        int ans = 0; 
+        string word; 
+        istringstream iss(text); 
+        while (iss >> word) {
+            bool found = false; 
+            for (auto& ch : word) 
+                if (broken.count(ch)) found = true; 
+            if (!found) ++ans; 
+        }
+        return ans; 
+    }
+
+
+    /*1936. Add Minimum Number of Rungs (Medium)
+	You are given a strictly increasing integer array rungs that represents the 
+	height of rungs on a ladder. You are currently on the floor at height 0, 
+	and you want to reach the last rung. You are also given an integer dist. 
+	You can only climb to the next highest rung if the distance between where 
+	you are currently at (the floor or on a rung) and the next rung is at most 
+	dist. You are able to insert rungs at any positive integer height if a rung 
+	is not already there. Return the minimum number of rungs that must be added 
+	to the ladder in order for you to climb to the last rung.
+
+	Example 1:
+	Input: rungs = [1,3,5,10], dist = 2
+	Output: 2
+	Explanation: You currently cannot reach the last rung. Add rungs at heights 
+	             7 and 8 to climb this ladder. The ladder will now have rungs 
+	             at [1,3,5,7,8,10].
+	
+	Example 2:
+	Input: rungs = [3,6,8,10], dist = 3
+	Output: 0
+	Explanation: This ladder can be climbed without adding additional rungs.
+	
+	Example 3:
+	Input: rungs = [3,4,6,7], dist = 2
+	Output: 1
+	Explanation: You currently cannot reach the first rung from the ground. Add 
+	             a rung at height 1 to climb this ladder. The ladder will now 
+	             have rungs at [1,3,4,6,7].
+	
+	Example 4:
+	Input: rungs = [5], dist = 10
+	Output: 0
+	Explanation: This ladder can be climbed without adding additional rungs.
+
+	Constraints:
+	* 1 <= rungs.length <= 10^5
+	* 1 <= rungs[i] <= 10^9
+	* 1 <= dist <= 10^9
+	* rungs is strictly increasing.*/
+
+    int addRungs(vector<int>& rungs, int dist) {
+        int ans = 0, prev = 0; 
+        for (auto& x : rungs) {
+            ans += (x - prev - 1)/dist; 
+            prev = x; 
+        }
+        return ans; 
+    }
+
+
+    /*1937. Maximum Number of Points with Cost (Medium)
+	You are given an m x n integer matrix points (0-indexed). Starting with 0 
+	points, you want to maximize the number of points you can get from the 
+	matrix. To gain points, you must pick one cell in each row. Picking the 
+	cell at coordinates (r, c) will add points[r][c] to your score. However, 
+	you will lose points if you pick a cell too far from the cell that you 
+	picked in the previous row. For every two adjacent rows r and r + 1 (where 
+	0 <= r < m - 1), picking cells at coordinates (r, c1) and (r + 1, c2) will 
+	subtract abs(c1 - c2) from your score. Return the maximum number of points 
+	you can achieve. abs(x) is defined as:
+	* x for x >= 0.
+	* -x for x < 0.
+
+	Example 1:
+	Input: points = [[1,2,3],[1,5,1],[3,1,1]]
+	Output: 9
+	Explanation: The blue cells denote the optimal cells to pick, which have 
+	             coordinates (0, 2), (1, 1), and (2, 0). You add 3 + 5 + 3 = 11 
+	             to your score. However, you must subtract 
+	             abs(2 - 1) + abs(1 - 0) = 2 from your score. Your final score 
+	             is 11 - 2 = 9.
+	
+	Example 2:
+	Input: points = [[1,5],[2,3],[4,2]]
+	Output: 11
+	Explanation: The blue cells denote the optimal cells to pick, which have 
+	             coordinates (0, 1), (1, 1), and (2, 0). You add 5 + 3 + 4 = 12 
+	             to your score. However, you must subtract 
+	             abs(1 - 1) + abs(1 - 0) = 1 from your score. Your final score 
+	             is 12 - 1 = 11.
+
+	Constraints:
+	* m == points.length
+	* n == points[r].length
+	* 1 <= m, n <= 10^5
+	* 1 <= m * n <= 10^5
+	* 0 <= points[r][c] <= 10^5*/
+
+    long long maxPoints(vector<vector<int>>& points) {
+        int m = points.size(), n = points[0].size(); 
+        vector<vector<long>> dp(m, vector<long>(n, 0)); 
+        for (int j = 0; j < n; ++j) dp[0][j] = points[0][j]; 
+        
+        for (int i = 1; i < m; ++i) {
+            for (int j = n-2; j >= 0; --j) 
+                dp[i-1][j] = max(dp[i-1][j], dp[i-1][j+1]-1); 
+            
+            long prefix = 0; 
+            for (int j = 0; j < n; ++j) {
+                dp[i][j] = points[i][j] + max(prefix, dp[i-1][j]); 
+                prefix = max(prefix, dp[i-1][j]) - 1; 
+            }
+        }
+        return *max_element(dp[m-1].begin(), dp[m-1].end()); 
+    }
+
+
+    /*1938. Maximum Genetic Difference Query (Hard)
+	There is a rooted tree consisting of n nodes numbered 0 to n - 1. Each 
+	node's number denotes its unique genetic value (i.e. the genetic value of 
+	node x is x). The genetic difference between two genetic values is defined 
+	as the bitwise-XOR of their values. You are given the integer array parents, 
+	where parents[i] is the parent for node i. If node x is the root of the 
+	tree, then parents[x] == -1. You are also given the array queries where 
+	queries[i] = [nodei, vali]. For each query i, find the maximum genetic 
+	difference between vali and pi, where pi is the genetic value of any node 
+	that is on the path between nodei and the root (including nodei and the 
+	root). More formally, you want to maximize vali XOR pi. Return an array ans 
+	where ans[i] is the answer to the ith query.
+
+	Example 1:
+	Input: parents = [-1,0,1,1], queries = [[0,2],[3,2],[2,5]]
+	Output: [2,3,7]
+	Explanation: The queries are processed as follows:
+	- [0,2]: The node with the maximum genetic difference is 0, with a difference of 2 XOR 0 = 2.
+	- [3,2]: The node with the maximum genetic difference is 1, with a difference of 2 XOR 1 = 3.
+	- [2,5]: The node with the maximum genetic difference is 2, with a difference of 5 XOR 2 = 7.
+
+	Example 2:
+	Input: parents = [3,7,-1,2,0,7,0,2], queries = [[4,6],[1,15],[0,5]]
+	Output: [6,14,7]
+	Explanation: The queries are processed as follows:
+	- [4,6]: The node with the maximum genetic difference is 0, with a difference of 6 XOR 0 = 6.
+	- [1,15]: The node with the maximum genetic difference is 1, with a difference of 15 XOR 1 = 14.
+	- [0,5]: The node with the maximum genetic difference is 2, with a difference of 5 XOR 2 = 7.
+
+	Constraints:
+	* 2 <= parents.length <= 10^5
+	* 0 <= parents[i] <= parents.length - 1 for every node i that is not the root.
+	* parents[root] == -1
+	* 1 <= queries.length <= 3 * 10^4
+	* 0 <= nodei <= parents.length - 1
+	* 0 <= vali <= 2 * 10^5
+
+class TrieNode {
+    TrieNode* child[2] = {}; 
+    int mult = 0; 
+    int val = -1; 
+friend class Trie; 
+};
+
+class Trie {
+    TrieNode* root; 
+public: 
+    Trie() { root = new TrieNode(); }
+    void insert(int val) {
+        TrieNode* node = root; 
+        for (int i = 18; i >= 0; --i) {
+            int bit = (val >> i) & 1; 
+            if (!node->child[bit]) node->child[bit] = new TrieNode(); 
+            node = node->child[bit]; 
+            node->mult += 1; 
+        }
+        node->val = val; 
+    }
+    
+    int search(int val) {
+        TrieNode* node = root; 
+        for (int i = 18; i >= 0; --i) {
+            int bit = (val >> i) & 1; 
+            if (node->child[1^bit]) node = node->child[1^bit]; 
+            else node = node->child[bit]; 
+        }
+        return val ^ node->val; 
+    }
+    
+    void remove(int val) {
+        TrieNode* node = root; 
+        for (int i = 18; i >= 0; --i) {
+            int bit = (val >> i) & 1; 
+            --node->child[bit]->mult; 
+            if (node->child[bit]->mult == 0) {
+                delete node->child[bit]; 
+                node->child[bit] = nullptr; 
+                break; 
+            }
+            node = node->child[bit]; 
+        }
+    }
+};*/
+
+    vector<int> maxGeneticDifference(vector<int>& parents, vector<vector<int>>& queries) {
+        int root = -1; 
+        unordered_map<int, vector<int>> tree; 
+        
+        for (int i = 0; i < parents.size(); ++i) {
+            if (parents[i] == -1) root = i; 
+            else tree[parents[i]].push_back(i); 
+        }
+        
+        unordered_map<int, vector<pair<int, int>>> mp; 
+        for (int i = 0; i < queries.size(); ++i) {
+            int node = queries[i][0], val = queries[i][1]; 
+            mp[node].emplace_back(val, i); 
+        }
+        
+        vector<int> ans(queries.size(), 0); 
+        Trie* trie = new Trie(); 
+        
+        function<void(int)> fn = [&](int x) {
+            trie->insert(x); 
+            for (auto& [v, i] : mp[x]) ans[i] = trie->search(v); 
+            for (auto& xx : tree[x]) fn(xx); 
+            trie->remove(x); 
+        }; 
+    
+        fn(root); 
+        return ans; 
+    }
 };
 
 
