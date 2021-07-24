@@ -14337,6 +14337,242 @@ public:
         fn(root); 
         return ans; 
     }
+
+
+    /*1941. Check if All Characters Have Equal Number of Occurrences (Easy)
+	Given a string s, return true if s is a good string, or false otherwise. A 
+	string s is good if all the characters that appear in s have the same 
+	number of occurrences (i.e., the same frequency).
+
+	Example 1:
+	Input: s = "abacbc"
+	Output: true
+	Explanation: The characters that appear in s are 'a', 'b', and 'c'. All 
+	             characters occur 2 times in s.
+	
+	Example 2:
+	Input: s = "aaabb"
+	Output: false
+	Explanation: The characters that appear in s are 'a' and 'b'. 'a' occurs 3 
+	             times while 'b' occurs 2 times, which is not the same number 
+	             of times.
+
+	Constraints:
+	* 1 <= s.length <= 1000
+	* s consists of lowercase English letters.*/
+
+    bool areOccurrencesEqual(string s) {
+        unordered_map<char, int> freq; 
+        for (auto& ch : s) ++freq[ch]; 
+        
+        int prev = 0; 
+        for (auto& [k, v] : freq) {
+            if (!prev) prev = v; 
+            else if (prev != v) return false; 
+        }
+        return true; 
+    }
+
+
+    /*1942. The Number of the Smallest Unoccupied Chair (Medium)
+	There is a party where n friends numbered from 0 to n - 1 are attending. 
+	There is an infinite number of chairs in this party that are numbered from 
+	0 to infinity. When a friend arrives at the party, they sit on the 
+	unoccupied chair with the smallest number. For example, if chairs 0, 1, and 
+	5 are occupied when a friend comes, they will sit on chair number 2. When a 
+	friend leaves the party, their chair becomes unoccupied at the moment they 
+	leave. If another friend arrives at that same moment, they can sit in that 
+	chair. You are given a 0-indexed 2D integer array times where 
+	times[i] = [arrivali, leavingi], indicating the arrival and leaving times 
+	of the ith friend respectively, and an integer targetFriend. All arrival 
+	times are distinct. Return the chair number that the friend numbered 
+	targetFriend will sit on.
+
+	Example 1:
+	Input: times = [[1,4],[2,3],[4,6]], targetFriend = 1
+	Output: 1
+	Explanation: - Friend 0 arrives at time 1 and sits on chair 0.
+	             - Friend 1 arrives at time 2 and sits on chair 1.
+	             - Friend 1 leaves at time 3 and chair 1 becomes empty.
+	             - Friend 0 leaves at time 4 and chair 0 becomes empty.
+	             - Friend 2 arrives at time 4 and sits on chair 0.
+	             Since friend 1 sat on chair 1, we return 1.
+	
+	Example 2:
+	Input: times = [[3,10],[1,5],[2,6]], targetFriend = 0
+	Output: 2
+	Explanation: - Friend 1 arrives at time 1 and sits on chair 0.
+	             - Friend 2 arrives at time 2 and sits on chair 1.
+	             - Friend 0 arrives at time 3 and sits on chair 2.
+	             - Friend 1 leaves at time 5 and chair 0 becomes empty.
+	             - Friend 2 leaves at time 6 and chair 1 becomes empty.
+	             - Friend 0 leaves at time 10 and chair 2 becomes empty.
+	             Since friend 0 sat on chair 2, we return 2.
+
+	Constraints:
+	* n == times.length
+	* 2 <= n <= 10^4
+	* times[i].length == 2
+	* 1 <= arrivali < leavingi <= 10^5
+	* 0 <= targetFriend <= n - 1
+	* Each arrivali time is distinct.*/
+
+    int smallestChair(vector<vector<int>>& times, int targetFriend) {
+        vector<vector<int>> vals; 
+        for (int i = 0; i < times.size(); ++i) {
+            vals.push_back({times[i][0], 1, i}); 
+            vals.push_back({times[i][1], 0, i}); 
+        }
+        sort(vals.begin(), vals.end()); 
+        
+        int k = 0; 
+        priority_queue<int, vector<int>, greater<>> pq; 
+        unordered_map<int, int> mp; 
+        
+        for (auto& val : vals) {
+            int i = val[2], s = 0; 
+            if (val[1]) {
+                if (pq.size()) {
+                    s = pq.top(); pq.pop(); 
+                } else 
+                    s = k++; 
+                if (i == targetFriend) return s; 
+                mp[i] = s; 
+            } else 
+                pq.push(mp[i]); 
+        }
+        return -1; 
+    }
+
+
+    /*1943. Describe the Painting (Medium)
+	There is a long and thin painting that can be represented by a number line. 
+	The painting was painted with multiple overlapping segments where each 
+	segment was painted with a unique color. You are given a 2D integer array 
+	segments, where segments[i] = [starti, endi, colori] represents the half-
+	closed segment [starti, endi) with colori as the color. The colors in the 
+	overlapping segments of the painting were mixed when it was painted. When 
+	two or more colors mix, they form a new color that can be represented as a 
+	set of mixed colors.
+
+	* For example, if colors 2, 4, and 6 are mixed, then the resulting mixed 
+	  color is {2,4,6}.
+	For the sake of simplicity, you should only output the sum of the elements 
+	in the set rather than the full set. You want to describe the painting with 
+	the minimum number of non-overlapping half-closed segments of these mixed 
+	colors. These segments can be represented by the 2D array painting where 
+	painting[j] = [leftj, rightj, mixj] describes a half-closed segment 
+	[leftj, rightj) with the mixed color sum of mixj.
+
+	* For example, the painting created with segments = [[1,4,5],[1,7,7]] can 
+	  be described by painting = [[1,4,12],[4,7,7]] because:
+	  + [1,4) is colored {5,7} (with a sum of 12) from both the first and 
+	    second segments.
+	  + [4,7) is colored {7} from only the second segment.
+	Return the 2D array painting describing the finished painting (excluding 
+	any parts that are not painted). You may return the segments in any order.
+	A half-closed segment [a, b) is the section of the number line between 
+	points a and b including point a and not including point b.
+
+	Example 1:
+	Input: segments = [[1,4,5],[4,7,7],[1,7,9]]
+	Output: [[1,4,14],[4,7,16]]
+	Explanation: The painting can be described as follows:
+	             - [1,4) is colored {5,9} (with a sum of 14) from the first and third segments.
+	             - [4,7) is colored {7,9} (with a sum of 16) from the second and third segments.
+	
+	Example 2:
+	Input: segments = [[1,7,9],[6,8,15],[8,10,7]]
+	Output: [[1,6,9],[6,7,24],[7,8,15],[8,10,7]]
+	Explanation: The painting can be described as follows:
+	             - [1,6) is colored 9 from the first segment.
+	             - [6,7) is colored {9,15} (with a sum of 24) from the first and second segments.
+	             - [7,8) is colored 15 from the second segment.
+	             - [8,10) is colored 7 from the third segment.
+	
+	Example 3:
+	Input: segments = [[1,4,5],[1,4,7],[4,7,1],[4,7,11]]
+	Output: [[1,4,12],[4,7,12]]
+	Explanation: The painting can be described as follows:
+	             - [1,4) is colored {5,7} (with a sum of 12) from the first and second segments.
+	             - [4,7) is colored {1,11} (with a sum of 12) from the third and fourth segments.
+	             Note that returning a single segment [1,7) is incorrect 
+	             because the mixed color sets are different.
+
+	Constraints:
+	* 1 <= segments.length <= 2 * 10^4
+	* segments[i].length == 3
+	* 1 <= starti < endi <= 10^5
+	* 1 <= colori <= 10^9
+	* Each colori is distinct.*/
+
+    vector<vector<long long>> splitPainting(vector<vector<int>>& segments) {
+        vector<vector<int>> vals; 
+        for (auto& segment : segments) {
+            vals.push_back({segment[0],  segment[2]}); 
+            vals.push_back({segment[1], -segment[2]}); 
+        }
+        sort(vals.begin(), vals.end()); 
+        
+        int prev = 0; 
+        long long prefix = 0; 
+        vector<vector<long long>> ans; 
+        
+        for (auto& val : vals) {
+            if (prev < val[0] && prefix) ans.push_back({prev, val[0], prefix}); 
+            prev = val[0]; 
+            prefix += val[1]; 
+        }
+        return ans; 
+    }
+
+
+    /*1944. Number of Visible People in a Queue (Hard)
+	There are n people standing in a queue, and they numbered from 0 to n - 1 
+	in left to right order. You are given an array heights of distinct integers 
+	where heights[i] represents the height of the ith person. A person can see 
+	another person to their right in the queue if everybody in between is 
+	shorter than both of them. More formally, the ith person can see the jth 
+	person if 
+	* i < j and 
+	* min(heights[i], heights[j]) > max(heights[i+1], heights[i+2], ..., heights[j-1]).
+	Return an array answer of length n where answer[i] is the number of people 
+	the ith person can see to their right in the queue.
+
+	Example 1:
+	Input: heights = [10,6,8,5,11,9]
+	Output: [3,1,2,1,1,0]
+	Explanation: Person 0 can see person 1, 2, and 4.
+	             Person 1 can see person 2.
+	             Person 2 can see person 3 and 4.
+	             Person 3 can see person 4.
+	             Person 4 can see person 5.
+	             Person 5 can see no one since nobody is to the right of them.
+	
+	Example 2:
+	Input: heights = [5,1,2,3,10]
+	Output: [4,1,1,1,0]
+
+	Constraints:
+	* n == heights.length
+	* 1 <= n <= 10^5
+	* 1 <= heights[i] <= 10^5
+	* All the values of heights are unique.*/
+
+    vector<int> canSeePersonsCount(vector<int>& heights) {
+        int n = heights.size(); 
+        vector<int> ans(n); 
+        stack<int> stk; 
+        for (int i = n-1; i >= 0; --i) {
+            while (stk.size() && stk.top() <= heights[i]) {
+                ++ans[i]; 
+                stk.pop(); 
+            }
+            if (stk.size()) ++ans[i]; 
+            stk.push(heights[i]); 
+        }
+        return ans; 
+    }
 };
 
 
