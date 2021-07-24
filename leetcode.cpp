@@ -6818,6 +6818,48 @@ public:
     }
 
 
+    /*920. Number of Music Playlists (Hard)
+	Your music player contains n different songs and she wants to listen to 
+	goal (not necessarily different) songs during your trip.  You create a 
+	playlist so that:
+	* Every song is played at least once
+	* A song can only be played again only if k other songs have been played
+	Return the number of possible playlists.  As the answer can be very large, 
+	return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: n = 3, goal = 3, k = 1
+	Output: 6
+	Explanation: There are 6 possible playlists. [1, 2, 3], [1, 3, 2], 
+	             [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1].
+	
+	Example 2:
+	Input: n = 2, goal = 3, k = 0
+	Output: 6
+	Explanation: There are 6 possible playlists. [1, 1, 2], [1, 2, 1], 
+	             [2, 1, 1], [2, 2, 1], [2, 1, 2], [1, 2, 2]
+	
+	Example 3:
+	Input: n = 2, goal = 3, k = 1
+	Output: 2
+	Explanation: There are 2 possible playlists. [1, 2, 1], [2, 1, 2]
+
+	Note: 0 <= k < n <= goal <= 100*/
+
+    int numMusicPlaylists(int n, int goal, int k) {
+        const int MOD = 1'000'000'007; 
+        vector<vector<long>> dp(goal+1, vector<long>(n+1, 0)); 
+        dp[goal][n] = 1l; 
+        for (int i = goal-1; i >= 0; --i) {
+            for (int j = n; j >= 0; --j) {
+                if (j < n) dp[i][j] = (dp[i][j] + (n-j) * dp[i+1][j+1]) % MOD; 
+                if (k < j) dp[i][j] = (dp[i][j] + (j-k) * dp[i+1][j]) % MOD; 
+            }
+        }
+        return dp[0][0]; 
+    }
+
+
     /*922. Sort Array By Parity II (Easy)
 	Given an array of integers nums, half of the integers in nums are odd, and 
 	the other half are even. Sort the array so that whenever nums[i] is odd, i 
