@@ -1219,14 +1219,15 @@ public:
 	 * };
 	 */
 
-    TreeNode* sortedArrayToBST(vector<int>& nums, int lo = 0, int hi = -1) {
-        if (hi == -1) hi = nums.size(); 
-        if (lo == hi) return NULL; 
-        int mid = lo + (hi - lo)/2; 
-        TreeNode *node = new TreeNode(nums[mid]); 
-        node->left = sortedArrayToBST(nums, lo, mid); 
-        node->right = sortedArrayToBST(nums, mid+1, hi); 
-        return node; 
+    TreeNode* sortedArrayToBST(vector<int>& nums) {
+        
+        function<TreeNode*(int, int)> fn = [&](int lo, int hi) -> TreeNode* {
+            if (lo == hi) return nullptr; 
+            int mid = lo + (hi - lo)/2; 
+            return new TreeNode(nums[mid], fn(lo, mid), fn(mid+1, hi)); 
+        }; 
+        
+        return fn(0, nums.size()); 
     }
 
 

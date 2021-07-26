@@ -3673,7 +3673,7 @@ class Solution:
     def sortedArrayToBST(self, nums: List[int]) -> TreeNode:
         
         def fn(lo, hi):
-            """Return BST using nums[lo:hi]"""
+            """Return BST for nums[lo:hi]"""
             if lo == hi: return None
             mid = (lo + hi)//2
             return TreeNode(nums[mid], fn(lo, mid), fn(mid+1, hi))
