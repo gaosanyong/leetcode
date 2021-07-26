@@ -37580,6 +37580,284 @@ class Trie:
             stack.append(heights[i])
         return ans 
 
+    
+    """1945. Sum of Digits of String After Convert (Easy)
+	You are given a string s consisting of lowercase English letters, and an 
+	integer k. First, convert s into an integer by replacing each letter with 
+	its position in the alphabet (i.e., replace 'a' with 1, 'b' with 2, ..., 
+	'z' with 26). Then, transform the integer by replacing it with the sum of 
+	its digits. Repeat the transform operation k times in total. For example, 
+	if s = "zbax" and k = 2, then the resulting integer would be 8 by the 
+	following operations:
+	* Convert: "zbax" ➝ "(26)(2)(1)(24)" ➝ "262124" ➝ 262124
+	* Transform #1: 262124 ➝ 2 + 6 + 2 + 1 + 2 + 4 ➝ 17
+	* Transform #2: 17 ➝ 1 + 7 ➝ 8
+	Return the resulting integer after performing the operations described 
+	above.
+
+	Example 1:
+	Input: s = "iiii", k = 1
+	Output: 36
+	Explanation: The operations are as follows:
+	             - Convert: "iiii" ➝ "(9)(9)(9)(9)" ➝ "9999" ➝ 9999
+	             - Transform #1: 9999 ➝ 9 + 9 + 9 + 9 ➝ 36
+	             Thus the resulting integer is 36.
+	
+	Example 2:
+	Input: s = "leetcode", k = 2
+	Output: 6
+	Explanation: The operations are as follows:
+	             - Convert: "leetcode" ➝ "(12)(5)(5)(20)(3)(15)(4)(5)" ➝ "12552031545" ➝ 12552031545
+	             - Transform #1: 12552031545 ➝ 1 + 2 + 5 + 5 + 2 + 0 + 3 + 1 + 5 + 4 + 5 ➝ 33
+	             - Transform #2: 33 ➝ 3 + 3 ➝ 6
+	             Thus the resulting integer is 6.
+	
+	Example 3:
+	Input: s = "zbax", k = 2
+	Output: 8
+
+	Constraints:
+	* 1 <= s.length <= 100
+	* 1 <= k <= 10
+	* s consists of lowercase English letters."""
+
+    def getLucky(self, s: str, k: int) -> int:
+        s = "".join(str(ord(ch)-96) for ch in s)
+        for _ in range(k): s = str(sum(int(ch) for ch in s))
+        return s
+
+
+    """1946. Largest Number After Mutating Substring (Medium)
+	You are given a string num, which represents a large integer. You are also 
+	given a 0-indexed integer array change of length 10 that maps each digit 
+	0-9 to another digit. More formally, digit d maps to digit change[d]. You 
+	may choose to mutate any substring of num. To mutate a substring, replace 
+	each digit num[i] with the digit it maps to in change (i.e. replace num[i] 
+	with change[num[i]]). Return a string representing the largest possible 
+	integer after mutating (or choosing not to) any substring of num. A 
+	substring is a contiguous sequence of characters within the string.
+
+	Example 1:
+	Input: num = "132", change = [9,8,5,0,3,6,4,2,6,8]
+	Output: "832"
+	Explanation: Replace the substring "1":
+	             - 1 maps to change[1] = 8.
+	             Thus, "132" becomes "832". "832" is the largest number that 
+	             can be created, so return it.
+	
+	Example 2:
+	Input: num = "021", change = [9,4,3,5,7,2,1,9,0,6]
+	Output: "934"
+	Explanation: Replace the substring "021":
+	             - 0 maps to change[0] = 9.
+	             - 2 maps to change[2] = 3.
+	             - 1 maps to change[1] = 4.
+	             Thus, "021" becomes "934". "934" is the largest number that 
+	             can be created, so return it.
+	
+	Example 3:
+	Input: num = "5", change = [1,4,7,5,3,2,5,6,9,4]
+	Output: "5"
+	Explanation: "5" is already the largest number that can be created, so 
+	             return it.
+
+	Constraints:
+	* 1 <= num.length <= 10^5
+	* num consists of only digits 0-9.
+	* change.length == 10
+	* 0 <= change[d] <= 9"""
+
+    def maximumNumber(self, num: str, change: List[int]) -> str:
+        num = list(num)
+        on = False 
+        for i, ch in enumerate(num): 
+            x = int(ch)
+            if x < change[x]: 
+                on = True
+                num[i] = str(change[x])
+            elif x > change[x] and on: break
+        return "".join(num)
+
+
+    """1947. Maximum Compatibility Score Sum (Medium)
+	There is a survey that consists of n questions where each question's answer 
+	is either 0 (no) or 1 (yes). The survey was given to m students numbered 
+	from 0 to m - 1 and m mentors numbered from 0 to m - 1. The answers of the 
+	students are represented by a 2D integer array students where students[i] 
+	is an integer array that contains the answers of the ith student (0-indexed). 
+	The answers of the mentors are represented by a 2D integer array mentors 
+	where mentors[j] is an integer array that contains the answers of the jth 
+	mentor (0-indexed). Each student will be assigned to one mentor, and each 
+	mentor will have one student assigned to them. The compatibility score of a 
+	student-mentor pair is the number of answers that are the same for both the 
+	student and the mentor.
+
+	* For example, if the student's answers were [1, 0, 1] and the mentor's 
+	  answers were [0, 0, 1], then their compatibility score is 2 because only 
+	  the second and the third answers are the same.
+	You are tasked with finding the optimal student-mentor pairings to maximize 
+	the sum of the compatibility scores. Given students and mentors, return the 
+	maximum compatibility score sum that can be achieved.
+
+	Example 1:
+	Input: students = [[1,1,0],[1,0,1],[0,0,1]], mentors = [[1,0,0],[0,0,1],[1,1,0]]
+	Output: 8
+	Explanation: We assign students to mentors in the following way:
+	             - student 0 to mentor 2 with a compatibility score of 3.
+	             - student 1 to mentor 0 with a compatibility score of 2.
+	             - student 2 to mentor 1 with a compatibility score of 3.
+	             The compatibility score sum is 3 + 2 + 3 = 8.
+	
+	Example 2:
+	Input: students = [[0,0],[0,0],[0,0]], mentors = [[1,1],[1,1],[1,1]]
+	Output: 0
+	Explanation: The compatibility score of any student-mentor pair is 0.
+
+	Constraints:
+	* m == students.length == mentors.length
+	* n == students[i].length == mentors[j].length
+	* 1 <= m, n <= 8
+	* students[i][k] is either 0 or 1.
+	* mentors[j][k] is either 0 or 1."""
+
+    def maxCompatibilitySum(self, students: List[List[int]], mentors: List[List[int]]) -> int:
+        m = len(students)
+        
+        score = [[0]*m for _ in range(m)]
+        for i in range(m): 
+            for j in range(m): 
+                score[i][j] = sum(x == y for x, y in zip(students[i], mentors[j]))
+        
+        @cache 
+        def fn(mask, j): 
+            """Return max score of assigning students in mask to first j mentors."""
+            ans = 0 
+            for i in range(m): 
+                if not mask & (1<<i): 
+                    ans = max(ans, fn(mask^(1<<i), j-1) + score[i][j])
+            return ans 
+        
+        return fn(1<<m, m-1)
+
+
+    """1948. Delete Duplicate Folders in System (Hard)
+	Due to a bug, there are many duplicate folders in a file system. You are 
+	given a 2D array paths, where paths[i] is an array representing an absolute 
+	path to the ith folder in the file system.
+
+	* For example, ["one", "two", "three"] represents the path "/one/two/three".
+	Two folders (not necessarily on the same level) are identical if they 
+	contain the same non-empty set of identical subfolders and underlying 
+	subfolder structure. The folders do not need to be at the root level to be 
+	identical. If two or more folders are identical, then mark the folders as 
+	well as all their subfolders.
+
+	* For example, folders "/a" and "/b" in the file structure below are 
+	  identical. They (as well as their subfolders) should all be marked:
+	  - /a
+	  - /a/x
+	  - /a/x/y
+	  - /a/z
+	  - /b
+	  - /b/x
+	  - /b/x/y
+	  - /b/z
+	* However, if the file structure also included the path "/b/w", then the 
+	  folders "/a" and "/b" would not be identical. Note that "/a/x" and "/b/x" 
+	  would still be considered identical even with the added folder.
+	Once all the identical folders and their subfolders have been marked, the 
+	file system will delete all of them. The file system only runs the deletion 
+	once, so any folders that become identical after the initial deletion are 
+	not deleted. Return the 2D array ans containing the paths of the remaining 
+	folders after deleting all the marked folders. The paths may be returned in 
+	any order.
+
+	Example 1:
+	Input: paths = [["a"],["c"],["d"],["a","b"],["c","b"],["d","a"]]
+	Output: [["d"],["d","a"]]
+	Explanation: Folders "/a" and "/c" (and their subfolders) are marked for 
+	             deletion because they both contain an empty folder named "b".
+	
+	Example 2:
+	Input: paths = [["a"],["c"],["a","b"],["c","b"],["a","b","x"],["a","b","x","y"],["w"],["w","y"]]
+	Output: [["c"],["c","b"],["a"],["a","b"]]
+	Explanation: Folders "/a/b/x" and "/w" (and their subfolders) are marked 
+	             for deletion because they both contain an empty folder named 
+	             "y". Note that folders "/a" and "/c" are identical after the 
+	             deletion, but they are not deleted because they were not 
+	             marked beforehand.
+	
+	Example 3:
+	Input: paths = [["a","b"],["c","d"],["c"],["a"]]
+	Output: [["c"],["c","d"],["a"],["a","b"]]
+	Explanation: All folders are unique in the file system. Note that the 
+	             returned array can be in a different order as the order does 
+	             not matter.
+	
+	Example 4:
+	Input: paths = [["a"],["a","x"],["a","x","y"],["a","z"],["b"],["b","x"],["b","x","y"],["b","z"]]
+	Output: []
+	Explanation: Folders "/a/x" and "/b/x" (and their subfolders) are marked 
+	             for deletion because they both contain an empty folder named 
+	             "y". Folders "/a" and "/b" (and their subfolders) are marked 
+	             for deletion because they both contain an empty folder "z" and 
+	             the folder "x" described above.
+	
+	Example 5:
+	Input: paths = [["a"],["a","x"],["a","x","y"],["a","z"],["b"],["b","x"],["b","x","y"],["b","z"],["b","w"]]
+	Output: [["b"],["b","w"],["b","z"],["a"],["a","z"]]
+	Explanation: This has the same structure as the previous example, except 
+	             with the added "/b/w". Folders "/a/x" and "/b/x" are still 
+	             marked, but "/a" and "/b" are no longer marked because "/b" 
+	             has the empty folder named "w" and "/a" does not. Note that 
+	             "/a/z" and "/b/z" are not marked because the set of identical 
+	             subfolders must be non-empty, but these folders are empty.
+
+	Constraints:
+	* 1 <= paths.length <= 2 * 10^4
+	* 1 <= paths[i].length <= 500
+	* 1 <= paths[i][j].length <= 10
+	* 1 <= sum(paths[i][j].length) <= 2 * 10^5
+	* path[i][j] consists of lowercase English letters.
+	* No two paths lead to the same folder.
+	* For any folder not at the root level, its parent folder will also be in the input."""
+
+    def deleteDuplicateFolder(self, paths: List[List[str]]) -> List[List[str]]:
+        paths.sort()
+        
+        tree = {"#": -1}
+        for i, path in enumerate(paths): 
+            node = tree
+            for x in path: node = node.setdefault(x, {})
+            node["#"] = i
+        
+        seen = {}
+        mark = set()
+        
+        def fn(n): 
+            """Return serialized value of sub-tree rooted at n."""
+            if len(n) == 1: return "$" # leaf node 
+            vals = []
+            for k in n: 
+                if k != "#": vals.append(f"${k}${fn(n[k])}")
+            hs = "".join(vals)
+            if hs in seen: 
+                mark.add(n["#"])
+                mark.add(seen[hs])
+            if hs != "$": seen[hs] = n["#"]
+            return hs
+        
+        fn(tree)
+        
+        ans = []
+        stack = [tree]
+        while stack: 
+            n = stack.pop()
+            if n["#"] >= 0: ans.append(paths[n["#"]])
+            for k in n: 
+                if k != "#" and n[k]["#"] not in mark: stack.append(n[k])
+        return ans 
+
 
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
