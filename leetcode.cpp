@@ -3159,6 +3159,50 @@ public:
     }
 
 
+    /*600. Non-negative Integers without Consecutive Ones (Hard)
+	Given a positive integer n, return the number of the integers in the range 
+	[0, n] whose binary representations do not contain consecutive ones.
+
+	Example 1:
+	Input: n = 5
+	Output: 5
+	Explanation: Here are the non-negative integers <= 5 with their 
+	             corresponding binary representations:
+	             0 : 0
+	             1 : 1
+	             2 : 10
+	             3 : 11
+	             4 : 100
+	             5 : 101
+	             Among them, only integer 3 disobeys the rule (two consecutive 
+	             ones) and the other 5 satisfy the rule. 
+	
+	Example 2:
+	Input: n = 1
+	Output: 2
+
+	Example 3:
+	Input: n = 2
+	Output: 3
+
+	Constraints: 1 <= n <= 10^9*/
+
+    int findIntegers(int n) {
+        vector<int> fib = {1, 2}; 
+        for (int i = 2; i < 32; ++i) fib.push_back(fib[i-2] + fib[i-1]); 
+        
+        int ans = 0, prev = 0; 
+        for (int i = 31; i >= 0; --i) {
+            if (n & (1 << i)) {
+                ans += fib[i]; 
+                if (prev) return ans; 
+                else prev = 1; 
+            } else prev = 0; 
+        }
+        return ans + 1; 
+    }
+
+
     /*637. Average of Levels in Binary Tree (Easy)
 	Given the root of a binary tree, return the average value of the nodes on 
 	each level in the form of an array. Answers within 10-5 of the actual 
