@@ -569,15 +569,14 @@ class Solution:
 
     def threeSumClosest(self, nums: List[int], target: int) -> int:
         nums.sort()
-        ans = float("inf")
+        ans = inf
         for i in range(len(nums)): 
             lo, hi = i+1, len(nums)-1
             while lo < hi: 
-                val = nums[i] + nums[lo] + nums[hi] 
-                if val == target: return val
-                elif val > target: hi -= 1
-                else: lo += 1
-                ans = min(ans, val, key=lambda x: abs(x-target))
+                sm = nums[i] + nums[lo] + nums[hi] 
+                ans = min(ans, sm, key=lambda x: abs(x-target))
+                if sm < target: lo += 1
+                else: hi -= 1
         return ans 
 
 
