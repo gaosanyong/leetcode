@@ -12991,6 +12991,57 @@ class Solution:
         return ans 
 
 
+    """691. Stickers to Spell Word (Hard)
+	We are given n different types of stickers. Each sticker has a lowercase 
+	English word on it. You would like to spell out the given string target by 
+	cutting individual letters from your collection of stickers and rearranging 
+	them. You can use each sticker more than once if you want, and you have 
+	infinite quantities of each sticker. Return the minimum number of stickers 
+	that you need to spell out target. If the task is impossible, return -1.
+	Note: In all test cases, all words were chosen randomly from the 1000 most 
+	common US English words, and target was chosen as a concatenation of two 
+	random words.
+
+	Example 1:
+	Input: stickers = ["with","example","science"], target = "thehat"
+	Output: 3
+	Explanation: We can use 2 "with" stickers, and 1 "example" sticker. After 
+	             cutting and rearrange the letters of those stickers, we can 
+	             form the target "thehat". Also, this is the minimum number of 
+	             stickers necessary to form the target string.
+	
+	Example 2:
+	Input: stickers = ["notice","possible"], target = "basicbasic"
+	Output: -1
+	Explanation: We cannot form the target "basicbasic" from cutting letters 
+	             from the given stickers.
+
+	Constraints:
+	* n == stickers.length
+	* 1 <= n <= 50
+	* 1 <= stickers[i].length <= 10
+	* 1 <= target <= 15
+	* stickers[i] and target consist of lowercase English letters."""
+
+    def minStickers(self, stickers: List[str], target: str) -> int:
+        freqs = [Counter(x) for x in stickers]
+        
+        @cache
+        def fn(x):
+            """Return min sticks to give x."""
+            if not x: return 0 
+            ans = inf
+            freq = Counter(x)
+            for cnt in freqs: 
+                if x[0] in cnt: 
+                    xx = "".join(k*v for k, v in (freq - cnt).items())
+                    ans = min(ans, 1 + fn(xx))
+            return ans 
+        
+        ans = fn(target)
+        return ans if ans < inf else -1
+
+
     """692. Top K Frequent Words (Medium)
 	Given a non-empty list of words, return the k most frequent elements. Your 
 	answer should be sorted by frequency from highest to lowest. If two words 
