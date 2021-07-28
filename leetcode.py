@@ -16931,7 +16931,7 @@ class UnionFind:
         
         def fn(nums): 
             """Return beautiful array by rearraning elements in nums."""
-            if len(nums) <= 1: return nums
+            if len(nums) == 1: return nums
             return fn(nums[::2]) + fn(nums[1::2])
         
         return fn(list(range(1, N+1)))
