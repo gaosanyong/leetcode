@@ -11729,6 +11729,45 @@ class Solution:
         
         fn(root, 0)
         return root 
+
+
+    """542. 01 Matrix (Medium)
+	Given an m x n binary matrix mat, return the distance of the nearest 0 for 
+	each cell. The distance between two adjacent cells is 1.
+
+	Example 1:
+	Input: mat = [[0,0,0],[0,1,0],[0,0,0]]
+	Output: [[0,0,0],[0,1,0],[0,0,0]]
+
+	Example 2:
+	Input: mat = [[0,0,0],[0,1,0],[1,1,1]]
+	Output: [[0,0,0],[0,1,0],[1,2,1]]
+
+	Constraints:
+	* m == mat.length
+	* n == mat[i].length
+	* 1 <= m, n <= 10^4
+	* 1 <= m * n <= 10^4
+	* mat[i][j] is either 0 or 1.
+	* There is at least one 0 in mat."""
+
+    def updateMatrix(self, mat: List[List[int]]) -> List[List[int]]:
+        m, n = len(mat), len(mat[0]) 
+        ans = [[inf]*n for _ in range(m)]
+        
+        for i in range(m): 
+            for j in range(n): 
+                if not mat[i][j]: ans[i][j] = 0
+                else:
+                    if i: ans[i][j] = min(ans[i][j], 1 + ans[i-1][j])
+                    if j: ans[i][j] = min(ans[i][j], 1 + ans[i][j-1])
+        
+        for i in reversed(range(m)):
+            for j in reversed(range(n)): 
+                if mat[i][j]: 
+                    if i+1 < m: ans[i][j] = min(ans[i][j], 1 + ans[i+1][j])
+                    if j+1 < n: ans[i][j] = min(ans[i][j], 1 + ans[i][j+1])
+        return ans
  
 
     """552. Student Attendance Record II (Hard)
