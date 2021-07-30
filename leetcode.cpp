@@ -15673,6 +15673,66 @@ public:
 };
 
 
+/*677. Map Sum Pairs (Medium)
+Implement the MapSum class:
+* MapSum() Initializes the MapSum object.
+* void insert(String key, int val) Inserts the key-val pair into the map. If 
+  the key already existed, the original key-value pair will be overridden to 
+  the new one.
+* int sum(string prefix) Returns the sum of all the pairs' value whose key 
+  starts with the prefix.
+
+Example 1:
+Input: ["MapSum", "insert", "sum", "insert", "sum"]
+       [[], ["apple", 3], ["ap"], ["app", 2], ["ap"]]
+Output: [null, null, 3, null, 5]
+Explanation:
+MapSum mapSum = new MapSum();
+mapSum.insert("apple", 3);  
+mapSum.sum("ap");           // return 3 (apple = 3)
+mapSum.insert("app", 2);    
+mapSum.sum("ap");           // return 5 (apple + app = 3 + 2 = 5)
+ 
+Constraints:
+* 1 <= key.length, prefix.length <= 50
+* key and prefix consist of only lowercase English letters.
+* 1 <= val <= 1000
+* At most 50 calls will be made to insert and sum.*/
+
+struct TrieNode {
+    int val = 0; 
+    TrieNode* child[26] = {}; 
+};
+
+
+class MapSum {
+    TrieNode* root = new TrieNode(); 
+    unordered_map<string, int> seen; 
+public:
+    MapSum() {}
+    
+    void insert(string key, int val) {
+        val -= seen[key]; 
+        TrieNode* node = root; 
+        for (auto& ch : key) {
+            if (!node->child[ch-'a']) node->child[ch-'a'] = new TrieNode(); 
+            node = node->child[ch-'a']; 
+            node->val += val; 
+        }
+        seen[key] += val; 
+    }
+    
+    int sum(string prefix) {
+        TrieNode* node = root; 
+        for (auto& ch : prefix) {
+            if (!node->child[ch-'a']) return 0; 
+            node = node->child[ch-'a']; 
+        }
+        return node->val; 
+    }
+};
+
+
 /*684. Redundant Connection (Medium)
 In this problem, a tree is an undirected graph that is connected and has no 
 cycles. You are given a graph that started as a tree with n nodes labeled from 
