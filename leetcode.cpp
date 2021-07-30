@@ -1408,6 +1408,91 @@ public:
     }
 
 
+    /*126. Word Ladder II (Hard)
+	A transformation sequence from word beginWord to word endWord using a 
+	dictionary wordList is a sequence of words beginWord -> s1 -> s2 -> ... -> 
+	sk such that:
+	* Every adjacent pair of words differs by a single letter.
+	* Every si for 1 <= i <= k is in wordList. Note that beginWord does not 
+	  need to be in wordList.
+	* sk == endWord
+	Given two words, beginWord and endWord, and a dictionary wordList, return 
+	all the shortest transformation sequences from beginWord to endWord, or an 
+	empty list if no such sequence exists. Each sequence should be returned as 
+	a list of the words [beginWord, s1, s2, ..., sk].
+
+	Example 1:
+	Input: beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log","cog"]
+	Output: [["hit","hot","dot","dog","cog"],["hit","hot","lot","log","cog"]]
+	Explanation: There are 2 shortest transformation sequences:
+	             "hit" -> "hot" -> "dot" -> "dog" -> "cog"
+	             "hit" -> "hot" -> "lot" -> "log" -> "cog"
+	
+	Example 2:
+	Input: beginWord = "hit", endWord = "cog", wordList = ["hot","dot","dog","lot","log"]
+	Output: []
+	Explanation: The endWord "cog" is not in wordList, therefore there is no 
+	             valid transformation sequence.
+
+	Constraints:
+	* 1 <= beginWord.length <= 5
+	* endWord.length == beginWord.length
+	* 1 <= wordList.length <= 1000
+	* wordList[i].length == beginWord.length
+	* beginWord, endWord, and wordList[i] consist of lowercase English letters.
+	* beginWord != endWord
+	* All the words in wordList are unique.*/
+
+    vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {
+        auto it = find(wordList.begin(), wordList.end(), endWord); 
+        if (it == wordList.end()) return {}; 
+        
+        unordered_map<string, vector<string>> graph; 
+        for (auto& word : wordList) 
+            for (int i = 0; i < word.size(); ++i) {
+                string key = word.substr(0, i) + "*" + word.substr(i+1); 
+                graph[key].push_back(word); 
+            }
+        
+        queue<string> q; 
+        q.push(beginWord); 
+        unordered_map<string, unordered_set<string>> prev({{beginWord, {}}}); 
+        
+        while (q.size()) {
+            unordered_map<string, unordered_set<string>> pp; 
+            for (int n = q.size(); n; --n) {
+                string w = q.front(); q.pop(); 
+                for (int i = 0; i < w.size(); ++i) {
+                    string key = w.substr(0, i) + "*" + w.substr(i+1); 
+                    for (auto& ww : graph[key]) 
+                        if (!prev.count(ww)) {
+                            q.push(ww); 
+                            pp[ww].insert(w); 
+                        }
+                }
+            }
+            for (auto& [k, v] : pp) prev[k] = v; 
+            if (prev.count(endWord)) break; 
+        }
+        
+        if (!prev.count(endWord)) return {}; 
+        
+        vector<vector<string>> ans = {{endWord}}; 
+        while (prev[ans[0].back()].size()) {
+            vector<vector<string>> newq; 
+            for (auto& x : ans) 
+                for (auto& ww : prev[x.back()]) {
+                    vector<string> xx = x; 
+                    xx.push_back(ww); 
+                    newq.push_back(xx); 
+                }
+            ans = newq; 
+        }
+        for (auto& x : ans) reverse(x.begin(), x.end()); 
+        return ans; 
+    }
+
+
     /*128. Longest Consecutive Sequence (Medium)
 	Given an unsorted array of integers nums, return the length of the longest 
 	consecutive elements sequence. You must write an algorithm that runs in O(n) 
