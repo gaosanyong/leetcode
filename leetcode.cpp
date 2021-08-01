@@ -15446,6 +15446,180 @@ public:
         }
         return ans; 
     }
+
+
+    /*1952. Three Divisors (Easy)
+	Given an integer n, return true if n has exactly three positive divisors. 
+	Otherwise, return false. An integer m is a divisor of n if there exists an 
+	integer k such that n = k * m.
+
+	Example 1:
+	Input: n = 2
+	Output: false
+	Explantion: 2 has only two divisors: 1 and 2.
+
+	Example 2:
+	Input: n = 4
+	Output: true
+	Explantion: 4 has three divisors: 1, 2, and 4.
+
+	Constraints: 1 <= n <= 10^4*/
+
+
+    bool isThree(int n) {
+        if (n == 1) return false; 
+        int x = sqrt(n); 
+        if (x*x != n) return false; 
+        
+        for (int i = 2; i <= sqrt(x); ++i) 
+            if (x % i == 0) return false; 
+        return true; 
+    }
+
+
+    /*1953. Maximum Number of Weeks for Which You Can Work (Medium)
+	There are n projects numbered from 0 to n - 1. You are given an integer 
+	array milestones where each milestones[i] denotes the number of milestones 
+	the ith project has. You can work on the projects following these two rules:
+	* Every week, you will finish exactly one milestone of one project. You 
+	  must work every week.
+	* You cannot work on two milestones from the same project for two 
+	  consecutive weeks.
+	Once all the milestones of all the projects are finished, or if the only 
+	milestones that you can work on will cause you to violate the above rules, 
+	you will stop working. Note that you may not be able to finish every 
+	project's milestones due to these constraints. Return the maximum number of 
+	weeks you would be able to work on the projects without violating the rules 
+	mentioned above.
+
+	Example 1:
+	Input: milestones = [1,2,3]
+	Output: 6
+	Explanation: One possible scenario is:
+	             - During the 1st week, you will work on a milestone of project 0.
+	             - During the 2nd week, you will work on a milestone of project 2.
+	             - During the 3rd week, you will work on a milestone of project 1.
+	             - During the 4th week, you will work on a milestone of project 2.
+	             - During the 5th week, you will work on a milestone of project 1.
+	             - During the 6th week, you will work on a milestone of project 2.
+	             The total number of weeks is 6.
+	
+	Example 2:
+	Input: milestones = [5,2,1]
+	Output: 7
+	Explanation: One possible scenario is:
+	             - During the 1st week, you will work on a milestone of project 0.
+	             - During the 2nd week, you will work on a milestone of project 1.
+	             - During the 3rd week, you will work on a milestone of project 0.
+	             - During the 4th week, you will work on a milestone of project 1.
+	             - During the 5th week, you will work on a milestone of project 0.
+	             - During the 6th week, you will work on a milestone of project 2.
+	             - During the 7th week, you will work on a milestone of project 0.
+	             The total number of weeks is 7. Note that you cannot work on 
+	             the last milestone of project 0 on 8th week because it would 
+	             violate the rules. Thus, one milestone in project 0 will 
+	             remain unfinished.
+
+	Constraints:
+	* n == milestones.length
+	* 1 <= n <= 10^5
+	* 1 <= milestones[i] <= 10^9*/
+
+    long long numberOfWeeks(vector<int>& milestones) {
+        long long m = *max_element(milestones.begin(), milestones.end()), s = accumulate(milestones.begin(), milestones.end(), 0ll); 
+        return s - max(0ll, 2*m - s - 1); 
+    }
+
+
+    /*1954. Minimum Garden Perimeter to Collect Enough Apples (Medium)
+	In a garden represented as an infinite 2D grid, there is an apple tree 
+	planted at every integer coordinate. The apple tree planted at an integer 
+	coordinate (i, j) has |i| + |j| apples growing on it. You will buy an axis-
+	aligned square plot of land that is centered at (0, 0). Given an integer 
+	neededApples, return the minimum perimeter of a plot such that at least 
+	neededApples apples are inside or on the perimeter of that plot.
+
+	The value of |x| is defined as:
+	* x if x >= 0
+	* -x if x < 0
+
+	Example 1:
+	Input: neededApples = 1
+	Output: 8
+	Explanation: A square plot of side length 1 does not contain any apples. 
+	             However, a square plot of side length 2 has 12 apples inside 
+	             (as depicted in the image above). The perimeter is 2 * 4 = 8.
+	
+	Example 2:
+	Input: neededApples = 13
+	Output: 16
+
+	Example 3:
+	Input: neededApples = 1000000000
+	Output: 5040
+
+	Constraints: 1 <= neededApples <= 10^15*/
+
+    long long minimumPerimeter(long long neededApples) {
+        long long lo = 0, hi = 100000; 
+        while (lo < hi) {
+            long long mid = lo + (hi - lo)/2; 
+            if (2*mid*(mid+1)*(2*mid+1) < neededApples) lo = mid+1; 
+            else hi = mid; 
+        }
+        return lo*8; 
+    }
+
+
+    /*1955. Count Number of Special Subsequences (Hard)
+	A sequence is special if it consists of a positive number of 0s, followed 
+	by a positive number of 1s, then a positive number of 2s.
+	* For example, [0,1,2] and [0,0,1,1,1,2] are special.
+	* In contrast, [2,1,0], [1], and [0,1,2,0] are not special.
+	Given an array nums (consisting of only integers 0, 1, and 2), return the 
+	number of different subsequences that are special. Since the answer may be 
+	very large, return it modulo 10^9 + 7. A subsequence of an array is a 
+	sequence that can be derived from the array by deleting some or no elements 
+	without changing the order of the remaining elements. Two subsequences are 
+	different if the set of indices chosen are different.
+
+	Example 1:
+	Input: nums = [0,1,2,2]
+	Output: 3
+	Explanation: The special subsequences are [0,1,2,2], [0,1,2,2], and 
+	             [0,1,2,2].
+
+	Example 2:
+	Input: nums = [2,2,0,0]
+	Output: 0
+	Explanation: There are no special subsequences in [2,2,0,0].
+
+	Example 3:
+	Input: nums = [0,1,2,0,1,2]
+	Output: 7
+	Explanation: The special subsequences are:
+	             - [0,1,2,0,1,2]
+	             - [0,1,2,0,1,2]
+	             - [0,1,2,0,1,2]
+	             - [0,1,2,0,1,2]
+	             - [0,1,2,0,1,2]
+	             - [0,1,2,0,1,2]
+	             - [0,1,2,0,1,2]
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 0 <= nums[i] <= 2*/
+
+    int countSpecialSubsequences(vector<int>& nums) {
+        const int MOD = 1'000'000'007; 
+        long s0 = 0, s1 = 0, s2 = 0; 
+        for (auto& x : nums) {
+            if (x == 0) s0 = (1 + 2*s0) % MOD; 
+            else if (x == 1) s1 = (s0 + 2*s1) % MOD; 
+            else s2 = (s1 + 2*s2) % MOD; 
+        }
+        return s2; 
+    }
 };
 
 
