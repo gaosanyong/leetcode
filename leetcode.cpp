@@ -5791,9 +5791,8 @@ public:
 	* grid[i][j] is either 0 or 1.*/
 
     int largestIsland(vector<vector<int>>& grid) {
-        int ans = 0, n = grid.size(), v = 2; 
+        int n = grid.size(), v = 2, d[5] = {1, 0, -1, 0, 1}; 
         unordered_map<int, int> freq; 
-        int d[5] = {1, 0, -1, 0, 1}; 
         
         for (int i = 0; i < n; ++i) 
             for (int j = 0; j < n; ++j) 
@@ -5807,7 +5806,7 @@ public:
                         for (int k = 0; k < 4; ++k) {
                             int ii = i + d[k], jj = j + d[k+1]; 
                             if (0 <= ii && ii < n && 0 <= jj && jj < n && grid[ii][jj] == 1) {
-                                stk.push({ii, jj}); 
+                                stk.emplace(ii, jj); 
                                 grid[ii][jj] = v; 
                             }
                         }
@@ -5815,9 +5814,11 @@ public:
                     ++v; 
                 }
         
+        int ans = 0; 
         for (int i = 0; i < n; ++i) 
             for (int j = 0; j < n; ++j) 
-                if (grid[i][j] == 0) {
+                if (grid[i][j]) ans = max(ans, freq[grid[i][j]]); 
+                else {
                     int cand = 1; 
                     unordered_set<int> seen; 
                     for (int k = 0; k < 4; ++k) {
@@ -5828,8 +5829,7 @@ public:
                         }
                     }
                     ans = max(ans, cand); 
-                } else 
-                    ans = max(ans, freq[grid[i][j]]); 
+                }
         return ans; 
     }
 
