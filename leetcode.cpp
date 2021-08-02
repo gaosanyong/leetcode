@@ -2951,6 +2951,57 @@ public:
     }
 
 
+    /*546. Remove Boxes (Hard)
+	You are given several boxes with different colors represented by different 
+	positive numbers. You may experience several rounds to remove boxes until 
+	there is no box left. Each time you can choose some continuous boxes with 
+	the same color (i.e., composed of k boxes, k >= 1), remove them and get 
+	k * k points. Return the maximum points you can get.
+
+	Example 1:
+	Input: boxes = [1,3,2,2,2,3,4,3,1]
+	Output: 23
+	Explanation: [1, 3, 2, 2, 2, 3, 4, 3, 1] 
+	             ----> [1, 3, 3, 4, 3, 1] (3*3=9 points) 
+	             ----> [1, 3, 3, 3, 1] (1*1=1 points) 
+	             ----> [1, 1] (3*3=9 points) 
+	             ----> [] (2*2=4 points)
+	
+	Example 2:
+	Input: boxes = [1,1,1]
+	Output: 9
+
+	Example 3:
+	Input: boxes = [1]
+	Output: 1
+
+	Constraints:
+	* 1 <= boxes.length <= 100
+	* 1 <= boxes[i] <= 100*/
+
+    int removeBoxes(vector<int>& boxes) {
+        int n = boxes.size(), memo[n+1][n+1][n+1]; 
+        memset(memo, -1, sizeof(memo)); 
+        
+        function<int(int, int, int)> fn = [&](int lo, int hi, int k) {
+            if (memo[lo][hi][k] == -1) {
+                if (lo == hi) memo[lo][hi][k] = 0; 
+                else if (lo+1 < hi && boxes[lo] == boxes[lo+1]) memo[lo][hi][k] = fn(lo+1, hi, k+1); 
+                else {
+                    memo[lo][hi][k] = (k+1)*(k+1) + fn(lo+1, hi, 0); 
+                    for (int mid = lo+2; mid < hi; ++mid) {
+                        if (boxes[lo] == boxes[mid])
+                            memo[lo][hi][k] = max(memo[lo][hi][k], fn(lo+1, mid, 0) + fn(mid, hi, k+1)); 
+                    }
+                }
+            }
+            return memo[lo][hi][k]; 
+        };
+        
+        return fn(0, n, 0); 
+    }
+
+
     /*552. Student Attendance Record II (Hard)
 	An attendance record for a student can be represented as a string where 
 	each character signifies whether the student was absent, late, or present 

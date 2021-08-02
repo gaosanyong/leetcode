@@ -11776,7 +11776,51 @@ class Solution:
                     if i+1 < m: ans[i][j] = min(ans[i][j], 1 + ans[i+1][j])
                     if j+1 < n: ans[i][j] = min(ans[i][j], 1 + ans[i][j+1])
         return ans
- 
+
+
+    """546. Remove Boxes (Hard)
+	You are given several boxes with different colors represented by different 
+	positive numbers. You may experience several rounds to remove boxes until 
+	there is no box left. Each time you can choose some continuous boxes with 
+	the same color (i.e., composed of k boxes, k >= 1), remove them and get 
+	k * k points. Return the maximum points you can get.
+
+	Example 1:
+	Input: boxes = [1,3,2,2,2,3,4,3,1]
+	Output: 23
+	Explanation: [1, 3, 2, 2, 2, 3, 4, 3, 1] 
+	             ----> [1, 3, 3, 4, 3, 1] (3*3=9 points) 
+	             ----> [1, 3, 3, 3, 1] (1*1=1 points) 
+	             ----> [1, 1] (3*3=9 points) 
+	             ----> [] (2*2=4 points)
+	
+	Example 2:
+	Input: boxes = [1,1,1]
+	Output: 9
+
+	Example 3:
+	Input: boxes = [1]
+	Output: 1
+
+	Constraints:
+	* 1 <= boxes.length <= 100
+	* 1 <= boxes[i] <= 100"""
+
+    def removeBoxes(self, boxes: List[int]) -> int:
+        
+        @cache
+        def fn(lo, hi, k): 
+            """Return max score of removing boxes from lo to hi with k to the left."""
+            if lo == hi: return 0 
+            while lo+1 < hi and boxes[lo] == boxes[lo+1]: lo, k = lo+1, k+1
+            ans = (k+1)*(k+1) + fn(lo+1, hi, 0)
+            for mid in range(lo+2, hi): 
+                if boxes[lo] == boxes[mid]: 
+                    ans = max(ans, fn(lo+1, mid, 0) + fn(mid, hi, k+1))
+            return ans 
+                
+        return fn(0, len(boxes), 0)
+
 
     """552. Student Attendance Record II (Hard)
 	An attendance record for a student can be represented as a string where 
