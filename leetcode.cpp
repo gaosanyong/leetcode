@@ -925,6 +925,43 @@ public:
     }
 
 
+    /*90. Subsets II (Medium)
+	Given an integer array nums that may contain duplicates, return all 
+	possible subsets (the power set). The solution set must not contain 
+	duplicate subsets. Return the solution in any order.
+
+	Example 1:
+	Input: nums = [1,2,2]
+	Output: [[],[1],[1,2],[1,2,2],[2],[2,2]]
+
+	Example 2:
+	Input: nums = [0]
+	Output: [[],[0]]
+
+	Constraints:
+	* 1 <= nums.length <= 10
+	* -10 <= nums[i] <= 10*/
+
+    vector<vector<int>> subsetsWithDup(vector<int>& nums) {
+        sort(nums.begin(), nums.end()); 
+        vector<vector<int>> ans; 
+        vector<int> stk; 
+        
+        function<void(int)> fn = [&](int i) {
+            if (i == nums.size()) ans.push_back(stk); 
+            else {
+                if (stk.empty() || stk.back() != nums[i]) fn(i+1); 
+                stk.push_back(nums[i]); 
+                fn(i+1); 
+                stk.pop_back(); 
+            }
+        }; 
+        
+        fn(0); 
+        return ans; 
+    }
+
+
     /*92. Reverse Linked List II (Medium)
 	Given the head of a singly linked list and two integers left and right 
 	where left <= right, reverse the nodes of the list from position left to 

@@ -3088,17 +3088,17 @@ class Solution:
 	]"""
 
     def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
+        nums.sort()
+        ans, stack = [], []
         
         def fn(i):
             """Populate ans using a stack"""
-            if len(nums) == i: return ans.append(stack.copy())
-            if not stack or nums[i] != stack[-1]: fn(i+1)
+            if i == len(nums): return ans.append(stack.copy())
+            if not stack or stack[-1] != nums[i]: fn(i+1)
             stack.append(nums[i])
             fn(i+1)
             stack.pop()
             
-        nums.sort()
-        ans, stack = [], []
         fn(0)
         return ans 
 
