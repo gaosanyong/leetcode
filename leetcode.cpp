@@ -1371,6 +1371,62 @@ public:
     }
 
 
+    /*113. Path Sum II (Medium)
+	Given the root of a binary tree and an integer targetSum, return all root-
+	to-leaf paths where each path's sum equals targetSum. A leaf is a node with 
+	no children.
+
+	Example 1:
+	Input: root = [5,4,8,11,null,13,4,7,2,null,null,5,1], targetSum = 22
+	Output: [[5,4,11,2],[5,8,4,5]]
+
+	Example 2:
+	Input: root = [1,2,3], targetSum = 5
+	Output: []
+
+	Example 3:
+	Input: root = [1,2], targetSum = 0
+	Output: []
+
+	Constraints:
+	* The number of nodes in the tree is in the range [0, 5000].
+	* -1000 <= Node.val <= 1000
+	* -1000 <= targetSum <= 1000*/
+
+    vector<vector<int>> pathSum(TreeNode* root, int targetSum) {
+        vector<vector<int>> ans; 
+        if (root) {
+            unordered_map<TreeNode*, TreeNode*> parent; 
+            vector<TreeNode*> leaf; 
+            stack<pair<TreeNode*, int>> stk; 
+            stk.emplace(root, root->val); 
+            while (stk.size()) {
+                auto [node, val] = stk.top(); stk.pop(); 
+                if (!node->left && !node->right && val == targetSum) leaf.push_back(node); 
+                if (node->left) {
+                    parent[node->left] = node; 
+                    stk.emplace(node->left, val + node->left->val); 
+                }
+                if (node->right) {
+                    parent[node->right] = node; 
+                    stk.emplace(node->right, val + node->right->val); 
+                }
+            }
+            
+            for (auto& node : leaf) {
+                vector<int> path; 
+                while (node) {
+                    path.push_back(node->val); 
+                    node = parent[node]; 
+                }
+                reverse(path.begin(), path.end()); 
+                ans.push_back(path); 
+            }
+        }
+        return ans; 
+    }
+
+
     /*114. Flatten Binary Tree to Linked List (Medium)
 	Given the root of a binary tree, flatten the tree into a "linked list":
 	* The "linked list" should use the same TreeNode class where the right 
