@@ -16002,15 +16002,13 @@ public:
 	  closing brackets ']' equals n / 2.*/
 
     int minSwaps(string s) {
-        int ans = 0; 
-        for (int lo = 0, hi = s.size()-1, prefix = 0, suffix = 0; lo < hi; ++lo) {
-            prefix += s[lo] == '[' ? 1 : -1; 
-            if (prefix < 0) {
+        int ans = 0, prefix = 0; 
+        for (auto& ch : s) {
+            if (ch == '[') prefix += 1; 
+            else prefix -= 1; 
+            if (prefix == -1) {
                 ++ans; 
-                prefix += 2;
-                for (; suffix >= 0; --hi) 
-                    suffix += s[hi] == ']' ? 1 : -1; 
-                suffix += 2; 
+                prefix = 1; 
             }
         }
         return ans; 

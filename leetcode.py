@@ -38662,19 +38662,14 @@ class Trie:
 	  closing brackets ']' equals n / 2."""
 
     def minSwaps(self, s: str) -> int:
-        ans = prefix = suffix = 0 
-        lo, hi = 0, len(s)-1
-        while lo < hi: 
-            prefix += 1 if s[lo] == "[" else -1 
-            lo += 1
-            if prefix < 0: 
+        ans = prefix = 0 
+        for ch in s:
+            if ch == "[": prefix += 1
+            else: prefix -= 1
+            if prefix == -1:
                 ans += 1
-                prefix += 2
-                while suffix >= 0: 
-                    suffix += 1 if s[hi] == "]" else -1
-                    hi -= 1
-                suffix += 2
-        return ans 
+                prefix = 1
+        return ans
 
 
     """1964. Find the Longest Valid Obstacle Course at Each Position (Hard)
