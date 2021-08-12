@@ -9401,6 +9401,59 @@ public:
     }
 
 
+    /*1058. Minimize Rounding Error to Meet Target (Medium)
+	Given an array of prices [p1,p2...,pn] and a target, round each price pi to 
+	Roundi(pi) so that the rounded array [Round1(p1),Round2(p2)...,Roundn(pn)] 
+	sums to the given target. Each operation Roundi(pi) could be either 
+	Floor(pi) or Ceil(pi). Return the string "-1" if the rounded array is 
+	impossible to sum to target. Otherwise, return the smallest rounding error, 
+	which is defined as Σ |Roundi(pi) - (pi)| for i from 1 to n, as a string 
+	with three places after the decimal.
+
+	Example 1:
+	Input: prices = ["0.700","2.800","4.900"], target = 8
+	Output: "1.000"
+	Explanation: Use Floor, Ceil and Ceil operations to get 
+	             (0.7 - 0) + (3 - 2.8) + (5 - 4.9) = 0.7 + 0.2 + 0.1 = 1.0 .
+	
+	Example 2:
+	Input: prices = ["1.500","2.500","3.500"], target = 10
+	Output: "-1"
+	Explanation: It is impossible to meet the target.
+
+	Example 3:
+	Input: prices = ["1.500","2.500","3.500"], target = 9
+	Output: "1.500"
+
+	Constraints:
+	* 1 <= prices.length <= 500
+	* Each string prices[i] represents a real number in the range [0.0, 1000.0] 
+	  and has exactly 3 decimal places.
+	* 0 <= target <= 10^6*/
+
+    string minimizeError(vector<string>& prices, int target) {
+        vector<double> err; 
+        double ans = 0, lo = 0, hi = 0; 
+        for (auto& price : prices) {
+            double x = stod(price); 
+            lo += floor(x); 
+            hi += ceil(x); 
+            if (floor(x) < x && x < ceil(x)) err.push_back(x - floor(x)); 
+        }
+        if (target < lo || hi < target) return "-1"; 
+        sort(err.begin(), err.end()); 
+        int k = hi - target; 
+        for (int i = 0; i < err.size(); ++i) {
+            if (i < k) ans += err[i]; 
+            else ans -= err[i]; 
+        }
+        ans += err.size() - k; 
+        stringstream stream; 
+        stream << fixed << setprecision(3) << ans; 
+        return stream.str(); 
+    }
+
+
     /*1074. Number of Submatrices That Sum to Target (Hard)
 	Given a matrix and a target, return the number of non-empty submatrices 
 	that sum to target. A submatrix x1, y1, x2, y2 is the set of all cells 
