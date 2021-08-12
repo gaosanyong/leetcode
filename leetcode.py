@@ -1674,10 +1674,10 @@ class Solution:
 	The order of your output does not matter."""
     
     def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
-        ans = dict()
-        for word in strs:
-            ans.setdefault("".join(sorted(word)), []).append(word)
-        return ans.values()
+        mp = {}
+        for word in strs: 
+            mp.setdefault("".join(sorted(word)), []).append(word)
+        return mp.values()
 
 
     """50. Pow(x, n) (Medium)
