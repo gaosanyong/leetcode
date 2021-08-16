@@ -39761,6 +39761,207 @@ class Trie:
         return ans 
 
 
+    """1967. Number of Strings That Appear as Substrings in Word (Easy)
+	Given an array of strings patterns and a string word, return the number of 
+	strings in patterns that exist as a substring in word. A substring is a 
+	contiguous sequence of characters within a string.
+
+	Example 1:
+	Input: patterns = ["a","abc","bc","d"], word = "abc"
+	Output: 3
+	Explanation: - "a" appears as a substring in "abc".
+	             - "abc" appears as a substring in "abc".
+	             - "bc" appears as a substring in "abc".
+	             - "d" does not appear as a substring in "abc".
+	             3 of the strings in patterns appear as a substring in word.
+	
+	Example 2:
+	Input: patterns = ["a","b","c"], word = "aaaaabbbbb"
+	Output: 2
+	Explanation: - "a" appears as a substring in "aaaaabbbbb".
+	             - "b" appears as a substring in "aaaaabbbbb".
+	             - "c" does not appear as a substring in "aaaaabbbbb".
+	             2 of the strings in patterns appear as a substring in word.
+	
+	Example 3:
+	Input: patterns = ["a","a","a"], word = "ab"
+	Output: 3
+	Explanation: Each of the patterns appears as a substring in word "ab".
+
+	Constraints:
+	* 1 <= patterns.length <= 100
+	* 1 <= patterns[i].length <= 100
+	* 1 <= word.length <= 100
+	* patterns[i] and word consist of lowercase English letters."""
+
+    def numOfStrings(self, patterns: List[str], word: str) -> int:
+        return sum(x in word for x in patterns)
+
+
+    """1968. Array With Elements Not Equal to Average of Neighbors (Medium)
+	You are given a 0-indexed array nums of distinct integers. You want to 
+	rearrange the elements in the array such that every element in the 
+	rearranged array is not equal to the average of its neighbors. More 
+	formally, the rearranged array should have the property such that for every 
+	i in the range 1 <= i < nums.length - 1, (nums[i-1] + nums[i+1]) / 2 is not 
+	equal to nums[i]. Return any rearrangement of nums that meets the 
+	requirements.
+
+	Example 1:
+	Input: nums = [1,2,3,4,5]
+	Output: [1,2,4,5,3]
+	Explanation:
+	When i=1, nums[i] = 2, and the average of its neighbors is (1+4) / 2 = 2.5.
+	When i=2, nums[i] = 4, and the average of its neighbors is (2+5) / 2 = 3.5.
+	When i=3, nums[i] = 5, and the average of its neighbors is (4+3) / 2 = 3.5.
+
+	Example 2:
+	Input: nums = [6,2,0,9,7]
+	Output: [9,7,6,2,0]
+	Explanation:
+	When i=1, nums[i] = 7, and the average of its neighbors is (9+6) / 2 = 7.5.
+	When i=2, nums[i] = 6, and the average of its neighbors is (7+2) / 2 = 4.5.
+	When i=3, nums[i] = 2, and the average of its neighbors is (6+0) / 2 = 3.
+
+	Constraints:
+	* 3 <= nums.length <= 10^5
+	* 0 <= nums[i] <= 10^5"""
+
+    def rearrangeArray(self, nums: List[int]) -> List[int]:
+        for i in range(1, len(nums)-1): 
+            if nums[i-1] < nums[i] < nums[i+1] or nums[i-1] > nums[i] > nums[i+1]: 
+                nums[i], nums[i+1] = nums[i+1], nums[i]
+        return nums
+
+
+    """1969. Minimum Non-Zero Product of the Array Elements (Medium)
+	You are given a positive integer p. Consider an array nums (1-indexed) that 
+	consists of the integers in the inclusive range [1, 2p - 1] in their binary 
+	representations. You are allowed to do the following operation any number 
+	of times:
+	* Choose two elements x and y from nums.
+	* Choose a bit in x and swap it with its corresponding bit in y. 
+	  Corresponding bit refers to the bit that is in the same position in the 
+	  other integer.
+	For example, if x = 1101 and y = 0011, after swapping the 2nd bit from the 
+	right, we have x = 1111 and y = 0001. Find the minimum non-zero product of 
+	nums after performing the above operation any number of times. Return this 
+	product modulo 10^9 + 7. Note: The answer should be the minimum product 
+	before the modulo operation is done.
+
+	Example 1:
+	Input: p = 1
+	Output: 1
+	Explanation: nums = [1]. There is only one element, so the product equals 
+	             that element.
+	
+	Example 2:
+	Input: p = 2
+	Output: 6
+	Explanation: nums = [01, 10, 11]. Any swap would either make the product 0 
+	             or stay the same. Thus, the array product of 1 * 2 * 3 = 6 is 
+	             already minimized.
+	
+	Example 3:
+	Input: p = 3
+	Output: 1512
+	Explanation: nums = [001, 010, 011, 100, 101, 110, 111]
+	             - In the first operation we can swap the leftmost bit of the second and fifth elements.
+	                 - The resulting array is [001, 110, 011, 100, 001, 110, 111].
+	             - In the second operation we can swap the middle bit of the third and fourth elements.
+	                 - The resulting array is [001, 110, 001, 110, 001, 110, 111].
+	             The array product is 1 * 6 * 1 * 6 * 1 * 6 * 7 = 1512, which is the minimum possible product.
+
+	Constraints: 1 <= p <= 60"""
+
+    def minNonZeroProduct(self, p: int) -> int:
+        x = (1 << p) - 1
+        return pow(x-1, (x-1)//2, 1_000_000_007) * x % 1_000_000_007
+
+
+    """1970. Last Day Where You Can Still Cross (Hard)
+	There is a 1-based binary matrix where 0 represents land and 1 represents 
+	water. You are given integers row and col representing the number of rows 
+	and columns in the matrix, respectively. Initially on day 0, the entire 
+	matrix is land. However, each day a new cell becomes flooded with water. 
+	You are given a 1-based 2D array cells, where cells[i] = [ri, ci] 
+	represents that on the ith day, the cell on the rith row and cith column 
+	(1-based coordinates) will be covered with water (i.e., changed to 1).You 
+	want to find the last day that it is possible to walk from the top to the 
+	bottom by only walking on land cells. You can start from any cell in the 
+	top row and end at any cell in the bottom row. You can only travel in the 
+	four cardinal directions (left, right, up, and down). Return the last day 
+	where it is possible to walk from the top to the bottom by only walking on 
+	land cells.
+
+	Example 1:
+	Input: row = 2, col = 2, cells = [[1,1],[2,1],[1,2],[2,2]]
+	Output: 2
+	Explanation: The above image depicts how the matrix changes each day 
+	             starting from day 0. The last day where it is possible to 
+	             cross from top to bottom is on day 2.
+	
+	Example 2:
+	Input: row = 2, col = 2, cells = [[1,1],[1,2],[2,1],[2,2]]
+	Output: 1
+	Explanation: The above image depicts how the matrix changes each day 
+	             starting from day 0. The last day where it is possible to 
+	             cross from top to bottom is on day 1.
+	
+	Example 3:
+	Input: row = 3, col = 3, cells = [[1,2],[2,1],[3,3],[2,2],[1,1],[1,3],[2,3],[3,2],[3,1]]
+	Output: 3
+	Explanation: The above image depicts how the matrix changes each day 
+	             starting from day 0. The last day where it is possible to 
+	             cross from top to bottom is on day 3.
+
+	Constraints:
+	* 2 <= row, col <= 2 * 10^4
+	* 4 <= row * col <= 2 * 10^4
+	* cells.length == row * col
+	* 1 <= ri <= row
+	* 1 <= ci <= col
+	* All the values of cells are unique.
+
+class UnionFind: 
+    def __init__(self, n): 
+        self.parent = list(range(n))
+        self.rank = [1] * n
+        
+    def find(self, p): 
+        if p != self.parent[p]: 
+            self.parent[p] = self.find(self.parent[p]) # find w/ path compression 
+        return self.parent[p]
+    
+    def union(self, p, q): 
+        prt, qrt = self.find(p), self.find(q)
+        if prt == qrt: return False # already connected 
+        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt # union by rank 
+        self.parent[prt] = qrt
+        self.rank[qrt] += self.rank[prt]
+        return True """
+    
+    def latestDayToCross(self, row: int, col: int, cells: List[List[int]]) -> int:
+        grid = [[0]*col for _ in range(row)]
+        
+        n = row * col
+        uf = UnionFind(n)
+        span = [[n, 0] for _ in range(n)]
+        
+        for step, (i, j) in enumerate(cells): 
+            i, j = i-1, j-1
+            grid[i][j] = 1
+            x = i*col + j
+            for ii, jj in (i-1, j-1), (i-1, j), (i-1, j+1), (i, j-1), (i, j+1), (i+1, j-1), (i+1, j), (i+1, j+1): 
+                if 0 <= ii < row and 0 <= jj < col and grid[ii][jj]: 
+                    xx = ii*col + jj 
+                    r, rr = uf.find(x), uf.find(xx)
+                    span[r][0] = span[rr][0] = min(span[r][0], span[rr][0], j, jj)
+                    span[r][1] = span[rr][1] = max(span[r][1], span[rr][1], j, jj)
+                    if span[r] == [0, col-1]: return step 
+                    uf.union(x, xx)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
