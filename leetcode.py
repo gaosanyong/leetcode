@@ -20403,6 +20403,39 @@ class UnionFind:
         return ans
 
 
+    """1100. Find K-Length Substrings With No Repeated Characters (Medium)
+	Given a string s and an integer k, return the number of substrings in s of 
+	length k with no repeated characters.
+
+	Example 1:
+	Input: s = "havefunonleetcode", k = 5
+	Output: 6
+	Explanation: There are 6 substrings they are: 'havef','avefu','vefun',
+	             'efuno','etcod','tcode'.
+	
+	Example 2:
+	Input: s = "home", k = 5
+	Output: 0
+	Explanation: Notice k can be larger than the length of s. In this case, it 
+	             is not possible to find any substring.
+
+	Constraints:
+	* 1 <= s.length <= 10^4
+	* s consists of lowercase English letters.
+	* 1 <= k <= 10^4"""
+
+    def numKLenSubstrNoRepeats(self, s: str, k: int) -> int:
+        ans = 0 
+        freq = {}
+        for i, c in enumerate(s): 
+            freq[c] = 1 + freq.get(c, 0)
+            if i >= k: 
+                freq[s[i-k]] -= 1
+                if freq[s[i-k]] == 0: freq.pop(s[i-k])
+            if i+1 >= k and len(freq) == k: ans += 1
+        return ans 
+
+
     """1103. Distribute Candies to People (Easy)
 	We distribute some number of candies, to a row of n = num_people people in 
 	the following way: 

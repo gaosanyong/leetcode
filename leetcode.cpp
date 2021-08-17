@@ -9962,6 +9962,39 @@ public:
     }
 
 
+    /*1100. Find K-Length Substrings With No Repeated Characters (Medium)
+	Given a string s and an integer k, return the number of substrings in s of 
+	length k with no repeated characters.
+
+	Example 1:
+	Input: s = "havefunonleetcode", k = 5
+	Output: 6
+	Explanation: There are 6 substrings they are: 'havef','avefu','vefun',
+	             'efuno','etcod','tcode'.
+	
+	Example 2:
+	Input: s = "home", k = 5
+	Output: 0
+	Explanation: Notice k can be larger than the length of s. In this case, it 
+	             is not possible to find any substring.
+
+	Constraints:
+	* 1 <= s.length <= 10^4
+	* s consists of lowercase English letters.
+	* 1 <= k <= 10^4*/
+
+    int numKLenSubstrNoRepeats(string s, int k) {
+        int ans = 0; 
+        unordered_map<char, int> freq; 
+        for (int i = 0; i < s.size(); ++i) {
+            freq[s[i]]++; 
+            if (i >= k && --freq[s[i-k]] == 0) freq.erase(s[i-k]); 
+            if (i+1 >= k && freq.size() == k) ++ans; 
+        }
+        return ans; 
+    }
+
+
     /*1209. Remove All Adjacent Duplicates in String II (Medium)
 	Given a string s, a k duplicate removal consists of choosing k adjacent and 
 	equal letters from s and removing them causing the left and the right side 
