@@ -13551,6 +13551,52 @@ public:
     }
 
 
+    /*1858. Longest Word With All Prefixes (Medium)
+	Given an array of strings words, find the longest string in words such that 
+	every prefix of it is also in words. For example, let 
+	words = ["a", "app", "ap"]. The string "app" has prefixes "ap" and "a", all 
+	of which are in words. Return the string described above. If there is more 
+	than one string with the same length, return the lexicographically smallest 
+	one, and if no string exists, return "".
+
+	Example 1:
+	Input: words = ["k","ki","kir","kira", "kiran"]
+	Output: "kiran"
+	Explanation: "kiran" has prefixes "kira", "kir", "ki", and "k", and all of 
+	             them appear in words.
+	
+	Example 2:
+	Input: words = ["a", "banana", "app", "appl", "ap", "apply", "apple"]
+	Output: "apple"
+	Explanation: Both "apple" and "apply" have all their prefixes in words. 
+	             However, "apple" is lexicographically smaller, so we return 
+	             that.
+	
+	Example 3:
+	Input: words = ["abc", "bc", "ab", "qwe"]
+	Output: ""
+
+	Constraints:
+	* 1 <= words.length <= 10^5
+	* 1 <= words[i].length <= 10^5
+	* 1 <= sum(words[i].length) <= 10^5*/
+
+    string longestWord(vector<string>& words) {
+        sort(words.begin(), words.end(), [](auto& lhs, auto& rhs) {
+            return lhs.size() < rhs.size() || (lhs.size() == rhs.size() && lhs < rhs); 
+        }); 
+        
+        string ans = ""; 
+        unordered_set<string> seen = {""}; 
+        for (auto& word : words) 
+            if (seen.count(word.substr(0, word.size()-1))) {
+                if (word.size() > ans.size()) ans = word; 
+                seen.insert(word); 
+            }
+        return ans; 
+    }
+
+
     /*1859. Sorting the Sentence (Easy)
 	A sentence is a list of words that are separated by a single space with no 
 	leading or trailing spaces. Each word consists of lowercase and uppercase 
