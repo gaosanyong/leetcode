@@ -3129,12 +3129,14 @@ class Solution:
         
         @cache
         def fn(i): 
-            """Return decode ways of s[i:]"""
-            if i >= len(s): return i == len(s) #boundary condition
-            return 0 if s[i] == "0" else fn(i+1) + (int(s[i:i+2]) <= 26)*fn(i+2)
-            
+            """Return number of ways to decode s[i:]."""
+            if i == len(s): return 1 
+            if s[i] == "0": return 0 
+            ans = fn(i+1)
+            if i+1 < len(s) and s[i:i+2] <= "26": ans += fn(i+2)
+            return ans 
+        
         return fn(0)
-
 
 
     """92. Reverse Linked List II (Medium)
