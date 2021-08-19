@@ -11158,6 +11158,41 @@ class Solution:
         return S[:n].count(1)
 
 
+    """484. Find Permutation (Medium)
+	A permutation perm of n integers of all the integers in the range [1, n] 
+	can be represented as a string s of length n - 1 where:
+	* s[i] == 'I' if perm[i] < perm[i + 1], and
+	* s[i] == 'D' if perm[i] > perm[i + 1].
+	Given a string s, reconstruct the lexicographically smallest permutation 
+	perm and return it.
+
+	Example 1:
+	Input: s = "I"
+	Output: [1,2]
+	Explanation: [1,2] is the only legal permutation that can represented by s, 
+	             where the number 1 and 2 construct an increasing relationship.
+	
+	Example 2:
+	Input: s = "DI"
+	Output: [2,1,3]
+	Explanation: Both [2,1,3] and [3,1,2] can be represented as "DI", but since 
+	             we want to find the smallest lexicographical permutation, you 
+	             should return [2,1,3]
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s[i] is either 'I' or 'D'."""
+
+    def findPermutation(self, s: str) -> List[int]:
+        ans, stack = [], []
+        for i, ch in enumerate(s + "I"): 
+            if ch == "D": stack.append(i+1)
+            else: 
+                ans.append(i+1)
+                while stack: ans.append(stack.pop())
+        return ans 
+
+
     """487. Max Consecutive Ones II (Medium)
 	Given a binary array, find the maximum number of consecutive 1s in this 
 	array if you can flip at most one 0.

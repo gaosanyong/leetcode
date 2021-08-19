@@ -3121,6 +3121,47 @@ public:
     }
 
 
+    /*484. Find Permutation (Medium)
+	A permutation perm of n integers of all the integers in the range [1, n] 
+	can be represented as a string s of length n - 1 where:
+	* s[i] == 'I' if perm[i] < perm[i + 1], and
+	* s[i] == 'D' if perm[i] > perm[i + 1].
+	Given a string s, reconstruct the lexicographically smallest permutation 
+	perm and return it.
+
+	Example 1:
+	Input: s = "I"
+	Output: [1,2]
+	Explanation: [1,2] is the only legal permutation that can represented by s, 
+	             where the number 1 and 2 construct an increasing relationship.
+	
+	Example 2:
+	Input: s = "DI"
+	Output: [2,1,3]
+	Explanation: Both [2,1,3] and [3,1,2] can be represented as "DI", but since 
+	             we want to find the smallest lexicographical permutation, you 
+	             should return [2,1,3]
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s[i] is either 'I' or 'D'.*/
+
+    vector<int> findPermutation(string s) {
+        vector<int> ans, stk; 
+        s.push_back('I'); 
+        for (int i = 0; i < s.size(); ++i)
+            if (s[i] == 'D') stk.push_back(i+1); 
+            else {
+                ans.push_back(i+1); 
+                while (stk.size()) {
+                    ans.push_back(stk.back()); 
+                    stk.pop_back(); 
+                }
+            }
+        return ans; 
+    }
+
+
     /*495. Teemo Attacking (Easy)
 	Our hero Teemo is attacking an enemy Ashe with poison attacks! When Teemo 
 	attacks Ashe, Ashe gets poisoned for a exactly duration seconds. More 
