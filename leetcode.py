@@ -27180,6 +27180,55 @@ class UnionFind:
         return fn(0, k, "", 0)
 
 
+    """1554. Strings Differ by One Character (Medium)
+	Given a list of strings dict where all the strings are of the same length.
+	Return True if there are 2 strings that only differ by 1 character in the 
+	same index, otherwise return False. 
+
+	Follow up: Could you solve this problem in O(n*m) where n is the length of 
+	           dict and m is the length of each string.
+
+	Example 1:
+	Input: dict = ["abcd","acbd", "aacd"]
+	Output: true
+	Explanation: Strings "abcd" and "aacd" differ only by one character in the 
+	             index 1.
+
+	Example 2:
+	Input: dict = ["ab","cd","yz"]
+	Output: false
+	
+	Example 3:
+	Input: dict = ["abcd","cccc","abyd","abab"]
+	Output: true
+
+	Constraints:
+	* Number of characters in dict <= 10^5
+	* dict[i].length == dict[j].length
+	* dict[i] should be unique.
+	* dict[i] contains only lowercase English letters."""
+
+    def differByOne(self, dict: List[str]) -> bool:
+        MOD = 1_000_000_007
+        hs = []
+        for word in dict: 
+            val = 0
+            for ch in word: val = (26*val + ord(ch) - 97) % MOD
+            hs.append(val)
+        
+        mult = 1
+        for j in reversed(range(len(dict[0]))): 
+            seen = {}
+            for i, w in enumerate(dict): 
+                val = (hs[i] - (ord(w[j]) - 97) * mult) % MOD
+                if val in seen: 
+                    for ww in seen[val]: 
+                        if sum(x != xx for x, xx in zip(w, ww)) == 1: return True 
+                seen.setdefault(val, []).append(w)
+            mult = 26 * mult % MOD
+        return False
+
+
     """1564. Put Boxes Into the Warehouse I (Medium)
 	You are given two arrays of positive integers, boxes and warehouse, 
 	representing the heights of some boxes of unit width and the heights of n 

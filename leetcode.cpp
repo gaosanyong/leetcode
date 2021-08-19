@@ -10847,6 +10847,60 @@ public:
     }
 
 
+    /*1554. Strings Differ by One Character (Medium)
+	Given a list of strings dict where all the strings are of the same length.
+	Return True if there are 2 strings that only differ by 1 character in the 
+	same index, otherwise return False. 
+
+	Follow up: Could you solve this problem in O(n*m) where n is the length of 
+	           dict and m is the length of each string.
+
+	Example 1:
+	Input: dict = ["abcd","acbd", "aacd"]
+	Output: true
+	Explanation: Strings "abcd" and "aacd" differ only by one character in the 
+	             index 1.
+
+	Example 2:
+	Input: dict = ["ab","cd","yz"]
+	Output: false
+	
+	Example 3:
+	Input: dict = ["abcd","cccc","abyd","abab"]
+	Output: true
+
+	Constraints:
+	* Number of characters in dict <= 10^5
+	* dict[i].length == dict[j].length
+	* dict[i] should be unique.
+	* dict[i] contains only lowercase English letters.*/
+
+    bool differByOne(vector<string>& dict) {
+        const int MOD = 1'000'000'007; 
+        vector<int> hs; 
+        for (auto& word : dict) {
+            long val = 0; 
+            for (auto& ch : word) val = (26*val + ch - 'a') % MOD; 
+            hs.push_back(val); 
+        }
+        
+        int m = dict.size(), n = dict[0].size(); 
+        long mult = 1l; 
+        for (int j = n-1; j >= 0; --j) {
+            unordered_map<int, vector<int>> seen; 
+            for (int i = 0; i < m; ++i) {
+                int val = (hs[i] - (dict[i][j] - 'a')*mult + 26l*MOD) % MOD; 
+                if (seen.count(val)) 
+                    for (auto& ii : seen[val]) 
+                        if (dict[ii].substr(0, j) == dict[i].substr(0, j) && dict[ii].substr(j+1, n-j-1) == dict[i].substr(j+1, n-j-1)) return true; 
+                seen[val].push_back(i); 
+            }
+            mult = (26 * mult) % MOD; 
+        }
+        return false; 
+    }
+
+
     /*1612. Check If Two Expression Trees are Equivalent (Medium)
 	A binary expression tree is a kind of binary tree used to represent 
 	arithmetic expressions. Each node of a binary expression tree has either 
