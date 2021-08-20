@@ -1205,11 +1205,12 @@ class Solution:
 
     def isValidSudoku(self, board: List[List[str]]) -> bool:
         seen = set()
-        for i, j in product(range(9), range(9)):
-            if board[i][j] != ".": 
-                item = {(i, board[i][j]), (board[i][j], j), (i//3, board[i][j], j//3)}
-                if seen & item: return False 
-                seen |= item
+        for i in range(9):
+            for j in range(9): 
+                if board[i][j] != ".": 
+                    news = {(i, board[i][j]), (board[i][j], j), (i//3, board[i][j], j//3)}
+                    if seen & news: return False 
+                    seen |= news
         return True
 
 
