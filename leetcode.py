@@ -11720,6 +11720,45 @@ class Solution:
         return board
 
 
+    """531. Lonely Pixel I (Medium)
+	Given an m x n picture consisting of black 'B' and white 'W' pixels, return 
+	the number of black lonely pixels. A black lonely pixel is a character 'B' 
+	that located at a specific position where the same row and same column 
+	don't have any other black pixels.
+
+	Example 1:
+	Input: picture = [["W","W","B"],["W","B","W"],["B","W","W"]]
+	Output: 3
+	Explanation: All the three 'B's are black lonely pixels.
+
+	Example 2:
+	Input: picture = [["B","B","B"],["B","B","W"],["B","B","B"]]
+	Output: 0
+
+	Constraints:
+	* m == picture.length
+	* n == picture[i].length
+	* 1 <= m, n <= 500
+	* picture[i][j] is 'W' or 'B'."""
+
+    def findLonelyPixel(self, picture: List[List[str]]) -> int:
+        m, n = len(picture), len(picture[0])
+        rows = [0] * m
+        cols = [0] * n
+        for i in range(m): 
+            for j in range(n): 
+                if picture[i][j] == "B": 
+                    rows[i] += 1
+                    cols[j] += 1
+        
+        ans = 0 
+        for i in range(m): 
+            if rows[i] == 1: 
+                for j in range(n): 
+                    if picture[i][j] == "B" and cols[j] == 1: ans += 1
+        return ans  
+
+
     """532. K-diff Pairs in an Array (Medium)
 	Given an array of integers nums and an integer k, return the number of 
 	unique k-diff pairs in the array. A k-diff pair is an integer pair 
