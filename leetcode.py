@@ -21168,6 +21168,58 @@ class UnionFind:
         return sum(int(x)**len(s) for x in s) == N
 
 
+    """1136. Parallel Courses (Medium)
+	You are given an integer n, which indicates that there are n courses 
+	labeled from 1 to n. You are also given an array relations where 
+	relations[i] = [prevCoursei, nextCoursei], representing a prerequisite 
+	relationship between course prevCoursei and course nextCoursei: course 
+	prevCoursei has to be taken before course nextCoursei. In one semester, you 
+	can take any number of courses as long as you have taken all the 
+	prerequisites in the previous semester for the courses you are taking.
+	Return the minimum number of semesters needed to take all courses. If there 
+	is no way to take all the courses, return -1.
+
+	Example 1:
+	Input: n = 3, relations = [[1,3],[2,3]]
+	Output: 2
+	Explanation: The figure above represents the given graph. In the first 
+	             semester, you can take courses 1 and 2. In the second semester, 
+	             you can take course 3.
+	
+	Example 2:
+	Input: n = 3, relations = [[1,2],[2,3],[3,1]]
+	Output: -1
+	Explanation: No course can be studied because they are prerequisites of 
+	             each other.
+
+	Constraints:
+	* 1 <= n <= 5000
+	* 1 <= relations.length <= 5000
+	* relations[i].length == 2
+	* 1 <= prevCoursei, nextCoursei <= n
+	* prevCoursei != nextCoursei
+	* All the pairs [prevCoursei, nextCoursei] are unique."""
+
+    def minimumSemesters(self, n: int, relations: List[List[int]]) -> int:
+        graph = {}
+        indeg = [0]*n
+        for u, v in relations: 
+            graph.setdefault(u-1, []).append(v-1)
+            indeg[v-1] += 1
+        
+        ans = 0
+        queue = [x for x in range(n) if not indeg[x]]
+        while queue: 
+            ans += 1
+            newq = []
+            for x in queue: 
+                for xx in graph.get(x, []): 
+                    indeg[xx] -= 1
+                    if not indeg[xx]: newq.append(xx)
+            queue = newq
+        return -1 if any(indeg) else ans
+
+
     """1137. N-th Tribonacci Number (Easy)
 	The Tribonacci sequence Tn is defined as follows: 
 	T0 = 0, T1 = 1, T2 = 1, and Tn+3 = Tn + Tn+1 + Tn+2 for n >= 0.
