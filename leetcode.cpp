@@ -10362,6 +10362,78 @@ public:
     }
 
 
+    /*1135. Connecting Cities With Minimum Cost (Medium)
+	There are n cities labeled from 1 to n. You are given the integer n and an 
+	array connections where connections[i] = [xi, yi, costi] indicates that the 
+	cost of connecting city xi and city yi (bidirectional connection) is costi.
+	Return the minimum cost to connect all the n cities such that there is at 
+	least one path between each pair of cities. If it is impossible to connect 
+	all the n cities, return -1, The cost is the sum of the connections' costs 
+	used.
+
+	Example 1:
+	Input: n = 3, connections = [[1,2,5],[1,3,6],[2,3,1]]
+	Output: 6
+	Explanation: Choosing any 2 edges will connect all cities so we choose the 
+	             minimum 2.
+
+	Example 2:
+	Input: n = 4, connections = [[1,2,3],[3,4,4]]
+	Output: -1
+	Explanation: There is no way to connect all cities even if all edges are 
+	             used.
+
+	Constraints:
+	* 1 <= n <= 10^4
+	* 1 <= connections.length <= 10^4
+	* connections[i].length == 3
+	* 1 <= xi, yi <= n
+	* xi != yi
+	* 0 <= costi <= 10^5
+
+class UnionFind {
+vector<int> parent, rank; 
+public: 
+    UnionFind(int n) {
+        parent.resize(n); 
+        iota(parent.begin(), parent.end(), 0); 
+        rank = vector<int>(n, 1); 
+    }
+    
+    int find(int p) {
+        if (p != parent[p])
+            parent[p] = find(parent[p]); 
+        return parent[p]; 
+    }
+    
+    bool connect(int p, int q) {
+        int prt = find(p), qrt = find(q); 
+        if (prt == qrt) return false; 
+        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
+        parent[prt] = qrt; 
+        rank[qrt] += rank[prt]; 
+        return true; 
+    }
+};*/
+
+
+    int minimumCost(int n, vector<vector<int>>& connections) {
+        sort(connections.begin(), connections.end(), [](auto& lhs, auto& rhs) { return lhs[2] < rhs[2]; }); 
+        int ans = 0; 
+        UnionFind* uf = new UnionFind(n); 
+        for (auto& connection : connections) {
+            int x = connection[0] - 1, y = connection[1] - 1, cost = connection[2]; 
+            if (uf->connect(x, y)) {
+                ans += cost; 
+                n -= 1; 
+            }
+            if (n == 1) break; 
+        }
+        delete uf; 
+        return n == 1 ? ans : -1; 
+    }
+
+
     /*1136. Parallel Courses (Medium)
 	You are given an integer n, which indicates that there are n courses 
 	labeled from 1 to n. You are also given an array relations where 
