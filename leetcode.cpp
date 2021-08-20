@@ -10042,6 +10042,60 @@ public:
     }
 
 
+    /*1087. Brace Expansion (Medium)
+	You are given a string s representing a list of words. Each letter in the 
+	word has one or more options.
+	* If there is one option, the letter is represented as is.
+	* If there is more than one option, then curly braces delimit the options. 
+	  For example, "{a,b,c}" represents options ["a", "b", "c"].
+	For example, if s = "a{b,c}", the first character is always 'a', but the 
+	second character can be 'b' or 'c'. The original list is ["ab", "ac"]. 
+	Return all words that can be formed in this manner, sorted in 
+	lexicographical order.
+
+	Example 1:
+	Input: s = "{a,b}c{d,e}f"
+	Output: ["acdf","acef","bcdf","bcef"]
+
+	Example 2:
+	Input: s = "abcd"
+	Output: ["abcd"]
+
+	Constraints:
+	* 1 <= s.length <= 50
+	* s consists of curly brackets '{}', commas ',', and lowercase English 
+	  letters.
+	* s is guaranteed to be a valid input.
+	* There are no nested curly brackets.
+	* All characters inside a pair of consecutive opening and ending curly 
+	  brackets are different.*/
+
+    vector<string> expand(string s) {
+        vector<string> ans = {""}; 
+        for (int i = 0; i < s.size(); ++i) {
+            if (s[i] == '{') {
+                int ii = i; 
+                while (s[++ii] != '}'); 
+                string ss = s.substr(i+1, ii-i-1); // ss == substring 
+                vector<string> tokens; 
+                for (int k = 0, kk = 0; k != -1; kk = k+1) {
+                    k = ss.find(',', kk); 
+                    tokens.push_back(ss.substr(kk, (k == -1 ? ss.size() : k)-kk)); 
+                }
+                vector<string> tmp; 
+                for (auto& x : ans) 
+                    for (auto& xx : tokens) 
+                        tmp.push_back(x+xx); 
+                ans = tmp; 
+                i = ii; 
+            } else 
+                for (auto& x : ans) x.push_back(s[i]); 
+        }
+        sort(ans.begin(), ans.end()); 
+        return ans; 
+    }
+
+
     /*1095. Find in Mountain Array (Hard)
 	(This problem is an interactive problem.)
 	You may recall that an array A is a mountain array if and only if:
