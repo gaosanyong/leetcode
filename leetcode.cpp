@@ -2372,6 +2372,64 @@ public:
     }
 
 
+    /*261. Graph Valid Tree (Medium)
+	You have a graph of n nodes labeled from 0 to n - 1. You are given an 
+	integer n and a list of edges where edges[i] = [ai, bi] indicates that 
+	there is an undirected edge between nodes ai and bi in the graph. Return 
+	true if the edges of the given graph make up a valid tree, and false 
+	otherwise.
+
+	Example 1:
+	Input: n = 5, edges = [[0,1],[0,2],[0,3],[1,4]]
+	Output: true
+
+	Example 2:
+	Input: n = 5, edges = [[0,1],[1,2],[2,3],[1,3],[1,4]]
+	Output: false
+
+	Constraints:
+	* 1 <= 2000 <= n
+	* 0 <= edges.length <= 5000
+	* edges[i].length == 2
+	* 0 <= ai, bi < n
+	* ai != bi
+	* There are no self-loops or repeated edges.
+
+class UnionFind {
+    vector<int> parent, rank; 
+public: 
+    UnionFind(int n) {
+        parent.resize(n); 
+        iota(parent.begin(), parent.end(), 0); 
+        rank = vector<int>(n, 1); 
+    }
+    
+    int find(int p) {
+        if (p != parent[p])
+            parent[p] = find(parent[p]); 
+        return parent[p]; 
+    }
+    
+    bool connect(int p, int q) {
+        int prt = find(p), qrt = find(q); 
+        if (prt == qrt) return false; 
+        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
+        parent[prt] = qrt; 
+        rank[qrt] += rank[prt]; 
+        return true; 
+    }
+};*/
+
+    bool validTree(int n, vector<vector<int>>& edges) {
+        UnionFind uf = UnionFind(n); 
+        for (auto& edge : edges) {
+            if (!uf.connect(edge[0], edge[1])) return false; 
+            --n; 
+        }
+        return n == 1; 
+    }
+
+
     /*263. Ugly Number (Easy)
 	Given an integer n, return true if n is an ugly number. Ugly number is a 
 	positive number whose prime factors only include 2, 3, and/or 5.
