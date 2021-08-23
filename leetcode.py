@@ -12853,6 +12853,67 @@ class UnionFind:
         return stack[0]
 
 
+    """653. Two Sum IV - Input is a BST (Easy)
+	Given the root of a Binary Search Tree and a target number k, return true 
+	if there exist two elements in the BST such that their sum is equal to the 
+	given target.
+
+	Example 1:
+	Input: root = [5,3,6,2,4,null,7], k = 9
+	Output: true
+
+	Example 2:
+	Input: root = [5,3,6,2,4,null,7], k = 28
+	Output: false
+
+	Example 3:
+	Input: root = [2,1,3], k = 4
+	Output: true
+
+	Example 4:
+	Input: root = [2,1,3], k = 1
+	Output: false
+
+	Example 5:
+	Input: root = [2,1,3], k = 3
+	Output: true
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 10^4].
+	* -10^4 <= Node.val <= 10^4
+	* root is guaranteed to be a valid binary search tree.
+	* -10^5 <= k <= 10^5"""
+
+    def findTarget(self, root: Optional[TreeNode], k: int) -> bool:
+        left, right = [], []
+        lo = hi = root 
+        while lo: 
+            left.append(lo)
+            lo = lo.left
+        lo = left.pop()
+            
+        while hi: 
+            right.append(hi)
+            hi = hi.right 
+        hi = right.pop()
+        
+        while lo.val < hi.val: 
+            if lo.val + hi.val < k: 
+                lo = lo.right
+                while lo: 
+                    left.append(lo)
+                    lo = lo.left
+                lo = left.pop()
+            elif lo.val + hi.val == k: return True 
+            else: 
+                hi = hi.left
+                while hi: 
+                    right.append(hi)
+                    hi = hi.right 
+                hi = right.pop()
+        return False 
+
+
     """655. Print Binary Tree (Medium)
 	Print a binary tree in an m*n 2D string array following these rules:
 	1 The row number m should be equal to the height of the given binary tree.

@@ -4532,20 +4532,22 @@ public:
 	* -10^5 <= k <= 10^5*/
 
     bool findTarget(TreeNode* root, int k) {
-        unordered_set<int> seen; 
-        stack<TreeNode*> stk; 
-        stk.push(root); 
+        stack<TreeNode*> left, right; 
+        for (TreeNode *lo = root; lo; lo = lo->left) left.push(lo); 
+        for (TreeNode *hi = root; hi; hi = hi->right) right.push(hi); 
         
-        while (!stk.empty()) {
-            TreeNode* node = stk.top(); 
-            stk.pop(); 
-            if (node) {
-                if (seen.count(k - node->val)) return true; 
-                seen.insert(node->val); 
-                stk.push(node->right);
-                stk.push(node->left); 
+        TreeNode *lo = left.top(), *hi = right.top(); 
+        while (lo->val < hi->val) 
+            if (lo->val + hi->val < k) {
+                left.pop(); 
+                for (lo = lo->right; lo; lo = lo->left) left.push(lo); 
+                lo = left.top(); 
+            } else if (lo->val + hi->val == k) return true; 
+            else {
+                right.pop(); 
+                for (hi = hi->left; hi; hi = hi->right) right.push(hi); 
+                hi = right.top(); 
             }
-        }
         return false; 
     }
 
