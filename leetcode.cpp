@@ -19126,6 +19126,201 @@ public:
         fn(root); 
         return ans; 
     }
+
+
+    /*1979. Find Greatest Common Divisor of Array (Easy)
+	Given an integer array nums, return the greatest common divisor of the 
+	smallest number and largest number in nums. The greatest common divisor of 
+	two numbers is the largest positive integer that evenly divides both 
+	numbers.
+
+	Example 1:
+	Input: nums = [2,5,6,9,10]
+	Output: 2
+	Explanation: The smallest number in nums is 2. The largest number in nums 
+	             is 10. The greatest common divisor of 2 and 10 is 2.
+	
+	Example 2:
+	Input: nums = [7,5,6,8,3]
+	Output: 1
+	Explanation: The smallest number in nums is 3. The largest number in nums 
+	             is 8. The greatest common divisor of 3 and 8 is 1.
+	
+	Example 3:
+	Input: nums = [3,3]
+	Output: 3
+	Explanation: The smallest number in nums is 3. The largest number in nums 
+	             is 3. The greatest common divisor of 3 and 3 is 3.
+
+	Constraints:
+	* 2 <= nums.length <= 1000
+	* 1 <= nums[i] <= 1000*/
+
+    int findGCD(vector<int>& nums) {
+        return gcd(*max_element(nums.begin(), nums.end()), *min_element(nums.begin(), nums.end())); 
+    }
+
+
+    /*1980. Find Unique Binary String (Medium)
+	Given an array of strings nums containing n unique binary strings each of 
+	length n, return a binary string of length n that does not appear in nums. 
+	If there are multiple answers, you may return any of them.
+
+	Example 1:
+	Input: nums = ["01","10"]
+	Output: "11"
+	Explanation: "11" does not appear in nums. "00" would also be correct.
+
+	Example 2:
+	Input: nums = ["00","01"]
+	Output: "11"
+	Explanation: "11" does not appear in nums. "10" would also be correct.
+
+	Example 3:
+	Input: nums = ["111","011","001"]
+	Output: "101"
+	Explanation: "101" does not appear in nums. "000", "010", "100", and "110" 
+	             would also be correct.
+
+	Constraints:
+	* n == nums.length
+	* 1 <= n <= 16
+	* nums[i].length == n
+	* nums[i] is either '0' or '1'.
+	* All the strings of nums are unique.*/
+
+    string findDifferentBinaryString(vector<string>& nums) {
+        string ans; 
+        for (int i = 0; i < nums.size(); ++i) 
+            ans += nums[i][i] == '0' ? "1" : "0"; 
+        return ans; 
+    }
+
+
+    /*1981. Minimize the Difference Between Target and Chosen Elements (Medium)
+	You are given an m x n integer matrix mat and an integer target. Choose one 
+	integer from each row in the matrix such that the absolute difference 
+	between target and the sum of the chosen elements is minimized. Return the 
+	minimum absolute difference. The absolute difference between two numbers a 
+	and b is the absolute value of a - b.
+
+	Example 1:
+	Input: mat = [[1,2,3],[4,5,6],[7,8,9]], target = 13
+	Output: 0
+	Explanation: One possible choice is to:
+	             - Choose 1 from the first row.
+	             - Choose 5 from the second row.
+	             - Choose 7 from the third row.
+	             The sum of the chosen elements is 13, which equals the target, 
+	             so the absolute difference is 0.
+	
+	Example 2:
+	Input: mat = [[1],[2],[3]], target = 100
+	Output: 94
+	Explanation: The best possible choice is to:
+	             - Choose 1 from the first row.
+	             - Choose 2 from the second row.
+	             - Choose 3 from the third row.
+	             The sum of the chosen elements is 6, and the absolute 
+	             difference is 94.
+	
+	Example 3:
+	Input: mat = [[1,2,9,8,7]], target = 6
+	Output: 1
+	Explanation: The best choice is to choose 7 from the first row. The 
+	             absolute difference is 1.
+
+	Constraints:
+	* m == mat.length
+	* n == mat[i].length
+	* 1 <= m, n <= 70
+	* 1 <= mat[i][j] <= 70
+	* 1 <= target <= 800*/
+
+    int minimizeTheDifference(vector<vector<int>>& mat, int target) {
+        bitset<5000> bits(1); 
+        for (auto& row : mat) {
+            bitset<5000> temp; 
+            for (auto& x : row) temp |= (bits << x); 
+            bits = temp; 
+        }
+        
+        for (int x = 0; ; ++x) 
+            if (bits[target+x] || (x <= target && bits[target-x])) return x; 
+        return -1; 
+    }
+
+
+    /*1982. Find Array Given Subset Sums (Hard)
+	You are given an integer n representing the length of an unknown array that 
+	you are trying to recover. You are also given an array sums containing the 
+	values of all 2n subset sums of the unknown array (in no particular order).
+	Return the array ans of length n representing the unknown array. If 
+	multiple answers exist, return any of them. An array sub is a subset of an 
+	array arr if sub can be obtained from arr by deleting some (possibly zero 
+	or all) elements of arr. The sum of the elements in sub is one possible 
+	subset sum of arr. The sum of an empty array is considered to be 0. Note 
+	that test cases are generated such that there will always be at least one 
+	correct answer.
+
+	Example 1:
+	Input: n = 3, sums = [-3,-2,-1,0,0,1,2,3]
+	Output: [1,2,-3]
+	Explanation: [1,2,-3] is able to achieve the given subset sums:
+	             - []: sum is 0
+	             - [1]: sum is 1
+	             - [2]: sum is 2
+	             - [1,2]: sum is 3
+	             - [-3]: sum is -3
+	             - [1,-3]: sum is -2
+	             - [2,-3]: sum is -1
+	             - [1,2,-3]: sum is 0
+	             Note that any permutation of [1,2,-3] and also any permutation 
+	             of [-1,-2,3] will also be accepted.
+	
+	Example 2:
+	Input: n = 2, sums = [0,0,0,0]
+	Output: [0,0]
+	Explanation: The only correct answer is [0,0].
+
+	Example 3:
+	Input: n = 4, sums = [0,0,5,5,4,-1,4,9,9,-1,4,3,4,8,3,8]
+	Output: [0,-1,4,5]
+	Explanation: [0,-1,4,5] is able to achieve the given subset sums.
+
+	Constraints:
+	* 1 <= n <= 15
+	* sums.length == 2n
+	* -10^4 <= sums[i] <= 10^4*/
+
+    vector<int> recoverArray(int n, vector<int>& sums) {
+        sort(sums.begin(), sums.end()); 
+        
+        vector<int> ans; 
+        while (n--) {
+            int diff = sums[1] - sums[0]; 
+            unordered_map<int, int> freq; 
+            vector<int> ss0, ss1; 
+            bool on = false; 
+            for (auto& x : sums) 
+                if (!freq[x]) {
+                    ss0.push_back(x); 
+                    freq[x+diff]++; 
+                    if (x == 0) on = true; 
+                } else {
+                    ss1.push_back(x); 
+                    freq[x]--; 
+                }
+            if (on) {
+                ans.push_back(diff); 
+                sums = ss0; 
+            } else {
+                ans.push_back(-diff); 
+                sums = ss1; 
+            }
+        }
+        return ans; 
+    }
 };
 
 
