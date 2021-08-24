@@ -41249,6 +41249,230 @@ class UnionFind:
         return ans
 
 
+    """1974. Minimum Time to Type Word Using Special Typewriter (Easy)
+	There is a special typewriter with lowercase English letters 'a' to 'z' 
+	arranged in a circle with a pointer. A character can only be typed if the 
+	pointer is pointing to that character. The pointer is initially pointing to 
+	the character 'a'. Each second, you may perform one of the following 
+	operations:
+	* Move the pointer one character counterclockwise or clockwise.
+	* Type the character the pointer is currently on.
+	Given a string word, return the minimum number of seconds to type out the 
+	characters in word.
+
+	Example 1:
+	Input: word = "abc"
+	Output: 5
+	Explanation: The characters are printed as follows:
+	             - Type the character 'a' in 1 second since the pointer is 
+	               initially on 'a'.
+	             - Move the pointer clockwise to 'b' in 1 second.
+	             - Type the character 'b' in 1 second.
+	             - Move the pointer clockwise to 'c' in 1 second.
+	             - Type the character 'c' in 1 second.
+	
+	Example 2:
+	Input: word = "bza"
+	Output: 7
+	Explanation: The characters are printed as follows:
+	             - Move the pointer clockwise to 'b' in 1 second.
+	             - Type the character 'b' in 1 second.
+	             - Move the pointer counterclockwise to 'z' in 2 seconds.
+	             - Type the character 'z' in 1 second.
+	             - Move the pointer clockwise to 'a' in 1 second.
+	             - Type the character 'a' in 1 second.
+	
+	Example 3:
+	Input: word = "zjpc"
+	Output: 34
+	Explanation: The characters are printed as follows:
+	             - Move the pointer counterclockwise to 'z' in 1 second.
+	             - Type the character 'z' in 1 second.
+	             - Move the pointer clockwise to 'j' in 10 seconds.
+	             - Type the character 'j' in 1 second.
+	             - Move the pointer clockwise to 'p' in 6 seconds.
+	             - Type the character 'p' in 1 second.
+	             - Move the pointer counterclockwise to 'c' in 13 seconds.
+	             - Type the character 'c' in 1 second.
+
+	Constraints:
+	* 1 <= word.length <= 100
+	* word consists of lowercase English letters."""
+
+    def minTimeToType(self, word: str) -> int:
+        ans = len(word)
+        prev = "a"
+        for ch in word: 
+            val = (ord(ch) - ord(prev)) % 26 
+            ans += min(val, 26 - val)
+            prev = ch
+        return ans 
+
+
+    """1975. Maximum Matrix Sum (Medium)
+	You are given an n x n integer matrix. You can do the following operation 
+	any number of times:
+	* Choose any two adjacent elements of matrix and multiply each of them by 
+	  -1.
+	Two elements are considered adjacent if and only if they share a border.
+	Your goal is to maximize the summation of the matrix's elements. Return the 
+	maximum sum of the matrix's elements using the operation mentioned above.
+
+	Example 1:
+	Input: matrix = [[1,-1],[-1,1]]
+	Output: 4
+	Explanation: We can follow the following steps to reach sum equals 4:
+	             - Multiply the 2 elements in the first row by -1.
+	             - Multiply the 2 elements in the first column by -1.
+
+	Example 2:
+	Input: matrix = [[1,2,3],[-1,-2,-3],[1,2,3]]
+	Output: 16
+	Explanation: We can follow the following step to reach sum equals 16:
+	             - Multiply the 2 last elements in the second row by -1.
+
+	Constraints:
+	* n == matrix.length == matrix[i].length
+	* 2 <= n <= 250
+	* -10^5 <= matrix[i][j] <= 10^5"""
+
+    def maxMatrixSum(self, matrix: List[List[int]]) -> int:
+        ans = mult = 0
+        val = inf 
+        for i in range(len(matrix)): 
+            for j in range(len(matrix)):
+                ans += abs(matrix[i][j])
+                val = min(val, abs(matrix[i][j]))
+                if matrix[i][j] < 0: mult ^= 1
+        return ans - 2*mult*val
+
+
+    """1976. Number of Ways to Arrive at Destination (Medium)
+	You are in a city that consists of n intersections numbered from 0 to n - 1 
+	with bi-directional roads between some intersections. The inputs are 
+	generated such that you can reach any intersection from any other 
+	intersection and that there is at most one road between any two 
+	intersections. You are given an integer n and a 2D integer array roads 
+	where roads[i] = [ui, vi, timei] means that there is a road between 
+	intersections ui and vi that takes timei minutes to travel. You want to 
+	know in how many ways you can travel from intersection 0 to intersection 
+	n - 1 in the shortest amount of time. Return the number of ways you can 
+	arrive at your destination in the shortest amount of time. Since the answer 
+	may be large, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: n = 7, roads = [[0,6,7],[0,1,2],[1,2,3],[1,3,3],[6,3,3],[3,5,1],[6,5,1],[2,5,1],[0,4,5],[4,6,2]]
+	Output: 4
+	Explanation: The shortest amount of time it takes to go from intersection 0 
+	             to intersection 6 is 7 minutes. The four ways to get there in 
+	             7 minutes are:
+	             - 0 ➝ 6
+	             - 0 ➝ 4 ➝ 6
+	             - 0 ➝ 1 ➝ 2 ➝ 5 ➝ 6
+	             - 0 ➝ 1 ➝ 3 ➝ 5 ➝ 6
+	
+	Example 2:
+	Input: n = 2, roads = [[1,0,10]]
+	Output: 1
+	Explanation: There is only one way to go from intersection 0 to 
+	             intersection 1, and it takes 10 minutes.
+
+	Constraints:
+	* 1 <= n <= 200
+	* n - 1 <= roads.length <= n * (n - 1) / 2
+	* roads[i].length == 3
+	* 0 <= ui, vi <= n - 1
+	* 1 <= timei <= 10^9
+	* ui != vi
+	* There is at most one road connecting any two intersections.
+	* You can reach any intersection from any other intersection."""
+
+    def countPaths(self, n: int, roads: List[List[int]]) -> int:
+        graph = {}
+        for u, v, time in roads: 
+            graph.setdefault(u, []).append((v, time))
+            graph.setdefault(v, []).append((u, time))
+        
+        # modified Dijkstra's algo
+        dist = [inf] * n
+        dist[0] = 0
+        ways = [0] * n
+        ways[0] = 1
+        
+        pq = [(0, 0)]
+        while pq: 
+            d, u = heappop(pq)
+            if d > dist[-1]: break
+            if d == dist[u]: 
+                for v, time in graph.get(u, []): 
+                    if dist[u] + time < dist[v]: 
+                        dist[v] = dist[u] + time
+                        ways[v] = ways[u]
+                        heappush(pq, (dist[v], v))
+                    elif dist[u] + time == dist[v]: ways[v] += ways[u]
+        return ways[-1] % 1_000_000_007
+
+
+    """1977. Number of Ways to Separate Numbers (Hard)
+	You wrote down many positive integers in a string called num. However, you 
+	realized that you forgot to add commas to seperate the different numbers. 
+	You remember that the list of integers was non-decreasing and that no 
+	integer had leading zeros. Return the number of possible lists of integers 
+	that you could have written down to get the string num. Since the answer 
+	may be large, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: num = "327"
+	Output: 2
+	Explanation: You could have written down the numbers:
+	             3, 27
+	             327
+	
+	Example 2:
+	Input: num = "094"
+	Output: 0
+	Explanation: No numbers can have leading zeros and all numbers must be 
+	             positive.
+	
+	Example 3:
+	Input: num = "0"
+	Output: 0
+	Explanation: No numbers can have leading zeros and all numbers must be 
+	             positive.
+	
+	Example 4:
+	Input: num = "9999999999999"
+	Output: 101
+	 
+	Constraints:
+	* 1 <= num.length <= 3500
+	* num consists of digits '0' through '9'."""
+
+    def numberOfCombinations(self, num: str) -> int:
+        n = len(num)
+        lcs = [[0]*(n+1) for _ in range(n)]
+        for i in reversed(range(n)): 
+            for j in reversed(range(i+1, n)): 
+                if num[i] == num[j]: lcs[i][j] = 1 + lcs[i+1][j+1]
+        
+        def cmp(i, j, d): 
+            """Return True if """
+            m = lcs[i][j]
+            if m >= d: return True 
+            return num[i+m] <= num[j+m]
+        
+        dp = [[0]*(n+1) for _ in range(n)]
+        for i in range(n): 
+            if num[i] != "0": 
+                for j in range(i+1, n+1): 
+                    if i == 0: dp[i][j] = 1
+                    else: 
+                        dp[i][j] = dp[i][j-1]
+                        if 2*i-j >= 0 and cmp(2*i-j, i, j-i): dp[i][j] += dp[2*i-j][i]
+                        if 2*i-j+1 >= 0 and not cmp(2*i-j+1, i, j-i-1): dp[i][j] += dp[2*i-j+1][i]
+        return sum(dp[i][n] for i in range(n)) % 1_000_000_007
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
