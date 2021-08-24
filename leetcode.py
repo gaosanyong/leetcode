@@ -11877,9 +11877,9 @@ class UnionFind:
 	the range of [-100, 100]. And the output should be also in this form."""
 
     def complexNumberMultiply(self, a: str, b: str) -> str:
-        ar, ac = map(int, a[:-1].split("+"))
-        br, bc = map(int, b[:-1].split("+"))
-        return f"{ar*br-ac*bc}+{ar*bc+ac*br}i"
+        ra, ia = map(int, a[:-1].split("+"))
+        rb, ib = map(int, b[:-1].split("+"))
+        return f"{ra*rb-ia*ib}+{ra*ib+ia*rb}i"
 
 
     """538. Convert BST to Greater Tree (Medium)
