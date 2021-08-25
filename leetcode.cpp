@@ -4655,6 +4655,58 @@ public:
     }
 
 
+    /*666. Path Sum IV (Medium)
+	If the depth of a tree is smaller than 5, then this tree can be represented 
+	by an array of three-digit integers. For each integer in this array:
+	* The hundreds digit represents the depth d of this node where 1 <= d <= 4.
+	* The tens digit represents the position p of this node in the level it 
+	  belongs to where 1 <= p <= 8. The position is the same as that in a full 
+	  binary tree.
+	* The units digit represents the value v of this node where 0 <= v <= 9.
+	Given an array of ascending three-digit integers nums representing a binary 
+	tree with a depth smaller than 5, return the sum of all paths from the root 
+	towards the leaves. It is guaranteed that the given array represents a 
+	valid connected binary tree.
+
+	Example 1:
+	Input: nums = [113,215,221]
+	Output: 12
+	Explanation: The tree that the list represents is shown. The path sum is 
+	             (3 + 5) + (3 + 1) = 12.
+	
+	Example 2:
+	Input: nums = [113,221]
+	Output: 4
+	Explanation: The tree that the list represents is shown. The path sum is 
+	             (3 + 1) = 4.
+
+	Constraints:
+	* 1 <= nums.length <= 15
+	* 110 <= nums[i] <= 489
+	* nums represents a valid binary tree with depth less than 5.*/
+
+    int pathSum(vector<int>& nums) {
+        map<int, int> tree; 
+        for (auto& num : nums) {
+            int k = num/10, v = num%10; 
+            tree[k] = v; 
+        }
+        
+        int ans = 0; 
+        stack<pair<int, int>> stk; 
+        stk.emplace(11, 0); 
+        while (stk.size()) {
+            auto [k, v] = stk.top(); stk.pop(); 
+            v += tree[k]; 
+            int ll = (k/10+1)*10 + k%10*2 - 1, rr = ll+1; 
+            if (!tree.count(ll) && !tree.count(rr)) ans += v; 
+            if (tree.count(ll)) stk.emplace(ll, v); 
+            if (tree.count(rr)) stk.emplace(rr, v); 
+        }
+        return ans; 
+    }
+
+
     /*668. Kth Smallest Number in Multiplication Table (Hard)
 	Nearly everyone has used the Multiplication Table. The multiplication table 
 	of size m x n is an integer matrix mat where mat[i][j] == i * j (1-indexed).
@@ -19338,6 +19390,7 @@ public:
 	* num consists of digits '0' through '9'.*/
 
     int numberOfCombinations(string num) {
+        const int MOD = 1'000'000'007; 
         int n = num.size(); 
         vector<vector<int>> lcs(n, vector<int>(n+1)); 
         for (int i = n-1; i >= 0; --i) {
@@ -19357,12 +19410,12 @@ public:
                 if (0 <= 2*lo - hi) {
                     int m = lcs[2*lo-hi][lo]; 
                     if (m >= hi - lo || num[2*lo-hi+m] <= num[lo+m]) 
-                        ans = (ans + fn(2*lo-hi, lo)) % 1'000'000'007; 
+                        ans = (ans + fn(2*lo-hi, lo)) % MOD; 
                 }
                 if (0 <= 2*lo - hi + 1) {
                     int m = lcs[2*lo-hi+1][lo]; 
                     if (m < hi - lo - 1 && num[2*lo-hi+1+m] > num[lo+m])  
-                        ans = (ans + fn(2*lo-hi+1, lo)) % 1'000'000'007; 
+                        ans = (ans + fn(2*lo-hi+1, lo)) % MOD; 
                 }
                 memo[lo][hi] = ans; 
             }
@@ -19371,7 +19424,7 @@ public:
         
         long ans = 0; 
         for (int i = 0; i < n; ++i) 
-            ans = (ans + fn(i, n)) % 1'000'000'007; 
+            ans = (ans + fn(i, n)) % MOD; 
         return ans; 
         
     }
