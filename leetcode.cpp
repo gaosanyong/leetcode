@@ -15459,6 +15459,44 @@ public:
     }
 
 
+    /*1885. Count Pairs in Two Arrays (Medium)
+	Given two integer arrays nums1 and nums2 of length n, count the pairs of 
+	indices (i, j) such that i < j and nums1[i] + nums1[j] > nums2[i] + nums2[j].
+	Return the number of pairs satisfying the condition.
+
+	Example 1:
+	Input: nums1 = [2,1,2,1], nums2 = [1,2,1,2]
+	Output: 1
+	Explanation: The pairs satisfying the condition are:
+	             - (0, 2) where 2 + 2 > 1 + 1.
+	
+	Example 2:
+	Input: nums1 = [1,10,6,2], nums2 = [1,4,1,5]
+	Output: 5
+	Explanation: The pairs satisfying the condition are:
+	             - (0, 1) where 1 + 10 > 1 + 4.
+	             - (0, 2) where 1 + 6 > 1 + 1.
+	             - (1, 2) where 10 + 6 > 4 + 1.
+	             - (1, 3) where 10 + 2 > 4 + 5.
+	             - (2, 3) where 6 + 2 > 1 + 5.
+
+	Constraints:
+	* n == nums1.length == nums2.length
+	* 1 <= n <= 10^5
+	* 1 <= nums1[i], nums2[i] <= 10^5*/
+
+    long long countPairs(vector<int>& nums1, vector<int>& nums2) {
+        vector<int> diff; 
+        for (int i = 0; i < nums1.size(); ++i) diff.push_back(nums1[i] - nums2[i]); 
+        sort(diff.begin(), diff.end()); 
+        
+        long long ans = 0; 
+        for (int i = 0; i < diff.size(); ++i) 
+            ans += diff.end() - upper_bound(diff.begin()+i+1, diff.end(), -diff[i]); 
+        return ans; 
+    }
+
+
     /*1886. Determine Whether Matrix Can Be Obtained By Rotation (Easy)
 	Given two n x n binary matrices mat and target, return true if it is 
 	possible to make mat equal to target by rotating mat in 90-degree 
