@@ -12682,6 +12682,47 @@ class UnionFind:
             heappush(pq, (nums[i][j+1], i, j+1))
         return ans 
 
+
+    """633. Sum of Square Numbers (Medium)
+	Given a non-negative integer c, decide whether there're two integers a and 
+	b such that a^2 + b^2 = c.
+
+	Example 1:
+	Input: c = 5
+	Output: true
+	Explanation: 1 * 1 + 2 * 2 = 5
+
+	Example 2:
+	Input: c = 3
+	Output: false
+
+	Example 3:
+	Input: c = 4
+	Output: true
+
+	Example 4:
+	Input: c = 2
+	Output: true
+
+	Example 5:
+	Input: c = 1
+	Output: true
+
+	Constraints: 0 <= c <= 2^31 - 1"""
+
+    def judgeSquareSum(self, c: int) -> bool:
+        # Fermat theorem on sum of two squares
+        x = 2
+        while x*x <= c: 
+            if c % x == 0: 
+                mult = 0
+                while c % x == 0: 
+                    mult += 1
+                    c //= x
+                if x % 4 == 3 and mult & 1: return False 
+            x += 1
+        return c % 4 != 3
+
     
     """639. Decode Ways II (Hard)
 	A message containing letters from A-Z can be encoded into numbers using the 
