@@ -3564,6 +3564,56 @@ public:
     }
 
 
+    /*536. Construct Binary Tree from String (Medium)
+	You need to construct a binary tree from a string consisting of parenthesis 
+	and integers. The whole input represents a binary tree. It contains an 
+	integer followed by zero, one or two pairs of parenthesis. The integer 
+	represents the root's value and a pair of parenthesis contains a child 
+	binary tree with the same structure. You always start to construct the left 
+	child node of the parent first if it exists.
+
+	Example 1:
+	Input: s = "4(2(3)(1))(6(5))"
+	Output: [4,2,6,3,1,5]
+
+	Example 2:
+	Input: s = "4(2(3)(1))(6(5)(7))"
+	Output: [4,2,6,3,1,5,7]
+
+	Example 3:
+	Input: s = "-4(2(3)(1))(6(5)(7))"
+	Output: [-4,2,6,3,1,5,7]
+
+	Constraints:
+	* 0 <= s.length <= 3 * 10^4
+	* s consists of digits, '(', ')', and '-' only.*/
+
+    TreeNode* str2tree(string s) {
+        if (s.empty()) return nullptr; // edge case 
+        stack<TreeNode*> stk; 
+        string val; 
+        TreeNode* node = nullptr; 
+        for (auto& ch : s) 
+            if (ch == '(') {
+                if (val.size()) {
+                    node = new TreeNode(stoi(val)); 
+                    val.clear(); 
+                    stk.push(node); 
+                }
+            } else if (ch == ')') {
+                if (val.size()) {
+                    node = new TreeNode(stoi(val)); 
+                    val.clear(); 
+                } else {
+                    node = stk.top(); stk.pop(); 
+                }
+                if (!stk.top()->left) stk.top()->left = node; 
+                else stk.top()->right = node; 
+            } else val.push_back(ch); 
+        return stk.size() ? stk.top() : new TreeNode(stoi(val)); 
+    }
+
+
     /*537. Complex Number Multiplication (Medium)
 	A complex number can be represented as a string on the form "real+imaginaryi" 
 	where:
