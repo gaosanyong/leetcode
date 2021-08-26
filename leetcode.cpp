@@ -2862,6 +2862,50 @@ public:
     }
 
 
+    /*331. Verify Preorder Serialization of a Binary Tree (Medium)
+	One way to serialize a binary tree is to use preorder traversal. When we 
+	encounter a non-null node, we record the node's value. If it is a null node, 
+	we record using a sentinel value such as '#'. For example, the above binary 
+	tree can be serialized to the string "9,3,4,#,#,1,#,#,2,#,6,#,#", where '#' 
+	represents a null node. Given a string of comma-separated values preorder, 
+	return true if it is a correct preorder traversal serialization of a binary 
+	tree. It is guaranteed that each comma-separated value in the string must 
+	be either an integer or a character '#' representing null pointer. You may 
+	assume that the input format is always valid. For example, it could never 
+	contain two consecutive commas, such as "1,,3". Note that you are not 
+	allowed to reconstruct the tree.
+
+	Example 1:
+	Input: preorder = "9,3,4,#,#,1,#,#,2,#,6,#,#"
+	Output: true
+
+	Example 2:
+	Input: preorder = "1,#"
+	Output: false
+
+	Example 3:
+	Input: preorder = "9,#,#,1"
+	Output: false
+
+	Constraints:
+	* 1 <= preorder.length <= 10^4
+	* preoder consist of integers in the range [0, 100] and '#' separated by 
+	  commas ','.*/
+
+    bool isValidSerialization(string preorder) {
+        int cnt = 1; 
+        // split string by delimiter
+        for (int i = 0, ii = 0; ii != string::npos; i = ii+1) {
+            if (cnt == 0) return false; 
+            ii = preorder.find(',', i); 
+            string elem = preorder.substr(i, (ii == string::npos ? preorder.size() : ii) - i); 
+            if (elem == "#") cnt -= 1; 
+            else cnt += 1; 
+        }
+        return cnt == 0; 
+    }
+
+
     /*338. Counting Bits (Easy)
 	Given an integer n, return an array ans of length n + 1 such that for each 
 	i (0 <= i <= n), ans[i] is the number of 1's in the binary representation 
