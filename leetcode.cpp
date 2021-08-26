@@ -3323,6 +3323,83 @@ public:
     }
 
 
+    /*490. The Maze (Medium)
+	There is a ball in a maze with empty spaces (represented as 0) and walls 
+	(represented as 1). The ball can go through the empty spaces by rolling up, 
+	down, left or right, but it won't stop rolling until hitting a wall. When 
+	the ball stops, it could choose the next direction. Given the m x n maze, 
+	the ball's start position and the destination, where 
+	start = [startrow, startcol] and 
+	destination = [destinationrow, destinationcol], return true if the ball can 
+	stop at the destination, otherwise return false. You may assume that the 
+	borders of the maze are all walls (see examples).
+
+	Example 1:
+	Input: maze = [[0,0,1,0,0],
+	               [0,0,0,0,0],
+	               [0,0,0,1,0],
+	               [1,1,0,1,1],
+	               [0,0,0,0,0]], start = [0,4], destination = [4,4]
+	Output: true
+	Explanation: One possible way is : left -> down -> left -> down -> right -> 
+	             down -> right.
+
+	Example 2:
+	Input: maze = [[0,0,1,0,0],
+	               [0,0,0,0,0],
+	               [0,0,0,1,0],
+	               [1,1,0,1,1],
+	               [0,0,0,0,0]], start = [0,4], destination = [3,2]
+	Output: false
+	Explanation: There is no way for the ball to stop at the destination. 
+	             Notice that you can pass through the destination but you 
+	             cannot stop there.
+	
+	Example 3:
+	Input: maze = [[0,0,0,0,0],
+	               [1,1,0,0,1],
+	               [0,0,0,0,0],
+	               [0,1,0,0,1],
+	               [0,1,0,0,0]], start = [4,3], destination = [0,1]
+	Output: false
+
+	Constraints:
+	* m == maze.length
+	* n == maze[i].length
+	* 1 <= m, n <= 100
+	* maze[i][j] is 0 or 1.
+	* start.length == 2
+	* destination.length == 2
+	* 0 <= startrow, destinationrow <= m
+	* 0 <= startcol, destinationcol <= n
+	* Both the ball and the destination exist in an empty space, and they will 
+	  not be in the same position initially.
+	* The maze contains at least 2 empty spaces.*/
+
+    bool hasPath(vector<vector<int>>& maze, vector<int>& start, vector<int>& destination) {
+        int m = maze.size(), n = maze[0].size(), dir[5] = {-1, 0, 1, 0, -1}; 
+        stack<pair<int, int>> stk; 
+        stk.emplace(start[0], start[1]); 
+        maze[start[0]][start[1]] = 2; // mark as visited 
+        while (stk.size()) {
+            auto [i, j] = stk.top(); stk.pop(); 
+            if (i == destination[0] && j == destination[1]) return true; 
+            for (int k = 0; k < 4; ++k) {
+                int ii = i, jj = j, di = dir[k], dj = dir[k+1]; 
+                while (0 <= ii+di && ii+di < m && 0 <= jj+dj && jj+dj < n && maze[ii+di][jj+dj] != 1) {
+                    ii += di; 
+                    jj += dj; 
+                }
+                if (maze[ii][jj] == 0) {
+                    stk.emplace(ii, jj); 
+                    maze[ii][jj] = 2; 
+                }
+            }
+        }
+        return false; 
+    }
+
+
     /*495. Teemo Attacking (Easy)
 	Our hero Teemo is attacking an enemy Ashe with poison attacks! When Teemo 
 	attacks Ashe, Ashe gets poisoned for a exactly duration seconds. More 
