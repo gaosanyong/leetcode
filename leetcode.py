@@ -20069,6 +20069,62 @@ class UnionFind:
         return "".join(uf.find(ch) for ch in baseStr)
 
 
+    """1062. Longest Repeating Substring (Medium)
+	Given a string s, find out the length of the longest repeating substring(s). 
+	Return 0 if no repeating substring exists.
+
+	Example 1:
+	Input: s = "abcd"
+	Output: 0
+	Explanation: There is no repeating substring.
+
+	Example 2:
+	Input: s = "abbaba"
+	Output: 2
+	Explanation: The longest repeating substrings are "ab" and "ba", each of 
+	             which occurs twice.
+	
+	Example 3:
+	Input: s = "aabcaabdaab"
+	Output: 3
+	Explanation: The longest repeating substring is "aab", which occurs 3 times.
+	
+	Example 4:
+	Input: s = "aaaaa"
+	Output: 4
+	Explanation: The longest repeating substring is "aaaa", which occurs twice.
+
+	Constraints:
+	* The string s consists of only lowercase English letters from 'a' - 'z'.
+	* 1 <= s.length <= 1500"""
+
+    def longestRepeatingSubstring(self, s: str) -> int:
+        MOD = 1_000_000_007
+        
+        fac = [1]
+        prefix = [0]
+        for ch in s: 
+            fac.append((fac[-1] * 26 % MOD))
+            prefix.append((prefix[-1]*26 + ord(ch) - 97) % MOD)
+            
+        def fn(k): 
+            """Return True if a repeating substring of length k is found."""
+            seen = set()
+            for i in range(len(s)-k+1): 
+                val = (prefix[i+k] - prefix[i]*fac[k]) % MOD 
+                if val in seen: return True # rolling hash (ver. Monte Carlo)
+                seen.add(val)
+            return False 
+        
+        # last-true binary search 
+        lo, hi = -1, len(s)-1
+        while lo < hi:
+            mid = lo + hi + 1 >> 1
+            if fn(mid): lo = mid
+            else: hi = mid - 1
+        return lo
+
+
     """1064. Fixed Point (Easy)
 	Given an array of distinct integers arr, where arr is sorted in ascending 
 	order, return the smallest index i that satisfies arr[i] == i. If there is 
@@ -34540,7 +34596,7 @@ class Fenwick:
 
 
     """1784. Check if Binary String Has at Most One Segment of Ones (Easy)
-	Given a binary string s ​​​​​without leading zeros, return true​​​ if s contains 
+	Given a binary string s without leading zeros, return true if s contains 
 	at most one contiguous segment of ones. Otherwise, return false.
 
 	Example 1:
@@ -34554,7 +34610,7 @@ class Fenwick:
 
 	Constraints:
 	* 1 <= s.length <= 100
-	* s[i]​​​​ is either '0' or '1'.
+	* s[i] is either '0' or '1'.
 	* s[0] is '1'."""
 
     def checkOnesSegment(self, s: str) -> bool:
@@ -34659,11 +34715,11 @@ class Fenwick:
 
 
     """1787. Make the XOR of All Segments Equal to Zero (Hard)
-	You are given an array nums​​​ and an integer k​​​​​. The XOR of a segment [left, right] 
+	You are given an array nums and an integer k. The XOR of a segment [left, right] 
 	where left <= right is the XOR of all the elements with indices between 
 	left and right, inclusive: nums[left] XOR nums[left+1] XOR ... XOR nums[right]. 
 	Return the minimum number of elements to change in the array such that the 
-	XOR of all segments of size k​​​​​​ is equal to zero.
+	XOR of all segments of size k is equal to zero.
 
 	Example 1:
 	Input: nums = [1,2,0,3,0], k = 1
@@ -34682,7 +34738,7 @@ class Fenwick:
 
 	Constraints:
 	* 1 <= k <= nums.length <= 2000
-	* ​​​​​​0 <= nums[i] < 2^10"""
+	* 0 <= nums[i] < 2^10"""
 
     def minChanges(self, nums: List[int], k: int) -> int:
         freq = defaultdict(lambda: defaultdict(int))
@@ -35175,25 +35231,25 @@ class Fenwick:
 	Input: nums = [1,4,2,7], low = 2, high = 6
 	Output: 6
 	Explanation: All nice pairs (i, j) are as follows:
-	    - (0, 1): nums[0] XOR nums[1] = 5 
-	    - (0, 2): nums[0] XOR nums[2] = 3
-	    - (0, 3): nums[0] XOR nums[3] = 6
-	    - (1, 2): nums[1] XOR nums[2] = 6
-	    - (1, 3): nums[1] XOR nums[3] = 3
-	    - (2, 3): nums[2] XOR nums[3] = 5
+	             - (0, 1): nums[0] XOR nums[1] = 5 
+	             - (0, 2): nums[0] XOR nums[2] = 3
+	             - (0, 3): nums[0] XOR nums[3] = 6
+	             - (1, 2): nums[1] XOR nums[2] = 6
+	             - (1, 3): nums[1] XOR nums[3] = 3
+	             - (2, 3): nums[2] XOR nums[3] = 5
 
 	Example 2:
 	Input: nums = [9,8,4,2,1], low = 5, high = 14
 	Output: 8
 	Explanation: All nice pairs (i, j) are as follows:
-	​​​​​    - (0, 2): nums[0] XOR nums[2] = 13
-	    - (0, 3): nums[0] XOR nums[3] = 11
-	    - (0, 4): nums[0] XOR nums[4] = 8
-	    - (1, 2): nums[1] XOR nums[2] = 12
-	    - (1, 3): nums[1] XOR nums[3] = 10
-	    - (1, 4): nums[1] XOR nums[4] = 9
-	    - (2, 3): nums[2] XOR nums[3] = 6
-	    - (2, 4): nums[2] XOR nums[4] = 5
+	             - (0, 2): nums[0] XOR nums[2] = 13
+	             - (0, 3): nums[0] XOR nums[3] = 11
+	             - (0, 4): nums[0] XOR nums[4] = 8
+	             - (1, 2): nums[1] XOR nums[2] = 12
+	             - (1, 3): nums[1] XOR nums[3] = 10
+	             - (1, 4): nums[1] XOR nums[4] = 9
+	             - (2, 3): nums[2] XOR nums[3] = 6
+	             - (2, 4): nums[2] XOR nums[4] = 5
 
 	Constraints:
 	* 1 <= nums.length <= 2 * 10^4
@@ -35274,12 +35330,12 @@ class Fenwick:
 
 
     """1806. Minimum Number of Operations to Reinitialize a Permutation (Medium)
-	You are given an even integer n​​​​​​. You initially have a permutation 
-	perm of size n​​ where perm[i] == i​ (0-indexed)​​​​. In one operation, you 
+	You are given an even integer n. You initially have a permutation 
+	perm of size n where perm[i] == i (0-indexed). In one operation, you 
 	will create a new array arr, and for each i:
 	* If i % 2 == 0, then arr[i] = perm[i / 2].
 	* If i % 2 == 1, then arr[i] = perm[n / 2 + (i - 1) / 2].
-	You will then assign arr​​​​ to perm. Return the minimum non-zero number of 
+	You will then assign arr to perm. Return the minimum non-zero number of 
 	operations you need to perform on perm to return the permutation to its 
 	initial value.
 
@@ -35304,7 +35360,7 @@ class Fenwick:
 
 	Constraints:
 	* 2 <= n <= 1000
-	* n​​​​​​ is even."""
+	* n is even."""
 
     def reinitializePermutation(self, n: int) -> int:
         ans = 0
@@ -35563,8 +35619,8 @@ class Fenwick:
 	leading or trailing spaces. Each of the words consists of only uppercase 
 	and lowercase English letters (no punctuation). For example, "Hello World", 
 	"HELLO", and "hello world hello world" are all sentences. You are given a 
-	sentence s​​​​​​ and an integer k​​​​​​. You want to truncate s​​​​​​ such that it contains 
-	only the first k​​​​​​ words. Return s​​​​​​ after truncating it.
+	sentence s and an integer k. You want to truncate s such that it contains 
+	only the first k words. Return s after truncating it.
 
 	Example 1:
 	Input: s = "Hello how are you Contestant", k = 4
@@ -35930,7 +35986,7 @@ class Fenwick:
 	Constraints:
 	* 1 <= points.length <= 500
 	* points[i].length == 2
-	* 0 <= x​​​​​​i, y​​​​​​i <= 500
+	* 0 <= xi, yi <= 500
 	* 1 <= queries.length <= 500
 	* queries[j].length == 3
 	* 0 <= xj, yj <= 500
@@ -35987,7 +36043,7 @@ class Fenwick:
 	* 1 <= n <= 10^5
 	* 1 <= maximumBit <= 20
 	* 0 <= nums[i] < 2maximumBit
-	* nums​​​ is sorted in ascending order."""
+	* nums is sorted in ascending order."""
 
     def getMaximumXor(self, nums: List[int], maximumBit: int) -> List[int]:
         ans = [0]*len(nums)
@@ -35999,13 +36055,13 @@ class Fenwick:
 
 
     """1830. Minimum Number of Operations to Make String Sorted (Hard)
-	You are given a string s (0-indexed)​​​​​​. You are asked to perform the 
-	following operation on s​​​​​​ until you get a sorted string:
+	You are given a string s (0-indexed). You are asked to perform the 
+	following operation on s until you get a sorted string:
 	* Find the largest index i such that 1 <= i < s.length and s[i] < s[i - 1].
 	* Find the largest index j such that i <= j < s.length and s[k] < s[i - 1] 
 	  for all the possible values of k in the range [i, j] inclusive.
-	* Swap the two characters at indices i - 1​​​​ and j​​​​​.
-	* Reverse the suffix starting at index i​​​​​​.
+	* Swap the two characters at indices i - 1 and j.
+	* Reverse the suffix starting at index i.
 	Return the number of operations needed to make the string sorted. Since the 
 	answer can be too large, return it modulo 109 + 7.
 
@@ -36036,7 +36092,7 @@ class Fenwick:
 
 	Constraints:
 	* 1 <= s.length <= 3000
-	* s​​​​​​ consists only of lowercase English letters."""
+	* s consists only of lowercase English letters."""
 
     def makeStringSorted(self, s: str) -> int:
         freq = [0]*26

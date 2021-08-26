@@ -10280,6 +10280,63 @@ public:
     }
 
 
+    /*1062. Longest Repeating Substring (Medium)
+	Given a string s, find out the length of the longest repeating substring(s). 
+	Return 0 if no repeating substring exists.
+
+	Example 1:
+	Input: s = "abcd"
+	Output: 0
+	Explanation: There is no repeating substring.
+
+	Example 2:
+	Input: s = "abbaba"
+	Output: 2
+	Explanation: The longest repeating substrings are "ab" and "ba", each of 
+	             which occurs twice.
+	
+	Example 3:
+	Input: s = "aabcaabdaab"
+	Output: 3
+	Explanation: The longest repeating substring is "aab", which occurs 3 times.
+	
+	Example 4:
+	Input: s = "aaaaa"
+	Output: 4
+	Explanation: The longest repeating substring is "aaaa", which occurs twice.
+
+	Constraints:
+	* The string s consists of only lowercase English letters from 'a' - 'z'.
+	* 1 <= s.length <= 1500*/
+
+    int longestRepeatingSubstring(string s) {
+        const int MOD = 1'000'000'007; 
+        vector<long> fac(1, 1), prefix(1, 0); 
+        for (auto& ch : s) {
+            fac.push_back(fac.back() * 26 % MOD); 
+            prefix.push_back((prefix.back() * 26 + (ch - 'a')) % MOD);
+        }
+        
+        auto fn = [&](int k) {
+            unordered_set<int> seen; 
+            for (int i = 0; i < s.size()-k+1; ++i) {
+                int val = (prefix[i+k] - prefix[i]*fac[k]%MOD + MOD) % MOD; 
+                if (seen.count(val)) return true; 
+                seen.insert(val); 
+            }
+            return false; 
+        };
+        
+        int lo = -1, hi = s.size()-1; 
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1)/2; 
+            if (fn(mid)) lo = mid; 
+            else hi = mid - 1; 
+        }
+        return lo; 
+    }
+
+
     /*1074. Number of Submatrices That Sum to Target (Hard)
 	Given a matrix and a target, return the number of non-empty submatrices 
 	that sum to target. A submatrix x1, y1, x2, y2 is the set of all cells 
