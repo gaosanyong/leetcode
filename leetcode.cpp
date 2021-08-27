@@ -11266,6 +11266,39 @@ public:
     }
 
 
+    /*1230. Toss Strange Coins (Medium)
+	You have some coins. The i-th coin has a probability prob[i] of facing 
+	heads when tossed. Return the probability that the number of coins facing 
+	heads equals target if you toss every coin exactly once.
+
+	Example 1:
+	Input: prob = [0.4], target = 1
+	Output: 0.40000
+
+	Example 2:
+	Input: prob = [0.5,0.5,0.5,0.5,0.5], target = 0
+	Output: 0.03125
+
+	Constraints:
+	* 1 <= prob.length <= 1000
+	* 0 <= prob[i] <= 1
+	* 0 <= target <= prob.length
+	* Answers will be accepted as correct if they are within 10^-5 of the 
+	  correct answer.*/
+
+    double probabilityOfHeads(vector<double>& prob, int target) {
+        int n = prob.size(); 
+        vector<vector<double>> dp(1+n, vector<double>(1+target)); 
+        dp[n][0] = 1; 
+        for (int i = n-1; i >= 0; --i) 
+            for (int j = 0; j <= target; ++j) {
+                if (j) dp[i][j] = prob[i]*dp[i+1][j-1]; 
+                dp[i][j] += (1-prob[i])*dp[i+1][j]; 
+            }
+        return dp[0][target]; 
+    }
+
+
     /*1236. Web Crawler (Medium)
 	Given a url startUrl and an interface HtmlParser, implement a web crawler 
 	to crawl all links that are under the same hostname as startUrl. Return all 
