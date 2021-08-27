@@ -11632,16 +11632,17 @@ class UnionFind:
 
     def findLUSlength(self, strs: List[str]) -> int:
         
-        def fn(p, s): 
+        def fn(p, s):
             """Return True if p is a subsequence of s."""
             ss = iter(s)
-            return all(c in ss for c in p)
+            return all(ch in ss for ch in p)
         
-        strs.sort(key=len, reverse=True)
-        
-        for i in range(len(strs)): 
-            if not any(fn(strs[i], strs[ii]) for ii in range(len(strs)) if i != ii): return len(strs[i])
-        return -1
+        ans = -1 
+        for i, s in enumerate(strs): 
+            for ii in range(len(strs)): 
+                if i != ii and len(s) <= len(strs[ii]) and fn(s, strs[ii]): break 
+            else: ans = max(ans, len(s))
+        return ans
 
 
     """523. Continuous Subarray Sum (Medium)
