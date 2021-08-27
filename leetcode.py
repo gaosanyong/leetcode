@@ -12979,37 +12979,36 @@ class UnionFind:
         return 0 if n == 1 else n 
 
 
-    """654. Maximum Binary Tree (Medium)
-	Given an integer array with no duplicates. A maximum tree building on this 
-	array is defined as follow:
-	* The root is the maximum number in the array.
-	* The left subtree is the maximum tree constructed from left part subarray 
-	  divided by the maximum number.
-	* The right subtree is the maximum tree constructed from right part 
-	  subarray divided by the maximum number.
-	Construct the maximum tree by the given array and output the root node of 
-	this tree.
+    """651. 4 Keys Keyboard (Medium)
+	Imagine you have a special keyboard with the following keys:
+	* A: Print one 'A' on the screen.
+	* Ctrl-A: Select the whole screen.
+	* Ctrl-C: Copy selection to buffer.
+	* Ctrl-V: Print buffer on screen appending it after what has already been 
+	  printed.
+	Given an integer n, return the maximum number of 'A' you can print on the 
+	screen with at most n presses on the keys.
 
 	Example 1:
-	Input: [3,2,1,6,0,5]
-	Output: return the tree root node representing the following tree:
-	      6
-	    /   \
-	   3     5
-	    \    / 
-	     2  0   
-	       \
-	        1
-	Note: The size of the given array will be in the range [1,1000]."""
+	Input: n = 3
+	Output: 3
+	Explanation: We can at most get 3 A's on screen by pressing the following 
+	             key sequence: A, A, A
+	
+	Example 2:
+	Input: n = 7
+	Output: 9
+	Explanation: We can at most get 9 A's on screen by pressing following key 
+	             sequence: A, A, A, Ctrl A, Ctrl C, Ctrl V, Ctrl V
 
-    def constructMaximumBinaryTree(self, nums: List[int]) -> TreeNode:
-        stack = []
-        for x in nums: 
-            node = TreeNode(x)
-            while stack and stack[-1].val < x: node.left = stack.pop()
-            if stack: stack[-1].right = node 
-            stack.append(node)
-        return stack[0]
+	Constraints: 1 <= n <= 50"""
+
+    def maxA(self, n: int) -> int:
+        dp = [0, 1]
+        for x in range(2, n+1): 
+            dp.append(1 + dp[x-1])
+            for xx in range(x-2): dp[x] = max(dp[x], dp[xx]*(x-xx-1))
+        return dp[n]
 
 
     """653. Two Sum IV - Input is a BST (Easy)
@@ -13071,6 +13070,39 @@ class UnionFind:
                     hi = hi.right 
                 hi = right.pop()
         return False 
+
+
+    """654. Maximum Binary Tree (Medium)
+	Given an integer array with no duplicates. A maximum tree building on this 
+	array is defined as follow:
+	* The root is the maximum number in the array.
+	* The left subtree is the maximum tree constructed from left part subarray 
+	  divided by the maximum number.
+	* The right subtree is the maximum tree constructed from right part 
+	  subarray divided by the maximum number.
+	Construct the maximum tree by the given array and output the root node of 
+	this tree.
+
+	Example 1:
+	Input: [3,2,1,6,0,5]
+	Output: return the tree root node representing the following tree:
+	      6
+	    /   \
+	   3     5
+	    \    / 
+	     2  0   
+	       \
+	        1
+	Note: The size of the given array will be in the range [1,1000]."""
+
+    def constructMaximumBinaryTree(self, nums: List[int]) -> TreeNode:
+        stack = []
+        for x in nums: 
+            node = TreeNode(x)
+            while stack and stack[-1].val < x: node.left = stack.pop()
+            if stack: stack[-1].right = node 
+            stack.append(node)
+        return stack[0]
 
 
     """655. Print Binary Tree (Medium)
