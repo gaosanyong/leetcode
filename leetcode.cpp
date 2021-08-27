@@ -3465,6 +3465,88 @@ public:
     }
 
 
+    /*505. The Maze II (Medium)
+	There is a ball in a maze with empty spaces (represented as 0) and walls 
+	(represented as 1). The ball can go through the empty spaces by rolling up, 
+	down, left or right, but it won't stop rolling until hitting a wall. When 
+	the ball stops, it could choose the next direction. Given the m x n maze, 
+	the ball's start position and the destination, where 
+	start = [startrow, startcol] and 
+	destination = [destinationrow, destinationcol], return the shortest 
+	distance for the ball to stop at the destination. If the ball cannot stop 
+	at destination, return -1. The distance is the number of empty spaces 
+	traveled by the ball from the start position (excluded) to the destination 
+	(included). You may assume that the borders of the maze are all walls (see 
+	examples).
+
+	Example 1:
+	Input: maze = [[0,0,1,0,0],
+	               [0,0,0,0,0],
+	               [0,0,0,1,0],
+	               [1,1,0,1,1],
+	               [0,0,0,0,0]], start = [0,4], destination = [4,4]
+	Output: 12
+	Explanation: One possible way is : left -> down -> left -> down -> right -> 
+	             down -> right. The length of the path is 
+	             1 + 1 + 3 + 1 + 2 + 2 + 2 = 12.
+	
+	Example 2:
+	Input: maze = [[0,0,1,0,0],
+	               [0,0,0,0,0],
+	               [0,0,0,1,0],
+	               [1,1,0,1,1],
+	               [0,0,0,0,0]], start = [0,4], destination = [3,2]
+	Output: -1
+	Explanation: There is no way for the ball to stop at the destination. 
+	             Notice that you can pass through the destination but you 
+	             cannot stop there.
+	
+	Example 3:
+	Input: maze = [[0,0,0,0,0],
+	               [1,1,0,0,1],
+	               [0,0,0,0,0],
+	               [0,1,0,0,1],
+	               [0,1,0,0,0]], start = [4,3], destination = [0,1]
+	Output: -1
+
+	Constraints:
+	* m == maze.length
+	* n == maze[i].length
+	* 1 <= m, n <= 100
+	* maze[i][j] is 0 or 1.
+	* start.length == 2
+	* destination.length == 2
+	* 0 <= startrow, destinationrow <= m
+	* 0 <= startcol, destinationcol <= n
+	* Both the ball and the destination exist in an empty space, and they will 
+	  not be in the same position initially.
+	* The maze contains at least 2 empty spaces.*/
+
+    int shortestDistance(vector<vector<int>>& maze, vector<int>& start, vector<int>& destination) {
+        int m = maze.size(), n = maze[0].size(); 
+        
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq; // min-heap 
+        pq.emplace(0, start[0]*n + start[1]); 
+        vector<int> dist(m*n, INT_MAX); 
+        dist[start[0]*n + start[1]] = 0; 
+        
+        while (pq.size()) {
+            auto [x, k] = pq.top(); pq.pop(); 
+            int i = k/n, j = k%n; 
+            if (i == destination[0] && j == destination[1]) return x; 
+            for (auto& [di, dj] : {make_pair(-1, 0), {0, -1}, {0, 1}, {1, 0}}) {
+                int ii = i, jj = j, xx = x; 
+                for (; 0 <= ii+di && ii+di < m && 0 <= jj+dj && jj+dj < n && maze[ii+di][jj+dj] == 0; ii += di, jj += dj, ++xx); 
+                if (xx < dist[ii*n+jj]) {
+                    pq.emplace(xx, ii*n+jj); 
+                    dist[ii*n+jj] = xx; 
+                }
+            }
+        }
+        return -1; 
+    }
+
+
     /*514. Freedom Trail (Hard)
 	In the video game Fallout 4, the quest "Road to Freedom" requires players 
 	to reach a metal dial called the "Freedom Trail Ring" and use the dial to 
