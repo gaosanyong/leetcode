@@ -10827,6 +10827,58 @@ public:
     }
 
 
+    /*1102. Path With Maximum Minimum Value (Medium)
+	Given an m x n integer matrix grid, return the maximum score of a path 
+	starting at (0, 0) and ending at (m - 1, n - 1) moving in the 4 cardinal 
+	directions. The score of a path is the minimum value in that path. For 
+	example, the score of the path 8 → 4 → 5 → 9 is 4.
+
+	Example 1:
+	Input: grid = [[5,4,5],
+	               [1,2,6],
+	               [7,4,6]]
+	Output: 4
+	Explanation: The path with the maximum score is highlighted in yellow. 
+
+	Example 2:
+	Input: grid = [[2,2,1,2,2,2],
+	               [1,2,2,2,1,2]]
+	Output: 2
+
+	Example 3:
+	Input: grid = [[3,4,6,3,4],
+	               [0,2,1,1,7],
+	               [8,8,3,2,7],
+	               [3,2,4,9,8],
+	               [4,1,2,0,0],
+	               [4,6,5,4,3]]
+	Output: 3
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 100
+	* 0 <= grid[i][j] <= 10^9*/
+
+    int maximumMinimumPath(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        priority_queue<pair<int, int>> pq; 
+        pq.emplace(grid[0][0], 0); 
+        grid[0][0] = -1; // mark as visited 
+        while (pq.size()) {
+            auto [v, k] = pq.top(); pq.pop(); 
+            int i = k/n, j = k%n; 
+            if (i == m-1 && j == n-1) return v; 
+            for (auto& [ii, jj] : {make_pair(i-1, j), {i, j-1}, {i, j+1}, {i+1, j}}) 
+                if (0 <= ii && ii < m && 0 <= jj && jj < n && 0 <= grid[ii][jj]) {
+                    pq.emplace(min(v, grid[ii][jj]), ii*n+jj); 
+                    grid[ii][jj] = -1; 
+                }
+        }
+        return -1; 
+    }
+
+
     /*1135. Connecting Cities With Minimum Cost (Medium)
 	There are n cities labeled from 1 to n. You are given the integer n and an 
 	array connections where connections[i] = [xi, yi, costi] indicates that the 
