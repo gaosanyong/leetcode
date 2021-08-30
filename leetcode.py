@@ -42611,6 +42611,199 @@ class UnionFind:
         return ans 
 
 
+    """1984. Minimum Difference Between Highest and Lowest of K Scores (Easy)
+	You are given a 0-indexed integer array nums, where nums[i] represents the 
+	score of the ith student. You are also given an integer k. Pick the scores 
+	of any k students from the array so that the difference between the highest 
+	and the lowest of the k scores is minimized. Return the minimum possible 
+	difference.
+
+	Example 1:
+	Input: nums = [90], k = 1
+	Output: 0
+	Explanation: There is one way to pick score(s) of one student:
+	             - [90]. The difference between the highest and lowest score is 90 - 90 = 0.
+	             The minimum possible difference is 0.
+	
+	Example 2:
+	Input: nums = [9,4,1,7], k = 2
+	Output: 2
+	Explanation: There are six ways to pick score(s) of two students:
+	             - [9,4,1,7]. The difference between the highest and lowest score is 9 - 4 = 5.
+	             - [9,4,1,7]. The difference between the highest and lowest score is 9 - 1 = 8.
+	             - [9,4,1,7]. The difference between the highest and lowest score is 9 - 7 = 2.
+	             - [9,4,1,7]. The difference between the highest and lowest score is 4 - 1 = 3.
+	             - [9,4,1,7]. The difference between the highest and lowest score is 7 - 4 = 3.
+	             - [9,4,1,7]. The difference between the highest and lowest score is 7 - 1 = 6.
+	             The minimum possible difference is 2.
+
+	Constraints:
+	* 1 <= k <= nums.length <= 1000
+	* 0 <= nums[i] <= 10^5"""
+
+    def minimumDifference(self, nums: List[int], k: int) -> int:
+        nums.sort()
+        return min(nums[i+k-1]-nums[i] for i in range(len(nums)-k+1))
+
+
+    """1985. Find the Kth Largest Integer in the Array (Medium)
+	You are given an array of strings nums and an integer k. Each string in 
+	nums represents an integer without leading zeros. Return the string that 
+	represents the kth largest integer in nums. Note: Duplicate numbers should 
+	be counted distinctly. For example, if nums is ["1","2","2"], "2" is the 
+	first largest integer, "2" is the second-largest integer, and "1" is the 
+	third-largest integer.
+
+	Example 1:
+	Input: nums = ["3","6","7","10"], k = 4
+	Output: "3"
+	Explanation: The numbers in nums sorted in non-decreasing order are 
+	             ["3","6","7","10"]. The 4th largest integer in nums is "3".
+	
+	Example 2:
+	Input: nums = ["2","21","12","1"], k = 3
+	Output: "2"
+	Explanation: The numbers in nums sorted in non-decreasing order are 
+	             ["1","2","12","21"]. The 3rd largest integer in nums is "2".
+	
+	Example 3:
+	Input: nums = ["0","0"], k = 2
+	Output: "0"
+	Explanation: The numbers in nums sorted in non-decreasing order are 
+	             ["0","0"]. The 2nd largest integer in nums is "0".
+
+	Constraints:
+	* 1 <= k <= nums.length <= 10^4
+	* 1 <= nums[i].length <= 100
+	* nums[i] consists of only digits.
+	* nums[i] will not have any leading zeros."""
+
+    def kthLargestNumber(self, nums: List[str], k: int) -> str:
+        nums = [int(x) for x in nums]
+        shuffle(nums)
+        
+        def part(lo, hi): 
+            """Return partition of nums[lo:hi]."""
+            i, j = lo+1, hi-1
+            while i <= j: 
+                if nums[i] < nums[lo]: i += 1
+                elif nums[lo] < nums[j]: j -= 1
+                else: 
+                    nums[i], nums[j] = nums[j], nums[i]
+                    i += 1
+                    j -= 1
+            nums[lo], nums[j] = nums[j], nums[lo]
+            return j 
+        
+        lo, hi = 0, len(nums)
+        while lo < hi: 
+            mid = part(lo, hi)
+            if mid == len(nums)-k: return str(nums[mid])
+            elif mid < len(nums)-k: lo = mid + 1
+            else: hi = mid
+
+
+    """1986. Minimum Number of Work Sessions to Finish the Tasks (Medium)
+	There are n tasks assigned to you. The task times are represented as an 
+	integer array tasks of length n, where the ith task takes tasks[i] hours to 
+	finish. A work session is when you work for at most sessionTime consecutive 
+	hours and then take a break. You should finish the given tasks in a way 
+	that satisfies the following conditions:
+	* If you start a task in a work session, you must complete it in the same 
+	  work session.
+	* You can start a new task immediately after finishing the previous one.
+	* You may complete the tasks in any order.
+	Given tasks and sessionTime, return the minimum number of work sessions 
+	needed to finish all the tasks following the conditions above. The tests 
+	are generated such that sessionTime is greater than or equal to the maximum 
+	element in tasks[i].
+
+	Example 1:
+	Input: tasks = [1,2,3], sessionTime = 3
+	Output: 2
+	Explanation: You can finish the tasks in two work sessions.
+	             - First work session: finish the first and the second tasks in 
+	               1 + 2 = 3 hours.
+	             - Second work session: finish the third task in 3 hours.
+	
+	Example 2:
+	Input: tasks = [3,1,3,1,1], sessionTime = 8
+	Output: 2
+	Explanation: You can finish the tasks in two work sessions.
+	             - First work session: finish all the tasks except the last one 
+	               in 3 + 1 + 3 + 1 = 8 hours.
+	             - Second work session: finish the last task in 1 hour.
+	
+	Example 3:
+	Input: tasks = [1,2,3,4,5], sessionTime = 15
+	Output: 1
+	Explanation: You can finish all the tasks in one work session.
+
+	Constraints:
+	* n == tasks.length
+	* 1 <= n <= 14
+	* 1 <= tasks[i] <= 10
+	* max(tasks[i]) <= sessionTime <= 15"""
+
+    def minSessions(self, tasks: List[int], sessionTime: int) -> int:
+        
+        @cache
+        def fn(mask, rem):
+            """Return minimum work sessions to finish tasks indicated by set bits in mask."""
+            if not mask: return 0 # done 
+            ans = inf 
+            for i, x in enumerate(tasks): 
+                if mask & (1<<i): 
+                    if x <= rem: ans = min(ans, fn(mask ^ (1<<i), rem - x))
+                    else: ans = min(ans, 1 + fn(mask ^ (1<<i), sessionTime - x))
+            return ans
+        
+        return fn((1<<len(tasks))-1, 0)
+
+
+    """1987. Number of Unique Good Subsequences (Hard)
+	You are given a binary string binary. A subsequence of binary is considered 
+	good if it is not empty and has no leading zeros (with the exception of "0").
+	Find the number of unique good subsequences of binary. For example, if 
+	binary = "001", then all the good subsequences are ["0", "0", "1"], so the 
+	unique good subsequences are "0" and "1". Note that subsequences "00", "01", 
+	and "001" are not good because they have leading zeros. Return the number 
+	of unique good subsequences of binary. Since the answer may be very large, 
+	return it modulo 10^9 + 7. A subsequence is a sequence that can be derived 
+	from another sequence by deleting some or no elements without changing the 
+	order of the remaining elements.
+
+	Example 1:
+	Input: binary = "001"
+	Output: 2
+	Explanation: The good subsequences of binary are ["0", "0", "1"]. The 
+	             unique good subsequences are "0" and "1".
+	
+	Example 2:
+	Input: binary = "11"
+	Output: 2
+	Explanation: The good subsequences of binary are ["1", "1", "11"]. The 
+	             unique good subsequences are "1" and "11".
+	
+	Example 3:
+	Input: binary = "101"
+	Output: 5
+	Explanation: The good subsequences of binary are ["1", "0", "1", "10", "11", 
+	             "101"]. The unique good subsequences are "0", "1", "10", "11", 
+	             and "101".
+
+	Constraints:
+	* 1 <= binary.length <= 10^5
+	* binary consists of only '0's and '1's."""
+
+    def numberOfUniqueGoodSubsequences(self, binary: str) -> int:
+        f0 = f1 = 0
+        for ch in binary: 
+            if ch == "0": f0 += f1
+            else: f1 += f0 + 1
+        return (f0 + f1 + int("0" in binary)) % 1_000_000_007
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
