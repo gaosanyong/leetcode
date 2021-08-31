@@ -22629,6 +22629,62 @@ class UnionFind:
         return ans 
 
 
+    """1168. Optimize Water Distribution in a Village (Hard)
+	There are n houses in a village. We want to supply water for all the houses 
+	by building wells and laying pipes. For each house i, we can either build a 
+	well inside it directly with cost wells[i - 1] (note the -1 due to 0-
+	indexing), or pipe in water from another well to it. The costs to lay pipes 
+	between houses are given by the array pipes, where each 
+	pipes[j] = [house1j, house2j, costj] represents the cost to connect house1j 
+	and house2j together using a pipe. Connections are bidirectional. Return 
+	the minimum total cost to supply water to all houses.
+
+	Example 1:
+	Input: n = 3, wells = [1,2,2], pipes = [[1,2,1],[2,3,1]]
+	Output: 3
+	Explanation: The image shows the costs of connecting houses using pipes. 
+	             The best strategy is to build a well in the first house with 
+	             cost 1 and connect the other houses to it with cost 2 so the 
+	             total cost is 3.
+	
+	Example 2:
+	Input: n = 2, wells = [1,1], pipes = [[1,2,1]]
+	Output: 2
+
+	Constraints:
+	* 2 <= n <= 10^4
+	* wells.length == n
+	* 0 <= wells[i] <= 10^5
+	* 1 <= pipes.length <= 10^4
+	* pipes[j].length == 3
+	* 1 <= house1j, house2j <= n
+	* 0 <= costj <= 10^5
+	* house1j != house2j"""
+
+    def minCostToSupplyWater(self, n: int, wells: List[int], pipes: List[List[int]]) -> int:
+        pq = [(cost, p-1, q-1) for p, q, cost in pipes] # min-heap 
+        heapify(pq)
+        
+        parent = list(range(n))
+        
+        def find(p): 
+            if p != parent[p]: parent[p] = find(parent[p])
+            return parent[p]
+
+        def union(p, q, cost):
+            prt, qrt = find(p), find(q)
+            if wells[prt] < wells[qrt]: prt, qrt = qrt, prt
+            if prt == qrt or cost >= wells[prt]: return False 
+            parent[prt] = qrt
+            return True 
+        
+        ans = 0
+        while pq: 
+            cost, p, q = heappop(pq)
+            if union(p, q, cost): ans += cost
+        return ans + sum(wells[i] for i in set(map(find, range(n))))
+
+
     """1176. Diet Plan Performance (Easy)
 	A dieter consumes calories[i] calories on the i-th day. Given an integer k, 
 	for every consecutive sequence of k days (calories[i], calories[i+1], ..., 

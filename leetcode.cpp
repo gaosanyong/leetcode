@@ -11444,6 +11444,76 @@ public:
     }
 
 
+    /*1168. Optimize Water Distribution in a Village (Hard)
+	There are n houses in a village. We want to supply water for all the houses 
+	by building wells and laying pipes. For each house i, we can either build a 
+	well inside it directly with cost wells[i - 1] (note the -1 due to 0-
+	indexing), or pipe in water from another well to it. The costs to lay pipes 
+	between houses are given by the array pipes, where each 
+	pipes[j] = [house1j, house2j, costj] represents the cost to connect house1j 
+	and house2j together using a pipe. Connections are bidirectional. Return 
+	the minimum total cost to supply water to all houses.
+
+	Example 1:
+	Input: n = 3, wells = [1,2,2], pipes = [[1,2,1],[2,3,1]]
+	Output: 3
+	Explanation: The image shows the costs of connecting houses using pipes. 
+	             The best strategy is to build a well in the first house with 
+	             cost 1 and connect the other houses to it with cost 2 so the 
+	             total cost is 3.
+	
+	Example 2:
+	Input: n = 2, wells = [1,1], pipes = [[1,2,1]]
+	Output: 2
+
+	Constraints:
+	* 2 <= n <= 10^4
+	* wells.length == n
+	* 0 <= wells[i] <= 10^5
+	* 1 <= pipes.length <= 10^4
+	* pipes[j].length == 3
+	* 1 <= house1j, house2j <= n
+	* 0 <= costj <= 10^5
+	* house1j != house2j*/
+
+    int minCostToSupplyWater(int n, vector<int>& wells, vector<vector<int>>& pipes) {
+        priority_queue<array<int,3>, vector<array<int,3>>, greater<>> pq; // min-heap 
+        for (auto& pipe : pipes) 
+            pq.push({pipe[2], pipe[0]-1, pipe[1]-1}); 
+        
+        vector<int> parent(n); 
+        iota(parent.begin(), parent.end(), 0); 
+        
+        function<int(int)> find = [&](int p) {
+            if (p != parent[p]) parent[p] = find(parent[p]); 
+            return parent[p]; 
+        }; 
+        
+        auto connect = [&](int p, int q, int cost) {
+            int prt = find(p), qrt = find(q); 
+            if (wells[prt] < wells[qrt]) swap(prt, qrt); 
+            if (prt == qrt || wells[prt] <= cost) return false; 
+            parent[prt] = qrt; 
+            return true; 
+        }; 
+        
+        int ans = 0; 
+        while (pq.size()) {
+            auto [cost, p, q] = pq.top(); pq.pop(); 
+            if (connect(p, q, cost)) ans += cost; 
+        }
+        unordered_set<int> seen; 
+        for (int i = 0; i < n; ++i) {
+            int ii = find(i); 
+            if (!seen.count(ii)) {
+                seen.insert(ii); 
+                ans += wells[ii]; 
+            } 
+        }
+        return ans; 
+    }
+
+
     /*1182. Shortest Distance to Target Color (Medium)
 	You are given an array colors, in which there are three colors: 1, 2 and 3.
 	You are also given some queries. Each query consists of two integers i and 
