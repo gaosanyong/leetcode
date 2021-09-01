@@ -12479,15 +12479,13 @@ class UnionFind:
 	* Each element of A is an integer within the range [0, N-1]."""
 
     def arrayNesting(self, nums: List[int]) -> int:
-        ans = 0
-        seen = [False]*len(nums)
-        for x in nums: 
-            val = 0
-            while not seen[x]: 
-                seen[x] = True
-                x = nums[x]
-                val += 1
-            ans = max(ans, val)
+        ans = 0 
+        for i in range(len(nums)): 
+            cnt = 0
+            while nums[i] != -1: 
+                cnt += 1
+                nums[i], i = -1, nums[i]
+            ans = max(ans, cnt)
         return ans 
 
 
