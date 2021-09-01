@@ -4024,6 +4024,90 @@ public:
     }
 
 
+    /*545. Boundary of Binary Tree (Medium)
+	The boundary of a binary tree is the concatenation of the root, the left 
+	boundary, the leaves ordered from left-to-right, and the reverse order of 
+	the right boundary. The left boundary is the set of nodes defined by the 
+	following:
+	* The root node's left child is in the left boundary. If the root does not 
+	  have a left child, then the left boundary is empty.
+	* If a node in the left boundary and has a left child, then the left child 
+	  is in the left boundary.
+	* If a node is in the left boundary, has no left child, but has a right 
+	  child, then the right child is in the left boundary.
+	* The leftmost leaf is not in the left boundary.
+	The right boundary is similar to the left boundary, except it is the right 
+	side of the root's right subtree. Again, the leaf is not part of the right 
+	boundary, and the right boundary is empty if the root does not have a right 
+	child. The leaves are nodes that do not have any children. For this problem, 
+	the root is not a leaf. Given the root of a binary tree, return the values 
+	of its boundary.
+
+	Example 1:
+	Input: root = [1,null,2,3,4]
+	Output: [1,3,4,2]
+	Explanation: - The left boundary is empty because the root does not have a 
+	               left child.
+	             - The right boundary follows the path starting from the root's 
+	               right child 2 -> 4. 4 is a leaf, so the right boundary is [2].
+	             - The leaves from left to right are [3,4].
+	             Concatenating everything results in 
+	             [1] + [] + [3,4] + [2] = [1,3,4,2].
+	
+	Example 2:
+	Input: root = [1,2,3,4,5,6,null,null,null,7,8,9,10]
+	Output: [1,2,4,7,8,9,10,6,3]
+	Explanation: - The left boundary follows the path starting from the root's 
+	               left child 2 -> 4. 4 is a leaf, so the left boundary is [2].
+	             - The right boundary follows the path starting from the root's 
+	               right child 3 -> 6 -> 10. 10 is a leaf, so the right 
+	               boundary is [3,6], and in reverse order is [6,3].
+	             - The leaves from left to right are [4,7,8,9,10].
+	             Concatenating everything results in 
+	             [1] + [2] + [4,7,8,9,10] + [6,3] = [1,2,4,7,8,9,10,6,3].
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 10^4].
+	* -1000 <= Node.val <= 1000*/
+
+    vector<int> boundaryOfBinaryTree(TreeNode* root) {
+        stack<pair<TreeNode*, int>> stk; 
+        if (root->right) stk.emplace(root->right, 1); 
+        if (root->left) stk.emplace(root->left, -1); 
+        vector<int> left, right, leaves; 
+        while (stk.size()) {
+            auto [node, v] = stk.top(); stk.pop(); 
+            if (!node->left && !node->right) leaves.push_back(node->val); 
+            else if (v == -1) {
+                left.push_back(node->val); 
+                if (node->right) {
+                    if (node->left) stk.emplace(node->right, 0); 
+                    else stk.emplace(node->right, -1); 
+                } 
+                if (node->left) stk.emplace(node->left, -1); 
+            } else if (v == 1) {
+                right.push_back(node->val); 
+                if (node->right) stk.emplace(node->right, 1); 
+                if (node->left) {
+                    if (node->right) stk.emplace(node->left, 0); 
+                    else stk.emplace(node->left, 1); 
+                }
+            } else {
+                if (node->right) stk.emplace(node->right, 0); 
+                if (node->left) stk.emplace(node->left, 0); 
+            }
+        }
+        reverse(right.begin(), right.end()); 
+        vector<int> ans; 
+        ans.reserve(1 + left.size() + right.size() + leaves.size()); 
+        ans.push_back(root->val); 
+        ans.insert(ans.end(), left.begin(), left.end()); 
+        ans.insert(ans.end(), leaves.begin(), leaves.end()); 
+        ans.insert(ans.end(), right.begin(), right.end()); 
+        return ans; 
+    }
+
+
     /*546. Remove Boxes (Hard)
 	You are given several boxes with different colors represented by different 
 	positive numbers. You may experience several rounds to remove boxes until 
