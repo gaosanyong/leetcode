@@ -21762,18 +21762,26 @@ class UnionFind:
 	* Answers will be accepted as correct if they are within 10^-5 of the 
 	  correct answer."""
 
-    def maximumAverageSubtree(self, root: TreeNode) -> float:
-        
-        def fn(node): 
-            """Return sum, count and max average of subtree rooted at node."""
-            if not node: return 0, 0, 0
-            ls, ln, lv = fn(node.left)
-            rs, rn, rv = fn(node.right)
-            s = ls + node.val + rs
-            n = ln + 1 + rn 
-            return s, n, max(s/n, lv, rv)
-            
-        return fn(root)[2]
+    def maximumAverageSubtree(self, root: Optional[TreeNode]) -> float:
+        ans = 0 
+        sm, cnt = {None: 0}, {None: 0}
+        node, stack = root, []
+        prev = None
+        while node or stack: 
+            if node: 
+                stack.append(node)
+                node = node.left
+            else: 
+                node = stack[-1]
+                if node.right and node.right != prev: node = node.right
+                else: 
+                    sm[node] = node.val + sm[node.left] + sm[node.right]
+                    cnt[node] = 1 + cnt[node.left] + cnt[node.right]
+                    ans = max(ans, sm[node]/cnt[node])
+                    stack.pop()
+                    prev = node 
+                    node = None
+        return ans 
 
 
     """1125. Smallest Sufficient Team (Hard)
