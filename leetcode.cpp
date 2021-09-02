@@ -4159,6 +4159,62 @@ public:
     }
 
 
+    /*549. Binary Tree Longest Consecutive Sequence II (Medium)
+	Given the root of a binary tree, return the length of the longest 
+	consecutive path in the tree. A consecutive path is a path where the values 
+	of the consecutive nodes in the path differ by one. This path can be either 
+	increasing or decreasing. For example, [1,2,3,4] and [4,3,2,1] are both 
+	considered valid, but the path [1,2,4,3] is not valid. On the other hand, 
+	the path can be in the child-Parent-child order, where not necessarily be 
+	parent-child order.
+
+	Example 1:
+	Input: root = [1,2,3]
+	Output: 2
+	Explanation: The longest consecutive path is [1, 2] or [2, 1].
+
+	Example 2:
+	Input: root = [2,1,3]
+	Output: 3
+	Explanation: The longest consecutive path is [1, 2, 3] or [3, 2, 1].
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 3 * 10^4].
+	* -3 * 10^4 <= Node.val <= 3 * 10^4*/
+
+    int longestConsecutive(TreeNode* root) {
+        int ans = 0; 
+        unordered_map<TreeNode*, array<int, 2>> mp; 
+        stack<TreeNode*> stk; 
+        TreeNode *node = root, *prev = nullptr; 
+        
+        while (node || stk.size()) 
+            if (node) {
+                stk.push(node); 
+                node = node->left; 
+            } else {
+                node = stk.top(); 
+                if (node->right && node->right != prev) node = node->right; 
+                else {
+                    mp[node] = {1, 1}; 
+                    if (node->left) {
+                        if (node->left->val + 1 == node->val) mp[node][0] = 1 + mp[node->left][0]; 
+                        if (node->left->val - 1 == node->val) mp[node][1] = 1 + mp[node->left][1]; 
+                    } 
+                    if (node->right) {
+                        if (node->right->val + 1 == node->val) mp[node][0] = max(mp[node][0], 1 + mp[node->right][0]); 
+                        if (node->right->val - 1 == node->val) mp[node][1] = max(mp[node][1], 1 + mp[node->right][1]); 
+                    }
+                    ans = max(ans, mp[node][0] + mp[node][1] - 1); 
+                    stk.pop(); 
+                    prev = node; 
+                    node = nullptr; 
+                }
+            }
+        return ans; 
+    }
+
+
     /*552. Student Attendance Record II (Hard)
 	An attendance record for a student can be represented as a string where 
 	each character signifies whether the student was absent, late, or present 
