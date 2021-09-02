@@ -3242,17 +3242,17 @@ class Solution:
     def generateTrees(self, n: int) -> List[TreeNode]:
         
         @cache
-        def fn(lo, hi): 
-            """Return structurally uniq BST using numbers from lo (inclusive) to hi (exclusive)"""
+        def fn(lo, hi):
+            """Return root of tree using numbers from lo (inclusive) to hi (exclusive)"""
             if lo == hi: return [None]
             ans = []
-            for i in range(lo, hi):
-                for left in fn(lo, i):
-                    for right in fn(i+1, hi): 
-                        ans.append(TreeNode(i, left, right))
+            for mid in range(lo, hi): 
+                for left in fn(lo, mid): 
+                    for right in fn(mid+1, hi): 
+                        ans.append(TreeNode(mid, left, right))
             return ans 
         
-        return fn(1, n+1) if n else []
+        return fn(1, n+1)
 
 
     """96. Unique Binary Search Trees (Medium)

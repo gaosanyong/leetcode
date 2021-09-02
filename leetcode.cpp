@@ -1249,6 +1249,42 @@ public:
     }
 
 
+    /*95. Unique Binary Search Trees II (Medium)
+	Given an integer n, return all the structurally unique BST's (binary search 
+	trees), which has exactly n nodes of unique values from 1 to n. Return the 
+	answer in any order.
+
+	Example 1:
+	Input: n = 3
+	Output: [[1,null,2,null,3],[1,null,3,2],[2,1,3],[3,1,null,null,2],[3,2,null,1]]
+
+	Example 2:
+	Input: n = 1
+	Output: [[1]]
+
+	Constraints: 1 <= n <= 8*/
+
+    vector<TreeNode*> generateTrees(int n) {
+        unordered_map<int, vector<TreeNode*>> memo; 
+        
+        function<vector<TreeNode*>(int, int)> fn = [&](int lo, int hi) {
+            int key = 10*lo + hi; 
+            if (!memo.count(key)) 
+                if (lo == hi) memo[key].push_back(nullptr); 
+                else {
+                    vector<TreeNode*> ans; 
+                    for (int mid = lo; mid < hi; ++mid) 
+                        for (auto& left : fn(lo, mid)) 
+                            for (auto& right : fn(mid+1, hi)) 
+                                memo[key].push_back(new TreeNode(mid, left, right)); 
+                }
+            return memo[key]; 
+        }; 
+        
+        return fn(1, n+1); 
+    }
+
+
     /*97. Interleaving String (Medium)
 	Given strings s1, s2, and s3, find whether s3 is formed by an interleaving 
 	of s1 and s2. An interleaving of two strings s and t is a configuration 
