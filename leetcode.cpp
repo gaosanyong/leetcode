@@ -3412,6 +3412,41 @@ public:
     }
 
 
+    /*469. Convex Polygon (Medium)
+	You are given an array of points on the X-Y plane points where 
+	points[i] = [xi, yi]. The points form a polygon when joined sequentially.
+	Return true if this polygon is convex and false otherwise. You may assume 
+	the polygon formed by given points is always a simple polygon. In other 
+	words, we ensure that exactly two edges intersect at each vertex and that 
+	edges otherwise don't intersect each other.
+
+	Example 1:
+	Input: points = [[0,0],[0,5],[5,5],[5,0]]
+	Output: true
+
+	Example 2:
+	Input: points = [[0,0],[0,10],[10,10],[10,0],[5,5]]
+	Output: false
+
+	Constraints:
+	* 3 <= points.length <= 10^4
+	* points[i].length == 2
+	* -10^4 <= xi, yi <= 10^4
+	* All the given points are unique.*/
+
+    bool isConvex(vector<vector<int>>& points) {
+        points.push_back(points[0]); 
+        points.push_back(points[1]); 
+        long sign = 0; 
+        for (int i = 2; i < points.size(); ++i) {
+            long val = (points[i][0] - points[i-1][0]) * (points[i-1][1] - points[i-2][1]) - (points[i-1][0] - points[i-2][0]) * (points[i][1] - points[i-1][1]); 
+            if (sign * val < 0) return false; 
+            if (val) sign = val; 
+        }
+        return true; 
+    }
+
+
     /*484. Find Permutation (Medium)
 	A permutation perm of n integers of all the integers in the range [1, n] 
 	can be represented as a string s of length n - 1 where:
