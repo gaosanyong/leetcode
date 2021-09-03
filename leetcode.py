@@ -12658,7 +12658,6 @@ class UnionFind:
 	Squirrel : [4,4]
 	Nuts : [[3,0], [2,5]]
 	Output: 12
-	​​​​​
 	Note:
 	* All given positions won't overlap.
 	* The squirrel can take at most one nut at one time.
@@ -12820,6 +12819,52 @@ class UnionFind:
             return 1 + min(fn(i1+1,i2), fn(i1, i2+1))
         
         return fn(0, 0)
+
+
+    """587. Erect the Fence (Hard)
+	You are given an array trees where trees[i] = [xi, yi] represents the 
+	location of a tree in the garden. You are asked to fence the entire garden 
+	using the minimum length of rope as it is expensive. The garden is well 
+	fenced only if all the trees are enclosed. Return the coordinates of trees 
+	that are exactly located on the fence perimeter.
+
+	Example 1:
+	Input: points = [[1,1],[2,2],[2,0],[2,4],[3,3],[4,2]]
+	Output: [[1,1],[2,0],[3,3],[2,4],[4,2]]
+
+	Example 2:
+	Input: points = [[1,2],[2,2],[4,2]]
+	Output: [[4,2],[2,2],[1,2]]
+
+	Constraints:
+	* 1 <= points.length <= 3000
+	* points[i].length == 2
+	* 0 <= xi, yi <= 100
+	* All the given points are unique."""
+
+    def outerTrees(self, trees: List[List[int]]) -> List[List[int]]:
+        # convex hull via Graham scan 
+        xx, yy = min(trees, key=lambda x: (x[1], x[0])) # reference point
+        
+        mp = {}
+        for x, y in trees: mp.setdefault(atan2(y-yy, x-xx), []).append([x, y])
+        
+        trees = []
+        m = max(mp)
+        for k in sorted(mp): 
+            mp[k].sort(key=lambda p: abs(p[0]-xx)+abs(p[1]-yy))
+            if k == m and trees: mp[k].reverse()
+            trees.extend(mp[k])
+                
+        stack = []
+        for x, y in trees: 
+            while len(stack) >= 2: 
+                x0, y0 = stack[-1]
+                x1, y1 = stack[-2]
+                if (x0-x1)*(y-y0) - (x-x0)*(y0-y1) >= 0: break
+                else: stack.pop()
+            stack.append([x, y])
+        return stack
 
 
     """594. Longest Harmonious Subsequence (Easy)

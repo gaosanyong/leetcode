@@ -4683,6 +4683,63 @@ public:
     }
 
 
+    /*587. Erect the Fence (Hard)
+	You are given an array trees where trees[i] = [xi, yi] represents the 
+	location of a tree in the garden. You are asked to fence the entire garden 
+	using the minimum length of rope as it is expensive. The garden is well 
+	fenced only if all the trees are enclosed. Return the coordinates of trees 
+	that are exactly located on the fence perimeter.
+
+	Example 1:
+	Input: points = [[1,1],[2,2],[2,0],[2,4],[3,3],[4,2]]
+	Output: [[1,1],[2,0],[3,3],[2,4],[4,2]]
+
+	Example 2:
+	Input: points = [[1,2],[2,2],[4,2]]
+	Output: [[4,2],[2,2],[1,2]]
+
+	Constraints:
+	* 1 <= points.length <= 3000
+	* points[i].length == 2
+	* 0 <= xi, yi <= 100
+	* All the given points are unique.*/
+
+    vector<vector<int>> outerTrees(vector<vector<int>>& trees) {
+        int xx = INT_MAX, yy = INT_MAX; 
+        for (auto& p : trees) 
+            if (p[1] < yy || (p[0] < xx && p[1] == yy)) {
+                xx = p[0]; 
+                yy = p[1]; 
+            }
+        
+        map<double, vector<vector<int>>> mp; 
+        for (auto& p : trees) mp[atan2(p[1] - yy, p[0] - xx)].push_back(p); 
+        
+        vector<vector<int>> vals; 
+        for (auto& [k, v] : mp) {
+            sort(v.begin(), v.end(), [&](auto& lhs, auto& rhs) {
+                return abs(lhs[0] - xx) + abs(lhs[1] - yy) < abs(rhs[0] - xx) + abs(rhs[1] - yy); 
+            }); 
+            if (k == mp.rbegin()->first && vals.size()) reverse(v.begin(), v.end()); 
+            for (auto& x : v) vals.push_back(x); 
+        }
+        
+        vector<vector<int>> ans; 
+        for (auto& p : vals) {
+            while (ans.size() >= 2) {
+                auto p0 = ans.back(); ans.pop_back(); 
+                auto p1 = ans.back(); 
+                if ((p0[0] - p1[0]) * (p[1] - p0[1]) - (p[0] - p0[0]) * (p0[1] - p1[1]) >= 0) {
+                    ans.push_back(p0); 
+                    break; 
+                }
+            }
+            ans.push_back(p); 
+        }
+        return ans; 
+    }
+
+
     /*583. Delete Operation for Two Strings (Medium)
 	Given two strings word1 and word2, return the minimum number of steps 
 	required to make word1 and word2 the same. In one step, you can delete 
