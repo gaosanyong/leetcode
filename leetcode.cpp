@@ -7892,7 +7892,7 @@ public:
 	Note: 1 <= n <= 10000*/
 
     vector<int> sumOfDistancesInTree(int n, vector<vector<int>>& edges) {
-        unordered_map<int, vector<int>> graph; 
+        vector<vector<int>> graph(n); 
         for (auto& edge : edges) {
             graph[edge[0]].push_back(edge[1]); 
             graph[edge[1]].push_back(edge[0]); 
@@ -7900,32 +7900,30 @@ public:
         
         vector<int> size(n); 
         
-        function<pair<int, int>(int, int)> fn = [&](int x, int p) {
-            int c = 1, s = 0; 
-            for (auto& xx : graph[x]) {
+        function<int(int, int)> fn = [&](int x, int p) {
+            int sm = 0; 
+            size[x] = 1; 
+            for (auto& xx : graph[x]) 
                 if (xx != p) {
-                    auto [cc, ss] = fn(xx, x); 
-                    c += cc; 
-                    s += ss + cc; 
+                    int ss = fn(xx, x); 
+                    size[x] += size[xx]; 
+                    sm += ss + size[xx]; 
                 }
-            }
-            size[x] = c; 
-            return make_pair(c, s); 
+            return sm; 
         };
         
         vector<int> ans(n); 
-        ans[0] = fn(0, -1).second; 
+        ans[0] = fn(0, -1);
         
         stack<int> stk; 
         stk.push(0); 
         while (stk.size()) {
             int x = stk.top(); stk.pop(); 
-            for (auto& xx : graph[x]) {
+            for (auto& xx : graph[x]) 
                 if (!ans[xx]) {
                     ans[xx] = ans[x] + n - 2*size[xx]; 
                     stk.push(xx); 
                 }
-            }
         }
         return ans; 
     }
