@@ -14753,11 +14753,11 @@ public:
         auto power = [](long x, int p, int m) {
             long ans = 1; 
             while (p) {
-                if (p&1) {
-                    ans = (ans * x) % m; 
-                    p -= 1; 
+                if (p & 1) {
+                    ans = ans * x % m; 
+                    --p; 
                 } else {
-                    x = (x * x) % m; 
+                    x = x * x % m; 
                     p /= 2; 
                 } 
             }
@@ -21731,6 +21731,220 @@ public:
         }
         return ans; 
     }
+
+
+    /*1991. Find the Middle Index in Array (Easy)
+	Given a 0-indexed integer array nums, find the leftmost middleIndex (i.e., 
+	the smallest amongst all the possible ones). A middleIndex is an index 
+	where 
+	nums[0] + nums[1] + ... + nums[middleIndex-1] == nums[middleIndex+1] + nums[middleIndex+2] + ... + nums[nums.length-1].
+	If middleIndex == 0, the left side sum is considered to be 0. Similarly, if 
+	middleIndex == nums.length - 1, the right side sum is considered to be 0. 
+	Return the leftmost middleIndex that satisfies the condition, or -1 if 
+	there is no such index.
+
+	Example 1:
+	Input: nums = [2,3,-1,8,4]
+	Output: 3
+	Explanation: The sum of the numbers before index 3 is: 2 + 3 + -1 = 4
+	             The sum of the numbers after index 3 is: 4 = 4
+	
+	Example 2:
+	Input: nums = [1,-1,4]
+	Output: 2
+	Explanation: The sum of the numbers before index 2 is: 1 + -1 = 0
+	             The sum of the numbers after index 2 is: 0
+	
+	Example 3:
+	Input: nums = [2,5]
+	Output: -1
+	Explanation: There is no valid middleIndex.
+	
+	Example 4:
+	Input: nums = [1]
+	Output: 0
+	Explantion: The sum of the numbers before index 0 is: 0
+	            The sum of the numbers after index 0 is: 0
+
+	Constraints:
+	* 1 <= nums.length <= 100
+	* -1000 <= nums[i] <= 1000*/
+
+    int findMiddleIndex(vector<int>& nums) {
+        int total = accumulate(nums.begin(), nums.end(), 0), prefix = 0;  
+        for (int i = 0; i < nums.size(); ++i) {
+            if (2*prefix == total - nums[i]) return i; 
+            prefix += nums[i]; 
+        }
+        return -1; 
+    }
+
+
+    /*1992. Find All Groups of Farmland (Medium)
+	You are given a 0-indexed m x n binary matrix land where a 0 represents a 
+	hectare of forested land and a 1 represents a hectare of farmland. To keep 
+	the land organized, there are designated rectangular areas of hectares that 
+	consist entirely of farmland. These rectangular areas are called groups. No 
+	two groups are adjacent, meaning farmland in one group is not four-
+	directionally adjacent to another farmland in a different group. land can 
+	be represented by a coordinate system where the top left corner of land is 
+	(0, 0) and the bottom right corner of land is (m-1, n-1). Find the 
+	coordinates of the top left and bottom right corner of each group of 
+	farmland. A group of farmland with a top left corner at (r1, c1) and a 
+	bottom right corner at (r2, c2) is represented by the 4-length array 
+	[r1, c1, r2, c2]. Return a 2D array containing the 4-length arrays 
+	described above for each group of farmland in land. If there are no groups 
+	of farmland, return an empty array. You may return the answer in any order.
+
+	Example 1:
+	Input: land = [[1,0,0],[0,1,1],[0,1,1]]
+	Output: [[0,0,0,0],[1,1,2,2]]
+	Explanation: The first group has a top left corner at land[0][0] and a 
+	             bottom right corner at land[0][0]. The second group has a top 
+	             left corner at land[1][1] and a bottom right corner at 
+	             land[2][2].
+	
+	Example 2:
+	Input: land = [[1,1],[1,1]]
+	Output: [[0,0,1,1]]
+	Explanation: The first group has a top left corner at land[0][0] and a 
+	             bottom right corner at land[1][1].
+	
+	Example 3:
+	Input: land = [[0]]
+	Output: []
+	Explanation: There are no groups of farmland.
+
+	Constraints:
+	* m == land.length
+	* n == land[i].length
+	* 1 <= m, n <= 300
+	* land consists of only 0's and 1's.
+	* Groups of farmland are rectangular in shape.*/
+
+    vector<vector<int>> findFarmland(vector<vector<int>>& land) {
+        int m = land.size(), n = land[0].size(), dir[5] = {-1, 0, 1, 0, -1}; 
+        vector<vector<int>> ans; 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if (land[i][j]) {
+                    land[i][j] = 0; // mark as visited 
+                    int mini = i, minj = j, maxi = i, maxj = j; 
+                    stack<int> stk; 
+                    stk.push(i*n + j); 
+                    while (stk.size()) {
+                        auto x = stk.top(); stk.pop(); 
+                        int i = x/n, j = x%n; 
+                        for (int k = 0; k < 4; ++k) {
+                            int ii = i + dir[k], jj = j + dir[k+1]; 
+                            if (0 <= ii && ii < m && 0 <= jj && jj < n && land[ii][jj]) {
+                                land[ii][jj] = 0; 
+                                stk.push(ii*n + jj); 
+                                maxi = max(maxi, ii); 
+                                maxj = max(maxj, jj); 
+                            }
+                        }
+                    }
+                    ans.push_back({mini, minj, maxi, maxj});  
+                }
+        return ans; 
+    }
+
+
+    /*1994. The Number of Good Subsets (Hard)
+	You are given an integer array nums. We call a subset of nums good if its 
+	product can be represented as a product of one or more distinct prime 
+	numbers. 
+	* For example, if nums = [1, 2, 3, 4]:
+	  + [2, 3], [1, 2, 3], and [1, 3] are good subsets with products 6 = 2*3, 
+	    6 = 2*3, and 3 = 3 respectively.
+	  + [1, 4] and [4] are not good subsets with products 4 = 2*2 and 4 = 2*2 
+	    respectively.
+	Return the number of different good subsets in nums modulo 10^9 + 7. A 
+	subset of nums is any array that can be obtained by deleting some (possibly 
+	none or all) elements from nums. Two subsets are different if and only if 
+	the chosen indices to delete are different.
+
+	Example 1:
+	Input: nums = [1,2,3,4]
+	Output: 6
+	Explanation: The good subsets are:
+	             - [1,2]: product is 2, which is the product of distinct prime 2.
+	             - [1,2,3]: product is 6, which is the product of distinct primes 2 and 3.
+	             - [1,3]: product is 3, which is the product of distinct prime 3.
+	             - [2]: product is 2, which is the product of distinct prime 2.
+	             - [2,3]: product is 6, which is the product of distinct primes 2 and 3.
+	             - [3]: product is 3, which is the product of distinct prime 3.
+	
+	Example 2:
+	Input: nums = [4,2,3,15]
+	Output: 5
+	Explanation: The good subsets are:
+	             - [2]: product is 2, which is the product of distinct prime 2.
+	             - [2,3]: product is 6, which is the product of distinct primes 2 and 3.
+	             - [2,15]: product is 30, which is the product of distinct primes 2, 3, and 5.
+	             - [3]: product is 3, which is the product of distinct prime 3.
+	             - [15]: product is 15, which is the product of distinct primes 3 and 5.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 30*/
+
+    int numberOfGoodSubsets(vector<int>& nums) {
+        const int MOD = 1'000'000'007; 
+        
+        int primes[10] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29}; 
+        unordered_map<int, int> mp; 
+        for (int i = 0; i < 10; ++i) mp[primes[i]] = i+1; 
+        
+        vector<int> freq(31); 
+        for (auto& x : nums) ++freq[x]; 
+        
+        vector<int> masks(31); 
+        masks[1] = 1; 
+        for (int x = 2; x < 31; ++x) {
+            int bits = 0, xx = x; 
+            bool dup = false; 
+            for (auto& k : primes) 
+                while (xx % k == 0) {
+                    if ((bits >> mp[k]) & 1) {
+                        dup = true; 
+                        break; 
+                    }
+                    bits |= 1 << mp[k]; 
+                    xx /= k; 
+                }
+            if (not dup) masks[x] = bits; 
+        }
+        
+        auto power = [](long x, int p, int m) {
+            long ans = 1; 
+            while (p) {
+                if (p & 1) {
+                    ans = ans * x % m; 
+                    --p; 
+                } else {
+                    x = x * x % m; 
+                    p /= 2; 
+                }
+            }
+            return ans; 
+        }; 
+        
+        int M = 1 << 11; 
+        vector<vector<long>> dp(32, vector<long>(M)); 
+        for (int m = 2; m < M; ++m) dp[31][m] = 1; 
+        
+        for (int x = 30; x >= 1; --x) 
+            for (int m = 0; m < M; ++m) {
+                dp[x][m] = dp[x+1][m]; 
+                if (freq[x] && masks[x]) {
+                    if (x == 1) dp[x][m] = power(2, freq[1], MOD) * dp[x][m] % MOD; 
+                    else if ((m & masks[x]) == 0) dp[x][m] = (dp[x][m] + freq[x] * dp[x+1][m | masks[x]]) % MOD; 
+                }
+            }
+        return dp[1][0]; 
+    }
 };
 
 
@@ -23028,5 +23242,111 @@ public:
             ans.push_back(*it); 
         }
         return ans; 
+    }
+};
+
+
+/*1993. Operations on Tree (Medium)
+You are given a tree with n nodes numbered from 0 to n - 1 in the form of a 
+parent array parent where parent[i] is the parent of the ith node. The root of 
+the tree is node 0, so parent[0] = -1 since it has no parent. You want to 
+design a data structure that allows users to lock, unlock, and upgrade nodes in 
+the tree. The data structure should support the following functions:
+* Lock: Locks the given node for the given user and prevents other users from 
+  locking the same node. You may only lock a node if the node is unlocked.
+* Unlock: Unlocks the given node for the given user. You may only unlock a node 
+  if it is currently locked by the same user.
+* Upgrade: Locks the given node for the given user and unlocks all of its 
+  descendants. You may only upgrade a node if all 3 conditions are true:
+  + The node is unlocked,
+  + It has at least one locked descendant (by any user), and
+  + It does not have any locked ancestors.
+
+Implement the LockingTree class:
+* LockingTree(int[] parent) initializes the data structure with the parent 
+  array.
+* lock(int num, int user) returns true if it is possible for the user with id 
+  user to lock the node num, or false otherwise. If it is possible, the node 
+  num will become locked by the user with id user.
+* unlock(int num, int user) returns true if it is possible for the user with id 
+  user to unlock the node num, or false otherwise. If it is possible, the node 
+  num will become unlocked.
+* upgrade(int num, int user) returns true if it is possible for the user with 
+  id user to upgrade the node num, or false otherwise. If it is possible, the 
+  node num will be upgraded.
+
+Example 1:
+Input: ["LockingTree", "lock", "unlock", "unlock", "lock", "upgrade", "lock"]
+       [[[-1, 0, 0, 1, 1, 2, 2]], [2, 2], [2, 3], [2, 2], [4, 5], [0, 1], [0, 1]]
+Output: [null, true, false, true, true, true, false]
+Explanation: 
+LockingTree lockingTree = new LockingTree([-1, 0, 0, 1, 1, 2, 2]);
+lockingTree.lock(2, 2);    // return true because node 2 is unlocked.
+                           // Node 2 will now be locked by user 2.
+lockingTree.unlock(2, 3);  // return false because user 3 cannot unlock a node locked by user 2.
+lockingTree.unlock(2, 2);  // return true because node 2 was previously locked by user 2.
+                           // Node 2 will now be unlocked.
+lockingTree.lock(4, 5);    // return true because node 4 is unlocked.
+                           // Node 4 will now be locked by user 5.
+lockingTree.upgrade(0, 1); // return true because node 0 is unlocked and has at least one locked descendant (node 4).
+                           // Node 0 will now be locked by user 1 and node 4 will now be unlocked.
+lockingTree.lock(0, 1);    // return false because node 0 is already locked.
+
+Constraints:
+* n == parent.length
+* 2 <= n <= 2000
+* 0 <= parent[i] <= n - 1 for i != 0
+* parent[0] == -1
+* 0 <= num <= n - 1
+* 1 <= user <= 104
+* parent represents a valid tree.
+* At most 2000 calls in total will be made to lock, unlock, and upgrade.*/
+
+class LockingTree {
+    vector<int> parent; 
+    vector<int> locked; 
+    vector<vector<int>> tree; 
+public:
+    LockingTree(vector<int>& parent) {
+        this->parent = parent; 
+        int n = parent.size(); 
+        locked.resize(n); 
+        tree.resize(n); 
+        for (int i = 0; i < parent.size(); ++i) 
+            if (parent[i] != -1) tree[parent[i]].push_back(i); 
+    }
+    
+    bool lock(int num, int user) {
+        if (locked[num]) return false; 
+        locked[num] = user; 
+        return true; 
+    }
+    
+    bool unlock(int num, int user) {
+        if (locked[num] != user) return false; 
+        locked[num] = 0; 
+        return true; 
+    }
+    
+    bool upgrade(int num, int user) {
+        if (locked[num]) return false; // locked node found
+        int x = num; 
+        while (x != -1) {
+            if (locked[x]) return false; // locked ancestor found
+            x = parent[x]; 
+        }
+        stack<int> stk; stk.push(num); 
+        vector<int> descendants; 
+        while (stk.size()) {
+            int x = stk.top(); stk.pop(); 
+            if (locked[x]) descendants.push_back(x); 
+            for (auto& xx : tree[x]) stk.push(xx); 
+        }
+        if (descendants.size()) {
+            locked[num] = user; 
+            for (auto& x : descendants) locked[x] = 0; 
+            return true; 
+        }
+        return false; 
     }
 };
