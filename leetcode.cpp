@@ -21945,6 +21945,241 @@ public:
             }
         return dp[1][0]; 
     }
+
+
+    /*1995. Count Special Quadruplets (Easy)
+	Given a 0-indexed integer array nums, return the number of distinct 
+	quadruplets (a, b, c, d) such that:
+	* nums[a] + nums[b] + nums[c] == nums[d], and
+	* a < b < c < d
+
+	Example 1:
+	Input: nums = [1,2,3,6]
+	Output: 1
+	Explanation: The only quadruplet that satisfies the requirement is 
+	             (0, 1, 2, 3) because 1 + 2 + 3 == 6.
+	
+	Example 2:
+	Input: nums = [3,3,6,4,5]
+	Output: 0
+	Explanation: There are no such quadruplets in [3,3,6,4,5].
+
+	Example 3:
+	Input: nums = [1,1,1,3,5]
+	Output: 4
+	Explanation: The 4 quadruplets that satisfy the requirement are:
+	             - (0, 1, 2, 3): 1 + 1 + 1 == 3
+	             - (0, 1, 3, 4): 1 + 1 + 3 == 5
+	             - (0, 2, 3, 4): 1 + 1 + 3 == 5
+	             - (1, 2, 3, 4): 1 + 1 + 3 == 5
+
+	Constraints:
+	* 4 <= nums.length <= 50
+	* 1 <= nums[i] <= 100*/
+
+    int countQuadruplets(vector<int>& nums) {
+        int ans = 0; 
+        unordered_map<int, int> freq; 
+        for (int i = 0; i < nums.size(); ++i) {
+            for (int j = i+1; j < nums.size(); ++j) 
+                for (int k = j+1; k < nums.size(); ++k) 
+                    ans += freq[nums[k] - nums[i] - nums[j]]; 
+            freq[nums[i]]++; 
+        }
+        return ans; 
+    }
+
+
+    /*1996. The Number of Weak Characters in the Game (Medium)
+	You are playing a game that contains multiple characters, and each of the 
+	characters has two main properties: attack and defense. You are given a 2D 
+	integer array properties where properties[i] = [attacki, defensei] 
+	represents the properties of the ith character in the game. A character is 
+	said to be weak if any other character has both attack and defense levels 
+	strictly greater than this character's attack and defense levels. More 
+	formally, a character i is said to be weak if there exists another 
+	character j where attackj > attacki and defensej > defensei. Return the 
+	number of weak characters.
+
+	Example 1:
+	Input: properties = [[5,5],[6,3],[3,6]]
+	Output: 0
+	Explanation: No character has strictly greater attack and defense than the 
+	             other.
+	
+	Example 2:
+	Input: properties = [[2,2],[3,3]]
+	Output: 1
+	Explanation: The first character is weak because the second character has a 
+	             strictly greater attack and defense.
+	
+	Example 3:
+	Input: properties = [[1,5],[10,4],[4,3]]
+	Output: 1
+	Explanation: The third character is weak because the second character has a 
+	             strictly greater attack and defense.
+
+	Constraints:
+	* 2 <= properties.length <= 10^5
+	* properties[i].length == 2
+	* 1 <= attacki, defensei <= 10^5*/
+
+    int numberOfWeakCharacters(vector<vector<int>>& properties) {
+        sort(properties.begin(), properties.end(), [](auto& lhs, auto& rhs) {
+            return lhs[0] > rhs[0] || (lhs[0] == rhs[0] && lhs[1] < rhs[1]); 
+        }); 
+        
+        int ans = 0, prefix = 0; 
+        for (auto& x : properties) {
+            if (x[1] < prefix) ++ans; 
+            prefix = max(prefix, x[1]);
+        }
+        return ans; 
+    }
+
+
+    /*1997. First Day Where You Have Been in All the Rooms (Medium)
+	There are n rooms you need to visit, labeled from 0 to n - 1. Each day is 
+	labeled, starting from 0. You will go in and visit one room a day. 
+	Initially on day 0, you visit room 0. The order you visit the rooms for the 
+	coming days is determined by the following rules and a given 0-indexed 
+	array nextVisit of length n:
+	* Assuming that on a day, you visit room i,
+	* if you have been in room i an odd number of times (including the current 
+	  visit), on the next day you will visit the room specified by nextVisit[i] 
+	  where 0 <= nextVisit[i] <= i;
+	* if you have been in room i an even number of times (including the current 
+	  visit), on the next day you will visit room (i + 1) mod n.
+	Return the label of the first day where you have been in all the rooms. It 
+	can be shown that such a day exists. Since the answer may be very large, 
+	return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: nextVisit = [0,0]
+	Output: 2
+	Explanation:
+	- On day 0, you visit room 0. The total times you have been in room 0 is 1, 
+	  which is odd. On the next day you will visit room nextVisit[0] = 0
+	- On day 1, you visit room 0, The total times you have been in room 0 is 2, 
+	  which is even. On the next day you will visit room (0 + 1) mod 2 = 1
+	- On day 2, you visit room 1. This is the first day where you have been in 
+	  all the rooms.
+	
+	Example 2:
+	Input: nextVisit = [0,0,2]
+	Output: 6
+	Explanation: Your room visiting order for each day is: [0,0,1,0,0,1,2,...]. 
+	             Day 6 is the first day where you have been in all the rooms.
+	
+	Example 3:
+	Input: nextVisit = [0,1,2,0]
+	Output: 6
+	Explanation: Your room visiting order for each day is: [0,0,1,1,2,2,3,...].
+	             Day 6 is the first day where you have been in all the rooms.
+
+	Constraints:
+	* n == nextVisit.length
+	* 2 <= n <= 10^5
+	* 0 <= nextVisit[i] <= i*/
+
+    int firstDayBeenInAllRooms(vector<int>& nextVisit) {
+        const int MOD = 1'000'000'007; 
+        int n = nextVisit.size(); 
+        vector<long> odd(n), even(n); 
+        even[0] = 1; 
+        for (int i = 1; i < n; ++i) {
+            odd[i] = (even[i-1] + 1) % MOD; 
+            even[i] = (2*odd[i] - odd[nextVisit[i]] + 1 + MOD) % MOD; 
+        }
+        return odd.back(); 
+    }
+
+
+    /*1998. GCD Sort of an Array (Hard)
+	You are given an integer array nums, and you can perform the following 
+	operation any number of times on nums:
+	* Swap the positions of two elements nums[i] and nums[j] if 
+	  gcd(nums[i], nums[j]) > 1 where gcd(nums[i], nums[j]) is the greatest 
+	  common divisor of nums[i] and nums[j].
+	Return true if it is possible to sort nums in non-decreasing order using 
+	the above swap method, or false otherwise.
+
+	Example 1:
+	Input: nums = [7,21,3]
+	Output: true
+	Explanation: We can sort [7,21,3] by performing the following operations:
+	             - Swap 7 and 21 because gcd(7,21) = 7. nums = [21,7,3]
+	             - Swap 21 and 3 because gcd(21,3) = 3. nums = [3,7,21]
+	
+	Example 2:
+	Input: nums = [5,2,6,2]
+	Output: false
+	Explanation: It is impossible to sort the array because 5 cannot be swapped 
+	             with any other element.
+	
+	Example 3:
+	Input: nums = [10,5,9,3,15]
+	Output: true
+	We can sort [10,5,9,3,15] by performing the following operations:
+	- Swap 10 and 15 because gcd(10,15) = 5. nums = [15,5,9,3,10]
+	- Swap 15 and 3 because gcd(15,3) = 3. nums = [3,5,9,15,10]
+	- Swap 10 and 15 because gcd(10,15) = 5. nums = [3,5,9,10,15]
+
+	Constraints:
+	* 1 <= nums.length <= 3 * 10^4
+	* 2 <= nums[i] <= 10^5
+
+class UnionFind {
+    vector<int> parent, rank; 
+public: 
+    UnionFind(int n) {
+        parent.resize(n); 
+        iota(parent.begin(), parent.end(), 0); 
+        rank = vector<int>(n, 1); 
+    }
+    
+    int find(int p) {
+        if (p != parent[p]) 
+            parent[p] = find(parent[p]); 
+        return parent[p]; 
+    }
+    
+    bool connect(int p, int q) {
+        int prt = find(p), qrt = find(q); 
+        if (prt == qrt) return false; 
+        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
+        parent[prt] = qrt; 
+        rank[qrt] += rank[prt]; 
+        return true; 
+    }
+};*/
+
+    bool gcdSort(vector<int>& nums) {
+        int m = *max_element(nums.begin(), nums.end()); 
+        UnionFind* uf = new UnionFind(1+m); 
+        
+        unordered_set<int> seen(nums.begin(), nums.end()); 
+        
+        vector<bool> sieve(1+m, true); 
+        sieve[0] = sieve[1] = false; 
+        for (int i = 2; i <= m/2; ++i) 
+            if (sieve[i]) 
+                for (int ii = i*2; ii <= m; ii += i) {
+                    sieve[ii] = false; 
+                    if (seen.count(ii)) uf->connect(i, ii); 
+                }
+        
+        bool ans = true; 
+        vector<int> copy(nums); 
+        sort(copy.begin(), copy.end()); 
+        for (int i = 0; i < nums.size(); ++i) 
+            if (uf->find(nums[i]) != uf->find(copy[i])) {
+                ans = false; 
+                break; 
+            }
+        delete uf; 
+        return ans; 
+    }
 };
 
 

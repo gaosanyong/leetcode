@@ -33724,7 +33724,7 @@ class Fenwick:
 	There is a biker going on a road trip. The road trip consists of n + 1 
 	points at different altitudes. The biker starts his trip on point 0 with 
 	altitude equal 0. You are given an integer array gain of length n where 
-	gain[i] is the net gain in altitude between points i​​​​​​ and i + 1 for all 
+	gain[i] is the net gain in altitude between points i and i + 1 for all 
 	(0 <= i < n). Return the highest altitude of a point.
 
 	Example 1:
@@ -33756,8 +33756,8 @@ class Fenwick:
 	language. You are given an integer n, an array languages, and an array 
 	friendships where:
 	* There are n languages numbered 1 through n,
-	* languages[i] is the set of languages the i​​​​​​th​​​​ user knows, and
-	* friendships[i] = [u​​​​​​i​​​, v​​​​​​i] denotes a friendship between the users u​​​​​​​​​​​i​​​​​ and vi.
+	* languages[i] is the set of languages the ith user knows, and
+	* friendships[i] = [ui, vi] denotes a friendship between the users ui and vi.
 	You can choose one language and teach it to some users so that all friends 
 	can communicate with each other. Return the minimum number of users you 
 	need to teach. Note that friendships are not transitive, meaning if x is a 
@@ -33780,9 +33780,9 @@ class Fenwick:
 	* 1 <= m <= 500
 	* 1 <= languages[i].length <= n
 	* 1 <= languages[i][j] <= n
-	* 1 <= u​​​​​​i < v​​​​​​i <= languages.length
+	* 1 <= ui < vi <= languages.length
 	* 1 <= friendships.length <= 500
-	* All tuples (u​​​​​i, v​​​​​​i) are unique
+	* All tuples (ui, vi) are unique
 	* languages[i] contains only unique values"""
 
     def minimumTeachings(self, n: int, languages: List[List[int]], friendships: List[List[int]]) -> int:
@@ -33837,7 +33837,7 @@ class Fenwick:
 	queries[i] = [ni, ki], find the number of different ways you can place 
 	positive integers into an array of size ni such that the product of the 
 	integers is ki. As the number of ways may be too large, the answer to the 
-	ith query is the number of ways modulo 109 + 7. Return an integer array 
+	ith query is the number of ways modulo 10^9 + 7. Return an integer array 
 	answer where answer.length == queries.length, and answer[i] is the answer 
 	to the ith query.
 
@@ -33847,15 +33847,15 @@ class Fenwick:
 	Explanation: Each query is independent.
 	[2,6]: There are 4 ways to fill an array of size 2 that multiply to 6: [1,6], [2,3], [3,2], [6,1].
 	[5,1]: There is 1 way to fill an array of size 5 that multiply to 1: [1,1,1,1,1].
-	[73,660]: There are 1050734917 ways to fill an array of size 73 that multiply to 660. 1050734917 modulo 109 + 7 = 50734910.
+	[73,660]: There are 1050734917 ways to fill an array of size 73 that multiply to 660. 1050734917 modulo 10^9 + 7 = 50734910.
 
 	Example 2:
 	Input: queries = [[1,1],[2,2],[3,3],[4,4],[5,5]]
 	Output: [1,2,3,10,5]
 
 	Constraints:
-	* 1 <= queries.length <= 104
-	* 1 <= ni, ki <= 104"""
+	* 1 <= queries.length <= 10^4
+	* 1 <= ni, ki <= 10^4"""
 
     def waysToFillArray(self, queries: List[List[int]]) -> List[int]:
         spf = list(range(10001)) # spf = smallest prime factor 
@@ -43624,6 +43624,212 @@ class UnionFind:
             return ans % 1_000_000_007
         
         return fn(1, 0)
+
+
+    """1995. Count Special Quadruplets (Easy)
+	Given a 0-indexed integer array nums, return the number of distinct 
+	quadruplets (a, b, c, d) such that:
+	* nums[a] + nums[b] + nums[c] == nums[d], and
+	* a < b < c < d
+
+	Example 1:
+	Input: nums = [1,2,3,6]
+	Output: 1
+	Explanation: The only quadruplet that satisfies the requirement is 
+	             (0, 1, 2, 3) because 1 + 2 + 3 == 6.
+	
+	Example 2:
+	Input: nums = [3,3,6,4,5]
+	Output: 0
+	Explanation: There are no such quadruplets in [3,3,6,4,5].
+
+	Example 3:
+	Input: nums = [1,1,1,3,5]
+	Output: 4
+	Explanation: The 4 quadruplets that satisfy the requirement are:
+	             - (0, 1, 2, 3): 1 + 1 + 1 == 3
+	             - (0, 1, 3, 4): 1 + 1 + 3 == 5
+	             - (0, 2, 3, 4): 1 + 1 + 3 == 5
+	             - (1, 2, 3, 4): 1 + 1 + 3 == 5
+
+	Constraints:
+	* 4 <= nums.length <= 50
+	* 1 <= nums[i] <= 100"""
+
+    def countQuadruplets(self, nums: List[int]) -> int:
+        ans = 0
+        freq = defaultdict(int)
+        for i in range(len(nums)):
+            for j in range(i+1, len(nums)):
+                for k in range(j+1, len(nums)):
+                    ans += freq[nums[k] - nums[i] - nums[j]]
+            freq[nums[i]] += 1
+        return ans 
+
+
+    """1996. The Number of Weak Characters in the Game (Medium)
+	You are playing a game that contains multiple characters, and each of the 
+	characters has two main properties: attack and defense. You are given a 2D 
+	integer array properties where properties[i] = [attacki, defensei] 
+	represents the properties of the ith character in the game. A character is 
+	said to be weak if any other character has both attack and defense levels 
+	strictly greater than this character's attack and defense levels. More 
+	formally, a character i is said to be weak if there exists another 
+	character j where attackj > attacki and defensej > defensei. Return the 
+	number of weak characters.
+
+	Example 1:
+	Input: properties = [[5,5],[6,3],[3,6]]
+	Output: 0
+	Explanation: No character has strictly greater attack and defense than the 
+	             other.
+	
+	Example 2:
+	Input: properties = [[2,2],[3,3]]
+	Output: 1
+	Explanation: The first character is weak because the second character has a 
+	             strictly greater attack and defense.
+	
+	Example 3:
+	Input: properties = [[1,5],[10,4],[4,3]]
+	Output: 1
+	Explanation: The third character is weak because the second character has a 
+	             strictly greater attack and defense.
+
+	Constraints:
+	* 2 <= properties.length <= 10^5
+	* properties[i].length == 2
+	* 1 <= attacki, defensei <= 10^5"""
+
+    def numberOfWeakCharacters(self, properties: List[List[int]]) -> int:
+        ans = prefix = 0 
+        for _, d in sorted(properties, key=lambda x: (-x[0], x[1])):
+            if d < prefix: ans += 1
+            prefix = max(prefix, d)
+        return ans
+
+
+    """1997. First Day Where You Have Been in All the Rooms (Medium)
+	There are n rooms you need to visit, labeled from 0 to n - 1. Each day is 
+	labeled, starting from 0. You will go in and visit one room a day. 
+	Initially on day 0, you visit room 0. The order you visit the rooms for the 
+	coming days is determined by the following rules and a given 0-indexed 
+	array nextVisit of length n:
+	* Assuming that on a day, you visit room i,
+	* if you have been in room i an odd number of times (including the current 
+	  visit), on the next day you will visit the room specified by nextVisit[i] 
+	  where 0 <= nextVisit[i] <= i;
+	* if you have been in room i an even number of times (including the current 
+	  visit), on the next day you will visit room (i + 1) mod n.
+	Return the label of the first day where you have been in all the rooms. It 
+	can be shown that such a day exists. Since the answer may be very large, 
+	return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: nextVisit = [0,0]
+	Output: 2
+	Explanation:
+	- On day 0, you visit room 0. The total times you have been in room 0 is 1, 
+	  which is odd. On the next day you will visit room nextVisit[0] = 0
+	- On day 1, you visit room 0, The total times you have been in room 0 is 2, 
+	  which is even. On the next day you will visit room (0 + 1) mod 2 = 1
+	- On day 2, you visit room 1. This is the first day where you have been in 
+	  all the rooms.
+	
+	Example 2:
+	Input: nextVisit = [0,0,2]
+	Output: 6
+	Explanation: Your room visiting order for each day is: [0,0,1,0,0,1,2,...]. 
+	             Day 6 is the first day where you have been in all the rooms.
+	
+	Example 3:
+	Input: nextVisit = [0,1,2,0]
+	Output: 6
+	Explanation: Your room visiting order for each day is: [0,0,1,1,2,2,3,...].
+	             Day 6 is the first day where you have been in all the rooms.
+
+	Constraints:
+	* n == nextVisit.length
+	* 2 <= n <= 10^5
+	* 0 <= nextVisit[i] <= i"""
+
+    def firstDayBeenInAllRooms(self, nextVisit: List[int]) -> int:
+        odd = [0]
+        even = [1]
+        for i in range(1, len(nextVisit)): 
+            odd.append((even[-1] + 1) % 1_000_000_007)
+            even.append((2*odd[-1] - odd[nextVisit[i]] + 1) % 1_000_000_007)
+        return odd[-1] 
+
+
+    """1998. GCD Sort of an Array (Hard)
+	You are given an integer array nums, and you can perform the following 
+	operation any number of times on nums:
+	* Swap the positions of two elements nums[i] and nums[j] if 
+	  gcd(nums[i], nums[j]) > 1 where gcd(nums[i], nums[j]) is the greatest 
+	  common divisor of nums[i] and nums[j].
+	Return true if it is possible to sort nums in non-decreasing order using 
+	the above swap method, or false otherwise.
+
+	Example 1:
+	Input: nums = [7,21,3]
+	Output: true
+	Explanation: We can sort [7,21,3] by performing the following operations:
+	             - Swap 7 and 21 because gcd(7,21) = 7. nums = [21,7,3]
+	             - Swap 21 and 3 because gcd(21,3) = 3. nums = [3,7,21]
+	
+	Example 2:
+	Input: nums = [5,2,6,2]
+	Output: false
+	Explanation: It is impossible to sort the array because 5 cannot be swapped 
+	             with any other element.
+	
+	Example 3:
+	Input: nums = [10,5,9,3,15]
+	Output: true
+	We can sort [10,5,9,3,15] by performing the following operations:
+	- Swap 10 and 15 because gcd(10,15) = 5. nums = [15,5,9,3,10]
+	- Swap 15 and 3 because gcd(15,3) = 3. nums = [3,5,9,15,10]
+	- Swap 10 and 15 because gcd(10,15) = 5. nums = [3,5,9,10,15]
+
+	Constraints:
+	* 1 <= nums.length <= 3 * 10^4
+	* 2 <= nums[i] <= 10^5
+
+class UnionFind:
+    
+    def __init__(self, n): 
+        self.parent = list(range(n))
+        self.rank = [1] * n
+        
+    def find(self, p): 
+        if p != self.parent[p]: 
+            self.parent[p] = self.find(self.parent[p])
+        return self.parent[p]
+
+    def union(self, p, q):
+        prt, qrt = self.find(p), self.find(q)
+        if prt == qrt: return False 
+        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
+        self.parent[prt] = qrt
+        self.rank[qrt] += self.rank[prt]
+        return True"""
+        
+    def gcdSort(self, nums: List[int]) -> bool:
+        m = max(nums)
+        uf = UnionFind(m+1)
+        
+        seen = set(nums)
+        
+        # modified sieve of eratosthenes
+        sieve = [1]*(m+1)
+        sieve[0] = sieve[1] = 0
+        for k in range(m//2 + 1): 
+            if sieve[k]: 
+                for x in range(2*k, m+1, k): 
+                    sieve[x] = 0
+                    if x in seen: uf.union(k, x)
+        return all(uf.find(x) == uf.find(y) for x, y in zip(nums, sorted(nums)))
 
 
 """146. LRU Cache (Medium)
