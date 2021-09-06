@@ -30423,15 +30423,15 @@ class UnionFind:
 	* releaseTimes.length == n
 	* keysPressed.length == n
 	* 2 <= n <= 1000
-	* 0 <= releaseTimes[i] <= 109
+	* 0 <= releaseTimes[i] <= 10^9
 	* releaseTimes[i] < releaseTimes[i+1]
 	* keysPressed contains only lowercase English letters."""
 
     def slowestKey(self, releaseTimes: List[int], keysPressed: str) -> str:
-        ans, mx = "", 0
+        ans, most = "", 0
         for i, (t, k) in enumerate(zip(releaseTimes, keysPressed)):
             if i: t -= releaseTimes[i-1]
-            if t > mx or t == mx and k > ans: ans, mx = k, t # update 
+            if (t, k) > (most, ans): most, ans = t, k # update 
         return ans 
 
 
