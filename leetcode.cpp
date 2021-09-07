@@ -4458,6 +4458,60 @@ public:
     }
 
 
+    /*555. Split Concatenated Strings (Medium)
+	You are given an array of strings strs. You could concatenate these strings 
+	together into a loop, where for each string, you could choose to reverse it 
+	or not. Among all the possible loops, return the lexicographically largest 
+	string after cutting the loop, which will make the looped string into a 
+	regular one. Specifically, to find the lexicographically largest string, 
+	you need to experience two phases:
+	* Concatenate all the strings into a loop, where you can reverse some 
+	  strings or not and connect them in the same order as given.
+	* Cut and make one breakpoint in any place of the loop, which will make the 
+	  looped string into a regular one starting from the character at the 
+	  cutpoint.
+	And your job is to find the lexicographically largest one among all the 
+	possible regular strings.
+
+	Example 1:
+	Input: strs = ["abc","xyz"]
+	Output: "zyxcba"
+	Explanation: You can get the looped string "-abcxyz-", "-abczyx-", 
+	             "-cbaxyz-", "-cbazyx-", where '-' represents the looped status. 
+	             The answer string came from the fourth looped one, where you 
+	             could cut from the middle character 'a' and get "zyxcba".
+	
+	Example 2:
+	Input: strs = ["abc"]
+	Output: "cba"
+
+	Constraints:
+	* 1 <= strs.length <= 1000
+	* 1 <= strs[i].length <= 1000
+	* 1 <= sum(strs[i].length) <= 1000
+	* strs[i] consists of lowercase English letters.*/
+
+    string splitLoopedString(vector<string>& strs) {
+        string s; 
+        for (int i = 0; i < strs.size(); ++i) {
+            string rev = strs[i]; 
+            reverse(rev.begin(), rev.end()); 
+            s += max(strs[i], rev); 
+        }
+        
+        string ans; 
+        for (int i = 0, ii = 0; i < strs.size(); ii += strs[i].size(), ++i) {
+            string rest = s.substr(ii + strs[i].size()) + s.substr(0, ii), rev = strs[i]; 
+            reverse(rev.begin(), rev.end()); 
+            for (int k = 0; k < strs[i].size(); ++k) {
+                ans = max(ans, strs[i].substr(k) + rest + strs[i].substr(0, k)); 
+                ans = max(ans, rev.substr(k) + rest + rev.substr(0, k)); 
+            }
+        }
+        return ans; 
+    }
+
+
     /*559. Maximum Depth of N-ary Tree (Easy)
 	Given a n-ary tree, find its maximum depth. The maximum depth is the number 
 	of nodes along the longest path from the root node down to the farthest 
