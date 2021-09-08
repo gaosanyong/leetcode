@@ -9754,6 +9754,57 @@ class UnionFind:
         return ans 
 
 
+    """351. Android Unlock Patterns (Medium)
+	Android devices have a special lock screen with a 3 x 3 grid of dots. Users 
+	can set an "unlock pattern" by connecting the dots in a specific sequence, 
+	forming a series of joined line segments where each segment's endpoints are 
+	two consecutive dots in the sequence. A sequence of k dots is a valid 
+	unlock pattern if both of the following are true:
+	* All the dots in the sequence are distinct.
+	* If the line segment connecting two consecutive dots in the sequence 
+	  passes through the center of any other dot, the other dot must have 
+	  previously appeared in the sequence. No jumps through the center non-
+	  selected dots are allowed.
+	  + For example, connecting dots 2 and 9 without dots 5 or 6 appearing 
+	    beforehand is valid because the line from dot 2 to dot 9 does not pass 
+	    through the center of either dot 5 or 6.
+	  + However, connecting dots 1 and 3 without dot 2 appearing beforehand is 
+	    invalid because the line from dot 1 to dot 3 passes through the center 
+	    of dot 2.
+
+	Two unlock patterns are considered unique if there is a dot in one sequence 
+	that is not in the other, or the order of the dots is different.
+
+	Example 1:
+	Input: m = 1, n = 1
+	Output: 9
+
+	Example 2:
+	Input: m = 1, n = 2
+	Output: 65
+
+	Constraints: 1 <= m, n <= 9"""
+
+    def numberOfPatterns(self, m: int, n: int) -> int:        
+        mp = {(1, 3): 2, (1, 7): 4, (1, 9): 5, (2, 8): 5, (3, 7): 5, (3, 9): 6, (4, 6): 5, (7, 9): 8, \
+              (3, 1): 2, (7, 1): 4, (9, 1): 5, (8, 2): 5, (7, 3): 5, (9, 3): 6, (6, 4): 5, (9, 7): 8}
+        
+        @cache
+        def fn(x, mask):
+            """Return number of unlock patterns."""
+            ans = size = 0 
+            for xx in range(1, 10): 
+                if not mask & (1 << xx): 
+                    if (x, xx) not in mp or mask & 1 << mp[x, xx]: 
+                        ans += fn(xx, mask^(1<<xx))
+                    size += 1
+            size = 9 - size
+            if m <= size <= n: ans += 1
+            return ans 
+        
+        return fn(0, 0)
+
+
     """356. Line Reflection (Medium)
 	Given n points on a 2D plane, find if there is such a line parallel to 
 	y-axis that reflect the given points symmetrically, in other words, answer 

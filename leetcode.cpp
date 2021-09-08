@@ -3108,6 +3108,59 @@ public:
     }
 
 
+    /*351. Android Unlock Patterns (Medium)
+	Android devices have a special lock screen with a 3 x 3 grid of dots. Users 
+	can set an "unlock pattern" by connecting the dots in a specific sequence, 
+	forming a series of joined line segments where each segment's endpoints are 
+	two consecutive dots in the sequence. A sequence of k dots is a valid 
+	unlock pattern if both of the following are true:
+	* All the dots in the sequence are distinct.
+	* If the line segment connecting two consecutive dots in the sequence 
+	  passes through the center of any other dot, the other dot must have 
+	  previously appeared in the sequence. No jumps through the center non-
+	  selected dots are allowed.
+	  + For example, connecting dots 2 and 9 without dots 5 or 6 appearing 
+	    beforehand is valid because the line from dot 2 to dot 9 does not pass 
+	    through the center of either dot 5 or 6.
+	  + However, connecting dots 1 and 3 without dot 2 appearing beforehand is 
+	    invalid because the line from dot 1 to dot 3 passes through the center 
+	    of dot 2.
+
+	Two unlock patterns are considered unique if there is a dot in one sequence 
+	that is not in the other, or the order of the dots is different.
+
+	Example 1:
+	Input: m = 1, n = 1
+	Output: 9
+
+	Example 2:
+	Input: m = 1, n = 2
+	Output: 65
+
+	Constraints: 1 <= m, n <= 9*/
+
+    int numberOfPatterns(int m, int n) {
+        vector<vector<int>> skip(10, vector<int>(10, 0)); 
+        skip[1][3] = skip[3][1] = 2; 
+        skip[1][7] = skip[7][1] = 4; 
+        skip[1][9] = skip[9][1] = skip[2][8] = skip[8][2] = skip[3][7] = skip[7][3] = skip[4][6] = skip[6][4] = 5; 
+        skip[3][9] = skip[9][3] = 6; 
+        skip[7][9] = skip[9][7] = 8; 
+        
+        map<pair<int, int>, int> memo; 
+        function<int(int, int)> fn = [&](int x, int mask) {
+            int ans = 0, size = __builtin_popcount(mask); 
+            for (int xx = 1; xx <= 9; ++xx) 
+                if ((mask & (1 << xx)) == 0 && (skip[x][xx] == 0 || (mask & (1 << skip[x][xx])))) 
+                    ans += fn(xx, mask^(1 << xx)); 
+            if (m <= size && size <= n) ++ans; 
+            return ans; 
+        }; 
+        
+        return fn(0, 0); 
+    }
+
+
     /*363. Max Sum of Rectangle No Larger Than K (Hard)
 	Given an m x n matrix matrix and an integer k, return the max sum of a 
 	rectangle in the matrix such that its sum is no larger than k. It is 
