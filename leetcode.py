@@ -13169,6 +13169,32 @@ class UnionFind:
         return ans 
 
 
+    """625. Minimum Factorization (Medium)
+	Given a positive integer num, return the smallest positive integer x whose 
+	multiplication of each digit equals num. If there is no answer or the 
+	answer is not fit in 32-bit signed integer, return 0.
+
+	Example 1:
+	Input: num = 48
+	Output: 68
+
+	Example 2:
+	Input: num = 15
+	Output: 35
+
+	Constraints: 1 <= num <= 2^31 - 1"""
+
+    def smallestFactorization(self, num: int) -> int:
+        if num == 1: return 1 # edge case 
+        ans, mult = 0, 1
+        for x in range(9, 1, -1): 
+            while num % x == 0: 
+                num //= x
+                ans = ans + mult * x
+                mult *= 10
+        return ans if num == 1 and ans < (1 << 31) else 0
+
+
     """629. K Inverse Pairs Array (Hard)
 	For an integer array nums, an inverse pair is a pair of integers [i, j] 
 	where 0 <= i < j < nums.length and nums[i] > nums[j]. Given two integers n 
