@@ -15555,16 +15555,18 @@ class UnionFind:
 	* (Additionally, programs submitted in C, C++, or C# will be judged with a 
 	  slightly smaller time limit.)"""
 
-    def orderOfLargestPlusSign(self, N: int, mines: List[List[int]]) -> int:
-        mines = {(x, y) for x, y in mines}
-        dp = [[N]*N for _ in range(N)]
-        for i in range(N):
-            tt = ll = rr = bb = 0 # top | left | right | bottom 
-            for j in range(N): 
-                dp[i][j] = min(dp[i][j], ll := 0 if (i, j) in mines else ll+1)
-                dp[j][i] = min(dp[j][i], tt := 0 if (j, i) in mines else tt+1)
-                dp[~i][~j] = min(dp[~i][~j], rr := 0 if (~i%N, ~j%N) in mines else rr+1)
-                dp[~j][~i] = min(dp[~j][~i], bb := 0 if (~j%N, ~i%N) in mines else bb+1)
+    def orderOfLargestPlusSign(self, n: int, mines: List[List[int]]) -> int:
+        dp = [[n] * n for _ in range(n)]
+        for i, j in mines: dp[i][j] = 0
+        
+        for i in range(n):
+            ll = dd = rr = uu = 0 
+            for j in range(n): 
+                dp[i][j] = min(dp[i][j], ll := ll+1 if dp[i][j] else 0)
+                dp[j][i] = min(dp[j][i], dd := dd+1 if dp[j][i] else 0)
+                dp[i][~j] = min(dp[i][~j], rr := rr+1 if dp[i][~j] else 0)
+                dp[~j][i] = min(dp[~j][i], uu := uu+1 if dp[~j][i] else 0)
+                    
         return max(map(max, dp))
 
 
