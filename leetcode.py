@@ -13367,6 +13367,32 @@ class UnionFind:
             x += 1
         return c % 4 != 3
 
+
+    """634. Find the Derangement of An Array (Medium)
+	In combinatorial mathematics, a derangement is a permutation of the 
+	elements of a set, such that no element appears in its original position.
+	You are given an integer n. There is originally an array consisting of n 
+	integers from 1 to n in ascending order, return the number of derangements 
+	it can generate. Since the answer may be huge, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: n = 3
+	Output: 2
+	Explanation: The original array is [1,2,3]. The two derangements are 
+	             [2,3,1] and [3,1,2].
+	
+	Example 2:
+	Input: n = 2
+	Output: 1
+
+	Constraints: 1 <= n <= 10^6"""
+
+    def findDerangement(self, n: int) -> int:
+        f0, f1 = 1, 0
+        for i in range(2, n+1): 
+            f0, f1 = f1, (i-1) * (f0+f1) % 1_000_000_007
+        return f1
+
     
     """639. Decode Ways II (Hard)
 	A message containing letters from A-Z can be encoded into numbers using the 
