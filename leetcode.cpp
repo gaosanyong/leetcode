@@ -15175,6 +15175,67 @@ public:
     }
 
 
+    /*1820. Maximum Number of Accepted Invitations (Medium)
+	There are m boys and n girls in a class attending an upcoming party. You 
+	are given an m x n integer matrix grid, where grid[i][j] equals 0 or 1. If 
+	grid[i][j] == 1, then that means the ith boy can invite the jth girl to the 
+	party. A boy can invite at most one girl, and a girl can accept at most one 
+	invitation from a boy. Return the maximum possible number of accepted 
+	invitations.
+
+	Example 1:
+	Input: grid = [[1,1,1],
+	               [1,0,1],
+	               [0,0,1]]
+	Output: 3
+	Explanation: The invitations are sent as follows:
+	             - The 1st boy invites the 2nd girl.
+	             - The 2nd boy invites the 1st girl.
+	             - The 3rd boy invites the 3rd girl.
+	
+	Example 2:
+	Input: grid = [[1,0,1,0],
+	               [1,0,0,0],
+	               [0,0,1,0],
+	               [1,1,1,0]]
+	Output: 3
+	Explanation: The invitations are sent as follows:
+	             -The 1st boy invites the 3rd girl.
+	             -The 2nd boy invites the 1st girl.
+	             -The 3rd boy invites no one.
+	             -The 4th boy invites the 2nd girl.
+
+	Constraints:
+	* grid.length == m
+	* grid[i].length == n
+	* 1 <= m, n <= 200
+	* grid[i][j] is either 0 or 1.*/
+
+    int maximumInvitations(vector<vector<int>>& grid) {
+    	/*maximum bipartite matching*/
+        int m = grid.size(), n = grid[0].size(), ans = 0; 
+        vector<int> match(n, -1); 
+        
+        function<bool(int, vector<bool>&)> fn = [&](int i, vector<bool>& seen) {
+            for (int j = 0; j < n; ++j) 
+                if (grid[i][j] && not seen[j]) {
+                    seen[j] = true; 
+                    if (match[j] == -1 || fn(match[j], seen)) {
+                        match[j] = i; 
+                        return true; 
+                    }
+                }
+            return false; 
+        }; 
+        
+        for (int i = 0; i < m; ++i) {
+            vector<bool> seen(n, false); 
+            if (fn(i, seen)) ++ans; 
+        }
+        return ans; 
+    }
+
+
     /*1827. Minimum Operations to Make the Array Increasing (Easy)
 	You are given an integer array nums (0-indexed). In one operation, you can 
 	choose an element of the array and increment it by 1. For example, if 
