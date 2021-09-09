@@ -2883,6 +2883,49 @@ public:
     }
 
 
+    /*296. Best Meeting Point (Hard)
+	Given an m x n binary grid grid where each 1 marks the home of one friend, 
+	return the minimal total travel distance. The total travel distance is the 
+	sum of the distances between the houses of the friends and the meeting 
+	point. The distance is calculated using Manhattan Distance, where 
+	distance(p1, p2) = |p2.x - p1.x| + |p2.y - p1.y|.
+
+	Example 1:
+	Input: grid = [[1,0,0,0,1],[0,0,0,0,0],[0,0,1,0,0]]
+	Output: 6
+	Explanation: Given three friends living at (0,0), (0,4), and (2,2). The 
+	             point (0,2) is an ideal meeting point, as the total travel 
+	             distance of 2 + 2 + 2 = 6 is minimal. So return 6.
+	
+	Example 2:
+	Input: grid = [[1,1]]
+	Output: 1
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 200
+	* grid[i][j] is either 0 or 1.
+	* There will be at least two friends in the grid.*/
+
+    int minTotalDistance(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size(); 
+        vector<int> rows, cols; 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if (grid[i][j]) {
+                    rows.push_back(i); 
+                    cols.push_back(j); 
+                }
+        sort(cols.begin(), cols.end()); 
+        
+        int ans = 0; 
+        for (int lo = 0, hi = rows.size()-1; lo < hi; ++lo, --hi) 
+            ans += rows[hi] - rows[lo] + cols[hi] - cols[lo]; 
+        return ans; 
+    }
+
+
     /*318. Maximum Product of Word Lengths (Medium)
 	Given a string array words, return the maximum value of 
 	length(word[i]) * length(word[j]) where the two words do not share common 

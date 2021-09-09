@@ -8759,6 +8759,51 @@ class UnionFind:
         return fn(s)
 
 
+    """296. Best Meeting Point (Hard)
+	Given an m x n binary grid grid where each 1 marks the home of one friend, 
+	return the minimal total travel distance. The total travel distance is the 
+	sum of the distances between the houses of the friends and the meeting 
+	point. The distance is calculated using Manhattan Distance, where 
+	distance(p1, p2) = |p2.x - p1.x| + |p2.y - p1.y|.
+
+	Example 1:
+	Input: grid = [[1,0,0,0,1],[0,0,0,0,0],[0,0,1,0,0]]
+	Output: 6
+	Explanation: Given three friends living at (0,0), (0,4), and (2,2). The 
+	             point (0,2) is an ideal meeting point, as the total travel 
+	             distance of 2 + 2 + 2 = 6 is minimal. So return 6.
+	
+	Example 2:
+	Input: grid = [[1,1]]
+	Output: 1
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 200
+	* grid[i][j] is either 0 or 1.
+	* There will be at least two friends in the grid."""
+
+    def minTotalDistance(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        rows = []
+        cols = []
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j]: 
+                    rows.append(i)
+                    cols.append(j)
+        cols.sort()
+        
+        ans = 0
+        lo, hi = 0, len(rows)-1
+        while lo < hi: 
+            ans += rows[hi] - rows[lo] + cols[hi] - cols[lo]
+            lo += 1
+            hi -= 1
+        return ans 
+
+
     """298. Binary Tree Longest Consecutive Sequence (Medium)
 	Given a binary tree, find the length of the longest consecutive sequence 
 	path. The path refers to any sequence of nodes from some starting node to 
