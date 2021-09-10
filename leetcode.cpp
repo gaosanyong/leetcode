@@ -3550,18 +3550,27 @@ public:
 	* -2^31 <= nums[i] <= 2^31 - 1*/
 
     int numberOfArithmeticSlices(vector<int>& nums) {
-        int ans = 0, n = size(nums); 
-        vector<unordered_map<int, int>> freq(n); 
-        for (size_t i = 0; i < n; ++i) {
-            for (size_t ii = 0; ii < i; ++ii) {
-                long temp = (long) nums[i] - nums[ii]; 
-                if (temp > INT_MAX || temp < INT_MIN) continue;
-                int diff = nums[i] - nums[ii]; 
-                ans += freq[ii][diff]; 
-                freq[i][diff] += 1 + freq[ii][diff]; 
+        int ans = 0, n = nums.size(); 
+        unordered_map<int, vector<size_t>> locs;
+        for (size_t i = 0; i < nums.size(); ++i)
+            locs[nums[i]].push_back(i);        
+        
+        vector<vector<int>> dp(n, vector<int>(n)); 
+        
+        for (size_t i = 0; i < nums.size(); ++i) 
+            for (size_t j = 0; j < i; ++j) {
+                long prev = (long) 2*nums[j] - nums[i];
+                if (INT_MIN <= prev && prev <= INT_MAX) {
+                    auto it = locs.find(prev);
+                    if (it != locs.end()) 
+                        for (auto& k : it->second) {
+                            if (k >= j) break;
+                            dp[i][j] += 1 + dp[j][k];
+                        }
+                    ans += dp[i][j];
+                }
             }
-        }
-        return ans; 
+        return ans;
     }
 
 
