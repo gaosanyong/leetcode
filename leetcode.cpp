@@ -9104,6 +9104,85 @@ public:
     }
 
 
+    /*866. Prime Palindrome (Medium)
+	Given an integer n, return the smallest prime palindrome greater than or 
+	equal to n. An integer is prime if it has exactly two divisors: 1 and 
+	itself. Note that 1 is not a prime number. For example, 2, 3, 5, 7, 11, 
+	and 13 are all primes. An integer is a palindrome if it reads the same from 
+	left to right as it does from right to left. For example, 101 and 12321 are 
+	palindromes. The test cases are generated so that the answer always exists 
+	and is in the range [2, 2 * 10^8].
+
+	Example 1:
+	Input: n = 6
+	Output: 7
+
+	Example 2:
+	Input: n = 8
+	Output: 11
+
+	Example 3:
+	Input: n = 13
+	Output: 101
+
+	Constraints: 1 <= n <= 10^8*/
+
+    int primePalindrome(int n) {
+        if (8 <= n && n <= 11) return 11; // edge case 
+        
+        auto fn = [](int x) {
+            vector<int> digits; 
+            for (int xx = x; xx; xx /= 10) 
+                digits.push_back(xx % 10); 
+            
+            reverse(digits.begin(), digits.end()); 
+            int n = digits.size(); 
+            bool found = false; 
+            int i = n/2; 
+            for (; i >= 0; --i) 
+                if (digits[i] < 9) {
+                    found = true; 
+                    break; 
+                } 
+            if (!found) return 10*x + 11; 
+            digits[i] = digits[n-1-i] = digits[i] + 1; 
+            for (int ii = 0; ii < i; ++ii) digits[n-1-ii] = digits[ii]; 
+            for (int ii = i+1; ii <= n/2; ++ii) digits[ii] = digits[n-1-ii] = 0; 
+            int ans = 0; 
+            for (auto& digit : digits) ans = 10*ans + digit; 
+            return ans; 
+        }; 
+        
+        auto isprime = [&](int x) {
+            if (x <= 1) return false; 
+            if (x % 2 == 0) return x == 2; 
+            for (int k = 3; k <= sqrt(x); k += 2) 
+                if (x % k == 0) return false; 
+            return true; 
+        }; 
+        
+        auto ispalin = [](int x) {
+            vector<int> digits; 
+            for (; x; x /= 10) 
+                digits.push_back(x % 10); 
+            for (int lo = 0, hi = digits.size()-1; lo < hi; ++lo, --hi) 
+                if (digits[lo] != digits[hi]) return false; 
+            return true; 
+        }; 
+        
+        int k = 0; 
+        for (int nn = n; nn; nn /= 10, ++k);
+        
+        if (k % 2 == 0) n = pow(10, k) + 1; 
+        else if (!ispalin(n)) n = fn(n); 
+        
+        for (; true; n = fn(n)) {
+            if (isprime(n)) return n; 
+        }
+        return -1; 
+    }
+
+
     /*867. Transpose Matrix (Easy)
 	Given a 2D integer array matrix, return the transpose of matrix. The 
 	transpose of a matrix is the matrix flipped over its main diagonal, 

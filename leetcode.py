@@ -18197,6 +18197,67 @@ class UnionFind:
             else: node = node.right 
 
 
+    """866. Prime Palindrome (Medium)
+	Given an integer n, return the smallest prime palindrome greater than or 
+	equal to n. An integer is prime if it has exactly two divisors: 1 and 
+	itself. Note that 1 is not a prime number. For example, 2, 3, 5, 7, 11, 
+	and 13 are all primes. An integer is a palindrome if it reads the same from 
+	left to right as it does from right to left. For example, 101 and 12321 are 
+	palindromes. The test cases are generated so that the answer always exists 
+	and is in the range [2, 2 * 10^8].
+
+	Example 1:
+	Input: n = 6
+	Output: 7
+
+	Example 2:
+	Input: n = 8
+	Output: 11
+
+	Example 3:
+	Input: n = 13
+	Output: 101
+
+	Constraints: 1 <= n <= 10^8"""
+
+    def primePalindrome(self, n: int) -> int:
+        if 8 <= n <= 11: return 11 # edge case 
+        
+        def fn(n): 
+            """Return next palindromic number greater than x."""
+            digits = [int(x) for x in str(n)]
+            for i in reversed(range(len(digits)//2+1)): 
+                if digits[i] < 9: break 
+            else: return 10*n + 11
+            digits[i] = digits[~i] = digits[i] + 1
+            for ii in range(i): 
+                digits[~ii] = digits[ii]
+            for ii in range(i+1, len(digits)//2+1): 
+                digits[ii] = digits[~ii] = 0
+            return int("".join(map(str, digits)))
+        
+        def isprime(x): 
+            """Return True if x is prime."""
+            if x <= 1: return False 
+            if x % 2 == 0: return x == 2
+            for k in range(3, int(sqrt(x))+1, 2): 
+                if x % k == 0: return False
+            return True 
+        
+        nn = n 
+        k = 0
+        while nn: 
+            nn //= 10
+            k += 1
+            
+        if not k&1: n = 10**k + 1
+        elif str(n) != str(n)[::-1]: n = fn(n)
+        
+        while True: 
+            if isprime(n): return n
+            n = fn(n)
+
+
     """869. Reordered Power of 2 (Medium)
 	Starting with a positive integer N, we reorder the digits in any order 
 	(including the original order) such that the leading digit is not zero. 
