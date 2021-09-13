@@ -9134,7 +9134,6 @@ public:
             vector<int> digits; 
             for (int xx = x; xx; xx /= 10) 
                 digits.push_back(xx % 10); 
-            
             reverse(digits.begin(), digits.end()); 
             int n = digits.size(); 
             bool found = false; 
@@ -23245,6 +23244,220 @@ public:
                 break; 
             }
         delete uf; 
+        return ans; 
+    }
+
+
+    /*2000. Reverse Prefix of Word (Easy)
+	Given a 0-indexed string word and a character ch, reverse the segment of 
+	word that starts at index 0 and ends at the index of the first occurrence 
+	of ch (inclusive). If the character ch does not exist in word, do nothing.
+	For example, if word = "abcdefd" and ch = "d", then you should reverse the 
+	segment that starts at 0 and ends at 3 (inclusive). The resulting string 
+	will be "dcbaefd". Return the resulting string.
+
+	Example 1:
+	Input: word = "abcdefd", ch = "d"
+	Output: "dcbaefd"
+	Explanation: The first occurrence of "d" is at index 3. Reverse the part of 
+	             word from 0 to 3 (inclusive), the resulting string is "dcbaefd".
+	
+	Example 2:
+	Input: word = "xyxzxe", ch = "z"
+	Output: "zxyxxe"
+	Explanation: The first and only occurrence of "z" is at index 3. Reverse 
+	             the part of word from 0 to 3 (inclusive), the resulting string 
+	             is "zxyxxe".
+	
+	Example 3:
+	Input: word = "abcd", ch = "z"
+	Output: "abcd"
+	Explanation: "z" does not exist in word. You should not do any reverse 
+	             operation, the resulting string is "abcd".
+
+	Constraints:
+	* 1 <= word.length <= 250
+	* word consists of lowercase English letters.
+	* ch is a lowercase English letter.*/
+
+    string reversePrefix(string word, char ch) {
+        int k = word.find(ch); 
+        reverse(word.begin(), word.begin()+k+1); 
+        return word; 
+    }
+
+
+    /*2001. Number of Pairs of Interchangeable Rectangles (Medium)
+	You are given n rectangles represented by a 0-indexed 2D integer array 
+	rectangles, where rectangles[i] = [widthi, heighti] denotes the width and 
+	height of the ith rectangle. Two rectangles i and j (i < j) are considered 
+	interchangeable if they have the same width-to-height ratio. More formally, 
+	two rectangles are interchangeable if widthi/heighti == widthj/heightj 
+	(using decimal division, not integer division). Return the number of pairs 
+	of interchangeable rectangles in rectangles.
+
+	Example 1:
+	Input: rectangles = [[4,8],[3,6],[10,20],[15,30]]
+	Output: 6
+	Explanation: The following are the interchangeable pairs of rectangles by 
+	             index (0-indexed):
+	             - Rectangle 0 with rectangle 1: 4/8 == 3/6.
+	             - Rectangle 0 with rectangle 2: 4/8 == 10/20.
+	             - Rectangle 0 with rectangle 3: 4/8 == 15/30.
+	             - Rectangle 1 with rectangle 2: 3/6 == 10/20.
+	             - Rectangle 1 with rectangle 3: 3/6 == 15/30.
+	             - Rectangle 2 with rectangle 3: 10/20 == 15/30.
+	Example 2:
+	Input: rectangles = [[4,5],[7,8]]
+	Output: 0
+	Explanation: There are no interchangeable pairs of rectangles.
+
+	Constraints:
+	* n == rectangles.length
+	* 1 <= n <= 105
+	* rectangles[i].length == 2
+	* 1 <= widthi, heighti <= 10^5*/
+
+    long long interchangeableRectangles(vector<vector<int>>& rectangles) {
+        long long ans = 0; 
+        unordered_map<double, int> freq; 
+        for (auto& rec : rectangles) {
+            double ratio = (double) rec[0]/rec[1]; 
+            ans += freq[ratio]; 
+            freq[ratio]++; 
+        }
+        return ans; 
+    }
+
+
+    /*2002. Maximum Product of the Length of Two Palindromic Subsequences (Medium)
+	Given a string s, find two disjoint palindromic subsequences of s such that 
+	the product of their lengths is maximized. The two subsequences are 
+	disjoint if they do not both pick a character at the same index. Return the 
+	maximum possible product of the lengths of the two palindromic subsequences.
+	A subsequence is a string that can be derived from another string by 
+	deleting some or no characters without changing the order of the remaining 
+	characters. A string is palindromic if it reads the same forward and 
+	backward.
+
+	Example 1:
+	example-1
+	Input: s = "leetcodecom"
+	Output: 9
+	Explanation: An optimal solution is to choose "ete" for the 1st subsequence 
+	             and "cdc" for the 2nd subsequence. The product of their 
+	             lengths is: 3 * 3 = 9.
+	
+	Example 2:
+	Input: s = "bb"
+	Output: 1
+	Explanation: An optimal solution is to choose "b" (the first character) for 
+	             the 1st subsequence and "b" (the second character) for the 2nd 
+	             subsequence. The product of their lengths is: 1 * 1 = 1.
+	
+	Example 3:
+	Input: s = "accbcaxxcxx"
+	Output: 25
+	Explanation: An optimal solution is to choose "accca" for the 1st 
+	             subsequence and "xxcxx" for the 2nd subsequence. The product 
+	             of their lengths is: 5 * 5 = 25.
+
+	Constraints:
+	* 2 <= s.length <= 12
+	* s consists of lowercase English letters only.*/
+
+    int maxProduct(string s) {
+        int n = s.size(); 
+        vector<int> dp(1 << n); 
+        for (int mask = 1; mask < (1 << n); ++mask) 
+            if ((mask & mask-1) == 0) dp[mask] = 1; 
+            else {
+                int lo = log2(mask & ~(mask-1)), hi = log2(mask); 
+                if (s[lo] == s[hi]) dp[mask] = 2 + dp[mask^(1<<lo)^(1<<hi)]; 
+                else dp[mask] = max(dp[mask^(1<<lo)], dp[mask^(1<<hi)]);
+            }
+        
+        int ans = 0; 
+        for (int mask = 0; mask < (1 << n); ++mask) {
+            int comp = (1 << n) - 1 ^ mask; 
+            ans = max(ans, dp[mask] * dp[comp]); 
+        }
+        return ans; 
+    }
+
+
+    /*2003. Smallest Missing Genetic Value in Each Subtree (Hard)
+	There is a family tree rooted at 0 consisting of n nodes numbered 0 to 
+	n - 1. You are given a 0-indexed integer array parents, where parents[i] is 
+	the parent for node i. Since node 0 is the root, parents[0] == -1. There 
+	are 10^5 genetic values, each represented by an integer in the inclusive 
+	range [1, 10^5]. You are given a 0-indexed integer array nums, where nums[i] 
+	is a distinct genetic value for node i. Return an array ans of length n 
+	where ans[i] is the smallest genetic value that is missing from the subtree 
+	rooted at node i. The subtree rooted at a node x contains node x and all of 
+	its descendant nodes.
+
+	Example 1:
+	Input: parents = [-1,0,0,2], nums = [1,2,3,4]
+	Output: [5,1,1,1]
+	Explanation: The answer for each subtree is calculated as follows:
+	             - 0: The subtree contains nodes [0,1,2,3] with values [1,2,3,4]. 5 is the smallest missing value.
+	             - 1: The subtree contains only node 1 with value 2. 1 is the smallest missing value.
+	             - 2: The subtree contains nodes [2,3] with values [3,4]. 1 is the smallest missing value.
+	             - 3: The subtree contains only node 3 with value 4. 1 is the smallest missing value.
+	
+	Example 2:
+	Input: parents = [-1,0,1,0,3,3], nums = [5,4,6,2,1,3]
+	Output: [7,1,1,4,2,1]
+	Explanation: The answer for each subtree is calculated as follows:
+	             - 0: The subtree contains nodes [0,1,2,3,4,5] with values [5,4,6,2,1,3]. 7 is the smallest missing value.
+	             - 1: The subtree contains nodes [1,2] with values [4,6]. 1 is the smallest missing value.
+	             - 2: The subtree contains only node 2 with value 6. 1 is the smallest missing value.
+	             - 3: The subtree contains nodes [3,4,5] with values [2,1,3]. 4 is the smallest missing value.
+	             - 4: The subtree contains only node 4 with value 1. 2 is the smallest missing value.
+	             - 5: The subtree contains only node 5 with value 3. 1 is the smallest missing value.
+	
+	Example 3:
+	Input: parents = [-1,2,3,0,2,4,1], nums = [2,3,4,5,6,7,8]
+	Output: [1,1,1,1,1,1,1]
+	Explanation: The value 1 is missing from all the subtrees.
+
+	Constraints:
+	* n == parents.length == nums.length
+	* 2 <= n <= 10^5
+	* 0 <= parents[i] <= n - 1 for i != 0
+	* parents[0] == -1
+	* parents represents a valid tree.
+	* 1 <= nums[i] <= 105
+	* Each nums[i] is distinct.*/
+
+    vector<int> smallestMissingValueSubtree(vector<int>& parents, vector<int>& nums) {
+        int n = parents.size(); 
+        vector<int> ans(n, 1); 
+        
+        auto it = find(nums.begin(), nums.end(), 1); 
+        if (it != nums.end()) {
+            vector<vector<int>> tree(n); 
+            for (int i = 0; i < n; ++i) 
+                if (parents[i] != -1) tree[parents[i]].push_back(i); 
+            
+            int miss = 1; 
+            unordered_set<int> seen; 
+            for (int k = it - nums.begin(); k != -1; k = parents[k]) {
+                stack<int> stk; stk.push(k);
+                seen.insert(nums[k]); 
+                while (stk.size()) {
+                    int x = stk.top(); stk.pop(); 
+                    for (auto& xx : tree[x]) 
+                        if (!seen.count(nums[xx])) {
+                            seen.insert(nums[xx]); 
+                            stk.push(xx); 
+                        }
+                }
+                for (; seen.count(miss); ++miss); 
+                ans[k] = miss; 
+            }
+        }
         return ans; 
     }
 };
