@@ -24162,10 +24162,10 @@ class UnionFind:
 
     def maxNumberOfBalloons(self, text: str) -> int:
         ref = {"a":1, "b":1, "l":2, "n":1, "o":2}
-        freq = {}
+        freq = defaultdict(int)
         for c in text: 
-            if c in ref: freq[c] = 1 + freq.get(c, 0)
-        return min(freq.get(c, 0)//ref[c] for c in ref)
+            if c in "balloon": freq[c] += 1
+        return min(freq[c]//ref[c] for c in ref)
 
 
     """1190. Reverse Substrings Between Each Pair of Parentheses (Medium)
