@@ -11395,6 +11395,62 @@ class UnionFind:
         return True 
 
 
+    """472. Concatenated Words (Hard)
+	Given an array of strings words (without duplicates), return all the 
+	concatenated words in the given list of words. A concatenated word is 
+	defined as a string that is comprised entirely of at least two shorter 
+	words in the given array.
+
+	Example 1:
+	Input: words = ["cat","cats","catsdogcats","dog","dogcatsdog","hippopotamuses","rat","ratcatdogcat"]
+	Output: ["catsdogcats","dogcatsdog","ratcatdogcat"]
+	Explanation: "catsdogcats" can be concatenated by "cats", "dog" and "cats"; 
+	             "dogcatsdog" can be concatenated by "dog", "cats" and "dog"; 
+	             "ratcatdogcat" can be concatenated by "rat", "cat", "dog" and "cat".
+	
+	Example 2:
+	Input: words = ["cat","dog","catdog"]
+	Output: ["catdog"]
+
+	Constraints:
+	* 1 <= words.length <= 10^4
+	* 0 <= words[i].length <= 1000
+	* words[i] consists of only lowercase English letters.
+	* 0 <= sum(words[i].length) <= 10^5
+
+class Trie: 
+    
+    def __init__(self): 
+        self.root = {}
+        
+    def insert(self, word): 
+        node = self.root
+        for ch in reversed(word): 
+            node = node.setdefault(ch, {})
+        node["#"] = True
+        
+    def search(self, word): 
+        dp = [True] + [False] * len(word)
+        for i in range(len(word)): 
+            node = self.root
+            for j in reversed(range(i+1)): 
+                if word[j] not in node: break 
+                node = node[word[j]]
+                if dp[j] and node.get("#"):
+                    dp[i+1] = True 
+                    break 
+        return dp[-1]"""
+
+    def findAllConcatenatedWordsInADict(self, words: List[str]) -> List[str]:
+        ans = []
+        trie = Trie()
+        for word in sorted(words, key=len): 
+            if word: 
+                if trie.search(word): ans.append(word)
+                trie.insert(word)
+        return ans
+
+
     """481. Magical String (Medium)
 	A magical string S consists of only '1' and '2' and obeys the following 
 	rules:
