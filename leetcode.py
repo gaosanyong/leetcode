@@ -1833,19 +1833,17 @@ class Solution:
 	Output: [1,2,3,4,8,12,11,10,9,5,6,7]"""
 
     def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
-        if not matrix: return [] #edge case 
+        m, n = len(matrix), len(matrix[0]) 
         ans = []
-        m, n = len(matrix), len(matrix[0])
-        i, j, di, dj, k = 0, 0, 0, 1, 0  #position, direction & side
-        bd = [0, n, m, 0] #boundary (top|right|bottom|left)
+        i = j = 0 # position
+        di, dj = 0, 1 # direction
         for _ in range(m*n): 
             ans.append(matrix[i][j])
-            if not(bd[0] <= i + di < bd[2] and bd[3] <= j + dj < bd[1]): 
-                di, dj = dj, -di           #rotate 
-                if k in (0, 3): bd[k] += 1 #top or left boundary
-                else: bd[k] -= 1           #bottom or right boundary
-                k = (k+1)%4
-            i, j = i+di, j+dj
+            matrix[i][j] = None # mark "visited"
+            if not (0 <= i+di < m and 0 <= j+dj < n and matrix[i+di][j+dj] is not None): 
+                di, dj = dj, -di # rotate clockwise 
+            i += di
+            j += dj
         return ans 
 
 

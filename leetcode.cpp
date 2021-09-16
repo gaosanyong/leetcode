@@ -834,6 +834,38 @@ public:
     }
 
 
+    /*54. Spiral Matrix (Medium)
+	Given an m x n matrix, return all elements of the matrix in spiral order.
+
+	Example 1:
+	Input: matrix = [[1,2,3],[4,5,6],[7,8,9]]
+	Output: [1,2,3,6,9,8,7,4,5]
+
+	Example 2:
+	Input: matrix = [[1,2,3,4],[5,6,7,8],[9,10,11,12]]
+	Output: [1,2,3,4,8,12,11,10,9,5,6,7]
+
+	Constraints:
+	* m == matrix.length
+	* n == matrix[i].length
+	* 1 <= m, n <= 10
+	* -100 <= matrix[i][j] <= 100*/
+
+    vector<int> spiralOrder(vector<vector<int>>& matrix) {
+        int m = matrix.size(), n = matrix[0].size(); 
+        vector<int> ans; 
+        for (int k = m*n, i = 0, j = 0, di = 0, dj = 1; k; --k, i += di, j += dj) {
+            ans.push_back(matrix[i][j]); 
+            matrix[i][j] = 101; // mark "visited"
+            if (!(0 <= i+di && i+di < m && 0 <= j+dj && j+dj < n && matrix[i+di][j+dj] <= 100)) {
+                swap(di, dj); // rotate clockwise
+                dj *= -1; 
+            }
+        }
+        return ans; 
+    }
+
+
     /*63. Unique Paths II (Medium)
 	A robot is located at the top-left corner of a m x n grid (marked 'Start' 
 	in the diagram below). The robot can only move either down or right at any 
