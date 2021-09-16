@@ -3004,6 +3004,67 @@ public:
     }
 
 
+    /*321. Create Maximum Number (Hard)
+	You are given two integer arrays nums1 and nums2 of lengths m and n 
+	respectively. nums1 and nums2 represent the digits of two numbers. You are 
+	also given an integer k. Create the maximum number of length k <= m + n 
+	from digits of the two numbers. The relative order of the digits from the 
+	same array must be preserved. Return an array of the k digits representing 
+	the answer.
+
+	Example 1:
+	Input: nums1 = [3,4,6,5], nums2 = [9,1,2,5,8,3], k = 5
+	Output: [9,8,6,5,3]
+
+	Example 2:
+	Input: nums1 = [6,7], nums2 = [6,0,4], k = 5
+	Output: [6,7,6,0,4]
+
+	Example 3:
+	Input: nums1 = [3,9], nums2 = [8,9], k = 3
+	Output: [9,8,9]
+
+	Constraints:
+	* m == nums1.length
+	* n == nums2.length
+	* 1 <= m, n <= 500
+	* 0 <= nums1[i], nums2[i] <= 9
+	* 1 <= k <= m + n*/
+
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        vector<int> ans(k); 
+        
+        auto fn = [](vector<int>& arr, int k) {
+            vector<int> ans(k); 
+            for (int i = 0, n = 0; i < arr.size(); ++i) {
+                while (n && ans[n-1] < arr[i] && n + arr.size() - i > k) --n; 
+                if (n < k) ans[n++] = arr[i]; 
+            }
+            return ans; 
+        };
+        
+        auto cmp = [](vector<int>& val1, int i1, vector<int>& val2, int i2) {
+            for (; i1 < val1.size() && i2 < val2.size(); i1++, i2++) {
+                if (val1[i1] > val2[i2]) return true; 
+                if (val1[i1] < val2[i2]) return false; 
+            }
+            return i2 == val2.size(); 
+        };
+        
+        for (int i = 0; i <= k; ++i) {
+            if (i <= nums1.size() && k-i <= nums2.size()) {
+                vector<int> val1 = fn(nums1, i), val2 = fn(nums2, k - i); 
+                vector<int> cand; 
+                for (int i1 = 0, i2 = 0; i1 < val1.size() || i2 < val2.size(); ) 
+                    if (cmp(val1, i1, val2, i2)) cand.push_back(val1[i1++]);
+                    else cand.push_back(val2[i2++]); 
+                ans = max(ans, cand); 
+            }
+        }
+        return ans; 
+    }
+
+
     /*329. Longest Increasing Path in a Matrix (Hard)
 	Given an m x n integers matrix, return the length of the longest increasing 
 	path in matrix. From each cell, you can either move in four directions: 
