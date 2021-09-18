@@ -24020,6 +24020,202 @@ public:
         }
         return ans; 
     }
+
+
+    /*2006. Count Number of Pairs With Absolute Difference K (Easy)
+	Given an integer array nums and an integer k, return the number of pairs 
+	(i, j) where i < j such that |nums[i] - nums[j]| == k. The value of |x| is 
+	defined as:
+	* x if x >= 0.
+	* -x if x < 0.
+
+	Example 1:
+	Input: nums = [1,2,2,1], k = 1
+	Output: 4
+	Explanation: The pairs with an absolute difference of 1 are:
+	             - [1,2,2,1]
+	             - [1,2,2,1]
+	             - [1,2,2,1]
+	             - [1,2,2,1]
+	
+	Example 2:
+	Input: nums = [1,3], k = 3
+	Output: 0
+	Explanation: There are no pairs with an absolute difference of 3.
+
+	Example 3:
+	Input: nums = [3,2,1,5,4], k = 2
+	Output: 3
+	Explanation: The pairs with an absolute difference of 2 are:
+	             - [3,2,1,5,4]
+	             - [3,2,1,5,4]
+	             - [3,2,1,5,4]
+
+	Constraints:
+	* 1 <= nums.length <= 200
+	* 1 <= nums[i] <= 100
+	* 1 <= k <= 99*/
+
+    int countKDifference(vector<int>& nums, int k) {
+        int ans = 0; 
+        unordered_map<int, int> freq; 
+        for (auto& x : nums) {
+            ans += freq[x - k] + freq[x + k]; 
+            freq[x]++; 
+        }
+        return ans; 
+    }
+
+
+    /*2007. Find Original Array From Doubled Array (Medium)
+	An integer array original is transformed into a doubled array changed by 
+	appending twice the value of every element in original, and then randomly 
+	shuffling the resulting array. Given an array changed, return original if 
+	changed is a doubled array. If changed is not a doubled array, return an 
+	empty array. The elements in original may be returned in any order.
+
+	Example 1:
+	Input: changed = [1,3,4,2,6,8]
+	Output: [1,3,4]
+	Explanation: One possible original array could be [1,3,4]:
+	             - Twice the value of 1 is 1 * 2 = 2.
+	             - Twice the value of 3 is 3 * 2 = 6.
+	             - Twice the value of 4 is 4 * 2 = 8.
+	             Other original arrays could be [4,3,1] or [3,1,4].
+	
+	Example 2:
+	Input: changed = [6,3,0,1]
+	Output: []
+	Explanation: changed is not a doubled array.
+
+	Example 3:
+	Input: changed = [1]
+	Output: []
+	Explanation: changed is not a doubled array.
+
+	Constraints:
+	* 1 <= changed.length <= 10^5
+	* 0 <= changed[i] <= 10^5*/
+
+    vector<int> findOriginalArray(vector<int>& changed) {
+        map<int, int> freq; 
+        for (auto& x : changed) freq[x]++; 
+        
+        sort(changed.begin(), changed.end()); 
+        
+        vector<int> ans; 
+        for (auto& [k, v] : freq) 
+            if (v) {
+                if (k && v <= freq[2*k]) {
+                    freq[2*k] -= v; 
+                    for (; v; --v) ans.push_back(k); 
+                } else if (k == 0 && v % 2 == 0) 
+                    for (v /= 2; v; --v) ans.push_back(k); 
+                else return {}; 
+            }
+        return ans; 
+    }
+
+
+    /*2008. Maximum Earnings From Taxi (Medium)
+	There are n points on a road you are driving your taxi on. The n points on 
+	the road are labeled from 1 to n in the direction you are going, and you 
+	want to drive from point 1 to point n to make money by picking up 
+	passengers. You cannot change the direction of the taxi. The passengers are 
+	represented by a 0-indexed 2D integer array rides, where 
+	rides[i] = [starti, endi, tipi] denotes the ith passenger requesting a ride 
+	from point starti to point endi who is willing to give a tipi dollar tip.
+	For each passenger i you pick up, you earn endi - starti + tipi dollars. 
+	You may only drive at most one passenger at a time. Given n and rides, 
+	return the maximum number of dollars you can earn by picking up the 
+	passengers optimally. Note: You may drop off a passenger and pick up a 
+	different passenger at the same point.
+
+	Example 1:
+	Input: n = 5, rides = [[2,5,4],[1,5,1]]
+	Output: 7
+	Explanation: We can pick up passenger 0 to earn 5 - 2 + 4 = 7 dollars.
+
+	Example 2:
+	Input: n = 20, rides = [[1,6,1],[3,10,2],[10,12,3],[11,12,2],[12,15,2],[13,18,1]]
+	Output: 20
+	Explanation: We will pick up the following passengers:
+	             - Drive passenger 1 from point 3 to point 10 for a profit of 
+	               10 - 3 + 2 = 9 dollars.
+	             - Drive passenger 2 from point 10 to point 12 for a profit of 
+	               12 - 10 + 3 = 5 dollars.
+	             - Drive passenger 5 from point 13 to point 18 for a profit of 
+	               18 - 13 + 1 = 6 dollars.
+	             We earn 9 + 5 + 6 = 20 dollars in total.
+
+	Constraints:
+	* 1 <= n <= 10^5
+	* 1 <= rides.length <= 3 * 10^4
+	* rides[i].length == 3
+	* 1 <= starti < endi <= n
+	* 1 <= tipi <= 10^5*/
+
+    long long maxTaxiEarnings(int n, vector<vector<int>>& rides) {
+        unordered_map<int, vector<pair<int, int>>> mp; 
+        for (auto& x : rides) 
+            mp[x[0]].emplace_back(x[1], x[2]); 
+        
+        vector<long long> dp(n+1); 
+        for (int x = n-1; x >= 1; --x) {
+            dp[x] = dp[x+1]; 
+            for (auto& [xx, tip] : mp[x]) 
+                dp[x] = max(dp[x], xx - x + tip + dp[xx]); 
+        }
+        return dp[1]; 
+    }
+
+
+    /*2009. Minimum Number of Operations to Make Array Continuous (Hard)
+	You are given an integer array nums. In one operation, you can replace any 
+	element in nums with any integer. nums is considered continuous if both of 
+	the following conditions are fulfilled:
+	* All elements in nums are unique.
+	* The difference between the maximum element and the minimum element in 
+	  nums equals nums.length - 1.
+	For example, nums = [4, 2, 5, 3] is continuous, but nums = [1, 2, 3, 5, 6] 
+	is not continuous. Return the minimum number of operations to make nums 
+	continuous.
+
+	Example 1:
+	Input: nums = [4,2,5,3]
+	Output: 0
+	Explanation: nums is already continuous.
+
+	Example 2:
+	Input: nums = [1,2,3,5,6]
+	Output: 1
+	Explanation: One possible solution is to change the last element to 4. The 
+	             resulting array is [1,2,3,5,4], which is continuous.
+	
+	Example 3:
+	Input: nums = [1,10,100,1000]
+	Output: 3
+	Explanation: One possible solution is to:
+	             - Change the second element to 2.
+	             - Change the third element to 3.
+	             - Change the fourth element to 4.
+	             The resulting array is [1,2,3,4], which is continuous.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^9*/
+
+    int minOperations(vector<int>& nums) {
+        int n = nums.size(), ans = 0; 
+        sort(nums.begin(), nums.end()); 
+        nums.erase(unique(nums.begin(), nums.end()), nums.end()); // remove duplicates
+        
+        for (int i = 0, ii = 0; i < nums.size(); ++i) {
+            if (nums[i] - nums[ii] >= n) ++ii; 
+            ans = max(ans, i - ii + 1); 
+        }
+        return n - ans; 
+    }
 };
 
 
