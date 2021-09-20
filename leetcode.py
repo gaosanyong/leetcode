@@ -8411,25 +8411,22 @@ class UnionFind:
 	num only contain digits."""
 
     def addOperators(self, num: str, target: int) -> List[str]:
-        if not num: return [] #edge case
-        ops = ["*", "+", "-"]
         
-        def fn(i): 
-            """Populate ans with a stack via backtracking."""
-            stack.append(num[i]) #push operand on stack
-            if i == len(num)-1: #last position 
-                expr = "".join(stack)
-                if eval(expr) == target: ans.append(expr)
+        def fn(i, expr, total, last):
+            """Populate ans with expression evaluated to target."""
+            if i == len(num): 
+                if total == target: ans.append(expr)
             else: 
-                for op in ops + [""]:
-                    if (len(stack) == 1 or stack[-2] in ops) and stack[-1] == "0" and op == "": continue #standalone 0 
-                    stack.append(op) #push operator on stack 
-                    fn(i+1)
-                    stack.pop() #pop out operator 
-            stack.pop() #pop out operand 
-        
-        ans, stack = [], []
-        fn(0)
+                for ii in range(i, len(num) if num[i] != "0" else i+1): 
+                    val = int(num[i:ii+1])
+                    if i == 0: fn(ii+1, num[i:ii+1], val, val)
+                    else: 
+                        fn(ii+1, expr + "*" + num[i:ii+1], total - last + last * val, last * val)
+                        fn(ii+1, expr + "+" + num[i:ii+1], total + val, val)
+                        fn(ii+1, expr + "-" + num[i:ii+1], total - val, -val)
+                    
+        ans = []
+        fn(0, "", 0, 0)
         return ans 
 
 
