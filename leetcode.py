@@ -26389,7 +26389,7 @@ class UnionFind:
             score[p][3+j] += 1
             if i == j: score[p][6] += 1
             if i+j == 2: score[p][7] += 1
-            if any(x == 3 for x in score[p]): return ["A", "B"][p]
+            if any(x == 3 for x in score[p]): return "AB"[p]
             
         return "Pending" if len(moves) < 9 else "Draw"
 
