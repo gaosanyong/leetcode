@@ -3920,13 +3920,12 @@ class Solution:
 	    ^^^"""
 
     def numDistinct(self, s: str, t: str) -> int:
-        pos = dict()
-        for i, c in enumerate(t): pos.setdefault(c, []).append(i)
+        loc = {}
+        for i, x in enumerate(t): loc.setdefault(x, []).append(i)
             
         ans = [0]*len(t) + [1]
-        for c in reversed(s):
-            for i in pos.get(c, []):
-                ans[i] += ans[i+1]
+        for c in reversed(s): 
+            for i in pos.get(c, []): ans[i] += ans[i+1]
         return ans[0]
 
 
