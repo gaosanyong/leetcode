@@ -24373,6 +24373,187 @@ public:
         }
         return n - ans; 
     }
+
+
+    /*2011. Final Value of Variable After Performing Operations (Easy)
+	There is a programming language with only four operations and one variable 
+	X:
+	* ++X and X++ increments the value of the variable X by 1.
+	* --X and X-- decrements the value of the variable X by 1.
+	Initially, the value of X is 0. Given an array of strings operations 
+	containing a list of operations, return the final value of X after 
+	performing all the operations.
+
+	Example 1:
+	Input: operations = ["--X","X++","X++"]
+	Output: 1
+	Explanation: The operations are performed as follows:
+	             Initially, X = 0.
+	             --X: X is decremented by 1, X =  0 - 1 = -1.
+	             X++: X is incremented by 1, X = -1 + 1 =  0.
+	             X++: X is incremented by 1, X =  0 + 1 =  1.
+	
+	Example 2:
+	Input: operations = ["++X","++X","X++"]
+	Output: 3
+	Explanation: The operations are performed as follows:
+	             Initially, X = 0.
+	             ++X: X is incremented by 1, X = 0 + 1 = 1.
+	             ++X: X is incremented by 1, X = 1 + 1 = 2.
+	             X++: X is incremented by 1, X = 2 + 1 = 3.
+	
+	Example 3:
+	Input: operations = ["X++","++X","--X","X--"]
+	Output: 0
+	Explanation: The operations are performed as follows:
+	             Initially, X = 0.
+	             X++: X is incremented by 1, X = 0 + 1 = 1.
+	             ++X: X is incremented by 1, X = 1 + 1 = 2.
+	             --X: X is decremented by 1, X = 2 - 1 = 1.
+	             X--: X is decremented by 1, X = 1 - 1 = 0.
+
+	Constraints:
+	* 1 <= operations.length <= 100
+	* operations[i] will be either "++X", "X++", "--X", or "X--".*/
+
+    int finalValueAfterOperations(vector<string>& operations) {
+        int ans = 0; 
+        for (auto& op : operations) 
+            if (op == "++X" || op == "X++") ++ans; 
+            else --ans; 
+        return ans; 
+    }
+
+
+    /*2012. Sum of Beauty in the Array (Medium)
+	You are given a 0-indexed integer array nums. For each index i 
+	(1 <= i <= nums.length - 2) the beauty of nums[i] equals:
+	* 2, if nums[j] < nums[i] < nums[k], for all 0 <= j < i and for all 
+	  i < k <= nums.length - 1.
+	* 1, if nums[i - 1] < nums[i] < nums[i + 1], and the previous condition is 
+	  not satisfied.
+	* 0, if none of the previous conditions holds.
+	Return the sum of beauty of all nums[i] where 1 <= i <= nums.length - 2.
+
+	Example 1:
+	Input: nums = [1,2,3]
+	Output: 2
+	Explanation: For each index i in the range 1 <= i <= 1:
+	             - The beauty of nums[1] equals 2.
+	
+	Example 2:
+	Input: nums = [2,4,6,4]
+	Output: 1
+	Explanation: For each index i in the range 1 <= i <= 2:
+	             - The beauty of nums[1] equals 1.
+	             - The beauty of nums[2] equals 0.
+	
+	Example 3:
+	Input: nums = [3,2,1]
+	Output: 0
+	Explanation: For each index i in the range 1 <= i <= 1:
+	             - The beauty of nums[1] equals 0.
+
+	Constraints:
+	* 3 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^5*/
+
+    int sumOfBeauties(vector<int>& nums) {
+        int n = nums.size(); 
+        vector<int> suffix(n, INT_MAX); 
+        for (int i = n-2; i >= 1; --i) 
+            suffix[i] = min(suffix[i+1], nums[i+1]); 
+        
+        int prefix = 0, ans = 0; 
+        for (int i = 1; i < n-1; ++i) {
+            prefix = max(prefix, nums[i-1]); 
+            if (prefix < nums[i] && nums[i] < suffix[i]) ans += 2; 
+            else if (nums[i-1] < nums[i] && nums[i] < nums[i+1]) ans += 1; 
+        }
+        return ans; 
+    }
+
+
+    /*2014. Longest Subsequence Repeated k Times (Hard)
+	You are given a string s of length n, and an integer k. You are tasked to 
+	find the longest subsequence repeated k times in string s. A subsequence is 
+	a string that can be derived from another string by deleting some or no 
+	characters without changing the order of the remaining characters. A 
+	subsequence seq is repeated k times in the string s if seq * k is a 
+	subsequence of s, where seq * k represents a string constructed by 
+	concatenating seq k times. For example, "bba" is repeated 2 times in the 
+	string "bababcba", because the string "bbabba", constructed by 
+	concatenating "bba" 2 times, is a subsequence of the string "bababcba". 
+	Return the longest subsequence repeated k times in string s. If multiple 
+	such subsequences are found, return the lexicographically largest one. If 
+	there is no such subsequence, return an empty string.
+
+	Example 1:
+	example 1
+	Input: s = "letsleetcode", k = 2
+	Output: "let"
+	Explanation: There are two longest subsequences repeated 2 times: "let" and 
+	             "ete". "let" is the lexicographically largest one.
+	
+	Example 2:
+	Input: s = "bb", k = 2
+	Output: "b"
+	Explanation: The longest subsequence repeated 2 times is "b".
+
+	Example 3:
+	Input: s = "ab", k = 2
+	Output: ""
+	Explanation: There is no subsequence repeated 2 times. Empty string is 
+	             returned.
+	
+	Example 4:
+	Input: s = "bbabbabbbbabaababab", k = 3
+	Output: "bbbb"
+	Explanation: The longest subsequence "bbbb" is repeated 3 times in 
+	             "bbabbabbbbabaababab".
+
+	Constraints:
+	* n == s.length
+	* 2 <= n, k <= 2000
+	* 2 <= n < k * 8
+	* s consists of lowercase English letters.*/
+
+    string longestSubsequenceRepeatedK(string s, int k) {
+        vector<int> freq(26); 
+        for (auto& ch : s) ++freq[ch - 'a']; 
+        
+        vector<char> cand; 
+        for (int i = 0; i < 26; ++i) 
+            if (freq[i] >= k) cand.push_back(i + 'a'); 
+        
+        auto fn = [&](string ss) {
+            // return True if ss is a k-repeated sub-sequence of s. 
+            int i = 0, cnt = 0; 
+            for (auto& ch : s) 
+                if (ss[i] == ch) 
+                    if (++i == ss.size()) {
+                        if (++cnt == k) return true; 
+                        i = 0; 
+                    }
+            return false;    
+        }; 
+        
+        string ans; 
+        queue<string> q; 
+        q.push(""); 
+        while (q.size()) {
+            string x = q.front(); q.pop(); 
+            ans = x; 
+            for (auto& ch : cand) {
+                string xx = x + ch; 
+                if (fn(xx)) {
+                    ans = xx; 
+                    q.push(xx); 
+                }
+            }
+        }
+        return ans; 
+    }
 };
 
 
@@ -25947,5 +26128,65 @@ public:
             return true; 
         }
         return false; 
+    }
+};
+
+
+/*2013. Detect Squares (Medium)
+You are given a stream of points on the X-Y plane. Design an algorithm that:
+* Adds new points from the stream into a data structure. Duplicate points are 
+  allowed and should be treated as different points.
+* Given a query point, counts the number of ways to choose three points from 
+  the data structure such that the three points and the query point form an 
+  axis-aligned square with positive area.
+An axis-aligned square is a square whose edges are all the same length and are 
+either parallel or perpendicular to the x-axis and y-axis.
+
+Implement the DetectSquares class:
+* DetectSquares() Initializes the object with an empty data structure.
+* void add(int[] point) Adds a new point point = [x, y] to the data structure.
+* int count(int[] point) Counts the number of ways to form axis-aligned squares 
+  with point point = [x, y] as described above.
+
+Example 1:
+Input: ["DetectSquares", "add", "add", "add", "count", "count", "add", "count"]
+       [[], [[3, 10]], [[11, 2]], [[3, 2]], [[11, 10]], [[14, 8]], [[11, 2]], [[11, 10]]]
+Output: [null, null, null, null, 1, 0, null, 2]
+Explanation: 
+DetectSquares detectSquares = new DetectSquares();
+detectSquares.add([3, 10]);
+detectSquares.add([11, 2]);
+detectSquares.add([3, 2]);
+detectSquares.count([11, 10]); // return 1. You can choose:
+                               //   - The first, second, and third points
+detectSquares.count([14, 8]);  // return 0. The query point cannot form a 
+                               // square with any points in the data structure.
+detectSquares.add([11, 2]);    // Adding duplicate points is allowed.
+detectSquares.count([11, 10]); // return 2. You can choose:
+                               //   - The first, second, and third points
+                               //   - The first, third, and fourth points
+
+Constraints:
+* point.length == 2
+* 0 <= x, y <= 1000
+* At most 5000 calls in total will be made to add and count.*/
+
+class DetectSquares {
+    unordered_map<int, int> freq; 
+public:
+    DetectSquares() {}
+    
+    void add(vector<int> point) {
+        ++freq[point[0]*1001 + point[1]]; 
+    }
+    
+    int count(vector<int> point) {
+        int ans = 0, x = point[0], y = point[1]; 
+        for (auto& [k, v] : freq) {
+            int xx = k/1001, yy = k%1001; 
+            if (xx != x && abs(x-xx) == abs(y-yy) && freq.count(xx*1001+y) && freq.count(x*1001+yy)) 
+                ans += v * freq[xx*1001+y] * freq[x*1001+yy]; 
+        }
+        return ans; 
     }
 };
