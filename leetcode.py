@@ -13076,6 +13076,33 @@ class Trie:
         return [[next(it) for _ in range(c)] for i in range(r)]
 
 
+    """567. Permutation in String (Medium)
+	Given two strings s1 and s2, return true if s2 contains a permutation of s1, 
+	or false otherwise. In other words, return true if one of s1's permutations 
+	is the substring of s2.
+
+	Example 1:
+	Input: s1 = "ab", s2 = "eidbaooo"
+	Output: true
+	Explanation: s2 contains one permutation of s1 ("ba").
+
+	Example 2:
+	Input: s1 = "ab", s2 = "eidboaoo"
+	Output: false
+
+	Constraints:
+	* 1 <= s1.length, s2.length <= 10^4
+	* s1 and s2 consist of lowercase English letters."""
+
+    def checkInclusion(self, s1: str, s2: str) -> bool:
+        freq = Counter(s1)
+        for i, x in enumerate(s2): 
+            freq[x] -= 1
+            if i >= len(s1): freq[s2[i-len(s1)]] += 1
+            if all(x == 0 for x in freq.values()): return True 
+        return False
+
+
     """573. Squirrel Simulation (Medium)
 	There's a tree, a squirrel, and several nuts. Positions are represented by 
 	the cells in a 2D grid. Your goal is to find the minimal distance for the 

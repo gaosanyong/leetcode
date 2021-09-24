@@ -5352,6 +5352,36 @@ public:
     }
 
 
+    /*567. Permutation in String (Medium)
+	Given two strings s1 and s2, return true if s2 contains a permutation of s1, 
+	or false otherwise. In other words, return true if one of s1's permutations 
+	is the substring of s2.
+
+	Example 1:
+	Input: s1 = "ab", s2 = "eidbaooo"
+	Output: true
+	Explanation: s2 contains one permutation of s1 ("ba").
+
+	Example 2:
+	Input: s1 = "ab", s2 = "eidboaoo"
+	Output: false
+
+	Constraints:
+	* 1 <= s1.length, s2.length <= 10^4
+	* s1 and s2 consist of lowercase English letters.*/
+
+    bool checkInclusion(string s1, string s2) {
+        vector<int> freq(26); 
+        for (auto& ch : s1) freq[ch - 'a']++; 
+        for (int i = 0; i < s2.size(); ++i) {
+            freq[s2[i]-'a']--; 
+            if (i >= s1.size()) freq[s2[i-s1.size()]-'a']++; 
+            if (all_of(freq.begin(), freq.end(), [](int x){return x == 0;})) return true; 
+        }
+        return false; 
+    }
+
+
     /*572. Subtree of Another Tree (Easy)
 	Given two non-empty binary trees s and t, check whether tree t has exactly 
 	the same structure and node values with a subtree of s. A subtree of s is a 
