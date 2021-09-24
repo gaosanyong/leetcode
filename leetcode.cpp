@@ -2923,12 +2923,9 @@ public:
 	Follow up: Could you minimize the total number of operations done?*/
 
     void moveZeroes(vector<int>& nums) {
-        int ii = 0; 
-        for (int i = 0; i < nums.size(); ++i) {
-            if (nums[i] != 0) {
-                swap(nums[ii], nums[i]); 
-                ++ii; 
-            }
+        for (int i = 0, ii = 0; i < nums.size(); ++i) {
+            if (nums[i]) 
+                swap(nums[ii++], nums[i]); 
         }
     }
 

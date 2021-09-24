@@ -8442,11 +8442,11 @@ class UnionFind:
 	Minimize the total number of operations."""
 
     def moveZeroes(self, nums: List[int]) -> None:
-        lo = 0
-        for hi in range(len(nums)):
-            if nums[hi]: 
-                nums[hi], nums[lo] = nums[lo], nums[hi]
-                lo += 1
+        ii = 0
+        for i in range(len(nums)): 
+            if nums[i]: 
+                nums[i], nums[ii] = nums[ii], nums[i]
+                ii += 1
 
 
     """286. Walls and Gates (Medium)
