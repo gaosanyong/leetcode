@@ -6790,32 +6790,27 @@ public:
 	* grid[i][j] is either 0 or 1.*/
 
     int maxAreaOfIsland(vector<vector<int>>& grid) {
-        int ans = 0, m = size(grid), n = size(grid[0]); 
-        vector<pair<int, int>> dir = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}}; 
-        
-        for (int i = 0; i < m; ++i) {
-            for (int j = 0; j < n; ++j) {
+        int ans = 0, m = grid.size(), n = grid[0].size(), dir[5] = {-1, 0, 1, 0, -1}; 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
                 if (grid[i][j]) {
-                    int val = 0; 
+                    int val = 1; 
+                    grid[i][j] = 0; 
                     stack<pair<int, int>> stk; 
-                    stk.push(make_pair(i, j)); 
-                    while (!stk.empty()) {
-                        auto [i, j] = stk.top(); 
-                        stk.pop(); 
-                        if (grid[i][j]) {
-                            ++val; 
-                            grid[i][j] = 0; 
-                            for (auto& [di, dj] : dir) {
-                                int ii = i + di, jj = j + dj; 
-                                if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj] == 1) 
-                                    stk.push(make_pair(ii, jj)); 
+                    stk.emplace(i, j); 
+                    while (stk.size()) {
+                        auto [i, j] = stk.top(); stk.pop(); 
+                        for (int k = 0; k < 4; ++k) {
+                            int ii = i + dir[k], jj = j + dir[k+1]; 
+                            if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj]) {
+                                val++; 
+                                grid[ii][jj] = 0; 
+                                stk.emplace(ii, jj); 
                             }
                         }
                     }
                     ans = max(ans, val); 
                 }
-            }
-        }
         return ans; 
     }
 

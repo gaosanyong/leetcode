@@ -14764,16 +14764,23 @@ class Trie:
 	Note: The length of each dimension in the given grid does not exceed 50."""
 
     def maxAreaOfIsland(self, grid: List[List[int]]) -> int:
-        m, n = len(grid), len(grid[0]) # dimension 
-        
-        def dfs(i, j): 
-            """Depth-first traverse the grid."""
-            if 0 <= i < m and 0 <= j < n and grid[i][j] == 1: 
-                grid[i][j] = 0 # mark visited 
-                return 1 + sum(dfs(ii, jj) for ii, jj in ((i-1, j), (i, j-1), (i, j+1), (i+1, j)))
-            return 0
-        
-        return max(dfs(i, j) for i in range(m) for j in range(n))
+        m, n = len(grid), len(grid[0])
+        ans = 0 
+        for i in range(m):
+            for j in range(n): 
+                if grid[i][j]: 
+                    grid[i][j] = 0
+                    stack = [(i, j)]
+                    val = 1
+                    while stack: 
+                        x, y = stack.pop()
+                        for xx, yy in (x-1, y), (x, y-1), (x, y+1), (x+1, y): 
+                            if 0 <= xx < m and 0 <= yy < n and grid[xx][yy]: 
+                                grid[xx][yy] = 0
+                                stack.append((xx, yy))
+                                val += 1
+                    ans = max(ans, val)
+        return ans 
 
 
     """702. Search in a Sorted Array of Unknown Size (Medium)
