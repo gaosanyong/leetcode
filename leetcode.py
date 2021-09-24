@@ -80,12 +80,12 @@ class Solution:
 	substring."""
 
     def lengthOfLongestSubstring(self, s: str) -> int:
-        seen = dict()
-        ans = j = 0
+        ans = ii = 0
+        seen = {}
         for i, x in enumerate(s): 
-            if x in seen and seen[x] >= j: j = seen[x] + 1
-            ans = max(ans, i-j+1)
-            seen[x] = i
+            if x in seen: ii = max(ii, seen[x] + 1)
+            seen[x] = i 
+            ans = max(ans, i - ii + 1)
         return ans 
 
 
