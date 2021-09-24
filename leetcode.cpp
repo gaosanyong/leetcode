@@ -7509,21 +7509,18 @@ public:
 	* The value of each color in image[i][j] and newColor will be an integer in [0, 65535].*/
 
     vector<vector<int>> floodFill(vector<vector<int>>& image, int sr, int sc, int newColor) {
-        if (image[sr][sc] != newColor) {
-            int m = image.size(), n = image[0].size(), oldColor = image[sr][sc]; 
-            stack<vector<int>> stk; 
-            stk.push({sr, sc}); 
-
+        int m = image.size(), n = image[0].size(), oldColor = image[sr][sc], dir[5] = {-1, 0, 1, 0, -1}; 
+        if (oldColor != newColor) {
+            stack<pair<int, int>> stk; 
+            stk.emplace(sr, sc); 
             while (!stk.empty()) {
-                int i = stk.top()[0], j = stk.top()[1]; 
-                stk.pop(); 
-                for (auto& d : vector<vector<int>>{{-1, 0}, {0, -1}, {0, 1}, {1, 0}}) {
-                    int ii = i + d[0], jj = j + d[1];
-                    if (0 <= ii && ii < m && 0 <= jj && jj < n && image[ii][jj] == oldColor) {
-                        stk.push({ii, jj}); 
-                    }
-                }
+                auto [i, j] = stk.top(); stk.pop(); 
                 image[i][j] = newColor; 
+                for (int k = 0; k < 4; ++k) {
+                    int ii = i + dir[k], jj = j + dir[k+1];
+                    if (0 <= ii && ii < m && 0 <= jj && jj < n && image[ii][jj] == oldColor) 
+                        stk.emplace(ii, jj); 
+                }
             }
         } 
         return image; 
