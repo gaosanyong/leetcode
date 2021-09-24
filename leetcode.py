@@ -647,14 +647,14 @@ class Solution:
 	Note: Given n will always be valid.
 	Follow up: Could you do this in one pass?"""
 
-    def removeNthFromEnd(self, head: ListNode, n: int) -> ListNode:
+    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
         dummy = ListNode(next=head)
-        fast = slow = dummy
-        i = 0
-        while fast:
+        slow = fast = dummy 
+        while fast: 
             fast = fast.next 
-            if (i:=i+1) > n+1: slow = slow.next
-        slow.next = slow.next.next
+            if n < 0: slow = slow.next
+            n -= 1
+        slow.next = slow.next.next 
         return dummy.next 
 
 
