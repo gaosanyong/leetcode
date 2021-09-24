@@ -5774,11 +5774,10 @@ class Solution:
     def twoSum(self, numbers: List[int], target: int) -> List[int]:
         lo, hi = 0, len(numbers)-1
         while lo < hi: 
-            val = numbers[lo] + numbers[hi]
-            if val == target: return [lo+1, hi+1]
-            elif val > target: hi -= 1
-            else: lo += 1
-
+            sm = numbers[lo] + numbers[hi]
+            if sm < target: lo += 1
+            elif sm == target: return [lo+1, hi+1]
+            else: hi -= 1
 
 
     """168. Excel Sheet Column Title (Easy)
