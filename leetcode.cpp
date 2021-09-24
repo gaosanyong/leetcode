@@ -5079,6 +5079,35 @@ public:
     }
 
 
+    /*557. Reverse Words in a String III (Easy)
+	Given a string s, reverse the order of characters in each word within a 
+	sentence while still preserving whitespace and initial word order.
+
+	Example 1:
+	Input: s = "Let's take LeetCode contest"
+	Output: "s'teL ekat edoCteeL tsetnoc"
+
+	Example 2:
+	Input: s = "God Ding"
+	Output: "doG gniD"
+
+	Constraints:
+	* 1 <= s.length <= 5 * 10^4
+	* s contains printable ASCII characters.
+	* s does not contain any leading or trailing spaces.
+	* There is at least one word in s.
+	* All the words in s are separated by a single space.*/
+
+    string reverseWords(string s) {
+        for (int i = 0, ii = 0; i <= s.size(); ++i) 
+            if (i == s.size() || s[i] == ' ') {
+                for (int lo = ii, hi = i-1; lo < hi; swap(s[lo++], s[hi--])); 
+                ii = i+1; 
+            }
+        return s; 
+    }
+
+
     /*559. Maximum Depth of N-ary Tree (Easy)
 	Given a n-ary tree, find its maximum depth. The maximum depth is the number 
 	of nodes along the longest path from the root node down to the farthest 
@@ -17685,10 +17714,10 @@ public:
 
 
     /*1855. Maximum Distance Between a Pair of Values (Medium)
-	You are given two non-increasing 0-indexed integer arrays nums1​​​​​​ and 
-	nums2​​​​​​. A pair of indices (i, j), where 0 <= i < nums1.length and 
+	You are given two non-increasing 0-indexed integer arrays nums1 and 
+	nums2. A pair of indices (i, j), where 0 <= i < nums1.length and 
 	0 <= j < nums2.length, is valid if both i <= j and nums1[i] <= nums2[j]. 
-	The distance of the pair is j - i​​​​. Return the maximum distance of any 
+	The distance of the pair is j - i. Return the maximum distance of any 
 	valid pair (i, j). If there are no valid pairs, return 0. An array arr 
 	is non-increasing if arr[i-1] >= arr[i] for every 1 <= i < arr.length.
 
