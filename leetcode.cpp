@@ -9907,10 +9907,10 @@ public:
 	Note: The number of nodes in the given list will be between 1 and 100.*/
 
     ListNode* middleNode(ListNode* head) {
-        ListNode *fast = head, *slow = head; 
+        ListNode *slow = head, *fast = head; 
         while (fast && fast->next) {
-            fast = fast->next->next; 
             slow = slow->next; 
+            fast = fast->next->next; 
         }
         return slow; 
     }
