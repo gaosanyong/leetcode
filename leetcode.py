@@ -6076,14 +6076,12 @@ class Solution:
 	* k >= 0"""
 
     def rotate(self, nums: List[int], k: int) -> None:
-        """
-        Do not return anything, modify nums in-place instead.
-        """
-        g = gcd(k, (n := len(nums)))
-        for i in range(g):
-            ii = i
+        n = len(nums)
+        g = gcd(n, k)
+        for i in range(g): 
+            ii = i 
             for _ in range(n//g): 
-                ii = (ii + k)%n
+                ii = (ii + k) % n
                 nums[i], nums[ii] = nums[ii], nums[i]
 
 
@@ -46041,6 +46039,257 @@ class UnionFind:
                     ans = xx
                     queue.append(xx)
         return ans
+
+
+    """2016. Maximum Difference Between Increasing Elements (Easy)
+	Given a 0-indexed integer array nums of size n, find the maximum difference 
+	between nums[i] and nums[j] (i.e., nums[j] - nums[i]), such that 
+	0 <= i < j < n and nums[i] < nums[j]. Return the maximum difference. If no 
+	such i and j exists, return -1.
+
+	Example 1:
+	Input: nums = [7,1,5,4]
+	Output: 4
+	Explanation: The maximum difference occurs with i = 1 and j = 2, 
+	             nums[j] - nums[i] = 5 - 1 = 4. Note that with i = 1 and j = 0, 
+	             the difference nums[j] - nums[i] = 7 - 1 = 6, but i > j, so it 
+	             is not valid.
+	
+	Example 2:
+	Input: nums = [9,4,3,2]
+	Output: -1
+	Explanation: There is no i and j such that i < j and nums[i] < nums[j].
+	
+	Example 3:
+	Input: nums = [1,5,2,10]
+	Output: 9
+	Explanation: The maximum difference occurs with i = 0 and j = 3, 
+	             nums[j] - nums[i] = 10 - 1 = 9.
+
+	Constraints:
+	* n == nums.length
+	* 2 <= n <= 1000
+	* 1 <= nums[i] <= 10^9"""
+
+    def maximumDifference(self, nums: List[int]) -> int:
+        ans = 0
+        prefix = inf
+        for i, x in enumerate(nums): 
+            if i: ans = max(ans, x - prefix)
+            prefix = min(prefix, x)
+        return ans if ans > 0 else -1
+
+
+    """2017. Grid Game (Medium)
+	You are given a 0-indexed 2D array grid of size 2 x n, where grid[r][c] 
+	represents the number of points at position (r, c) on the matrix. Two 
+	robots are playing a game on this matrix. Both robots initially start at 
+	(0, 0) and want to reach (1, n-1). Each robot may only move to the right 
+	((r, c) to (r, c + 1)) or down ((r, c) to (r + 1, c)). At the start of the 
+	game, the first robot moves from (0, 0) to (1, n-1), collecting all the 
+	points from the cells on its path. For all cells (r, c) traversed on the 
+	path, grid[r][c] is set to 0. Then, the second robot moves from (0, 0) to 
+	(1, n-1), collecting the points on its path. Note that their paths may 
+	intersect with one another. The first robot wants to minimize the number of 
+	points collected by the second robot. In contrast, the second robot wants 
+	to maximize the number of points it collects. If both robots play optimally, 
+	return the number of points collected by the second robot.
+
+	Example 1:
+	Input: grid = [[2,5,4],[1,5,1]]
+	Output: 4
+	Explanation: The optimal path taken by the first robot is shown in red, and 
+	             the optimal path taken by the second robot is shown in blue. 
+	             The cells visited by the first robot are set to 0. The second 
+	             robot will collect 0 + 0 + 4 + 0 = 4 points.
+	
+	Example 2:
+	Input: grid = [[3,3,1],[8,5,2]]
+	Output: 4
+	Explanation: The optimal path taken by the first robot is shown in red, and 
+	             the optimal path taken by the second robot is shown in blue. 
+	             The cells visited by the first robot are set to 0. The second 
+	             robot will collect 0 + 3 + 1 + 0 = 4 points.
+	
+	Example 3:
+	Input: grid = [[1,3,1,15],[1,3,3,1]]
+	Output: 7
+	Explanation: The optimal path taken by the first robot is shown in red, and 
+	             the optimal path taken by the second robot is shown in blue. 
+	             The cells visited by the first robot are set to 0. The second 
+	             robot will collect 0 + 1 + 3 + 3 + 0 = 7 points.
+
+	Constraints:
+	* grid.length == 2
+	* n == grid[r].length
+	* 1 <= n <= 5 * 10^4
+	* 1 <= grid[r][c] <= 10^5"""
+
+    def gridGame(self, grid: List[List[int]]) -> int:
+        n = len(grid[0])
+        for i in range(1, n): 
+            grid[0][i] += grid[0][i-1]   # prefix sum 
+            grid[1][~i] += grid[1][~i+1] # suffix sum 
+            
+        ans = inf 
+        for i in range(n): 
+            ans = min(ans, max(grid[0][-1] - grid[0][i], grid[1][0] - grid[1][i]))
+        return ans 
+
+
+    """2018. Check if Word Can Be Placed In Crossword (Medium)
+	You are given an m x n matrix board, representing the current state of a 
+	crossword puzzle. The crossword contains lowercase English letters (from 
+	solved words), ' ' to represent any empty cells, and '#' to represent any 
+	blocked cells. A word can be placed horizontally (left to right or right to 
+	left) or vertically (top to bottom or bottom to top) in the board if:
+	* It does not occupy a cell containing the character '#'.
+	* The cell each letter is placed in must either be ' ' (empty) or match the 
+	  letter already on the board.
+	* There must not be any empty cells ' ' or other lowercase letters directly 
+	  left or right of the word if the word was placed horizontally.
+	* There must not be any empty cells ' ' or other lowercase letters directly 
+	  above or below the word if the word was placed vertically.
+	Given a string word, return true if word can be placed in board, or false 
+	otherwise.
+
+	Example 1:
+	Input: board = [["#", " ", "#"], [" ", " ", "#"], ["#", "c", " "]], word = "abc"
+	Output: true
+	Explanation: The word "abc" can be placed as shown above (top to bottom).
+
+	Example 2:
+	Input: board = [[" ", "#", "a"], [" ", "#", "c"], [" ", "#", "a"]], word = "ac"
+	Output: false
+	Explanation: It is impossible to place the word because there will always 
+	             be a space/letter above or below it.
+	
+	Example 3:
+	Input: board = [["#", " ", "#"], [" ", " ", "#"], ["#", " ", "c"]], word = "ca"
+	Output: true
+	Explanation: The word "ca" can be placed as shown above (right to left). 
+
+	Constraints:
+	* m == board.length
+	* n == board[i].length
+	* 1 <= m * n <= 2 * 10^5
+	* board[i][j] will be ' ', '#', or a lowercase English letter.
+	* 1 <= word.length <= max(m, n)
+	* word will contain only lowercase English letters."""
+
+    def placeWordInCrossword(self, board: List[List[str]], word: str) -> bool:
+        
+        def fn(board): 
+            """Return true if some row in board can accommodate word."""
+            m, n = len(board), len(board[0])
+            for i in range(m): 
+                lo, hi = 0, len(word)-1
+                for j in range(n): 
+                    if board[i][j] == " ": 
+                        lo += 1
+                        hi -= 1
+                    elif board[i][j] == "#": lo, hi = 0, len(word)-1
+                    else: 
+                        if board[i][j] == word[lo]: lo += 1
+                        else: lo = 0 
+                        if board[i][j] == word[hi]: hi -= 1
+                        else: hi = len(word)-1
+                    if lo == len(word) or hi == -1: 
+                        if (j == len(word)-1 or board[i][j-len(word)] == "#") and (j == n-1 or board[i][j+1] == "#"): return True 
+                        else: break
+            return False 
+        
+        return fn(board) or fn(list(zip(*board)))
+
+
+    """2019. The Score of Students Solving Math Expression (Hard)
+	You are given a string s that contains digits 0-9, addition symbols '+', 
+	and multiplication symbols '*' only, representing a valid math expression 
+	of single digit numbers (e.g., 3+5*2). This expression was given to n 
+	elementary school students. The students were instructed to get the answer 
+	of the expression by following this order of operations:
+	* Compute multiplication, reading from left to right; Then,
+	* Compute addition, reading from left to right.
+	You are given an integer array answers of length n, which are the submitted 
+	answers of the students in no particular order. You are asked to grade the 
+	answers, by following these rules:
+	* If an answer equals the correct answer of the expression, this student 
+	  will be rewarded 5 points;
+	* Otherwise, if the answer could be interpreted as if the student used the 
+	  incorrect order of operations, once or multiple times, this student will 
+	  be rewarded 2 points;
+	* Otherwise, this student will be rewarded 0 points.
+	Return the sum of the points of the students.
+
+	Example 1:
+	Input: s = "7+3*1*2", answers = [20,13,42]
+	Output: 7
+	Explanation: As illustrated above, the correct answer of the expression is 
+	             13, therefore one student is rewarded 5 points: [20,13,42]. A 
+	             student might have used this incorrect order of operations: 
+	             7+3=10, 10*1=10, 10*2=20. Therefore one student is rewarded 2 
+	             points: [20,13,42]. The points for the students are: [2,5,0]. 
+	             The sum of the points is 2+5+0=7.
+	
+	Example 2:
+	Input: s = "3+5*2", answers = [13,0,10,13,13,16,16]
+	Output: 19
+	Explanation: The correct answer of the expression is 13, therefore three 
+	             students are rewarded 5 points each: [13,0,10,13,13,16,16]. 
+	             A student might have used this incorrect order of operations: 
+	             3+5=8, 8*2=16. Therefore two students are rewarded 2 points: 
+	             [13,0,10,13,13,16,16]. The points for the students are: 
+	             [5,0,0,5,5,2,2]. The sum of the points is 5+0+0+5+5+2+2=19.
+	
+	Example 3:
+	Input: s = "6+0*1", answers = [12,9,6,4,8,6]
+	Output: 10
+	Explanation: The correct answer of the expression is 6. If a student had 
+	             used some incorrect order of operations, the answer would also 
+	             be 6. By the rules of grading, the students will still be 
+	             rewarded 5 points (as they got the correct answer), not 2 
+	             points. The points for the students are: [0,0,5,0,0,5]. The 
+	             sum of the points is 10.
+
+	Constraints:
+	* 3 <= s.length <= 31
+	* s represents a valid expression that contains only digits 0-9, '+', and '*' only.
+	* All the integer operands in the expression are in the inclusive range [0, 9].
+	* 1 <= The count of all operators ('+' and '*') in the math expression <= 15
+	* Test data are generated such that the correct answer of the expression is in the range of [0, 1000].
+	* n == answers.length
+	* 1 <= n <= 10^4
+	* 0 <= answers[i] <= 1000"""
+
+    def scoreOfStudents(self, s: str, answers: List[int]) -> int:
+        op = ""
+        stack = []
+        for ch in s: 
+            if ch in "+*": op = ch
+            else: 
+                x = int(ch)
+                if op == "*": stack[-1] *= x
+                else: stack.append(x)
+        target = sum(stack)
+        
+        @cache
+        def fn(lo, hi): 
+            """Return possible answers of s[lo:hi]."""
+            if lo+1 == hi: return {int(s[lo])}
+            ans = set()
+            for mid in range(lo+1, hi, 2): 
+                for x in fn(lo, mid): 
+                    for y in fn(mid+1, hi): 
+                        if s[mid] == "+" and x + y <= 1000: ans.add(x + y)
+                        elif s[mid] == "*" and x * y <= 1000: ans.add(x * y)
+            return ans 
+                
+        cand = fn(0, len(s))
+        ans = 0 
+        for x in answers: 
+            if x == target: ans += 5
+            elif x in cand: ans += 2
+        return ans 
 
 
 """146. LRU Cache (Medium)
