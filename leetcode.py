@@ -46115,12 +46115,12 @@ class UnionFind:
 	* 1 <= nums[i] <= 10^9"""
 
     def maximumDifference(self, nums: List[int]) -> int:
-        ans = 0
+        ans = -1 
         prefix = inf
         for i, x in enumerate(nums): 
-            if i: ans = max(ans, x - prefix)
+            if i and x > prefix: ans = max(ans, x - prefix)
             prefix = min(prefix, x)
-        return ans if ans > 0 else -1
+        return ans 
 
 
     """2017. Grid Game (Medium)
@@ -46169,14 +46169,13 @@ class UnionFind:
 	* 1 <= grid[r][c] <= 10^5"""
 
     def gridGame(self, grid: List[List[int]]) -> int:
-        n = len(grid[0])
-        for i in range(1, n): 
-            grid[0][i] += grid[0][i-1]   # prefix sum 
-            grid[1][~i] += grid[1][~i+1] # suffix sum 
-            
-        ans = inf 
-        for i in range(n): 
-            ans = min(ans, max(grid[0][-1] - grid[0][i], grid[1][0] - grid[1][i]))
+        ans = inf
+        prefix = 0
+        suffix = sum(grid[0])
+        for i in range(len(grid[0])): 
+            suffix -= grid[0][i]
+            ans = min(ans, max(prefix, suffix))
+            prefix += grid[1][i]
         return ans 
 
 
@@ -46221,28 +46220,12 @@ class UnionFind:
 	* word will contain only lowercase English letters."""
 
     def placeWordInCrossword(self, board: List[List[str]], word: str) -> bool:
-        
-        def fn(board): 
-            """Return true if some row in board can accommodate word."""
-            m, n = len(board), len(board[0])
-            for i in range(m): 
-                lo, hi = 0, len(word)-1
-                for j in range(n): 
-                    if board[i][j] == " ": 
-                        lo += 1
-                        hi -= 1
-                    elif board[i][j] == "#": lo, hi = 0, len(word)-1
-                    else: 
-                        if board[i][j] == word[lo]: lo += 1
-                        else: lo = 0 
-                        if board[i][j] == word[hi]: hi -= 1
-                        else: hi = len(word)-1
-                    if lo == len(word) or hi == -1: 
-                        if (j == len(word)-1 or board[i][j-len(word)] == "#") and (j == n-1 or board[i][j+1] == "#"): return True 
-                        else: break
-            return False 
-        
-        return fn(board) or fn(list(zip(*board)))
+        for x in board, zip(*board): 
+            for row in x: 
+                for s in "".join(row).split("#"): 
+                    for w in word, word[::-1]: 
+                        if len(s) == len(w) and all(ss in (" ", ww) for ss, ww in zip(s, w)): return True 
+        return False
 
 
     """2019. The Score of Students Solving Math Expression (Hard)
@@ -46305,15 +46288,6 @@ class UnionFind:
 	* 0 <= answers[i] <= 1000"""
 
     def scoreOfStudents(self, s: str, answers: List[int]) -> int:
-        op = ""
-        stack = []
-        for ch in s: 
-            if ch in "+*": op = ch
-            else: 
-                x = int(ch)
-                if op == "*": stack[-1] *= x
-                else: stack.append(x)
-        target = sum(stack)
         
         @cache
         def fn(lo, hi): 
@@ -46327,6 +46301,7 @@ class UnionFind:
                         elif s[mid] == "*" and x * y <= 1000: ans.add(x * y)
             return ans 
                 
+        target = eval(s)
         cand = fn(0, len(s))
         ans = 0 
         for x in answers: 
