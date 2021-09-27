@@ -25002,6 +25002,263 @@ public:
         }
         return ans; 
     }
+
+
+    /*2016. Maximum Difference Between Increasing Elements (Easy)
+	Given a 0-indexed integer array nums of size n, find the maximum difference 
+	between nums[i] and nums[j] (i.e., nums[j] - nums[i]), such that 
+	0 <= i < j < n and nums[i] < nums[j]. Return the maximum difference. If no 
+	such i and j exists, return -1.
+
+	Example 1:
+	Input: nums = [7,1,5,4]
+	Output: 4
+	Explanation: The maximum difference occurs with i = 1 and j = 2, 
+	             nums[j] - nums[i] = 5 - 1 = 4. Note that with i = 1 and j = 0, 
+	             the difference nums[j] - nums[i] = 7 - 1 = 6, but i > j, so it 
+	             is not valid.
+	
+	Example 2:
+	Input: nums = [9,4,3,2]
+	Output: -1
+	Explanation: There is no i and j such that i < j and nums[i] < nums[j].
+	
+	Example 3:
+	Input: nums = [1,5,2,10]
+	Output: 9
+	Explanation: The maximum difference occurs with i = 0 and j = 3, 
+	             nums[j] - nums[i] = 10 - 1 = 9.
+
+	Constraints:
+	* n == nums.length
+	* 2 <= n <= 1000
+	* 1 <= nums[i] <= 10^9*/
+
+    int maximumDifference(vector<int>& nums) {
+        int ans = -1, prefix = INT_MAX; 
+        for (int i = 0; i < nums.size(); ++i) {
+            if (i && prefix < nums[i]) ans = max(ans, nums[i] - prefix); 
+            prefix = min(prefix, nums[i]); 
+        }
+        return ans; 
+    }
+
+
+    /*2017. Grid Game (Medium)
+	You are given a 0-indexed 2D array grid of size 2 x n, where grid[r][c] 
+	represents the number of points at position (r, c) on the matrix. Two 
+	robots are playing a game on this matrix. Both robots initially start at 
+	(0, 0) and want to reach (1, n-1). Each robot may only move to the right 
+	((r, c) to (r, c + 1)) or down ((r, c) to (r + 1, c)). At the start of the 
+	game, the first robot moves from (0, 0) to (1, n-1), collecting all the 
+	points from the cells on its path. For all cells (r, c) traversed on the 
+	path, grid[r][c] is set to 0. Then, the second robot moves from (0, 0) to 
+	(1, n-1), collecting the points on its path. Note that their paths may 
+	intersect with one another. The first robot wants to minimize the number of 
+	points collected by the second robot. In contrast, the second robot wants 
+	to maximize the number of points it collects. If both robots play optimally, 
+	return the number of points collected by the second robot.
+
+	Example 1:
+	Input: grid = [[2,5,4],[1,5,1]]
+	Output: 4
+	Explanation: The optimal path taken by the first robot is shown in red, and 
+	             the optimal path taken by the second robot is shown in blue. 
+	             The cells visited by the first robot are set to 0. The second 
+	             robot will collect 0 + 0 + 4 + 0 = 4 points.
+	
+	Example 2:
+	Input: grid = [[3,3,1],[8,5,2]]
+	Output: 4
+	Explanation: The optimal path taken by the first robot is shown in red, and 
+	             the optimal path taken by the second robot is shown in blue. 
+	             The cells visited by the first robot are set to 0. The second 
+	             robot will collect 0 + 3 + 1 + 0 = 4 points.
+	
+	Example 3:
+	Input: grid = [[1,3,1,15],[1,3,3,1]]
+	Output: 7
+	Explanation: The optimal path taken by the first robot is shown in red, and 
+	             the optimal path taken by the second robot is shown in blue. 
+	             The cells visited by the first robot are set to 0. The second 
+	             robot will collect 0 + 1 + 3 + 3 + 0 = 7 points.
+
+	Constraints:
+	* grid.length == 2
+	* n == grid[r].length
+	* 1 <= n <= 5 * 10^4
+	* 1 <= grid[r][c] <= 10^5*/
+
+    long long gridGame(vector<vector<int>>& grid) {
+        long long ans = LONG_MAX, prefix = 0, suffix = accumulate(grid[0].begin(), grid[0].end(), 0l); 
+        for (int i = 0; i < grid[0].size(); ++i) {
+            suffix -= grid[0][i]; 
+            ans = min(ans, max(prefix, suffix)); 
+            prefix += grid[1][i]; 
+        }
+        return ans; 
+    }
+
+
+    /*2018. Check if Word Can Be Placed In Crossword (Medium)
+	You are given an m x n matrix board, representing the current state of a 
+	crossword puzzle. The crossword contains lowercase English letters (from 
+	solved words), ' ' to represent any empty cells, and '#' to represent any 
+	blocked cells. A word can be placed horizontally (left to right or right to 
+	left) or vertically (top to bottom or bottom to top) in the board if:
+	* It does not occupy a cell containing the character '#'.
+	* The cell each letter is placed in must either be ' ' (empty) or match the 
+	  letter already on the board.
+	* There must not be any empty cells ' ' or other lowercase letters directly 
+	  left or right of the word if the word was placed horizontally.
+	* There must not be any empty cells ' ' or other lowercase letters directly 
+	  above or below the word if the word was placed vertically.
+	Given a string word, return true if word can be placed in board, or false 
+	otherwise.
+
+	Example 1:
+	Input: board = [["#", " ", "#"], [" ", " ", "#"], ["#", "c", " "]], word = "abc"
+	Output: true
+	Explanation: The word "abc" can be placed as shown above (top to bottom).
+
+	Example 2:
+	Input: board = [[" ", "#", "a"], [" ", "#", "c"], [" ", "#", "a"]], word = "ac"
+	Output: false
+	Explanation: It is impossible to place the word because there will always 
+	             be a space/letter above or below it.
+	
+	Example 3:
+	Input: board = [["#", " ", "#"], [" ", " ", "#"], ["#", " ", "c"]], word = "ca"
+	Output: true
+	Explanation: The word "ca" can be placed as shown above (right to left). 
+
+	Constraints:
+	* m == board.length
+	* n == board[i].length
+	* 1 <= m * n <= 2 * 10^5
+	* board[i][j] will be ' ', '#', or a lowercase English letter.
+	* 1 <= word.length <= max(m, n)
+	* word will contain only lowercase English letters.*/
+
+    bool placeWordInCrossword(vector<vector<char>>& board, string word) {
+        int m = board.size(), n = board[0].size(), w = word.size(); 
+        vector<vector<char>> trans(n, vector<char>(m)); 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j)
+                trans[j][i] = board[i][j]; 
+        
+        auto fn = [&](vector<vector<char>>& x) {
+            int m = x.size(), n = x[0].size(); 
+            for (int i = 0; i < m; ++i) {
+                int lo = 0, hi = w-1; 
+                for (int j = 0; j < n; ++j) {
+                    if (x[i][j] == '#') {
+                        lo = 0; hi = w-1; 
+                    } else if (x[i][j] == ' ') {
+                        ++lo; --hi; 
+                    } else {
+                        lo = x[i][j] == word[lo] ? lo+1 : 0; 
+                        hi = x[i][j] == word[hi] ? hi-1 : w-1; 
+                    }
+                    if (lo == w || hi == -1) 
+                        if ((j == n-1 || x[i][j+1] == '#') and (j == w-1 || x[i][j-w] == '#')) return true; 
+                        else { lo = 0; hi = w-1; }
+                }
+            }
+            return false; 
+        };
+        
+        return fn(board) || fn(trans); 
+    }
+
+
+    /*2019. The Score of Students Solving Math Expression (Hard)
+	You are given a string s that contains digits 0-9, addition symbols '+', 
+	and multiplication symbols '*' only, representing a valid math expression 
+	of single digit numbers (e.g., 3+5*2). This expression was given to n 
+	elementary school students. The students were instructed to get the answer 
+	of the expression by following this order of operations:
+	* Compute multiplication, reading from left to right; Then,
+	* Compute addition, reading from left to right.
+	You are given an integer array answers of length n, which are the submitted 
+	answers of the students in no particular order. You are asked to grade the 
+	answers, by following these rules:
+	* If an answer equals the correct answer of the expression, this student 
+	  will be rewarded 5 points;
+	* Otherwise, if the answer could be interpreted as if the student used the 
+	  incorrect order of operations, once or multiple times, this student will 
+	  be rewarded 2 points;
+	* Otherwise, this student will be rewarded 0 points.
+	Return the sum of the points of the students.
+
+	Example 1:
+	Input: s = "7+3*1*2", answers = [20,13,42]
+	Output: 7
+	Explanation: As illustrated above, the correct answer of the expression is 
+	             13, therefore one student is rewarded 5 points: [20,13,42]. A 
+	             student might have used this incorrect order of operations: 
+	             7+3=10, 10*1=10, 10*2=20. Therefore one student is rewarded 2 
+	             points: [20,13,42]. The points for the students are: [2,5,0]. 
+	             The sum of the points is 2+5+0=7.
+	
+	Example 2:
+	Input: s = "3+5*2", answers = [13,0,10,13,13,16,16]
+	Output: 19
+	Explanation: The correct answer of the expression is 13, therefore three 
+	             students are rewarded 5 points each: [13,0,10,13,13,16,16]. 
+	             A student might have used this incorrect order of operations: 
+	             3+5=8, 8*2=16. Therefore two students are rewarded 2 points: 
+	             [13,0,10,13,13,16,16]. The points for the students are: 
+	             [5,0,0,5,5,2,2]. The sum of the points is 5+0+0+5+5+2+2=19.
+	
+	Example 3:
+	Input: s = "6+0*1", answers = [12,9,6,4,8,6]
+	Output: 10
+	Explanation: The correct answer of the expression is 6. If a student had 
+	             used some incorrect order of operations, the answer would also 
+	             be 6. By the rules of grading, the students will still be 
+	             rewarded 5 points (as they got the correct answer), not 2 
+	             points. The points for the students are: [0,0,5,0,0,5]. The 
+	             sum of the points is 10.
+
+	Constraints:
+	* 3 <= s.length <= 31
+	* s represents a valid expression that contains only digits 0-9, '+', and '*' only.
+	* All the integer operands in the expression are in the inclusive range [0, 9].
+	* 1 <= The count of all operators ('+' and '*') in the math expression <= 15
+	* Test data are generated such that the correct answer of the expression is in the range of [0, 1000].
+	* n == answers.length
+	* 1 <= n <= 10^4
+	* 0 <= answers[i] <= 1000*/
+
+    int scoreOfStudents(string s, vector<int>& answers) {
+        int n = s.size(); 
+        vector<int> stk; 
+        for (int i = 0; i < n; i += 2) {
+            int x = s[i] - '0'; 
+            if (i && s[i-1] == '*') stk.back() *= x; 
+            else stk.push_back(x); 
+        }
+        int target = accumulate(stk.begin(), stk.end(), 0); 
+        
+        vector<vector<unordered_set<int>>> dp(n, vector<unordered_set<int>>(n)); 
+        for (int lo = n-1; lo >= 0; lo -= 2) 
+            for (int hi = lo; hi < n; hi += 2) 
+                if (lo == hi) dp[lo][hi] = {s[lo] - '0'}; 
+                else 
+                    for (int mid = lo+1; mid < hi; mid += 2) 
+                        for (auto& x : dp[lo][mid-1]) 
+                            for (auto& y : dp[mid+1][hi]) 
+                                if (s[mid] == '+' && x + y <= 1000) dp[lo][hi].insert(x+y); 
+                                else if (s[mid] == '*' && x * y <= 1000) dp[lo][hi].insert(x*y); 
+        
+        int ans = 0; 
+        for (auto& x : answers) {
+            if (x == target) ans += 5; 
+            else if (dp[0][n-1].count(x)) ans += 2; 
+        }
+        return ans; 
+    }
 };
 
 
