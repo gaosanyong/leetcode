@@ -10851,15 +10851,14 @@ public:
 	Follow Up: Could you solve it in-place?*/
 
     vector<int> sortArrayByParityII(vector<int>& nums) {
-        for (int i = 0, j = 1; i < nums.size() && j < nums.size(); ) {
-            if (!(nums[i]&1)) i += 2; 
-            else if (nums[j]&1) j += 2; 
+        for (int ii = 0, i = 1; ii < nums.size() && i < nums.size(); ) 
+            if (!(nums[ii]&1)) ii += 2; 
+            else if (nums[i]&1) i += 2; 
             else {
-                swap(nums[i], nums[j]); 
+                swap(nums[ii], nums[i]); 
+                ii += 2; 
                 i += 2; 
-                j += 2; 
             }
-        }
         return nums; 
     }
 
