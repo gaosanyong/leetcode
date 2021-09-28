@@ -3822,6 +3822,59 @@ public:
     }
 
 
+    /*407. Trapping Rain Water II (Hard)
+	Given an m x n integer matrix heightMap representing the height of each 
+	unit cell in a 2D elevation map, return the volume of water it can trap 
+	after raining.
+
+	Example 1:
+	Input: heightMap = [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]]
+	Output: 4
+	Explanation: After the rain, water is trapped between the blocks. We have 
+	             two small pounds 1 and 3 units trapped. The total volume of 
+	             water trapped is 4.
+	
+	Example 2:
+	Input: heightMap = [[3,3,3,3,3],[3,2,2,2,3],[3,2,1,2,3],[3,2,2,2,3],[3,3,3,3,3]]
+	Output: 10
+
+	Constraints:
+	* m == heightMap.length
+	* n == heightMap[i].length
+	* 1 <= m, n <= 200
+	* 0 <= heightMap[i][j] <= 2 * 10^4*/
+
+    int trapRainWater(vector<vector<int>>& heightMap) {
+        int m = heightMap.size(), n = heightMap[0].size(); 
+        
+        priority_queue<array<int,3>, vector<array<int,3>>, greater<>> pq; // min-heap 
+        for (int i = 0; i < m; ++i) {
+            pq.push({heightMap[i][0], i, 0}); 
+            pq.push({heightMap[i][n-1], i, n-1}); 
+        }
+        for (int j = 1; j < n-1; ++j) {
+            pq.push({heightMap[0][j], 0, j}); 
+            pq.push({heightMap[m-1][j], m-1, j}); 
+        }
+        
+        int ans = 0, most = 0, dir[5] = {-1, 0, 1, 0, -1}; 
+        while (pq.size()) {
+            auto elem = pq.top(); pq.pop(); 
+            int ht = elem[0], i = elem[1], j = elem[2]; 
+            most = max(most, ht); 
+            for (int k = 0; k < 4; ++k) {
+                int ii = i + dir[k], jj = j + dir[k+1]; 
+                if (0 < ii && ii < m-1 && 0 < jj && jj < n-1 && heightMap[ii][jj] != -1) {
+                    ans += max(0, most - heightMap[ii][jj]); 
+                    pq.push({heightMap[ii][jj], ii, jj}); 
+                    heightMap[ii][jj] = -1; 
+                }
+            }
+        }
+        return ans; 
+    }
+
+
     /*415. Add Strings (Easy)
 	Given two non-negative integers, num1 and num2 represented as string, 
 	return the sum of num1 and num2 as a string. You must solve the problem 

@@ -11040,6 +11040,51 @@ class UnionFind:
         return ans 
 
 
+    """407. Trapping Rain Water II (Hard)
+	Given an m x n integer matrix heightMap representing the height of each 
+	unit cell in a 2D elevation map, return the volume of water it can trap 
+	after raining.
+
+	Example 1:
+	Input: heightMap = [[1,4,3,1,3,2],[3,2,1,3,2,4],[2,3,3,2,3,1]]
+	Output: 4
+	Explanation: After the rain, water is trapped between the blocks. We have 
+	             two small pounds 1 and 3 units trapped. The total volume of 
+	             water trapped is 4.
+	
+	Example 2:
+	Input: heightMap = [[3,3,3,3,3],[3,2,2,2,3],[3,2,1,2,3],[3,2,2,2,3],[3,3,3,3,3]]
+	Output: 10
+
+	Constraints:
+	* m == heightMap.length
+	* n == heightMap[i].length
+	* 1 <= m, n <= 200
+	* 0 <= heightMap[i][j] <= 2 * 10^4"""
+
+    def trapRainWater(self, heightMap: List[List[int]]) -> int:
+        m, n = len(heightMap), len(heightMap[0])
+        
+        pq = []
+        for i in range(m): 
+            heappush(pq, (heightMap[i][0], i, 0))
+            heappush(pq, (heightMap[i][n-1], i, n-1))
+        for j in range(1, n-1): 
+            heappush(pq, (heightMap[0][j], 0, j))
+            heappush(pq, (heightMap[m-1][j], m-1, j))
+        
+        ans = most = 0 
+        while pq: 
+            ht, i, j = heappop(pq)
+            most = max(most, ht)
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                if 0 < ii < m-1 and 0 < jj < n-1 and heightMap[ii][jj] != -1: 
+                    ans += max(0, most - heightMap[ii][jj])
+                    heappush(pq, (heightMap[ii][jj], ii, jj))
+                    heightMap[ii][jj] = -1 # mark "visited"
+        return ans 
+
+
     """408. Valid Word Abbreviation (Easy)
 	Given a non-empty string s and an abbreviation abbr, return whether the 
 	string matches with the given abbreviation. A string such as "word" 
