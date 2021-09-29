@@ -6545,6 +6545,48 @@ public:
     }
 
 
+    /*664. Strange Printer (Hard)
+	There is a strange printer with the following two special properties:
+	* The printer can only print a sequence of the same character each time.
+	* At each turn, the printer can print new characters starting from and 
+	  ending at any place and will cover the original existing characters.
+	Given a string s, return the minimum number of turns the printer needed to 
+	print it.
+
+	Example 1:
+	Input: s = "aaabbb"
+	Output: 2
+	Explanation: Print "aaa" first and then print "bbb".
+
+	Example 2:
+	Input: s = "aba"
+	Output: 2
+	Explanation: Print "aaa" first and then print "b" from the second place of 
+	             the string, which will cover the existing character 'a'.
+
+	Constraints:
+	* 1 <= s.length <= 100
+	* s consists of lowercase English letters.*/
+
+    int strangePrinter(string s) {
+        string ss; 
+        for (int i = 0; i < s.size(); ++i) 
+            if (i == 0 || s[i-1] != s[i]) ss.push_back(s[i]); 
+        
+        int n = ss.size(); 
+        vector<vector<int>> dp(n+1, vector<int>(n+1)); 
+        
+        for (int lo = n-1; lo >= 0; --lo) 
+            for (int hi = lo+1; hi <= n; ++hi) {
+                dp[lo][hi] = 1 + dp[lo+1][hi]; 
+                for (int mid = lo+1; mid < hi; ++mid) 
+                    if (ss[lo] == ss[mid]) 
+                        dp[lo][hi] = min(dp[lo][hi], dp[lo][mid] + dp[mid+1][hi]); 
+            }
+        return dp[0][n]; 
+    }
+
+
     /*665. Non-decreasing Array (Medium)
 	Given an array nums with n integers, your task is to check if it could 
 	become non-decreasing by modifying at most one element. We define an array 
