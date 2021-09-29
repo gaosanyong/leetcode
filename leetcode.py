@@ -15381,9 +15381,7 @@ class UnionFind:
             ans.append(node)
             if i == r: q -= 1
             prev = None
-            for _ in range(q): 
-                prev = node
-                if node: node = node.next 
+            for _ in range(q): prev, node = node, node.next
             if prev: prev.next = None # break list into parts 
         return ans 
 

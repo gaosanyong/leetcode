@@ -7637,6 +7637,55 @@ public:
     }
 
 
+    /*725. Split Linked List in Parts (Medium)
+	Given the head of a singly linked list and an integer k, split the linked 
+	list into k consecutive linked list parts. The length of each part should 
+	be as equal as possible: no two parts should have a size differing by more 
+	than one. This may lead to some parts being null. The parts should be in 
+	the order of occurrence in the input list, and parts occurring earlier 
+	should always have a size greater than or equal to parts occurring later. 
+	Return an array of the k parts.
+
+	Example 1:
+	Input: head = [1,2,3], k = 5
+	Output: [[1],[2],[3],[],[]]
+	Explanation: The first element output[0] has output[0].val = 1, 
+	             output[0].next = null. The last element output[4] is null, but 
+	             its string representation as a ListNode is [].
+	
+	Example 2:
+	Input: head = [1,2,3,4,5,6,7,8,9,10], k = 3
+	Output: [[1,2,3,4],[5,6,7],[8,9,10]]
+	Explanation: The input has been split into consecutive parts with size 
+	             difference at most 1, and earlier parts are a larger size than 
+	             the later parts.
+
+	Constraints:
+	* The number of nodes in the list is in the range [0, 1000].
+	* 0 <= Node.val <= 1000
+	* 1 <= k <= 50*/
+
+    vector<ListNode*> splitListToParts(ListNode* head, int k) {
+        int n = 0; 
+        for (ListNode* node = head; node; node = node->next, n++); 
+        int q = n/k+1, r = n%k; 
+        
+        vector<ListNode*> ans; 
+        ListNode* node = head; 
+        for (; k; --k, --r) {
+            ans.push_back(node); 
+            if (r == 0) --q; 
+            ListNode* prev = nullptr; 
+            for (int i = 0; i < q; ++i) {
+                prev = node; 
+                node = node->next; 
+            }
+            if (prev) prev->next = nullptr; 
+        }
+        return ans; 
+    }
+
+
     /*726. Number of Atoms (Hard)
 	Given a string formula representing a chemical formula, return the count of 
 	each atom. The atomic element always starts with an uppercase character, 
