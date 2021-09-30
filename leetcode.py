@@ -14988,6 +14988,44 @@ class Trie:
         return ans 
 
 
+    """698. Partition to K Equal Sum Subsets (Medium)
+	Given an integer array nums and an integer k, return true if it is possible 
+	to divide this array into k non-empty subsets whose sums are all equal.
+
+	Example 1:
+	Input: nums = [4,3,2,3,5,2,1], k = 4
+	Output: true
+	Explanation: It's possible to divide it into 4 subsets (5), (1, 4), (2,3), 
+	             (2,3) with equal sums.
+	
+	Example 2:
+	Input: nums = [1,2,3,4], k = 3
+	Output: false
+
+	Constraints:
+	* 1 <= k <= nums.length <= 16
+	* 1 <= nums[i] <= 10^4
+	* The frequency of each element is in the range [1, 4]."""
+
+    def canPartitionKSubsets(self, nums: List[int], k: int) -> bool:
+        total = sum(nums)
+        if total % k: return False 
+        avg = total // k
+        
+        @cache
+        def fn(x, mask):
+            """Return True if possible to partition."""
+            if x > avg: return False 
+            if x == avg: return fn(0, mask)
+            if not mask: return True 
+            for i in range(len(nums)): 
+                if mask & 1<<i and fn(x + nums[i], mask ^ 1<<i): return True 
+            return False 
+        
+        nums.sort(reverse=True)
+        return fn(0, (1 << len(nums))-1)
+
+
     """702. Search in a Sorted Array of Unknown Size (Medium)
 	This is an interactive problem. You have a sorted array of unique elements 
 	and an unknown size. You do not have an access to the array but you can use 

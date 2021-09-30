@@ -7212,6 +7212,50 @@ public:
     }
 
 
+    /*698. Partition to K Equal Sum Subsets (Medium)
+	Given an integer array nums and an integer k, return true if it is possible 
+	to divide this array into k non-empty subsets whose sums are all equal.
+
+	Example 1:
+	Input: nums = [4,3,2,3,5,2,1], k = 4
+	Output: true
+	Explanation: It's possible to divide it into 4 subsets (5), (1, 4), (2,3), 
+	             (2,3) with equal sums.
+	
+	Example 2:
+	Input: nums = [1,2,3,4], k = 3
+	Output: false
+
+	Constraints:
+	* 1 <= k <= nums.length <= 16
+	* 1 <= nums[i] <= 10^4
+	* The frequency of each element is in the range [1, 4].*/
+
+    bool canPartitionKSubsets(vector<int>& nums, int k) {
+        int total = accumulate(nums.begin(), nums.end(), 0); 
+        if (total % k) return false; 
+        int avg = total / k; 
+        
+        vector<int> sm(k); 
+        sort(nums.begin(), nums.end(), [&](auto& lhs, auto& rhs) {return lhs > rhs; }); 
+        
+        function<bool(int)> fn = [&](int i) {
+            if (i == nums.size()) return true; 
+            for (int kk = 0; kk < k; ++kk) {
+                if (sm[kk] + nums[i] <= avg) {
+                    sm[kk] += nums[i]; 
+                    if (fn(i+1)) return true; 
+                    sm[kk] -= nums[i]; 
+                }
+                if (sm[kk] == 0) break; 
+            }
+            return false; 
+        }; 
+        
+        return fn(0); 
+    }
+
+
     /*700. Search in a Binary Search Tree (Easy)
 	You are given the root of a binary search tree (BST) and an integer val. 
 	Find the node in the BST that the node's value equals val and return the 
