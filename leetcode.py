@@ -24113,6 +24113,46 @@ class UnionFind:
         return (fn(0, 1) + sum(piles))//2
 
 
+    """1143. Longest Common Subsequence (Medium)
+	Given two strings text1 and text2, return the length of their longest 
+	common subsequence. If there is no common subsequence, return 0. A 
+	subsequence of a string is a new string generated from the original string 
+	with some characters (can be none) deleted without changing the relative 
+	order of the remaining characters. For example, "ace" is a subsequence of 
+	"abcde". A common subsequence of two strings is a subsequence that is 
+	common to both strings.
+
+	Example 1:
+	Input: text1 = "abcde", text2 = "ace" 
+	Output: 3  
+	Explanation: The longest common subsequence is "ace" and its length is 3.
+
+	Example 2:
+	Input: text1 = "abc", text2 = "abc"
+	Output: 3
+	Explanation: The longest common subsequence is "abc" and its length is 3.
+
+	Example 3:
+	Input: text1 = "abc", text2 = "def"
+	Output: 0
+	Explanation: There is no such common subsequence, so the result is 0.
+
+	Constraints:
+	* 1 <= text1.length, text2.length <= 1000
+	* text1 and text2 consist of only lowercase English characters."""
+
+    def longestCommonSubsequence(self, text1: str, text2: str) -> int:
+        
+        @cache
+        def fn(i, j):
+            """Return length of lcs of text1[i:] and text2[j:]."""
+            if i == len(text1) or j == len(text2): return 0 
+            if text1[i] == text2[j]: return 1 + fn(i+1, j+1)
+            return max(fn(i+1, j), fn(i, j+1))
+        
+        return fn(0, 0)
+
+
     """1144. Decrease Elements To Make Array Zigzag (Medium)
 	Given an array nums of integers, a move consists of choosing any element 
 	and decreasing it by 1. An array A is a zigzag array if either:
@@ -42457,32 +42497,6 @@ class Fenwick:
         return sum(max(0, nums[i-1] - nums[i]) for i in range(1, len(nums))) + nums[-1]
 
 
-    """1925. Count Square Sum Triples (Easy)
-	A square triple (a,b,c) is a triple where a, b, and c are integers and 
-	a^2 + b^2 = c^2. Given an integer n, return the number of square triples 
-	such that 1 <= a, b, c <= n.
-
-	Example 1:
-	Input: n = 5
-	Output: 2
-	Explanation: The square triples are (3,4,5) and (4,3,5).
-
-	Example 2:
-	Input: n = 10
-	Output: 4
-	Explanation: The square triples are (3,4,5), (4,3,5), (6,8,10), and (8,6,10).
-
-	Constraints: 1 <= n <= 250"""
-
-    def countTriples(self, n: int) -> int:
-        ans = 0 
-        for a in range(1, n): 
-            for b in range(a+1, n): 
-                cc = a*a + b*b
-                if int(sqrt(cc))**2 == cc and cc <= n*n: ans += 2
-        return ans 
-
-
     """1918. Kth Smallest Subarray Sum (Medium)
 	Given an integer array nums of length n and an integer k, return the kth 
 	smallest subarray sum. A subarray is defined as a non-empty contiguous 
@@ -42544,6 +42558,32 @@ class Fenwick:
             if fn(mid) < k: lo = mid + 1
             else: hi = mid
         return lo 
+
+
+    """1925. Count Square Sum Triples (Easy)
+	A square triple (a,b,c) is a triple where a, b, and c are integers and 
+	a^2 + b^2 = c^2. Given an integer n, return the number of square triples 
+	such that 1 <= a, b, c <= n.
+
+	Example 1:
+	Input: n = 5
+	Output: 2
+	Explanation: The square triples are (3,4,5) and (4,3,5).
+
+	Example 2:
+	Input: n = 10
+	Output: 4
+	Explanation: The square triples are (3,4,5), (4,3,5), (6,8,10), and (8,6,10).
+
+	Constraints: 1 <= n <= 250"""
+
+    def countTriples(self, n: int) -> int:
+        ans = 0 
+        for a in range(1, n): 
+            for b in range(a+1, n): 
+                cc = a*a + b*b
+                if int(sqrt(cc))**2 == cc and cc <= n*n: ans += 2
+        return ans 
 
 
     """1926. Nearest Exit from Entrance in Maze (Medium)
