@@ -46650,6 +46650,227 @@ class UnionFind:
         return ans 
 
 
+    """2022. Convert 1D Array Into 2D Array (Easy)
+	You are given a 0-indexed 1-dimensional (1D) integer array original, and 
+	two integers, m and n. You are tasked with creating a 2-dimensional (2D) 
+	array with m rows and n columns using all the elements from original. The 
+	elements from indices 0 to n - 1 (inclusive) of original should form the 
+	first row of the constructed 2D array, the elements from indices n to 
+	2 * n - 1 (inclusive) should form the second row of the constructed 2D 
+	array, and so on. Return an m x n 2D array constructed according to the 
+	above procedure, or an empty 2D array if it is impossible.
+
+	Example 1:
+	Input: original = [1,2,3,4], m = 2, n = 2
+	Output: [[1,2],[3,4]]
+	Explanation: The constructed 2D array should contain 2 rows and 2 columns.
+	             The first group of n=2 elements in original, [1,2], becomes 
+	             the first row in the constructed 2D array. The second group of 
+	             n=2 elements in original, [3,4], becomes the second row in the 
+	             constructed 2D array.
+	
+	Example 2:
+	Input: original = [1,2,3], m = 1, n = 3
+	Output: [[1,2,3]]
+	Explanation: The constructed 2D array should contain 1 row and 3 columns. 
+	             Put all three elements in original into the first row of the 
+	             constructed 2D array.
+	
+	Example 3:
+	Input: original = [1,2], m = 1, n = 1
+	Output: []
+	Explanation: There are 2 elements in original. It is impossible to fit 2 
+	             elements in a 1x1 2D array, so return an empty 2D array.
+	
+	Example 4:
+	Input: original = [3], m = 1, n = 2
+	Output: []
+	Explanation: There is 1 element in original. It is impossible to make 1 
+	             element fill all the spots in a 1x2 2D array, so return an 
+	             empty 2D array.
+
+	Constraints:
+	* 1 <= original.length <= 5 * 10^4
+	* 1 <= original[i] <= 10^5
+	* 1 <= m, n <= 4 * 10^4"""
+
+    def construct2DArray(self, original: List[int], m: int, n: int) -> List[List[int]]:
+        ans = []
+        if len(original) == m*n: 
+            for i in range(0, len(original), n): 
+                ans.append(original[i:i+n])
+        return ans 
+
+
+    """2023. Number of Pairs of Strings With Concatenation Equal to Target (Medium)
+	Given an array of digit strings nums and a digit string target, return the 
+	number of pairs of indices (i, j) (where i != j) such that the 
+	concatenation of nums[i] + nums[j] equals target.
+
+	Example 1:
+	Input: nums = ["777","7","77","77"], target = "7777"
+	Output: 4
+	Explanation: Valid pairs are:
+	             - (0, 1): "777" + "7"
+	             - (1, 0): "7" + "777"
+	             - (2, 3): "77" + "77"
+	             - (3, 2): "77" + "77"
+	
+	Example 2:
+	Input: nums = ["123","4","12","34"], target = "1234"
+	Output: 2
+	Explanation: Valid pairs are:
+	             - (0, 1): "123" + "4"
+	             - (2, 3): "12" + "34"
+	
+	Example 3:
+	Input: nums = ["1","1","1"], target = "11"
+	Output: 6
+	Explanation: Valid pairs are:
+	             - (0, 1): "1" + "1"
+	             - (1, 0): "1" + "1"
+	             - (0, 2): "1" + "1"
+	             - (2, 0): "1" + "1"
+	             - (1, 2): "1" + "1"
+	             - (2, 1): "1" + "1"
+
+	Constraints:
+	* 2 <= nums.length <= 100
+	* 1 <= nums[i].length <= 100
+	* 2 <= target.length <= 100
+	* nums[i] and target consist of digits.
+	* nums[i] and target do not have leading zeros."""
+
+    def numOfPairs(self, nums: List[str], target: str) -> int:
+        freq = Counter(nums)
+        ans = 0 
+        for k, v in freq.items(): 
+            if target.startswith(k): 
+                suffix = target[len(k):]
+                ans += v * freq[suffix]
+                if k == suffix: ans -= freq[suffix]
+        return ans 
+
+
+    """2024. Maximize the Confusion of an Exam (Medium)
+	A teacher is writing a test with n true/false questions, with 'T' denoting 
+	true and 'F' denoting false. He wants to confuse the students by maximizing 
+	the number of consecutive questions with the same answer (multiple trues or 
+	multiple falses in a row). You are given a string answerKey, where 
+	answerKey[i] is the original answer to the ith question. In addition, you 
+	are given an integer k, the maximum number of times you may perform the 
+	following operation:
+	* Change the answer key for any question to 'T' or 'F' (i.e., set 
+	  answerKey[i] to 'T' or 'F').
+	Return the maximum number of consecutive 'T's or 'F's in the answer key 
+	after performing the operation at most k times.
+
+	Example 1:
+	Input: answerKey = "TTFF", k = 2
+	Output: 4
+	Explanation: We can replace both the 'F's with 'T's to make 
+	             answerKey = "TTTT". There are four consecutive 'T's.
+	
+	Example 2:
+	Input: answerKey = "TFFT", k = 1
+	Output: 3
+	Explanation: We can replace the first 'T' with an 'F' to make 
+	             answerKey = "FFFT". Alternatively, we can replace the second 
+	             'T' with an 'F' to make answerKey = "TFFF". In both cases, 
+	             there are three consecutive 'F's.
+	
+	Example 3:
+	Input: answerKey = "TTFTTFTT", k = 1
+	Output: 5
+	Explanation: We can replace the first 'F' to make answerKey = "TTTTTFTT"
+	             Alternatively, we can replace the second 'F' to make 
+	             answerKey = "TTFTTTTT". In both cases, there are five 
+	             consecutive 'T's.
+
+	Constraints:
+	* n == answerKey.length
+	* 1 <= n <= 5 * 10^4
+	* answerKey[i] is either 'T' or 'F'
+	* 1 <= k <= n"""
+
+    def maxConsecutiveAnswers(self, answerKey: str, k: int) -> int:
+        
+        def fn(target): 
+            """Return max consecutive target."""
+            ans = cnt = ii = 0 
+            for i, x in enumerate(answerKey): 
+                if x == target: cnt += 1 
+                while cnt > k: 
+                    if answerKey[ii] == target: cnt -= 1
+                    ii += 1
+                ans = max(ans, i - ii + 1)
+            return ans 
+        
+        return max(fn("T"), fn("F"))
+
+
+    """2025. Maximum Number of Ways to Partition an Array (Hard)
+	You are given a 0-indexed integer array nums of length n. The number of 
+	ways to partition nums is the number of pivot indices that satisfy both 
+	conditions:
+	* 1 <= pivot < n
+	* nums[0] + nums[1] + ... + nums[pivot - 1] == nums[pivot] + nums[pivot + 1] + ... + nums[n - 1]
+	You are also given an integer k. You can choose to change the value of one 
+	element of nums to k, or to leave the array unchanged. Return the maximum 
+	possible number of ways to partition nums to satisfy both conditions after 
+	changing at most one element.
+
+	Example 1:
+	Input: nums = [2,-1,2], k = 3
+	Output: 1
+	Explanation: One optimal approach is to change nums[0] to k. The array 
+	             becomes [3,-1,2]. There is one way to partition the array:
+	             - For pivot = 2, we have the partition [3,-1 | 2]: 
+	               3 + -1 == 2.
+	
+	Example 2:
+	Input: nums = [0,0,0], k = 1
+	Output: 2
+	Explanation: The optimal approach is to leave the array unchanged. There 
+	             are two ways to partition the array:
+	             - For pivot = 1, we have the partition [0 | 0,0]: 0 == 0 + 0.
+	             - For pivot = 2, we have the partition [0,0 | 0]: 0 + 0 == 0.
+	
+	Example 3:
+	Input: nums = [22,4,-25,-20,-15,15,-16,7,19,-10,0,-13,-14], k = -33
+	Output: 4
+	Explanation: One optimal approach is to change nums[2] to k. The array 
+	             becomes [22,4,-33,-20,-15,15,-16,7,19,-10,0,-13,-14]. There 
+	             are four ways to partition the array.
+
+	Constraints:
+	* n == nums.length
+	* 2 <= n <= 10^5
+	* -10^5 <= k, nums[i] <= 10^5"""
+
+    def waysToPartition(self, nums: List[int], k: int) -> int:
+        prefix = [0]
+        loc = defaultdict(list)
+        for i, x in enumerate(nums): 
+            prefix.append(prefix[-1] + x)
+            if i < len(nums)-1: loc[prefix[-1]].append(i)
+        
+        ans = 0 
+        if prefix[-1] % 2 == 0: ans = len(loc[prefix[-1]//2]) # unchanged 
+        
+        total = prefix[-1]
+        for i, x in enumerate(nums): 
+            cnt = 0 
+            diff = k - x
+            target = total + diff 
+            if target % 2 == 0: 
+                target //= 2
+                cnt += bisect_left(loc[target], i)
+                cnt += len(loc[target-diff]) - bisect_left(loc[target-diff], i)
+            ans = max(ans, cnt)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
