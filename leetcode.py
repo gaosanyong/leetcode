@@ -46870,6 +46870,203 @@ class UnionFind:
             ans = max(ans, cnt)
         return ans 
 
+    
+    """2027. Minimum Moves to Convert String (Easy)
+	You are given a string s consisting of n characters which are either 'X' or 
+	'O'. A move is defined as selecting three consecutive characters of s and 
+	converting them to 'O'. Note that if a move is applied to the character 'O', 
+	it will stay the same. Return the minimum number of moves required so that 
+	all the characters of s are converted to 'O'.
+
+	Example 1:
+	Input: s = "XXX"
+	Output: 1
+	Explanation: XXX -> OOO. We select all the 3 characters and convert them in 
+	             one move.
+	
+	Example 2:
+	Input: s = "XXOX"
+	Output: 2
+	Explanation: XXOX -> OOOX -> OOOO. We select the first 3 characters in the 
+	             first move, and convert them to 'O'. Then we select the last 3 
+	             characters and convert them so that the final string contains 
+	             all 'O's.
+	
+	Example 3:
+	Input: s = "OOOO"
+	Output: 0
+	Explanation: There are no 'X's in s to convert.
+
+	Constraints:
+	* 3 <= s.length <= 1000
+	* s[i] is either 'X' or 'O'."""
+
+    def minimumMoves(self, s: str) -> int:
+        ans = i = 0
+        while i < len(s): 
+            if s[i] == "X": 
+                ans += 1
+                i += 3
+            else: i += 1
+        return ans 
+
+
+    """2028. Find Missing Observations (Medium)
+	You have observations of n + m 6-sided dice rolls with each face numbered 
+	from 1 to 6. n of the observations went missing, and you only have the 
+	observations of m rolls. Fortunately, you have also calculated the average 
+	value of the n + m rolls. You are given an integer array rolls of length m 
+	where rolls[i] is the value of the ith observation. You are also given the 
+	two integers mean and n. Return an array of length n containing the missing 
+	observations such that the average value of the n + m rolls is exactly mean. 
+	If there are multiple valid answers, return any of them. If no such array 
+	exists, return an empty array. The average value of a set of k numbers is 
+	the sum of the numbers divided by k. Note that mean is an integer, so the 
+	sum of the n + m rolls should be divisible by n + m.
+
+	Example 1:
+	Input: rolls = [3,2,4,3], mean = 4, n = 2
+	Output: [6,6]
+	Explanation: The mean of all n + m rolls is (3 + 2 + 4 + 3 + 6 + 6) / 6 = 4.
+
+	Example 2:
+	Input: rolls = [1,5,6], mean = 3, n = 4
+	Output: [2,3,2,2]
+	Explanation: The mean of all n + m rolls is (1 + 5 + 6 + 2 + 3 + 2 + 2) / 7 = 3.
+
+	Example 3:
+	Input: rolls = [1,2,3,4], mean = 6, n = 4
+	Output: []
+	Explanation: It is impossible for the mean to be 6 no matter what the 4 
+	             missing rolls are.
+	
+	Example 4:
+	Input: rolls = [1], mean = 3, n = 1
+	Output: [5]
+	Explanation: The mean of all n + m rolls is (1 + 5) / 2 = 3.
+
+	Constraints:
+	* m == rolls.length
+	* 1 <= n, m <= 10^5
+	* 1 <= rolls[i], mean <= 6"""
+
+    def missingRolls(self, rolls: List[int], mean: int, n: int) -> List[int]:
+        total = mean * (len(rolls) + n) - sum(rolls)
+        if not n <= total <= 6*n: return []
+        q, r = divmod(total, n)
+        return [q]*(n-r) + [q+1]*r
+
+
+    """2029. Stone Game IX (Medium)
+	Alice and Bob continue their games with stones. There is a row of n stones, 
+	and each stone has an associated value. You are given an integer array 
+	stones, where stones[i] is the value of the ith stone. Alice and Bob take 
+	turns, with Alice starting first. On each turn, the player may remove any 
+	stone from stones. The player who removes a stone loses if the sum of the 
+	values of all removed stones is divisible by 3. Bob will win automatically 
+	if there are no remaining stones (even if it is Alice's turn). Assuming 
+	both players play optimally, return true if Alice wins and false if Bob 
+	wins.
+
+	Example 1:
+	Input: stones = [2,1]
+	Output: true
+	Explanation: The game will be played as follows:
+	             - Turn 1: Alice can remove either stone.
+	             - Turn 2: Bob removes the remaining stone. 
+	             The sum of the removed stones is 1 + 2 = 3 and is divisible by 
+	             3. Therefore, Bob loses and Alice wins the game.
+	
+	Example 2:
+	Input: stones = [2]
+	Output: false
+	Explanation: Alice will remove the only stone, and the sum of the values on 
+	             the removed stones is 2. Since all the stones are removed and 
+	             the sum of values is not divisible by 3, Bob wins the game.
+	
+	Example 3:
+	Input: stones = [5,1,2,4,3]
+	Output: false
+	Explanation: Bob will always win. One possible way for Bob to win is shown 
+	             below:
+	             - Turn 1: Alice can remove the second stone with value 1. Sum 
+	               of removed stones = 1.
+	             - Turn 2: Bob removes the fifth stone with value 3. Sum of 
+	               removed stones = 1 + 3 = 4.
+	             - Turn 3: Alices removes the fourth stone with value 4. Sum of 
+	               removed stones = 1 + 3 + 4 = 8.
+	             - Turn 4: Bob removes the third stone with value 2. Sum of 
+	               removed stones = 1 + 3 + 4 + 2 = 10.
+	             - Turn 5: Alice removes the first stone with value 5. Sum of 
+	               removed stones = 1 + 3 + 4 + 2 + 5 = 15.
+	             Alice loses the game because the sum of the removed stones (15) 
+	             is divisible by 3. Bob wins the game.
+
+	Constraints:
+	* 1 <= stones.length <= 10^5
+	* 1 <= stones[i] <= 10^4"""
+
+    def stoneGameIX(self, stones: List[int]) -> bool:
+        freq = defaultdict(int)
+        for x in stones: freq[x % 3] += 1
+        if freq[0]%2 == 0: return freq[1] and freq[2]
+        return abs(freq[1] - freq[2]) >= 3
+
+
+    """2030. Smallest K-Length Subsequence With Occurrences of a Letter (Hard)
+	You are given a string s, an integer k, a letter letter, and an integer 
+	repetition. Return the lexicographically smallest subsequence of s of 
+	length k that has the letter letter appear at least repetition times. The 
+	test cases are generated so that the letter appears in s at least 
+	repetition times. A subsequence is a string that can be derived from 
+	another string by deleting some or no characters without changing the order 
+	of the remaining characters. A string a is lexicographically smaller than a 
+	string b if in the first position where a and b differ, string a has a 
+	letter that appears earlier in the alphabet than the corresponding letter 
+	in b.
+
+	Example 1:
+	Input: s = "leet", k = 3, letter = "e", repetition = 1
+	Output: "eet"
+	Explanation: There are four subsequences of length 3 that have the letter 
+	             'e' appear at least 1 time:
+	             - "lee" (from "leet")
+	             - "let" (from "leet")
+	             - "let" (from "leet")
+	             - "eet" (from "leet")
+	             The lexicographically smallest subsequence among them is "eet".
+	
+	Example 2:
+	example-2
+	Input: s = "leetcode", k = 4, letter = "e", repetition = 2
+	Output: "ecde"
+	Explanation: "ecde" is the lexicographically smallest subsequence of length 
+	             4 that has the letter "e" appear at least 2 times.
+	
+	Example 3:
+	Input: s = "bb", k = 2, letter = "b", repetition = 2
+	Output: "bb"
+	Explanation: "bb" is the only subsequence of length 2 that has the letter 
+	             "b" appear at least 2 times.
+
+	Constraints:
+	* 1 <= repetition <= k <= s.length <= 5 * 10^4
+	* s consists of lowercase English letters.
+	* letter is a lowercase English letter, and appears in s at least 
+	  repetition times."""
+
+    def smallestSubsequence(self, s: str, k: int, letter: str, repetition: int) -> str:
+        rest = sum(x == letter for x in s)
+        stack = []
+        for i, x in enumerate(s): 
+            while stack and stack[-1] > x and len(stack) + len(s) - i > k and (stack[-1] != letter or repetition < rest): 
+                if stack.pop() == letter: repetition += 1
+            if len(stack) < k and (x == letter or len(stack) + repetition < k): 
+                stack.append(x)
+                if x == letter: repetition -= 1
+            if x == letter: rest -= 1
+        return "".join(stack)
+
 
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
