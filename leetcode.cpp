@@ -675,13 +675,13 @@ public:
 	* board[i][j] is a digit or '.'.*/
 
     bool isValidSudoku(vector<vector<char>>& board) {
-        int row[9][9] = {0}, col[9][9] = {0}, sub[9][9] = {0}; 
+        bool rows[9][9] = {false}, cols[9][9] = {false}, subs[9][9] = {false}; 
         for (int i = 0; i < 9; ++i) 
             for (int j = 0; j < 9; ++j) 
                 if (board[i][j] != '.') {
                     int x = board[i][j] - '1', k = i/3*3 + j/3; 
-                    if (row[i][x] || col[j][x] || sub[k][x]) return false; 
-                    row[i][x] = col[j][x] = sub[k][x] = 1; 
+                    if (rows[i][x] || cols[j][x] || subs[k][x]) return false; 
+                    rows[i][x] = cols[j][x] = subs[k][x] = true; 
                 }
         return true; 
     }
@@ -3842,6 +3842,35 @@ public:
             if (j+1 < n) pq.emplace(matrix[i/n][j+1], i+1); 
         }
         return pq.top().first; 
+    }
+
+
+    /*387. First Unique Character in a String (Easy)
+	Given a string s, find the first non-repeating character in it and return 
+	its index. If it does not exist, return -1.
+
+	Example 1:
+	Input: s = "leetcode"
+	Output: 0
+
+	Example 2:
+	Input: s = "loveleetcode"
+	Output: 2
+
+	Example 3:
+	Input: s = "aabb"
+	Output: -1
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s consists of only lowercase English letters.*/
+
+    int firstUniqChar(string s) {
+        unordered_map<char, int> freq; 
+        for (auto& ch : s) ++freq[ch]; 
+        for (int i = 0; i < s.size(); ++i) 
+            if (freq[s[i]] == 1) return i; 
+        return -1; 
     }
 
 

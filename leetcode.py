@@ -1206,12 +1206,12 @@ class Solution:
     def isValidSudoku(self, board: List[List[str]]) -> bool:
         seen = set()
         for i in range(9):
-            for j in range(9): 
+            for j in range(9):
                 if board[i][j] != ".": 
-                    news = {(i, board[i][j]), (board[i][j], j), (i//3, board[i][j], j//3)}
-                    if seen & news: return False 
-                    seen |= news
-        return True
+                    cand = {(i, board[i][j]), (board[i][j], j), (i//3, j//3, board[i][j])}
+                    if seen & cand: return False 
+                    seen |= cand 
+        return True 
 
 
     """37. Sudoku Solver (Hard)
@@ -2558,17 +2558,10 @@ class Solution:
 	Output: false"""
 
     def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
-        if not matrix: return False #edge case 
-        
-        m, n = len(matrix), len(matrix[0])
-        lo, hi = 0, m*n
-        while lo < hi: 
-            mid = (lo + hi)//2
-            i, j = divmod(mid, n)
-            if matrix[i][j] == target: return True
-            elif matrix[i][j] > target: hi = mid
-            else: lo = mid+1
-        return False 
+        i = bisect_right(next(zip(*matrix)), target) - 1
+        if i == -1: return False 
+        j = bisect_left(matrix[i], target)
+        return j < len(matrix[i]) and matrix[i][j] == target 
 
 
     """75. Sort Colors (Medium)
@@ -10555,6 +10548,31 @@ class UnionFind:
         ans = []
         for x in range(1, 10): dfs(x)
         return ans 
+
+
+    """387. First Unique Character in a String (Easy)
+	Given a string s, find the first non-repeating character in it and return 
+	its index. If it does not exist, return -1.
+
+	Example 1:
+	Input: s = "leetcode"
+	Output: 0
+
+	Example 2:
+	Input: s = "loveleetcode"
+	Output: 2
+
+	Example 3:
+	Input: s = "aabb"
+	Output: -1
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s consists of only lowercase English letters."""
+
+    def firstUniqChar(self, s: str) -> int:
+        freq = Counter(s)
+        return next((i for i, ch in enumerate(s) if freq[ch] == 1), -1)
 
 
     """388. Longest Absolute File Path (Medium)
