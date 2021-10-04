@@ -1555,21 +1555,19 @@ public:
 
     vector<vector<int>> levelOrder(TreeNode* root) {
         vector<vector<int>> ans; 
-        queue<TreeNode*> queue; 
-        queue.push(root); 
-        
-        while (queue.size()) {
-            vector<int> vals; 
-            for (int i = 0, n = queue.size(); i < n; ++i) {
-                TreeNode* node = queue.front(); 
-                queue.pop(); 
-                if (node) {
+        if (root) {
+            queue<TreeNode*> q; 
+            q.push(root); 
+            while (q.size()) {
+                vector<int> vals; 
+                for (int n = q.size(); n; --n) {
+                    TreeNode* node = q.front(); q.pop(); 
                     vals.push_back(node->val); 
-                    queue.push(node->left);
-                    queue.push(node->right); 
+                    if (node->left) q.push(node->left); 
+                    if (node->right) q.push(node->right); 
                 }
+                ans.push_back(vals); 
             }
-            if (vals.size()) ans.push_back(vals); 
         }
         return ans; 
     }
@@ -2146,14 +2144,14 @@ public:
 
     vector<int> preorderTraversal(TreeNode* root) {
         vector<int> ans; 
-        stack<TreeNode*> stk; 
-        stk.push(root); 
-        while (stk.size()) {
-            TreeNode* node = stk.top(); stk.pop(); 
-            if (node) {
+        if (root) {
+            stack<TreeNode*> stk; 
+            stk.push(root); 
+            while (stk.size()) {
+                TreeNode* node = stk.top(); stk.pop(); 
                 ans.push_back(node->val); 
-                stk.push(node->right);
-                stk.push(node->left); 
+                if (node->right) stk.push(node->right); 
+                if (node->left) stk.push(node->left); 
             }
         }
         return ans; 

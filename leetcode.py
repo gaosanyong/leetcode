@@ -3497,16 +3497,18 @@ class Solution:
 	  [15,7]
 	]"""
 
-    def levelOrder(self, root: TreeNode) -> List[List[int]]:
-        ans, queue = [], [root]
-        while queue: 
-            newq, vals = [], []
-            for node in queue: 
-                if node: 
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        ans = []
+        if root: 
+            queue = deque([root])
+            while queue: 
+                vals = []
+                for _ in range(len(queue)): 
+                    node = queue.popleft()
                     vals.append(node.val)
-                    newq.extend([node.left, node.right])
-            if vals: ans.append(vals)
-            queue = newq
+                    if node.left: queue.append(node.left)
+                    if node.right: queue.append(node.right)
+                ans.append(vals)
         return ans 
 
 
@@ -5001,15 +5003,15 @@ class Solution:
 	Output: [1,2,3]
 	Follow up: Recursive solution is trivial, could you do it iteratively?"""
 
-    def preorderTraversal(self, root: TreeNode) -> List[int]:
+    def preorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
         ans = []
-        stack = [root]
-        while stack: 
-            node = stack.pop()
-            if node: 
+        if root: 
+            stack = [root]
+            while stack: 
+                node = stack.pop()
                 ans.append(node.val)
-                stack.append(node.right)
-                stack.append(node.left)
+                if node.right: stack.append(node.right)
+                if node.left: stack.append(node.left)
         return ans 
 
 
