@@ -7411,10 +7411,7 @@ class Solution:
 	           adapt your solution to such case?"""
     
     def isAnagram(self, s: str, t: str) -> bool:
-        freq = [0]*26
-        for c in s: freq[ord(c)-97] += 1
-        for c in t: freq[ord(c)-97] -= 1
-        return all(v == 0 for v in freq)
+        return Counter(s) == Counter(t)
 
 
     """243. Shortest Word Distance (Easy)

@@ -2736,17 +2736,11 @@ public:
 	           adapt your solution to such a case?*/
 
     bool isAnagram(string s, string t) {
-        if (s.length() != t.length()) return false; 
-        
-        vector<int> freq(26, 0); 
-        for (int i = 0; i < s.length(); ++i) {
-            ++freq[s[i] - 'a']; 
-            --freq[t[i] - 'a'];
-        }
-        
-        for (auto x : freq) {
+        int freq[26] = {0}; 
+        for (auto& ch : s) ++freq[ch - 'a']; 
+        for (auto& ch : t) --freq[ch - 'a']; 
+        for (auto& x : freq) 
             if (x) return false; 
-        }
         return true; 
     }
 
