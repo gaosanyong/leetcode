@@ -20843,10 +20843,10 @@ class UnionFind:
         lo, hi = 0, len(nums)-1
         for i in reversed(range(len(nums))):
             if abs(nums[lo]) >= abs(nums[hi]): 
-                ans[i] = nums[lo] * nums[lo]
+                ans[i] = nums[lo]**2
                 lo += 1
             else: 
-                ans[i] = nums[hi] * nums[hi]
+                ans[i] = nums[hi]**2
                 hi -= 1
         return ans
 
