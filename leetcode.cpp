@@ -1369,17 +1369,15 @@ public:
         vector<int> ans; 
         TreeNode* node = root; 
         stack<TreeNode*> stk; 
-        while (node || !stk.empty()) {
+        while (node || stk.size()) 
             if (node) {
                 stk.push(node); 
                 node = node->left; 
             } else {
-                node = stk.top(); 
-                stk.pop(); 
+                node = stk.top(); stk.pop(); 
                 ans.push_back(node->val); 
-                node = node->right;
+                node = node->right; 
             }
-        }
         return ans; 
     }
 
@@ -2150,9 +2148,8 @@ public:
         vector<int> ans; 
         stack<TreeNode*> stk; 
         stk.push(root); 
-        while (!stk.empty()) {
-            TreeNode* node = stk.top(); 
-            stk.pop(); 
+        while (stk.size()) {
+            TreeNode* node = stk.top(); stk.pop(); 
             if (node) {
                 ans.push_back(node->val); 
                 stk.push(node->right);
@@ -2195,24 +2192,22 @@ public:
 
     vector<int> postorderTraversal(TreeNode* root) {
         vector<int> ans; 
-        TreeNode *node = root, *prev = NULL; 
+        TreeNode *node = root, *prev = nullptr; 
         stack<TreeNode*> stk; 
-        while (node || !stk.empty()) {
+        while (node || stk.size()) 
             if (node) {
                 stk.push(node); 
                 node = node->left; 
             } else {
                 node = stk.top(); 
-                if (node->right && node->right != prev) 
-                    node = node->right; 
+                if (node->right && node->right != prev) node = node->right; 
                 else {
                     ans.push_back(node->val); 
                     stk.pop(); 
                     prev = node; 
-                    node = NULL; 
+                    node = nullptr; 
                 }
             }
-        }
         return ans; 
     }
 

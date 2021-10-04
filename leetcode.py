@@ -3204,17 +3204,17 @@ class Solution:
 
 	Output: [1,3,2]"""
 
-    def inorderTraversal(self, root: TreeNode) -> List[int]:
-        ans, stack = [], []
-        node = root
-        while stack or node:
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        ans = []
+        node, stack = root, []
+        while node or stack:
             if node: 
                 stack.append(node)
                 node = node.left
-                continue
-            node = stack.pop()
-            ans.append(node.val)
-            node = node.right
+            else: 
+                node = stack.pop()
+                ans.append(node.val)
+                node = node.right
         return ans 
 
 
@@ -5027,23 +5027,22 @@ class Solution:
 	Output: [3,2,1]
 	Follow up: Recursive solution is trivial, could you do it iteratively?"""
 
-    def postorderTraversal(self, root: TreeNode) -> List[int]:
+    def postorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
         ans = []
         node, stack = root, []
+        prev = None
         while node or stack: 
             if node: 
-                if node.right: stack.append(node.right)
                 stack.append(node)
                 node = node.left
-                continue
-            node = stack.pop()
-            if stack and stack[-1] == node.right: 
-                stack.pop()
-                stack.append(node)
-                node = node.right
-            else:
-                ans.append(node.val)
-                node = None
+            else: 
+                node = stack[-1]
+                if node.right and node.right != prev: node = node.right
+                else: 
+                    ans.append(node.val)
+                    stack.pop()
+                    prev = node
+                    node = None
         return ans 
 
 
