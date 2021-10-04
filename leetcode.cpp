@@ -403,17 +403,14 @@ public:
 	* s consists of parentheses only '()[]{}'.*/
 
     bool isValid(string s) {
+        unordered_map<char, char> mp = {{'(', ')'}, {'[', ']'}, {'{', '}'}}; 
         stack<char> stk; 
-        for (auto& c : s) {
-            switch(c) {
-                case '(': stk.push(')'); break; 
-                case '[': stk.push(']'); break; 
-                case '{': stk.push('}'); break; 
-                default: 
-                    if (stk.empty() or stk.top() != c) return false; 
-                    stk.pop(); 
+        for (auto& ch : s) 
+            if (mp.count(ch)) stk.push(ch); 
+            else {
+                if (stk.empty() || mp[stk.top()] != ch) return false; 
+                stk.pop(); 
             }
-        }
         return stk.empty(); 
     }
 
