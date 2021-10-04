@@ -3469,14 +3469,15 @@ class Solution:
 
 	Follow up: Solve it both recursively and iteratively."""
 
-    def isSymmetric(self, root: TreeNode) -> bool:
-        
-        def fn(m, n):
-            """Return True if subtrees rooted at m and n are symmetric"""
-            if not m or not n: return m is n
-            return fn(m.left, n.right) and m.val == n.val and fn(m.right, n.left)
-        
-        return fn(root, root)
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+        stack = [(root, root)]
+        while stack: 
+            p, q = stack.pop()
+            if not p and not q: continue
+            if not p or not q or p.val != q.val: return False 
+            stack.append((p.left, q.right))
+            stack.append((p.right, q.left))
+        return True 
 
 
     """102. Binary Tree Level Order Traversal (Medium)
