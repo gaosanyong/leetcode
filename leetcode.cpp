@@ -628,6 +628,49 @@ public:
     }
 
 
+    /*35. Search Insert Position (Easy)
+	Given a sorted array of distinct integers and a target value, return the 
+	index if the target is found. If not, return the index where it would be if 
+	it were inserted in order. You must write an algorithm with O(log n) 
+	runtime complexity.
+
+	Example 1:
+	Input: nums = [1,3,5,6], target = 5
+	Output: 2
+
+	Example 2:
+	Input: nums = [1,3,5,6], target = 2
+	Output: 1
+
+	Example 3:
+	Input: nums = [1,3,5,6], target = 7
+	Output: 4
+
+	Example 4:
+	Input: nums = [1,3,5,6], target = 0
+	Output: 0
+
+	Example 5:
+	Input: nums = [1], target = 0
+	Output: 0
+
+	Constraints:
+	* 1 <= nums.length <= 10^4
+	* -10^4 <= nums[i] <= 10^4
+	* nums contains distinct values sorted in ascending order.
+	* -10^4 <= target <= 10^4*/
+
+    int searchInsert(vector<int>& nums, int target) {
+        int lo = 0, hi = nums.size(); 
+        while (lo < hi) {
+            int mid = lo + (hi - lo)/2; 
+            if (nums[mid] < target) lo = mid + 1; 
+            else hi = mid; 
+        }
+        return lo; 
+    }
+
+
     /*36. Valid Sudoku (Medium)
 	Determine if a 9 x 9 Sudoku board is valid. Only the filled cells need to 
 	be validated according to the following rules:
@@ -12323,12 +12366,9 @@ public:
     vector<int> sortedSquares(vector<int>& nums) {
         int n = nums.size(); 
         vector<int> ans(n); 
-        for (int i = n-1, lo = 0, hi = n-1; i >= 0; --i) {
-            if (abs(nums[lo]) >= abs(nums[hi])) 
-                ans[i] = pow(nums[lo++], 2); 
-            else
-                ans[i] = pow(nums[hi--], 2); 
-        }
+        for (int i = n-1, lo = 0, hi = n-1; i >= 0; --i) 
+            if (abs(nums[lo]) >= abs(nums[hi])) ans[i] = pow(nums[lo++], 2); 
+            else ans[i] = pow(nums[hi--], 2); 
         return ans; 
     }
 
