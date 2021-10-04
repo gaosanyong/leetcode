@@ -5922,10 +5922,10 @@ class Solution:
         m, n = len(dungeon), len(dungeon[0])
         
         @cache
-        def fn(i, j): 
-            """Return minimum health at cell (i, j)"""
+        def fn(i, j):
+            """Return min health at (i,j)."""
+            if i == m or j == n: return inf
             if i == m-1 and j == n-1: return max(1, 1 - dungeon[i][j])
-            if i > m-1 or j > n-1: return inf
             return max(1, min(fn(i+1, j), fn(i, j+1)) - dungeon[i][j])
         
         return fn(0, 0)
