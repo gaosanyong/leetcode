@@ -47611,22 +47611,19 @@ example, no pop or peek operations will be called on an empty queue)."""
 class MyQueue:
 
     def __init__(self):
-        self.in_ = [] #in stack 
-        self.out = [] #out stack
+        self.in_ = []
+        self.out = []
 
     def push(self, x: int) -> None:
         self.in_.append(x)
-        
-    def _move(self) -> None: 
-        if not self.out:
-            while self.in_: self.out.append(self.in_.pop())
 
     def pop(self) -> int:
-        self._move()
+        self.peek()
         return self.out.pop()
 
     def peek(self) -> int:
-        self._move()
+        if not self.out: 
+            while self.in_: self.out.append(self.in_.pop())
         return self.out[-1]
 
     def empty(self) -> bool:
