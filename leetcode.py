@@ -2868,14 +2868,13 @@ class Solution:
 	Input: 1->1->2->3->3
 	Output: 1->2->3"""
 
-    def deleteDuplicates(self, head: ListNode) -> ListNode:
-        slow = fast = head 
-        while fast:
-            if slow.val == fast.val: slow.next = fast.next
-            else: slow = slow.next
-            fast = fast.next 
+    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        node = head 
+        while node: 
+            if node.next and node.val == node.next.val: node.next = node.next.next 
+            else: node = node.next
         return head 
-
+        
 
     """84. Largest Rectangle in Histogram (Hard)
 	Given n non-negative integers representing the histogram's bar height where 

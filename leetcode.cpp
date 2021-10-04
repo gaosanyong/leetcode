@@ -1081,16 +1081,10 @@ public:
 	* The list is guaranteed to be sorted in ascending order.*/
 
     ListNode* deleteDuplicates(ListNode* head) {
-        if (head != NULL) {
-            ListNode* node = head; 
-            while (node->next != NULL) {
-                if (node->val == node->next->val) {
-                    node->next = node->next->next; 
-                } else {
-                    node = node->next; 
-                }
-            }
-        }
+        ListNode* node = head; 
+        while (node) 
+            if (node->next && node->val == node->next->val) node->next = node->next->next; 
+            else node = node->next; 
         return head; 
     }
 
