@@ -8318,10 +8318,10 @@ class UnionFind:
 	Then 4 is the first bad version. """
 
     def firstBadVersion(self, n):
-        lo, hi = 1, n #hi is bad 
-        while lo < hi: #no need to check lo == hi since hi is bad 
+        lo, hi = 1, n 
+        while lo < hi: 
             mid = (lo + hi)//2
-            if isBadVersion(mid): hi = mid #hi is bad 
+            if isBadVersion(mid): hi = mid 
             else: lo = mid + 1
         return lo 
 
