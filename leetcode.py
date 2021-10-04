@@ -1869,13 +1869,11 @@ class Solution:
 	0 <= nums[i][j] <= 10^5"""
 
     def canJump(self, nums: List[int]) -> bool:
-        limit = 0
-        for i in range(len(nums)): 
-            if i > limit: return False 
-            limit = max(limit, i + nums[i])
-        return True 
-
-
+        hi = 0
+        for i, x in enumerate(nums): 
+            if i > hi: return False
+            hi = max(hi, i + x)
+        return True
 
 
     """56. Merge Intervals (Medium)
