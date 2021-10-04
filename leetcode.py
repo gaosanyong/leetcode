@@ -3560,14 +3560,16 @@ class Solution:
 	    /  \
 	   15   7"""
 
-    def maxDepth(self, root: TreeNode) -> int:
-        
-        def fn(node):
-            """Return depth of BST at given node"""
-            if not node: return 0
-            return 1 + max(fn(node.left), fn(node.right))
-        
-        return fn(root)
+    def maxDepth(self, root: Optional[TreeNode]) -> int:
+        ans = 0
+        if root: 
+            stack = [(root, 1)]
+            while stack: 
+                node, d = stack.pop()
+                ans = max(ans, d)
+                if node.right: stack.append((node.right, d+1))
+                if node.left: stack.append((node.left, d+1))
+        return ans 
 
 
     """105. Construct Binary Tree from Preorder and Inorder Traversal (Medium)

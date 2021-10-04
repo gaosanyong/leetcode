@@ -1599,8 +1599,18 @@ public:
 	* -100 <= Node.val <= 100*/
 
     int maxDepth(TreeNode* root) {
-        if (root == NULL) return 0; 
-        return 1 + max(maxDepth(root->left), maxDepth(root->right)); 
+        int ans = 0; 
+        if (root) {
+            stack<pair<TreeNode*, int>> stk; 
+            stk.emplace(root, 1); 
+            while (stk.size()) {
+                auto [node, d] = stk.top(); stk.pop(); 
+                ans = max(ans, d); 
+                if (node->right) stk.emplace(node->right, d+1); 
+                if (node->left) stk.emplace(node->left, d+1); 
+            }
+        }
+        return ans; 
     }
 
 
