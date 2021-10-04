@@ -10531,6 +10531,31 @@ class UnionFind:
         return ans 
 
 
+    """383. Ransom Note (Easy)
+	Given two stings ransomNote and magazine, return true if ransomNote can be 
+	constructed from magazine and false otherwise. Each letter in magazine can 
+	only be used once in ransomNote.
+
+	Example 1:
+	Input: ransomNote = "a", magazine = "b"
+	Output: false
+
+	Example 2:
+	Input: ransomNote = "aa", magazine = "ab"
+	Output: false
+
+	Example 3:
+	Input: ransomNote = "aa", magazine = "aab"
+	Output: true
+
+	Constraints:
+	* 1 <= ransomNote.length, magazine.length <= 10^5
+	* ransomNote and magazine consist of lowercase English letters."""
+
+    def canConstruct(self, ransomNote: str, magazine: str) -> bool:
+        return not Counter(ransomNote) - Counter(magazine)
+
+
     """386. Lexicographical Numbers (Medium)
 	Given an integer n, return 1 - n in lexicographical order. For example, 
 	given 13, return: [1,10,11,12,13,2,3,4,5,6,7,8,9]. Please optimize your 
