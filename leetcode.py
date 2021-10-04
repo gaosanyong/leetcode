@@ -6322,7 +6322,7 @@ class Solution:
 	Output: 1->2->3->4->5"""
 
     def removeElements(self, head: ListNode, val: int) -> ListNode:
-        dummy = node = ListNode(next=head) #head could be removed
+        dummy = node = ListNode(next=head)
         while node.next: 
             if node.next.val == val: node.next = node.next.next 
             else: node = node.next 
