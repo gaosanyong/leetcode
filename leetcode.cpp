@@ -7418,7 +7418,7 @@ public:
                         for (int k = 0; k < 4; ++k) {
                             int ii = i + dir[k], jj = j + dir[k+1]; 
                             if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj]) {
-                                val++; 
+                                ++val; 
                                 grid[ii][jj] = 0; 
                                 stk.emplace(ii, jj); 
                             }
