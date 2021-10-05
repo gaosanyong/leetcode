@@ -9306,6 +9306,143 @@ public:
     }
 
 
+    /*803. Bricks Falling When Hit (Hard)
+	You are given an m x n binary grid, where each 1 represents a brick and 0 
+	represents an empty space. A brick is stable if:
+	* It is directly connected to the top of the grid, or
+	* At least one other brick in its four adjacent cells is stable.
+	You are also given an array hits, which is a sequence of erasures we want 
+	to apply. Each time we want to erase the brick at the location 
+	hits[i] = (rowi, coli). The brick on that location (if it exists) will 
+	disappear. Some other bricks may no longer be stable because of that 
+	erasure and will fall. Once a brick falls, it is immediately erased from 
+	the grid (i.e., it does not land on other stable bricks). Return an array 
+	result, where each result[i] is the number of bricks that will fall after 
+	the ith erasure is applied. Note that an erasure may refer to a location 
+	with no brick, and if it does, no bricks drop.
+
+	Example 1:
+	Input: grid = [[1,0,0,0],[1,1,1,0]], hits = [[1,0]]
+	Output: [2]
+	Explanation: Starting with the grid:
+	             [[1,0,0,0],
+	              [1,1,1,0]]
+	             We erase the underlined brick at (1,0), resulting in the grid:
+	             [[1,0,0,0],
+	              [0,1,1,0]]
+	             The two underlined bricks are no longer stable as they are no 
+	             longer connected to the top nor adjacent to another stable 
+	             brick, so they will fall. The resulting grid is:
+	             [[1,0,0,0],
+	              [0,0,0,0]]
+	             Hence the result is [2].
+	
+	Example 2:
+	Input: grid = [[1,0,0,0],[1,1,0,0]], hits = [[1,1],[1,0]]
+	Output: [0,0]
+	Explanation: Starting with the grid:
+	             [[1,0,0,0],
+	              [1,1,0,0]]
+	             We erase the underlined brick at (1,1), resulting in the grid:
+	             [[1,0,0,0],
+	              [1,0,0,0]]
+	             All remaining bricks are still stable, so no bricks fall. The 
+	             grid remains the same:
+	             [[1,0,0,0],
+	              [1,0,0,0]]
+	             Next, we erase the underlined brick at (1,0), resulting in the 
+	             grid:
+	             [[1,0,0,0],
+	              [0,0,0,0]]
+	             Once again, all remaining bricks are still stable, so no bricks 
+	             fall. Hence the result is [0,0].
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 200
+	* grid[i][j] is 0 or 1.
+	* 1 <= hits.length <= 4 * 10^4
+	* hits[i].length == 2
+	* 0 <= xi <= m - 1
+	* 0 <= yi <= n - 1
+	* All (xi, yi) are unique.
+
+class UnionFind {
+    vector<int> parent, rank; 
+    
+public: 
+    UnionFind(int n) {
+        parent.resize(n); 
+        iota(parent.begin(), parent.end(), 0); 
+        rank = vector<int>(n, 1); 
+    }
+    
+    int find(int p) {
+        if (p != parent[p]) 
+            parent[p] = find(parent[p]); 
+        return parent[p]; 
+    }
+    
+    bool connect(int p, int q) {
+        int prt = find(p), qrt = find(q); 
+        if (prt == qrt) return false; 
+        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
+        parent[prt] = qrt; 
+        rank[qrt] += rank[prt]; 
+        return true; 
+    }
+    
+    int top() {
+        return rank[find(parent.size()-1)]; 
+    }
+}; */
+
+    vector<int> hitBricks(vector<vector<int>>& grid, vector<vector<int>>& hits) {
+        int m = grid.size(), n = grid[0].size(), dir[5] = {-1, 0, 1, 0, -1}; 
+        vector<vector<bool>> on(m, vector<bool>(n)); 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j)
+                if (grid[i][j]) on[i][j] = true; 
+        
+        for (auto& hit : hits) 
+            grid[hit[0]][hit[1]] = 0; 
+        
+        UnionFind* uf = new UnionFind(m*n+1); 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if (grid[i][j]) {
+                    if (i == 0) uf->connect(j, m*n); 
+                    for (int k = 0; k < 4; ++k) {
+                        int ii = i + dir[k], jj = j + dir[k+1]; 
+                        if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj])
+                            uf->connect(i*n+j, ii*n+jj); 
+                    }
+                }
+        
+        vector<int> ans; 
+        int prev = uf->top(); 
+        for (int x = hits.size()-1; x >= 0; --x) {
+            int i = hits[x][0], j = hits[x][1]; 
+            if (on[i][j]) {
+                grid[i][j] = 1; 
+                if (i == 0) uf->connect(j, m*n); 
+                for (int k = 0; k < 4; ++k) {
+                    int ii = i + dir[k], jj = j + dir[k+1]; 
+                    if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj]) 
+                        uf->connect(i*n+j, ii*n+jj); 
+                }
+                int rank = uf->top(); 
+                ans.push_back(max(0, rank - prev - 1)); 
+                prev = rank; 
+            } else 
+                ans.push_back(0); 
+        }
+        reverse(ans.begin(), ans.end()); 
+        return ans; 
+    }
+
+
     /*810. Chalkboard XOR Game (Hard)
 	We are given non-negative integers nums[i] which are written on a 
 	chalkboard. Alice and Bob take turns erasing exactly one number from the 
