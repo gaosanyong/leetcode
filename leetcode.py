@@ -3806,15 +3806,16 @@ class Solution:
 	7    2      1
 	return true, as there exist a root-to-leaf path 5->4->11->2 which sum is 22."""
 
-    def hasPathSum(self, root: TreeNode, sum: int) -> bool:
-        
-        def fn(node, x): 
-            """Return True if node is on root-to-leaf path"""
-            if not node: return False 
-            if not node.left and not node.right: return node.val == x
-            return fn(node.left, x-node.val) or fn(node.right, x-node.val)
-        
-        return fn(root, sum)
+    def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
+        stack = [(root, 0)]
+        while stack: 
+            node, val = stack.pop()
+            if node: 
+                val += node.val 
+                if not node.left and not node.right and val == targetSum: return True 
+                stack.append((node.right, val))
+                stack.append((node.left, val))
+        return False 
 
 
     """113. Path Sum II (Medium)
