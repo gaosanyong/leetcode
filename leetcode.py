@@ -6943,15 +6943,15 @@ class Solution:
 	Google: 90% of our engineers use the software you wrote (Homebrew), but you 
 	can’t invert a binary tree on a whiteboard so f*** off."""
 
-    def invertTree(self, root: TreeNode) -> TreeNode:
-        
-        def fn(node):
-            """Return root of tree that is inverted"""
-            if not node: return 
-            node.left, node.right = fn(node.right), fn(node.left)
-            return node 
-        
-        return fn(root)
+    def invertTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        stack = [root]
+        while stack: 
+            node = stack.pop()
+            if node: 
+                node.left, node.right = node.right, node.left 
+                stack.append(node.right)
+                stack.append(node.left)
+        return root
 
 
     """227. Basic Calculator II (Medium)

@@ -2693,6 +2693,40 @@ public:
     }
 
 
+    /*226. Invert Binary Tree (Easy)
+	Given the root of a binary tree, invert the tree, and return its root.
+
+	Example 1:
+	Input: root = [4,2,7,1,3,6,9]
+	Output: [4,7,2,9,6,3,1]
+
+	Example 2:
+	Input: root = [2,1,3]
+	Output: [2,3,1]
+
+	Example 3:
+	Input: root = []
+	Output: []
+
+	Constraints:
+	* The number of nodes in the tree is in the range [0, 100].
+	* -100 <= Node.val <= 100*/
+
+    TreeNode* invertTree(TreeNode* root) {
+        stack<TreeNode*> stk; 
+        stk.push(root); 
+        while (stk.size()) {
+            TreeNode* node = stk.top(); stk.pop(); 
+            if (node) {
+                swap(node->left, node->right); 
+                stk.push(node->right); 
+                stk.push(node->left); 
+            }
+        }
+        return root; 
+    }
+
+
     /*236. Lowest Common Ancestor of a Binary Tree (Medium)
 	Given a binary tree, find the lowest common ancestor (LCA) of two given 
 	nodes in the tree. According to the definition of LCA on Wikipedia: “The 
