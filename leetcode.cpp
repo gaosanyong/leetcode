@@ -5684,10 +5684,11 @@ public:
 	* All the words in s are separated by a single space.*/
 
     string reverseWords(string s) {
-        for (int i = 0, ii = 0; i <= s.size(); ++i) 
-            if (i == s.size() || s[i] == ' ') {
-                for (int lo = ii, hi = i-1; lo < hi; swap(s[lo++], s[hi--])); 
-                ii = i+1; 
+        for (int i = 0, lo = 0; i < s.size(); ++i) 
+            if (i+1 == s.size() || s[i+1] == ' ') {
+                for (int hi = i; lo < hi; ++lo, --hi) 
+                    swap(s[lo], s[hi]); 
+                lo = i+2; 
             }
         return s; 
     }
