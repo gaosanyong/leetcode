@@ -365,9 +365,7 @@ public:
             fast = fast->next; 
             if (n-- < 0) slow = slow->next; 
         }
-        ListNode* temp = slow->next; 
         slow->next = slow->next->next; 
-        delete temp; 
         return dummy.next; 
     }
 
