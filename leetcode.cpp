@@ -2017,7 +2017,7 @@ public:
 	* 1 <= triangle.length <= 200
 	* triangle[0].length == 1
 	* triangle[i].length == triangle[i - 1].length + 1
-	* -104 <= triangle[i][j] <= 104
+	* -10^4 <= triangle[i][j] <= 10^4
 
 	Follow up: Could you do this using only O(n) extra space, where n is the 
 	           total number of rows in the triangle?*/
@@ -7711,12 +7711,13 @@ public:
 	* 1 <= val <= 10^7*/
 
     TreeNode* searchBST(TreeNode* root, int val) {
-        while (root) {
-            if (root->val == val) return root; 
-            if (root->val < val) root = root->right; 
-            else root = root->left; 
+        TreeNode* node = root; 
+        while (node) {
+            if (node->val < val) node = node->right; 
+            else if (node->val == val) break; 
+            else node = node->left; 
         }
-        return NULL; 
+        return node; 
     }
 
 
