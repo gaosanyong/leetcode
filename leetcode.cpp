@@ -9244,6 +9244,42 @@ public:
     }
 
 
+    /*784. Letter Case Permutation (Medium)
+	Given a string s, we can transform every letter individually to be 
+	lowercase or uppercase to create another string. Return a list of all 
+	possible strings we could create. You can return the output in any order.
+
+	Example 1:
+	Input: s = "a1b2"
+	Output: ["a1b2","a1B2","A1b2","A1B2"]
+
+	Example 2:
+	Input: s = "3z4"
+	Output: ["3z4","3Z4"]
+
+	Example 3:
+	Input: s = "12345"
+	Output: ["12345"]
+
+	Example 4:
+	Input: s = "0"
+	Output: ["0"]
+
+	Constraints:
+	* s will be a string with length between 1 and 12.
+	* s will consist only of letters or digits.*/
+
+    vector<string> letterCasePermutation(string s) {
+        vector<string> ans = {""}; 
+        for (auto& ch : s) 
+            for (int i = 0, n = ans.size(); i < n; ++i) {
+                if (isalpha(ch)) ans.push_back(ans[i] + string(1, ch^32)); 
+                ans[i].push_back(ch); 
+            }
+        return ans; 
+    }
+
+
     /*786. K-th Smallest Prime Fraction (Hard)
 	You are given a sorted integer array arr containing 1 and prime numbers, 
 	where all the integers of arr are unique. You are also given an integer k.
