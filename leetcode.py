@@ -2662,17 +2662,16 @@ class Solution:
 	]"""
 
     def combine(self, n: int, k: int) -> List[List[int]]:
-        
-        def fn(i): 
-            """Populate ans using a stack"""
-            if len(stack) == k: return ans.append(stack.copy())
-            for ii in range(i+1, n+1): 
-                stack.append(ii)
-                fn(ii)
-                stack.pop()
-        
         ans, stack = [], []
-        fn(0)
+        x = 1
+        while True:
+            if len(stack) == k: ans.append(stack[:])
+            if len(stack) == k or k - len(stack) > n - x + 1:
+                if not stack: break
+                x = stack.pop() + 1
+            else:
+                stack.append(x)
+                x += 1
         return ans 
 
 

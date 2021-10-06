@@ -791,6 +791,44 @@ public:
     }
 
 
+    /*46. Permutations (Medium)
+	Given an array nums of distinct integers, return all the possible 
+	permutations. You can return the answer in any order.
+
+	Example 1:
+	Input: nums = [1,2,3]
+	Output: [[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]
+
+	Example 2:
+	Input: nums = [0,1]
+	Output: [[0,1],[1,0]]
+
+	Example 3:
+	Input: nums = [1]
+	Output: [[1]]
+
+	Constraints:
+	* 1 <= nums.length <= 6
+	* -10 <= nums[i] <= 10
+	* All the integers of nums are unique.*/
+
+    vector<vector<int>> permute(vector<int>& nums) {
+        vector<vector<int>> ans; 
+        
+        function<void(int)> fn = [&](int i) {
+            if (i == nums.size()) ans.push_back(nums); 
+            for (int ii = i; ii < nums.size(); ++ii) {
+                swap(nums[i], nums[ii]); 
+                fn(i+1); 
+                swap(nums[i], nums[ii]); 
+            }
+        }; 
+        
+        fn(0); 
+        return ans; 
+    }
+
+
     /*48. Rotate Image (Medium)
 	You are given an n x n 2D matrix representing an image, rotate the image by 
 	90 degrees (clockwise). You have to rotate the image in-place, which means 
@@ -1056,6 +1094,42 @@ public:
             if (flag) matrix[i][0] = 0; 
         }
     }
+
+
+    /*77. Combinations (Medium)
+	Given two integers n and k, return all possible combinations of k numbers 
+	out of the range [1, n]. You may return the answer in any order.
+
+	Example 1:
+	Input: n = 4, k = 2
+	Output: [[2,4],
+	         [3,4],
+	         [2,3],
+	         [1,2],
+	         [1,3],
+	         [1,4],]
+	
+	Example 2:
+	Input: n = 1, k = 1
+	Output: [[1]]
+
+	Constraints:
+	* 1 <= n <= 20
+	* 1 <= k <= n*/
+
+	vector<vector<int>> combine(int n, int k) {
+		vector<vector<int>> ans;
+		vector<int> stk;
+		for (int x = 1; true; ) {
+			if (stk.size() == k) ans.push_back(stk); 
+            if (stk.size() == k || k - stk.size() > n - x + 1) {
+                if (stk.empty()) break; 
+                x = 1 + stk.back(); stk.pop_back(); 
+            } else 
+                stk.push_back(x++); 
+		}
+		return ans;
+	}
 
 
 	/*83. Remove Duplicates from Sorted List (Easy)
