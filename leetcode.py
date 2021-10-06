@@ -18479,6 +18479,70 @@ class UnionFind:
         return "".join(ans)
 
 
+    """839. Similar String Groups (Hard)
+	Two strings X and Y are similar if we can swap two letters (in different 
+	positions) of X, so that it equals Y. Also two strings X and Y are similar 
+	if they are equal. For example, "tars" and "rats" are similar (swapping at 
+	positions 0 and 2), and "rats" and "arts" are similar, but "star" is not 
+	similar to "tars", "rats", or "arts". Together, these form two connected 
+	groups by similarity: {"tars", "rats", "arts"} and {"star"}.  Notice that 
+	"tars" and "arts" are in the same group even though they are not similar.  
+	Formally, each group is such that a word is in the group if and only if it 
+	is similar to at least one other word in the group. We are given a list 
+	strs of strings where every string in strs is an anagram of every other 
+	string in strs. How many groups are there?
+
+	Example 1:
+	Input: strs = ["tars","rats","arts","star"]
+	Output: 2
+
+	Example 2:
+	Input: strs = ["omv","ovm"]
+	Output: 1
+
+	Constraints:
+	* 1 <= strs.length <= 300
+	* 1 <= strs[i].length <= 300
+	* strs[i] consists of lowercase letters only.
+	* All words in strs have the same length and are anagrams of each other.
+
+class UnionFind:
+    
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [1] * n
+        
+    def find(self, p):
+        if p != self.parent[p]: 
+            self.parent[p] = self.find(self.parent[p])
+        return self.parent[p]
+    
+    def union(self, p, q): 
+        prt, qrt = self.find(p), self.find(q)
+        if prt == qrt: return False 
+        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
+        self.parent[prt] = qrt
+        self.rank[qrt] += self.rank[prt]
+        return True"""
+
+    def numSimilarGroups(self, strs: List[str]) -> int:
+        
+        def fn(x, y): 
+            cnt = 0
+            for xx, yy in zip(x, y): 
+                if xx != yy: cnt += 1
+                if cnt > 2: return False 
+            return True 
+        
+        n = len(strs)
+        uf = UnionFind(n)
+        for i in range(n): 
+            for ii in range(i): 
+                if fn(strs[i], strs[ii]) and uf.union(i, ii): 
+                    n -= 1
+        return n
+
+
     """840. Magic Squares In Grid (Medium)
 	A 3 x 3 magic square is a 3 x 3 grid filled with distinct numbers from 1 to 
 	9 such that each row, column, and both diagonals all have the same sum. 

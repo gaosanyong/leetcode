@@ -10139,6 +10139,78 @@ public:
     }
 
 
+    /*839. Similar String Groups (Hard)
+	Two strings X and Y are similar if we can swap two letters (in different 
+	positions) of X, so that it equals Y. Also two strings X and Y are similar 
+	if they are equal. For example, "tars" and "rats" are similar (swapping at 
+	positions 0 and 2), and "rats" and "arts" are similar, but "star" is not 
+	similar to "tars", "rats", or "arts". Together, these form two connected 
+	groups by similarity: {"tars", "rats", "arts"} and {"star"}.  Notice that 
+	"tars" and "arts" are in the same group even though they are not similar.  
+	Formally, each group is such that a word is in the group if and only if it 
+	is similar to at least one other word in the group. We are given a list 
+	strs of strings where every string in strs is an anagram of every other 
+	string in strs. How many groups are there?
+
+	Example 1:
+	Input: strs = ["tars","rats","arts","star"]
+	Output: 2
+
+	Example 2:
+	Input: strs = ["omv","ovm"]
+	Output: 1
+
+	Constraints:
+	* 1 <= strs.length <= 300
+	* 1 <= strs[i].length <= 300
+	* strs[i] consists of lowercase letters only.
+	* All words in strs have the same length and are anagrams of each other.
+
+class UnionFind {
+    vector<int> parent, rank; 
+public: 
+    UnionFind(int n) {
+        parent.resize(n); 
+        iota(parent.begin(), parent.end(), 0); 
+        rank = vector<int>(n, 1); 
+    }
+    
+    int find(int p) {
+        if (p != parent[p]) 
+            parent[p] = find(parent[p]); 
+        return parent[p]; 
+    }
+    
+    bool connect(int p, int q) {
+        int prt = find(p), qrt = find(q); 
+        if (prt == qrt) return false; 
+        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
+        parent[prt] = qrt; 
+        rank[qrt] += rank[prt]; 
+        return true; 
+    }
+}; */
+
+    int numSimilarGroups(vector<string>& strs) {
+        
+        auto fn = [](string& x, string& y) {
+            int cnt = 0; 
+            for (int i = 0; i < x.size(); ++i) 
+                if (x[i] != y[i] && ++cnt > 2) return false; 
+            return true; 
+        }; 
+        
+        int n = strs.size(); 
+        UnionFind* uf = new UnionFind(n); 
+        for (int i = 0; i < strs.size(); ++i) 
+            for (int ii = 0; ii < i; ++ii) 
+                if (fn(strs[i], strs[ii]) && uf->connect(i, ii))
+                    --n; 
+        delete uf; 
+        return n; 
+    }
+
+
     /*843. Guess the Word (Hard)
 	This is an interactive problem. You are given an array of unique strings 
 	wordlist where wordlist[i] is 6 letters long, and one word in this list is 
