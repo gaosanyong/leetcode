@@ -80,7 +80,7 @@ public:
 	/*7. Reverse Integer (Easy)
 	Given a 32-bit signed integer, reverse digits of an integer. Note that 
 	assume we are dealing with an environment that could only store integers 
-	within the 32-bit signed integer range: [−231,  231 − 1]. For the purpose 
+	within the 32-bit signed integer range: [−2^31,  2^31 − 1]. For the purpose 
 	of this problem, assume that your function returns 0 when the reversed 
 	integer overflows.
 
@@ -2797,6 +2797,42 @@ public:
             }
         }
         return root; 
+    }
+
+
+    /*231. Power of Two (Easy)
+	Given an integer n, return true if it is a power of two. Otherwise, return 
+	false. An integer n is a power of two, if there exists an integer x such 
+	that n == 2x.
+
+	Example 1:
+	Input: n = 1
+	Output: true
+	Explanation: 20 = 1
+
+	Example 2:
+	Input: n = 16
+	Output: true
+	Explanation: 24 = 16
+
+	Example 3:
+	Input: n = 3
+	Output: false
+
+	Example 4:
+	Input: n = 4
+	Output: true
+
+	Example 5:
+	Input: n = 5
+	Output: false
+
+	Constraints: -2^31 <= n <= 2^31 - 1
+
+	Follow up: Could you solve it without loops/recursion?*/
+
+    bool isPowerOfTwo(int n) {
+        return n > 0 && (n & n-1) == 0; 
     }
 
 
@@ -19233,7 +19269,7 @@ public:
 	- At the 5th second, 5 bits of memory are allocated to stick 1. The first stick now has 0 bits of available memory.
 	- At the 6th second, the program crashes. The sticks have 0 and 4 bits available respectively.
 
-	Constraints: 0 <= memory1, memory2 <= 231 - 1*/
+	Constraints: 0 <= memory1, memory2 <= 2^31 - 1*/
 
     vector<int> memLeak(int memory1, int memory2) {
         int ans = 1; 
