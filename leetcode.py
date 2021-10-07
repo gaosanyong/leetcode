@@ -1124,17 +1124,9 @@ class Solution:
 	Output: [-1,-1]"""
 
     def searchRange(self, nums: List[int], target: int) -> List[int]:
-        
-        def fn(x, lo=0, hi=len(nums)):
-            while lo < hi:
-                mid = (lo + hi)//2
-                if nums[mid] >= x: hi = mid
-                else: lo = mid+1
-            return lo 
-        
-        lo = fn(target)
-        if not lo < len(nums) or nums[lo] != target: return [-1, -1]
-        return [lo, fn(target+1, lo)-1]
+        lo = bisect_left(nums, target)
+        hi = bisect_left(nums, target+1)-1
+        return [lo, hi] if lo < len(nums) and nums[lo] == target else [-1, -1]
 
 
     """35. Search Insert Position (Easy)
