@@ -7185,17 +7185,16 @@ public:
         for (TreeNode *lo = root; lo; lo = lo->left) left.push(lo); 
         for (TreeNode *hi = root; hi; hi = hi->right) right.push(hi); 
         
-        TreeNode *lo = left.top(), *hi = right.top(); 
+        TreeNode *lo = left.top(); left.pop(); 
+        TreeNode *hi = right.top(); right.pop(); 
         while (lo->val < hi->val) 
             if (lo->val + hi->val < k) {
-                left.pop(); 
                 for (lo = lo->right; lo; lo = lo->left) left.push(lo); 
-                lo = left.top(); 
+                lo = left.top(); left.pop(); 
             } else if (lo->val + hi->val == k) return true; 
             else {
-                right.pop(); 
                 for (hi = hi->left; hi; hi = hi->right) right.push(hi); 
-                hi = right.top(); 
+                hi = right.top(); right.pop(); 
             }
         return false; 
     }

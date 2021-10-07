@@ -14227,32 +14227,21 @@ class Trie:
 	* -10^5 <= k <= 10^5"""
 
     def findTarget(self, root: Optional[TreeNode], k: int) -> bool:
-        left, right = [], []
-        lo = hi = root 
-        while lo: 
-            left.append(lo)
-            lo = lo.left
-        lo = left.pop()
-            
-        while hi: 
-            right.append(hi)
-            hi = hi.right 
-        hi = right.pop()
         
-        while lo.val < hi.val: 
-            if lo.val + hi.val < k: 
-                lo = lo.right
-                while lo: 
-                    left.append(lo)
-                    lo = lo.left
-                lo = left.pop()
-            elif lo.val + hi.val == k: return True 
-            else: 
-                hi = hi.left
-                while hi: 
-                    right.append(hi)
-                    hi = hi.right 
-                hi = right.pop()
+        def fn(node, tf): 
+            if node: 
+                yield from fn(node.left, tf) if tf else fn(node.right, tf)
+                yield node.val 
+                yield from fn(node.right, tf) if tf else fn(node.left, tf)
+                        
+        fit = fn(root, 1) # forward iterator
+        bit = fn(root, 0) # backward iterator
+        lo, hi = next(fit), next(bit)
+        while lo < hi: 
+            sm = lo + hi 
+            if sm < k: lo = next(fit)
+            elif sm == k: return True
+            else: hi = next(bit)
         return False 
 
 
