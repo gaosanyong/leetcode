@@ -5836,12 +5836,13 @@ class Solution:
 	Output: 2"""
 
     def majorityElement(self, nums: List[int]) -> int:
-        """Boyer-Moore majority voting"""
-        ans, vote = None, 0
-        for x in nums:
+        """Boyer-Moore majority voting algo"""
+        ans = vote = 0
+        for x in nums: 
             if vote == 0: ans = x
-            vote += 1 if x == ans else -1
-        return ans
+            if x == ans: vote += 1
+            else: vote -= 1
+        return ans 
 
 
     """171. Excel Sheet Column Number (Easy)
