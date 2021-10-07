@@ -2574,10 +2574,15 @@ class Solution:
 	Output: false"""
 
     def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
-        i = bisect_right(next(zip(*matrix)), target) - 1
-        if i == -1: return False 
-        j = bisect_left(matrix[i], target)
-        return j < len(matrix[i]) and matrix[i][j] == target 
+        m, n = len(matrix), len(matrix[0])
+        lo, hi = 0, m*n
+        while lo < hi: 
+            mid = lo + hi >> 1
+            i, j = divmod(mid, n)
+            if matrix[i][j] < target: lo = mid + 1
+            elif matrix[i][j] == target: return True 
+            else: hi = mid
+        return False 
 
 
     """75. Sort Colors (Medium)
@@ -32585,9 +32590,9 @@ class UnionFind:
 	Add:    "2353"
 	Rotate: "5323"
 	Add:    "5222"
-	​​​​​​​Add:    "5121"
-	​​​​​​​Rotate: "2151"
-	​​​​​​​Add:    "2050"​​​​​​​​​​​​
+	Add:    "5121"
+	Rotate: "2151"
+	Add:    "2050"
 	There is no way to obtain a string that is lexicographically smaller then 
 	"2050".
 
@@ -32597,8 +32602,8 @@ class UnionFind:
 	Explanation: We can apply the following operations:
 	Start:  "74"
 	Rotate: "47"
-	​​​​​​​Add:    "42"
-	​​​​​​​Rotate: "24"​​​​​​​​​​​​
+	Add:    "42"
+	Rotate: "24"
 	There is no way to obtain a string that is lexicographically smaller then 
 	"24".
 
