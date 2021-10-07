@@ -15695,20 +15695,15 @@ public:
 	* arr[i] contains only lower case English letters.*/
 
     int maxLength(vector<string>& arr) {
-        vector<string> ans = {""}; 
+        vector<bitset<26>> dp(1); 
         for (auto& s : arr) {
-            for (int i = 0, n = ans.size(); i < n; ++i) {
-                bool found = false; 
-                int freq[26] = {0}; 
-                for (auto& ch : s) 
-                    if (++freq[ch-'a'] > 1 || ans[i].find(ch) != string::npos) {
-                        found = true;
-                        break; 
-                    }
-                if (not found) ans.push_back(s + ans[i]); 
-            }
+            bitset<26> bs; 
+            for (auto& ch : s) bs.set(ch - 'a'); 
+            if (bs.count() == s.size()) 
+                for (int i = 0, n = dp.size(); i < n; ++i) 
+                    if ((bs & dp[i]).none()) dp.push_back(bs | dp[i]); 
         }
-        return max_element(ans.begin(), ans.end(), [&](auto& lhs, auto& rhs) {return lhs.size() < rhs.size();})->size(); 
+        return max_element(dp.begin(), dp.end(), [](auto& lhs, auto& rhs) {return lhs.count() < rhs.count();})->count(); 
     }
 
 
