@@ -2733,19 +2733,20 @@ class Solution:
 	1 <= word.length <= 10^3"""
 
     def exist(self, board: List[List[str]], word: str) -> bool:
+        if Counter(word) - Counter(sum(board, [])): return False 
         m, n = len(board), len(board[0])
         
         def fn(i, j, k):
-            """Return True if a series starting from (i, j) matches word[k:]"""
+            """Return True if a match is found."""
             if k == len(word): return True 
-            if not (0 <= i < m and 0 <= j < n) or (i, j) in seen or board[i][j] != word[k]: return False 
-            
-            seen.add((i, j))
-            ans = any(fn(i+di, j+dj, k+1) for di, dj in ((-1, 0), (0, -1), (1, 0), (0, 1)))
-            seen.remove((i, j))
-            return ans 
+            if 0 <= i < m and 0 <= j < n and board[i][j] == word[k]: 
+                temp = board[i][j]
+                board[i][j] = ""
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                    if fn(ii, jj, k+1): return True 
+                board[i][j] = temp 
+            return False 
         
-        seen = set()
         return any(fn(i, j, 0) for i in range(m) for j in range(n))
 
 
