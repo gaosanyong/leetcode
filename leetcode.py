@@ -3337,13 +3337,14 @@ class Solution:
 	Explanation: The root node's value is 5 but its right child's value is 4."""
 
     def isValidBST(self, root: TreeNode) -> bool:
-         
-        def fn(node, lo=-inf, hi=inf):
-            """Return True if tree rooted at node is a valid BST bounded between lo and hi"""
-            if not node: return True
-            return fn(node.left, lo, node.val) and lo < node.val < hi and fn(node.right, node.val, hi)
-        
-        return fn(root)
+        stack = [(root, -inf, inf)]
+        while stack: 
+            node, lo, hi = stack.pop()
+            if lo < node.val < hi: 
+                if node.left: stack.append((node.left, lo, node.val))
+                if node.right: stack.append((node.right, node.val, hi))
+            else: return False 
+        return True 
 
 
     """99. Recover Binary Search Tree (Hard)
