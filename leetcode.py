@@ -1902,13 +1902,11 @@ class Solution:
 	default code definition to get new method signature."""
 
     def merge(self, intervals: List[List[int]]) -> List[List[int]]:
-        intervals.sort()
         ans = []
-        for interval in intervals: 
-            if ans and ans[-1][1] >= interval[0]: 
-                ans[-1][1] = max(ans[-1][1], interval[1])
-            else: ans.append(interval)
-        return ans
+        for x, y in sorted(intervals, key=lambda x: x[1]): 
+            while ans and x <= ans[-1][1]: x = min(x, ans.pop()[0])
+            ans.append([x, y])
+        return ans 
 
 
     """57. Insert Interval (Hard)
