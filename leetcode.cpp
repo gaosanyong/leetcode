@@ -9092,11 +9092,10 @@ public:
 	* 0 <= cost[i] <= 999*/
 
     int minCostClimbingStairs(vector<int>& cost) {
-        int f0 = 0, f1 = 0; 
-        for (int i = size(cost)-1; i >= 0; --i) {
-            int tmp = f0; 
-            f0 = cost[i] + min(f0, f1); 
-            f1 = tmp; 
+        int f0 = cost[0], f1 = cost[1]; 
+        for (int i = 2; i < cost.size(); ++i) {
+            swap(f0, f1); 
+            f1 = min(f0, f1) + cost[i];  
         }
         return min(f0, f1); 
     }

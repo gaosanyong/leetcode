@@ -16171,8 +16171,8 @@ class UnionFind:
 
     def minCostClimbingStairs(self, cost: List[int]) -> int:
         f0 = f1 = 0 
-        for c in reversed(cost): 
-            f0, f1 = c + min(f0, f1), f0
+        for x in reversed(cost): 
+            f0, f1 = f1, min(f0, f1) + x
         return min(f0, f1)
 
 
