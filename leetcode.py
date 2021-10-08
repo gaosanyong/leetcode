@@ -47814,51 +47814,29 @@ Note:
 You may assume that all inputs are consist of lowercase letters a-z.
 All inputs are guaranteed to be non-empty strings."""
 
-class TrieNode:
-    """Node on trie"""
-    def __init__(self):
-        self.data = [None]*26 #lowercase letter only
-        self.word = False     #true if a word terminates here 
-        
-
 class Trie:
 
     def __init__(self):
-        """
-        Initialize your data structure here.
-        """
-        self.root = TrieNode()
+        self.root = {}
 
     def insert(self, word: str) -> None:
-        """
-        Inserts a word into the trie.
-        """
         node = self.root
-        for i in (ord(x) - 97 for x in word): 
-            if not node.data[i]: node.data[i] = TrieNode()
-            node = node.data[i]
-        node.word = True
-        
-    def _traverse(self, word): 
-        """traverse the trie to find word"""
-        node = self.root
-        for i in (ord(x)-97 for x in word):
-            if not node.data[i]: return None
-            node = node.data[i]
-        return node
-        
+        for ch in word: node = node.setdefault(ch, {})
+        node["$"] = word
+
     def search(self, word: str) -> bool:
-        """
-        Returns if the word is in the trie.
-        """
-        node = self._traverse(word)
-        return node.word if node else False 
-        
+        node = self.root
+        for ch in word: 
+            if ch not in node: return False 
+            node = node[ch]
+        return node.get("$")
+
     def startsWith(self, prefix: str) -> bool:
-        """
-        Returns if there is any word in the trie that starts with the given prefix.
-        """
-        return self._traverse(prefix)
+        node = self.root
+        for ch in prefix: 
+            if ch not in node: return False 
+            node = node[ch]
+        return True
 
 
 """211. Add and Search Word - Data structure design (Medium)
