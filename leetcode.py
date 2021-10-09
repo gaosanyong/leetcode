@@ -1662,7 +1662,7 @@ class Solution:
 	]"""
 
     def rotate(self, matrix: List[List[int]]) -> None:
-        matrix[:] = [list(x) for x in zip(*matrix[::-1])]
+        matrix[:] = list(zip(*matrix[::-1]))
 
 
     """49. Group Anagrams (Medium)
