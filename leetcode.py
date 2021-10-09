@@ -2594,18 +2594,17 @@ class Solution:
 	Could you come up with a one-pass algorithm using only constant space?"""
 
     def sortColors(self, nums: List[int]) -> None:
-        """Dijkstra's three-way partition"""
-        lo, mid, hi = 0, 0, len(nums)
-        
-        while mid < hi: 
-            if nums[mid] < 1: 
+        # Dijkstra's 3-way partition 
+        lo, mid, hi = 0, 0, len(nums)-1
+        while mid <= hi: 
+            if nums[mid] == 0: 
                 nums[lo], nums[mid] = nums[mid], nums[lo]
-                lo, mid = lo+1, mid+1
-            elif nums[mid] > 1:
-                hi -= 1
-                nums[mid], nums[hi] = nums[hi], nums[mid]
-            else:
+                lo += 1
                 mid += 1
+            elif nums[mid] == 2: 
+                nums[hi], nums[mid] = nums[mid], nums[hi]
+                hi -= 1
+            else: mid += 1
         
 
     """76. Minimum Window Substring (Hard)
