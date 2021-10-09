@@ -1375,6 +1375,36 @@ public:
     }
 
 
+    /*82. Remove Duplicates from Sorted List II (Medium)
+	Given the head of a sorted linked list, delete all nodes that have 
+	duplicate numbers, leaving only distinct numbers from the original list. 
+	Return the linked list sorted as well.
+
+	Example 1:
+	Input: head = [1,2,3,3,4,4,5]
+	Output: [1,2,5]
+
+	Example 2:
+	Input: head = [1,1,1,2,3]
+	Output: [2,3]
+
+	Constraints:
+	* The number of nodes in the list is in the range [0, 300].
+	* -100 <= Node.val <= 100
+	* The list is guaranteed to be sorted in ascending order.*/
+
+    ListNode* deleteDuplicates(ListNode* head) {
+        ListNode dummy(-101, head), *prev = &dummy, *node = head; 
+        while (node) {
+            while (node && node->next && node->val == node->next->val) node = node->next; 
+            if (prev->next == node) prev = prev->next; 
+            else prev->next = node->next; 
+            node = prev->next; 
+        }
+        return dummy.next;         
+    }
+
+
 	/*83. Remove Duplicates from Sorted List (Easy)
 	Given the head of a sorted linked list, delete all duplicates such that 
 	each element appears only once. Return the linked list sorted as well.
