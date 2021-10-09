@@ -537,18 +537,17 @@ class Solution:
         nums.sort()
         ans = []
         for i in range(len(nums)): 
-            if nums[i] > 0: break
-            if i and nums[i-1] == nums[i]: continue #remove duplicates
-            lo, hi = i+1, len(nums)-1
-            while lo < hi: 
-                x = nums[lo] + nums[hi] + nums[i]
-                if x > 0: hi -= 1
-                elif x < 0: lo += 1
-                else: 
-                    ans.append([nums[i], nums[lo], nums[hi]])
-                    lo += 1
-                    while lo < hi and nums[lo-1] == nums[lo]: lo += 1
-        return ans 
+            if i == 0 or nums[i-1] != nums[i]: 
+                lo, hi = i+1, len(nums)-1
+                while lo < hi: 
+                    sm = nums[i] + nums[lo] + nums[hi]
+                    if sm < 0: lo += 1
+                    elif sm == 0: 
+                        ans.append([nums[i], nums[lo], nums[hi]])
+                        lo += 1
+                        while lo < hi and nums[lo-1] == nums[lo]: lo += 1
+                    else: hi -= 1
+        return ans
 
 
     """16. 3Sum Closest (Medium)

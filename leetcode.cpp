@@ -223,6 +223,46 @@ public:
     }
 
 
+    /*15. 3Sum (Medium)
+	Given an integer array nums, return all the triplets 
+	[nums[i], nums[j], nums[k]] such that i != j, i != k, and j != k, and 
+	nums[i] + nums[j] + nums[k] == 0. Notice that the solution set must not 
+	contain duplicate triplets.
+
+	Example 1:
+	Input: nums = [-1,0,1,2,-1,-4]
+	Output: [[-1,-1,2],[-1,0,1]]
+
+	Example 2:
+	Input: nums = []
+	Output: []
+
+	Example 3:
+	Input: nums = [0]
+	Output: []
+
+	Constraints:
+	* 0 <= nums.length <= 3000
+	* -10^5 <= nums[i] <= 10^5*/
+
+    vector<vector<int>> threeSum(vector<int>& nums) {
+        sort(nums.begin(), nums.end()); 
+        vector<vector<int>> ans; 
+        for (int i = 0; i < nums.size(); ++i) 
+            if (i == 0 || nums[i-1] != nums[i]) 
+                for (int lo = i+1, hi = nums.size()-1; lo < hi; ) {
+                    int sm = nums[i] + nums[lo] + nums[hi]; 
+                    if (sm < 0) ++lo; 
+                    else if (sm == 0) {
+                        ans.push_back({nums[i], nums[lo], nums[hi]}); 
+                        ++lo; 
+                        while (lo < hi && nums[lo-1] == nums[lo]) ++lo; 
+                    } else --hi; 
+                }
+        return ans; 
+    }
+
+
     /*16. 3Sum Closest (Medium)
 	Given an array nums of n integers and an integer target, find three 
 	integers in nums such that the sum is closest to target. Return the sum of 
