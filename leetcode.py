@@ -1969,13 +1969,14 @@ class Solution:
 	]"""
 
     def generateMatrix(self, n: int) -> List[List[int]]:
-        matrix = [[0]*n for _ in range(n)]
-        i, j, di, dj = 0, 0, 0, 1
-        for v in range(1, n*n+1):
-            matrix[i][j] = v
-            if matrix[(i+di)%n][(j+dj)%n]: di, dj = dj, -di
+        ans = [[0]*n for _ in range(n)]
+        i = j = 0
+        di, dj = 0, 1
+        for v in range(n*n):
+            ans[i][j] = v+1
+            if ans[(i+di)%n][(j+dj)%n]: di, dj = dj, -di
             i, j = i+di, j+dj
-        return matrix 
+        return ans
 
 
     """60. Permutation Sequence (Medium)
