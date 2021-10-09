@@ -4347,14 +4347,12 @@ public:
 	  such that you cannot load all elements into the memory at once?*/
 
     vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
-        vector<int> ans; 
         unordered_map<int, int> freq; 
-        for (auto& x : nums1) freq[x]++; 
+        for (auto& x : nums1) ++freq[x]; 
+        
+        vector<int> ans; 
         for (auto& x : nums2) 
-            if (freq[x]) {
-                freq[x]--; 
-                ans.push_back(x); 
-            }
+            if (freq[x]-- > 0) ans.push_back(x); 
         return ans; 
     }
 
