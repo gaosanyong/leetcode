@@ -4061,8 +4061,9 @@ class Solution:
 
     def getRow(self, rowIndex: int) -> List[int]:
         ans = [1]
-        for i in range(rowIndex): #n choose k 
-            ans.append(ans[-1]*(rowIndex-i)//(i+1))
+        for _ in range(rowIndex): 
+            ans.append(1)
+            for i in range(len(ans)-2, 0, -1): ans[i] += ans[i-1]
         return ans 
 
 
