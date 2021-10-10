@@ -11276,6 +11276,51 @@ public:
     }
 
 
+    /*844. Backspace String Compare (Easy)
+	Given two strings s and t, return true if they are equal when both are 
+	typed into empty text editors. '#' means a backspace character. Note that 
+	after backspacing an empty text, the text will continue empty.
+
+	Example 1:
+	Input: s = "ab#c", t = "ad#c"
+	Output: true
+	Explanation: Both s and t become "ac".
+
+	Example 2:
+	Input: s = "ab##", t = "c#d#"
+	Output: true
+	Explanation: Both s and t become "".
+
+	Example 3:
+	Input: s = "a##c", t = "#a#c"
+	Output: true
+	Explanation: Both s and t become "c".
+
+	Example 4:
+	Input: s = "a#c", t = "b"
+	Output: false
+	Explanation: s becomes "c" while t becomes "b".
+
+	Constraints:
+	* 1 <= s.length, t.length <= 200
+	* s and t only contain lowercase letters and '#' characters.
+ 
+	Follow up: Can you solve it in O(n) time and O(1) space?*/
+
+    bool backspaceCompare(string s, string t) {
+        for (int i = s.size()-1, j = t.size()-1, cs = 0, ct = 0; 0 <= i || 0 <= j; --i, --j) {
+            for (; 0 <= i && (s[i] == '#' || cs); --i) 
+                if (s[i] == '#') ++cs; 
+                else --cs; 
+            for (; 0 <= j && (t[j] == '#' || ct); --j) 
+                if (t[j] == '#') ++ct; 
+                else --ct; 
+            if ((i < 0 && 0 <= j) || (0 <= i && j < 0) || (0 <= i && 0 <= j && s[i] != t[j])) return false; 
+        }
+        return true; 
+    }
+
+
     /*847. Shortest Path Visiting All Nodes (Hard)
 	You have an undirected, connected graph of n nodes labeled from 0 to n - 1. 
 	You are given an array graph where graph[i] is a list of all the nodes 

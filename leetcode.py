@@ -18796,6 +18796,54 @@ class UnionFind:
                 wordlist = [ww for ww in wordlist if sum(x == xx for x, xx in zip(w, ww)) == m]
 
 
+    """844. Backspace String Compare (Easy)
+	Given two strings s and t, return true if they are equal when both are 
+	typed into empty text editors. '#' means a backspace character. Note that 
+	after backspacing an empty text, the text will continue empty.
+
+	Example 1:
+	Input: s = "ab#c", t = "ad#c"
+	Output: true
+	Explanation: Both s and t become "ac".
+
+	Example 2:
+	Input: s = "ab##", t = "c#d#"
+	Output: true
+	Explanation: Both s and t become "".
+
+	Example 3:
+	Input: s = "a##c", t = "#a#c"
+	Output: true
+	Explanation: Both s and t become "c".
+
+	Example 4:
+	Input: s = "a#c", t = "b"
+	Output: false
+	Explanation: s becomes "c" while t becomes "b".
+
+	Constraints:
+	* 1 <= s.length, t.length <= 200
+	* s and t only contain lowercase letters and '#' characters.
+ 
+	Follow up: Can you solve it in O(n) time and O(1) space?"""
+
+    def backspaceCompare(self, s: str, t: str) -> bool:
+        i, j = len(s)-1, len(t)-1
+        ss = tt = 0
+        while 0 <= i or 0 <= j: 
+            while 0 <= i and (s[i] == "#" or ss): 
+                if s[i] == "#": ss += 1
+                else: ss -= 1
+                i -= 1
+            while 0 <= j and (t[j] == "#" or tt): 
+                if t[j] == "#": tt += 1
+                else: tt -= 1
+                j -= 1
+            if i < 0 and 0 <= j or 0 <= i and j < 0 or 0 <= i and 0 <= j and s[i] != t[j]: return False 
+            i, j = i-1, j-1
+        return True 
+
+
     """845. Longest Mountain in Array (Medium)
 	Let's call any (contiguous) subarray B (of A) a mountain if the following 
 	properties hold:
