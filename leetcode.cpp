@@ -2405,13 +2405,12 @@ public:
 	Constraints: 1 <= numRows <= 30*/
 
     vector<vector<int>> generate(int numRows) {
-        vector<vector<int>> ans(numRows); 
+        vector<vector<int>> ans; 
+        vector<int> row; 
         for (int i = 0; i < numRows; ++i) {
-            ans[i].resize(i+1); 
-            ans[i][0] = ans[i][i] = 1; 
-            for (int j = 1; j < i; ++j) {
-                ans[i][j] = ans[i-1][j-1] + ans[i-1][j]; 
-            }
+            row.push_back(1); 
+            for (int j = i-1; j >= 1; --j) row[j] += row[j-1]; 
+            ans.push_back(row); 
         }
         return ans; 
     }
