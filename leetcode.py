@@ -6281,8 +6281,7 @@ class Solution:
 	Output: 0"""
 
     def rangeBitwiseAnd(self, m: int, n: int) -> int:
-        while n > m: 
-            n &= n-1 #unset last set bit
+        while n > m: n &= n-1 # unset last set bit
         return n 
 
 

@@ -3065,6 +3065,30 @@ public:
     }
 
 
+    /*201. Bitwise AND of Numbers Range (Medium)
+	Given two integers left and right that represent the range [left, right], 
+	return the bitwise AND of all numbers in this range, inclusive.
+
+	Example 1:
+	Input: left = 5, right = 7
+	Output: 4
+
+	Example 2:
+	Input: left = 0, right = 0
+	Output: 0
+
+	Example 3:
+	Input: left = 1, right = 2147483647
+	Output: 0
+
+	Constraints: 0 <= left <= right <= 2^31 - 1*/
+
+    int rangeBitwiseAnd(int left, int right) {
+        for (; left < right; right &= right - 1); 
+        return right; 
+    }
+
+
     /*203. Remove Linked List Elements (Easy)
 	Given the head of a linked list and an integer val, remove all the nodes of 
 	the linked list that has Node.val == val, and return the new head.
@@ -27777,7 +27801,7 @@ public:
             vals[key].push_back(diff); 
         }
         
-        for (auto&v : vals) sort(v.begin(), v.end()); 
+        for (auto& v : vals) sort(v.begin(), v.end()); 
         
         int ans = INT_MAX; 
         for (int mask = 0; mask < (1<<n); ++mask) {
