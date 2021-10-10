@@ -47575,6 +47575,129 @@ class UnionFind:
         return "".join(stack)
 
 
+    """2032. Two Out of Three (Easy)
+	Given three integer arrays nums1, nums2, and nums3, return a distinct array 
+	containing all the values that are present in at least two out of the three 
+	arrays. You may return the values in any order.
+
+	Example 1:
+	Input: nums1 = [1,1,3,2], nums2 = [2,3], nums3 = [3]
+	Output: [3,2]
+	Explanation: The values that are present in at least two arrays are:
+	             - 3, in all three arrays.
+	             - 2, in nums1 and nums2.
+	
+	Example 2:
+	Input: nums1 = [3,1], nums2 = [2,3], nums3 = [1,2]
+	Output: [2,3,1]
+	Explanation: The values that are present in at least two arrays are:
+	             - 2, in nums2 and nums3.
+	             - 3, in nums1 and nums2.
+	             - 1, in nums1 and nums3.
+	
+	Example 3:
+	Input: nums1 = [1,2,2], nums2 = [4,3,3], nums3 = [5]
+	Output: []
+	Explanation: No value is present in at least two arrays.
+
+	Constraints:
+	* 1 <= nums1.length, nums2.length, nums3.length <= 100
+	* 1 <= nums1[i], nums2[j], nums3[k] <= 100"""
+
+    def twoOutOfThree(self, nums1: List[int], nums2: List[int], nums3: List[int]) -> List[int]:
+        s1, s2, s3 = set(nums1), set(nums2), set(nums3)
+        return (s1&s2) | (s2&s3) | (s1&s3)
+
+
+    """2033. Minimum Operations to Make a Uni-Value Grid (Medium)
+	You are given a 2D integer grid of size m x n and an integer x. In one 
+	operation, you can add x to or subtract x from any element in the grid. A 
+	uni-value grid is a grid where all the elements of it are equal. Return the 
+	minimum number of operations to make the grid uni-value. If it is not 
+	possible, return -1.
+
+	Example 1:
+	Input: grid = [[2,4],[6,8]], x = 2
+	Output: 4
+	Explanation: We can make every element equal to 4 by doing the following: 
+	             - Add x to 2 once.
+	             - Subtract x from 6 once.
+	             - Subtract x from 8 twice.
+	             A total of 4 operations were used.
+	
+	Example 2:
+	Input: grid = [[1,5],[2,3]], x = 1
+	Output: 5
+	Explanation: We can make every element equal to 3.
+
+	Example 3:
+	Input: grid = [[1,2],[3,4]], x = 2
+	Output: -1
+	Explanation: It is impossible to make every element equal.
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 10^5
+	* 1 <= m * n <= 10^5
+	* 1 <= x, grid[i][j] <= 10^4"""
+
+    def minOperations(self, grid: List[List[int]], x: int) -> int:
+        vals = [x for row in grid for x in row]
+        if len(set(val%x for val in vals)) > 1: return -1 # impossible
+        median = sorted(vals)[len(vals)//2] # O(N) possible via "quick select"
+        return sum(abs(val - median)//x for val in vals)
+
+
+    """2035. Partition Array Into Two Arrays to Minimize Sum Difference (Hard)
+	You are given an integer array nums of 2 * n integers. You need to 
+	partition nums into two arrays of length n to minimize the absolute 
+	difference of the sums of the arrays. To partition nums, put each element 
+	of nums into one of the two arrays. Return the minimum possible absolute 
+	difference.
+
+	Example 1:
+	Input: nums = [3,9,7,3]
+	Output: 2
+	Explanation: One optimal partition is: [3,9] and [7,3]. The absolute 
+	             difference between the sums of the arrays is 
+	             abs((3 + 9) - (7 + 3)) = 2.
+	
+	Example 2:
+	Input: nums = [-36,36]
+	Output: 72
+	Explanation: One optimal partition is: [-36] and [36]. The absolute 
+	             difference between the sums of the arrays is 
+	             abs((-36) - (36)) = 72.
+	
+	Example 3:
+	Input: nums = [2,-1,0,4,-2,-9]
+	Output: 0
+	Explanation: One optimal partition is: [2,4,-9] and [-1,0,-2]. The absolute 
+	             difference between the sums of the arrays is 
+	             abs((2 + 4 + -9) - (-1 + 0 + -2)) = 0.
+
+	Constraints:
+	* 1 <= n <= 15
+	* nums.length == 2 * n
+	* -10^7 <= nums[i] <= 10^7"""
+
+    def minimumDifference(self, nums: List[int]) -> int:
+        n = len(nums)//2
+        half0, half1 = nums[:n], nums[n:]
+        total0, total1 = sum(half0), sum(half1)
+        
+        ans = inf
+        for i in range(n+1): 
+            vals = sorted(2*sum(combo)-total0 for combo in combinations(half0, i))
+            for combo in combinations(half1, n-i): 
+                diff = 2*sum(combo) - total1
+                k = bisect_left(vals, -diff)
+                if k < len(vals): ans = min(ans, abs(vals[k] + diff))
+                if k: ans = min(ans, abs(vals[k-1] + diff))
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -51659,3 +51782,74 @@ class DetectSquares:
             if xx != x and abs(x-xx) == abs(y-yy): 
                 ans += self.freq[xx, yy] * self.freq.get((xx, y), 0) * self.freq.get((x, yy), 0)
         return ans 
+
+
+"""2034. Stock Price Fluctuation (Medium)
+You are given a stream of records about a particular stock. Each record 
+contains a timestamp and the corresponding price of the stock at that timestamp.
+Unfortunately due to the volatile nature of the stock market, the records do 
+not come in order. Even worse, some records may be incorrect. Another record 
+with the same timestamp may appear later in the stream correcting the price of 
+the previous wrong record. Design an algorithm that:
+* Updates the price of the stock at a particular timestamp, correcting the 
+  price from any previous records at the timestamp.
+* Finds the latest price of the stock based on the current records. The latest 
+  price is the price at the latest timestamp recorded.
+* Finds the maximum price the stock has been based on the current records.
+* Finds the minimum price the stock has been based on the current records.
+
+Implement the StockPrice class:
+* StockPrice() Initializes the object with no price records.
+* void update(int timestamp, int price) Updates the price of the stock at the 
+  given timestamp.
+* int current() Returns the latest price of the stock.
+* int maximum() Returns the maximum price of the stock.
+* int minimum() Returns the minimum price of the stock.
+
+Example 1:
+Input: ["StockPrice", "update", "update", "current", "maximum", "update", "maximum", "update", "minimum"]
+       [[], [1, 10], [2, 5], [], [], [1, 3], [], [4, 2], []]
+Output: [null, null, null, 5, 10, null, 5, null, 2]
+Explanation: 
+StockPrice stockPrice = new StockPrice();
+stockPrice.update(1, 10); // Timestamps are [1] with corresponding prices [10].
+stockPrice.update(2, 5);  // Timestamps are [1,2] with corresponding prices [10,5].
+stockPrice.current();     // return 5, the latest timestamp is 2 with the price being 5.
+stockPrice.maximum();     // return 10, the maximum price is 10 at timestamp 1.
+stockPrice.update(1, 3);  // The previous timestamp 1 had the wrong price, so it is updated to 3.
+                          // Timestamps are [1,2] with corresponding prices [3,5].
+stockPrice.maximum();     // return 5, the maximum price is 5 after the correction.
+stockPrice.update(4, 2);  // Timestamps are [1,2,4] with corresponding prices [3,5,2].
+stockPrice.minimum();     // return 2, the minimum price is 2 at timestamp 4.
+
+Constraints:
+* 1 <= timestamp, price <= 10^9
+* At most 10^5 calls will be made in total to update, current, maximum, and 
+  minimum.
+* current, maximum, and minimum will be called only after update has been 
+  called at least once."""
+
+class StockPrice:
+
+    def __init__(self):
+        self.mp = {}
+        self.maxp = [] # max-heap 
+        self.minp = [] # min-heap 
+        self.latest = 0 # latest timestamp
+
+    def update(self, timestamp: int, price: int) -> None:
+        self.mp[timestamp] = price 
+        if self.latest <= timestamp: self.latest = timestamp
+        heappush(self.maxp, (-price, timestamp))
+        heappush(self.minp, (price, timestamp))
+
+    def current(self) -> int:
+        return self.mp[self.latest]
+
+    def maximum(self) -> int:
+        while self.mp[self.maxp[0][1]] != -self.maxp[0][0]: heappop(self.maxp)
+        return -self.maxp[0][0]
+
+    def minimum(self) -> int:
+        while self.mp[self.minp[0][1]] != self.minp[0][0]: heappop(self.minp)
+        return self.minp[0][0]

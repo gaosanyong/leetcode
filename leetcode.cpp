@@ -27638,6 +27638,158 @@ public:
         
         return ans; 
     }
+
+
+    /*2032. Two Out of Three (Easy)
+	Given three integer arrays nums1, nums2, and nums3, return a distinct array 
+	containing all the values that are present in at least two out of the three 
+	arrays. You may return the values in any order.
+
+	Example 1:
+	Input: nums1 = [1,1,3,2], nums2 = [2,3], nums3 = [3]
+	Output: [3,2]
+	Explanation: The values that are present in at least two arrays are:
+	             - 3, in all three arrays.
+	             - 2, in nums1 and nums2.
+	
+	Example 2:
+	Input: nums1 = [3,1], nums2 = [2,3], nums3 = [1,2]
+	Output: [2,3,1]
+	Explanation: The values that are present in at least two arrays are:
+	             - 2, in nums2 and nums3.
+	             - 3, in nums1 and nums2.
+	             - 1, in nums1 and nums3.
+	
+	Example 3:
+	Input: nums1 = [1,2,2], nums2 = [4,3,3], nums3 = [5]
+	Output: []
+	Explanation: No value is present in at least two arrays.
+
+	Constraints:
+	* 1 <= nums1.length, nums2.length, nums3.length <= 100
+	* 1 <= nums1[i], nums2[j], nums3[k] <= 100*/
+
+    vector<int> twoOutOfThree(vector<int>& nums1, vector<int>& nums2, vector<int>& nums3) {
+        unordered_map<int, int> freq; 
+        for (auto& nums : {nums1, nums2, nums3}) {
+            unordered_set<int> st(nums.begin(), nums.end()); 
+            for (auto& x : st) ++freq[x]; 
+        }
+        vector<int> ans; 
+        for (auto& [k, v] : freq)
+            if (v >= 2) ans.push_back(k); 
+        return ans; 
+    }
+
+
+    /*2033. Minimum Operations to Make a Uni-Value Grid (Medium)
+	You are given a 2D integer grid of size m x n and an integer x. In one 
+	operation, you can add x to or subtract x from any element in the grid. A 
+	uni-value grid is a grid where all the elements of it are equal. Return the 
+	minimum number of operations to make the grid uni-value. If it is not 
+	possible, return -1.
+
+	Example 1:
+	Input: grid = [[2,4],[6,8]], x = 2
+	Output: 4
+	Explanation: We can make every element equal to 4 by doing the following: 
+	             - Add x to 2 once.
+	             - Subtract x from 6 once.
+	             - Subtract x from 8 twice.
+	             A total of 4 operations were used.
+	
+	Example 2:
+	Input: grid = [[1,5],[2,3]], x = 1
+	Output: 5
+	Explanation: We can make every element equal to 3.
+
+	Example 3:
+	Input: grid = [[1,2],[3,4]], x = 2
+	Output: -1
+	Explanation: It is impossible to make every element equal.
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 10^5
+	* 1 <= m * n <= 10^5
+	* 1 <= x, grid[i][j] <= 10^4*/
+
+    int minOperations(vector<vector<int>>& grid, int x) {
+        vector<int> vals; 
+        for (auto& row : grid)
+            for (auto& x : row)
+                vals.push_back(x); 
+        
+        for (auto& v : vals)
+            if ((v - vals[0]) % x) return -1; 
+        
+        sort(vals.begin(), vals.end()); 
+        int ans = 0, median = vals[vals.size()/2]; 
+        for (auto& v : vals) ans += abs(v - median)/x; 
+        return ans; 
+    }
+
+
+    /*2035. Partition Array Into Two Arrays to Minimize Sum Difference (Hard)
+	You are given an integer array nums of 2 * n integers. You need to 
+	partition nums into two arrays of length n to minimize the absolute 
+	difference of the sums of the arrays. To partition nums, put each element 
+	of nums into one of the two arrays. Return the minimum possible absolute 
+	difference.
+
+	Example 1:
+	Input: nums = [3,9,7,3]
+	Output: 2
+	Explanation: One optimal partition is: [3,9] and [7,3]. The absolute 
+	             difference between the sums of the arrays is 
+	             abs((3 + 9) - (7 + 3)) = 2.
+	
+	Example 2:
+	Input: nums = [-36,36]
+	Output: 72
+	Explanation: One optimal partition is: [-36] and [36]. The absolute 
+	             difference between the sums of the arrays is 
+	             abs((-36) - (36)) = 72.
+	
+	Example 3:
+	Input: nums = [2,-1,0,4,-2,-9]
+	Output: 0
+	Explanation: One optimal partition is: [2,4,-9] and [-1,0,-2]. The absolute 
+	             difference between the sums of the arrays is 
+	             abs((2 + 4 + -9) - (-1 + 0 + -2)) = 0.
+
+	Constraints:
+	* 1 <= n <= 15
+	* nums.length == 2 * n
+	* -10^7 <= nums[i] <= 10^7*/
+
+    int minimumDifference(vector<int>& nums) {
+        int n = nums.size()/2; 
+        vector<int> left(nums.begin(), nums.begin()+n), right(nums.begin()+n, nums.begin()+2*n); 
+        int lsum = accumulate(left.begin(), left.end(), 0), rsum = accumulate(right.begin(), right.end(), 0); 
+        
+        vector<vector<int>> vals(n+1); 
+        for (int mask = 0; mask < (1<<n); ++mask) {
+            int diff = 0, key = __builtin_popcount(mask); 
+            for (int i = 0; i < n; ++i) 
+                diff += (mask & (1 << i)) ? left[i] : -left[i]; 
+            vals[key].push_back(diff); 
+        }
+        
+        for (auto&v : vals) sort(v.begin(), v.end()); 
+        
+        int ans = INT_MAX; 
+        for (int mask = 0; mask < (1<<n); ++mask) {
+            int diff = 0, key = n - __builtin_popcount(mask); 
+            for (int i = 0; i < n; ++i) 
+                diff += (mask & (1 << i)) ? right[i] : -right[i]; 
+            auto it = lower_bound(vals[key].begin(), vals[key].end(), -diff); 
+            if (it != vals[key].end()) ans = min(ans, abs(diff + *it)); 
+            if (it != vals[key].begin()) ans = min(ans, abs(diff + *prev(it))); 
+        }
+        return ans; 
+    }
 };
 
 
@@ -29423,5 +29575,82 @@ public:
                 ans += v * freq[xx*1001+y] * freq[x*1001+yy]; 
         }
         return ans; 
+    }
+};
+
+
+/*2034. Stock Price Fluctuation (Medium)
+You are given a stream of records about a particular stock. Each record 
+contains a timestamp and the corresponding price of the stock at that timestamp.
+Unfortunately due to the volatile nature of the stock market, the records do 
+not come in order. Even worse, some records may be incorrect. Another record 
+with the same timestamp may appear later in the stream correcting the price of 
+the previous wrong record. Design an algorithm that:
+* Updates the price of the stock at a particular timestamp, correcting the 
+  price from any previous records at the timestamp.
+* Finds the latest price of the stock based on the current records. The latest 
+  price is the price at the latest timestamp recorded.
+* Finds the maximum price the stock has been based on the current records.
+* Finds the minimum price the stock has been based on the current records.
+
+Implement the StockPrice class:
+* StockPrice() Initializes the object with no price records.
+* void update(int timestamp, int price) Updates the price of the stock at the 
+  given timestamp.
+* int current() Returns the latest price of the stock.
+* int maximum() Returns the maximum price of the stock.
+* int minimum() Returns the minimum price of the stock.
+
+Example 1:
+Input: ["StockPrice", "update", "update", "current", "maximum", "update", "maximum", "update", "minimum"]
+       [[], [1, 10], [2, 5], [], [], [1, 3], [], [4, 2], []]
+Output: [null, null, null, 5, 10, null, 5, null, 2]
+Explanation: 
+StockPrice stockPrice = new StockPrice();
+stockPrice.update(1, 10); // Timestamps are [1] with corresponding prices [10].
+stockPrice.update(2, 5);  // Timestamps are [1,2] with corresponding prices [10,5].
+stockPrice.current();     // return 5, the latest timestamp is 2 with the price being 5.
+stockPrice.maximum();     // return 10, the maximum price is 10 at timestamp 1.
+stockPrice.update(1, 3);  // The previous timestamp 1 had the wrong price, so it is updated to 3.
+                          // Timestamps are [1,2] with corresponding prices [3,5].
+stockPrice.maximum();     // return 5, the maximum price is 5 after the correction.
+stockPrice.update(4, 2);  // Timestamps are [1,2,4] with corresponding prices [3,5,2].
+stockPrice.minimum();     // return 2, the minimum price is 2 at timestamp 4.
+
+Constraints:
+* 1 <= timestamp, price <= 10^9
+* At most 10^5 calls will be made in total to update, current, maximum, and 
+  minimum.
+* current, maximum, and minimum will be called only after update has been 
+  called at least once.*/
+
+class StockPrice {
+    unordered_map<int, int> mp; 
+    priority_queue<pair<int, int>> maxp; 
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> minp; 
+    int latest = 0; 
+    
+public:
+    StockPrice() {}
+    
+    void update(int timestamp, int price) {
+        mp[timestamp] = price; 
+        if (latest < timestamp) latest = timestamp; 
+        maxp.emplace(price, timestamp); 
+        minp.emplace(price, timestamp); 
+    }
+    
+    int current() {
+        return mp[latest]; 
+    }
+    
+    int maximum() {
+        while (mp[maxp.top().second] != maxp.top().first) maxp.pop(); 
+        return maxp.top().first; 
+    }
+    
+    int minimum() {
+        while (mp[minp.top().second] != minp.top().first) minp.pop(); 
+        return minp.top().first; 
     }
 };
