@@ -27878,7 +27878,6 @@ public:
     int minimumDifference(vector<int>& nums) {
         int n = nums.size()/2; 
         vector<int> left(nums.begin(), nums.begin()+n), right(nums.begin()+n, nums.begin()+2*n); 
-        int lsum = accumulate(left.begin(), left.end(), 0), rsum = accumulate(right.begin(), right.end(), 0); 
         
         vector<vector<int>> vals(n+1); 
         for (int mask = 0; mask < (1<<n); ++mask) {
@@ -27896,8 +27895,8 @@ public:
             for (int i = 0; i < n; ++i) 
                 diff += (mask & (1 << i)) ? right[i] : -right[i]; 
             auto it = lower_bound(vals[key].begin(), vals[key].end(), -diff); 
-            if (it != vals[key].end()) ans = min(ans, abs(diff + *it)); 
             if (it != vals[key].begin()) ans = min(ans, abs(diff + *prev(it))); 
+            if (it != vals[key].end()) ans = min(ans, abs(diff + *it)); 
         }
         return ans; 
     }
