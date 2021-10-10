@@ -1167,7 +1167,7 @@ public:
 
     bool canJump(vector<int>& nums) {
         for (int i = 0, hi = 0; i < nums.size(); ++i) {
-            if (i > hi) return false; 
+            if (hi < i) return false; 
             hi = max(hi, i + nums[i]); 
         }
         return true; 

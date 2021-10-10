@@ -1878,7 +1878,7 @@ class Solution:
     def canJump(self, nums: List[int]) -> bool:
         hi = 0
         for i, x in enumerate(nums): 
-            if i > hi: return False
+            if hi < i: return False
             hi = max(hi, i + x)
         return True
 
