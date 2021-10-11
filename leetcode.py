@@ -1554,9 +1554,9 @@ class Solution:
     def jump(self, nums: List[int]) -> int:
         ans = prev = curr = 0
         for i in range(len(nums)):
-            if i > prev: 
-                prev = curr
+            if prev < i: 
                 ans += 1
+                prev = curr
             curr = max(curr, i + nums[i])
         return ans 
 

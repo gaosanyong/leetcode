@@ -908,9 +908,9 @@ public:
     int jump(vector<int>& nums) {
         int ans = 0, prev = 0, curr = 0; 
         for (int i = 0; i < nums.size(); ++i) {
-            if (i > prev) {
-                prev = curr; 
+            if (prev < i) {
                 ++ans; 
+                prev = curr; 
             }
             curr = max(curr, i + nums[i]); 
         }
