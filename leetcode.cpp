@@ -6153,6 +6153,41 @@ public:
     }
 
 
+    /*543. Diameter of Binary Tree (Easy)
+	Given the root of a binary tree, return the length of the diameter of the 
+	tree. The diameter of a binary tree is the length of the longest path 
+	between any two nodes in a tree. This path may or may not pass through the 
+	root. The length of a path between two nodes is represented by the number 
+	of edges between them.
+
+	Example 1:
+	Input: root = [1,2,3,4,5]
+	Output: 3
+	Explanation: 3 is the length of the path [4,2,1,3] or [5,2,1,3].
+
+	Example 2:
+	Input: root = [1,2]
+	Output: 1
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 10^4].
+	* -100 <= Node.val <= 100*/
+
+    int diameterOfBinaryTree(TreeNode* root) {
+        int ans = 0; 
+        
+        function<int(TreeNode*)> fn = [&](TreeNode* node) {
+            if (!node) return 0; 
+            int left = fn(node->left), right = fn(node->right); 
+            ans = max(ans, left + right); 
+            return 1 + max(left, right); 
+        }; 
+        
+        fn(root); 
+        return ans; 
+    }
+
+
     /*544. Output Contest Matches (Medium)
 	During the NBA playoffs, we always set the rather strong team to play with 
 	the rather weak team, like make the rank 1 team play with the rank nth team, 
