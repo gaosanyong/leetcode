@@ -11804,6 +11804,79 @@ public:
     }
 
 
+    /*864. Shortest Path to Get All Keys (Hard)
+	You are given an m x n grid grid where:
+	* '.' is an empty cell.
+	* '#' is a wall.
+	* '@' is the starting point.
+	* Lowercase letters represent keys.
+	* Uppercase letters represent locks.
+	You start at the starting point and one move consists of walking one space 
+	in one of the four cardinal directions. You cannot walk outside the grid, 
+	or walk into a wall. If you walk over a key, you can pick it up and you 
+	cannot walk over a lock unless you have its corresponding key. For some 
+	1 <= k <= 6, there is exactly one lowercase and one uppercase letter of the 
+	first k letters of the English alphabet in the grid. This means that there 
+	is exactly one key for each lock, and one lock for each key; and also that 
+	the letters used to represent the keys and locks were chosen in the same 
+	order as the English alphabet. Return the lowest number of moves to acquire 
+	all keys. If it is impossible, return -1.
+
+	Example 1:
+	Input: grid = ["@.a.#","###.#","b.A.B"]
+	Output: 8
+	Explanation: Note that the goal is to obtain all the keys not to open all 
+	             the locks.
+	
+	Example 2:
+	Input: grid = ["@..aA","..B#.","....b"]
+	Output: 6
+
+	Example 3:
+	Input: grid = ["@Aa"]
+	Output: -1
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 30
+	* grid[i][j] is either an English letter, '.', '#', or '@'.
+	* The number of keys in the grid is in the range [1, 6].
+	* Each key in the grid is unique.
+	* Each key in the grid has a matching lock.*/
+
+    int shortestPathAllKeys(vector<string>& grid) {
+        int m = grid.size(), n = grid[0].size(), total = 0, dir[5] = {-1, 0, 1, 0, -1}; 
+        
+        deque<array<int,3>> q; 
+        set<array<int,3>> seen; 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if (grid[i][j] == '@') {
+                    q.push_back({i, j, 0}); 
+                    seen.insert({i, j, 0}); 
+                }
+                else if (islower(grid[i][j])) ++total; 
+        
+        for (int ans = 0; q.size(); ++ans) 
+            for (int sz = q.size(); sz; --sz) {
+                auto [i, j, keys] = q.front(); q.pop_front(); 
+                if (keys == (1 << total)-1) return ans; 
+                for (int k = 0; k < 4; ++k) {
+                    int ii = i + dir[k], jj = j + dir[k+1]; 
+                    if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj] != '#') {
+                        int kk = keys; 
+                        if (islower(grid[ii][jj])) kk |= 1 << (grid[ii][jj] - 'a'); 
+                        if (seen.count({ii, jj, kk}) || (isupper(grid[ii][jj]) && (kk & (1 << (grid[ii][jj] - 'A'))) == 0)) continue; 
+                        q.push_back({ii, jj, kk}); 
+                        seen.insert({ii, jj, kk}); 
+                    }
+                }
+            }
+        return -1; 
+    }
+
+
     /*866. Prime Palindrome (Medium)
 	Given an integer n, return the smallest prime palindrome greater than or 
 	equal to n. An integer is prime if it has exactly two divisors: 1 and 
