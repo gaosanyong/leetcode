@@ -5256,14 +5256,14 @@ class Solution:
 	Explanation: The result cannot be 2, because [-2,-1] is not a subarray."""
 
     def maxProduct(self, nums: List[int]) -> int:
-        mn = mx = 1
-        ans = -inf
-        for x in nums:
-            if x < 0: mn, mx = mx, mn
-            mn, mx = min(x, mn*x), max(x, mx*x)
-            ans = max(ans, mx)
+        ans = -inf 
+        large = small = 1
+        for x in nums: 
+            if x < 0: large, small = small, large
+            large = max(x, large*x)
+            small = min(x, small*x)
+            ans = max(ans, large)
         return ans 
-
 
 
     """153. Find Minimum in Rotated Sorted Array (Medium)
