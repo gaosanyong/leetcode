@@ -11465,6 +11465,42 @@ class UnionFind:
         return ans 
 
 
+    """435. Non-overlapping Intervals (Medium)
+	Given an array of intervals intervals where intervals[i] = [starti, endi], 
+	return the minimum number of intervals you need to remove to make the rest 
+	of the intervals non-overlapping.
+
+	Example 1:
+	Input: intervals = [[1,2],[2,3],[3,4],[1,3]]
+	Output: 1
+	Explanation: [1,3] can be removed and the rest of the intervals are non-
+	             overlapping.
+	
+	Example 2:
+	Input: intervals = [[1,2],[1,2],[1,2]]
+	Output: 2
+	Explanation: You need to remove two [1,2] to make the rest of the intervals 
+	             non-overlapping.
+	
+	Example 3:
+	Input: intervals = [[1,2],[2,3]]
+	Output: 0
+	Explanation: You don't need to remove any of the intervals since they're 
+	             already non-overlapping.
+
+	Constraints:
+	* 1 <= intervals.length <= 10^5
+	* intervals[i].length == 2
+	* -5 * 10^4 <= starti < endi <= 5 * 10^4"""
+
+    def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:
+        ans, prev = 0, -inf
+        for x, y in sorted(intervals, key=lambda x: x[1]): 
+            if x < prev: ans += 1
+            else: prev = y
+        return ans 
+
+
     """438. Find All Anagrams in a String (Medium)
 	Given two strings s and p, return an array of all the start indices of p's 
 	anagrams in s. You may return the answer in any order. An Anagram is a word 
