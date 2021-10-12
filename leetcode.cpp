@@ -3511,93 +3511,6 @@ public:
     }
 
 
-    /*234. Palindrome Linked List (Easy)
-	Given the head of a singly linked list, return true if it is a palindrome.
-
-	Example 1:
-	Input: head = [1,2,2,1]
-	Output: true
-
-	Example 2:
-	Input: head = [1,2]
-	Output: false
-
-	Constraints:
-	* The number of nodes in the list is in the range [1, 10^5].
-	* 0 <= Node.val <= 9
-
-	Follow up: Could you do it in O(n) time and O(1) space?*/
-
-    bool isPalindrome(ListNode* head) {
-        // find mid-point
-        ListNode *fast = head, *slow = head; 
-        
-        while (fast && fast->next) {
-            fast = fast->next->next;
-            slow = slow->next; 
-        }
-        
-        // reverse 2nd half
-        ListNode *prev = NULL; 
-        while (slow) {
-            ListNode* temp = slow->next; 
-            slow->next = prev; 
-            prev = slow;
-            slow = temp; 
-        }
-        
-        // check for palindrome 
-        while (head && prev) {
-            if (head->val != prev->val) return false; 
-            head = head->next; 
-            prev = prev->next; 
-        }
-        return true; 
-    }
-
-
-
-    /*235. Lowest Common Ancestor of a Binary Search Tree (Easy)
-	Given a binary search tree (BST), find the lowest common ancestor (LCA) of 
-	two given nodes in the BST. According to the definition of LCA on Wikipedia: 
-	“The lowest common ancestor is defined between two nodes p and q as the 
-	lowest node in T that has both p and q as descendants (where we allow a 
-	node to be a descendant of itself).”
-
-	Example 1:
-	Input: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
-	Output: 6
-	Explanation: The LCA of nodes 2 and 8 is 6.
-
-	Example 2:
-	Input: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4
-	Output: 2
-	Explanation: The LCA of nodes 2 and 4 is 2, since a node can be a descendant 
-	             of itself according to the LCA definition.
-
-	Example 3:
-	Input: root = [2,1], p = 2, q = 1
-	Output: 2
-
-	Constraints:
-	* The number of nodes in the tree is in the range [2, 10^5].
-	* -10^9 <= Node.val <= 10^9
-	* All Node.val are unique.
-	* p != q
-	* p and q will exist in the BST.*/
-
-    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
-        if (p->val > q->val) swap(p, q); 
-        TreeNode* node = root; 
-        while (node) {
-            if (node->val < p->val) node = node->right; 
-            else if (p->val <= node->val && node->val <= q->val) break; 
-            else node = node->left; 
-        }
-        return node; 
-    }
-
-
     /*226. Invert Binary Tree (Easy)
 	Given the root of a binary tree, invert the tree, and return its root.
 
@@ -3665,6 +3578,92 @@ public:
 
     bool isPowerOfTwo(int n) {
         return n > 0 && (n & n-1) == 0; 
+    }
+
+
+    /*234. Palindrome Linked List (Easy)
+	Given the head of a singly linked list, return true if it is a palindrome.
+
+	Example 1:
+	Input: head = [1,2,2,1]
+	Output: true
+
+	Example 2:
+	Input: head = [1,2]
+	Output: false
+
+	Constraints:
+	* The number of nodes in the list is in the range [1, 10^5].
+	* 0 <= Node.val <= 9
+
+	Follow up: Could you do it in O(n) time and O(1) space?*/
+
+    bool isPalindrome(ListNode* head) {
+        // find mid-point
+        ListNode *fast = head, *slow = head; 
+        
+        while (fast && fast->next) {
+            fast = fast->next->next;
+            slow = slow->next; 
+        }
+        
+        // reverse 2nd half
+        ListNode *prev = NULL; 
+        while (slow) {
+            ListNode* temp = slow->next; 
+            slow->next = prev; 
+            prev = slow;
+            slow = temp; 
+        }
+        
+        // check for palindrome 
+        while (head && prev) {
+            if (head->val != prev->val) return false; 
+            head = head->next; 
+            prev = prev->next; 
+        }
+        return true; 
+    }
+
+
+    /*235. Lowest Common Ancestor of a Binary Search Tree (Easy)
+	Given a binary search tree (BST), find the lowest common ancestor (LCA) of 
+	two given nodes in the BST. According to the definition of LCA on Wikipedia: 
+	“The lowest common ancestor is defined between two nodes p and q as the 
+	lowest node in T that has both p and q as descendants (where we allow a 
+	node to be a descendant of itself).”
+
+	Example 1:
+	Input: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 8
+	Output: 6
+	Explanation: The LCA of nodes 2 and 8 is 6.
+
+	Example 2:
+	Input: root = [6,2,8,0,4,7,9,null,null,3,5], p = 2, q = 4
+	Output: 2
+	Explanation: The LCA of nodes 2 and 4 is 2, since a node can be a descendant 
+	             of itself according to the LCA definition.
+
+	Example 3:
+	Input: root = [2,1], p = 2, q = 1
+	Output: 2
+
+	Constraints:
+	* The number of nodes in the tree is in the range [2, 10^5].
+	* -10^9 <= Node.val <= 10^9
+	* All Node.val are unique.
+	* p != q
+	* p and q will exist in the BST.*/
+
+    TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
+        if (p->val > q->val) swap(p, q); 
+        TreeNode* node = root; 
+        while (node) {
+            if (node->val < p->val) node = node->right; 
+            else if (p->val <= node->val && node->val <= q->val) break; 
+            else node = node->left; 
+        }
+        return node; 
     }
 
 
