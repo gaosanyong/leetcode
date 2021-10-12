@@ -5133,11 +5133,11 @@ public:
 	* num1 and num2 don't have any leading zeros except for the zero itself.*/
 
     string addStrings(string num1, string num2) {
-        string ans;
-        for (int i = num1.size()-1, j = num2.size()-1, carry = 0; 0 <= i || 0 <= j || carry; --i, --j) {
-            if (0 <= i) carry += num1[i] - '0'; 
-            if (0 <= j) carry += num2[j] - '0'; 
-            ans.push_back(carry % 10 + '0'); 
+        string ans; 
+        for (int i = 0, carry = 0, m = num1.size(), n = num2.size(); i < n || i < m || carry; ++i) {
+            if (i < m) carry += num1[m-1-i] - '0'; 
+            if (i < n) carry += num2[n-1-i] - '0'; 
+            ans.push_back(carry%10 + '0'); 
             carry /= 10; 
         }
         reverse(ans.begin(), ans.end()); 
