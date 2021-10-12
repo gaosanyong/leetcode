@@ -1553,11 +1553,11 @@ class Solution:
 
     def jump(self, nums: List[int]) -> int:
         ans = prev = curr = 0
-        for i in range(len(nums)):
+        for i, x in enumerate(nums): 
             if prev < i: 
                 ans += 1
-                prev = curr
-            curr = max(curr, i + nums[i])
+                prev = curr 
+            curr = max(curr, i + x)
         return ans 
 
 
