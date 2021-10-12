@@ -9635,10 +9635,10 @@ class UnionFind:
 	Output: false"""
 
     def increasingTriplet(self, nums: List[int]) -> bool:
-        ans = [inf]*2
-        for x in nums:
-            if x <= ans[0]: ans[0] = x
-            elif x <= ans[1]: ans[1] = x
+        x0 = x1 = inf
+        for x in nums: 
+            if x <= x0: x0 = x
+            elif x <= x1: x1 = x
             else: return True 
         return False 
 

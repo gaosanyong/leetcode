@@ -4580,6 +4580,44 @@ public:
     }
 
 
+    /*334. Increasing Triplet Subsequence (Medium)
+	Given an integer array nums, return true if there exists a triple of 
+	indices (i, j, k) such that i < j < k and nums[i] < nums[j] < nums[k]. If 
+	no such indices exists, return false.
+
+	Example 1:
+	Input: nums = [1,2,3,4,5]
+	Output: true
+	Explanation: Any triplet where i < j < k is valid.
+
+	Example 2:
+	Input: nums = [5,4,3,2,1]
+	Output: false
+	Explanation: No triplet exists.
+
+	Example 3:
+	Input: nums = [2,1,5,0,4,6]
+	Output: true
+	Explanation: The triplet (3, 4, 5) is valid because 
+	             nums[3] == 0 < nums[4] == 4 < nums[5] == 6.
+
+	Constraints:
+	* 1 <= nums.length <= 5 * 10^5
+	* -2^31 <= nums[i] <= 2^31 - 1
+ 
+	Follow up: Could you implement a solution that runs in O(n) time complexity 
+	           and O(1) space complexity?*/
+
+    bool increasingTriplet(vector<int>& nums) {
+        int x0 = INT_MAX, x1 = INT_MAX; 
+        for (auto& x : nums) 
+            if (x <= x0) x0 = x; 
+            else if (x <= x1) x1 = x; 
+            else return true; 
+        return false;
+    }
+
+
     /*338. Counting Bits (Easy)
 	Given an integer n, return an array ans of length n + 1 such that for each 
 	i (0 <= i <= n), ans[i] is the number of 1's in the binary representation 
