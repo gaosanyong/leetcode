@@ -3106,6 +3106,56 @@ public:
     }
 
 
+    /*200. Number of Islands (Medium)
+	Given an m x n 2D binary grid grid which represents a map of '1's (land) 
+	and '0's (water), return the number of islands. An island is surrounded by 
+	water and is formed by connecting adjacent lands horizontally or vertically. 
+	You may assume all four edges of the grid are all surrounded by water.
+
+	Example 1:
+	Input: grid = [["1","1","1","1","0"],
+	               ["1","1","0","1","0"],
+	               ["1","1","0","0","0"],
+	               ["0","0","0","0","0"]]
+	Output: 1
+	
+	Example 2:
+	Input: grid = [["1","1","0","0","0"],
+	               ["1","1","0","0","0"],
+	               ["0","0","1","0","0"],
+	               ["0","0","0","1","1"]]
+	Output: 3
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 300
+	* grid[i][j] is '0' or '1'.*/
+
+    int numIslands(vector<vector<char>>& grid) {
+        int ans = 0, m = grid.size(), n = grid[0].size(), dir[5] = {-1, 0, 1, 0, -1}; 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if (grid[i][j] == '1') {
+                    grid[i][j] = '0'; // mark "visited"
+                    ++ans; 
+                    stack<pair<int, int>> stk; 
+                    stk.emplace(i, j); 
+                    while (stk.size()) {
+                        auto [i, j] = stk.top(); stk.pop(); 
+                        for (int k = 0; k < 4; ++k) {
+                            int ii = i + dir[k], jj = j + dir[k+1]; 
+                            if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj] == '1') {
+                                grid[ii][jj] = '0'; 
+                                stk.emplace(ii, jj); 
+                            }
+                        }
+                    }
+                }
+        return ans; 
+    }
+
+
     /*201. Bitwise AND of Numbers Range (Medium)
 	Given two integers left and right that represent the range [left, right], 
 	return the bitwise AND of all numbers in this range, inclusive.
@@ -6406,6 +6456,53 @@ public:
         };
         
         return fn(0, n, 0); 
+    }
+
+
+    /*547. Number of Provinces (Medium)
+	There are n cities. Some of them are connected, while some are not. If city 
+	a is connected directly with city b, and city b is connected directly with 
+	city c, then city a is connected indirectly with city c. A province is a 
+	group of directly or indirectly connected cities and no other cities 
+	outside of the group. You are given an n x n matrix isConnected where 
+	isConnected[i][j] = 1 if the ith city and the jth city are directly 
+	connected, and isConnected[i][j] = 0 otherwise. Return the total number of 
+	provinces.
+
+	Example 1:
+	Input: isConnected = [[1,1,0],[1,1,0],[0,0,1]]
+	Output: 2
+
+	Example 2:
+	Input: isConnected = [[1,0,0],[0,1,0],[0,0,1]]
+	Output: 3
+
+	Constraints:
+	* 1 <= n <= 200
+	* n == isConnected.length
+	* n == isConnected[i].length
+	* isConnected[i][j] is 1 or 0.
+	* isConnected[i][i] == 1
+	* isConnected[i][j] == isConnected[j][i]*/
+
+    int findCircleNum(vector<vector<int>>& isConnected) {
+        int n = isConnected.size(), ans = 0; 
+        vector<bool> visited(n); 
+        for (int i = 0; i < n; ++i) 
+            if (!visited[i]) {
+                ++ans; 
+                visited[i] = true; 
+                stack<int> stk; stk.push(i); 
+                while (stk.size()) {
+                    int i = stk.top(); stk.pop(); 
+                    for (int ii = 0; ii < n; ++ii) 
+                        if (isConnected[i][ii] && !visited[ii]) {
+                            visited[ii] = true; 
+                            stk.push(ii); 
+                        }
+                }
+            }
+        return ans; 
     }
 
 
