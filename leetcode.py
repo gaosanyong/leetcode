@@ -6580,7 +6580,7 @@ class Solution:
         if len(nums) == 1: return nums[0] #edge case 
         
         def fn(lo, hi):
-            """Return money after robbing houses[lo:hi]"""
+            """Return max money after robbing houses from lo to hi."""
             f0 = f1 = 0
             for i in range(lo, hi):
                 f0, f1 = f1, max(f1, f0 + nums[i])
@@ -16360,18 +16360,14 @@ class UnionFind:
 	* Each element nums[i] is an integer in the range [1, 10000]."""
 
     def deleteAndEarn(self, nums: List[int]) -> int:
-        mp = {}
-        for x in nums: mp[x] = x + mp.get(x, 0)
-        
-        @cache
-        def fn(i): 
-            """Return maximum points one can earn from nums[i:]."""
-            if i >= len(nums): return 0 
-            if nums[i] + 1 not in mp: return mp[nums[i]] + fn(i+1)
-            return max(mp[nums[i]] + fn(i+2), fn(i+1))
-        
-        nums = sorted(set(nums))
-        return fn(0)
+        freq = Counter(nums)
+        prev = -1
+        f0 = f1 = 0
+        for x in sorted(freq): 
+            if prev + 1 == x: f0, f1 = max(f0, f1), f0 + x*freq[x]
+            else: f0, f1 = max(f0, f1), max(f0, f1) + x*freq[x]
+            prev = x
+        return max(f0, f1)
 
 
     """742. Closest Leaf in a Binary Tree (Medium)

@@ -9826,11 +9826,11 @@ public:
         int f0 = 0, f1 = 0, prev = -1; 
         for (auto& [k, v] : freq) {
             int f2 = prev + 1 == k ? f0 + k*v : max(f0, f1) + k*v; 
-            f0 = f1; 
-            f1 = max(f1, f2); 
+            f0 = max(f0, f1); 
+            f1 = f2; 
             prev = k; 
         }
-        return f1; 
+        return max(f0, f1); 
     }
 
 
