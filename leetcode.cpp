@@ -3685,12 +3685,10 @@ public:
 	           adapt your solution to such a case?*/
 
     bool isAnagram(string s, string t) {
-        int freq[26] = {0}; 
-        for (auto& ch : s) ++freq[ch - 'a']; 
-        for (auto& ch : t) --freq[ch - 'a']; 
-        for (auto& x : freq) 
-            if (x) return false; 
-        return true; 
+        vector<int> freq(26); 
+        for (auto& ch : s) ++freq[ch-'a']; 
+        for (auto& ch : t) --freq[ch-'a']; 
+        return all_of(freq.begin(), freq.end(), [](int x){return x == 0;}); 
     }
 
 
