@@ -7279,8 +7279,8 @@ class Solution:
         prefix = suffix = 1
         for i in range(len(nums)):
             ans[i] *= prefix 
-            prefix *= nums[i]
             ans[~i] *= suffix 
+            prefix *= nums[i]
             suffix *= nums[~i]
         return ans 
 
