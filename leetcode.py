@@ -22169,10 +22169,10 @@ class UnionFind:
 	* 1 <= A[i] <= 1000"""
 
     def maxScoreSightseeingPair(self, A: List[int]) -> int:
-        ans = mx = 0
+        ans = most = 0
         for i, x in enumerate(A): 
-            ans = max(ans, x - i + mx)
-            mx = max(mx, x + i)
+            ans = max(ans, x - i + most)
+            most = max(most, x + i)
         return ans 
 
 
