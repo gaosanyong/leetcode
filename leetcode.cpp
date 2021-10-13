@@ -2532,9 +2532,9 @@ public:
 
     int maxProfit(vector<int>& prices) {
         int ans = 0; 
-        for (int i = 1, val = 0; i < prices.size(); ++i) {
-            val = max(0, val + prices[i] - prices[i-1]); 
-            ans = max(ans, val); 
+        for (int i = 1, pnl = 0; i < prices.size(); ++i) {
+            pnl = max(0, pnl + prices[i] - prices[i-1]); 
+            ans = max(ans, pnl); 
         }
         return ans; 
     }
