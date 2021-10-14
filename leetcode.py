@@ -4,6 +4,7 @@ For more details, the readers are suggested to explore on their own effort.
 """
 
 from functools import cache, lru_cache, reduce
+from hashlib import sha256
 from heapq import heapify, heappop, heappush
 from itertools import groupby, zip_longest
 from math import ceil, inf, sqrt
@@ -8353,13 +8354,16 @@ class UnionFind:
 	Explanation: 13 = 4 + 9."""
 
     def numSquares(self, n: int) -> int:
+    	"""Lagrange's four-square theorem which states that every natural 
+    	   number can be represented as the sum of four integer (including zero) 
+    	   squares; Legendre's three-square theorem which says a positive 
+    	   integer can be expressed as the sum of three squares iff it is not 
+    	   of the form 4^k(8m+7) for integers k and m."""
+
         if int(sqrt(n))**2 == n: return 1
-        
         for i in range(1, int(sqrt(n))+1): 
             if int(sqrt(n - i*i))**2 == n - i*i: return 2
-        
         while n % 4 == 0: n //= 4
-            
         return 4 if n%8 == 7 else 3 #Lagrange four-square theorem & Lagendre three-square theorem
 
 
@@ -13644,6 +13648,46 @@ class Trie:
             if i >= len(s1): freq[s2[i-len(s1)]] += 1
             if all(x == 0 for x in freq.values()): return True 
         return False
+
+
+    """572. Subtree of Another Tree (Easy)
+	Given the roots of two binary trees root and subRoot, return true if there 
+	is a subtree of root with the same structure and node values of subRoot and 
+	false otherwise. A subtree of a binary tree tree is a tree that consists of 
+	a node in tree and all of this node's descendants. The tree tree could also 
+	be considered as a subtree of itself.
+
+	Example 1:
+	Input: root = [3,4,5,1,2], subRoot = [4,1,2]
+	Output: true
+
+	Example 2:
+	Input: root = [3,4,5,1,2,null,null,null,null,0], subRoot = [4,1,2]
+	Output: false
+
+	Constraints:
+	* The number of nodes in the root tree is in the range [1, 2000].
+	* The number of nodes in the subRoot tree is in the range [1, 1000].
+	* -10^4 <= root.val <= 10^4
+	* -10^4 <= subRoot.val <= 10^4"""
+
+    def isSubtree(self, root: Optional[TreeNode], subRoot: Optional[TreeNode]) -> bool:
+        ans = False 
+        target = ""
+        
+        def fn(node):
+            """Return hash of sub-tree rooted at node."""
+            nonlocal ans
+            if not node: return "$"
+            left, right = fn(node.left), fn(node.right)
+            sha = sha256()
+            sha.update((left + str(node.val) + right).encode())
+            if sha.hexdigest() == target: ans = True
+            return sha.hexdigest()
+        
+        target = fn(subRoot)
+        fn(root)
+        return ans 
 
 
     """573. Squirrel Simulation (Medium)
