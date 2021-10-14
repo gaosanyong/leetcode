@@ -67,11 +67,11 @@ public:
 
     int lengthOfLongestSubstring(string s) {
         int ans = 0; 
-        unordered_map<char, int> seen; 
+        unordered_map<char, int> loc; 
         for (int i = 0, ii = 0; i < s.size(); ++i) {
-            if (seen.count(s[i])) ii = max(ii, seen[s[i]]+1); 
-            seen[s[i]] = i; 
+            if (loc.count(s[i])) ii = max(ii, loc[s[i]]+1); 
             ans = max(ans, i - ii + 1); 
+            loc[s[i]] = i; 
         }
         return ans; 
     }

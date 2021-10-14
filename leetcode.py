@@ -82,11 +82,11 @@ class Solution:
 
     def lengthOfLongestSubstring(self, s: str) -> int:
         ans = ii = 0
-        seen = {}
+        loc = {}
         for i, x in enumerate(s): 
-            if x in seen: ii = max(ii, seen[x] + 1)
-            seen[x] = i 
+            if x in loc: ii = max(ii, loc[x]+1)
             ans = max(ans, i - ii + 1)
+            loc[x] = i
         return ans 
 
 
