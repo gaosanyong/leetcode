@@ -648,11 +648,10 @@ class Solution:
 	Follow up: Could you do this in one pass?"""
 
     def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
-        dummy = ListNode(next=head)
-        slow = fast = dummy 
+        dummy = slow = fast = ListNode(next=head)
         while fast: 
             fast = fast.next 
-            if n < 0: slow = slow.next
+            if n < 0: slow = slow.next 
             n -= 1
         slow.next = slow.next.next 
         return dummy.next 
