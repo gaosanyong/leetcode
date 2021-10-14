@@ -8619,9 +8619,9 @@ class UnionFind:
 	Notes: You may assume pattern contains only lowercase letters, and str 
 	       contains lowercase letters that may be separated by a single space."""
 
-    def wordPattern(self, pattern: str, str: str) -> bool:
-        string = str.split()
-        return len(pattern) == len(string) and len(set(zip(pattern, string))) == len(set(pattern)) == len(set(string))
+    def wordPattern(self, pattern: str, s: str) -> bool:
+        words = s.split()
+        return len(set(pattern)) == len(set(words)) == len(set(zip_longest(pattern, words)))
 
 
     """291. Word Pattern II (Medium)

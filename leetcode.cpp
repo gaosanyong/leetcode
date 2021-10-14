@@ -4438,9 +4438,7 @@ public:
         istringstream iss(s); 
         string buf; 
         vector<string> words; 
-        while (iss >> buf) {
-            words.push_back(buf); 
-        }
+        while (iss >> buf) words.push_back(buf); 
 
         if (pattern.size() != words.size()) return false; 
         
@@ -4448,8 +4446,7 @@ public:
         unordered_map<string, int> mpw; 
         
         for (int i = 0; i < pattern.length(); ++i) {
-            if (mpp[pattern[i]] != mpw[words[i]])
-                return false; 
+            if (mpp[pattern[i]] != mpw[words[i]]) return false; 
             mpp[pattern[i]] = mpw[words[i]] = i+1; 
         }
         return true; 
