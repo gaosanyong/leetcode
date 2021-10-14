@@ -10321,6 +10321,42 @@ public:
     }
 
 
+    /*763. Partition Labels (Medium)
+	You are given a string s. We want to partition the string into as many 
+	parts as possible so that each letter appears in at most one part. Return a 
+	list of integers representing the size of these parts.
+
+	Example 1:
+	Input: s = "ababcbacadefegdehijhklij"
+	Output: [9,7,8]
+	Explanation: The partition is "ababcbaca", "defegde", "hijhklij". This is a 
+	             partition so that each letter appears in at most one part. A 
+	             partition like "ababcbacadefegde", "hijhklij" is incorrect, 
+	             because it splits s into less parts.
+	
+	Example 2:
+	Input: s = "eccbbbbdec"
+	Output: [10]
+
+	Constraints:
+	* 1 <= s.length <= 500
+	* s consists of lowercase English letters.*/
+
+    vector<int> partitionLabels(string s) {
+        unordered_map<char, int> last; 
+        for (int i = 0; i < s.size(); ++i) last[s[i]] = i; 
+        vector<int> ans; 
+        for (int i = 0, lo = -1, hi = 0; i < s.size(); ++i) {
+            hi = max(hi, last[s[i]]); 
+            if (i == hi) {
+                ans.push_back(hi - lo); 
+                lo = hi; 
+            }
+        }
+        return ans; 
+    }
+
+
     /*764. Largest Plus Sign (Medium)
 	You are given an integer n. You have an n x n binary grid grid with all 
 	values initially 1's except for some indices given in the array mines. The 

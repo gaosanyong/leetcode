@@ -16881,15 +16881,15 @@ class UnionFind:
 	* S will have length in range [1, 500].
 	* S will consist of lowercase English letters ('a' to 'z') only."""
 
-    def partitionLabels(self, S: str) -> List[int]:
-        mp = {c: i for i, c in enumerate(S)}
+    def partitionLabels(self, s: str) -> List[int]:
+        last = {ch : i for i, ch in enumerate(s)}
         ans = []
-        ss = ee = 0
-        for i, c in enumerate(S): 
-            ee = max(ee, mp[c])
-            if ee == i: 
-                ans.append(ee - ss + 1)
-                ss = ee + 1
+        lo = hi = 0 
+        for i, ch in enumerate(s): 
+            hi = max(hi, last[ch])
+            if i == hi: 
+                ans.append(hi - lo + 1)
+                lo = hi + 1
         return ans 
 
 
