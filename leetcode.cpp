@@ -13723,6 +13723,92 @@ public:
     }
 
 
+    /*924. Minimize Malware Spread (Hard)
+	You are given a network of n nodes represented as an n x n adjacency matrix 
+	graph, where the ith node is directly connected to the jth node if 
+	graph[i][j] == 1. Some nodes initial are initially infected by malware. 
+	Whenever two nodes are directly connected, and at least one of those two 
+	nodes is infected by malware, both nodes will be infected by malware. This 
+	spread of malware will continue until no more nodes can be infected in this 
+	manner. Suppose M(initial) is the final number of nodes infected with 
+	malware in the entire network after the spread of malware stops. We will 
+	remove exactly one node from initial. Return the node that, if removed, 
+	would minimize M(initial). If multiple nodes could be removed to minimize 
+	M(initial), return such a node with the smallest index. Note that if a node 
+	was removed from the initial list of infected nodes, it might still be 
+	infected later due to the malware spread.
+
+	Example 1:
+	Input: graph = [[1,1,0],[1,1,0],[0,0,1]], initial = [0,1]
+	Output: 0
+
+	Example 2:
+	Input: graph = [[1,0,0],[0,1,0],[0,0,1]], initial = [0,2]
+	Output: 0
+
+	Example 3:
+	Input: graph = [[1,1,1],[1,1,1],[1,1,1]], initial = [1,2]
+	Output: 1
+
+	Constraints:
+	* n == graph.length
+	* n == graph[i].length
+	* 2 <= n <= 300
+	* graph[i][j] is 0 or 1.
+	* graph[i][j] == graph[j][i]
+	* graph[i][i] == 1
+	* 1 <= initial.length <= n
+	* 0 <= initial[i] <= n - 1
+	* All the integers in initial are unique.
+
+	class UnionFind {
+	public: 
+	    vector<int> parent, rank; 
+	    UnionFind(int n) {
+	        parent.resize(n); 
+	        iota(parent.begin(), parent.end(), 0); 
+	        rank = vector<int>(n, 1); 
+	    }
+	    
+	    int find(int p) {
+	        if (p != parent[p]) 
+	            parent[p] = find(parent[p]); 
+	        return parent[p]; 
+	    }
+	    
+	    bool connect(int p, int q) {
+	        int prt = find(p), qrt = find(q); 
+	        if (prt == qrt) return true; 
+	        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
+	        parent[prt] = qrt; 
+	        rank[qrt] += rank[prt]; 
+	        return true; 
+	    }
+	};*/
+
+    int minMalwareSpread(vector<vector<int>>& graph, vector<int>& initial) {
+        int n = graph.size(); 
+        UnionFind *uf = new UnionFind(n); 
+        
+        for (int i = 0; i < n; ++i) 
+            for (int j = i+1; j < n; ++j) 
+                if (graph[i][j]) uf->connect(i, j); 
+        
+        unordered_map<int, int> freq; 
+        for (auto& i : initial) ++freq[uf->find(i)]; 
+        
+        int ans = INT_MAX, most = 0; 
+        for (auto& i : initial) {
+            int p = uf->find(i), rank = 0; 
+            if (freq[p] == 1) rank = uf->rank[p]; 
+            if (rank > most || (rank == most && i < ans)) ans = i, most = rank; 
+        }
+        
+        delete uf; 
+        return ans; 
+    }
+
+
     /*925. Long Pressed Name (Easy)
 	Your friend is typing his name into a keyboard. Sometimes, when typing a 
 	character c, the key might get long pressed, and the character will be 
