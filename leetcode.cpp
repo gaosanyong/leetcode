@@ -884,6 +884,40 @@ public:
     }
 
 
+    /*43. Multiply Strings (Medium)
+	Given two non-negative integers num1 and num2 represented as strings, 
+	return the product of num1 and num2, also represented as a string.
+	Note: You must not use any built-in BigInteger library or convert the 
+	inputs to integer directly.
+
+	Example 1:
+	Input: num1 = "2", num2 = "3"
+	Output: "6"
+
+	Example 2:
+	Input: num1 = "123", num2 = "456"
+	Output: "56088"
+
+	Constraints:
+	* 1 <= num1.length, num2.length <= 200
+	* num1 and num2 consist of digits only.
+	* Both num1 and num2 do not contain any leading zero, except the number 0 
+	  itself.*/
+
+    string multiply(string num1, string num2) {
+        string ans(num1.size() + num2.size(), '0'); 
+        for (int i = 0; i < num1.size(); ++i) 
+            for (int j = 0; j < num2.size(); ++j) 
+                for (int x = (num1[i]-'0') * (num2[j] - '0'), k = i+j+1; x; --k) {
+                    x += ans[k] - '0'; 
+                    ans[k] = x % 10 + '0'; 
+                    x /= 10; 
+                }
+        int k = ans.find_first_not_of("0"); 
+        return k == string::npos ? "0" : ans.substr(k); 
+    }
+
+
     /*45. Jump Game II (Medium)
 	Given an array of non-negative integers nums, you are initially positioned 
 	at the first index of the array. Each element in the array represents your 

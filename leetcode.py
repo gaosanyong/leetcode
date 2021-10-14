@@ -1462,17 +1462,15 @@ class Solution:
 	  integer directly."""
 
     def multiply(self, num1: str, num2: str) -> str:
-        if num1 == "0" or num2 == "0": return "0" #edge case 
-        
-        ans = [0] * (len(num1) + len(num2))
-        for i, x in enumerate(reversed(num1)):
-            for j, y in enumerate(reversed(num2)): 
-                num = (ord(x) - 48) * (ord(y) - 48)
-                k = i + j
-                while num: 
-                    num, ans[k] = divmod(num + ans[k], 10)
-                    k += 1
-        return "".join(map(str, reversed(ans[:k])))
+        ans = [0]*(len(num1) + len(num2))
+        for i, x in enumerate(num1): 
+            for j, y in enumerate(num2): 
+                val = (ord(x)-48) * (ord(y)-48)
+                k = i+j+1
+                while val: 
+                    val, ans[k] = divmod(val + ans[k], 10)
+                    k -= 1
+        return "".join(map(str, ans)).lstrip("0") or "0"
 
 
     """44. Wildcard Matching (Hard)
