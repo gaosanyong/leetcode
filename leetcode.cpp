@@ -12199,6 +12199,58 @@ public:
     }
 
 
+    /*854. K-Similar Strings (Hard)
+	Strings s1 and s2 are k-similar (for some non-negative integer k) if we can 
+	swap the positions of two letters in s1 exactly k times so that the 
+	resulting string equals s2. Given two anagrams s1 and s2, return the 
+	smallest k for which s1 and s2 are k-similar.
+
+	Example 1:
+	Input: s1 = "ab", s2 = "ba"
+	Output: 1
+
+	Example 2:
+	Input: s1 = "abc", s2 = "bca"
+	Output: 2
+
+	Example 3:
+	Input: s1 = "abac", s2 = "baca"
+	Output: 2
+
+	Example 4:
+	Input: s1 = "aabc", s2 = "abca"
+	Output: 2
+
+	Constraints:
+	* 1 <= s1.length <= 20
+	* s2.length == s1.length
+	* s1 and s2 contain only lowercase letters from the set {'a', 'b', 'c', 'd', 'e', 'f'}.
+	* s2 is an anagram of s1.*/
+
+    int kSimilarity(string s1, string s2) {
+        unordered_set<string> seen; 
+        queue<string> q; q.push(s1); 
+        for (int ans = 0; q.size(); ++ans) 
+            for (int n = q.size(); n; --n) {
+                string s = q.front(); q.pop(); 
+                if (s == s2) return ans; 
+                for (int i = 0; i < s.size(); ++i) 
+                    if (s[i] != s2[i]) {
+                        for (int ii = i+1; ii < s.size(); ++ii) 
+                            if (s[ii] != s2[ii] && s[ii] == s2[i]) {
+                                string ss = s.substr(0, i) + string(1, s[ii]) + s.substr(i+1, ii-i-1) + string(1, s[i]) + s.substr(ii+1); 
+                                if (!seen.count(ss)) {
+                                    seen.insert(ss); 
+                                    q.push(ss); 
+                                }
+                            }
+                        break; 
+                    }
+            }
+        return -1; 
+    }
+
+
     /*857. Minimum Cost to Hire K Workers (Hard)
 	There are n workers. The i-th worker has a quality[i] and a minimum wage 
 	expectation wage[i]. Now we want to hire exactly k workers to form a paid 
