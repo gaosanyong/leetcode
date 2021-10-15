@@ -3154,6 +3154,45 @@ public:
     }
 
 
+    /*187. Repeated DNA Sequences (Medium)
+	The DNA sequence is composed of a series of nucleotides abbreviated as 'A', 
+	'C', 'G', and 'T'. For example, "ACGAATTCCG" is a DNA sequence. When 
+	studying DNA, it is useful to identify repeated sequences within the DNA.
+	Given a string s that represents a DNA sequence, return all the 10-letter-
+	long sequences (substrings) that occur more than once in a DNA molecule. 
+	You may return the answer in any order.
+
+	Example 1:
+	Input: s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"
+	Output: ["AAAAACCCCC","CCCCCAAAAA"]
+
+	Example 2:
+	Input: s = "AAAAAAAAAAAAA"
+	Output: ["AAAAAAAAAA"]
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s[i] is either 'A', 'C', 'G', or 'T'.*/
+
+    vector<string> findRepeatedDnaSequences(string s) {
+        unordered_map<char, int> mp {{'A', 0}, {'C', 1}, {'G', 2}, {'T', 3}}; 
+        unordered_set<int> seen; 
+        unordered_set<string> duplicate; 
+        
+        int hs = 0; // rolling hash 
+        for (int i = 0; i < s.size(); ++i) {
+            hs = 4*hs + mp[s[i]]; 
+            if (i >= 10) hs -= mp[s[i-10]]*pow(4, 10); 
+            if (i >= 9) {
+                if (seen.count(hs)) duplicate.insert(s.substr(i-9, 10)); 
+                else seen.insert(hs); 
+            }
+        }
+        vector<string> ans(duplicate.begin(), duplicate.end()); 
+        return ans; 
+    }
+
+
     /*189. Rotate Array (Medium)
 	Given an array, rotate the array to the right by k steps, where k is non-
 	negative.

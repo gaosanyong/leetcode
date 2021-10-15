@@ -6006,15 +6006,16 @@ class Solution:
 	Output: ["AAAAACCCCC", "CCCCCAAAAA"]"""
 
     def findRepeatedDnaSequences(self, s: str) -> List[str]:
-        htab = {"A":0, "C":1, "G":2, "T":3} #hash table
+        mp = dict(zip("ACGT", range(4)))
         
         ans, seen = set(), set()
-        hs = 0 
-        for i in range(len(s)):
-            hs = 4*hs + htab[s[i]]
-            if i >= 10: hs -= htab[s[i-10]]*4**10 #rolling hash
-            if hs in seen: ans.add(s[i-9:i+1])
-            if i >= 9: seen.add(hs)
+        hs = 0 # rolling hash 
+        for i, x in enumerate(s): 
+            hs = 4*hs + mp[x]
+            if i >= 10: hs -= mp[s[i-10]]*4**10 
+            if i >= 9: 
+                if hs in seen: ans.add(s[i-9:i+1])
+                seen.add(hs)
         return ans
 
 
