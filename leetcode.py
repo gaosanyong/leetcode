@@ -15433,20 +15433,20 @@ class Trie:
 
     def maxAreaOfIsland(self, grid: List[List[int]]) -> int:
         m, n = len(grid), len(grid[0])
-        ans = 0 
-        for i in range(m):
-            for j in range(n): 
-                if grid[i][j]: 
-                    grid[i][j] = 0
-                    stack = [(i, j)]
+        ans = 0
+        for r in range(m):
+            for c in range(n): 
+                if grid[r][c]: 
                     val = 1
+                    grid[r][c] = 0
+                    stack = [(r, c)]
                     while stack: 
-                        x, y = stack.pop()
-                        for xx, yy in (x-1, y), (x, y-1), (x, y+1), (x+1, y): 
-                            if 0 <= xx < m and 0 <= yy < n and grid[xx][yy]: 
-                                grid[xx][yy] = 0
-                                stack.append((xx, yy))
+                        i, j = stack.pop()
+                        for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
+                            if 0 <= ii < m and 0 <= jj < n and grid[ii][jj]: 
                                 val += 1
+                                grid[ii][jj] = 0 
+                                stack.append((ii, jj))
                     ans = max(ans, val)
         return ans 
 

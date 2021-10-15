@@ -8944,8 +8944,7 @@ public:
                 if (grid[i][j]) {
                     int val = 1; 
                     grid[i][j] = 0; 
-                    stack<pair<int, int>> stk; 
-                    stk.emplace(i, j); 
+                    stack<pair<int, int>> stk; stk.emplace(i, j); 
                     while (stk.size()) {
                         auto [i, j] = stk.top(); stk.pop(); 
                         for (int k = 0; k < 4; ++k) {
