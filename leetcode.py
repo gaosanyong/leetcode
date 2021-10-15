@@ -4118,11 +4118,11 @@ class Solution:
 	Explanation: In this case, no transaction is done, i.e. max profit = 0."""
 
     def maxProfit(self, prices: List[int]) -> int:
-        buy, pnl = inf, 0
-        for price in prices:
-            buy = min(buy, price)
-            pnl = max(pnl, price - buy)
-        return pnl 
+        ans = most = 0
+        for i in range(1, len(prices)): 
+            most = max(0, most + prices[i] - prices[i-1])
+            ans = max(ans, most)
+        return ans 
 
 
     """122. Best Time to Buy and Sell Stock II (Easy)
@@ -22439,7 +22439,7 @@ class UnionFind:
     def maxScoreSightseeingPair(self, A: List[int]) -> int:
         ans = most = 0
         for i, x in enumerate(A): 
-            ans = max(ans, x - i + most)
+            ans = max(ans, most + x - i)
             most = max(most, x + i)
         return ans 
 

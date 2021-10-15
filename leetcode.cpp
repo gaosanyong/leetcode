@@ -2613,9 +2613,9 @@ public:
 
     int maxProfit(vector<int>& prices) {
         int ans = 0; 
-        for (int i = 1, pnl = 0; i < prices.size(); ++i) {
-            pnl = max(0, pnl + prices[i] - prices[i-1]); 
-            ans = max(ans, pnl); 
+        for (int i = 1, most = 0; i < prices.size(); ++i) {
+            most = max(0, most + prices[i] - prices[i-1]); 
+            ans = max(ans, most); 
         }
         return ans; 
     }
