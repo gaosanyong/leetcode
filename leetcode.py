@@ -140,14 +140,18 @@ class Solution:
 	Input: "cbbd"
 	Output: "bb"""
 
-    def longestPalindrome(self, s: str) -> str:
-        ans = ""
-        for i in range(2*len(s)-1): 
-            lo = i//2
-            hi = lo + i%2
-            while 0 <= lo and hi < len(s) and s[lo] == s[hi]: lo, hi = lo-1, hi+1
-            ans = max(ans, s[lo+1:hi], key=len)
-        return ans 
+    def longestPalindrome(self, s: str) -> str:               
+        """Manacher's algo"""
+        ss = "#" + "#".join(s) + "#" # augmented string (even-length palindromes)
+        n = len(ss)
+        hlen = [0] * n # half-length
+        center = right = 0
+        for i in range(n):
+            if i < right: hlen[i] = min(right-i, hlen[2*center-i])
+            while 0 <= i-1-hlen[i] and i+1+hlen[i] < len(ss) and ss[i-1-hlen[i]] == ss[i+1+hlen[i]]: hlen[i] += 1
+            if right < i+hlen[i]: center, right = i, i+hlen[i]
+        xx, ii = max((x, i) for i, x in enumerate(hlen))
+        return s[(ii-xx)//2 : (ii+xx)//2]
 
 
 	"""6. ZigZag Conversion (Medium)

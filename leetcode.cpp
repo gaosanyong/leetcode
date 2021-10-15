@@ -77,6 +77,53 @@ public:
     }
 
 
+    /*5. Longest Palindromic Substring (Medium)
+	Given a string s, return the longest palindromic substring in s.
+
+	Example 1:
+	Input: s = "babad"
+	Output: "bab"
+	Note: "aba" is also a valid answer.
+
+	Example 2:
+	Input: s = "cbbd"
+	Output: "bb"
+
+	Example 3:
+	Input: s = "a"
+	Output: "a"
+
+	Example 4:
+	Input: s = "ac"
+	Output: "a"
+
+	Constraints:
+	* 1 <= s.length <= 1000
+	* s consist of only digits and English letters.*/
+
+    string longestPalindrome(string s) {
+    	/*Manacher's algo*/
+        string ss = "#"; 
+        for (auto& ch : s) {
+            ss.push_back(ch); 
+            ss.push_back('#'); 
+        }
+        
+        int n = ss.size(), center = 0, right = 0; 
+        vector<int> hlen(n); 
+        for (int i = 0; i < n; ++i) {
+            if (i < right) hlen[i] = min(right-i, hlen[2*center-i]); 
+            while (0 <= i-1-hlen[i] && i+1+hlen[i] < n && ss[i-1-hlen[i]] == ss[i+1+hlen[i]]) ++hlen[i]; 
+            if (right < i+hlen[i]) center = i, right = i+hlen[i]; 
+        }
+        
+        int ii = 0, xx = 0; 
+        for (int i = 0; i < n; ++i) 
+            if (xx < hlen[i]) ii = i, xx = hlen[i]; 
+        return s.substr((ii-xx)/2, xx); 
+    }
+
+
 	/*7. Reverse Integer (Easy)
 	Given a 32-bit signed integer, reverse digits of an integer. Note that 
 	assume we are dealing with an environment that could only store integers 
