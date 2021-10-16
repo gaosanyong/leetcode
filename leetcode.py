@@ -48601,6 +48601,279 @@ class UnionFind:
         return ans 
 
 
+    """2037. Minimum Number of Moves to Seat Everyone (Easy)
+	There are n seats and n students in a room. You are given an array seats of 
+	length n, where seats[i] is the position of the ith seat. You are also 
+	given the array students of length n, where students[j] is the position of 
+	the jth student. You may perform the following move any number of times:
+	* Increase or decrease the position of the ith student by 1 (i.e., moving 
+	  the ith student from position x to x + 1 or x - 1)
+	* Return the minimum number of moves required to move each student to a 
+	  seat such that no two students are in the same seat.
+	Note that there may be multiple seats or students in the same position at 
+	the beginning.
+
+	Example 1:
+	Input: seats = [3,1,5], students = [2,7,4]
+	Output: 4
+	Explanation: The students are moved as follows:
+	             - The first student is moved from from position 2 to position 1 using 1 move.
+	             - The second student is moved from from position 7 to position 5 using 2 moves.
+	             - The third student is moved from from position 4 to position 3 using 1 move.
+	             In total, 1 + 2 + 1 = 4 moves were used.
+	
+	Example 2:
+	Input: seats = [4,1,5,9], students = [1,3,2,6]
+	Output: 7
+	Explanation: The students are moved as follows:
+	             - The first student is not moved.
+	             - The second student is moved from from position 3 to position 4 using 1 move.
+	             - The third student is moved from from position 2 to position 5 using 3 moves.
+	             - The fourth student is moved from from position 6 to position 9 using 3 moves.
+	             In total, 0 + 1 + 3 + 3 = 7 moves were used.
+	
+	Example 3:
+	Input: seats = [2,2,6,6], students = [1,3,2,6]
+	Output: 4
+	Explanation: The students are moved as follows:
+	             - The first student is moved from from position 1 to position 2 using 1 move.
+	             - The second student is moved from from position 3 to position 6 using 3 moves.
+	             - The third student is not moved.
+	             - The fourth student is not moved.
+	             In total, 1 + 3 + 0 + 0 = 4 moves were used.
+
+	Constraints:
+	* n == seats.length == students.length
+	* 1 <= n <= 100
+	* 1 <= seats[i], students[j] <= 100"""
+
+    def minMovesToSeat(self, seats: List[int], students: List[int]) -> int:
+        return sum(abs(x-y) for x, y in zip(sorted(seats), sorted(students)))
+
+
+    """2038. Remove Colored Pieces if Both Neighbors are the Same Color (Medium)
+	There are n pieces arranged in a line, and each piece is colored either by 
+	'A' or by 'B'. You are given a string colors of length n where colors[i] is 
+	the color of the ith piece. Alice and Bob are playing a game where they 
+	take alternating turns removing pieces from the line. In this game, Alice 
+	moves first.
+	* Alice is only allowed to remove a piece colored 'A' if both its neighbors 
+	  are also colored 'A'. She is not allowed to remove pieces that are 
+	  colored 'B'.
+	* Bob is only allowed to remove a piece colored 'B' if both its neighbors 
+	  are also colored 'B'. He is not allowed to remove pieces that are colored 
+	  'A'.
+	* Alice and Bob cannot remove pieces from the edge of the line.
+	* If a player cannot make a move on their turn, that player loses and the 
+	  other player wins.
+	Assuming Alice and Bob play optimally, return true if Alice wins, or return 
+	false if Bob wins.
+
+	Example 1:
+	Input: colors = "AAABABB"
+	Output: true
+	Explanation: AAABABB -> AABABB
+	             Alice moves first. She removes the second 'A' from the left 
+	             since that is the only 'A' whose neighbors are both 'A'. Now 
+	             it's Bob's turn. Bob cannot make a move on his turn since 
+	             there are no 'B's whose neighbors are both 'B'. Thus, Alice 
+	             wins, so return true.
+	
+	Example 2:
+	Input: colors = "AA"
+	Output: false
+	Explanation: Alice has her turn first. There are only two 'A's and both are 
+	             on the edge of the line, so she cannot move on her turn. Thus, 
+	             Bob wins, so return false.
+	
+	Example 3:
+	Input: colors = "ABBBBBBBAAA"
+	Output: false
+	Explanation: ABBBBBBBAAA -> ABBBBBBBAA
+	             Alice moves first. Her only option is to remove the second to 
+	             last 'A' from the right. 
+	             ABBBBBBBAA -> ABBBBBBAA
+	             Next is Bob's turn. He has many options for which 'B' piece to 
+	             remove. He can pick any. On Alice's second turn, she has no 
+	             more pieces that she can remove. Thus, Bob wins, so return 
+	             false.
+
+	Constraints:
+	* 1 <= colors.length <= 10^5
+	* colors consists of only the letters 'A' and 'B'"""
+
+    def winnerOfGame(self, colors: str) -> bool:
+        diff = 0 
+        for k, grp in groupby(colors): 
+            if k == "A": diff += max(0, len(list(grp)) - 2)
+            else: diff -= max(0, len(list(grp)) - 2)
+        return diff > 0 
+
+
+    """2039. The Time When the Network Becomes Idle (Medium)
+	There is a network of n servers, labeled from 0 to n - 1. You are given a 
+	2D integer array edges, where edges[i] = [ui, vi] indicates there is a 
+	message channel between servers ui and vi, and they can pass any number of 
+	messages to each other directly in one second. You are also given a 
+	0-indexed integer array patience of length n. All servers are connected, 
+	i.e., a message can be passed from one server to any other server(s) 
+	directly or indirectly through the message channels. The server labeled 0 
+	is the master server. The rest are data servers. Each data server needs to 
+	send its message to the master server for processing and wait for a reply. 
+	Messages move between servers optimally, so every message takes the least 
+	amount of time to arrive at the master server. The master server will 
+	process all newly arrived messages instantly and send a reply to the 
+	originating server via the reversed path the message had gone through. At 
+	the beginning of second 0, each data server sends its message to be 
+	processed. Starting from second 1, at the beginning of every second, each 
+	data server will check if it has received a reply to the message it sent 
+	(including any newly arrived replies) from the master server:
+	* If it has not, it will resend the message periodically. The data server 
+	  i will resend the message every patience[i] second(s), i.e., the data 
+	  server i will resend the message if patience[i] second(s) have elapsed 
+	  since the last time the message was sent from this server.
+	* Otherwise, no more resending will occur from this server.
+	The network becomes idle when there are no messages passing between servers 
+	or arriving at servers. Return the earliest second starting from which the 
+	network becomes idle.
+
+	Example 1:
+	Input: edges = [[0,1],[1,2]], patience = [0,2,1]
+	Output: 8
+	Explanation: At (the beginning of) second 0,
+	             - Data server 1 sends its message (denoted 1A) to the master server.
+	             - Data server 2 sends its message (denoted 2A) to the master server.
+	             At second 1,
+	             - Message 1A arrives at the master server. Master server processes message 1A instantly and sends a reply 1A back.
+	             - Server 1 has not received any reply. 1 second (1 < patience[1] = 2) elapsed since this server has sent the message, therefore it does not resend the message.
+	             - Server 2 has not received any reply. 1 second (1 == patience[2] = 1) elapsed since this server has sent the message, therefore it resends the message (denoted 2B).
+	             At second 2,
+	             - The reply 1A arrives at server 1. No more resending will occur from server 1.
+	             - Message 2A arrives at the master server. Master server processes message 2A instantly and sends a reply 2A back.
+	             - Server 2 resends the message (denoted 2C).
+	             ...
+	             At second 4,
+	             - The reply 2A arrives at server 2. No more resending will occur from server 2.
+	             ...
+	             At second 7, reply 2D arrives at server 2.
+	             Starting from the beginning of the second 8, there are no 
+	             messages passing between servers or arriving at servers. This 
+	             is the time when the network becomes idle.
+	
+	Example 2:
+	Input: edges = [[0,1],[0,2],[1,2]], patience = [0,10,10]
+	Output: 3
+	Explanation: Data servers 1 and 2 receive a reply back at the beginning of 
+	             second 2. From the beginning of the second 3, the network 
+	             becomes idle.
+
+	Constraints:
+	* n == patience.length
+	* 2 <= n <= 10^5
+	* patience[0] == 0
+	* 1 <= patience[i] <= 10^5 for 1 <= i < n
+	* 1 <= edges.length <= min(10^5, n * (n - 1) / 2)
+	* edges[i].length == 2
+	* 0 <= ui, vi < n
+	* ui != vi
+	* There are no duplicate edges.
+	* Each server can directly or indirectly reach another server."""
+
+    def networkBecomesIdle(self, edges: List[List[int]], patience: List[int]) -> int:
+        graph = {}
+        for u, v in edges: 
+            graph.setdefault(u, []).append(v)
+            graph.setdefault(v, []).append(u)
+        
+        dist = [-1]*len(graph)
+        dist[0] = 0 
+        val = 0
+        queue = [0]
+        while queue: 
+            val += 2
+            newq = []
+            for u in queue: 
+                for v in graph[u]: 
+                    if dist[v] == -1: 
+                        dist[v] = val
+                        newq.append(v)
+            queue = newq
+        
+        ans = 0
+        for d, p in zip(dist, patience): 
+            if p: 
+                k = d//p - int(d%p == 0)
+                ans = max(ans, d + k*p)
+        return ans + 1
+
+
+    """2040. Kth Smallest Product of Two Sorted Arrays (Hard)
+	Given two sorted 0-indexed integer arrays nums1 and nums2 as well as an 
+	integer k, return the kth (1-based) smallest product of nums1[i] * nums2[j] 
+	where 0 <= i < nums1.length and 0 <= j < nums2.length.
+
+	Example 1:
+	Input: nums1 = [2,5], nums2 = [3,4], k = 2
+	Output: 8
+	Explanation: The 2 smallest products are:
+	             - nums1[0] * nums2[0] = 2 * 3 = 6
+	             - nums1[0] * nums2[1] = 2 * 4 = 8
+	             The 2nd smallest product is 8.
+	
+	Example 2:
+	Input: nums1 = [-4,-2,0,3], nums2 = [2,4], k = 6
+	Output: 0
+	Explanation: The 6 smallest products are:
+	             - nums1[0] * nums2[1] = (-4) * 4 = -16
+	             - nums1[0] * nums2[0] = (-4) * 2 = -8
+	             - nums1[1] * nums2[1] = (-2) * 4 = -8
+	             - nums1[1] * nums2[0] = (-2) * 2 = -4
+	             - nums1[2] * nums2[0] = 0 * 2 = 0
+	             - nums1[2] * nums2[1] = 0 * 4 = 0
+	             The 6th smallest product is 0.
+	
+	Example 3:
+	Input: nums1 = [-2,-1,0,1,2], nums2 = [-3,-1,2,4,5], k = 3
+	Output: -6
+	Explanation: The 3 smallest products are:
+	             - nums1[0] * nums2[4] = (-2) * 5 = -10
+	             - nums1[0] * nums2[3] = (-2) * 4 = -8
+	             - nums1[4] * nums2[0] = 2 * (-3) = -6
+	             The 3rd smallest product is -6.
+
+	Constraints:
+	* 1 <= nums1.length, nums2.length <= 5 * 10^4
+	* -10^5 <= nums1[i], nums2[j] <= 10^5
+	* 1 <= k <= nums1.length * nums2.length
+	* nums1 and nums2 are sorted."""
+
+    def kthSmallestProduct(self, nums1: List[int], nums2: List[int], k: int) -> int:
+        neg = [x for x in nums1 if x < 0]
+        pos = [x for x in nums1 if x >= 0]
+        
+        def fn(val):
+            """Return count of products <= val."""
+            ans = 0
+            lo, hi = 0, len(nums2)-1
+            for x in neg[::-1] + pos if val >= 0 else neg + pos[::-1]: 
+                if x < 0: 
+                    while lo < len(nums2) and x*nums2[lo] > val: lo += 1
+                    ans += len(nums2) - lo
+                elif x == 0: 
+                    if 0 <= val: ans += len(nums2)
+                else: 
+                    while 0 <= hi and x*nums2[hi] > val: hi -= 1
+                    ans += hi+1
+            return ans 
+        
+        lo, hi = -10**10, 10**10 + 1
+        while lo < hi: 
+            mid = lo + hi >> 1
+            if fn(mid) < k: lo = mid + 1
+            else: hi = mid
+        return lo 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
