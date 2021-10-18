@@ -4185,13 +4185,13 @@ class Solution:
 	Explanation: In this case, no transaction is done, i.e. max profit = 0."""
 
     def maxProfit(self, prices: List[int]) -> int:
-        buy, pnl = [inf]*2, [0]*2
-        for price in prices: 
-            buy[0] = min(buy[0], price)
-            pnl[0] = max(pnl[0], price - buy[0])
-            buy[1] = min(buy[1], price - pnl[0])
-            pnl[1] = max(pnl[1], price - buy[1])
-        return pnl[1]
+        pnl = [0]*len(prices)
+        for _ in range(2):
+            most = 0 
+            for i in range(1, len(prices)): 
+                most = max(pnl[i], most + prices[i] - prices[i-1])
+                pnl[i] = max(pnl[i-1], most)
+        return pnl[-1]
 
 
     """124. Binary Tree Maximum Path Sum (Hard)
