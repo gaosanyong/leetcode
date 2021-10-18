@@ -16541,6 +16541,55 @@ public:
     }
 
 
+    /*1091. Shortest Path in Binary Matrix (Medium)
+	Given an n x n binary matrix grid, return the length of the shortest clear 
+	path in the matrix. If there is no clear path, return -1. A clear path in a 
+	binary matrix is a path from the top-left cell (i.e., (0, 0)) to the bottom-
+	right cell (i.e., (n - 1, n - 1)) such that:
+	* All the visited cells of the path are 0.
+	* All the adjacent cells of the path are 8-directionally connected (i.e., 
+	  they are different and they share an edge or a corner).
+	The length of a clear path is the number of visited cells of this path.
+
+	Example 1:
+	Input: grid = [[0,1],[1,0]]
+	Output: 2
+
+	Example 2:
+	Input: grid = [[0,0,0],[1,1,0],[1,1,0]]
+	Output: 4
+
+	Example 3:
+	Input: grid = [[1,0,0],[1,1,0],[1,1,0]]
+	Output: -1
+
+	Constraints:
+	* n == grid.length
+	* n == grid[i].length
+	* 1 <= n <= 100
+	* grid[i][j] is 0 or 1*/
+
+    int shortestPathBinaryMatrix(vector<vector<int>>& grid) {
+        if (grid[0][0] == 0) {
+            int n = grid.size(); 
+            queue<pair<int, int>> q; q.emplace(0, 0); 
+            grid[0][0] = 1; 
+            for (int ans = 1; q.size(); ++ans) 
+                for (int sz = q.size(); sz; --sz) {
+                    auto [i, j] = q.front(); q.pop(); 
+                    if (i == n-1 && j == n-1) return ans; 
+                    for (int ii = i-1; ii <= i+1; ++ii) 
+                        for (int jj = j-1; jj <= j+1; ++jj) 
+                            if (0 <= ii && ii < n && 0 <= jj && jj < n && grid[ii][jj] == 0) {
+                                q.emplace(ii, jj); 
+                                grid[ii][jj] = 1; 
+                            }
+                }
+        }
+        return -1; 
+    }
+
+
     /*1095. Find in Mountain Array (Hard)
 	(This problem is an interactive problem.)
 	You may recall that an array A is a mountain array if and only if:

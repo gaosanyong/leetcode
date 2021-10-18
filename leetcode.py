@@ -24335,8 +24335,8 @@ class UnionFind:
 	* grid[r][c] is 0 or 1"""
 
     def shortestPathBinaryMatrix(self, grid: List[List[int]]) -> int:
-        n = len(grid)
         if not grid[0][0]: 
+        	n = len(grid)
             ans = 1
             queue = [(0, 0)]
             grid[0][0] = 1 # mark as visited 
@@ -24348,8 +24348,8 @@ class UnionFind:
                         if 0 <= ii < n and 0 <= jj < n and not grid[ii][jj]: 
                             newq.append((ii, jj))
                             grid[ii][jj] = 1
-                queue = newq
                 ans += 1
+                queue = newq
         return -1 
 
 
