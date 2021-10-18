@@ -2985,7 +2985,7 @@ public:
                 node = node->left; 
             } else {
                 node = stk.top(); 
-                if (node->right && node->right != prev) node = node->right; 
+                if (node->right && prev != node->right) node = node->right; 
                 else {
                     ans.push_back(node->val); 
                     stk.pop(); 
@@ -29938,8 +29938,7 @@ public:
     }
     
     int pop() {
-        peek(); 
-        int ans = out.top(); 
+        int ans = peek(); 
         out.pop(); 
         return ans; 
     }
