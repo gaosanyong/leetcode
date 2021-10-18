@@ -29282,6 +29282,202 @@ public:
         }
         return ans; 
     }
+
+
+    /*2042. Check if Numbers Are Ascending in a Sentence (Easy)
+	A sentence is a list of tokens separated by a single space with no leading 
+	or trailing spaces. Every token is either a positive number consisting of 
+	digits 0-9 with no leading zeros, or a word consisting of lowercase English 
+	letters. For example, "a puppy has 2 eyes 4 legs" is a sentence with seven 
+	tokens: "2" and "4" are numbers and the other tokens such as "puppy" are 
+	words. Given a string s representing a sentence, you need to check if all 
+	the numbers in s are strictly increasing from left to right (i.e., other 
+	than the last number, each number is strictly smaller than the number on 
+	its right in s). Return true if so, or false otherwise.
+
+	Example 1:
+	Input: s = "1 box has 3 blue 4 red 6 green and 12 yellow marbles"
+	Output: true
+	Explanation: The numbers in s are: 1, 3, 4, 6, 12. They are strictly 
+	             increasing from left to right: 1 < 3 < 4 < 6 < 12.
+	
+	Example 2:
+	Input: s = "hello world 5 x 5"
+	Output: false
+	Explanation: The numbers in s are: 5, 5. They are not strictly increasing.
+	
+	Example 3:
+	Input: s = "sunset is at 7 51 pm overnight lows will be in the low 50 and 60 s"
+	Output: false
+	Explanation: The numbers in s are: 7, 51, 50, 60. They are not strictly increasing.
+
+	Example 4:
+	Input: s = "4 5 11 26"
+	Output: true
+	Explanation: The numbers in s are: 4, 5, 11, 26. They are strictly 
+	             increasing from left to right: 4 < 5 < 11 < 26.
+
+	Constraints:
+	* 3 <= s.length <= 200
+	* s consists of lowercase English letters, spaces, and digits from 0 to 9, 
+	  inclusive.
+	* The number of tokens in s is between 2 and 100, inclusive.
+	* The tokens in s are separated by a single space.
+	* There are at least two numbers in s.
+	* Each number in s is a positive number less than 100, with no leading 
+	  zeros.
+	* s contains no leading or trailing spaces.*/
+
+    bool areNumbersAscending(string s) {
+        istringstream iss(s); 
+        string buf; 
+        int prev = INT_MIN; 
+        while (iss >> buf) 
+            if(all_of(buf.begin(), buf.end(), [](auto& ch) {return isdigit(ch);})) {
+                int curr = stoi(buf); 
+                if (prev >= curr) return false; 
+                prev = curr; 
+            }
+        return true; 
+    }
+
+
+    /*2044. Count Number of Maximum Bitwise-OR Subsets (Medium)
+	Given an integer array nums, find the maximum possible bitwise OR of a 
+	subset of nums and return the number of different non-empty subsets with 
+	the maximum bitwise OR. An array a is a subset of an array b if a can be 
+	obtained from b by deleting some (possibly zero) elements of b. Two subsets 
+	are considered different if the indices of the elements chosen are 
+	different. The bitwise OR of an array a is equal to 
+	a[0] OR a[1] OR ... OR a[a.length - 1] (0-indexed).
+
+	Example 1:
+	Input: nums = [3,1]
+	Output: 2
+	Explanation: The maximum possible bitwise OR of a subset is 3. There are 2 
+	             subsets with a bitwise OR of 3:
+ 	             - [3]
+ 	             - [3,1]
+	
+	Example 2:
+	Input: nums = [2,2,2]
+	Output: 7
+	Explanation: All non-empty subsets of [2,2,2] have a bitwise OR of 2. There 
+	             are 2^3 - 1 = 7 total subsets.
+	
+	Example 3:
+	Input: nums = [3,2,1,5]
+	Output: 6
+	Explanation: The maximum possible bitwise OR of a subset is 7. There are 6 
+	             subsets with a bitwise OR of 7:
+	             - [3,5]
+	             - [3,1,5]
+	             - [3,2,5]
+	             - [3,2,1,5]
+	             - [2,5]
+	             - [2,1,5]
+
+	Constraints:
+	* 1 <= nums.length <= 16
+	* 1 <= nums[i] <= 10^5*/
+
+    int countMaxOrSubsets(vector<int>& nums) {
+        int most = 0; 
+        unordered_map<int, int> mp = {{0, 1}}; 
+        for (int x : nums) {
+            most |= x; 
+            unordered_map<int, int> tmp = mp; 
+            for (auto& [k, v] : tmp) mp[x | k] += v; 
+        }
+        return mp[most]; 
+    }
+
+
+    /*2045. Second Minimum Time to Reach Destination (Hard)
+	A city is represented as a bi-directional connected graph with n vertices 
+	where each vertex is labeled from 1 to n (inclusive). The edges in the 
+	graph are represented as a 2D integer array edges, where each 
+	edges[i] = [ui, vi] denotes a bi-directional edge between vertex ui and 
+	vertex vi. Every vertex pair is connected by at most one edge, and no 
+	vertex has an edge to itself. The time taken to traverse any edge is time 
+	minutes. Each vertex has a traffic signal which changes its color from 
+	green to red and vice versa every change minutes. All signals change at the 
+	same time. You can enter a vertex at any time, but can leave a vertex only 
+	when the signal is green. You cannot wait at a vertex if the signal is 
+	green. The second minimum value is defined as the smallest value strictly 
+	larger than the minimum value. For example the second minimum value of 
+	[2, 3, 4] is 3, and the second minimum value of [2, 2, 4] is 4. Given n, 
+	edges, time, and change, return the second minimum time it will take to go 
+	from vertex 1 to vertex n.
+
+	Notes:
+	* You can go through any vertex any number of times, including 1 and n.
+	* You can assume that when the journey starts, all signals have just turned 
+	  green.
+
+	Example 1:
+	Input: n = 5, edges = [[1,2],[1,3],[1,4],[3,4],[4,5]], time = 3, change = 5
+	Output: 13
+	Explanation: The figure on the left shows the given graph. The blue path in 
+	             the figure on the right is the minimum time path. The time 
+	             taken is:
+	             - Start at 1, time elapsed=0
+	             - 1 -> 4: 3 minutes, time elapsed=3
+	             - 4 -> 5: 3 minutes, time elapsed=6
+	             Hence the minimum time needed is 6 minutes. The red path shows 
+	             the path to get the second minimum time.
+	             - Start at 1, time elapsed=0
+	             - 1 -> 3: 3 minutes, time elapsed=3
+	             - 3 -> 4: 3 minutes, time elapsed=6
+	             - Wait at 4 for 4 minutes, time elapsed=10
+	             - 4 -> 5: 3 minutes, time elapsed=13
+	             Hence the second minimum time is 13 minutes.      
+	
+	Example 2:
+	Input: n = 2, edges = [[1,2]], time = 3, change = 2
+	Output: 11
+	Explanation: The minimum time path is 1 -> 2 with time = 3 minutes. The 
+	             second minimum time path is 1 -> 2 -> 1 -> 2 with time = 11 
+	             minutes.
+
+	Constraints:
+	* 2 <= n <= 10^4
+	* n - 1 <= edges.length <= min(2 * 104, n * (n - 1) / 2)
+	* edges[i].length == 2
+	* 1 <= ui, vi <= n
+	* ui != vi
+	* There are no duplicate edges.
+	* Each vertex can be reached directly or indirectly from every other vertex.
+	* 1 <= time, change <= 10^3*/
+
+    int secondMinimum(int n, vector<vector<int>>& edges, int time, int change) {
+        vector<vector<int>> graph(n); 
+        for (auto& edge : edges) {
+            graph[edge[0]-1].push_back(edge[1]-1); 
+            graph[edge[1]-1].push_back(edge[0]-1); 
+        }
+        
+        int least = -1; 
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+        pq.emplace(0, 0); 
+        vector<vector<int>> seen(n); 
+        
+        while (pq.size()) {
+            auto [t, u] = pq.top(); pq.pop(); 
+            if (u == n-1) {
+                if (least == -1) least = t; 
+                else if (least < t) return t; 
+            }
+            if (t/change & 1) t = (t/change+1)*change; 
+            t += time; 
+            for (auto& v : graph[u]) 
+                if (seen[v].empty() or (seen[v].size() == 1 and seen[v][0] != t)) {
+                    seen[v].push_back(t); 
+                    pq.emplace(t, v); 
+                }
+        }
+        return -1; 
+    }
 };
 
 
@@ -31144,5 +31340,85 @@ public:
     int minimum() {
         while (mp[minp.top().second] != minp.top().first) minp.pop(); 
         return minp.top().first; 
+    }
+};
+
+
+/*2043. Simple Bank System (Medium)
+You have been tasked with writing a program for a popular bank that will 
+automate all its incoming transactions (transfer, deposit, and withdraw). The 
+bank has n accounts numbered from 1 to n. The initial balance of each account 
+is stored in a 0-indexed integer array balance, with the (i + 1)th account 
+having an initial balance of balance[i]. Execute all the valid transactions. A 
+transaction is valid if:
+* The given account number(s) are between 1 and n, and
+* The amount of money withdrawn or transferred from is less than or equal to 
+  the balance of the account.
+
+Implement the Bank class:
+* Bank(long[] balance) Initializes the object with the 0-indexed integer array 
+  balance.
+* boolean transfer(int account1, int account2, long money) Transfers money 
+  dollars from the account numbered account1 to the account numbered account2. 
+  Return true if the transaction was successful, false otherwise.
+* boolean deposit(int account, long money) Deposit money dollars into the 
+  account numbered account. Return true if the transaction was successful, 
+  false otherwise.
+* boolean withdraw(int account, long money) Withdraw money dollars from the 
+  account numbered account. Return true if the transaction was successful, 
+  false otherwise.
+
+Example 1:
+Input: ["Bank", "withdraw", "transfer", "deposit", "transfer", "withdraw"]
+       [[[10, 100, 20, 50, 30]], [3, 10], [5, 1, 20], [5, 20], [3, 4, 15], [10, 50]]
+Output: [null, true, true, true, false, false]
+Explanation
+Bank bank = new Bank([10, 100, 20, 50, 30]);
+bank.withdraw(3, 10);    // return true, account 3 has a balance of $20, so it is valid to withdraw $10.
+                         // Account 3 has $20 - $10 = $10.
+bank.transfer(5, 1, 20); // return true, account 5 has a balance of $30, so it is valid to transfer $20.
+                         // Account 5 has $30 - $20 = $10, and account 1 has $10 + $20 = $30.
+bank.deposit(5, 20);     // return true, it is valid to deposit $20 to account 5.
+                         // Account 5 has $10 + $20 = $30.
+bank.transfer(3, 4, 15); // return false, the current balance of account 3 is $10,
+                         // so it is invalid to transfer $15 from it.
+bank.withdraw(10, 50);   // return false, it is invalid because account 10 does not exist.
+ 
+Constraints:
+* n == balance.length
+* 1 <= n, account, account1, account2 <= 10^5
+* 0 <= balance[i], money <= 10^12
+* At most 10^4 calls will be made to each function transfer, deposit, withdraw.*/
+
+class Bank {
+    vector<long long> balance; 
+public:
+    Bank(vector<long long>& balance) {
+        this->balance = balance; 
+    }
+    
+    bool transfer(int account1, int account2, long long money) {
+        if (withdraw(account1, money)) {
+            if (deposit(account2, money)) return true; 
+            deposit(account1, money); 
+            return false; 
+        }
+        return false; 
+    }
+    
+    bool deposit(int account, long long money) {
+        if (account <= balance.size()) {
+            balance[account-1] += money; 
+            return true; 
+        }
+        return false; 
+    }
+    
+    bool withdraw(int account, long long money) {
+        if (account <= balance.size() && balance[account-1] >= money) {
+            balance[account-1] -= money; 
+            return true; 
+        }
+        return false; 
     }
 };
