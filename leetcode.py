@@ -2690,17 +2690,9 @@ class Solution:
 	]"""
 
     def subsets(self, nums: List[int]) -> List[List[int]]:
-        
-        def fn(i):
-            """Populate ans using a stack"""
-            if len(nums) == i: return ans.append(stack.copy())
-            fn(i+1)
-            stack.append(nums[i])
-            fn(i+1)
-            stack.pop()
-                
-        ans, stack = [], []
-        fn(0)
+        ans = []
+        for m in range(1<<len(nums)): 
+            ans.append([nums[i] for i in range(len(nums)) if m & 1<<i])
         return ans 
 
 
