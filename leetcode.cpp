@@ -2931,14 +2931,13 @@ public:
 
     vector<int> preorderTraversal(TreeNode* root) {
         vector<int> ans; 
-        if (root) {
-            stack<TreeNode*> stk; 
-            stk.push(root); 
-            while (stk.size()) {
-                TreeNode* node = stk.top(); stk.pop(); 
+        stack<TreeNode*> stk; stk.push(root); 
+        while (stk.size()) {
+            TreeNode* node = stk.top(); stk.pop(); 
+            if (node) {
                 ans.push_back(node->val); 
-                if (node->right) stk.push(node->right); 
-                if (node->left) stk.push(node->left); 
+                stk.push(node->right); 
+                stk.push(node->left); 
             }
         }
         return ans; 
