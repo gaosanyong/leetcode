@@ -15186,19 +15186,17 @@ public:
 
     bool isCousins(TreeNode* root, int x, int y) {
         queue<pair<TreeNode*, TreeNode*>> q; 
-        q.push(make_pair(root, nullptr)); 
-        
+        q.emplace(root, nullptr); 
         while (q.size()) {
-            queue<pair<TreeNode*, TreeNode*>> newq; 
             TreeNode* seen = nullptr; 
-            for (int i = 0, n = size(q); i < n; ++i) {
-                auto [node, par] = q.front(); q.pop(); 
-                if (node->val == x || node->val == y) {
-                    if (seen) return seen != par; 
-                    else seen = par; 
-                } 
-                if (node->left) q.push(make_pair(node->left, node));
-                if (node->right) q.push(make_pair(node->right, node)); 
+            for (int sz = q.size(); sz; --sz) {
+                auto [n, p] = q.front(); q.pop(); 
+                if (n->val == x || n->val == y) {
+                    if (seen) return seen != p; 
+                    else seen = p; 
+                }
+                if (n->left) q.emplace(n->left, n); 
+                if (n->right) q.emplace(n->right, n); 
             }
             if (seen) return false; 
         }
