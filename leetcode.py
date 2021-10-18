@@ -17913,16 +17913,16 @@ class UnionFind:
 
     def allPathsSourceTarget(self, graph: List[List[int]]) -> List[List[int]]:
         
-        @cache
         def fn(n): 
-            """Return path from given node to dst node."""
-            if n == len(graph)-1: return [[n]]
-            ans = []
-            for nn in graph[n]: 
-                ans.extend([[n] + x for x in fn(nn)])
-            return ans 
-        
-        return fn(0)
+            """Populate ans via a stack."""
+            stack.append(n)
+            if n == len(graph)-1: ans.append(stack[:])
+            for nn in graph[n]: fn(nn)
+            stack.pop()
+            
+        ans, stack = [], []
+        fn(0)
+        return ans 
 
 
     """798. Smallest Rotation with Highest Score (Hard)
