@@ -2823,6 +2823,65 @@ public:
     }
 
 
+    /*130. Surrounded Regions (Medium)
+	Given an m x n matrix board containing 'X' and 'O', capture all regions 
+	that are 4-directionally surrounded by 'X'. A region is captured by 
+	flipping all 'O's into 'X's in that surrounded region.
+
+	Example 1:
+	Input: board = [["X","X","X","X"],
+	                ["X","O","O","X"],
+	                ["X","X","O","X"],
+	                ["X","O","X","X"]]
+	Output: [["X","X","X","X"],
+	         ["X","X","X","X"],
+	         ["X","X","X","X"],
+	         ["X","O","X","X"]]
+	Explanation: Surrounded regions should not be on the border, which means 
+	             that any 'O' on the border of the board are not flipped to 
+	             'X'. Any 'O' that is not on the border and it is not connected 
+	             to an 'O' on the border will be flipped to 'X'. Two cells are 
+	             connected if they are adjacent cells connected horizontally or 
+	             vertically.
+	
+	Example 2:
+	Input: board = [["X"]]
+	Output: [["X"]]
+
+	Constraints:
+	* m == board.length
+	* n == board[i].length
+	* 1 <= m, n <= 200
+	* board[i][j] is 'X' or 'O'.*/
+
+    void solve(vector<vector<char>>& board) {
+        int m = board.size(), n = board[0].size(), dir[5] = {-1, 0, 1, 0, -1}; 
+        stack<pair<int, int>> stk; 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if ((i == 0 || i == m-1 || j == 0 || j == n-1) && board[i][j] == 'O') {
+                    stk.emplace(i, j); 
+                    board[i][j] = '#'; 
+                }
+        
+        while (stk.size()) {
+            auto [i, j] = stk.top(); stk.pop(); 
+            for (int k = 0; k < 4; ++k) {
+                int ii = i + dir[k], jj = j + dir[k+1]; 
+                if (0 <= ii && ii < m && 0 <= jj && jj < n && board[ii][jj] == 'O') {
+                    stk.emplace(ii, jj); 
+                    board[ii][jj] = '#'; 
+                }
+            }
+        }
+        
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if (board[i][j] == 'O') board[i][j] = 'X'; 
+                else if (board[i][j] == '#') board[i][j] = 'O'; 
+    }
+
+
     /*136. Single Number (Easy)
 	Given a non-empty array of integers nums, every element appears twice 
 	except for one. Find that single one. You must implement a solution with a 

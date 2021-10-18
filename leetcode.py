@@ -4478,14 +4478,14 @@ class Solution:
 	horizontally or vertically."""
 
     def solve(self, board: List[List[str]]) -> None:
-        if not board: return [] #edge case 
         m, n = len(board), len(board[0])
         
         def fn(i, j):
             """Flood fill "O" with sentinel"""
-            if not (0 <= i < m and 0 <= j < n) or board[i][j] != "O": return 
-            board[i][j] = "#" #sentinel 
-            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): fn(ii, jj)
+            if 0 <= i < m and 0 <= j < n and board[i][j] == "O": 
+                board[i][j] = "#" #sentinel 
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                    fn(ii, jj)
         
         for i in range(m): fn(i, 0) or fn(i, n-1)
         for j in range(n): fn(0, j) or fn(m-1, j)
