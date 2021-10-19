@@ -44,8 +44,8 @@ class Solution:
 	Output: 7 -> 0 -> 8
 	Explanation: 342 + 465 = 807."""
 
-    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
-        head = node = ListNode()
+    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+        dummy = node = ListNode()
         carry = 0
         while l1 or l2 or carry: 
             if l1: 
@@ -54,9 +54,9 @@ class Solution:
             if l2: 
                 carry += l2.val 
                 l2 = l2.next 
-            carry, x = divmod(carry, 10)
-            node.next = node = ListNode(x)
-        return head.next 
+            node.next = node = ListNode(carry%10)
+            carry //= 10 
+        return dummy.next 
 
 
     """3. Longest Substring Without Repeating Characters (Medium)
