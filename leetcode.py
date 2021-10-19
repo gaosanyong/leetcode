@@ -2832,16 +2832,13 @@ class Solution:
 	Input: 1->1->1->2->3
 	Output: 2->3"""
 
-    def deleteDuplicates(self, head: ListNode) -> ListNode:
-        slow = fast = dummy = ListNode(None, head)
-        prev = None
-        while fast: 
-            if fast.val == prev or (fast.next and fast.val == fast.next.val): 
-                slow.next = fast.next
-            else: 
-                slow = slow.next
-            prev = fast.val
-            fast = fast.next
+    def deleteDuplicates(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        dummy = node = ListNode(next=head)
+        while node and node.next: 
+            temp = node.next
+            while temp and node.next.val == temp.val: temp = temp.next 
+            if node.next.next == temp: node = node.next
+            else: node.next = temp
         return dummy.next 
 
 
