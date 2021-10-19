@@ -4943,13 +4943,16 @@ class Solution:
     def detectCycle(self, head: ListNode) -> ListNode:
         """Floyd's tortoise & hare (phase 2)"""
         fast = slow = head 
-        while fast and fast.next:
-            fast, slow = fast.next.next, slow.next
-            if fast == slow: 
-                fast = head 
-                while fast != slow: fast, slow = fast.next, slow.next
-                return fast
-        return None 
+        while fast and fast.next: 
+            fast = fast.next.next
+            slow = slow.next
+            if fast == slow: break 
+        else: return None
+        node = head 
+        while node != slow: 
+            node = node.next 
+            slow = slow.next 
+        return node 
 
 
     """143. Reorder List (Medium)
