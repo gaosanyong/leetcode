@@ -819,17 +819,18 @@ class Solution:
 	Note: Only constant extra memory is allowed.
 	You may not alter the values in the list's nodes, only nodes itself may be changed."""
     
-    def reverseKGroup(self, head: ListNode, k: int) -> ListNode:
-        node, i = head, 0
-        while node:
-            if (i:=i+1) == k: break
-            node = node.next 
-        if i < k: return head 
-        
-        prev, node = None, head 
-        for _ in range(k): node.next, node, prev = prev, node.next, node
-        head.next = self.reverseKGroup(node, k)
-        return prev 
+    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        dummy = tail = ListNode(next=head)
+        node = head 
+        while node: 
+            temp = node
+            for _ in range(k): 
+                if not temp: return dummy.next 
+                temp = temp.next 
+            prev = None
+            for _ in range(k): node.next, node, prev = prev, node.next, node
+            tail.next.next, tail.next, tail = node, prev, tail.next
+        return dummy.next
 
 
     """26. Remove Duplicates from Sorted Array (Easy)
