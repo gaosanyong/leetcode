@@ -5496,11 +5496,11 @@ class Solution:
 	Your code should preferably run in O(n) time and use only O(1) memory."""
 
     def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
-        n0, n1 = headA, headB
-        while n0 != n1:
-            n0 = n0.next if n0 else headB
-            n1 = n1.next if n1 else headA
-        return n0
+        nodeA, nodeB = headA, headB
+        while nodeA != nodeB: 
+            nodeA = nodeA.next if nodeA else headB
+            nodeB = nodeB.next if nodeB else headA
+        return nodeA
 
 
     """161. One Edit Distance (Medium)
