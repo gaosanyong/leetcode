@@ -4077,16 +4077,10 @@ class Solution:
 	where n is the total number of rows in the triangle."""
 
     def minimumTotal(self, triangle: List[List[int]]) -> int:
-        
-        @cache
-        def fn(i, j):
-            """Return minimum path sum ending at (i, j)"""
-            if i < 0: return 0
-            if j < 0 or j > i: return inf
-            return triangle[i][j] + min(fn(i-1, j-1), fn(i-1, j))
-        
-        m = len(triangle)
-        return min(fn(m-1, j) for j in range(m))
+        for i in reversed(range(len(triangle)-1)): 
+            for j in range(i+1): 
+                triangle[i][j] += min(triangle[i+1][j], triangle[i+1][j+1])
+        return triangle[0][0]
 
 
     """121. Best Time to Buy and Sell Stock (Easy)
