@@ -49233,10 +49233,9 @@ class MinStack:
     def __init__(self):
         self.stack = []
 
-    def push(self, x: int) -> None:
-        if not self.stack: mn = x
-        else: mn = min(x, self.stack[-1][1])
-        self.stack.append((x, mn))
+    def push(self, val: int) -> None:
+        if self.stack: self.stack.append((val, min(val, self.stack[-1][1])))
+        else: self.stack.append((val, val))
 
     def pop(self) -> None:
         self.stack.pop()
