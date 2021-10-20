@@ -1582,12 +1582,12 @@ class Solution:
     def permute(self, nums: List[int]) -> List[List[int]]:
         
         def fn(i):
-            """Backtracking to get permutations (not Heap's algo)"""
+            """Heap's algo (1963)"""
             if i == len(nums): ans.append(nums.copy())
-            for j in range(i, len(nums)): 
-                nums[i], nums[j] = nums[j], nums[i]
+            for k in reversed(range(i, len(nums))): 
                 fn(i+1)
-                nums[i], nums[j] = nums[j], nums[i]
+                if (len(nums)-i) & 1: nums[i], nums[-1] = nums[-1], nums[i]
+                else: nums[i], nums[k] = nums[k], nums[i]
             
         ans = []
         fn(0)
