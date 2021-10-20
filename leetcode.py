@@ -2662,7 +2662,7 @@ class Solution:
         ans, stack = [], []
         x = 1
         while True:
-            if len(stack) == k: ans.append(stack[:])
+            if len(stack) == k: ans.append(stack.copy())
             if len(stack) == k or k - len(stack) > n - x + 1:
                 if not stack: break
                 x = stack.pop() + 1
