@@ -40428,6 +40428,7 @@ class Fenwick:
 	Constraints: 1 <= k <= n <= 500"""
 
     def findTheWinner(self, n: int, k: int) -> int:
+    	"""Josephus Problem"""
         ans = 0
         for x in range(2, n+1): 
             ans = (ans + k) % x
