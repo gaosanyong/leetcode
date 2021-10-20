@@ -5818,7 +5818,7 @@ class Solution:
 	Output: 2"""
 
     def majorityElement(self, nums: List[int]) -> int:
-        """Boyer-Moore majority voting algo"""
+        """Boyer-Moore majority vote algo"""
         ans = vote = 0
         for x in nums: 
             if vote == 0: ans = x

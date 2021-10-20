@@ -1997,6 +1997,46 @@ public:
     }
 
 
+    /*98. Validate Binary Search Tree (Medium)
+	Given the root of a binary tree, determine if it is a valid binary search 
+	tree (BST). A valid BST is defined as follows:
+	* The left subtree of a node contains only nodes with keys less than the 
+	  node's key.
+	* The right subtree of a node contains only nodes with keys greater than 
+	  the node's key.
+	* Both the left and right subtrees must also be binary search trees.
+
+	Example 1:
+	Input: root = [2,1,3]
+	Output: true
+
+	Example 2:
+	Input: root = [5,1,4,null,null,3,6]
+	Output: false
+	Explanation: The root node's value is 5 but its right child's value is 4.
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 10^4].
+	* -2^31 <= Node.val <= 2^31 - 1*/
+
+    bool isValidBST(TreeNode* root) {
+        TreeNode* node = root; 
+        stack<TreeNode*> stk; 
+        long prev = LONG_MIN; 
+        while (node || stk.size()) 
+            if (node) {
+                stk.push(node); 
+                node = node->left; 
+            } else {
+                node = stk.top(); stk.pop(); 
+                if (prev >= node->val) return false; 
+                prev = node->val; 
+                node = node->right; 
+            }
+        return true; 
+    }
+
+
     /*100. Same Tree (Easy)
 	Given the roots of two binary trees p and q, write a function to check if 
 	they are the same or not. Two binary trees are considered the same if they 
@@ -3342,6 +3382,38 @@ public:
             else hi--;
         }
         return {}; 
+    }
+
+
+    /*169. Majority Element (Easy)
+	Given an array nums of size n, return the majority element. The majority 
+	element is the element that appears more than ⌊n / 2⌋ times. You may assume 
+	that the majority element always exists in the array.
+
+	Example 1:
+	Input: nums = [3,2,3]
+	Output: 3
+
+	Example 2:
+	Input: nums = [2,2,1,1,1,2,2]
+	Output: 2
+
+	Constraints:
+	* n == nums.length
+	* 1 <= n <= 5 * 10^4
+	* -2^31 <= nums[i] <= 2^31 - 1
+
+	Follow-up: Could you solve the problem in linear time and in O(1) space?*/
+
+    int majorityElement(vector<int>& nums) {
+        /*Boyer-Moore majority vote algo*/
+        int ans = 0, vote = 0; 
+        for (auto& x : nums) {
+            if (vote == 0) ans = x; 
+            if (x == ans) ++vote; 
+            else --vote; 
+        }
+        return ans; 
     }
 
 
