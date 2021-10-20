@@ -4036,7 +4036,7 @@ class Solution:
         for i in range(numRows): 
             row.append(1)
             for j in reversed(range(1, i)): row[j] += row[j-1]
-            ans.append(row[:])
+            ans.append(row.copy())
         return ans
 
 
