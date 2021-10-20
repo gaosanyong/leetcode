@@ -4052,10 +4052,10 @@ class Solution:
 	Follow up: Could you optimize your algorithm to use only O(k) extra space?"""
 
     def getRow(self, rowIndex: int) -> List[int]:
-        ans = [1]
-        for _ in range(rowIndex): 
+        ans = []
+        for _ in range(rowIndex+1): 
             ans.append(1)
-            for i in range(len(ans)-2, 0, -1): ans[i] += ans[i-1]
+            for i in reversed(range(1, len(ans)-1)): ans[i] += ans[i-1]
         return ans 
 
 
