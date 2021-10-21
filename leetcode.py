@@ -1432,18 +1432,18 @@ class Solution:
 	Output: 6"""
 
     def trap(self, height: List[int]) -> int:
-        ans = left = right = 0
         lo, hi = 0, len(height)-1
+        ans = val = 0
         while lo < hi: 
-            if height[lo] < height[hi]: 
-                left = max(left, height[lo])
-                ans += left - height[lo]
+            if height[lo] <= height[hi]: 
+                val = max(val, height[lo])
+                ans += val - height[lo]
                 lo += 1
             else: 
-                right = max(right, height[hi])
-                ans += right - height[hi]
+                val = max(val, height[hi])
+                ans += val - height[hi]
                 hi -= 1
-        return ans 
+        return ans
 
 
     """43. Multiply Strings (Medium)
