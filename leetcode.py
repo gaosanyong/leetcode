@@ -4807,14 +4807,12 @@ class Solution:
 	Output: false"""
 
     def wordBreak(self, s: str, wordDict: List[str]) -> bool:
-        
-        @cache
-        def fn(i):
-            """Return True if s[i:] can be segmented"""
-            if i == len(s): return True 
-            return any(s[i:i+len(word)] == word and fn(i+len(word)) for word in wordDict)
-        
-        return fn(0)
+        dp = [False]*len(s) + [True]
+        for i in reversed(range(len(dp))): 
+            if dp[i]: 
+                for word in wordDict: 
+                    if s[i-len(word):i] == word: dp[i-len(word)] = True
+        return dp[0]
 
 
     """140. Word Break II (Hard)
