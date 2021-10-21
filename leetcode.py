@@ -3117,17 +3117,13 @@ class Solution:
 	Explanation: It could be decoded as "BZ" (2 26), "VF" (22 6), or "BBF" (2 2 6)."""
 
     def numDecodings(self, s: str) -> int:
-        
-        @cache
-        def fn(i): 
-            """Return number of ways to decode s[i:]."""
-            if i == len(s): return 1 
-            if s[i] == "0": return 0 
-            ans = fn(i+1)
-            if i+1 < len(s) and s[i:i+2] <= "26": ans += fn(i+2)
-            return ans 
-        
-        return fn(0)
+        dp = [0] * (1 + len(s))
+        dp[-1] = 1
+        for i in reversed(range(len(s))): 
+            if s[i] != '0': 
+                dp[i] = dp[i+1]
+                if i+1 < len(s) and s[i:i+2] <= "26": dp[i] += dp[i+2]
+        return dp[0]
 
 
     """92. Reverse Linked List II (Medium)
