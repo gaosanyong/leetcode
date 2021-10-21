@@ -50532,27 +50532,27 @@ randomSet.getRandom();"""
 class RandomizedSet:
 
     def __init__(self):
-        self.val = [] # array of values
-        self.map = {} # mapping from value to index 
+        self.loc = {} # val-to-index mapping
+        self.vals = []
 
     def insert(self, val: int) -> bool:
-        if val in self.map: return False 
-        self.map[val] = len(self.val) # insert to mapping
-        self.val.append(val) # insert to array 
+        if val in self.loc: return False 
+        self.loc[val] = len(self.vals)
+        self.vals.append(val)
         return True 
 
     def remove(self, val: int) -> bool:
-        if val not in self.map: return False 
-        i = self.map[val]
-        self.map[self.val[-1]] = i
-        self.map.pop(val)
-        self.val[i] = self.val[-1]
-        self.val.pop()
+        if val not in self.loc: return False 
+        i = self.loc[val] 
+        self.loc[self.vals[-1]] = i 
+        self.loc.pop(val)
+        self.vals[i] = self.vals[-1]
+        self.vals.pop()
         return True 
-
+ 
     def getRandom(self) -> int:
-        return choice(self.val)
-
+        return choice(self.vals)
+        
 
 """381. Insert Delete GetRandom O(1) - Duplicates allowed (Hard)
 Design a data structure that supports all following operations in average O(1) 
