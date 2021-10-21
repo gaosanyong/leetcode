@@ -3579,7 +3579,7 @@ class Solution:
 	   15   7"""
 
     def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
-        loc = {x: i for i, x in enumerate(inorder)} # val-to-idx mapping 
+        loc = {x : i for i, x in enumerate(inorder)}
         root = None
         stack = []
         for x in preorder: 
