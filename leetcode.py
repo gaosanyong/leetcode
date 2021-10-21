@@ -7927,15 +7927,13 @@ class UnionFind:
 
 	Note:
 	* 1 is typically treated as an ugly number.
-	* Input is within the 32-bit signed integer range: [−231,  231 − 1]."""
+	* Input is within the 32-bit signed integer range: [−2^31,  2^31 − 1]."""
 
-    def isUgly(self, num: int) -> bool:
-        if num <= 0: return False #edge case 
-        
-        for f in 2, 3, 5: 
-            while num % f == 0: 
-                num //= f
-        return num == 1
+    def isUgly(self, n: int) -> bool:
+        if n <= 0: return False 
+        for f in 2,3,5:
+            while n%f == 0: n //= f
+        return n == 1
 
 
     """264. Ugly Number II (Medium)
