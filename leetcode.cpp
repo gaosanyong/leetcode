@@ -30281,12 +30281,12 @@ public:
         }
         
         int least = -1; 
-        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+        queue<pair<int, int>> pq;
         pq.emplace(0, 0); 
         vector<vector<int>> seen(n); 
         
         while (pq.size()) {
-            auto [t, u] = pq.top(); pq.pop(); 
+            auto [t, u] = pq.front(); pq.pop(); 
             if (u == n-1) {
                 if (least == -1) least = t; 
                 else if (least < t) return t; 

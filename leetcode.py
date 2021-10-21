@@ -3588,7 +3588,7 @@ class Solution:
                 stack.append(node)
                 node.left = node = TreeNode(x)
             else: 
-                while stack and loc[stack[-1].val] < loc[x]: node = stack.pop() # backtracking
+                while stack and loc[stack[-1].val] < loc[x]: node = stack.pop()
                 node.right = node = TreeNode(x)
         return root
 
@@ -49155,11 +49155,12 @@ class UnionFind:
         for u, v in edges: 
             graph[u-1].append(v-1)
             graph[v-1].append(u-1)
-        pq = [(0, 0)]
-        seen = [[] for _ in range(n)]
+        
         least = None
-        while pq: 
-            t, u = heappop(pq)
+        queue = deque([(0, 0)])
+        seen = [[] for _ in range(n)]
+        while queue: 
+            t, u = queue.popleft()
             if u == n-1: 
                 if least is None: least = t
                 elif least < t: return t 
@@ -49168,7 +49169,7 @@ class UnionFind:
             for v in graph[u]: 
                 if not seen[v] or len(seen[v]) == 1 and seen[v][0] != t: 
                     seen[v].append(t)
-                    heappush(pq, (t, v))
+                    queue.append((t, v))
 
 
 """146. LRU Cache (Medium)
