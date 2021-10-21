@@ -3519,18 +3519,20 @@ class Solution:
 	  [15,7]
 	]"""
 
-    def zigzagLevelOrder(self, root: TreeNode) -> List[List[int]]:
-        ans, queue = [], [root]
-        stride = 1
-        while queue: 
-            tmp, val = [], []
-            for node in queue: 
-                if node: 
-                    val.append(node.val)
-                    tmp.extend([node.left, node.right])
-            if val: ans.append(val[::stride])
-            stride *= -1
-            queue = tmp
+    def zigzagLevelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        ans = []
+        flag = 0
+        if root: 
+            queue = deque([root])
+            while queue: 
+                vals = []
+                for _ in range(len(queue)): 
+                    node = queue.popleft()
+                    vals.append(node.val)
+                    if node.left: queue.append(node.left)
+                    if node.right: queue.append(node.right)
+                ans.append(vals[::-1] if flag else vals)
+                flag ^= 1
         return ans 
 
 
@@ -50552,7 +50554,7 @@ class RandomizedSet:
  
     def getRandom(self) -> int:
         return choice(self.vals)
-        
+
 
 """381. Insert Delete GetRandom O(1) - Duplicates allowed (Hard)
 Design a data structure that supports all following operations in average O(1) 
