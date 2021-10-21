@@ -3607,19 +3607,19 @@ class Solution:
 	    /  \
 	   15   7"""
 
-    def buildTree(self, inorder: List[int], postorder: List[int]) -> TreeNode:
-        mp = {x: i for i, x in enumerate(inorder)} # relative position 
-        
+    def buildTree(self, inorder: List[int], postorder: List[int]) -> Optional[TreeNode]:
+        loc = {x : i for i, x in enumerate(inorder)}
         root = None
         stack = []
         for x in reversed(postorder): 
             if not root: root = node = TreeNode(x)
-            elif mp[x] > mp[stack[-1].val]: stack[-1].right = node = TreeNode(x)
+            elif loc[node.val] < loc[x]: 
+                stack.append(node)
+                node.right = node = TreeNode(x)
             else: 
-                while stack and mp[stack[-1].val] > mp[x]: node = stack.pop() # retrace 
+                while stack and loc[x] < loc[stack[-1].val]: node = stack.pop()
                 node.left = node = TreeNode(x)
-            stack.append(node)
-        return root 
+        return root
 
 
     """107. Binary Tree Level Order Traversal II (Easy)
