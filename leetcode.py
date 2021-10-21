@@ -4102,11 +4102,11 @@ class Solution:
 	Explanation: In this case, no transaction is done, i.e. max profit = 0."""
 
     def maxProfit(self, prices: List[int]) -> int:
-        ans = most = 0
-        for i in range(1, len(prices)): 
-            most = max(0, most + prices[i] - prices[i-1])
-            ans = max(ans, most)
-        return ans 
+        buy, sell = inf, 0
+        for x in prices:
+            buy = min(buy, x)
+            sell = max(sell, x - buy)
+        return sell
 
 
     """122. Best Time to Buy and Sell Stock II (Easy)
@@ -4140,7 +4140,11 @@ class Solution:
 	0 <= prices[i] <= 10 ^ 4"""
 
     def maxProfit(self, prices: List[int]) -> int:
-        return sum(max(0, prices[i] - prices[i-1]) for i in range(1, len(prices))) 
+        buy, sell = inf, 0
+        for x in prices: 
+            buy = min(buy, x - sell)
+            sell = max(sell, x - buy)
+        return sell
 
 
     """123. Best Time to Buy and Sell Stock III (Hard)
@@ -4169,13 +4173,13 @@ class Solution:
 	Explanation: In this case, no transaction is done, i.e. max profit = 0."""
 
     def maxProfit(self, prices: List[int]) -> int:
-        pnl = [0]*len(prices)
-        for _ in range(2):
-            most = 0 
-            for i in range(1, len(prices)): 
-                most = max(pnl[i], most + prices[i] - prices[i-1])
-                pnl[i] = max(pnl[i-1], most)
-        return pnl[-1]
+        buy, sell = [inf]*2, [0]*2
+        for x in prices:
+            for i in range(2): 
+                if i: buy[i] = min(buy[i], x - sell[i-1])
+                else: buy[i] = min(buy[i], x)
+                sell[i] = max(sell[i], x - buy[i])
+        return sell[1]
 
 
     """124. Binary Tree Maximum Path Sum (Hard)
@@ -6030,15 +6034,14 @@ class Solution:
 	             day 6 (price = 3), profit = 3-0 = 3."""
 
     def maxProfit(self, k: int, prices: List[int]) -> int:
-        if k >= len(prices)//2: 
-            return sum(max(0, prices[i] - prices[i-1]) for i in range(1, len(prices)))
-        
-        buy, pnl = [inf]*k, [0]*k
-        for price in prices:
+        if k >= len(prices)//2: return sum(max(0, prices[i] - prices[i-1]) for i in range(1, len(prices)))
+        buy, sell = [inf]*k, [0]*k
+        for x in prices:
             for i in range(k):
-                buy[i] = min(buy[i], price - (pnl[i-1] if i else 0))
-                pnl[i] = max(pnl[i], price - buy[i])
-        return pnl[-1] if prices and k else 0
+                if i: buy[i] = min(buy[i], x - sell[i-1])
+                else: buy[i] = min(buy[i], x)
+                sell[i] = max(sell[i], x - buy[i])
+        return sell[-1] if k and prices else 0
 
 
     """189. Rotate Array (Easy)
@@ -8957,8 +8960,11 @@ class UnionFind:
 	* 0 <= prices[i] <= 1000"""
 
     def maxProfit(self, prices: List[int]) -> int:
-        buy, sell, cooldown = inf, 0, 0
-        for x in prices: buy, sell, cooldown = min(buy, x-cooldown), max(sell, x-buy), sell
+        buy, cooldown, sell = inf, 0, 0
+        for x in prices: 
+            buy = min(buy, x - cooldown)
+            cooldown = sell 
+            sell = max(sell, x - buy)
         return sell
 
 
@@ -15778,6 +15784,41 @@ class Trie:
                 ii += 1
             ans += i - ii + 1
         return ans 
+
+
+    """714. Best Time to Buy and Sell Stock with Transaction Fee (Medium)
+	You are given an array prices where prices[i] is the price of a given stock 
+	on the ith day, and an integer fee representing a transaction fee. Find the 
+	maximum profit you can achieve. You may complete as many transactions as 
+	you like, but you need to pay the transaction fee for each transaction. 
+	Note: You may not engage in multiple transactions simultaneously (i.e., you 
+	must sell the stock before you buy again).
+
+	Example 1:
+	Input: prices = [1,3,2,8,4,9], fee = 2
+	Output: 8
+	Explanation: The maximum profit can be achieved by:
+	             - Buying at prices[0] = 1
+	             - Selling at prices[3] = 8
+	             - Buying at prices[4] = 4
+	             - Selling at prices[5] = 9
+	             The total profit is ((8 - 1) - 2) + ((9 - 4) - 2) = 8.
+	
+	Example 2:
+	Input: prices = [1,3,7,5,10,3], fee = 3
+	Output: 6
+
+	Constraints:
+	* 1 <= prices.length <= 5 * 10^4
+	* 1 <= prices[i] < 5 * 10^4
+	* 0 <= fee < 5 * 10^4"""
+
+    def maxProfit(self, prices: List[int], fee: int) -> int:
+        buy, sell = inf, 0
+        for x in prices: 
+            buy = min(buy, x - sell)
+            sell = max(sell, x - buy - fee)
+        return sell 
 
 
     """719. Find K-th Smallest Pair Distance (Hard)
