@@ -2678,12 +2678,13 @@ public:
 	* 0 <= prices[i] <= 10^4*/
 
     int maxProfit(vector<int>& prices) {
-        int ans = 0; 
-        for (int i = 1, most = 0; i < prices.size(); ++i) {
-            most = max(0, most + prices[i] - prices[i-1]); 
-            ans = max(ans, most); 
+    	// buy low & sell high
+        int buy = INT_MAX, sell = 0; 
+        for (auto& x : prices) {
+            buy = min(buy, x); 
+            sell = max(sell, x - buy); 
         }
-        return ans; 
+        return sell; 
     }
 
 
@@ -2718,10 +2719,13 @@ public:
 	* 0 <= prices[i] <= 10^4*/
 
     int maxProfit(vector<int>& prices) {
-        int ans = 0; 
-        for (int i = 1; i < prices.size(); ++i) 
-            ans += max(0, prices[i] - prices[i-1]); 
-        return ans; 
+    	// buy low & sell high
+        int buy = INT_MAX, sell = 0; 
+        for (auto& x : prices) {
+            buy = min(buy, x - sell); 
+            sell = max(sell, x - buy); 
+        }
+        return sell; 
     }
 
 
@@ -2761,16 +2765,15 @@ public:
 	* 0 <= prices[i] <= 10^5*/
 
     int maxProfit(vector<int>& prices) {
-        int n = prices.size(); 
-        vector<int> pnl(n); 
-        for (int k = 0; k < 2; ++k) {
-            int most = 0; 
-            for (int i = 1; i < n; ++i) {
-                most = max(pnl[i], most + prices[i] - prices[i-1]); 
-                pnl[i] = max(pnl[i-1], most); 
+    	// buy low & sell high
+        vector<int> buy(2, INT_MAX), sell(2); 
+        for (auto& x : prices) 
+            for (int i = 0; i < 2; ++i) {
+                if (i) buy[i] = min(buy[i], x - sell[i-1]); 
+                else buy[i] = min(buy[i], x); 
+                sell[i] = max(sell[i], x - buy[i]); 
             }
-        }
-        return pnl.back(); 
+        return sell.back(); 
     }
 
 
@@ -3497,6 +3500,45 @@ public:
         }
         vector<string> ans(duplicate.begin(), duplicate.end()); 
         return ans; 
+    }
+
+
+    /*188. Best Time to Buy and Sell Stock IV (Hard)
+	You are given an integer array prices where prices[i] is the price of a 
+	given stock on the ith day, and an integer k. Find the maximum profit you 
+	can achieve. You may complete at most k transactions. Note: You may not 
+	engage in multiple transactions simultaneously (i.e., you must sell the 
+	stock before you buy again).
+
+	Example 1:
+	Input: k = 2, prices = [2,4,1]
+	Output: 2
+	Explanation: Buy on day 1 (price = 2) and sell on day 2 (price = 4), 
+	             profit = 4-2 = 2.
+	
+	Example 2:
+	Input: k = 2, prices = [3,2,6,5,0,3]
+	Output: 7
+	Explanation: Buy on day 2 (price = 2) and sell on day 3 (price = 6), 
+	             profit = 6-2 = 4. Then buy on day 5 (price = 0) and sell on 
+	             day 6 (price = 3), profit = 3-0 = 3.
+
+	Constraints:
+	* 0 <= k <= 100
+	* 0 <= prices.length <= 1000
+	* 0 <= prices[i] <= 1000*/
+
+    int maxProfit(int k, vector<int>& prices) {
+    	// buy low & sell high
+        k = min(k, (int) prices.size()/2); 
+        vector<int> buy(k, INT_MAX), sell(k); 
+        for (auto& x : prices) 
+            for (int i = 0; i < k; ++i) {
+                if (i) buy[i] = min(buy[i], x - sell[i-1]); 
+                else buy[i] = min(buy[i], x); 
+                sell[i] = max(sell[i], x - buy[i]); 
+            }
+        return k && prices.size() ? sell.back() : 0; 
     }
 
 
@@ -4935,7 +4977,8 @@ public:
 	* 0 <= prices[i] <= 1000*/
 
     int maxProfit(vector<int>& prices) {
-        int sell = 0, cooldown = 0, buy = INT_MAX; 
+    	// buy low & sell high
+        int buy = INT_MAX, cooldown = 0, sell = 0; 
         for (auto& x : prices) {
             buy = min(buy, x - cooldown); 
             cooldown = sell; 
@@ -9743,6 +9786,44 @@ public:
             ans += i - ii + 1; 
         }
         return ans; 
+    }
+
+
+    /*714. Best Time to Buy and Sell Stock with Transaction Fee (Medium)
+	You are given an array prices where prices[i] is the price of a given stock 
+	on the ith day, and an integer fee representing a transaction fee. Find the 
+	maximum profit you can achieve. You may complete as many transactions as 
+	you like, but you need to pay the transaction fee for each transaction.
+	Note: You may not engage in multiple transactions simultaneously (i.e., you 
+	must sell the stock before you buy again).
+
+	Example 1:
+	Input: prices = [1,3,2,8,4,9], fee = 2
+	Output: 8
+	Explanation: The maximum profit can be achieved by:
+	             - Buying at prices[0] = 1
+	             - Selling at prices[3] = 8
+	             - Buying at prices[4] = 4
+	             - Selling at prices[5] = 9
+	             The total profit is ((8 - 1) - 2) + ((9 - 4) - 2) = 8.
+	
+	Example 2:
+	Input: prices = [1,3,7,5,10,3], fee = 3
+	Output: 6
+
+	Constraints:
+	* 1 <= prices.length <= 5 * 10^4
+	* 1 <= prices[i] < 5 * 10^4
+	* 0 <= fee < 5 * 10^4*/
+
+    int maxProfit(vector<int>& prices, int fee) {
+    	// buy low & sell high
+        int buy = INT_MAX, sell = 0; 
+        for (auto& x : prices) {
+            buy = min(buy, x - sell); 
+            sell = max(sell, x - buy - fee); 
+        }
+        return sell; 
     }
 
 
