@@ -1950,6 +1950,31 @@ public:
     }
 
 
+    /*96. Unique Binary Search Trees (Medium)
+	Given an integer n, return the number of structurally unique BST's (binary 
+	search trees) which has exactly n nodes of unique values from 1 to n.
+
+	Example 1:
+	Input: n = 3
+	Output: 5
+
+	Example 2:
+	Input: n = 1
+	Output: 1
+
+	Constraints: 1 <= n <= 19*/
+
+    int numTrees(int n) {
+        // Catalan number 
+        long ans = 1; 
+        for (int i = 0; i < n; ++i) {
+            ans *= 2*n - i; 
+            ans /= i+1; 
+        }
+        return ans/(n+1); 
+    }
+
+
     /*97. Interleaving String (Medium)
 	Given strings s1, s2, and s3, find whether s3 is formed by an interleaving 
 	of s1 and s2. An interleaving of two strings s and t is a configuration 

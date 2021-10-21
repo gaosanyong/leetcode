@@ -3258,14 +3258,12 @@ class Solution:
 	   2     1         2                 3"""
 
     def numTrees(self, n: int) -> int:
-        
-        @cache
-        def fn(n):
-            """Return Catalan number in recursive form"""
-            if n == 0: return 1
-            return sum(fn(i)*fn(n-i-1) for i in range(n))
-        
-        return fn(n)
+        # Catalan number
+        ans = 1
+        for i in range(n): 
+            ans *= 2*n-i
+            ans //= i+1
+        return ans//(n+1)
 
 
     """97. Interleaving String (Hard)
