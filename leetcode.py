@@ -21074,17 +21074,11 @@ class UnionFind:
 	* 1 <= A.length == A[0].length <= 100
 	* -100 <= A[i][j] <= 100"""
 
-    def minFallingPathSum(self, A: List[List[int]]) -> int:
-        n = len(A)
-        
-        @cache
-        def fn(i, j): 
-            """Return the minimum falling path ending at (i, j)."""
-            if not (0 <= i < n and 0 <= j < n): return inf
-            if i == 0: return A[i][j]
-            return min(fn(i-1, j-1), fn(i-1, j), fn(i-1, j+1)) + A[i][j]
-        
-        return min(fn(n-1, j) for j in range(n))
+    def minFallingPathSum(self, matrix: List[List[int]]) -> int:
+        for i in range(1, len(matrix)):
+            for j in range(len(matrix)):
+                matrix[i][j] += min(matrix[i-1][max(0, j-1):j+2])
+        return min(matrix[-1])
 
 
     """932. Beautiful Array (Medium)
