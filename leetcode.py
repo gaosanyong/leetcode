@@ -11293,13 +11293,12 @@ class UnionFind:
 	return: 3, for 3 arithmetic slices in A: 
 	[1, 2, 3], [2, 3, 4] and [1, 2, 3, 4] itself."""
 
-    def numberOfArithmeticSlices(self, A: List[int]) -> int:
+    def numberOfArithmeticSlices(self, nums: List[int]) -> int:
         ans = cnt = 0
-        for i in range(2, len(A)): 
-            if A[i-2] - A[i-1] == A[i-1] - A[i]: 
-                cnt += 1
-                ans += cnt 
+        for i in range(2, len(nums)): 
+            if nums[i-2] - nums[i-1] == nums[i-1] - nums[i]: cnt += 1
             else: cnt = 0
+            ans += cnt
         return ans 
 
 
