@@ -6148,6 +6148,7 @@ class Solution:
 	Follow up: If this function is called many times, how would you optimize it?"""
 
     def hammingWeight(self, n: int) -> int:
+    	# Brian Kernighan’s Algo
         ans = 0
         while n: 
             ans += 1
