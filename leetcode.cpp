@@ -597,15 +597,15 @@ public:
 	Constraints: 1 <= n <= 8*/
 
     vector<string> generateParenthesis(int n) {
-        vector<vector<string>> ans = {{""}}; 
+        vector<vector<string>> dp = {{""}}; 
         for (int k = 1; k <= n; ++k) {
-            ans.push_back({}); 
+            dp.push_back({}); 
             for (int i = 0; i < k; ++i) 
-                for (auto& x : ans[i]) 
-                    for (auto& y : ans[k-i-1]) 
-                        ans.back().push_back(x + "(" + y + ")"); 
+                for (auto& x : dp[i]) 
+                    for (auto& y : dp[k-i-1]) 
+                        dp.back().push_back(x + "(" + y + ")"); 
         }
-        return ans.back(); 
+        return dp.back(); 
     }
 
 
