@@ -3794,18 +3794,26 @@ class Solution:
 	   [5,8,4,5]
 	]"""
 
-    def pathSum(self, root: TreeNode, sum: int) -> List[List[int]]:
-        
-        def fn(node, x): 
-            """Populate ans with a stack"""
-            if not node: return 
-            stack.append(node.val)
-            if not node.left and not node.right and node.val == x: ans.append(stack.copy())
-            fn(node.left, x-node.val) or fn(node.right, x-node.val)
-            stack.pop()
-            
-        ans, stack = [], []
-        fn(root, sum)
+    def pathSum(self, root: Optional[TreeNode], targetSum: int) -> List[List[int]]:
+        ans = []
+        if root: 
+            mp = {root: None}
+            stack = [(root, 0)]
+            while stack: 
+                node, val = stack.pop()
+                val += node.val 
+                if node.left: 
+                    mp[node.left] = node
+                    stack.append((node.left, val))
+                if node.right: 
+                    mp[node.right] = node 
+                    stack.append((node.right, val))
+                if not node.left and not node.right and val == targetSum: 
+                    path = []
+                    while node: 
+                        path.append(node.val)
+                        node = mp[node]
+                    ans.append(path[::-1])
         return ans 
 
 
@@ -6170,17 +6178,19 @@ class Solution:
 	 \     \
 	  5     4       <---"""
 
-    def rightSideView(self, root: TreeNode) -> List[int]:
+    def rightSideView(self, root: Optional[TreeNode]) -> List[int]:
         ans = []
-        queue, k = [root], 0
-        while queue: 
-            tmp = []
-            for node in queue: 
-                if node: 
-                    if len(ans) == k: ans.append(node.val)
-                    tmp.append(node.right)
-                    tmp.append(node.left)
-            queue, k = tmp, k+1
+        if root: 
+            queue = [root]
+            while queue: 
+                val = 0
+                newq = []
+                for x in queue: 
+                    val = x.val
+                    if x.left: newq.append(x.left)
+                    if x.right: newq.append(x.right)
+                ans.append(val)
+                queue = newq
         return ans 
 
 
