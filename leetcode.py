@@ -8854,8 +8854,8 @@ class UnionFind:
     def lengthOfLIS(self, nums: List[int]) -> int:
         ans = []
         for x in nums: 
-            i = bisect_left(ans, x)
-            if i == len(ans): ans.append(x)
+            k = bisect_left(ans, x)
+            if k == len(ans): ans.append(x)
             else: ans[i] = x
         return len(ans)
 
