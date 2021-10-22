@@ -1066,7 +1066,6 @@ public:
         for (int i = 0; i < n; ++i) 
             for (int j = 0; j < i; ++j) 
                 swap(matrix[i][j], matrix[j][i]); 
-        
         for (auto& row : matrix) 
             reverse(row.begin(), row.end()); 
 
@@ -1280,6 +1279,33 @@ public:
                 ans.pop_back(); 
             }
             ans.push_back(interval); 
+        }
+        return ans; 
+    }
+
+
+    /*59. Spiral Matrix II (Medium)
+	Given a positive integer n, generate an n x n matrix filled with elements 
+	from 1 to n^2 in spiral order.
+
+	Example 1:
+	Input: n = 3
+	Output: [[1,2,3],[8,9,4],[7,6,5]]
+
+	Example 2:
+	Input: n = 1
+	Output: [[1]]
+
+	Constraints: 1 <= n <= 20*/
+
+    vector<vector<int>> generateMatrix(int n) {
+        vector<vector<int>> ans(n, vector<int>(n)); 
+        for (int x = 1, i = 0, j = 0, di = 0, dj = 1; x <= n*n; ++x, i+=di, j+=dj) {
+            ans[i][j] = x; 
+            if (!(0 <= i+di && i+di < n && 0 <= j+dj && j+dj < n && ans[i+di][j+dj] == 0)) {
+                swap(di, dj); 
+                dj *= -1; 
+            }
         }
         return ans; 
     }
