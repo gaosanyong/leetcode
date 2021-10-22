@@ -1285,6 +1285,48 @@ public:
     }
 
 
+    /*62. Unique Paths (Medium)
+	A robot is located at the top-left corner of a m x n grid (marked 'Start' 
+	in the diagram below). The robot can only move either down or right at any 
+	point in time. The robot is trying to reach the bottom-right corner of the 
+	grid (marked 'Finish' in the diagram below). How many possible unique paths 
+	are there?
+
+	Example 1:
+	Input: m = 3, n = 7
+	Output: 28
+
+	Example 2:
+	Input: m = 3, n = 2
+	Output: 3
+	Explanation: From the top-left corner, there are a total of 3 ways to reach 
+	             the bottom-right corner:
+	             1. Right -> Down -> Down
+	             2. Down -> Down -> Right
+	             3. Down -> Right -> Down
+
+	Example 3:
+	Input: m = 7, n = 3
+	Output: 28
+
+	Example 4:
+	Input: m = 3, n = 3
+	Output: 6
+
+	Constraints:
+	* 1 <= m, n <= 100
+	* It's guaranteed that the answer will be less than or equal to 2 * 10^9.*/
+
+    int uniquePaths(int m, int n) {
+        long ans = 1;
+        for (int i = 0; i < min(m-1, n-1); ++i) {
+            ans *= m+n-2-i; 
+            ans /= i+1; 
+        }
+        return ans; 
+    }
+
+
     /*63. Unique Paths II (Medium)
 	A robot is located at the top-left corner of a m x n grid (marked 'Start' 
 	in the diagram below). The robot can only move either down or right at any 
@@ -6190,6 +6232,51 @@ public:
                 }
             }
         return ans;
+    }
+
+
+    /*451. Sort Characters By Frequency (Medium)
+	Given a string s, sort it in decreasing order based on the frequency of the 
+	characters. The frequency of a character is the number of times it appears 
+	in the string. Return the sorted string. If there are multiple answers, 
+	return any of them.
+
+	Example 1:
+	Input: s = "tree"
+	Output: "eert"
+	Explanation: 'e' appears twice while 'r' and 't' both appear once. So 'e' 
+	             must appear before both 'r' and 't'. Therefore "eetr" is also 
+	             a valid answer.
+	
+	Example 2:
+	Input: s = "cccaaa"
+	Output: "aaaccc"
+	Explanation: Both 'c' and 'a' appear three times, so both "cccaaa" and 
+	             "aaaccc" are valid answers. Note that "cacaca" is incorrect, 
+	             as the same characters must be together.
+	
+	Example 3:
+	Input: s = "Aabb"
+	Output: "bbAa"
+	Explanation: "bbaA" is also a valid answer, but "Aabb" is incorrect. Note 
+	             that 'A' and 'a' are treated as two different characters.
+
+	Constraints:
+	* 1 <= s.length <= 5 * 10^5
+	* s consists of uppercase and lowercase English letters and digits.*/
+
+    string frequencySort(string s) {
+        unordered_map<char, int> freq; 
+        for (auto& ch : s) ++freq[ch]; 
+        
+        vector<vector<char>> bucket(s.size()+1); 
+        for (auto& [k, v] : freq) bucket[v].push_back(k); 
+        
+        string ans; 
+        for (int v = s.size(); v >= 0; --v) 
+            for (auto& ch : bucket[v])
+                ans += string(v, ch); 
+        return ans; 
     }
 
 
