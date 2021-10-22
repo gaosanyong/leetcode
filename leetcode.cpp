@@ -404,16 +404,13 @@ public:
 
     vector<string> letterCombinations(string digits) {
         if (digits.empty()) return {}; 
-        
-        const vector<string> mp = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        const vector<string> phone = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
         vector<string> ans = {""}; 
         for (auto& c : digits) {
             vector<string> tmp; 
-            for (auto& x : ans) {
-                for (auto& xx : mp[c - '2']) {
+            for (auto& x : ans) 
+                for (auto& xx : phone[c - '2']) 
                     tmp.push_back(x + xx); 
-                }
-            }
             ans = tmp; 
         }
         return ans; 
