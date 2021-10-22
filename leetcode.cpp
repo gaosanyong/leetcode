@@ -5751,17 +5751,13 @@ public:
 	           the question to allow negative numbers?*/
 
     int combinationSum4(vector<int>& nums, int target) {
-        vector<unsigned int> dp(1+target, 0); 
+        vector<unsigned> dp(target+1, 0); 
         dp[0] = 1; 
-        for (int i = 0; i < dp.size(); ++i) {
-            if (dp[i]) {
-                for (auto x: nums) {
-                    if (i + x < dp.size()) 
-                        dp[i+x] += dp[i]; 
-                }
-            }
-        } 
-        return dp.back(); 
+        for (int i = 0; i < target; ++i) 
+            if (dp[i]) 
+                for (auto& x : nums) 
+                    if (i + x <= target) dp[i+x] += dp[i]; 
+        return dp[target]; 
     }
 
 
