@@ -1102,7 +1102,7 @@ class Solution:
     def search(self, nums: List[int], target: int) -> int:
         lo, hi = 0, len(nums)-1
         while lo <= hi: 
-            mid = (lo + hi)//2
+            mid = lo + hi >> 1
             if nums[mid] == target: return mid
             if nums[lo] <= nums[mid]: 
                 if nums[lo] <= target < nums[mid]: hi = mid - 1
@@ -2771,24 +2771,20 @@ class Solution:
 	complexity? How and why?"""
 
     def search(self, nums: List[int], target: int) -> bool:
-        
-        def fn(lo, hi):
-            """Return True if target is found in nums[lo:hi+1]"""
-            if hi < lo: return False 
-            if lo == hi: return nums[lo] == target
-            
-            mid = (lo + hi)//2
-            if nums[mid] == target: return True
-            if nums[lo] < nums[mid]: 
-                if nums[lo] <= target < nums[mid]: return fn(lo, mid-1)
-                else: return fn(mid+1, hi)
-            elif nums[mid] < nums[hi]:
-                if nums[mid] < target <= nums[hi]: return fn(mid+1, hi)
-                else: return fn(lo, mid-1)
-            else: #nums[lo] == nums[mid] == nums[hi]
-                return fn(lo, mid-1) or fn(mid+1, hi)
-        
-        return fn(0, len(nums)-1)
+        lo, hi = 0, len(nums)-1
+        while lo <= hi: 
+            mid = lo + hi >> 1
+            if nums[mid] == target: return True 
+            if nums[lo] == nums[mid] == nums[hi]: 
+                lo += 1
+                hi -= 1
+            elif nums[lo] <= nums[mid]: 
+                if nums[lo] <= target < nums[mid]: hi = mid - 1
+                else: lo = mid + 1
+            else: 
+                if nums[mid] < target <= nums[hi]: lo = mid + 1
+                else: hi = mid - 1
+        return False 
 
 
     """82. Remove Duplicates from Sorted List II (Medium)
