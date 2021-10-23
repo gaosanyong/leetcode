@@ -2117,15 +2117,13 @@ class Solution:
 
     def uniquePathsWithObstacles(self, obstacleGrid: List[List[int]]) -> int:
         m, n = len(obstacleGrid), len(obstacleGrid[0])
-        
-        @cache
-        def fn(i, j): 
-            """Return number of unique paths ending at (i, j)"""
-            if i < 0 or j < 0 or obstacleGrid[i][j]: return 0
-            if i == 0 and j == 0: return 1 
-            return fn(i-1, j) + fn(i, j-1)
-        
-        return fn(m-1, n-1)
+        dp = [0]*n
+        dp[0] = 1
+        for i in range(m): 
+            for j in range(n): 
+                if obstacleGrid[i][j]: dp[j] = 0
+                elif j: dp[j] += dp[j-1]
+        return dp[-1]
 
 
     """64. Minimum Path Sum (Medium)
