@@ -2766,11 +2766,11 @@ public:
 	           total number of rows in the triangle?*/
 
     int minimumTotal(vector<vector<int>>& triangle) {
-        vector<int> ans = triangle.back(); 
+        vector<int> dp = triangle.back(); 
         for (int i = triangle.size()-2; i >= 0; --i) 
             for (int j = 0; j <= i; ++j) 
-                ans[j] = triangle[i][j] + min(ans[j], ans[j+1]); 
-        return ans[0]; 
+                dp[j] = triangle[i][j] + min(dp[j], dp[j+1]); 
+        return dp[0]; 
     }
 
 
