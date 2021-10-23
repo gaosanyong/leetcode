@@ -5240,12 +5240,12 @@ class Solution:
 
     def findMin(self, nums: List[int]) -> int:
         lo, hi = 0, len(nums)-1
-        while lo < hi:
-            mid = (lo + hi)//2
+        while lo < hi: 
+            mid = lo + hi >> 1
             if nums[mid] < nums[hi]: hi = mid
             else: lo = mid + 1
         return nums[lo]
-
+            
 
     """154. Find Minimum in Rotated Sorted Array II (Hard)
 	Suppose an array sorted in ascending order is rotated at some pivot unknown 
@@ -5266,11 +5266,11 @@ class Solution:
 
     def findMin(self, nums: List[int]) -> int:
         lo, hi = 0, len(nums)-1
-        while lo < hi:
-            mid = (lo + hi)//2
+        while lo < hi: 
+            mid = lo + hi >> 1
             if nums[mid] < nums[hi]: hi = mid
-            elif nums[mid] > nums[hi]: lo = mid + 1
-            else: hi -= 1
+            elif nums[mid] == nums[hi]: hi -= 1 # duplicates
+            else: lo = mid + 1
         return nums[lo]
 
 
