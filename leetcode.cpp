@@ -4294,6 +4294,46 @@ public:
     }
 
 
+    /*221. Maximal Square (Medium)
+	Given an m x n binary matrix filled with 0's and 1's, find the largest 
+	square containing only 1's and return its area.
+
+	Example 1:
+	Input: matrix = [["1","0","1","0","0"],
+	                 ["1","0","1","1","1"],
+	                 ["1","1","1","1","1"],
+	                 ["1","0","0","1","0"]]
+	Output: 4
+
+	Example 2:
+	Input: matrix = [["0","1"],
+	                 ["1","0"]]
+	Output: 1
+	
+	Example 3:
+	Input: matrix = [["0"]]
+	Output: 0
+
+	Constraints:
+	* m == matrix.length
+	* n == matrix[i].length
+	* 1 <= m, n <= 300
+	* matrix[i][j] is '0' or '1'.*/
+
+    int maximalSquare(vector<vector<char>>& matrix) {
+        int ans = 0, m = matrix.size(), n = matrix[0].size(); 
+        vector<vector<int>> dp(m, vector<int>(n)); 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if (matrix[i][j] == '1') {
+                    if (i && j) dp[i][j] = 1 + min({dp[i-1][j], dp[i][j-1], dp[i-1][j-1]}); 
+                    else dp[i][j] = 1; 
+                    ans = max(ans, dp[i][j]); 
+                }
+        return ans*ans; 
+    }
+
+
     /*226. Invert Binary Tree (Easy)
 	Given the root of a binary tree, invert the tree, and return its root.
 
