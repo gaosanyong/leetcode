@@ -49447,28 +49447,18 @@ class BSTIterator:
 
     def __init__(self, root: TreeNode):
         self.stack = []
-        self._sink(root)
-    
-    def _sink(self, node: TreeNode) -> None:
-        """Sink along the tree and collect nodes to stack"""
-        while node:
-            self.stack.append(node)
-            node = node.left
+        self.node = root
 
     def next(self) -> int:
-        """
-        @return the next smallest number
-        """
-        node = self.stack.pop()
-        ans = node.val 
-        self._sink(node.right)
-        return ans 
+        while self.node: 
+            self.stack.append(self.node)
+            self.node = self.node.left
+        self.node = node = self.stack.pop()
+        self.node = self.node.right
+        return node.val
 
     def hasNext(self) -> bool:
-        """
-        @return whether we have a next smallest number
-        """
-        return self.stack
+        return self.stack or self.node 
 
 
 """208. Implement Trie (Prefix Tree) (Medium)
