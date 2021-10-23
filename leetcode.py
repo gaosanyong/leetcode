@@ -7026,18 +7026,18 @@ class Solution:
 	The number of elements of the BST is between 1 to 10^4.
 	You may assume k is always valid, 1 ≤ k ≤ BST's total elements."""
 
-    def kthSmallest(self, root: TreeNode, k: int) -> int:
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
         node = root
         stack = []
-        while node or stack:
-            if node:
+        while node or stack: 
+            if node: 
                 stack.append(node)
                 node = node.left
-                continue
-            node = stack.pop()
-            if not (k := k-1): break
-            node = node.right
-        return node.val 
+            else: 
+                node = stack.pop()
+                k -= 1
+                if k == 0: return node.val
+                node = node.right 
 
 
     """231. Power of Two (Easy)
