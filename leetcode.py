@@ -2082,8 +2082,8 @@ class Solution:
         
         def choose(n, k): 
             """Return n choose k"""
-            ans, k = 1, min(k, n-k)
-            for i in range(k):
+            ans = 1
+            for i in range(min(k, n-k)):
                 ans *= n-i
                 ans //= i+1
             return ans 
