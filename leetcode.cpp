@@ -910,14 +910,14 @@ public:
 	* 0 <= height[i] <= 10^5*/
 
     int trap(vector<int>& height) {
-        int ans = 0, left = 0, right = 0, lo = 0, hi = height.size()-1; 
-        while (lo < hi) {
+        int ans = 0; 
+        for (val = 0, lo = 0, hi = height.size()-1; lo < hi; ) {
             if (height[lo] < height[hi]) {
-                left = max(left, height[lo]); 
-                ans += left - height[lo++]; 
+                val = max(val, height[lo]); 
+                ans += val - height[lo++]; 
             } else {
-                right = max(right, height[hi]); 
-                ans += right - height[hi--]; 
+                val = max(val, height[hi]); 
+                ans += val - height[hi--]; 
             }
         }
         return ans; 
