@@ -6216,8 +6216,8 @@ public:
 	* -5 * 10^4 <= starti < endi <= 5 * 10^4*/
 
     int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        sort(intervals.begin(), intervals.end(), [&](auto& lhs, auto& rhs) {return lhs[1] < rhs[1];}); 
         int ans = 0, prev = INT_MIN; 
-        sort(intervals.begin(), intervals.end(), [](auto& lhs, auto& rhs){return lhs[1] < rhs[1];}); 
         for (auto& interval : intervals) 
             if (interval[0] < prev) ++ans; 
             else prev = interval[1]; 
