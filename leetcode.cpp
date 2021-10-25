@@ -30913,6 +30913,249 @@ public:
         }
         return -1; 
     }
+
+
+    /*2047. Number of Valid Words in a Sentence (Easy)
+	A sentence consists of lowercase letters ('a' to 'z'), digits ('0' to '9'), 
+	hyphens ('-'), punctuation marks ('!', '.', and ','), and spaces (' ') only. 
+	Each sentence can be broken down into one or more tokens separated by one 
+	or more spaces ' '. A token is a valid word if:
+	* It only contains lowercase letters, hyphens, and/or punctuation (no 
+	  digits).
+	* There is at most one hyphen '-'. If present, it should be surrounded by 
+	  lowercase characters ("a-b" is valid, but "-ab" and "ab-" are not valid).
+	* There is at most one punctuation mark. If present, it should be at the 
+	  end of the token.
+	Examples of valid words include "a-b.", "afad", "ba-c", "a!", and "!". 
+	Given a string sentence, return the number of valid words in sentence.
+
+	Example 1:
+	Input: sentence = "cat and  dog"
+	Output: 3
+	Explanation: The valid words in the sentence are "cat", "and", and "dog".
+
+	Example 2:
+	Input: sentence = "!this  1-s b8d!"
+	Output: 0
+	Explanation: There are no valid words in the sentence. "!this" is invalid 
+	             because it starts with a punctuation mark. "1-s" and "b8d" are 
+	             invalid because they contain digits.
+	
+	Example 3:
+	Input: sentence = "alice and  bob are playing stone-game10"
+	Output: 5
+	Explanation: The valid words in the sentence are "alice", "and", "bob", 
+	             "are", and "playing". "stone-game10" is invalid because it 
+	             contains digits.
+	
+	Example 4:
+	Input: sentence = "he bought 2 pencils, 3 erasers, and 1  pencil-sharpener."
+	Output: 6
+	Explanation: The valid words in the sentence are "he", "bought", "pencils,", 
+	             "erasers,", "and", and "pencil-sharpener.".
+
+	Constraints:
+	* 1 <= sentence.length <= 1000
+	* sentence only contains lowercase English letters, digits, ' ', '-', '!', 
+	  '.', and ','.
+	* There will be at least 1 token.*/
+
+    int countValidWords(string sentence) {
+        regex pattern("(^[a-z]+(-[a-z]+)?)?[!,.]?$"); 
+        
+        int ans = 0; 
+        istringstream iss(sentence); 
+        string buf; 
+        while (iss >> buf) 
+            if (regex_match(buf, pattern)) ++ans; 
+        return ans; 
+    }
+
+
+    /*2048. Next Greater Numerically Balanced Number (Medium)
+	An integer x is numerically balanced if for every digit d in the number x, 
+	there are exactly d occurrences of that digit in x. Given an integer n, 
+	return the smallest numerically balanced number strictly greater than n.
+
+	Example 1:
+	Input: n = 1
+	Output: 22
+	Explanation: 22 is numerically balanced since:
+	             - The digit 2 occurs 2 times. 
+	             It is also the smallest numerically balanced number strictly 
+	             greater than 1.
+	
+	Example 2:
+	Input: n = 1000
+	Output: 1333
+	Explanation: 1333 is numerically balanced since:
+	             - The digit 1 occurs 1 time.
+	             - The digit 3 occurs 3 times. 
+	             It is also the smallest numerically balanced number strictly 
+	             greater than 1000. Note that 1022 cannot be the answer because 
+	             0 appeared more than 0 times.
+	
+	Example 3:
+	Input: n = 3000
+	Output: 3133
+	Explanation: 3133 is numerically balanced since:
+	             - The digit 1 occurs 1 time.
+	             - The digit 3 occurs 3 times.
+	             It is also the smallest numerically balanced number strictly 
+	             greater than 3000.
+
+	Constraints: 0 <= n <= 10^6*/
+
+    int nextBeautifulNumber(int n) {
+        for (bool found = false; !found; ) {
+            ++n; 
+            vector<int> freq(10); 
+            for (int x = n; x; x /= 10) ++freq[x % 10]; 
+            found = true; 
+            for (int i = 0; i < 10; ++i) 
+                if (freq[i] && i != freq[i]) found = false; 
+        }
+        return n; 
+    }
+
+
+    /*2049. Count Nodes With the Highest Score (Medium)
+	There is a binary tree rooted at 0 consisting of n nodes. The nodes are 
+	labeled from 0 to n - 1. You are given a 0-indexed integer array parents 
+	representing the tree, where parents[i] is the parent of node i. Since node 
+	0 is the root, parents[0] == -1. Each node has a score. To find the score 
+	of a node, consider if the node and the edges connected to it were removed. 
+	The tree would become one or more non-empty subtrees. The size of a subtree 
+	is the number of the nodes in it. The score of the node is the product of 
+	the sizes of all those subtrees. Return the number of nodes that have the 
+	highest score.
+
+	Example 1:
+	Input: parents = [-1,2,0,2,0]
+	Output: 3
+	Explanation: - The score of node 0 is: 3 * 1 = 3
+	             - The score of node 1 is: 4 = 4
+	             - The score of node 2 is: 1 * 1 * 2 = 2
+	             - The score of node 3 is: 4 = 4
+	             - The score of node 4 is: 4 = 4
+	             The highest score is 4, and three nodes (node 1, node 3, and 
+	             ode 4) have the highest score.
+	
+	Example 2:
+	Input: parents = [-1,2,0]
+	Output: 2
+	Explanation: - The score of node 0 is: 2 = 2
+	             - The score of node 1 is: 2 = 2
+	             - The score of node 2 is: 1 * 1 = 1
+	             The highest score is 2, and two nodes (node 0 and node 1) have 
+	             the highest score.
+
+	Constraints:
+	* n == parents.length
+	* 2 <= n <= 10^5
+	* parents[0] == -1
+	* 0 <= parents[i] <= n - 1 for i != 0
+	* parents represents a valid binary tree.*/
+
+    int countHighestScoreNodes(vector<int>& parents) {
+        int n = parents.size(); 
+        vector<vector<int>> tree(n); 
+        for (int i = 0; i < n; ++i) 
+            if (parents[i] >= 0) tree[parents[i]].push_back(i); 
+        
+        map<long, int> freq; 
+        
+        function<int(int)> fn = [&](int x) {
+            long count = 1, score = 1; 
+            for (auto& xx : tree[x]) {
+                int cc = fn(xx); 
+                count += cc; 
+                score *= cc; 
+            }
+            score *= max(1l, n - count); 
+            ++freq[score]; 
+            return count; 
+        };
+        
+        fn(0); 
+        return freq.rbegin()->second; 
+    }
+
+
+    /*2050. Parallel Courses III (Hard)
+	You are given an integer n, which indicates that there are n courses 
+	labeled from 1 to n. You are also given a 2D integer array relations where 
+	relations[j] = [prevCoursej, nextCoursej] denotes that course prevCoursej 
+	has to be completed before course nextCoursej (prerequisite relationship). 
+	Furthermore, you are given a 0-indexed integer array time where time[i] 
+	denotes how many months it takes to complete the (i+1)th course. You must 
+	find the minimum number of months needed to complete all the courses 
+	following these rules:
+	* You may start taking a course at any time if the prerequisites are met.
+	* Any number of courses can be taken at the same time.
+	Return the minimum number of months needed to complete all the courses. 
+	Note: The test cases are generated such that it is possible to complete 
+	every course (i.e., the graph is a directed acyclic graph).
+
+	Example 1:
+	Input: n = 3, relations = [[1,3],[2,3]], time = [3,2,5]
+	Output: 8
+	Explanation: The figure above represents the given graph and the time 
+	             required to complete each course. We start course 1 and course 
+	             2 simultaneously at month 0. Course 1 takes 3 months and 
+	             course 2 takes 2 months to complete respectively. Thus, the 
+	             earliest time we can start course 3 is at month 3, and the 
+	             total time required is 3 + 5 = 8 months.
+	
+	Example 2:
+	Input: n = 5, relations = [[1,5],[2,5],[3,5],[3,4],[4,5]], time = [1,2,3,4,5]
+	Output: 12
+	Explanation: The figure above represents the given graph and the time 
+	             required to complete each course. You can start courses 1, 2, 
+	             and 3 at month 0. You can complete them after 1, 2, and 3 
+	             months respectively. Course 4 can be taken only after course 3 
+	             is completed, i.e., after 3 months. It is completed after 
+	             3 + 4 = 7 months. Course 5 can be taken only after courses 1, 
+	             2, 3, and 4 have been completed, i.e., after max(1,2,3,7) = 7 
+	             months. Thus, the minimum time needed to complete all the 
+	             courses is 7 + 5 = 12 months.
+
+	Constraints:
+	* 1 <= n <= 5 * 10^4
+	* 0 <= relations.length <= min(n * (n - 1) / 2, 5 * 10^4)
+	* relations[j].length == 2
+	* 1 <= prevCoursej, nextCoursej <= n
+	* prevCoursej != nextCoursej
+	* All the pairs [prevCoursej, nextCoursej] are unique.
+	* time.length == n
+	* 1 <= time[i] <= 10^4
+	* The given graph is a directed acyclic graph.*/
+
+    int minimumTime(int n, vector<vector<int>>& relations, vector<int>& time) {
+        vector<vector<int>> graph(n); 
+        vector<int> indeg(n); 
+        
+        for (auto& edge : relations) {
+            graph[edge[0]-1].push_back(edge[1]-1); 
+            ++indeg[edge[1]-1]; 
+        }
+        
+        queue<pair<int, int>> q; 
+        vector<int> start(n); 
+        for (int i = 0; i < n; ++i) 
+            if (indeg[i] == 0) q.emplace(time[i], i); 
+        
+        int ans = 0; 
+        while (q.size()) {
+            auto [t, u] = q.front(); q.pop(); 
+            ans = max(ans, t); 
+            for (auto& v : graph[u]) {
+                start[v] = max(start[v], t); 
+                if (--indeg[v] == 0) q.emplace(start[v] + time[v], v); 
+            }
+        }
+        return ans; 
+    }
 };
 
 
