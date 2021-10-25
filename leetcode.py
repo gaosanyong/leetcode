@@ -12551,15 +12551,14 @@ class Trie:
 	* s consists only of lowercase English letters."""
 
     def longestPalindromeSubseq(self, s: str) -> int:
-        
-        @cache
-        def fn(lo, hi): 
-            """Return longest palindromic subsequence."""
-            if lo >= hi: return int(lo == hi)
-            if s[lo] == s[hi]: return fn(lo+1, hi-1) + 2
-            return max(fn(lo+1, hi), fn(lo, hi-1))
-        
-        return fn(0, len(s)-1)
+        n = len(s)
+        dp = [[0]*n for _ in range(n)]
+        for i in reversed(range(n)): 
+            dp[i][i] = 1
+            for j in range(i+1, n): 
+                if s[i] == s[j]: dp[i][j] = 2 + dp[i+1][j-1]
+                else: dp[i][j] = max(dp[i+1][j], dp[i][j-1])
+        return dp[0][-1]
 
 
     """517. Super Washing Machines (Hard)
