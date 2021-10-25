@@ -6766,14 +6766,14 @@ class Solution:
 	Output: 4"""
 
     def maximalSquare(self, matrix: List[List[str]]) -> int:
-        
-        @cache
-        def fn(i, j):
-            """Return the length of max square ending at (i, j)."""
-            if i < 0 or j < 0 or matrix[i][j] == "0": return 0
-            return 1 + min(fn(i-1, j-1), fn(i-1, j), fn(i, j-1))
-        
-        return max((fn(i, j) for i in range(len(matrix)) for j in range(len(matrix[0]))), default=0)**2
+        m, n = len(matrix), len(matrix[0])
+        dp = [[0]*n for _ in range(m)]
+        for i in range(m): 
+            for j in range(n): 
+                if matrix[i][j] == "1": 
+                    if i == 0 or j == 0: dp[i][j] = 1
+                    else: dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
+        return max(map(max, dp))**2
 
 
     """222. Count Complete Tree Nodes (Medium)
