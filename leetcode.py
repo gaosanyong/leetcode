@@ -7178,8 +7178,7 @@ class Solution:
             """Return LCA of p and q in subtree rooted at node (if found)."""
             if not node or node in (p, q): return node
             left, right = fn(node.left), fn(node.right)
-            if left and right: return node 
-            return left or right
+            return node if left and right else left or right 
         
         return fn(root)
 
