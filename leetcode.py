@@ -10502,9 +10502,10 @@ class UnionFind:
         prev = 0
         for i in range(1, len(nums)): 
             diff = nums[i] - nums[i-1]
-            if prev * diff < 0: ans += 1
-            if diff: prev = diff
-        return ans + bool(prev)
+            if diff: 
+                if prev*diff <= 0: ans += 1
+                prev = diff 
+        return ans
 
 
     """377. Combination Sum IV (Medium)
