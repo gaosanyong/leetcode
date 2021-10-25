@@ -2144,15 +2144,13 @@ class Solution:
 
     def minPathSum(self, grid: List[List[int]]) -> int:
         m, n = len(grid), len(grid[0])
-        
-        @cache
-        def fn(i, j): 
-            """Return min path sum ending at (i, j)"""
-            if i == 0 and j == 0: return grid[i][j]
-            if i < 0 or j < 0: return float("inf")
-            return grid[i][j] + min(fn(i-1, j), fn(i, j-1))
-        
-        return fn(m-1, n-1)
+        ans = [inf]*n
+        ans[0] = 0
+        for i in range(m):
+            for j in range(n): 
+                if j: ans[j] = min(ans[j-1], ans[j])
+                ans[j] += grid[i][j]
+        return ans[-1]
 
 
     """65. Valid Number (Hard)
