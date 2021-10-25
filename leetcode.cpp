@@ -6171,8 +6171,8 @@ public:
         for (auto& ch : s) ++freq[ch]; 
         int ans = 0, odd = 0; 
         for (auto& [k, v] : freq) {
-            if (v&1) odd = 1; 
             ans += v/2*2; 
+            if (v&1) odd = 1; 
         }
         return ans + odd; 
     }
