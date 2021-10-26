@@ -9864,12 +9864,10 @@ class UnionFind:
 	* You can return the answer in any order."""
 
     def topKFrequent(self, nums: List[int], k: int) -> List[int]:
-        freq = dict()
-        for x in nums: freq[x] = 1 + freq.get(x, 0)
-        
+        freq = Counter(nums)
         bucket = [[] for _ in nums]
         for x, v in freq.items(): bucket[-v].append(x)
-            
+        
         ans = []
         for x in bucket: 
             ans.extend(x)
