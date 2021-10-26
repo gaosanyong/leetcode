@@ -31861,23 +31861,21 @@ Constraints:
 * At most 5 * 10^4 calls in total will be made to reset and shuffle.*/
 
 class Solution {
-    vector<int> orig; 
-    vector<int> nums; 
+    // Knuth shuffle aka Fisher-Yates shuffle
+    vector<int> orig, nums; 
 public:
     Solution(vector<int>& nums) {
         orig = nums; 
         this->nums = nums; 
     }
     
-    /** Resets the array to its original configuration and return it. */
     vector<int> reset() {
         return orig; 
     }
     
-    /** Returns a random shuffling of the array. */
     vector<int> shuffle() {
-        for (int i = 0; i < nums.size(); ++i) {
-            int ii = rand() % (i + 1); 
+        for (int i = 1; i < nums.size(); ++i) {
+            int ii = rand() % (i+1); 
             swap(nums[ii], nums[i]); 
         }
         return nums; 

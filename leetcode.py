@@ -51040,16 +51040,17 @@ solution.reset();
 solution.shuffle();"""
 
 class Solution:
+	"""Knuth shuffle aka Fisher-Yates shuffle"""
 
     def __init__(self, nums: List[int]):
-        self.orig = nums # original array 
-        self.nums = nums.copy()
+        self.orig = nums.copy()
+        self.nums = nums
 
     def reset(self) -> List[int]:
         return self.orig
 
     def shuffle(self) -> List[int]:
-        for i in range(len(self.nums)): 
+        for i in range(1, len(self.nums)): 
             ii = randint(0, i)
             self.nums[ii], self.nums[i] = self.nums[i], self.nums[ii]
         return self.nums
