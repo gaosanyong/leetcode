@@ -6587,11 +6587,28 @@ class Solution:
 	Note: You may assume k is always valid, 1 ≤ k ≤ array's length."""
 
     def findKthLargest(self, nums: List[int], k: int) -> int:
-        h = []
-        for x in nums: 
-            heappush(h, x)
-            if len(h) > k: heappop(h)
-        return h[0]
+        """Hoare's selection algo"""
+        
+        def partition(lo, hi): 
+            """Return partition of nums[lo:hi]."""
+            i, j = lo+1, hi-1
+            while i <= j: 
+                if nums[i] < nums[lo]: i += 1
+                elif nums[j] > nums[lo]: j -= 1
+                else: 
+                    nums[i], nums[j] = nums[j], nums[i]
+                    i += 1
+                    j -= 1
+            nums[lo], nums[j] = nums[j], nums[lo]
+            return j
+        
+        shuffle(nums)
+        lo, hi = 0, len(nums)
+        while True: 
+            mid = partition(lo, hi)
+            if mid+k < len(nums): lo = mid + 1
+            elif mid+k == len(nums): return nums[mid]
+            else: hi = mid
 
 
     """216. Combination Sum III (Medium)
