@@ -8845,13 +8845,12 @@ class UnionFind:
 	Follow up: Could you improve it to O(n log n) time complexity?"""
 
     def lengthOfLIS(self, nums: List[int]) -> int:
-        ans = []
+        vals = []
         for x in nums: 
-            k = bisect_left(ans, x)
-            if k == len(ans): ans.append(x)
-            else: ans[i] = x
-        return len(ans)
-
+            k = bisect_left(vals, x)
+            if k == len(vals): vals.append(x)
+            else: vals[k] = x
+        return len(vals)
 
 
     """306. Additive Number (Medium)
