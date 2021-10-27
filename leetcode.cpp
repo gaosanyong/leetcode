@@ -3352,6 +3352,41 @@ public:
     }
 
 
+    /*149. Max Points on a Line (Hard)
+	Given an array of points where points[i] = [xi, yi] represents a point on 
+	the X-Y plane, return the maximum number of points that lie on the same 
+	straight line.
+
+	Example 1:
+	Input: points = [[1,1],[2,2],[3,3]]
+	Output: 3
+
+	Example 2:
+	Input: points = [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+	Output: 4
+
+	Constraints:
+	* 1 <= points.length <= 300
+	* points[i].length == 2
+	* -10^4 <= xi, yi <= 10^4
+	* All the points are unique.*/
+
+    int maxPoints(vector<vector<int>>& points) {
+        int ans = 1; 
+        for (int i = 0; i < points.size(); ++i) {
+            map<pair<int, int>, int> freq; 
+            for (int j = i+1; j < points.size(); ++j) {
+                int dx = points[j][0] - points[i][0], dy = points[j][1] - points[i][1], g = gcd(dx, dy); 
+                if (g) dx /= g, dy /= g; 
+                if (dx < 0) dx *= -1, dy *= -1; 
+                else if (dx == 0) dy = abs(dy); 
+                ans = max(ans, ++freq[{dx, dy}] + 1); 
+            }
+        }
+        return ans; 
+    }
+
+
     /*150. Evaluate Reverse Polish Notation (Medium)
 	Evaluate the value of an arithmetic expression in Reverse Polish Notation. 
 	Valid operators are +, -, *, and /. Each operand may be an integer or 
