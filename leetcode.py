@@ -1330,20 +1330,13 @@ class Solution:
 	]"""
 
     def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
-        candidates.sort()
-        
-        def fn(stack, x, k=0):
-            """backtracking using a stack"""
-            if x == 0: return ans.append(stack.copy()) #store a copy 
-            for i in range(k, len(candidates)): 
-                if candidates[i] > x: break 
-                stack.append(candidates[i])
-                fn(stack, x-candidates[i], i)
-                stack.pop()
-        
-        ans = []
-        fn([], target)
-        return ans 
+        dp = [[] for _ in range(target + 1)]
+        dp[0].append([])
+        for x in candidates: 
+            for i in range(target): 
+                if i+x <= target: 
+                    for seq in dp[i]: dp[i+x].append(seq + [x])
+        return dp[-1]
 
 
     """40. Combination Sum II (Medium)
@@ -1376,20 +1369,14 @@ class Solution:
 
     def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
         candidates.sort()
-        
-        def fn(stack, x, k=0):
-            """backtracking using a stack"""
-            if x == 0: return ans.append(stack.copy())
-            for i in range(k, len(candidates)):
-                if candidates[i] > x: break 
-                if i > k and candidates[i] == candidates[i-1]: continue
-                stack.append(candidates[i])
-                fn(stack, x - candidates[i], i+1)
-                stack.pop()
-                
-        ans = []
-        fn([], target)
-        return ans 
+        dp = [set() for _ in range(target+1)]
+        dp[0].add(())
+        for x in candidates: 
+            for i in reversed(range(target)): 
+                if x + i <= target: 
+                    for seq in dp[i]: 
+                        dp[i+x].add(seq + (x,))
+        return dp[-1]
 
 
     """41. First Missing Positive (Hard)
@@ -6631,18 +6618,16 @@ class Solution:
 	Output: [[1,2,6], [1,3,5], [2,3,4]]"""
 
     def combinationSum3(self, k: int, n: int) -> List[List[int]]:
-        
-        def fn(n, i=1):
-            """Populate ans with a stack."""
-            if n == 0 and len(stack) == k: return ans.append(stack.copy())
-            if n < 0 or len(stack) == k: return 
-            for nn in range(i, 10):
-                stack.append(nn)
-                fn(n-nn, nn+1)
-                stack.pop()
-            
         ans, stack = [], []
-        fn(n)
+        x = 1
+        while True: 
+            if len(stack) == k and sum(stack) == n: ans.append(stack.copy())
+            if len(stack) == k or k - len(stack) > 10 - x: 
+                if not stack: break
+                x = stack.pop() + 1
+            else: 
+                stack.append(x)
+                x += 1
         return ans 
 
 
@@ -10553,14 +10538,13 @@ class UnionFind:
 	         all test cases."""
 
     def combinationSum4(self, nums: List[int], target: int) -> int:
-        
-        @cache
-        def fn(x):
-            """Return number of combinations summing up to target."""
-            if x <= 0: return int(x == 0)
-            return sum(fn(x - xx) for xx in nums)
-        
-        return fn(target)
+        dp = [0]*(target + 1)
+        dp[0] = 1
+        for i in range(target): 
+            if dp[i]: 
+                for x in nums: 
+                    if i+x <= target: dp[i+x] += dp[i]
+        return dp[-1]
 
 
     """378. Kth Smallest Element in a Sorted Matrix (Medium)
