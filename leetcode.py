@@ -25800,15 +25800,16 @@ class UnionFind:
 	* text1 and text2 consist of only lowercase English characters."""
 
     def longestCommonSubsequence(self, text1: str, text2: str) -> int:
-        
-        @cache
-        def fn(i, j):
-            """Return length of lcs of text1[i:] and text2[j:]."""
-            if i == len(text1) or j == len(text2): return 0 
-            if text1[i] == text2[j]: return 1 + fn(i+1, j+1)
-            return max(fn(i+1, j), fn(i, j+1))
-        
-        return fn(0, 0)
+        m, n = len(text1), len(text2)
+        dp = [0]*(n+1)
+        for i in reversed(range(m)):
+            prev = curr = 0
+            for j in reversed(range(n)):
+                curr = dp[j]
+                if text1[i] == text2[j]: dp[j] = 1 + prev
+                else: dp[j] = max(dp[j], dp[j+1])
+                prev = curr 
+        return dp[0]
 
 
     """1144. Decrease Elements To Make Array Zigzag (Medium)
