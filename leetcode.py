@@ -2564,7 +2564,7 @@ class Solution:
 	Could you come up with a one-pass algorithm using only constant space?"""
 
     def sortColors(self, nums: List[int]) -> None:
-        # Dijkstra 3-way partitioning
+        # Dijkstra's 3-way partitioning
         lo, mid, hi = 0, 0, len(nums)-1
         while mid <= hi: 
             if nums[mid] == 0: 
