@@ -945,13 +945,13 @@ public:
 	  itself.*/
 
     string multiply(string num1, string num2) {
-        string ans(num1.size() + num2.size(), '0'); 
-        for (int i = 0; i < num1.size(); ++i) 
-            for (int j = 0; j < num2.size(); ++j) 
-                for (int x = (num1[i]-'0') * (num2[j] - '0'), k = i+j+1; x; --k) {
-                    x += ans[k] - '0'; 
-                    ans[k] = x % 10 + '0'; 
-                    x /= 10; 
+        int m = num1.size(), n = num2.size(); 
+        string ans(m+n, '0'); 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                for (int carry = (num1[i]-'0') * (num2[j] - '0'), k = i+j+1; carry; --k, carry /= 10) {
+                    carry += ans[k] - '0'; 
+                    ans[k] = carry % 10 + '0'; 
                 }
         int k = ans.find_first_not_of("0"); 
         return k == string::npos ? "0" : ans.substr(k); 
