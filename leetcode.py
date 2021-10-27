@@ -2443,15 +2443,16 @@ class Solution:
 
     def minDistance(self, word1: str, word2: str) -> int:
         m, n = len(word1), len(word2)
-        
-        @cache
-        def fn(i, j): 
-            """Return edit distance between word1[i:] and word2[j:]"""
-            if i == m or j == n: return m + n - i - j
-            if word1[i] == word2[j]: return fn(i+1, j+1)
-            return 1 + min(fn(i+1, j), fn(i, j+1), fn(i+1, j+1))
-        
-        return fn(0, 0)
+        dp = [n-j for j in range(n+1)]
+        for i in reversed(range(m)):
+            prev = dp[n]
+            dp[n] += 1
+            for j in reversed(range(n)): 
+                curr = dp[j]
+                if word1[i] == word2[j]: dp[j] = prev
+                else: dp[j] = 1 + min(dp[j], dp[j+1], prev)
+                prev = curr
+        return dp[0]
 
 
     """73. Set Matrix Zeroes (Medium)
