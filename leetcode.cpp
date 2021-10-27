@@ -5196,7 +5196,7 @@ public:
         if (pow(int(sqrt(n)), 2) == n) return 1; 
         for (int i = 1; i < sqrt(n); ++i) 
             if (pow(int(sqrt(n-i*i)), 2) == n-i*i) return 2; 
-        while (n % 4 == 0) n /= 4; 
+        for (; n % 4 == 0; n /= 4); 
         return n % 8 == 7 ? 4 : 3; 
     }
 
