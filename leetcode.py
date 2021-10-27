@@ -6211,19 +6211,21 @@ class Solution:
 	Output: 3"""
 
     def numIslands(self, grid: List[List[str]]) -> int:
-        if not grid: return 0
         m, n = len(grid), len(grid[0])
-        
-        def fn(i, j):
-            """Flood fill cell with "0"."""
-            if 0 <= i < m and 0 <= j < n and grid[i][j] == "1": 
-                grid[i][j] = "0"
-                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
-                    fn(ii, jj)
-                return 1
-            return 0
-                
-        return sum(fn(i, j) for i in range(m) for j in range(n))
+        ans = 0
+        for r in range(m):
+            for c in range(n):
+                if grid[r][c] == '1': 
+                    ans += 1
+                    grid[r][c] = '0'
+                    stack = [(r, c)]
+                    while stack: 
+                        i, j = stack.pop()
+                        for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
+                            if 0 <= ii < m and 0 <= jj < n and grid[ii][jj] == '1': 
+                                grid[ii][jj] = '0'
+                                stack.append((ii, jj))
+        return ans 
 
 
    """201. Bitwise AND of Numbers Range (Medium)
