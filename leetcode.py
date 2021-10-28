@@ -27101,17 +27101,16 @@ class UnionFind:
 	* It is guaranteed that the result will be in range [1, 2 * 109]."""
 
     def nthUglyNumber(self, n: int, a: int, b: int, c: int) -> int:
+        # inclusion-exclusion principle
         ab = a*b//gcd(a, b)
         bc = b*c//gcd(b, c)
         ca = c*a//gcd(c, a)
         abc = ab*c//gcd(ab, c)
         
-        fn = lambda x: x//a + x//b + x//c - x//ab - x//bc - x//ca + x//abc
-        
-        lo, hi = 1, 2*10**9 + 1
+        lo, hi = 1, n*min(a, b, c)
         while lo < hi: 
             mid = lo + hi >> 1
-            if fn(mid) < n: lo = mid + 1
+            if mid//a + mid//b + mid//c - mid//ab - mid//bc - mid//ca + mid//abc < n: lo = mid + 1
             else: hi = mid 
         return lo 
 
