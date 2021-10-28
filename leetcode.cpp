@@ -340,8 +340,8 @@ public:
                     int sm = nums[i] + nums[lo] + nums[hi]; 
                     if (sm < 0) ++lo; 
                     else if (sm == 0) {
-                        ans.push_back({nums[i], nums[lo++], nums[hi]}); 
-                        while (lo < hi && nums[lo-1] == nums[lo]) ++lo; 
+                        ans.push_back({nums[i], nums[lo], nums[hi]}); 
+                        for (++lo; lo < hi && nums[lo-1] == nums[lo]; ++lo); 
                     } else --hi; 
                 }
         return ans; 
