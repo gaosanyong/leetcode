@@ -3959,15 +3959,17 @@ class Solution:
 	-100 <= node.val <= 100"""
 
     def connect(self, root: 'Node') -> 'Node':
-        parent = root
-        while parent:
-            child = dummy = Node()
-            while parent: 
-                if parent.left: child.next = child = parent.left
-                if parent.right: child.next = child = parent.right
-                parent = parent.next 
-            parent = dummy.next 
-        return root 
+        if root: 
+            queue = deque([root])
+            while queue: 
+                prev = None 
+                for _ in range(len(queue)): 
+                    node = queue.popleft()
+                    node.next = prev 
+                    prev = node 
+                    if node.right: queue.append(node.right)
+                    if node.left: queue.append(node.left)
+        return root
 
 
     """118. Pascal's Triangle (Easy)
