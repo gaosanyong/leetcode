@@ -3882,19 +3882,14 @@ public:
 
     vector<string> findRepeatedDnaSequences(string s) {
         unordered_map<char, int> mp {{'A', 0}, {'C', 1}, {'G', 2}, {'T', 3}}; 
-        unordered_set<int> seen; 
-        unordered_set<string> duplicate; 
-        
+        unordered_map<int, int> freq; 
+        vector<string> ans; 
         int hs = 0; // rolling hash 
         for (int i = 0; i < s.size(); ++i) {
             hs = 4*hs + mp[s[i]]; 
             if (i >= 10) hs -= mp[s[i-10]]*pow(4, 10); 
-            if (i >= 9) {
-                if (seen.count(hs)) duplicate.insert(s.substr(i-9, 10)); 
-                else seen.insert(hs); 
-            }
+            if (i >= 9 && ++freq[hs] == 2) ans.push_back(s.substr(i-9, 10)); 
         }
-        vector<string> ans(duplicate.begin(), duplicate.end()); 
         return ans; 
     }
 
