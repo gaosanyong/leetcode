@@ -9236,15 +9236,13 @@ class UnionFind:
 	Note: You may assume that you have an infinite number of each kind of coin."""
 
     def coinChange(self, coins: List[int], amount: int) -> int:
-        
-        @cache
-        def fn(x):
-            """Return fewest number of coins to make up to x."""
-            if x == 0: return 0
-            if x < 0: return inf
-            return min(1 + fn(x - coin) for coin in coins)
-        
-        return fn(amount) if fn(amount) < inf else -1
+        dp = [0] + [inf]*amount
+        for x in range(amount): 
+            if dp[x] < inf: 
+                for coin in coins: 
+                    if x + coin <= amount: 
+                        dp[x+coin] = min(dp[x+coin], 1 + dp[x])
+        return dp[-1] if dp[-1] < inf else -1
 
 
 	"""323. Number of Connected Components in an Undirected Graph (Medium)
@@ -12670,15 +12668,11 @@ class Trie:
 	* the answer is guaranteed to fit into signed 32-bit integer"""
 
     def change(self, amount: int, coins: List[int]) -> int:
-        coins.sort(reverse=True)
-        
-        @cache
-        def fn(x, i=0):
-            """Return number of combinations making up x."""
-            if x <= 0: return int(x == 0)
-            return sum(fn(x-coins[ii], ii) for ii in range(i, len(coins)))
-        
-        return fn(amount)
+        dp = [1] + [0]*amount
+        for coin in coins: 
+            for x in range(amount-coin+1): 
+                dp[x+coin] += dp[x]
+        return dp[-1]
 
 
     """522. Longest Uncommon Subsequence II (Medium)
