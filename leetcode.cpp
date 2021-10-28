@@ -14475,6 +14475,44 @@ public:
     }
 
 
+    /*878. Nth Magical Number (Hard)
+	A positive integer is magical if it is divisible by either a or b. Given 
+	the three integers n, a, and b, return the nth magical number. Since the 
+	answer may be very large, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: n = 1, a = 2, b = 3
+	Output: 2
+
+	Example 2:
+	Input: n = 4, a = 2, b = 3
+	Output: 6
+
+	Example 3:
+	Input: n = 5, a = 2, b = 4
+	Output: 10
+
+	Example 4:
+	Input: n = 3, a = 6, b = 4
+	Output: 8
+
+	Constraints:
+	* 1 <= n <= 109
+	* 2 <= a, b <= 4 * 10^4*/
+
+    int nthMagicalNumber(int n, int a, int b) {
+        // inclusion-exclusion principle
+        int ab = a*b/gcd(a, b); 
+        long lo = 0, hi = (long) n*min(a,b); 
+        while (lo < hi) {
+            long mid = lo + (hi - lo)/2; 
+            if (mid/a + mid/b - mid/ab < n) lo = mid + 1; 
+            else hi = mid; 
+        }
+        return lo % 1'000'000'007; 
+    }
+
+
     /*879. Profitable Schemes (Hard)
 	There is a group of n members, and a list of various crimes they could 
 	commit. The ith crime generates a profit[i] and requires group[i] members 
