@@ -18055,17 +18055,22 @@ class UnionFind:
 	* The input graph is guaranteed to be a DAG."""
 
     def allPathsSourceTarget(self, graph: List[List[int]]) -> List[List[int]]:
+        indeg = [0]*len(graph)
+        for val in graph: 
+            for x in val: indeg[x] += 1
         
-        def fn(n): 
-            """Populate ans via a stack."""
-            stack.append(n)
-            if n == len(graph)-1: ans.append(stack[:])
-            for nn in graph[n]: fn(nn)
-            stack.pop()
-            
-        ans, stack = [], []
-        fn(0)
-        return ans 
+        queue = deque(i for i, x in enumerate(indeg) if x == 0)
+        dp = [[] for _ in range(len(graph))]
+        
+        # bfs along topological order 
+        while queue: 
+            x = queue.popleft()
+            if x == 0: dp[0].append([0])
+            for xx in graph[x]: 
+                for seq in dp[x]: dp[xx].append(seq + [xx])
+                indeg[xx] -= 1
+                if indeg[xx] == 0: queue.append(xx)
+        return dp[-1]
 
 
     """798. Smallest Rotation with Highest Score (Hard)
