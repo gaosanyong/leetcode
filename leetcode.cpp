@@ -15961,6 +15961,73 @@ public:
     }
 
 
+    /*952. Largest Component Size by Common Factor (Hard)
+	You are given an integer array of unique positive integers nums. Consider 
+	the following graph:
+	* There are nums.length nodes, labeled nums[0] to nums[nums.length - 1],
+	* There is an undirected edge between nums[i] and nums[j] if nums[i] and 
+	  nums[j] share a common factor greater than 1.
+	Return the size of the largest connected component in the graph.
+
+	Example 1:
+	Input: nums = [4,6,15,35]
+	Output: 4
+
+	Example 2:
+	Input: nums = [20,50,9,63]
+	Output: 2
+
+	Example 3:
+	Input: nums = [2,3,6,7,4,12,21,39]
+	Output: 8
+
+	Constraints:
+	* 1 <= nums.length <= 2 * 10^4
+	* 1 <= nums[i] <= 10^5
+	* All the values of nums are unique.
+
+	class UnionFind {
+	    vector<int> parent, rank; 
+	public: 
+	    UnionFind(int n) {
+	        parent.resize(n); 
+	        iota(parent.begin(), parent.end(), 0); 
+	        rank = vector<int>(n, 1); 
+	    }
+	    
+	    int find(int p) {
+	        if (p != parent[p]) 
+	            parent[p] = find(parent[p]); 
+	        return parent[p]; 
+	    }
+	    
+	    bool connect(int p, int q) {
+	        int prt = find(p), qrt = find(q); 
+	        if (prt == qrt) return false; 
+	        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
+	        parent[prt] = qrt; 
+	        rank[qrt] += rank[prt]; 
+	        return true; 
+	    }
+	};*/
+
+    int largestComponentSize(vector<int>& nums) {
+        int m = *max_element(nums.begin(), nums.end()); 
+        UnionFind* uf = new UnionFind(m+1); 
+        for (auto& x : nums) 
+            for (int p = 2; p <= sqrt(x); ++p) 
+                if (x % p == 0) {
+                    uf->connect(x, p); 
+                    uf->connect(x, x/p); 
+                }
+        
+        int ans = 0; 
+        unordered_map<int, int> freq; 
+        for (auto& x : nums) ans = max(ans, ++freq[uf->find(x)]); 
+        return ans; 
+    }
+
+
     /*953. Verifying an Alien Dictionary (Easy)
 	In an alien language, surprisingly they also use english lowercase letters, 
 	but possibly in a different order. The order of the alphabet is some 
