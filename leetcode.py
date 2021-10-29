@@ -24702,21 +24702,21 @@ class UnionFind:
 	* grid[r][c] is 0 or 1"""
 
     def shortestPathBinaryMatrix(self, grid: List[List[int]]) -> int:
-        if not grid[0][0]: 
-        	n = len(grid)
-            ans = 1
-            queue = [(0, 0)]
-            grid[0][0] = 1 # mark as visited 
+        n = len(grid)
+        if grid[0][0] == 0: 
+            ans = 0 
+            grid[0][0] = 1
+            queue = deque([(0, 0)])
             while queue: 
-                newq = []
-                for i, j in queue:
-                    if i == j == n-1: return ans 
-                    for ii, jj in product(range(i-1, i+2), range(j-1, j+2)): 
-                        if 0 <= ii < n and 0 <= jj < n and not grid[ii][jj]: 
-                            newq.append((ii, jj))
-                            grid[ii][jj] = 1
                 ans += 1
-                queue = newq
+                for _ in range(len(queue)): 
+                    i, j = queue.popleft()
+                    if i == j == n-1: return ans
+                    for ii in range(i-1, i+2): 
+                        for jj in range(j-1, j+2): 
+                            if 0 <= ii < n and 0 <= jj < n and grid[ii][jj] == 0: 
+                                grid[ii][jj] = 1
+                                queue.append((ii, jj))
         return -1 
 
 
