@@ -1767,10 +1767,10 @@ public:
     vector<vector<int>> subsets(vector<int>& nums) {
         vector<vector<int>> ans; 
         for (int m = 0; m < (1 << nums.size()); ++m) {
-            vector<int> vals; 
+            vector<int> seq; 
             for (int i = 0; i < nums.size(); ++i) 
-                if (m & (1 << i)) vals.push_back(nums[i]); 
-            ans.push_back(vals); 
+                if (m & (1 << i)) seq.push_back(nums[i]); 
+            ans.push_back(seq); 
         }
         return ans; 
     }
