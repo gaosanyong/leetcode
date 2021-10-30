@@ -3034,17 +3034,15 @@ class Solution:
 
     def subsetsWithDup(self, nums: List[int]) -> List[List[int]]:
         nums.sort()
-        ans, stack = [], []
-        
-        def fn(i):
-            """Populate ans using a stack"""
-            if i == len(nums): return ans.append(stack.copy())
-            if not stack or stack[-1] != nums[i]: fn(i+1)
-            stack.append(nums[i])
-            fn(i+1)
-            stack.pop()
-            
-        fn(0)
+        ans = [[]]
+        sz = 0
+        for i in range(len(nums)): 
+            if i and nums[i-1] == nums[i]: ii = sz
+            else: ii = 0 
+            sz = len(ans)
+            while ii < sz: 
+                ans.append(ans[ii] + [nums[i]])
+                ii += 1
         return ans 
 
 
