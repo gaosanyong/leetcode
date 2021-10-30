@@ -1850,14 +1850,14 @@ public:
 	* The list is guaranteed to be sorted in ascending order.*/
 
     ListNode* deleteDuplicates(ListNode* head) {
-        ListNode dummy(-101, head), *prev = &dummy, *node = head; 
-        while (node) {
-            while (node && node->next && node->val == node->next->val) node = node->next; 
-            if (prev->next == node) prev = prev->next; 
-            else prev->next = node->next; 
-            node = prev->next; 
+        ListNode dummy(0, head), *slow = &dummy, *fast = slow->next; 
+        while (fast) {
+            while (fast->next && fast->val == fast->next->val) fast = fast->next; 
+            if (slow->next == fast) slow = slow->next; 
+            else slow->next = fast->next; 
+            fast = slow->next; 
         }
-        return dummy.next;         
+        return dummy.next; 
     }
 
 
