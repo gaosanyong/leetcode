@@ -2678,21 +2678,22 @@ class Solution:
 	1 <= word.length <= 10^3"""
 
     def exist(self, board: List[List[str]], word: str) -> bool:
-        if Counter(word) - Counter(sum(board, [])): return False 
         m, n = len(board), len(board[0])
         
-        def fn(i, j, k):
+        def fn(i, j, k): 
             """Return True if a match is found."""
-            if k == len(word): return True 
-            if 0 <= i < m and 0 <= j < n and board[i][j] == word[k]: 
-                temp = board[i][j]
-                board[i][j] = ""
-                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
-                    if fn(ii, jj, k+1): return True 
-                board[i][j] = temp 
+            if k == len(word)-1: return True 
+            temp = board[i][j]
+            board[i][j] = '#'
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                if 0 <= ii < m and 0 <= jj < n and board[ii][jj] == word[k+1] and fn(ii, jj, k+1): return True 
+            board[i][j] = temp 
             return False 
         
-        return any(fn(i, j, 0) for i in range(m) for j in range(n))
+        for i in range(m):
+            for j in range(n):
+                if board[i][j] == word[0] and fn(i, j, 0): return True 
+        return False 
 
 
     """80. Remove Duplicates from Sorted Array II (Medium)
