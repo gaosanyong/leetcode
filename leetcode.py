@@ -750,20 +750,15 @@ class Solution:
 	  "()()()"
 	]"""
 
+    @cache
     def generateParenthesis(self, n: int) -> List[str]:
-        
-        @cache
-        def fn(n): 
-            """Return n pairs of well-formed parenthesis."""
-            if n == 0: return [""]
-            ans = []
-            for k in range(n): 
-                for x in fn(k): 
-                    for y in fn(n-k-1): 
-                        ans.append(f"{x}({y})")
-            return ans 
-        
-        return fn(n)
+        if n == 0: return [""]
+        ans = []
+        for i in range(n):
+            for x in self.generateParenthesis(n-1-i): 
+                for y in self.generateParenthesis(i): 
+                    ans.append(f"({x}){y}")
+        return ans 
 
 
     """23. Merge k Sorted Lists (Hard)
