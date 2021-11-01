@@ -32490,43 +32490,41 @@ public:
             return ans; 
         }; 
         
-        map<array<int,3>, bool> memo; 
+        int memo[41][41][2000] = {0}; 
         
-        function<bool(int, int, int)> fn = [&](int i, int j, int diff) {
-            if (memo.count({i, j, diff}) == 0) {
-                memo[{i, j, diff}] = false; 
+        function<int(int, int, int)> fn = [&](int i, int j, int diff) {
+            if (!memo[i][j][1000+diff]) {
+                memo[i][j][1000+diff] = 1; 
                 if (i == m && j == n) {
-                    if (diff == 0) memo[{i, j, diff}] = true; 
+                    if (diff == 0) memo[i][j][1000+diff] = 2; 
                 } else if (i < m && isdigit(s1[i])) {
                     int ii = i; 
                     for (; ii < m && isdigit(s1[ii]); ++ii); 
-                    for (auto& x : gg(s1.substr(i, ii-i))) {
-                        if (fn(ii, j, diff-x)) {
-                            memo[{i, j, diff}] = true; 
+                    for (auto& x : gg(s1.substr(i, ii-i))) 
+                        if (fn(ii, j, diff-x) == 2) {
+                            memo[i][j][1000+diff] = 2; 
                             break; 
                         }
-                    }
                 } else if (j < n && isdigit(s2[j])) {
                     int jj = j; 
                     for (; jj < n && isdigit(s2[jj]); ++jj); 
-                    for (auto& x : gg(s2.substr(j, jj-j))) {
-                        if (fn(i, jj, diff+x)) {
-                            memo[{i, j, diff}] = true; 
+                    for (auto& x : gg(s2.substr(j, jj-j))) 
+                        if (fn(i, jj, diff+x) == 2) {
+                            memo[i][j][1000+diff] = 2; 
                             break; 
                         }
-                    }
                 } else if (diff == 0) {
-                    if (i < m && j < n && s1[i] == s2[j]) memo[{i, j, diff}] = fn(i+1, j+1, 0); 
+                    if (i < m && j < n && s1[i] == s2[j]) memo[i][j][1000+diff] = fn(i+1, j+1, 0); 
                 } else if (diff > 0) {
-                    if (i < m) memo[{i, j, diff}] = fn(i+1, j, diff-1); 
+                    if (i < m) memo[i][j][1000+diff] = fn(i+1, j, diff-1); 
                 } else {
-                    if (j < n) memo[{i, j, diff}] = fn(i, j+1, diff+1); 
+                    if (j < n) memo[i][j][1000+diff] = fn(i, j+1, diff+1); 
                 }
             }
-            return memo[{i, j, diff}]; 
+            return memo[i][j][1000+diff]; 
         }; 
         
-        return fn(0, 0, 0); 
+        return fn(0, 0, 0) == 2; 
     }
 };
 
