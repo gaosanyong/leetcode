@@ -6527,16 +6527,15 @@ class Solution:
 	             Total amount you can rob = 1 + 3 = 4."""
 
     def rob(self, nums: List[int]) -> int:
-        if len(nums) == 1: return nums[0] #edge case 
         
-        def fn(lo, hi):
-            """Return max money after robbing houses from lo to hi."""
+        def fn(lo, hi): 
+            """Return max money by robbing houses from lo to hi (exclusive)."""
             f0 = f1 = 0
-            for i in range(lo, hi):
-                f0, f1 = f1, max(f1, f0 + nums[i])
+            for x in nums[lo:hi]: f0, f1 = f1, max(f0+x, f1)
             return f1
         
-        return max(fn(0, len(nums)-1), fn(1, len(nums)))
+        n = len(nums)
+        return max(fn(0, n-1), fn(1, n)) if n > 1 else nums[0]
 
 
     """214. Shortest Palindrome (Hard)
@@ -50183,7 +50182,7 @@ class UnionFind:
 	Constraints:
 	* 1 <= s1.length, s2.length <= 40
 	* s1 and s2 consist of digits 1-9 (inclusive), and lowercase English 
-	  letters only.
+	 l etters only.
 	* The number of consecutive digits in s1 and s2 does not exceed 3."""
 
     def possiblyEquals(self, s1: str, s2: str) -> bool:
