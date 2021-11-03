@@ -4386,16 +4386,16 @@ class Solution:
 	The root-to-leaf path 4->0 represents the number 40.
 	Therefore, sum = 495 + 491 + 40 = 1026."""
 
-    def sumNumbers(self, root: TreeNode) -> int:
-        
-        def fn(node, val):
-            """Return sum of node-to-leaf numbers"""
-            if not node: return 0
-            val = 10*val + node.val
-            if not node.left and not node.right: return val 
-            return fn(node.left, val) + fn(node.right, val)
-            
-        return fn(root, 0)
+    def sumNumbers(self, root: Optional[TreeNode]) -> int:
+        ans = 0 
+        stack = [(root, 0)]
+        while stack: 
+            node, val = stack.pop()
+            val = 10*val + node.val 
+            if not node.left and not node.right: ans += val 
+            if node.left: stack.append((node.left, val))
+            if node.right: stack.append((node.right, val))
+        return ans 
 
 
     """130. Surrounded Regions (Medium)
