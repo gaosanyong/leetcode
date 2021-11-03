@@ -2617,24 +2617,18 @@ public:
 
     TreeNode* buildTree(vector<int>& preorder, vector<int>& inorder) {
         unordered_map<int, int> loc; 
-        for (int i = 0; i < size(inorder); ++i) loc[inorder[i]] = i; 
-        
-        TreeNode *root = NULL, *node = NULL; 
+        for (int i = 0; i < inorder.size(); ++i) loc[inorder[i]] = i; 
+        TreeNode *root = nullptr, *node = nullptr; 
         stack<TreeNode*> stk; 
-        
-        for (auto& x : preorder) {
-            if (!root) {
-                node = root = new TreeNode(x); 
-            } else if (loc[x] < loc[node->val]) {
+        for (auto& x : preorder) 
+            if (!root) node = root = new TreeNode(x); 
+            else if (loc[x] < loc[node->val]) {
                 stk.push(node); 
                 node = node->left = new TreeNode(x); 
             } else {
-                while (size(stk) && loc[stk.top()->val] < loc[x]) {
-                    node = stk.top(); stk.pop(); 
-                }
+                while (stk.size() && loc[stk.top()->val] < loc[x]) node = stk.top(), stk.pop(); 
                 node = node->right = new TreeNode(x); 
             }
-        }
         return root; 
     }
 
