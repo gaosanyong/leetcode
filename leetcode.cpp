@@ -2511,6 +2511,48 @@ public:
     }
 
 
+    /*103. Binary Tree Zigzag Level Order Traversal (Medium)
+	Given the root of a binary tree, return the zigzag level order traversal of 
+	its nodes' values. (i.e., from left to right, then right to left for the 
+	next level and alternate between).
+
+	Example 1:
+	Input: root = [3,9,20,null,null,15,7]
+	Output: [[3],[20,9],[15,7]]
+
+	Example 2:
+	Input: root = [1]
+	Output: [[1]]
+
+	Example 3:
+	Input: root = []
+	Output: []
+
+	Constraints:
+	* The number of nodes in the tree is in the range [0, 2000].
+	* -100 <= Node.val <= 100*/
+
+    vector<vector<int>> zigzagLevelOrder(TreeNode* root) {
+        vector<vector<int>> ans; 
+        if (root) {
+            queue<TreeNode*> q; 
+            q.push(root); 
+            for (bool tf = false; q.size(); tf = !tf) {
+                vector<int> vals; 
+                for (int sz = q.size(); sz; --sz) {
+                    TreeNode* node = q.front(); q.pop(); 
+                    vals.push_back(node->val); 
+                    if (node->left) q.push(node->left); 
+                    if (node->right) q.push(node->right); 
+                }
+                if (tf) reverse(vals.begin(), vals.end()); 
+                ans.push_back(vals); 
+            }
+        }
+        return ans; 
+    }
+
+
     /*104. Maximum Depth of Binary Tree (Easy)
 	Given the root of a binary tree, return its maximum depth. A binary tree's 
 	maximum depth is the number of nodes along the longest path from the root 
