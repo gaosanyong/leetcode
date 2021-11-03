@@ -2631,14 +2631,22 @@ public:
 	 */
 
     TreeNode* sortedArrayToBST(vector<int>& nums) {
-        
-        function<TreeNode*(int, int)> fn = [&](int lo, int hi) -> TreeNode* {
-            if (lo == hi) return nullptr; 
-            int mid = lo + (hi - lo)/2; 
-            return new TreeNode(nums[mid], fn(lo, mid), fn(mid+1, hi)); 
-        }; 
-        
-        return fn(0, nums.size()); 
+        int lo = 0, hi = nums.size(), mid = (lo+hi)/2; 
+        TreeNode *root = nullptr; 
+        stack<tuple<TreeNode*, int, int, bool>> stk; 
+        stk.emplace(root, 0, hi, false); 
+        while (stk.size()) {
+            auto [node, lo, hi, tf] = stk.top(); stk.pop(); 
+            if (lo < hi) {
+                mid = (lo+hi)/2; 
+                if (!root) node = root = new TreeNode(nums[mid]); 
+                else if (tf) node = node->right = new TreeNode(nums[mid]); 
+                else node = node->left = new TreeNode(nums[mid]); 
+                stk.emplace(node, lo, mid, false);
+                stk.emplace(node, mid+1, hi, true); 
+            }
+        }
+        return root; 
     }
 
 
