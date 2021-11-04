@@ -269,9 +269,18 @@ class Solution:
 	Explanation: The number "-91283472332" is out of the range of a 32-bit signed integer.
 	Thefore INT_MIN (−231) is returned."""
 
-    def myAtoi(self, str: str) -> int:
-        str = "".join(re.findall('^[\+|\-]?\d+', str.lstrip()))
-        return 0 if not str else min(2**31-1, max(-2**31, int(str)))
+    def myAtoi(self, s: str) -> int:
+        ii = -1 
+        for i in range(len(s)): 
+            if ii == -1: 
+                if s[i] in "+-" or s[i].isdigit(): ii = i 
+                elif not s[i].isspace(): return 0
+            elif not s[i].isdigit(): break 
+        else: i = len(s)
+        
+        ans = 0 
+        if 0 <= ii and (ii+1 < i or s[ii].isdigit()): ans = int(s[ii:i])
+        return max(-(1<<31), min((1<<31)-1, ans))
 
 
 	"""9. Palindrome Number (Easy)
