@@ -16022,19 +16022,18 @@ class Trie:
     def smallestDistancePair(self, nums: List[int], k: int) -> int:
         nums.sort()
         
-        def fn(x): 
-            """Return count of pairs <= x."""
+        def fn(val): 
+            """Return count of pairs whose diff <= val."""
             ans = ii = 0
-            for i in range(len(nums)):
-                while ii < i and nums[i] - nums[ii] > x: ii += 1
+            for i, x in enumerate(nums):
+                while ii < i and x - nums[ii] > val: ii += 1
                 ans += i - ii
             return ans 
         
         lo, hi = 0, nums[-1] - nums[0]
         while lo < hi: 
             mid = lo + hi >> 1
-            kk = fn(mid)
-            if kk < k: lo = mid + 1
+            if fn(mid) < k: lo = mid + 1
             else: hi = mid
         return lo
 
