@@ -933,21 +933,21 @@ class Solution:
 
     def strStr(self, haystack: str, needle: str) -> int:
         """Knuth-Morris-Pratt algo (1977)"""
-        if not needle: return 0 #edge case 
+        if not needle: return 0 # edge case 
         
-        lps = [0]*len(needle) #longest prefix-suffix table 
+        lps = [0]
         k = 0
         for i in range(1, len(needle)): 
             while k and needle[k] != needle[i]: k = lps[k-1]
             if needle[k] == needle[i]: k += 1
-            lps[i] = k 
-            
-        k = 0
-        for i in range(len(haystack)): 
-            while k and needle[k] != haystack[i]: k = lps[k-1]
-            if needle[k] == haystack[i]: k += 1
-            if k == len(needle): return i - len(needle) + 1
-        return -1
+            lps.append(k)
+        
+        k = 0 
+        for i, ch in enumerate(haystack): 
+            while k and needle[k] != ch: k = lps[k-1]
+            if needle[k] == ch: k += 1
+            if k == len(needle): return i - k + 1
+        return -1 
 
 
     """29. Divide Two Integers (Medium)
