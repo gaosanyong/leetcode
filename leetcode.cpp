@@ -2787,31 +2787,30 @@ public:
     vector<vector<int>> pathSum(TreeNode* root, int targetSum) {
         vector<vector<int>> ans; 
         if (root) {
-            unordered_map<TreeNode*, TreeNode*> parent; 
-            vector<TreeNode*> leaf; 
+            unordered_map<TreeNode*, TreeNode*> parent = {{root, nullptr}}; 
             stack<pair<TreeNode*, int>> stk; 
-            stk.emplace(root, root->val); 
+            stk.emplace(root, 0); 
             while (stk.size()) {
-                auto [node, val] = stk.top(); stk.pop(); 
-                if (!node->left && !node->right && val == targetSum) leaf.push_back(node); 
-                if (node->left) {
-                    parent[node->left] = node; 
-                    stk.emplace(node->left, val + node->left->val); 
+                auto [node, sm] = stk.top(); stk.pop(); 
+                sm += node->val; 
+                if (!node->left && !node->right) {
+                    if (sm == targetSum) {
+                        vector<int> vals; 
+                        for (; node; node = parent[node]) 
+                            vals.push_back(node->val); 
+                        reverse(vals.begin(), vals.end()); 
+                        ans.push_back(vals); 
+                    }
+                } else {
+                    if (node->left) {
+                        parent[node->left] = node; 
+                        stk.emplace(node->left, sm); 
+                    }
+                    if (node->right) {
+                        parent[node->right] = node; 
+                        stk.emplace(node->right, sm); 
+                    }
                 }
-                if (node->right) {
-                    parent[node->right] = node; 
-                    stk.emplace(node->right, val + node->right->val); 
-                }
-            }
-            
-            for (auto& node : leaf) {
-                vector<int> path; 
-                while (node) {
-                    path.push_back(node->val); 
-                    node = parent[node]; 
-                }
-                reverse(path.begin(), path.end()); 
-                ans.push_back(path); 
             }
         }
         return ans; 
