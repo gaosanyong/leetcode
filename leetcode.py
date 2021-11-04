@@ -11132,6 +11132,34 @@ class UnionFind:
         return fn(1, 1)
 
 
+    """404. Sum of Left Leaves (Easy)
+	Given the root of a binary tree, return the sum of all left leaves.
+
+	Example 1:
+	Input: root = [3,9,20,null,null,15,7]
+	Output: 24
+	Explanation: There are two left leaves in the binary tree, with values 9 
+	             and 15 respectively.
+	
+	Example 2:
+	Input: root = [1]
+	Output: 0
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 1000].
+	* -1000 <= Node.val <= 1000"""
+
+    def sumOfLeftLeaves(self, root: Optional[TreeNode]) -> int:
+        ans = 0 
+        stack = [(root, False)]
+        while stack: 
+            node, tf = stack.pop()
+            if not node.left and not node.right and tf: ans += node.val 
+            if node.left: stack.append((node.left, True))
+            if node.right: stack.append((node.right, False))
+        return ans 
+
+
     """406. Queue Reconstruction by Height (Medium)
 	Suppose you have a random list of people standing in a queue. Each person 
 	is described by a pair of integers (h, k), where h is the height of the 

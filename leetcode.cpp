@@ -6884,6 +6884,37 @@ public:
     }
 
 
+    /*404. Sum of Left Leaves (Easy)
+	Given the root of a binary tree, return the sum of all left leaves.
+
+	Example 1:
+	Input: root = [3,9,20,null,null,15,7]
+	Output: 24
+	Explanation: There are two left leaves in the binary tree, with values 9 
+	             and 15 respectively.
+	
+	Example 2:
+	Input: root = [1]
+	Output: 0
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 1000].
+	* -1000 <= Node.val <= 1000*/
+
+    int sumOfLeftLeaves(TreeNode* root) {
+        int ans = 0; 
+        stack<pair<TreeNode*, bool>> stk; 
+        stk.emplace(root, false); 
+        while (stk.size()) {
+            auto [node, tf] = stk.top(); stk.pop(); 
+            if (!node->left && !node->right && tf) ans += node->val; 
+            if (node->left) stk.emplace(node->left, true); 
+            if (node->right) stk.emplace(node->right, false); 
+        }
+        return ans; 
+    }
+
+
     /*407. Trapping Rain Water II (Hard)
 	Given an m x n integer matrix heightMap representing the height of each 
 	unit cell in a 2D elevation map, return the volume of water it can trap 
