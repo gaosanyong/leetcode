@@ -49944,6 +49944,263 @@ class UnionFind:
         return max(s+t for s, t in zip(start, time))
 
 
+    """2053. Kth Distinct String in an Array (Easy)
+	A distinct string is a string that is present only once in an array. Given 
+	an array of strings arr, and an integer k, return the kth distinct string 
+	present in arr. If there are fewer than k distinct strings, return an empty 
+	string "". Note that the strings are considered in the order in which they 
+	appear in the array.
+
+	Example 1:
+	Input: arr = ["d","b","c","b","c","a"], k = 2
+	Output: "a"
+	Explanation: The only distinct strings in arr are "d" and "a". "d" appears 
+	             1st, so it is the 1st distinct string. "a" appears 2nd, so it 
+	             is the 2nd distinct string. Since k == 2, "a" is returned. 
+	
+	Example 2:
+	Input: arr = ["aaa","aa","a"], k = 1
+	Output: "aaa"
+	Explanation: All strings in arr are distinct, so the 1st string "aaa" is 
+	             returned.
+	
+	Example 3:
+	Input: arr = ["a","b","a"], k = 3
+	Output: ""
+	Explanation: The only distinct string is "b". Since there are fewer than 3 
+	             distinct strings, we return an empty string "".
+
+	Constraints:
+	* 1 <= k <= arr.length <= 1000
+	* 1 <= arr[i].length <= 5
+	* arr[i] consists of lowercase English letters."""
+
+    def kthDistinct(self, arr: List[str], k: int) -> str:
+        freq = Counter(arr)
+        for x in arr: 
+            if freq[x] == 1: k -= 1
+            if k == 0: return x
+        return ""
+
+
+    """2054. Two Best Non-Overlapping Events (Medium)
+	You are given a 0-indexed 2D integer array of events where 
+	events[i] = [startTimei, endTimei, valuei]. The ith event starts at 
+	startTimei and ends at endTimei, and if you attend this event, you will 
+	receive a value of valuei. You can choose at most two non-overlapping 
+	events to attend such that the sum of their values is maximized. Return 
+	this maximum sum. Note that the start time and end time is inclusive: that 
+	is, you cannot attend two events where one of them starts and the other 
+	ends at the same time. More specifically, if you attend an event with end 
+	time t, the next event must start at or after t + 1.
+
+	Example 1:
+	Input: events = [[1,3,2],[4,5,2],[2,4,3]]
+	Output: 4
+	Explanation: Choose the green events, 0 and 1 for a sum of 2 + 2 = 4.
+
+	Example 2:
+	Example 1 Diagram
+	Input: events = [[1,3,2],[4,5,2],[1,5,5]]
+	Output: 5
+	Explanation: Choose event 2 for a sum of 5.
+
+	Example 3:
+	Input: events = [[1,5,3],[1,5,1],[6,6,5]]
+	Output: 8
+	Explanation: Choose events 0 and 2 for a sum of 3 + 5 = 8.
+
+	Constraints:
+	* 2 <= events.length <= 10^5
+	* events[i].length == 3
+	* 1 <= startTimei <= endTimei <= 10^9
+	* 1 <= valuei <= 10^6"""
+
+    def maxTwoEvents(self, events: List[List[int]]) -> int:
+        ans = most = 0 
+        pq = []
+        for st, et, val in sorted(events): 
+            heappush(pq, (et, val))
+            while pq and pq[0][0] < st: 
+                _, vv = heappop(pq)
+                most = max(most, vv)
+            ans = max(ans, most + val)
+        return ans 
+
+
+    """2055. Plates Between Candles (Medium)
+	There is a long table with a line of plates and candles arranged on top of 
+	it. You are given a 0-indexed string s consisting of characters '*' and '|' 
+	only, where a '*' represents a plate and a '|' represents a candle. You are 
+	also given a 0-indexed 2D integer array queries where 
+	queries[i] = [lefti, righti] denotes the substring s[lefti...righti] 
+	(inclusive). For each query, you need to find the number of plates between 
+	candles that are in the substring. A plate is considered between candles if 
+	there is at least one candle to its left and at least one candle to its 
+	right in the substring. For example, s = "||**||**|*", and a query [3, 8] 
+	denotes the substring "*||**|". The number of plates between candles in 
+	this substring is 2, as each of the two plates has at least one candle in 
+	the substring to its left and right. Return an integer array answer where 
+	answer[i] is the answer to the ith query.
+
+	Example 1:
+	Input: s = "**|**|***|", queries = [[2,5],[5,9]]
+	Output: [2,3]
+	Explanation: - queries[0] has two plates between candles.
+	             - queries[1] has three plates between candles.
+	
+	Example 2:
+	Input: s = "***|**|*****|**||**|*", queries = [[1,17],[4,5],[14,17],[5,11],[15,16]]
+	Output: [9,0,0,0,0]
+	Explanation: - queries[0] has nine plates between candles.
+	             - The other queries have zero plates between candles.
+
+	Constraints:
+	* 3 <= s.length <= 10^5
+	* s consists of '*' and '|' characters.
+	* 1 <= queries.length <= 10^5
+	* queries[i].length == 2
+	* 0 <= lefti <= righti < s.length"""
+
+    def platesBetweenCandles(self, s: str, queries: List[List[int]]) -> List[int]:
+        prefix = [0]
+        stack = []
+        upper = [-1]*len(s)
+        lower = [-1]*len(s)
+        lo = -1
+        for i, ch in enumerate(s): 
+            prefix.append(prefix[-1] + (ch == '*'))
+            stack.append(i)
+            if ch == '|': 
+                while stack: upper[stack.pop()] = i 
+                lo = i 
+            lower[i] = lo 
+        
+        ans = []
+        for x, y in queries: 
+            lo = upper[x]
+            hi = lower[y]
+            if hi != -1 and lo != -1 and lo <= hi: ans.append(prefix[hi+1] - prefix[lo])
+            else: ans.append(0)
+        return ans 
+
+
+    """2056. Number of Valid Move Combinations On Chessboard (Hard)
+	There is an 8 x 8 chessboard containing n pieces (rooks, queens, or 
+	bishops). You are given a string array pieces of length n, where pieces[i] 
+	describes the type (rook, queen, or bishop) of the ith piece. In addition, 
+	you are given a 2D integer array positions also of length n, where 
+	positions[i] = [ri, ci] indicates that the ith piece is currently at the 
+	1-based coordinate (ri, ci) on the chessboard. When making a move for a 
+	piece, you choose a destination square that the piece will travel toward 
+	and stop on.
+	* A rook can only travel horizontally or vertically from (r, c) to the 
+	  direction of (r+1, c), (r-1, c), (r, c+1), or (r, c-1).
+	* A queen can only travel horizontally, vertically, or diagonally from 
+	  (r, c) to the direction of (r+1, c), (r-1, c), (r, c+1), (r, c-1), 
+	  (r+1, c+1), (r+1, c-1), (r-1, c+1), (r-1, c-1).
+	* A bishop can only travel diagonally from (r, c) to the direction of 
+	  (r+1, c+1), (r+1, c-1), (r-1, c+1), (r-1, c-1).
+	You must make a move for every piece on the board simultaneously. A move 
+	combination consists of all the moves performed on all the given pieces. 
+	Every second, each piece will instantaneously travel one square towards 
+	their destination if they are not already at it. All pieces start 
+	traveling at the 0th second. A move combination is invalid if, at a given 
+	time, two or more pieces occupy the same square. Return the number of valid 
+	move combinations.
+
+	Notes:
+	* No two pieces will start in the same square.
+	* You may choose the square a piece is already on as its destination.
+	* If two pieces are directly adjacent to each other, it is valid for them 
+	  to move past each other and swap positions in one second.
+
+	Example 1:
+	Input: pieces = ["rook"], positions = [[1,1]]
+	Output: 15
+	Explanation: The image above shows the possible squares the piece can move to.
+
+	Example 2:
+	Input: pieces = ["queen"], positions = [[1,1]]
+	Output: 22
+	Explanation: The image above shows the possible squares the piece can move to.
+
+	Example 3:
+	Input: pieces = ["bishop"], positions = [[4,3]]
+	Output: 12
+	Explanation: The image above shows the possible squares the piece can move to.
+
+	Example 4:
+	Input: pieces = ["rook","rook"], positions = [[1,1],[8,8]]
+	Output: 223
+	Explanation: There are 15 moves for each rook which results in 15 * 15 = 225 
+	             move combinations. However, there are two invalid move 
+	             combinations:
+	             - Move both rooks to (8, 1), where they collide.
+	             - Move both rooks to (1, 8), where they collide.
+	             Thus there are 225 - 2 = 223 valid move combinations. Note that 
+	             there are two valid move combinations that would result in one 
+	             rook at (1, 8) and the other at (8, 1). Even though the board 
+	             state is the same, these two move combinations are considered 
+	             different since the moves themselves are different.
+	
+	Example 5:
+	Input: pieces = ["queen","bishop"], positions = [[5,7],[3,4]]
+	Output: 281
+	Explanation: There are 12 * 24 = 288 move combinations. However, there are 
+	             several invalid move combinations:
+	             - If the queen stops at (6, 7), it blocks the bishop from 
+	               moving to (6, 7) or (7, 8).
+	             - If the queen stops at (5, 6), it blocks the bishop from 
+	               moving to (5, 6), (6, 7), or (7, 8).
+	             - If the bishop stops at (5, 2), it blocks the queen from 
+	               moving to (5, 2) or (5, 1).
+	             Of the 288 move combinations, 281 are valid.
+
+	Constraints:
+	* n == pieces.length
+	* n == positions.length
+	* 1 <= n <= 4
+	* pieces only contains the strings "rook", "queen", and "bishop".
+	* There will be at most one queen on the chessboard.
+	* 1 <= xi, yi <= 8
+	* Each positions[i] is distinct."""
+
+    def countCombinations(self, pieces: List[str], positions: List[List[int]]) -> int:
+        n = len(pieces)
+        mp = {"bishop": ((-1, -1), (-1, 1), (1, -1), (1, 1)),
+              "queen" : ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)), 
+              "rook"  : ((-1, 0), (0, -1), (0, 1), (1, 0))}
+        
+        dirs = [[]] # directions
+        for piece in pieces: dirs = [x+[xx] for x in dirs for xx in mp[piece]]
+        
+        positions = tuple(map(tuple, positions))
+        
+        def fn(*args): 
+            """Return possible moves along given direction."""
+            stack = [((1<<n)-1, positions)]
+            while stack: 
+                mask, pos = stack.pop()
+                ans.add(pos)
+                m = mask
+                while m: 
+                    p = []
+                    for i in range(n): 
+                        if m & (1 << i): 
+                            p.append((pos[i][0] + args[i][0], pos[i][1] + args[i][1]))
+                            if not (1 <= p[i][0] <= 8 and 1 <= p[i][1] <= 8): break 
+                        else: p.append(pos[i])
+                    else: 
+                        cand = tuple(p)
+                        if len(set(cand)) == len(cand) and m: stack.append((m, cand))
+                    m = mask & (m-1)
+
+        ans = set()
+        for d in dirs: fn(*d)
+        return len(ans)
+
+
     """2057. Smallest Index With Equal Value (Easy)
 	Given a 0-indexed integer array nums, return the smallest index i of nums 
 	such that i mod 10 == nums[i], or -1 if such index does not exist. x mod y 
