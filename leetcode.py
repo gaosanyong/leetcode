@@ -4777,12 +4777,13 @@ class Solution:
 	Output: false"""
 
     def wordBreak(self, s: str, wordDict: List[str]) -> bool:
-        dp = [False]*len(s) + [True]
-        for i in reversed(range(len(dp))): 
+        dp = [False]*(1 + len(s))
+        dp[0] = True
+        for i in range(len(s)): 
             if dp[i]: 
                 for word in wordDict: 
-                    if s[i-len(word):i] == word: dp[i-len(word)] = True
-        return dp[0]
+                    if s[i:i+len(word)] == word: dp[i+len(word)] = True
+        return dp[-1]
 
 
     """140. Word Break II (Hard)
