@@ -3077,13 +3077,13 @@ class Solution:
 	Explanation: It could be decoded as "BZ" (2 26), "VF" (22 6), or "BBF" (2 2 6)."""
 
     def numDecodings(self, s: str) -> int:
-        dp = [0] * (1 + len(s))
-        dp[-1] = 1
-        for i in reversed(range(len(s))): 
-            if s[i] != '0': 
-                dp[i] = dp[i+1]
-                if i+1 < len(s) and s[i:i+2] <= "26": dp[i] += dp[i+2]
-        return dp[0]
+        dp = [0]*(len(s) + 1)
+        dp[0] = 1
+        for i, x in enumerate(s): 
+            if x != '0' and dp[i]: 
+                dp[i+1] += dp[i]
+                if i+1 < len(s) and s[i:i+2] <= "26": dp[i+2] += dp[i]
+        return dp[-1]
 
 
     """92. Reverse Linked List II (Medium)
