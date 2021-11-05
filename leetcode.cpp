@@ -16185,6 +16185,102 @@ public:
     }
 
 
+    /*928. Minimize Malware Spread II (Hard)
+	You are given a network of n nodes represented as an n x n adjacency matrix 
+	graph, where the ith node is directly connected to the jth node if 
+	graph[i][j] == 1. Some nodes initial are initially infected by malware. 
+	Whenever two nodes are directly connected, and at least one of those two 
+	nodes is infected by malware, both nodes will be infected by malware. This 
+	spread of malware will continue until no more nodes can be infected in this 
+	manner. Suppose M(initial) is the final number of nodes infected with 
+	malware in the entire network after the spread of malware stops. We will 
+	remove exactly one node from initial, completely removing it and any 
+	connections from this node to any other node. Return the node that, if 
+	removed, would minimize M(initial). If multiple nodes could be removed to 
+	minimize M(initial), return such a node with the smallest index.
+
+	Example 1:
+	Input: graph = [[1,1,0],[1,1,0],[0,0,1]], initial = [0,1]
+	Output: 0
+
+	Example 2:
+	Input: graph = [[1,1,0],[1,1,1],[0,1,1]], initial = [0,1]
+	Output: 1
+
+	Example 3:
+	Input: graph = [[1,1,0,0],[1,1,1,0],[0,1,1,1],[0,0,1,1]], initial = [0,1]
+	Output: 1
+
+	Constraints:
+	* n == graph.length
+	* n == graph[i].length
+	* 2 <= n <= 300
+	* graph[i][j] is 0 or 1.
+	* graph[i][j] == graph[j][i]
+	* graph[i][i] == 1
+	* 1 <= initial.length < n
+	* 0 <= initial[i] <= n - 1
+	* All the integers in initial are unique.
+
+	class UnionFind {
+	public: 
+	    vector<int> parent, rank; 
+	    UnionFind(int n) {
+	        parent.resize(n); 
+	        iota(parent.begin(), parent.end(), 0); 
+	        rank = vector<int>(n, 1); 
+	    }
+	    
+	    int find(int p) {
+	        if (p != parent[p]) 
+	            parent[p] = find(parent[p]); 
+	        return parent[p]; 
+	    }
+	    
+	    bool connect(int p, int q) {
+	        int prt = find(p), qrt = find(q); 
+	        if (prt == qrt) return false; 
+	        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
+	        parent[prt] = qrt; 
+	        rank[qrt] += rank[prt]; 
+	        return true; 
+	    }
+	}; */
+
+    int minMalwareSpread(vector<vector<int>>& graph, vector<int>& initial) {
+        int n = graph.size(); 
+        vector<bool> infect(n, false); 
+        for (auto& x : initial) infect[x] = true; 
+        
+        UnionFind* uf = new UnionFind(n); 
+        for (int u = 0; u < n; ++u) 
+            if (!infect[u]) 
+                for (int v = 0; v < n; ++v) 
+                    if (!infect[v] && graph[u][v]) 
+                        uf->connect(u, v); 
+        
+        unordered_map<int, unordered_set<int>> mp; 
+        for (auto& u : initial) 
+            for (int v = 0; v < n; ++v) 
+                if (!infect[v] && graph[u][v]) 
+                    mp[u].insert(uf->find(v)); 
+        
+        unordered_map<int, int> freq; 
+        for (auto& [k, v] : mp) 
+            for (auto& x : v) ++freq[x]; 
+        
+        int best = -1, ans = -1; 
+        for (auto& u : initial) {
+            int cnt = 0; 
+            for (auto& v : mp[u]) 
+                if (freq[v] == 1) cnt += uf->rank[v]; 
+            if (cnt > best || (cnt == best && u < ans)) 
+                ans = u, best = cnt; 
+        }
+        return ans; 
+    }
+
+
     /*929. Unique Email Addresses (Easy)
 	Every valid email consists of a local name and a domain name, separated by 
 	the '@' sign. Besides lowercase letters, the email may contain one or more 

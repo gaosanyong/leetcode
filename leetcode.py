@@ -21333,6 +21333,90 @@ class UnionFind:
         return flip 
 
 
+    """928. Minimize Malware Spread II (Hard)
+	You are given a network of n nodes represented as an n x n adjacency matrix 
+	graph, where the ith node is directly connected to the jth node if 
+	graph[i][j] == 1. Some nodes initial are initially infected by malware. 
+	Whenever two nodes are directly connected, and at least one of those two 
+	nodes is infected by malware, both nodes will be infected by malware. This 
+	spread of malware will continue until no more nodes can be infected in this 
+	manner. Suppose M(initial) is the final number of nodes infected with 
+	malware in the entire network after the spread of malware stops. We will 
+	remove exactly one node from initial, completely removing it and any 
+	connections from this node to any other node. Return the node that, if 
+	removed, would minimize M(initial). If multiple nodes could be removed to 
+	minimize M(initial), return such a node with the smallest index.
+
+	Example 1:
+	Input: graph = [[1,1,0],[1,1,0],[0,0,1]], initial = [0,1]
+	Output: 0
+
+	Example 2:
+	Input: graph = [[1,1,0],[1,1,1],[0,1,1]], initial = [0,1]
+	Output: 1
+
+	Example 3:
+	Input: graph = [[1,1,0,0],[1,1,1,0],[0,1,1,1],[0,0,1,1]], initial = [0,1]
+	Output: 1
+
+	Constraints:
+	* n == graph.length
+	* n == graph[i].length
+	* 2 <= n <= 300
+	* graph[i][j] is 0 or 1.
+	* graph[i][j] == graph[j][i]
+	* graph[i][i] == 1
+	* 1 <= initial.length < n
+	* 0 <= initial[i] <= n - 1
+	* All the integers in initial are unique.
+
+class UnionFind: 
+    
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [1] * n 
+    
+    def find(self, p):
+        if p != self.parent[p]: 
+            self.parent[p] = self.find(self.parent[p])
+        return self.parent[p]
+    
+    def union(self, p, q): 
+        prt, qrt = self.find(p), self.find(q)
+        if prt == qrt: return False 
+        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
+        self.parent[prt] = qrt
+        self.rank[qrt] += self.rank[prt]
+        return True"""
+    
+    def minMalwareSpread(self, graph: List[List[int]], initial: List[int]) -> int:
+        n = len(graph)
+        uf = UnionFind(n+1)
+        initial = set(initial)
+        for u in range(n): 
+            if u not in initial: 
+                for v in range(n): 
+                    if graph[u][v] and v not in initial: 
+                        uf.union(u, v)
+                        
+        mp = defaultdict(set)
+        for u in initial: 
+            for v in range(n): 
+                if graph[u][v] and v not in initial: 
+                    mp[u].add(uf.find(v))
+        freq = sum((Counter(v) for v in mp.values()), Counter())
+        
+        ans = best = -1
+        for u in initial: 
+            cnt = 0
+            for v in mp[u]: 
+                if freq[v] == 1: cnt += uf.rank[v]
+            if cnt > best or cnt == best and u < ans: 
+                ans = u
+                best = cnt
+        return ans
+
+
     """929. Unique Email Addresses (Easy)
 	Every valid email consists of a local name and a domain name, separated by 
 	the '@' sign. Besides lowercase letters, the email may contain one or more 
