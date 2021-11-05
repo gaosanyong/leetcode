@@ -21284,18 +21284,18 @@ class UnionFind:
     def minMalwareSpread(self, graph: List[List[int]], initial: List[int]) -> int:
         n = len(graph)
         uf = UnionFind(n)
-        for i in range(n):
-            for j in range(i+1, n):
-                if graph[i][j]: uf.union(i, j)
+        for u in range(n):
+            for v in range(u+1, n):
+                if graph[u][v]: uf.union(u, v)
                     
         freq = defaultdict(int)
-        for i in initial: freq[uf.find(i)] += 1
+        for u in initial: freq[uf.find(u)] += 1
             
-        ans, most = inf, 0
-        for i in initial: 
-            k = uf.find(i)
-            rank = uf.rank[k] if freq[k] == 1 else 0
-            if rank > most or rank == most and i < ans: ans, most = i, rank
+        ans = best = -1 
+        for u in initial: 
+            uu = uf.find(u)
+            cnt = uf.rank[uu] if freq[uu] == 1 else 0
+            if cnt > best or cnt == best and u < ans: ans, best = u, cnt
         return ans 
 
 
@@ -21391,11 +21391,11 @@ class UnionFind:
     
     def minMalwareSpread(self, graph: List[List[int]], initial: List[int]) -> int:
         n = len(graph)
-        uf = UnionFind(n+1)
+        uf = UnionFind(n)
         initial = set(initial)
         for u in range(n): 
             if u not in initial: 
-                for v in range(n): 
+                for v in range(u+1, n): 
                     if graph[u][v] and v not in initial: 
                         uf.union(u, v)
                         
@@ -21411,9 +21411,7 @@ class UnionFind:
             cnt = 0
             for v in mp[u]: 
                 if freq[v] == 1: cnt += uf.rank[v]
-            if cnt > best or cnt == best and u < ans: 
-                ans = u
-                best = cnt
+            if cnt > best or cnt == best and u < ans: ans, best= u, cnt
         return ans
 
 
