@@ -33425,6 +33425,89 @@ public:
 };
 
 
+
+/*297. Serialize and Deserialize Binary Tree (Hard)
+Serialization is the process of converting a data structure or object into a 
+sequence of bits so that it can be stored in a file or memory buffer, or 
+transmitted across a network connection link to be reconstructed later in the 
+same or another computer environment. Design an algorithm to serialize and 
+deserialize a binary tree. There is no restriction on how your serialization/
+deserialization algorithm should work. You just need to ensure that a binary 
+tree can be serialized to a string and this string can be deserialized to the 
+original tree structure. Clarification: The input/output format is the same as 
+how LeetCode serializes a binary tree. You do not necessarily need to follow 
+this format, so please be creative and come up with different approaches 
+yourself.
+
+Example 1:
+Input: root = [1,2,3,null,null,4,5]
+Output: [1,2,3,null,null,4,5]
+
+Example 2:
+Input: root = []
+Output: []
+
+Example 3:
+Input: root = [1]
+Output: [1]
+
+Example 4:
+Input: root = [1,2]
+Output: [1,2]
+
+Constraints:
+* The number of nodes in the tree is in the range [0, 10^4].
+* -1000 <= Node.val <= 1000*/
+
+class Codec {
+public:
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        vector<string> vals; 
+        stack<TreeNode*> stk; stk.push(root); 
+        while (stk.size()) {
+            TreeNode* node = stk.top(); stk.pop(); 
+            if (node) {
+                vals.push_back(to_string(node->val)); 
+                stk.push(node->right); 
+                stk.push(node->left); 
+            } else vals.push_back("$"); 
+        }
+        string ans; 
+        for (auto& x : vals) {
+            if (ans.size()) ans.push_back(' '); 
+            ans += x; 
+        }
+        return ans; 
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        vector<string> vals; 
+        istringstream iss(data); 
+        string buf; 
+        while (iss >> buf) vals.push_back(buf); 
+        
+        stack<TreeNode*> stk; 
+        TreeNode *root = nullptr, *prev = nullptr, *node = nullptr; 
+        for (auto& x : vals) {
+            if (x == "$") {
+                node = nullptr; 
+                if (stk.size() && !prev) stk.pop(); 
+            } else {
+                node = new TreeNode(stoi(x)); 
+                if (!root) root = node; 
+                else if (prev) stk.top()->left = node; 
+                else stk.top()->right = node, stk.pop(); 
+                stk.push(node); 
+            }
+            prev = node; 
+        }
+        return root; 
+    }
+};
+
 /*303. Range Sum Query - Immutable (Easy)
 Given an integer array nums, handle multiple queries of the following type:
 * Calculate the sum of the elements of nums between indices left and right 
