@@ -50702,6 +50702,238 @@ class UnionFind:
         return fn(0, 0, 0)
 
 
+    """2062. Count Vowel Substrings of a String (Easy)
+	A substring is a contiguous (non-empty) sequence of characters within a 
+	string. A vowel substring is a substring that only consists of vowels 
+	('a', 'e', 'i', 'o', and 'u') and has all five vowels present in it. Given 
+	a string word, return the number of vowel substrings in word.
+
+	Example 1:
+	Input: word = "aeiouu"
+	Output: 2
+	Explanation: The vowel substrings of word are as follows (underlined):
+	             - "aeiouu"
+	             - "aeiouu"
+	
+	Example 2:
+	Input: word = "unicornarihan"
+	Output: 0
+	Explanation: Not all 5 vowels are present, so there are no vowel substrings.
+
+	Example 3:
+	Input: word = "cuaieuouac"
+	Output: 7
+	Explanation: The vowel substrings of word are as follows (underlined):
+	             - "cuaieuouac"
+	             - "cuaieuouac"
+	             - "cuaieuouac"
+	             - "cuaieuouac"
+	             - "cuaieuouac"
+	             - "cuaieuouac"
+	             - "cuaieuouac"
+	
+	Example 4:
+	Input: word = "bbaeixoubb"
+	Output: 0
+	Explanation: The only substrings that contain all five vowels also contain 
+	             consonants, so there are no vowel substrings.
+
+	Constraints:
+	* 1 <= word.length <= 100
+	* word consists of lowercase English letters only."""
+
+    def countVowelSubstrings(self, word: str) -> int:
+        ans = 0 
+        freq = defaultdict(int)
+        for i, x in enumerate(word): 
+            if x in "aeiou": 
+                if not i or word[i-1] not in "aeiou": 
+                    jj = j = i # set anchor
+                    freq.clear()
+                freq[x] += 1
+                while len(freq) == 5 and all(freq.values()): 
+                    freq[word[j]] -= 1
+                    j += 1
+                ans += j - jj
+        return ans 
+
+
+    """2063. Vowels of All Substrings (Medium)
+	Given a string word, return the sum of the number of vowels ('a', 'e', 'i', 
+	'o', and 'u') in every substring of word. A substring is a contiguous (non-
+	empty) sequence of characters within a string. Note: Due to the large 
+	constraints, the answer may not fit in a signed 32-bit integer. Please be 
+	careful during the calculations.
+
+	Example 1:
+	Input: word = "aba"
+	Output: 6
+	Explanation: All possible substrings are: "a", "ab", "aba", "b", "ba", and 
+	             "a".
+	             - "b" has 0 vowels in it
+	             - "a", "ab", "ba", and "a" have 1 vowel each
+	             - "aba" has 2 vowels in it
+	             Hence, the total sum of vowels = 0 + 1 + 1 + 1 + 1 + 2 = 6. 
+	
+	Example 2:
+	Input: word = "abc"
+	Output: 3
+	Explanation: All possible substrings are: "a", "ab", "abc", "b", "bc", and 
+	             "c".
+	             - "a", "ab", and "abc" have 1 vowel each
+	             - "b", "bc", and "c" have 0 vowels each
+	             Hence, the total sum of vowels = 1 + 1 + 1 + 0 + 0 + 0 = 3. 
+	
+	Example 3:
+	Input: word = "ltcd"
+	Output: 0
+	Explanation: There are no vowels in any substring of "ltcd".
+
+	Example 4:
+	Input: word = "noosabasboosa"
+	Output: 237
+	Explanation: There are a total of 237 vowels in all the substrings.
+
+	Constraints:
+	* 1 <= word.length <= 10^5
+	* word consists of lowercase English letters."""
+
+    def countVowels(self, word: str) -> int:
+        return sum((i+1)*(len(word)-i) for i, x in enumerate(word) if x in "aeiou")
+
+
+    """2064. Minimized Maximum of Products Distributed to Any Store (Medium)
+	You are given an integer n indicating there are n specialty retail stores. 
+	There are m product types of varying amounts, which are given as a 0-
+	indexed integer array quantities, where quantities[i] represents the number 
+	of products of the ith product type. You need to distribute all products to 
+	the retail stores following these rules:
+	* A store can only be given at most one product type but can be given any 
+	  amount of it.
+	* After distribution, each store will be given some number of products 
+	  (possibly 0). Let x represent the maximum number of products given to any 
+	  store. You want x to be as small as possible, i.e., you want to minimize 
+	  the maximum number of products that are given to any store.
+	Return the minimum possible x.
+
+	Example 1:
+	Input: n = 6, quantities = [11,6]
+	Output: 3
+	Explanation: One optimal way is:
+	             - The 11 products of type 0 are distributed to the first four 
+	               stores in these amounts: 2, 3, 3, 3
+	             - The 6 products of type 1 are distributed to the other two 
+	               stores in these amounts: 3, 3
+	             The maximum number of products given to any store is 
+	             max(2, 3, 3, 3, 3, 3) = 3.
+	
+	Example 2:
+	Input: n = 7, quantities = [15,10,10]
+	Output: 5
+	Explanation: One optimal way is:
+	             - The 15 products of type 0 are distributed to the first three 
+	               stores in these amounts: 5, 5, 5
+	             - The 10 products of type 1 are distributed to the next two 
+	               stores in these amounts: 5, 5
+	             - The 10 products of type 2 are distributed to the last two 
+	               stores in these amounts: 5, 5
+	             The maximum number of products given to any store is 
+	             max(5, 5, 5, 5, 5, 5, 5) = 5.
+	
+	Example 3:
+	Input: n = 1, quantities = [100000]
+	Output: 100000
+	Explanation: The only optimal way is:
+	             - The 100000 products of type 0 are distributed to the only 
+	               store.
+	             The maximum number of products given to any store is 
+	             max(100000) = 100000.
+
+	Constraints:
+	* m == quantities.length
+	* 1 <= m <= n <= 10^5
+	* 1 <= quantities[i] <= 10^5"""
+
+    def minimizedMaximum(self, n: int, quantities: List[int]) -> int:
+        lo, hi = 1, max(quantities)
+        while lo < hi: 
+            mid = lo + hi >> 1
+            if sum(ceil(qty/mid) for qty in quantities) <= n: hi = mid 
+            else: lo = mid + 1
+        return lo
+
+
+    """2065. Maximum Path Quality of a Graph (Hard)
+	There is an undirected graph with n nodes numbered from 0 to n - 1 
+	(inclusive). You are given a 0-indexed integer array values where values[i] 
+	is the value of the ith node. You are also given a 0-indexed 2D integer 
+	array edges, where each edges[j] = [uj, vj, timej] indicates that there is 
+	an undirected edge between the nodes uj and vj, and it takes timej seconds 
+	to travel between the two nodes. Finally, you are given an integer maxTime.
+	A valid path in the graph is any path that starts at node 0, ends at node 0, 
+	and takes at most maxTime seconds to complete. You may visit the same node 
+	multiple times. The quality of a valid path is the sum of the values of the 
+	unique nodes visited in the path (each node's value is added at most once 
+	to the sum). Return the maximum quality of a valid path. Note: There are at 
+	most four edges connected to each node.
+
+	Example 1:
+	Input: values = [0,32,10,43], edges = [[0,1,10],[1,2,15],[0,3,10]], maxTime = 49
+	Output: 75
+	Explanation: One possible path is 0 -> 1 -> 0 -> 3 -> 0. The total time 
+	             taken is 10 + 10 + 10 + 10 = 40 <= 49. The nodes visited are 
+	             0, 1, and 3, giving a maximal path quality of 0 + 32 + 43 = 75.
+	
+	Example 2:
+	Input: values = [5,10,15,20], edges = [[0,1,10],[1,2,10],[0,3,10]], maxTime = 30
+	Output: 25
+	Explanation: One possible path is 0 -> 3 -> 0. The total time taken is 
+	             10 + 10 = 20 <= 30. The nodes visited are 0 and 3, giving a 
+	             maximal path quality of 5 + 20 = 25.
+	
+	Example 3:
+	Input: values = [1,2,3,4], edges = [[0,1,10],[1,2,11],[2,3,12],[1,3,13]], maxTime = 50
+	Output: 7
+	Explanation: One possible path is 0 -> 1 -> 3 -> 1 -> 0. The total time 
+	             taken is 10 + 13 + 13 + 10 = 46 <= 50. The nodes visited are 
+	             0, 1, and 3, giving a maximal path quality of 1 + 2 + 4 = 7.
+	
+	Example 4:
+	Input: values = [0,1,2], edges = [[1,2,10]], maxTime = 10
+	Output: 0
+	Explanation: The only path is 0. The total time taken is 0. The only node 
+	             visited is 0, giving a maximal path quality of 0.
+
+	Constraints:
+	* n == values.length
+	* 1 <= n <= 1000
+	* 0 <= values[i] <= 108
+	* 0 <= edges.length <= 2000
+	* edges[j].length == 3
+	* 0 <= uj < vj <= n - 1
+	* 10 <= timej, maxTime <= 100
+	* All the pairs [uj, vj] are unique.
+	* There are at most four edges connected to each node.
+	* The graph may not be connected."""
+
+    def maximalPathQuality(self, values: List[int], edges: List[List[int]], maxTime: int) -> int:
+        graph = [[] for _ in values]
+        for u, v, t in edges: 
+            graph[u].append((v, t))
+            graph[v].append((u, t))
+        
+        ans = 0 
+        stack = [(0, values[0], 0, 1)]
+        while stack: 
+            time, val, u, mask = stack.pop()
+            if u == 0: ans = max(ans, val)
+            for v, t in graph[u]: 
+                if time + t <= maxTime: 
+                    if not mask & 1<<v: stack.append((time+t, val+values[v], v, mask ^ 1<<v))
+                    else: stack.append((time+t, val, v, mask))
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
