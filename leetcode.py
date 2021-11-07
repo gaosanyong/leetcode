@@ -1464,10 +1464,10 @@ class Solution:
         ans = [0]*(len(num1) + len(num2))
         for i, x in enumerate(num1): 
             for j, y in enumerate(num2): 
-                val = (ord(x)-48) * (ord(y)-48)
+                carry = (ord(x)-48) * (ord(y)-48)
                 k = i+j+1
-                while val: 
-                    val, ans[k] = divmod(val + ans[k], 10)
+                while carry: 
+                    carry, ans[k] = divmod(carry + ans[k], 10)
                     k -= 1
         return "".join(map(str, ans)).lstrip("0") or "0"
 

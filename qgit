@@ -1,0 +1,30 @@
+[1mdiff --git a/leetcode.cpp b/leetcode.cpp[m
+[1mindex 2c18e98..9974c1f 100644[m
+[1m--- a/leetcode.cpp[m
+[1m+++ b/leetcode.cpp[m
+[36m@@ -33425,7 +33425,6 @@[m [mpublic:[m
+ };[m
+ [m
+ [m
+[31m-[m
+ /*297. Serialize and Deserialize Binary Tree (Hard)[m
+ Serialization is the process of converting a data structure or object into a [m
+ sequence of bits so that it can be stored in a file or memory buffer, or [m
+[1mdiff --git a/leetcode.py b/leetcode.py[m
+[1mindex 65c36b9..70e45c9 100644[m
+[1m--- a/leetcode.py[m
+[1m+++ b/leetcode.py[m
+[36m@@ -1464,10 +1464,10 @@[m [mclass Solution:[m
+         ans = [0]*(len(num1) + len(num2))[m
+         for i, x in enumerate(num1): [m
+             for j, y in enumerate(num2): [m
+[31m-                val = (ord(x)-48) * (ord(y)-48)[m
+[32m+[m[32m                carry = (ord(x)-48) * (ord(y)-48)[m
+                 k = i+j+1[m
+[31m-                while val: [m
+[31m-                    val, ans[k] = divmod(val + ans[k], 10)[m
+[32m+[m[32m                while carry:[m[41m [m
+[32m+[m[32m                    carry, ans[k] = divmod(carry + ans[k], 10)[m
+                     k -= 1[m
+         return "".join(map(str, ans)).lstrip("0") or "0"[m
+ [m
