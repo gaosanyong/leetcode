@@ -17896,13 +17896,13 @@ public:
 	* 1 <= trust[i][0], trust[i][1] <= n*/
 
     int findJudge(int n, vector<vector<int>>& trust) {
-        vector<int> degree(n+1, 0); 
+        vector<int> degree(n); 
         for (auto& x : trust) {
-            --degree[x[0]]; 
-            ++degree[x[1]]; 
+            --degree[x[0]-1]; 
+            ++degree[x[1]-1]; 
         }
-        for (int i = 1; i <= n; ++i) 
-            if (degree[i] == n-1) return i; 
+        for (int i = 0; i < n; ++i) 
+            if (degree[i] == n-1) return i+1; 
         return -1; 
     }
 
