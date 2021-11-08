@@ -6564,6 +6564,44 @@ public:
     }
 
 
+    /*347. Top K Frequent Elements (Medium)
+	Given an integer array nums and an integer k, return the k most frequent 
+	elements. You may return the answer in any order.
+
+	Example 1:
+	Input: nums = [1,1,1,2,2,3], k = 2
+	Output: [1,2]
+
+	Example 2:
+	Input: nums = [1], k = 1
+	Output: [1]
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* k is in the range [1, the number of unique elements in the array].
+	* It is guaranteed that the answer is unique.
+
+	Follow up: Your algorithm's time complexity must be better than O(n log n), 
+	           where n is the array's size.*/
+
+    vector<int> topKFrequent(vector<int>& nums, int k) {
+        unordered_map<int, int> freq; 
+        for (auto& x : nums) ++freq[x]; 
+        
+        int n = nums.size(); 
+        vector<vector<int>> bucket(n+1); 
+        for (auto& [x, v] : freq) bucket[v].push_back(x); 
+        
+        vector<int> ans; 
+        for (int x = n; x > 0; --x) 
+            if (ans.size() < k) 
+                for (auto& xx : bucket[x])
+                    ans.push_back(xx); 
+            else break; 
+        return ans; 
+    }
+
+
     /*350. Intersection of Two Arrays II (Easy)
 	Given two integer arrays nums1 and nums2, return an array of their 
 	intersection. Each element in the result must appear as many times as it 
