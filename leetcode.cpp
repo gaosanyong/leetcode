@@ -7725,7 +7725,7 @@ public:
         for (auto& ch : s) ++freq[ch]; 
         
         vector<vector<char>> bucket(s.size()+1); 
-        for (auto& [k, v] : freq) bucket[v].push_back(k); 
+        for (auto& [ch, v] : freq) bucket[v].push_back(ch); 
         
         string ans; 
         for (int v = s.size(); v >= 0; --v) 
