@@ -1,3 +1,6 @@
+#include "unionfind.h"
+
+
 class Solution {
 public:
 
@@ -5543,39 +5546,15 @@ public:
 	* edges[i].length == 2
 	* 0 <= ai, bi < n
 	* ai != bi
-	* There are no self-loops or repeated edges.
-
-class UnionFind {
-    vector<int> parent, rank; 
-public: 
-    UnionFind(int n) {
-        parent.resize(n); 
-        iota(parent.begin(), parent.end(), 0); 
-        rank = vector<int>(n, 1); 
-    }
-    
-    int find(int p) {
-        if (p != parent[p])
-            parent[p] = find(parent[p]); 
-        return parent[p]; 
-    }
-    
-    bool connect(int p, int q) {
-        int prt = find(p), qrt = find(q); 
-        if (prt == qrt) return false; 
-        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
-        parent[prt] = qrt; 
-        rank[qrt] += rank[prt]; 
-        return true; 
-    }
-};*/
+	* There are no self-loops or repeated edges.*/
 
     bool validTree(int n, vector<vector<int>>& edges) {
-        UnionFind uf = UnionFind(n); 
+        UnionFind *uf = new UnionFind(n); 
         for (auto& edge : edges) {
             if (!uf.connect(edge[0], edge[1])) return false; 
             --n; 
         }
+        delete uf; 
         return n == 1; 
     }
 
@@ -10879,6 +10858,99 @@ public:
     }
 
 
+	/*684. Redundant Connection (Medium)
+	In this problem, a tree is an undirected graph that is connected and has no 
+	cycles. You are given a graph that started as a tree with n nodes labeled from 
+	1 to n, with one additional edge added. The added edge has two different 
+	vertices chosen from 1 to n, and was not an edge that already existed. The 
+	graph is represented as an array edges of length n where edges[i] = [ai, bi] 
+	indicates that there is an edge between nodes ai and bi in the graph. Return an 
+	edge that can be removed so that the resulting graph is a tree of n nodes. If 
+	there are multiple answers, return the answer that occurs last in the input.
+
+	Example 1:
+	Input: edges = [[1,2],[1,3],[2,3]]
+	Output: [2,3]
+
+	Example 2:
+	Input: edges = [[1,2],[2,3],[3,4],[1,4],[1,5]]
+	Output: [1,4]
+
+	Constraints:
+	* n == edges.length
+	* 3 <= n <= 1000
+	* edges[i].length == 2
+	* 1 <= ai < bi <= edges.length
+	* ai != bi
+	* There are no repeated edges.
+	* The given graph is connected.*/
+
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+        UnionFind *uf = new UnionFind(size(edges)); 
+        for (auto& edge : edges) 
+            if (!uf->connect(edge[0]-1, edge[1]-1)) {
+            	delete uf; 
+            	return edge;
+            } 
+        delete uf; 
+        return {}; 
+    }
+
+
+    /*685. Redundant Connection II (Hard)
+	In this problem, a rooted tree is a directed graph such that, there is 
+	exactly one node (the root) for which all other nodes are descendants of 
+	this node, plus every node has exactly one parent, except for the root node 
+	which has no parents. The given input is a directed graph that started as a 
+	rooted tree with n nodes (with distinct values from 1 to n), with one 
+	additional directed edge added. The added edge has two different vertices 
+	chosen from 1 to n, and was not an edge that already existed.  resulting 
+	graph is given as a 2D-array of edges. Each element of edges is a pair 
+	[ui, vi] that represents a directed edge connecting nodes ui and vi, where 
+	ui is a parent of child vi. Return an edge that can be removed so that the 
+	resulting graph is a rooted tree of n nodes. If there are multiple answers, 
+	return the answer that occurs last in the given 2D-array.
+
+	Example 1:
+	Input: edges = [[1,2],[1,3],[2,3]]
+	Output: [2,3]
+
+	Example 2:
+	Input: edges = [[1,2],[2,3],[3,4],[4,1],[1,5]]
+	Output: [4,1]
+
+	Constraints:
+	* n == edges.length
+	* 3 <= n <= 1000
+	* edges[i].length == 2
+	* 1 <= ui, vi <= n
+	* ui != vi*/
+
+    vector<int> findRedundantDirectedConnection(vector<vector<int>>& edges) {
+        int n = edges.size(); 
+        vector<int> parent(n, 0), cand0, cand1, cand2; 
+        bool mult = false, cycle = false; 
+        UnionFind *uf = new UnionFind(n); 
+        
+        for (auto& edge : edges) {
+            int u = edge[0], v = edge[1]; 
+            if (parent[v-1]) {
+                mult = true; 
+                cand0 = {parent[v-1], v}; 
+                cand1 = {u, v}; 
+            } else {
+                parent[v-1] = u; 
+                if (!uf->connect(u-1, v-1)) {
+                    cycle = true; 
+                    cand2 = {u, v}; 
+                }
+            }
+        }
+        delete uf; 
+        return mult && cycle ? cand0 : mult ? cand1 : cand2; 
+    }
+
+
     /*689. Maximum Sum of 3 Non-Overlapping Subarrays (Hard)
 	Given an integer array nums and an integer k, find three non-overlapping 
 	subarrays of length k with maximum sum and return them. Return the result 
@@ -13372,37 +13444,7 @@ public:
 	* hits[i].length == 2
 	* 0 <= xi <= m - 1
 	* 0 <= yi <= n - 1
-	* All (xi, yi) are unique.
-
-class UnionFind {
-    vector<int> parent, rank; 
-    
-public: 
-    UnionFind(int n) {
-        parent.resize(n); 
-        iota(parent.begin(), parent.end(), 0); 
-        rank = vector<int>(n, 1); 
-    }
-    
-    int find(int p) {
-        if (p != parent[p]) 
-            parent[p] = find(parent[p]); 
-        return parent[p]; 
-    }
-    
-    bool connect(int p, int q) {
-        int prt = find(p), qrt = find(q); 
-        if (prt == qrt) return false; 
-        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
-        parent[prt] = qrt; 
-        rank[qrt] += rank[prt]; 
-        return true; 
-    }
-    
-    int top() {
-        return rank[find(parent.size()-1)]; 
-    }
-}; */
+	* All (xi, yi) are unique.*/
 
     vector<int> hitBricks(vector<vector<int>>& grid, vector<vector<int>>& hits) {
         int m = grid.size(), n = grid[0].size(), dir[5] = {-1, 0, 1, 0, -1}; 
@@ -14171,32 +14213,7 @@ public:
 	* 1 <= strs.length <= 300
 	* 1 <= strs[i].length <= 300
 	* strs[i] consists of lowercase letters only.
-	* All words in strs have the same length and are anagrams of each other.
-
-class UnionFind {
-    vector<int> parent, rank; 
-public: 
-    UnionFind(int n) {
-        parent.resize(n); 
-        iota(parent.begin(), parent.end(), 0); 
-        rank = vector<int>(n, 1); 
-    }
-    
-    int find(int p) {
-        if (p != parent[p]) 
-            parent[p] = find(parent[p]); 
-        return parent[p]; 
-    }
-    
-    bool connect(int p, int q) {
-        int prt = find(p), qrt = find(q); 
-        if (prt == qrt) return false; 
-        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
-        parent[prt] = qrt; 
-        rank[qrt] += rank[prt]; 
-        return true; 
-    }
-}; */
+	* All words in strs have the same length and are anagrams of each other.*/
 
     int numSimilarGroups(vector<string>& strs) {
         
@@ -16245,32 +16262,7 @@ public:
 	* graph[i][i] == 1
 	* 1 <= initial.length <= n
 	* 0 <= initial[i] <= n - 1
-	* All the integers in initial are unique.
-
-	class UnionFind {
-	public: 
-	    vector<int> parent, rank; 
-	    UnionFind(int n) {
-	        parent.resize(n); 
-	        iota(parent.begin(), parent.end(), 0); 
-	        rank = vector<int>(n, 1); 
-	    }
-	    
-	    int find(int p) {
-	        if (p != parent[p]) 
-	            parent[p] = find(parent[p]); 
-	        return parent[p]; 
-	    }
-	    
-	    bool connect(int p, int q) {
-	        int prt = find(p), qrt = find(q); 
-	        if (prt == qrt) return true; 
-	        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
-	        parent[prt] = qrt; 
-	        rank[qrt] += rank[prt]; 
-	        return true; 
-	    }
-	};*/
+	* All the integers in initial are unique.*/
 
     int minMalwareSpread(vector<vector<int>>& graph, vector<int>& initial) {
         int n = graph.size(); 
@@ -16407,32 +16399,7 @@ public:
 	* graph[i][i] == 1
 	* 1 <= initial.length < n
 	* 0 <= initial[i] <= n - 1
-	* All the integers in initial are unique.
-
-	class UnionFind {
-	public: 
-	    vector<int> parent, rank; 
-	    UnionFind(int n) {
-	        parent.resize(n); 
-	        iota(parent.begin(), parent.end(), 0); 
-	        rank = vector<int>(n, 1); 
-	    }
-	    
-	    int find(int p) {
-	        if (p != parent[p]) 
-	            parent[p] = find(parent[p]); 
-	        return parent[p]; 
-	    }
-	    
-	    bool connect(int p, int q) {
-	        int prt = find(p), qrt = find(q); 
-	        if (prt == qrt) return false; 
-	        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
-	        parent[prt] = qrt; 
-	        rank[qrt] += rank[prt]; 
-	        return true; 
-	    }
-	}; */
+	* All the integers in initial are unique.*/
 
     int minMalwareSpread(vector<vector<int>>& graph, vector<int>& initial) {
         int n = graph.size(); 
@@ -16939,32 +16906,7 @@ public:
 	Constraints:
 	* 1 <= nums.length <= 2 * 10^4
 	* 1 <= nums[i] <= 10^5
-	* All the values of nums are unique.
-
-	class UnionFind {
-	    vector<int> parent, rank; 
-	public: 
-	    UnionFind(int n) {
-	        parent.resize(n); 
-	        iota(parent.begin(), parent.end(), 0); 
-	        rank = vector<int>(n, 1); 
-	    }
-	    
-	    int find(int p) {
-	        if (p != parent[p]) 
-	            parent[p] = find(parent[p]); 
-	        return parent[p]; 
-	    }
-	    
-	    bool connect(int p, int q) {
-	        int prt = find(p), qrt = find(q); 
-	        if (prt == qrt) return false; 
-	        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
-	        parent[prt] = qrt; 
-	        rank[qrt] += rank[prt]; 
-	        return true; 
-	    }
-	};*/
+	* All the values of nums are unique.*/
 
     int largestComponentSize(vector<int>& nums) {
         int m = *max_element(nums.begin(), nums.end()); 
@@ -19398,32 +19340,7 @@ public:
 	* 0 <= xi, yi <= n - 1
 	* xi != yi
 	* All the values timestampi are unique.
-	* All the pairs (xi, yi) occur at most one time in the input.
-
-class UnionFind {
-    vector<int> parent, rank; 
-public: 
-    UnionFind(int n) {
-        parent.resize(n); 
-        iota(parent.begin(), parent.end(), 0); 
-        rank = vector<int>(n, 1); 
-    }
-    
-    int find(int p) {
-        if (p != parent[p]) 
-            parent[p] = find(parent[p]); 
-        return parent[p]; 
-    }
-    
-    bool connect(int p, int q) {
-        int prt = find(p), qrt = find(q); 
-        if (prt == qrt) return false; 
-        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
-        parent[prt] = qrt; 
-        rank[qrt] += rank[prt]; 
-        return true; 
-    }
-};*/
+	* All the pairs (xi, yi) occur at most one time in the input.*/
 
     int earliestAcq(vector<vector<int>>& logs, int n) {
         int ans = -1; 
@@ -19567,33 +19484,7 @@ public:
 	* connections[i].length == 3
 	* 1 <= xi, yi <= n
 	* xi != yi
-	* 0 <= costi <= 10^5
-
-class UnionFind {
-vector<int> parent, rank; 
-public: 
-    UnionFind(int n) {
-        parent.resize(n); 
-        iota(parent.begin(), parent.end(), 0); 
-        rank = vector<int>(n, 1); 
-    }
-    
-    int find(int p) {
-        if (p != parent[p])
-            parent[p] = find(parent[p]); 
-        return parent[p]; 
-    }
-    
-    bool connect(int p, int q) {
-        int prt = find(p), qrt = find(q); 
-        if (prt == qrt) return false; 
-        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
-        parent[prt] = qrt; 
-        rank[qrt] += rank[prt]; 
-        return true; 
-    }
-};*/
-
+	* 0 <= costi <= 10^5*/
 
     int minimumCost(int n, vector<vector<int>>& connections) {
         sort(connections.begin(), connections.end(), [](auto& lhs, auto& rhs) { return lhs[2] < rhs[2]; }); 
@@ -29560,32 +29451,7 @@ public:
 	* cells.length == row * col
 	* 1 <= ri <= row
 	* 1 <= ci <= col
-	* All the values of cells are unique.
-
-class UnionFind {
-    vector<int> parent, rank; 
-public: 
-    UnionFind(int n) {
-        parent.resize(n); 
-        iota(parent.begin(), parent.end(), 0); 
-        rank = vector<int>(n, 1); 
-    }
-    
-    int find(int p) {
-        if (p != parent[p]) 
-            parent[p] = find(parent[p]); // find w. path compression
-        return parent[p]; 
-    }
-    
-    bool connect(int p, int q) {
-        int prt = find(p), qrt = find(q); 
-        if (prt == qrt) return false; 
-        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
-        parent[prt] = qrt; 
-        rank[qrt] += rank[prt]; 
-        return true; 
-    }
-};*/
+	* All the values of cells are unique.*/
 
     int latestDayToCross(int row, int col, vector<vector<int>>& cells) {
         int n = row * col; 
@@ -29611,6 +29477,7 @@ public:
                         }
                     }
         }
+        delete uf; 
         return -1; 
     }
 
@@ -30843,32 +30710,7 @@ public:
 
 	Constraints:
 	* 1 <= nums.length <= 3 * 10^4
-	* 2 <= nums[i] <= 10^5
-
-class UnionFind {
-    vector<int> parent, rank; 
-public: 
-    UnionFind(int n) {
-        parent.resize(n); 
-        iota(parent.begin(), parent.end(), 0); 
-        rank = vector<int>(n, 1); 
-    }
-    
-    int find(int p) {
-        if (p != parent[p]) 
-            parent[p] = find(parent[p]); 
-        return parent[p]; 
-    }
-    
-    bool connect(int p, int q) {
-        int prt = find(p), qrt = find(q); 
-        if (prt == qrt) return false; 
-        if (rank[prt] > rank[qrt]) swap(prt, qrt); 
-        parent[prt] = qrt; 
-        rank[qrt] += rank[prt]; 
-        return true; 
-    }
-};*/
+	* 2 <= nums[i] <= 10^5*/
 
     bool gcdSort(vector<int>& nums) {
         int m = *max_element(nums.begin(), nums.end()); 
@@ -34538,72 +34380,6 @@ public:
             node = node->child[ch-'a']; 
         }
         return node->val; 
-    }
-};
-
-
-/*684. Redundant Connection (Medium)
-In this problem, a tree is an undirected graph that is connected and has no 
-cycles. You are given a graph that started as a tree with n nodes labeled from 
-1 to n, with one additional edge added. The added edge has two different 
-vertices chosen from 1 to n, and was not an edge that already existed. The 
-graph is represented as an array edges of length n where edges[i] = [ai, bi] 
-indicates that there is an edge between nodes ai and bi in the graph. Return an 
-edge that can be removed so that the resulting graph is a tree of n nodes. If 
-there are multiple answers, return the answer that occurs last in the input.
-
-Example 1:
-Input: edges = [[1,2],[1,3],[2,3]]
-Output: [2,3]
-
-Example 2:
-Input: edges = [[1,2],[2,3],[3,4],[1,4],[1,5]]
-Output: [1,4]
-
-Constraints:
-* n == edges.length
-* 3 <= n <= 1000
-* edges[i].length == 2
-* 1 <= ai < bi <= edges.length
-* ai != bi
-* There are no repeated edges.
-* The given graph is connected.*/
-
-class UnionFind {
-    vector<int> parent, rank; 
-public: 
-    UnionFind(int n) {
-        parent.resize(n); 
-        iota(begin(parent), end(parent), 0); 
-        rank = vector<int>(n, 1); 
-    } 
-    
-    int find(int p) {
-        /* find with path compression */
-        if (parent[p] != p) 
-            parent[p] = find(parent[p]); 
-        return parent[p]; 
-    }
-    
-    bool connect(int p, int q) {
-        /* union with rank */
-        int prt = find(p), qrt = find(q); 
-        if (prt == qrt) return false; 
-        if (rank[prt] > rank[qrt]) swap(prt, qrt);
-        parent[prt] = qrt; 
-        rank[qrt] += rank[prt]; 
-        return true; 
-    }
-};
-
-
-class Solution {
-public:
-    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
-        UnionFind uf = UnionFind(size(edges)); 
-        for (auto& edge : edges) 
-            if (!uf.connect(edge[0]-1, edge[1]-1)) return edge; 
-        return {}; 
     }
 };
 

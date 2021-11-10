@@ -11,6 +11,7 @@ from math import ceil, inf, sqrt
 from operator import gt, lt, or_, xor
 from sortedcontainers import SortedDict, SortedList
 from threading import Lock, Semaphore
+from unionfind import UnionFind
 
 
 class Solution:
@@ -7867,26 +7868,7 @@ class Solution:
 	* edges[i].length == 2
 	* 0 <= ai, bi < n
 	* ai != bi
-	* There are no self-loops or repeated edges.
-
-class UnionFind: 
-    
-    def __init__(self, n): 
-        self.parent = list(range(n))
-        self.rank = [1] * n 
-        
-    def find(self, p): 
-        if p != self.parent[p]: 
-            self.parent[p] = self.find(self.parent[p])
-        return self.parent[p]
-    
-    def union(self, p, q): 
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False 
-        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt 
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True """
+	* There are no self-loops or repeated edges."""
     
     def validTree(self, n: int, edges: List[List[int]]) -> bool:
         uf = UnionFind(n)
@@ -9282,34 +9264,12 @@ class UnionFind:
 
 	Note: You can assume that no duplicate edges will appear in edges. Since 
 	      all edges are undirected, [0, 1] is the same as [1, 0] and thus will 
-	      not appear together in edges.
-
-	class UnionFind: 
-	    def __init__(self, n):
-	        self.parent = list(range(n))
-	        self.rank = [1]*n
-	        self.components = n
-	        
-	    def find(self, p):
-	        if p != self.parent[p]:
-	            self.parent[p] = self.find(self.parent[p])
-	        return self.parent[p]
-	    
-	    def union(self, p, q):
-	        prt, qrt = self.find(p), self.find(q)
-	        if prt == qrt: return False 
-	        self.components -= 1
-	        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
-	        self.parent[prt] = qrt
-	        self.rank[qrt] += self.rank[prt]
-	        return True 
-	"""
+	      not appear together in edges."""
 
     def countComponents(self, n: int, edges: List[List[int]]) -> int:
         uf = UnionFind(n)
-        for u, v in edges: 
-            uf.union(u, v)
-        return uf.components
+        for u, v in edges: uf.union(u, v)
+        return len({uf.find(i) for i in range(n)})
 
 
     """325. Maximum Size Subarray Sum Equals k (Medium)
@@ -15377,6 +15337,86 @@ class Trie:
         return suffix
 
 
+	"""684. Redundant Connection (Medium)
+	In this problem, a tree is an undirected graph that is connected and has no 
+	cycles. You are given a graph that started as a tree with n nodes labeled from 
+	1 to n, with one additional edge added. The added edge has two different 
+	vertices chosen from 1 to n, and was not an edge that already existed. The 
+	graph is represented as an array edges of length n where edges[i] = [ai, bi] 
+	indicates that there is an edge between nodes ai and bi in the graph. Return an 
+	edge that can be removed so that the resulting graph is a tree of n nodes. If 
+	there are multiple answers, return the answer that occurs last in the input.
+
+	Example 1:
+	Input: edges = [[1,2],[1,3],[2,3]]
+	Output: [2,3]
+
+	Example 2:
+	Input: edges = [[1,2],[2,3],[3,4],[1,4],[1,5]]
+	Output: [1,4]
+
+	Constraints:
+	* n == edges.length
+	* 3 <= n <= 1000
+	* edges[i].length == 2
+	* 1 <= ai < bi <= edges.length
+	* ai != bi
+	* There are no repeated edges.
+	* The given graph is connected."""
+
+    def findRedundantConnection(self, edges: List[List[int]]) -> List[int]:
+        uf = UnionFind(len(edges))
+        for u, v in edges: 
+            if not uf.union(u-1, v-1): return [u, v]
+
+
+    """685. Redundant Connection II (Hard)
+	In this problem, a rooted tree is a directed graph such that, there is 
+	exactly one node (the root) for which all other nodes are descendants of 
+	this node, plus every node has exactly one parent, except for the root node 
+	which has no parents. The given input is a directed graph that started as a 
+	rooted tree with n nodes (with distinct values from 1 to n), with one 
+	additional directed edge added. The added edge has two different vertices 
+	chosen from 1 to n, and was not an edge that already existed.  resulting 
+	graph is given as a 2D-array of edges. Each element of edges is a pair 
+	[ui, vi] that represents a directed edge connecting nodes ui and vi, where 
+	ui is a parent of child vi. Return an edge that can be removed so that the 
+	resulting graph is a rooted tree of n nodes. If there are multiple answers, 
+	return the answer that occurs last in the given 2D-array.
+
+	Example 1:
+	Input: edges = [[1,2],[1,3],[2,3]]
+	Output: [2,3]
+
+	Example 2:
+	Input: edges = [[1,2],[2,3],[3,4],[4,1],[1,5]]
+	Output: [4,1]
+
+	Constraints:
+	* n == edges.length
+	* 3 <= n <= 1000
+	* edges[i].length == 2
+	* 1 <= ui, vi <= n
+	* ui != vi"""
+
+    def findRedundantDirectedConnection(self, edges: List[List[int]]) -> List[int]:
+        n = len(edges)
+        uf = UnionFind(n)
+        mult = cycle = False 
+        parent = [0]*(n)
+        for u, v in edges: 
+            if parent[v-1]: 
+                mult = True # seeing multiple parents 
+                cand0 = [parent[v-1], v]
+                cand1 = [u, v]
+            else: 
+                parent[v-1] = u
+                if not uf.union(u-1, v-1): 
+                    cycle = True # seeing cycle
+                    cand2 = [u, v]
+        return cand0 if mult and cycle else cand1 if mult else cand2
+
+
     """686. Repeated String Match (Medium)
 	Given two strings a and b, return the minimum number of times you should 
 	repeat string a so that string b is a substring of it. If it is impossible 
@@ -18419,26 +18459,7 @@ class UnionFind:
 	* hits[i].length == 2
 	* 0 <= xi <= m - 1
 	* 0 <= yi <= n - 1
-	* All (xi, yi) are unique.
-
-class UnionFind: 
-    
-    def __init__(self, n): 
-        self.parent = list(range(n))
-        self.rank = [1] * n
-        
-    def find(self, p): 
-        if p != self.parent[p]: 
-            self.parent[p] = self.find(self.parent[p])
-        return self.parent[p]
-    
-    def union(self, p, q):
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False 
-        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True """
+	* All (xi, yi) are unique."""
 
     def hitBricks(self, grid: List[List[int]], hits: List[List[int]]) -> List[int]:
         m, n = len(grid), len(grid[0]) # dimensions 
@@ -19326,26 +19347,7 @@ class UnionFind:
 	* 1 <= strs.length <= 300
 	* 1 <= strs[i].length <= 300
 	* strs[i] consists of lowercase letters only.
-	* All words in strs have the same length and are anagrams of each other.
-
-class UnionFind:
-    
-    def __init__(self, n):
-        self.parent = list(range(n))
-        self.rank = [1] * n
-        
-    def find(self, p):
-        if p != self.parent[p]: 
-            self.parent[p] = self.find(self.parent[p])
-        return self.parent[p]
-    
-    def union(self, p, q): 
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False 
-        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True"""
+	* All words in strs have the same length and are anagrams of each other."""
 
     def numSimilarGroups(self, strs: List[str]) -> int:
         
@@ -21299,25 +21301,7 @@ class UnionFind:
 	* graph[i][i] == 1
 	* 1 <= initial.length <= n
 	* 0 <= initial[i] <= n - 1
-	* All the integers in initial are unique.
-
-class UnionFind: 
-    
-    def __init__(self, n):
-        self.parent = list(range(n))
-        self.rank = [1]*n
-        
-    def find(self, p): 
-        if p != self.parent[p]: self.parent[p] = self.find(self.parent[p])
-        return self.parent[p]
-    
-    def union(self, p, q):
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False
-        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True"""
+	* All the integers in initial are unique."""
 
     def minMalwareSpread(self, graph: List[List[int]], initial: List[int]) -> int:
         n = len(graph)
@@ -21406,26 +21390,7 @@ class UnionFind:
 	* graph[i][i] == 1
 	* 1 <= initial.length < n
 	* 0 <= initial[i] <= n - 1
-	* All the integers in initial are unique.
-
-class UnionFind: 
-    
-    def __init__(self, n):
-        self.parent = list(range(n))
-        self.rank = [1] * n 
-    
-    def find(self, p):
-        if p != self.parent[p]: 
-            self.parent[p] = self.find(self.parent[p])
-        return self.parent[p]
-    
-    def union(self, p, q): 
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False 
-        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True"""
+	* All the integers in initial are unique."""
     
     def minMalwareSpread(self, graph: List[List[int]], initial: List[int]) -> int:
         n = len(graph)
@@ -22071,26 +22036,7 @@ class UnionFind:
 	Constraints:
 	* 1 <= nums.length <= 2 * 10^4
 	* 1 <= nums[i] <= 10^5
-	* All the values of nums are unique.
-
-class UnionFind: 
-    
-    def __init__(self, n):
-        self.parent = list(range(n))
-        self.rank = [1]*n
-        
-    def find(self, p): 
-        if p != self.parent[p]: 
-            self.parent[p] = self.find(self.parent[p])
-        return self.parent[p]
-    
-    def union(self, p, q): 
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False 
-        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True"""
+	* All the values of nums are unique."""
 
     def largestComponentSize(self, A: List[int]) -> int:
         m = max(A)
@@ -25407,27 +25353,7 @@ class UnionFind:
 	* 0 <= xi, yi <= n - 1
 	* xi != yi
 	* All the values timestampi are unique.
-	* All the pairs (xi, yi) occur at most one time in the input.
-
-class UnionFind: 
-    
-    def __init__(self, n): 
-        self.parent = list(range(n))
-        self.rank = [1] * n
-        
-    def find(self, p): 
-        if p != self.parent[p]: 
-            self.parent[p] = self.find(self.parent[p])
-        return self.parent[p]
-    
-    
-    def union(self, p, q): 
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False 
-        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True"""
+	* All the pairs (xi, yi) occur at most one time in the input."""
         
     def earliestAcq(self, logs: List[List[int]], n: int) -> int:
         uf = UnionFind(n)
@@ -26067,26 +25993,7 @@ class UnionFind:
 	* connections[i].length == 3
 	* 1 <= xi, yi <= n
 	* xi != yi
-	* 0 <= costi <= 10^5
-
-class UnionFind: 
-    
-    def __init__(self, n):
-        self.parent = list(range(n))
-        self.rank = [1] * n
-        
-    def find(self, p): 
-        if p != self.parent[p]: 
-            self.parent[p] = self.find(self.parent[p])
-        return self.parent[p]
-    
-    def union(self, p, q): 
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False 
-        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True"""
+	* 0 <= costi <= 10^5"""
 
     def minimumCost(self, n: int, connections: List[List[int]]) -> int:
         ans = 0 
@@ -27665,26 +27572,6 @@ class UnionFind:
 	* 0 <= pairs.length <= 10^5
 	* 0 <= pairs[i][0], pairs[i][1] < s.length
 	* s only contains lower case English letters."""
-
-"""
-class UnionFind:
-    def __init__(self, n): 
-        self.parent = list(range(n))
-        self.rank = [1]*n
-    
-    def find(self, p): 
-        if self.parent[p] != p: 
-            self.parent[p] = self.find(self.parent[p])
-        return self.parent[p]
-    
-    def union(self, p, q):
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False # already connected 
-        if prt > qrt: prt, qrt = qrt, prt
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True
-"""
 
     def smallestStringWithSwaps(self, s: str, pairs: List[List[int]]) -> str:
         s = list(s)
@@ -29397,25 +29284,7 @@ class UnionFind:
 	* 0 <= connections[i][0], connections[i][1] < n
 	* connections[i][0] != connections[i][1]
 	* There are no repeated connections.
-	* No two computers are connected by more than one cable.
-
-	class UnionFind:
-	    def __init__(self, n):
-	        self.parent = list(range(n))
-	        self.rank = [1] * n
-	    
-	    def find(self, p):
-	        if p != self.parent[p]: 
-	            self.parent[p] = self.find(self.parent[p])
-	        return self.parent[p]
-	    
-	    def union(self, p, q): 
-	        prt, qrt = self.find(p), self.find(q) 
-	        if prt == qrt: return False # already connected 
-	        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
-	        self.parent[prt] = qrt
-	        self.rank[qrt] += self.rank[prt]
-	        return True"""
+	* No two computers are connected by more than one cable."""
 
     def makeConnected(self, n: int, connections: List[List[int]]) -> int:
         if len(connections) < n-1: return -1 # not enough cables 
@@ -34530,26 +34399,6 @@ class UnionFind:
 	* queries[i].length == 2
 	* 1 <= ai, bi <= cities
 	* ai != bi"""
-
-""" 
- 	class UnionFind:
-	    def __init__(self, n):
-	        self.parent = list(range(n))
-	        self.rank = [1]*n
-	        
-	    def find(self, p): 
-	        if self.parent[p] != p:
-	            self.parent[p] = self.find(self.parent[p]) # path compression 
-	        return self.parent[p]
-	    
-	    def union(self, p, q): 
-	        prt, qrt = self.find(p), self.find(q)
-	        if prt == qrt: return False
-	        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt # union with ranking 
-	        self.parent[prt] = qrt
-	        self.rank[qrt] += self.rank[prt]
-	        return True 
-"""
 
     def areConnected(self, n: int, threshold: int, queries: List[List[int]]) -> List[bool]:
         uf = UnionFind(n)
@@ -46950,25 +46799,7 @@ class Trie:
 	* cells.length == row * col
 	* 1 <= ri <= row
 	* 1 <= ci <= col
-	* All the values of cells are unique.
-
-class UnionFind: 
-    def __init__(self, n): 
-        self.parent = list(range(n))
-        self.rank = [1] * n
-        
-    def find(self, p): 
-        if p != self.parent[p]: 
-            self.parent[p] = self.find(self.parent[p]) # find w/ path compression 
-        return self.parent[p]
-    
-    def union(self, p, q): 
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False # already connected 
-        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt # union by rank 
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True """
+	* All the values of cells are unique."""
     
     def latestDayToCross(self, row: int, col: int, cells: List[List[int]]) -> int:
         grid = [[0]*col for _ in range(row)]
@@ -48139,26 +47970,7 @@ class UnionFind:
 
 	Constraints:
 	* 1 <= nums.length <= 3 * 10^4
-	* 2 <= nums[i] <= 10^5
-
-class UnionFind:
-    
-    def __init__(self, n): 
-        self.parent = list(range(n))
-        self.rank = [1] * n
-        
-    def find(self, p): 
-        if p != self.parent[p]: 
-            self.parent[p] = self.find(self.parent[p])
-        return self.parent[p]
-
-    def union(self, p, q):
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False 
-        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True"""
+	* 2 <= nums[i] <= 10^5"""
         
     def gcdSort(self, nums: List[int]) -> bool:
         m = max(nums)
@@ -52955,61 +52767,6 @@ class MapSum:
             if ch not in node: return 0
             node = node[ch]
         return node["#"]
-
-
-"""684. Redundant Connection (Medium)
-In this problem, a tree is an undirected graph that is connected and has no 
-cycles. You are given a graph that started as a tree with n nodes labeled from 
-1 to n, with one additional edge added. The added edge has two different 
-vertices chosen from 1 to n, and was not an edge that already existed. The 
-graph is represented as an array edges of length n where edges[i] = [ai, bi] 
-indicates that there is an edge between nodes ai and bi in the graph. Return an 
-edge that can be removed so that the resulting graph is a tree of n nodes. If 
-there are multiple answers, return the answer that occurs last in the input.
-
-Example 1:
-Input: edges = [[1,2],[1,3],[2,3]]
-Output: [2,3]
-
-Example 2:
-Input: edges = [[1,2],[2,3],[3,4],[1,4],[1,5]]
-Output: [1,4]
-
-Constraints:
-* n == edges.length
-* 3 <= n <= 1000
-* edges[i].length == 2
-* 1 <= ai < bi <= edges.length
-* ai != bi
-* There are no repeated edges.
-* The given graph is connected."""
-
-class UnionFind:
-    def __init__(self, n):
-        self.parent = list(range(n))
-        self.rank = [1]*n
-        
-    def find(self, p): 
-        """Find with path compression"""
-        if self.parent[p] != p: 
-            self.parent[p] = self.find(self.parent[p])
-        return self.parent[p]
-    
-    def union(self, p, q): 
-        """Union with rank"""
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False
-        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True 
-    
-
-class Solution:
-    def findRedundantConnection(self, edges: List[List[int]]) -> List[int]:
-        uf = UnionFind(len(edges))
-        for u, v in edges: 
-            if not uf.union(u-1, v-1): return [u, v]
 
 
 """706. Design HashMap (Easy)
