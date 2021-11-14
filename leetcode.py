@@ -50968,6 +50968,263 @@ class Trie:
         return lo 
 
 
+    """2073. Time Needed to Buy Tickets (Easy)
+	There are n people in a line queuing to buy tickets, where the 0th person 
+	is at the front of the line and the (n - 1)th person is at the back of the 
+	line. You are given a 0-indexed integer array tickets of length n where the 
+	number of tickets that the ith person would like to buy is tickets[i]. Each 
+	person takes exactly 1 second to buy a ticket. A person can only buy 1 
+	ticket at a time and has to go back to the end of the line (which happens 
+	instantaneously) in order to buy more tickets. If a person does not have 
+	any tickets left to buy, the person will leave the line. Return the time 
+	taken for the person at position k (0-indexed) to finish buying tickets.
+
+	Example 1:
+	Input: tickets = [2,3,2], k = 2
+	Output: 6
+	Explanation: - In the first pass, everyone in the line buys a ticket and 
+	               the line becomes [1, 2, 1].
+	             - In the second pass, everyone in the line buys a ticket and 
+	               the line becomes [0, 1, 0].
+	             The person at position 2 has successfully bought 2 tickets and 
+	             it took 3 + 3 = 6 seconds.
+	
+	Example 2:
+	Input: tickets = [5,1,1,1], k = 0
+	Output: 8
+	Explanation: - In the first pass, everyone in the line buys a ticket and 
+	               the line becomes [4, 0, 0, 0].
+	             - In the next 4 passes, only the person in position 0 is 
+	               buying tickets.
+	             The person at position 0 has successfully bought 5 tickets and 
+	             it took 4 + 1 + 1 + 1 + 1 = 8 seconds.
+
+	Constraints:
+	* n == tickets.length
+	* 1 <= n <= 100
+	* 1 <= tickets[i] <= 100
+	* 0 <= k < n"""
+
+    def timeRequiredToBuy(self, tickets: List[int], k: int) -> int:
+        ans = behind = 0 
+        for i, x in enumerate(tickets): 
+            if i > k: behind = 1
+            if x < tickets[k] - behind: ans += x
+            else: ans += tickets[k] - behind
+        return ans 
+
+
+    """2074. Reverse Nodes in Even Length Groups (Medium)
+	You are given the head of a linked list. The nodes in the linked list are 
+	sequentially assigned to non-empty groups whose lengths form the sequence 
+	of the natural numbers (1, 2, 3, 4, ...). The length of a group is the 
+	number of nodes assigned to it. In other words,
+	* The 1st node is assigned to the first group.
+	* The 2nd and the 3rd nodes are assigned to the second group.
+	* The 4th, 5th, and 6th nodes are assigned to the third group, and so on.
+	Note that the length of the last group may be less than or equal to 
+	1 + the length of the second to last group. Reverse the nodes in each group 
+	with an even length, and return the head of the modified linked list.
+
+	Example 1:
+	Input: head = [5,2,6,3,9,1,7,3,8,4]
+	Output: [5,6,2,3,9,1,4,8,3,7]
+	Explanation:
+	- The length of the first group is 1, which is odd, hence no reversal occurrs.
+	- The length of the second group is 2, which is even, hence the nodes are reversed.
+	- The length of the third group is 3, which is odd, hence no reversal occurrs.
+	- The length of the last group is 4, which is even, hence the nodes are reversed.
+
+	Example 2:
+	Input: head = [1,1,0,6]
+	Output: [1,0,1,6]
+	Explanation:
+	- The length of the first group is 1. No reversal occurrs.
+	- The length of the second group is 2. The nodes are reversed.
+	- The length of the last group is 1. No reversal occurrs.
+
+	Example 3:
+	Input: head = [2,1]
+	Output: [2,1]
+	Explanation:
+	- The length of the first group is 1. No reversal occurrs.
+	- The length of the last group is 1. No reversal occurrs.
+
+	Example 4:
+	Input: head = [8]
+	Output: [8]
+	Explanation: There is only one group whose length is 1. No reversal occurrs.
+
+	Constraints:
+	* The number of nodes in the list is in the range [1, 10^5].
+	* 0 <= Node.val <= 10^5"""
+
+    def reverseEvenLengthGroups(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        n, node = 0, head
+        while node: n, node = n+1, node.next
+        
+        node = head 
+        k = 0 
+        while n: 
+            k += 1
+            size = min(k, n)
+            stack = []
+            if not size & 1: 
+                temp = node 
+                for _ in range(size): 
+                    stack.append(temp.val)
+                    temp = temp.next 
+            for _ in range(size): 
+                if stack: node.val = stack.pop()
+                node = node.next 
+            n -= size
+        return head 
+
+
+    """2075. Decode the Slanted Ciphertext (Medium)
+	A string originalText is encoded using a slanted transposition cipher to a 
+	string encodedText with the help of a matrix having a fixed number of rows 
+	rows. originalText is placed first in a top-left to bottom-right manner.
+	The blue cells are filled first, followed by the red cells, then the yellow 
+	cells, and so on, until we reach the end of originalText. The arrow 
+	indicates the order in which the cells are filled. All empty cells are 
+	filled with ' '. The number of columns is chosen such that the rightmost 
+	column will not be empty after filling in originalText. encodedText is then 
+	formed by appending all characters of the matrix in a row-wise fashion. The 
+	characters in the blue cells are appended first to encodedText, then the 
+	red cells, and so on, and finally the yellow cells. The arrow indicates the 
+	order in which the cells are accessed. For example, if 
+	originalText = "cipher" and rows = 3, then we encode it in the following 
+	manner:
+	The blue arrows depict how originalText is placed in the matrix, and the 
+	red arrows denote the order in which encodedText is formed. In the above 
+	example, encodedText = "ch ie pr". Given the encoded string encodedText and 
+	number of rows rows, return the original string originalText. Note: 
+	originalText does not have any trailing spaces ' '. The test cases are 
+	generated such that there is only one possible originalText.
+
+	Example 1:
+	Input: encodedText = "ch   ie   pr", rows = 3
+	Output: "cipher"
+	Explanation: This is the same example described in the problem description.
+
+	Example 2:
+	Input: encodedText = "iveo    eed   l te   olc", rows = 4
+	Output: "i love leetcode"
+	Explanation: The figure above denotes the matrix that was used to encode 
+	             originalText. The blue arrows show how we can find 
+	             originalText from encodedText.
+
+	Example 3:
+	Input: encodedText = "coding", rows = 1
+	Output: "coding"
+	Explanation: Since there is only 1 row, both originalText and encodedText 
+	             are the same.
+	
+	Example 4:
+	Input: encodedText = " b  ac", rows = 2
+	Output: " abc"
+	Explanation: originalText cannot have trailing spaces, but it may be 
+	             preceded by one or more spaces.
+
+	Constraints:
+	* 0 <= encodedText.length <= 10^6
+	* encodedText consists of lowercase English letters and ' ' only.
+	* encodedText is a valid encoding of some originalText that does not have 
+	  trailing spaces.
+	* 1 <= rows <= 1000
+	* The testcases are generated such that there is only one possible 
+	  originalText."""
+
+    def decodeCiphertext(self, encodedText: str, rows: int) -> str:
+        cols = len(encodedText)//rows
+        mat = [[""]*cols for _ in range(rows)]
+        k = 0
+        for i in range(rows): 
+            for j in range(cols): 
+                mat[i][j] = encodedText[k]
+                k += 1
+        ans = []
+        for offset in range(cols): 
+            i, j = 0, offset
+            while i < rows and j < cols: 
+                ans.append(mat[i][j])
+                i, j = i+1, j+1
+        return "".join(ans).rstrip()
+
+
+    """2076. Process Restricted Friend Requests (Hard)
+	You are given an integer n indicating the number of people in a network. 
+	Each person is labeled from 0 to n - 1. You are also given a 0-indexed 2D 
+	integer array restrictions, where restrictions[i] = [xi, yi] means that 
+	person xi and person yi cannot become friends, either directly or 
+	indirectly through other people. Initially, no one is friends with each 
+	other. You are given a list of friend requests as a 0-indexed 2D integer 
+	array requests, where requests[j] = [uj, vj] is a friend request between 
+	person uj and person vj. A friend request is successful if uj and vj can be 
+	friends. Each friend request is processed in the given order (i.e., 
+	requests[j] occurs before requests[j + 1]), and upon a successful request, 
+	uj and vj become direct friends for all future friend requests. Return a 
+	boolean array result, where each result[j] is true if the jth friend 
+	request is successful or false if it is not. Note: If uj and vj are already 
+	direct friends, the request is still successful.
+
+	Example 1:
+	Input: n = 3, restrictions = [[0,1]], requests = [[0,2],[2,1]]
+	Output: [true,false]
+	Explanation: Request 0: Person 0 and person 2 can be friends, so they 
+	             become direct friends. Request 1: Person 2 and person 1 cannot 
+	             be friends since person 0 and person 1 would be indirect 
+	             friends (1--2--0).
+	
+	Example 2:
+	Input: n = 3, restrictions = [[0,1]], requests = [[1,2],[0,2]]
+	Output: [true,false]
+	Explanation: Request 0: Person 1 and person 2 can be friends, so they 
+	             become direct friends. Request 1: Person 0 and person 2 cannot 
+	             be friends since person 0 and person 1 would be indirect 
+	             friends (0--2--1).
+	
+	Example 3:
+	Input: n = 5, restrictions = [[0,1],[1,2],[2,3]], requests = [[0,4],[1,2],[3,1],[3,4]]
+	Output: [true,false,true,false]
+	Explanation: Request 0: Person 0 and person 4 can be friends, so they 
+	             become direct friends. Request 1: Person 1 and person 2 cannot 
+	             be friends since they are directly restricted. Request 2: 
+	             Person 3 and person 1 can be friends, so they become direct 
+	             friends. Request 3: Person 3 and person 4 cannot be friends 
+	             since person 0 and person 1 would be indirect friends 
+	             (0--4--3--1).
+
+	Constraints:
+	* 2 <= n <= 1000
+	* 0 <= restrictions.length <= 1000
+	* restrictions[i].length == 2
+	* 0 <= xi, yi <= n - 1
+	* xi != yi
+	* 1 <= requests.length <= 1000
+	* requests[j].length == 2
+	* 0 <= uj, vj <= n - 1
+	* uj != vj"""
+
+    def friendRequests(self, n: int, restrictions: List[List[int]], requests: List[List[int]]) -> List[bool]:
+        ans = []
+        uf = UnionFind(n)
+        for u, v in requests: 
+            uu = uf.find(u)
+            vv = uf.find(v)
+            for x, y in restrictions: 
+                xx = uf.find(x)
+                yy = uf.find(y)
+                if uu == xx and vv == yy or uu == yy and vv == xx: 
+                    ans.append(False)
+                    break 
+            else: 
+                ans.append(True)
+                uf.union(u, v)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
