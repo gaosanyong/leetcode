@@ -33544,6 +33544,197 @@ public:
         fn(0, 0, values[0]); 
         return ans; 
     }
+
+
+    /*2068. Check Whether Two Strings are Almost Equivalent (Easy)
+	Two strings word1 and word2 are considered almost equivalent if the 
+	differences between the frequencies of each letter from 'a' to 'z' between 
+	word1 and word2 is at most 3. Given two strings word1 and word2, each of 
+	length n, return true if word1 and word2 are almost equivalent, or false 
+	otherwise. The frequency of a letter x is the number of times it occurs in 
+	the string.
+
+	Example 1:
+	Input: word1 = "aaaa", word2 = "bccb"
+	Output: false
+	Explanation: There are 4 'a's in "aaaa" but 0 'a's in "bccb". The 
+	             difference is 4, which is more than the allowed 3.
+	
+	Example 2:
+	Input: word1 = "abcdeef", word2 = "abaaacc"
+	Output: true
+	Explanation: The differences between the frequencies of each letter in 
+	             word1 and word2 are at most 3:
+	             - 'a' appears 1 time in word1 and 4 times in word2. The difference is 3.
+	             - 'b' appears 1 time in word1 and 1 time in word2. The difference is 0.
+	             - 'c' appears 1 time in word1 and 2 times in word2. The difference is 1.
+	             - 'd' appears 1 time in word1 and 0 times in word2. The difference is 1.
+	             - 'e' appears 2 times in word1 and 0 times in word2. The difference is 2.
+	             - 'f' appears 1 time in word1 and 0 times in word2. The difference is 1.
+	
+	Example 3:
+	Input: word1 = "cccddabba", word2 = "babababab"
+	Output: true
+	Explanation: The differences between the frequencies of each letter in 
+	             word1 and word2 are at most 3:
+	             - 'a' appears 2 times in word1 and 4 times in word2. The difference is 2.
+	             - 'b' appears 2 times in word1 and 5 times in word2. The difference is 3.
+	             - 'c' appears 3 times in word1 and 0 times in word2. The difference is 3.
+	             - 'd' appears 2 times in word1 and 0 times in word2. The difference is 2.
+
+	Constraints:
+	* n == word1.length == word2.length
+	* 1 <= n <= 100
+	* word1 and word2 consist only of lowercase English letters.*/
+
+    bool checkAlmostEquivalent(string word1, string word2) {
+        vector<int> freq(26); 
+        for (auto& ch : word1) ++freq[ch-'a']; 
+        for (auto& ch : word2) --freq[ch-'a']; 
+        return all_of(freq.begin(), freq.end(), [](auto& x) {return abs(x) <= 3;}); 
+    }
+
+
+    /*2070. Most Beautiful Item for Each Query (Medium)
+	You are given a 2D integer array items where items[i] = [pricei, beautyi] 
+	denotes the price and beauty of an item respectively. You are also given a 
+	0-indexed integer array queries. For each queries[j], you want to determine 
+	the maximum beauty of an item whose price is less than or equal to 
+	queries[j]. If no such item exists, then the answer to this query is 0. 
+	Return an array answer of the same length as queries where answer[j] is the 
+	answer to the jth query.
+
+	Example 1:
+	Input: items = [[1,2],[3,2],[2,4],[5,6],[3,5]], queries = [1,2,3,4,5,6]
+	Output: [2,4,5,5,6,6]
+	Explanation: - For queries[0]=1, [1,2] is the only item which has price <= 1. 
+	               Hence, the answer for this query is 2.
+	             - For queries[1]=2, the items which can be considered are [1,2] 
+	               and [2,4]. The maximum beauty among them is 4.
+	             - For queries[2]=3 and queries[3]=4, the items which can be 
+	               considered are [1,2], [3,2], [2,4], and [3,5]. The maximum 
+	               beauty among them is 5.
+	             - For queries[4]=5 and queries[5]=6, all items can be considered.
+	               Hence, the answer for them is the maximum beauty of all items, 
+	               i.e., 6.
+	
+	Example 2:
+	Input: items = [[1,2],[1,2],[1,3],[1,4]], queries = [1]
+	Output: [4]
+	Explanation: The price of every item is equal to 1, so we choose the item 
+	             with the maximum beauty 4. Note that multiple items can have 
+	             the same price and/or beauty.  
+	
+	Example 3:
+	Input: items = [[10,1000]], queries = [5]
+	Output: [0]
+	Explanation: No item has a price less than or equal to 5, so no item can be 
+	             chosen. Hence, the answer to the query is 0.
+
+	Constraints:
+	* 1 <= items.length, queries.length <= 10^5
+	* items[i].length == 2
+	* 1 <= pricei, beautyi, queries[j] <= 10^9*/
+
+    vector<int> maximumBeauty(vector<vector<int>>& items, vector<int>& queries) {
+        sort(items.begin(), items.end()); 
+        vector<pair<int, int>> aug; 
+        for (int i = 0; i < queries.size(); ++i) aug.emplace_back(queries[i], i); 
+        sort(aug.begin(), aug.end()); 
+
+        vector<int> ans(queries.size()); 
+        int prefix = 0, ii = 0; 
+        for (auto& [x, i] : aug) {
+            for (; ii < items.size() && items[ii][0] <= x; ++ii)  
+                prefix = max(prefix, items[ii][1]); 
+            ans[i] = prefix; 
+        }
+        return ans; 
+    }
+
+
+    /*2071. Maximum Number of Tasks You Can Assign (Hard)
+	You have n tasks and m workers. Each task has a strength requirement stored 
+	in a 0-indexed integer array tasks, with the ith task requiring tasks[i] 
+	strength to complete. The strength of each worker is stored in a 0-indexed 
+	integer array workers, with the jth worker having workers[j] strength. Each 
+	worker can only be assigned to a single task and must have a strength 
+	greater than or equal to the task's strength requirement (i.e., 
+	workers[j] >= tasks[i]). Additionally, you have pills magical pills that 
+	will increase a worker's strength by strength. You can decide which workers 
+	receive the magical pills, however, you may only give each worker at most 
+	one magical pill. Given the 0-indexed integer arrays tasks and workers and 
+	the integers pills and strength, return the maximum number of tasks that 
+	can be completed.
+
+	Example 1:
+	Input: tasks = [3,2,1], workers = [0,3,3], pills = 1, strength = 1
+	Output: 3
+	Explanation: We can assign the magical pill and tasks as follows:
+	             - Give the magical pill to worker 0.
+	             - Assign worker 0 to task 2 (0 + 1 >= 1)
+	             - Assign worker 1 to task 1 (3 >= 2)
+	             - Assign worker 2 to task 0 (3 >= 3)
+	
+	Example 2:
+	Input: tasks = [5,4], workers = [0,0,0], pills = 1, strength = 5
+	Output: 1
+	Explanation: We can assign the magical pill and tasks as follows:
+	             - Give the magical pill to worker 0.
+	             - Assign worker 0 to task 0 (0 + 5 >= 5)
+	
+	Example 3:
+	Input: tasks = [10,15,30], workers = [0,10,10,10,10], pills = 3, strength = 10
+	Output: 2
+	Explanation: We can assign the magical pills and tasks as follows:
+	             - Give the magical pill to worker 0 and worker 1.
+	             - Assign worker 0 to task 0 (0 + 10 >= 10)
+	             - Assign worker 1 to task 1 (10 + 10 >= 15)
+	
+	Example 4:
+	Input: tasks = [5,9,8,5,9], workers = [1,6,4,2,6], pills = 1, strength = 5
+	Output: 3
+	Explanation: We can assign the magical pill and tasks as follows:
+	             - Give the magical pill to worker 2.
+	             - Assign worker 1 to task 0 (6 >= 5)
+	             - Assign worker 2 to task 2 (4 + 5 >= 8)
+	             - Assign worker 4 to task 3 (6 >= 5)
+
+	Constraints:
+	* n == tasks.length
+	* m == workers.length
+	* 1 <= n, m <= 5 * 10^4
+	* 0 <= pills <= m
+	* 0 <= tasks[i], workers[j], strength <= 10^9*/
+
+    int maxTaskAssign(vector<int>& tasks, vector<int>& workers, int pills, int strength) {
+        sort(tasks.begin(), tasks.end()); 
+        sort(workers.begin(), workers.end()); 
+        
+        auto fn = [&](int k) {
+            int p = pills; 
+            multiset<int> st(workers.end()-k, workers.end()); 
+            for (int i = k-1; i >= 0; --i) {
+                int task = tasks[i]; 
+                if (task <= *(st.rbegin())) st.erase(prev(st.end())); 
+                else if (task <= *st.rbegin() + strength && p) {
+                    --p; 
+                    auto it = st.lower_bound(task - strength); 
+                    st.erase(it); 
+                } 
+                else return false; 
+            }
+            return true; 
+        }; 
+        
+        int lo = 0, hi = min((int)tasks.size(), (int)workers.size()); 
+        while (lo < hi) {
+            int mid = lo + (hi - lo + 1)/2; 
+            if (fn(mid)) lo = mid; 
+            else hi = mid - 1; 
+        }
+        return lo; 
+    }
 };
 
 
@@ -35790,5 +35981,88 @@ public:
             return true; 
         }
         return false; 
+    }
+};
+
+
+/*2069. Walking Robot Simulation II (Medium)
+A width x height grid is on an XY-plane with the bottom-left cell at (0, 0) and 
+the top-right cell at (width - 1, height - 1). The grid is aligned with the 
+four cardinal directions ("North", "East", "South", and "West"). A robot is 
+initially at cell (0, 0) facing direction "East". The robot can be instructed 
+to move for a specific number of steps. For each step, it does the following.
+
+Attempts to move forward one cell in the direction it is facing.
+* If the cell the robot is moving to is out of bounds, the robot instead turns 
+  90 degrees counterclockwise and retries the step.
+* After the robot finishes moving the number of steps required, it stops and 
+  awaits the next instruction.
+
+Implement the Robot class:
+* Robot(int width, int height) Initializes the width x height grid with the 
+  robot at (0, 0) facing "East".
+* void move(int num) Instructs the robot to move forward num steps.
+* int[] getPos() Returns the current cell the robot is at, as an array of 
+  length 2, [x, y].
+* String getDir() Returns the current direction of the robot, "North", "East", 
+  "South", or "West".
+
+Example 1:
+Input: ["Robot", "move", "move", "getPos", "getDir", "move", "move", "move", "getPos", "getDir"]
+       [[6, 3], [2], [2], [], [], [2], [1], [4], [], []]
+Output: [null, null, null, [4, 0], "East", null, null, null, [1, 2], "West"]
+Explanation
+Robot robot = new Robot(6, 3); // Initialize the grid and the robot at (0, 0) facing East.
+robot.move(2);  // It moves two steps East to (2, 0), and faces East.
+robot.move(2);  // It moves two steps East to (4, 0), and faces East.
+robot.getPos(); // return [4, 0]
+robot.getDir(); // return "East"
+robot.move(2);  // It moves one step East to (5, 0), and faces East.
+                // Moving the next step East would be out of bounds, so it turns and faces North.
+                // Then, it moves one step North to (5, 1), and faces North.
+robot.move(1);  // It moves one step North to (5, 2), and faces North (not West).
+robot.move(4);  // Moving the next step North would be out of bounds, so it turns and faces West.
+                // Then, it moves four steps West to (1, 2), and faces West.
+robot.getPos(); // return [1, 2]
+robot.getDir(); // return "West"
+
+Constraints:
+* 2 <= width, height <= 100
+* 1 <= num <= 10^5
+* At most 10^4 calls in total will be made to move, getPos, and getDir.*/
+
+class Robot {
+    int width = 0, height = 0, perimeter = 0, x = 0, y = 0, dx = 1, dy = 0; 
+public:
+    Robot(int width, int height): width(width), height(height) {
+        perimeter = 2*(width + height) - 4; 
+    }
+    
+    void move(int num) {
+        num %= perimeter; 
+        if (num == 0 && x == 0 && y == 0 && dx == 1 && dy == 0) dx = 0, dy = -1; // edge case 
+        while (num) {
+            int most = 0; 
+            if (dx == 1 && dy == 0) most = width - 1 - x; 
+            else if (dx == 0 && dy == 1) most = height - 1 - y; 
+            else if (dx == -1 && dy == 0) most = x; 
+            else most = y; 
+            int step = min(num, most); 
+            x += dx * step; 
+            y += dy * step; 
+            if (num > most) swap(dx, dy), dx *= -1; 
+            num -= step; 
+        }
+    }
+    
+    vector<int> getPos() {
+        return {x, y}; 
+    }
+    
+    string getDir() {
+        if (dx == 1 && dy == 0) return "East"; 
+        if (dx == 0 && dy == 1) return "North"; 
+        if (dx == -1 && dy == 0) return "West"; 
+        return "South"; 
     }
 };
