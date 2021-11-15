@@ -10224,14 +10224,13 @@ class Solution:
 
     def largestDivisibleSubset(self, nums: List[int]) -> List[int]:
         nums.sort()
-        ans = []
-        seen = {}
+        dp = []
         for i, x in enumerate(nums): 
-            seen[x] = [x]
+            dp.append([x])
             for ii in range(i): 
-                if x % nums[ii] == 0: seen[x] = max(seen[x], seen[nums[ii]] + [x], key=len)
-            ans = max(ans, seen[x], key=len)
-        return ans 
+                if x % nums[ii] == 0: 
+                    dp[-1] = max(dp[-1], dp[ii] + [x], key=len)
+        return max(dp, key=len)
 
 
     """369. Plus One Linked List (Medium)

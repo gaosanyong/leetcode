@@ -6718,6 +6718,49 @@ public:
     }
 
 
+    /*368. Largest Divisible Subset (Medium)
+	Given a set of distinct positive integers nums, return the largest subset 
+	answer such that every pair (answer[i], answer[j]) of elements in this 
+	subset satisfies:
+	* answer[i] % answer[j] == 0, or
+	* answer[j] % answer[i] == 0
+	If there are multiple solutions, return any of them.
+
+	Example 1:
+	Input: nums = [1,2,3]
+	Output: [1,2]
+	Explanation: [1,3] is also accepted.
+
+	Example 2:
+	Input: nums = [1,2,4,8]
+	Output: [1,2,4,8]
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* 1 <= nums[i] <= 2 * 10^9
+	* All the integers in nums are unique.*/
+
+    vector<int> largestDivisibleSubset(vector<int>& nums) {
+        sort(nums.begin(), nums.end()); 
+        int n = nums.size(); 
+        vector<int> dp(n, 1); 
+        for (int i = 0; i < n; ++i) 
+            for (int ii = 0; ii < i; ++ii) 
+                if (nums[i] % nums[ii] == 0) 
+                    dp[i] = max(dp[i], 1 + dp[ii]);
+        
+        auto it = max_element(dp.begin(), dp.end()); 
+        vector<int> ans;
+        for (int i = it - dp.begin(), val = *it; i >= 0; --i) 
+            if (ans.empty() || (ans.back() % nums[i] == 0 && dp[i] == val)) {
+                --val; 
+                ans.push_back(nums[i]); 
+            }
+        reverse(ans.begin(), ans.end()); 
+        return ans; 
+    }
+
+
     /*374. Guess Number Higher or Lower (Easy)
 	We are playing the Guess Game. The game is as follows:
 	* I pick a number from 1 to n. You have to guess which number I picked.
