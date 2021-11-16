@@ -15255,13 +15255,13 @@ class Trie:
 	* 1 <= k <= m * n"""
 
     def findKthNumber(self, m: int, n: int, k: int) -> int:
-        lo, hi = 0, m*n + 1
+        lo, hi = 1, m*n
         while lo < hi: 
             mid = lo + hi >> 1
-            x = sum(min(n, mid//i) for i in range(1, m+1))
-            if x < k: lo = mid + 1
+            cnt = sum(min(n, mid//(i+1)) for i in range(m))
+            if cnt < k: lo = mid + 1
             else: hi = mid 
-        return lo 
+        return lo
 
 
     """678. Valid Parenthesis String (Medium)

@@ -10745,13 +10745,11 @@ public:
 	* 1 <= k <= m * n*/
 
     int findKthNumber(int m, int n, int k) {
-        int lo = 0, hi = m*n + 1; 
+        int lo = 1, hi = m*n; 
         while (lo < hi) {
-            int mid = lo + (hi - lo)/2; 
-            int x = 0; 
-            for (int i = 1; i <= m; ++i)
-                x += min(n, mid/i); 
-            if (x < k) lo = mid + 1; 
+            int mid = lo + hi >> 1, cnt = 0; 
+            for (int i = 0; i < m; ++i) cnt += min(n, mid/(i+1)); 
+            if (cnt < k) lo = mid + 1; 
             else hi = mid; 
         }
         return lo; 
