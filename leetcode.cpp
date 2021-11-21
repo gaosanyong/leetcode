@@ -34317,6 +34317,202 @@ public:
         delete uf; 
         return ans; 
     }
+
+
+    /*2078. Two Furthest Houses With Different Colors (Easy)
+	There are n houses evenly lined up on the street, and each house is 
+	beautifully painted. You are given a 0-indexed integer array colors of 
+	length n, where colors[i] represents the color of the ith house. Return the 
+	maximum distance between two houses with different colors. The distance 
+	between the ith and jth houses is abs(i - j), where abs(x) is the absolute 
+	value of x.
+
+	Example 1:
+	Input: colors = [1,1,1,6,1,1,1]
+	Output: 3
+	Explanation: In the above image, color 1 is blue, and color 6 is red. The 
+	             furthest two houses with different colors are house 0 and 
+	             house 3. House 0 has color 1, and house 3 has color 6. The 
+	             distance between them is abs(0 - 3) = 3. Note that houses 3 
+	             and 6 can also produce the optimal answer.
+	
+	Example 2:
+	Input: colors = [1,8,3,8,3]
+	Output: 4
+	Explanation: In the above image, color 1 is blue, color 8 is yellow, and 
+	             color 3 is green. The furthest two houses with different 
+	             colors are house 0 and house 4. House 0 has color 1, and house 
+	             4 has color 3. The distance between them is abs(0 - 4) = 4.
+	
+	Example 3:
+	Input: colors = [0,1]
+	Output: 1
+	Explanation: The furthest two houses with different colors are house 0 and 
+	             house 1. House 0 has color 0, and house 1 has color 1. The 
+	             distance between them is abs(0 - 1) = 1.
+
+	Constraints:
+	* n == colors.length
+	* 2 <= n <= 100
+	* 0 <= colors[i] <= 100
+	* Test data are generated such that at least two houses have different 
+	  colors.*/
+
+    int maxDistance(vector<int>& colors) {
+        int ans = 0, n = colors.size(); 
+        for (int i = 0; i < n; ++i) {
+            if (colors.front() != colors[i]) ans = max(ans, i); 
+            if (colors[i] != colors.back()) ans = max(ans, n-1-i); 
+        }
+        return ans; 
+    }
+
+
+    /*2079. Watering Plants (Medium)
+	You want to water n plants in your garden with a watering can. The plants 
+	are arranged in a row and are labeled from 0 to n - 1 from left to right 
+	where the ith plant is located at x = i. There is a river at x = -1 that 
+	you can refill your watering can at. Each plant needs a specific amount of 
+	water. You will water the plants in the following way:
+	* Water the plants in order from left to right.
+	* After watering the current plant, if you do not have enough water to 
+	  completely water the next plant, return to the river to fully refill the 
+	  watering can.
+	* You cannot refill the watering can early.
+	You are initially at the river (i.e., x = -1). It takes one step to move 
+	one unit on the x-axis. Given a 0-indexed integer array plants of n 
+	integers, where plants[i] is the amount of water the ith plant needs, and 
+	an integer capacity representing the watering can capacity, return the 
+	number of steps needed to water all the plants.
+
+	Example 1:
+	Input: plants = [2,2,3,3], capacity = 5
+	Output: 14
+	Explanation: Start at the river with a full watering can:
+	- Walk to plant 0 (1 step) and water it. Watering can has 3 units of water.
+	- Walk to plant 1 (1 step) and water it. Watering can has 1 unit of water.
+	- Since you cannot completely water plant 2, walk back to the river to refill (2 steps).
+	- Walk to plant 2 (3 steps) and water it. Watering can has 2 units of water.
+	- Since you cannot completely water plant 3, walk back to the river to refill (3 steps).
+	- Walk to plant 3 (4 steps) and water it.
+	Steps needed = 1 + 1 + 2 + 3 + 3 + 4 = 14.
+
+	Example 2:
+	Input: plants = [1,1,1,4,2,3], capacity = 4
+	Output: 30
+	Explanation: Start at the river with a full watering can:
+	- Water plants 0, 1, and 2 (3 steps). Return to river (3 steps).
+	- Water plant 3 (4 steps). Return to river (4 steps).
+	- Water plant 4 (5 steps). Return to river (5 steps).
+	- Water plant 5 (6 steps).
+	Steps needed = 3 + 3 + 4 + 4 + 5 + 5 + 6 = 30.
+
+	Example 3:
+	Input: plants = [7,7,7,7,7,7,7], capacity = 8
+	Output: 49
+	Explanation: You have to refill before watering each plant. Steps needed 
+	             = 1 + 1 + 2 + 2 + 3 + 3 + 4 + 4 + 5 + 5 + 6 + 6 + 7 = 49.
+
+	Constraints:
+	* n == plants.length
+	* 1 <= n <= 1000
+	* 1 <= plants[i] <= 10^6
+	* max(plants[i]) <= capacity <= 10^9*/
+
+    int wateringPlants(vector<int>& plants, int capacity) {
+        int ans = 0, can = capacity; 
+        for (int i = 0; i < plants.size(); ++i, ++ans) {
+            if (can < plants[i]) ans += 2*i, can = capacity; 
+            can -= plants[i]; 
+        }
+        return ans; 
+    }
+
+
+    /*2081. Sum of k-Mirror Numbers (Hard)
+	A k-mirror number is a positive integer without leading zeros that reads 
+	the same both forward and backward in base-10 as well as in base-k. For 
+	example, 9 is a 2-mirror number. The representation of 9 in base-10 and 
+	base-2 are 9 and 1001 respectively, which read the same both forward and 
+	backward. On the contrary, 4 is not a 2-mirror number. The representation 
+	of 4 in base-2 is 100, which does not read the same both forward and 
+	backward. Given the base k and the number n, return the sum of the n 
+	smallest k-mirror numbers.
+
+	Example 1:
+	Input: k = 2, n = 5
+	Output: 25
+	Explanation: The 5 smallest 2-mirror numbers and their representations in 
+	             base-2 are listed as follows:
+	               base-10    base-2
+	                 1          1
+	                 3          11
+	                 5          101
+	                 7          111
+	                 9          1001
+	             Their sum = 1 + 3 + 5 + 7 + 9 = 25. 
+	
+	Example 2:
+	Input: k = 3, n = 7
+	Output: 499
+	Explanation: The 7 smallest 3-mirror numbers are and their representations 
+	             in base-3 are listed as follows:
+	               base-10    base-3
+	                 1          1
+	                 2          2
+	                 4          11
+	                 8          22
+	                 121        11111
+	                 151        12121
+	                 212        21212
+	             Their sum = 1 + 2 + 4 + 8 + 121 + 151 + 212 = 499.
+	
+	Example 3:
+	Input: k = 7, n = 17
+	Output: 20379000
+	Explanation: The 17 smallest 7-mirror numbers are: 1, 2, 3, 4, 5, 6, 8, 121, 
+	             171, 242, 292, 16561, 65656, 2137312, 4602064, 6597956, 6958596
+
+	Constraints:
+	* 2 <= k <= 9
+	* 1 <= n <= 30*/
+
+    long long kMirror(int k, int n) {
+        
+        auto palin = [](int n, bool odd) {
+            long long ans = n; 
+            if (odd) n /= 10; 
+            for (; n; n /= 10) ans = 10*ans + n % 10; 
+            return ans; 
+        }; 
+        
+        auto is_mirror = [&](long long x) {
+            long long rev = 0; 
+            for (auto tmp = x; tmp; tmp /= k) rev = k*rev + tmp % k; 
+            return x == rev; 
+        }; 
+        
+        long long ans = 0, palin0 = 0, palin1 = 0; 
+        int odd = 1, even = 1; 
+        while (n--) {
+            for (; true; ++odd) {
+                palin1 = palin(odd, true); 
+                if (is_mirror(palin1)) break; 
+            }
+            for (; palin0 < palin1; ++even) {
+                palin0 = palin(even, false); 
+                if (is_mirror(palin0)) break; 
+            }
+            if (palin0 < palin1) {
+                ans += palin0; 
+                ++even; 
+            } else {
+                ans += palin1; 
+                ++odd; 
+            }
+        }
+        return ans; 
+    }
 };
 
 
@@ -36646,5 +36842,47 @@ public:
         if (dx == 0 && dy == 1) return "North"; 
         if (dx == -1 && dy == 0) return "West"; 
         return "South"; 
+    }
+};
+
+
+/*2080. Range Frequency Queries (Medium)
+Design a data structure to find the frequency of a given value in a given 
+subarray. The frequency of a value in a subarray is the number of occurrences 
+of that value in the subarray. Implement the RangeFreqQuery class:
+* RangeFreqQuery(int[] arr) Constructs an instance of the class with the given 
+  0-indexed integer array arr.
+* int query(int left, int right, int value) Returns the frequency of value in 
+  the subarray arr[left...right].
+A subarray is a contiguous sequence of elements within an array. 
+arr[left...right] denotes the subarray that contains the elements of nums 
+between indices left and right (inclusive).
+
+Example 1:
+Input: ["RangeFreqQuery", "query", "query"]
+       [[[12, 33, 4, 56, 22, 2, 34, 33, 22, 12, 34, 56]], [1, 2, 4], [0, 11, 33]]
+Output: [null, 1, 2]
+Explanation:
+RangeFreqQuery rangeFreqQuery = new RangeFreqQuery([12, 33, 4, 56, 22, 2, 34, 33, 22, 12, 34, 56]);
+rangeFreqQuery.query(1, 2, 4); // return 1. The value 4 occurs 1 time in the subarray [33, 4]
+rangeFreqQuery.query(0, 11, 33); // return 2. The value 33 occurs 2 times in the whole array.
+
+Constraints:
+* 1 <= arr.length <= 10^5
+* 1 <= arr[i], value <= 10^4
+* 0 <= left <= right < arr.length
+* At most 10^5 calls will be made to query*/
+
+class RangeFreqQuery {
+    unordered_map<int, vector<int>> loc; 
+public:
+    RangeFreqQuery(vector<int>& arr) {
+        for (int i = 0; i < arr.size(); ++i) loc[arr[i]].push_back(i); 
+    }
+    
+    int query(int left, int right, int value) {
+        auto lo = lower_bound(loc[value].begin(), loc[value].end(), left); 
+        auto hi = upper_bound(loc[value].begin(), loc[value].end(), right); 
+        return hi - lo; 
     }
 };

@@ -56050,7 +56050,7 @@ Constraints:
 * 1 <= arr.length <= 10^5
 * 1 <= arr[i], value <= 10^4
 * 0 <= left <= right < arr.length
-* At most 105 calls will be made to query"""
+* At most 10^5 calls will be made to query"""
 
 class RangeFreqQuery:
 
