@@ -35693,7 +35693,7 @@ class Fenwick:
 
 	Constraints:
 	* 1 <= s.length <= 10^5
-	* s[i] is 'a' or 'b'​​."""
+	* s[i] is 'a' or 'b'."""
 
     def minimumDeletions(self, s: str) -> int:
         ans = suffix = 0
@@ -36088,7 +36088,7 @@ class Fenwick:
 	 
 	Constraints:
 	* 1 <= tasks.length <= 10^5
-	* 1 <= actual​i <= minimumi <= 10^4"""
+	* 1 <= actuali <= minimumi <= 10^4"""
 
     def minimumEffort(self, tasks: List[List[int]]) -> int:
         ans = val = 0
@@ -36232,8 +36232,8 @@ class Fenwick:
 	  that:
 	  + arr[0] < arr[1] < ... < arr[i - 1] < arr[i]
 	  + arr[i] > arr[i + 1] > ... > arr[arr.length - 1]
-	Given an integer array nums​​​, return the minimum number of elements to 
-	remove to make nums​​​ a mountain array.
+	Given an integer array nums, return the minimum number of elements to 
+	remove to make nums a mountain array.
 
 	Example 1:
 	Input: nums = [1,3,1]
@@ -36283,7 +36283,7 @@ class Fenwick:
 
     """1672. Richest Customer Wealth (Easy)
 	You are given an m x n integer grid accounts where accounts[i][j] is the 
-	amount of money the i​​​​​​​​​​​th​​​​ customer has in the j​​​​​​​​​​​th​​​​ bank. Return the wealth 
+	amount of money the ith customer has in the jth bank. Return the wealth 
 	that the richest customer has. A customer's wealth is the amount of money 
 	they have in all their bank accounts. The richest customer is the customer 
 	that has the maximum wealth.
@@ -37148,9 +37148,9 @@ class Fenwick:
 	* Otherwise, they will leave it and go to the queue's end.
 	This continues until none of the queue students want to take the top 
 	sandwich and are thus unable to eat. You are given two integer arrays 
-	students and sandwiches where sandwiches[i] is the type of the i​​​​​​th 
+	students and sandwiches where sandwiches[i] is the type of the ith 
 	sandwich in the stack (i = 0 is the top of the stack) and students[j] is 
-	the preference of the j​​​​​​th student in the initial queue (j = 0 is the front 
+	the preference of the jth student in the initial queue (j = 0 is the front 
 	of the queue). Return the number of students that are unable to eat.
 
 	Example 1:
@@ -38057,7 +38057,7 @@ class Fenwick:
 	There is a biker going on a road trip. The road trip consists of n + 1 
 	points at different altitudes. The biker starts his trip on point 0 with 
 	altitude equal 0. You are given an integer array gain of length n where 
-	gain[i] is the net gain in altitude between points i​​​​​​ and i + 1 for all 
+	gain[i] is the net gain in altitude between points i and i + 1 for all 
 	(0 <= i < n). Return the highest altitude of a point.
 
 	Example 1:

@@ -2636,6 +2636,49 @@ public:
     }
 
 
+    /*106. Construct Binary Tree from Inorder and Postorder Traversal (Medium)
+	Given two integer arrays inorder and postorder where inorder is the inorder 
+	traversal of a binary tree and postorder is the postorder traversal of the 
+	same tree, construct and return the binary tree.
+
+	Example 1:
+	Input: inorder = [9,3,15,20,7], postorder = [9,15,7,20,3]
+	Output: [3,9,20,null,null,15,7]
+
+	Example 2:
+	Input: inorder = [-1], postorder = [-1]
+	Output: [-1]
+
+	Constraints:
+	* 1 <= inorder.length <= 3000
+	* postorder.length == inorder.length
+	* -3000 <= inorder[i], postorder[i] <= 3000
+	* inorder and postorder consist of unique values.
+	* Each value of postorder also appears in inorder.
+	* inorder is guaranteed to be the inorder traversal of the tree.
+	* postorder is guaranteed to be the postorder traversal of the tree.*/
+
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        unordered_map<int, int> mp; 
+        for (int i = 0; i < inorder.size(); ++i) mp[inorder[i]] = i; 
+        
+        stack<TreeNode*> stk; 
+        TreeNode *root = nullptr, *node = nullptr; 
+        for (int i = postorder.size()-1; i >= 0; --i) {
+            int x = postorder[i]; 
+            if (!root) root = node = new TreeNode(x); 
+            else if (mp[node->val] < mp[x]) {
+                stk.push(node); 
+                node = node->right = new TreeNode(x); 
+            } else {
+                while (stk.size() && mp[x] < mp[stk.top()->val]) node = stk.top(), stk.pop(); 
+                node = node->left = new TreeNode(x); 
+            }
+        }
+        return root;
+    }
+
+
     /*108. Convert Sorted Array to Binary Search Tree (Easy)
 	Given an integer array nums where the elements are sorted in ascending 
 	order, convert it to a height-balanced binary search tree. A height-
