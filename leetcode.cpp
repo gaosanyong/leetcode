@@ -7776,14 +7776,13 @@ public:
     TreeNode* deleteNode(TreeNode* root, int key) {
         if (root) 
             if (root->val < key) root->right = deleteNode(root->right, key); 
-            else if (root->val > key) root->left = deleteNode(root->left, key); 
-            else {
+            else if (root->val == key) {
                 if (!root->left || !root->right) return root->left ? root->left : root->right; 
                 TreeNode* node = root->left; 
                 for (; node->right; node = node->right); 
                 root->val = node->val; 
                 root->left = deleteNode(root->left, node->val); 
-            }
+            } else root->left = deleteNode(root->left, key); 
         return root; 
     }
 

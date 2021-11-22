@@ -11914,16 +11914,16 @@ class Solution:
 
 	Follow up: Could you solve it with time complexity O(height of tree)?"""
 
-    def deleteNode(self, root: TreeNode, key: int) -> TreeNode:
-        if not root: return 
-        if root.val < key: root.right = self.deleteNode(root.right, key)
-        elif root.val > key: root.left = self.deleteNode(root.left, key)
-        else: # found 
-            if not root.left or not root.right: return root.left or root.right 
-            node = root.left 
-            while node.right: node = node.right 
-            root.val = node.val 
-            root.left = self.deleteNode(root.left, node.val)
+    def deleteNode(self, root: Optional[TreeNode], key: int) -> Optional[TreeNode]:
+        if root: 
+            if root.val < key: root.right = self.deleteNode(root.right, key)
+            elif root.val == key: 
+                if not root.left or not root.right: return root.left or root.right 
+                node = root.right 
+                while node.left: node = node.left 
+                root.val = node.val 
+                root.right = self.deleteNode(root.right, node.val)
+            else: root.left = self.deleteNode(root.left, key)
         return root 
 
 
