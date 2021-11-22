@@ -51611,23 +51611,21 @@ class Trie:
         
         def fn(x):
             """Return next k-symmetric number."""
-            s = list(x)
-            n = len(s)//2
-            for i in range(n, len(s)): 
-                if int(s[i])+1 < k: 
-                    s[i] = s[~i] = str(int(s[i])+1)
-                    for ii in range(n, i): s[ii] = s[~ii] = '0'
-                    return "".join(s)
-            return "1" + "0"*(len(s)-1) + "1"
+            n = len(x)//2
+            for i in range(n, len(x)): 
+                if int(x[i])+1 < k: 
+                    x[i] = x[~i] = str(int(x[i])+1)
+                    for ii in range(n, i): x[ii] = x[~ii] = '0'
+                    return x
+            return ["1"] + ["0"]*(len(x)-1) + ["1"]
                 
-        x = "0"
+        x = ["0"]
         ans = 0
         for _ in range(n): 
-            x = fn(x)
-            val = int(x, k)
-            while str(val)[::-1] != str(val): 
+            while True: 
                 x = fn(x)
-                val = int(x, k)
+                val = int("".join(x), k)
+                if str(val)[::-1] == str(val): break
             ans += val
         return ans 
 
