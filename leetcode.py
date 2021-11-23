@@ -22199,14 +22199,13 @@ class UnionFind:
         sieve[0] = sieve[1] = 0 
         for k in range(m//2+1): 
             if sieve[k]: 
-                ref = k if k in seen else 0
+                prev = k if k in seen else 0
                 for x in range(2*k, m+1, k): 
                     sieve[x] = 0
                     if x in seen: 
-                        if ref: uf.union(ref, x)
-                        ref = x
-        freq = Counter(uf.find(i) for i in range(m+1))
-        return max(freq.values())
+                        if prev: uf.union(prev, x)
+                        else: prev = x
+        return max(uf.rank)
 
 
     """954. Array of Doubled Pairs (Medium)

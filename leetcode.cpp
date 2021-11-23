@@ -17203,17 +17203,23 @@ public:
 
     int largestComponentSize(vector<int>& nums) {
         int m = *max_element(nums.begin(), nums.end()); 
+        vector<bool> seen(m+1); 
+        for (auto& x : nums) seen[x] = true; 
         UnionFind* uf = new UnionFind(m+1); 
-        for (auto& x : nums) 
-            for (int p = 2; p <= sqrt(x); ++p) 
-                if (x % p == 0) {
-                    uf->connect(x, p); 
-                    uf->connect(x, x/p); 
+        vector<bool> sieve(m+1, true); 
+        sieve[0] = sieve[1] = false; 
+        for (int x = 2; x <= m/2; ++x) 
+            if (sieve[x]) {
+                int prev = seen[x] ? x : 0; 
+                for (int xx = 2*x; xx <= m; xx += x) {
+                    sieve[xx] = false; 
+                    if (seen[xx]) 
+                        if (prev) uf->connect(prev, xx); 
+                        else prev = xx; 
                 }
-        
-        int ans = 0; 
-        unordered_map<int, int> freq; 
-        for (auto& x : nums) ans = max(ans, ++freq[uf->find(x)]); 
+            }
+        int ans = *max_element(uf->rank.begin(), uf->rank.end()); 
+        delete uf; 
         return ans; 
     }
 
