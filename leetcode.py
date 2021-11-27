@@ -11393,15 +11393,9 @@ class Solution:
     def canPartition(self, nums: List[int]) -> bool:
         sm = sum(nums)
         if sm & 1: return False 
-        
-        @cache # knapsack
-        def fn(i, x): 
-            """Return True if possible to find subset of nums[k:] summing to t."""
-            if x <= 0: return x == 0 
-            if i == len(nums): return False 
-            return fn(i+1, x) or fn(i+1, x-nums[i])
-        
-        return fn(0, sm//2)
+        bits = 1
+        for x in nums: bits |= bits << x
+        return bool(bits & (1<<sm//2))
 
 
     """418. Sentence Screen Fitting (Medium)
