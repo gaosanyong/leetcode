@@ -51650,6 +51650,247 @@ class Trie:
         return ans 
 
 
+    """2085. Count Common Words With One Occurrence (Easy)
+	Given two string arrays words1 and words2, return the number of strings 
+	that appear exactly once in each of the two arrays.
+
+	Example 1:
+	Input: words1 = ["leetcode","is","amazing","as","is"], words2 = ["amazing","leetcode","is"]
+	Output: 2
+	Explanation:
+	- "leetcode" appears exactly once in each of the two arrays. We count this 
+	  string.
+	- "amazing" appears exactly once in each of the two arrays. We count this 
+	  string.
+	- "is" appears in each of the two arrays, but there are 2 occurrences of it 
+	  in words1. We do not count this string.
+	- "as" appears once in words1, but does not appear in words2. We do not 
+	  count this string.
+	Thus, there are 2 strings that appear exactly once in each of the two 
+	arrays.
+	
+	Example 2:
+	Input: words1 = ["b","bb","bbb"], words2 = ["a","aa","aaa"]
+	Output: 0
+	Explanation: There are no strings that appear in each of the two arrays.
+	
+	Example 3:
+	Input: words1 = ["a","ab"], words2 = ["a","a","a","ab"]
+	Output: 1
+	Explanation: The only string that appears exactly once in each of the two arrays is "ab".
+
+	Constraints:
+	* 1 <= words1.length, words2.length <= 1000
+	* 1 <= words1[i].length, words2[j].length <= 30
+	* words1[i] and words2[j] consists only of lowercase English letters."""
+
+    def countWords(self, words1: List[str], words2: List[str]) -> int:
+        freq1, freq2 = Counter(words1), Counter(words2)
+        return len({w for w, v in freq1.items() if v == 1} & {w for w, v in freq2.items() if v == 1}) 
+
+
+    """2086. Minimum Number of Buckets Required to Collect Rainwater from Houses (Medium)
+	You are given a 0-indexed string street. Each character in street is either 
+	'H' representing a house or '.' representing an empty space. You can place 
+	buckets on the empty spaces to collect rainwater that falls from the 
+	adjacent houses. The rainwater from a house at index i is collected if a 
+	bucket is placed at index i - 1 and/or index i + 1. A single bucket, if 
+	placed adjacent to two houses, can collect the rainwater from both houses.
+	Return the minimum number of buckets needed so that for every house, there 
+	is at least one bucket collecting rainwater from it, or -1 if it is 
+	impossible.
+
+	Example 1:
+	Input: street = "H..H"
+	Output: 2
+	Explanation: We can put buckets at index 1 and index 2. "H..H" -> "HBBH" 
+	             ('B' denotes where a bucket is placed). The house at index 0 
+	             has a bucket to its right, and the house at index 3 has a 
+	             bucket to its left. Thus, for every house, there is at least 
+	             one bucket collecting rainwater from it.
+	
+	Example 2:
+	Input: street = ".H.H."
+	Output: 1
+	Explanation: We can put a bucket at index 2. ".H.H." -> ".HBH." ('B' 
+	             denotes where a bucket is placed). The house at index 1 has a 
+	             bucket to its right, and the house at index 3 has a bucket to 
+	             its left. Thus, for every house, there is at least one bucket 
+	             collecting rainwater from it.
+	
+	Example 3:
+	Input: street = ".HHH."
+	Output: -1
+	Explanation: There is no empty space to place a bucket to collect the 
+	             rainwater from the house at index 2. Thus, it is impossible to 
+	             collect the rainwater from all the houses.
+	
+	Example 4:
+	Input: street = "H"
+	Output: -1
+	Explanation: There is no empty space to place a bucket. Thus, it is 
+	             impossible to collect the rainwater from the house.
+	
+	Example 5:
+	Input: street = "."
+	Output: 0
+	Explanation: There is no house to collect water from. Thus, 0 buckets are 
+	             needed.
+
+	Constraints:
+	* 1 <= street.length <= 10^5
+	* street[i] is either'H' or '.'."""
+
+    def minimumBuckets(self, street: str) -> int:
+        street = list(street)
+        ans = 0 
+        for i, ch in enumerate(street): 
+            if ch == 'H' and (i == 0 or street[i-1] != '#'): 
+                if i+1 < len(street) and street[i+1] == '.': street[i+1] = '#'
+                elif i and street[i-1] == '.': street[i-1] = '#'
+                else: return -1
+                ans += 1
+        return ans 
+
+
+    """2087. Minimum Cost Homecoming of a Robot in a Grid (Medium)
+	There is an m x n grid, where (0, 0) is the top-left cell and (m - 1, n - 1) 
+	is the bottom-right cell. You are given an integer array startPos where 
+	startPos = [startrow, startcol] indicates that initially, a robot is at the 
+	cell (startrow, startcol). You are also given an integer array homePos 
+	where homePos = [homerow, homecol] indicates that its home is at the cell 
+	(homerow, homecol). The robot needs to go to its home. It can move one cell 
+	in four directions: left, right, up, or down, and it can not move outside 
+	the boundary. Every move incurs some cost. You are further given two 0-
+	indexed integer arrays: rowCosts of length m and colCosts of length n.
+	* If the robot moves up or down into a cell whose row is r, then this move 
+	  costs rowCosts[r].
+	* If the robot moves left or right into a cell whose column is c, then this 
+	  move costs colCosts[c].
+	Return the minimum total cost for this robot to return home.
+
+	Example 1:
+	Input: startPos = [1, 0], homePos = [2, 3], rowCosts = [5, 4, 3], colCosts = [8, 2, 6, 7]
+	Output: 18
+	Explanation: One optimal path is that: Starting from (1, 0)
+	-> It goes down to (2, 0). This move costs rowCosts[2] = 3.
+	-> It goes right to (2, 1). This move costs colCosts[1] = 2.
+	-> It goes right to (2, 2). This move costs colCosts[2] = 6.
+	-> It goes right to (2, 3). This move costs colCosts[3] = 7.
+	The total cost is 3 + 2 + 6 + 7 = 18
+	
+	Example 2:
+	Input: startPos = [0, 0], homePos = [0, 0], rowCosts = [5], colCosts = [26]
+	Output: 0
+	Explanation: The robot is already at its home. Since no moves occur, the 
+	             total cost is 0.
+
+	Constraints:
+	* m == rowCosts.length
+	* n == colCosts.length
+	* 1 <= m, n <= 10^5
+	* 0 <= rowCosts[r], colCosts[c] <= 10^4
+	* startPos.length == 2
+	* homePos.length == 2
+	* 0 <= startrow, homerow < m
+	* 0 <= startcol, homecol < n"""
+
+    def minCost(self, startPos: List[int], homePos: List[int], rowCosts: List[int], colCosts: List[int]) -> int:
+        ans = 0 
+        if startPos[0] < homePos[0]: ans = sum(rowCosts[startPos[0]+1:homePos[0]+1])
+        elif startPos[0] > homePos[0]: ans = sum(rowCosts[homePos[0]:startPos[0]])
+        if startPos[1] < homePos[1]: ans += sum(colCosts[startPos[1]+1:homePos[1]+1])
+        elif startPos[1] > homePos[1]: ans += sum(colCosts[homePos[1]:startPos[1]])
+        return ans 
+
+
+    """2088. Count Fertile Pyramids in a Land (Hard)
+	A farmer has a rectangular grid of land with m rows and n columns that can 
+	be divided into unit cells. Each cell is either fertile (represented by a 1) 
+	or barren (represented by a 0). All cells outside the grid are considered 
+	barren. A pyramidal plot of land can be defined as a set of cells with the 
+	following criteria:
+	* The number of cells in the set has to be greater than 1 and all cells 
+	  must be fertile.
+	* The apex of a pyramid is the topmost cell of the pyramid. The height of a 
+	  pyramid is the number of rows it covers. Let (r, c) be the apex of the 
+	  pyramid, and its height be h. Then, the plot comprises of cells (i, j) 
+	  where r <= i <= r + h - 1 and c - (i - r) <= j <= c + (i - r).
+	An inverse pyramidal plot of land can be defined as a set of cells with 
+	similar criteria:
+	* The number of cells in the set has to be greater than 1 and all cells 
+	  must be fertile.
+	* The apex of an inverse pyramid is the bottommost cell of the inverse 
+	  pyramid. The height of an inverse pyramid is the number of rows it covers. 
+	  Let (r, c) be the apex of the pyramid, and its height be h. Then, the 
+	  plot comprises of cells (i, j) where r - h + 1 <= i <= r and 
+	  c - (r - i) <= j <= c + (r - i).
+	Some examples of valid and invalid pyramidal (and inverse pyramidal) plots 
+	are shown below. Black cells indicate fertile cells. Given a 0-indexed 
+	m x n binary matrix grid representing the farmland, return the total number 
+	of pyramidal and inverse pyramidal plots that can be found in grid.
+
+	Example 1:
+	Input: grid = [[0,1,1,0],[1,1,1,1]]
+	Output: 2
+	Explanation: The 2 possible pyramidal plots are shown in blue and red 
+	             respectively. There are no inverse pyramidal plots in this 
+	             grid. Hence total number of pyramidal and inverse pyramidal 
+	             plots is 2 + 0 = 2.
+	
+	Example 2:
+	Input: grid = [[1,1,1],[1,1,1]]
+	Output: 2
+	Explanation: The pyramidal plot is shown in blue, and the inverse pyramidal 
+	             plot is shown in red. Hence the total number of plots is 
+	             1 + 1 = 2.
+	
+	Example 3:
+	Input: grid = [[1,0,1],[0,0,0],[1,0,1]]
+	Output: 0
+	Explanation: There are no pyramidal or inverse pyramidal plots in the grid.
+	
+	Example 4:
+	Input: grid = [[1,1,1,1,0],[1,1,1,1,1],[1,1,1,1,1],[0,1,0,0,1]]
+	Output: 13
+	Explanation: There are 7 pyramidal plots, 3 of which are shown in the 2nd 
+	             and 3rd figures. There are 6 inverse pyramidal plots, 2 of 
+	             which are shown in the last figure. The total number of plots 
+	             is 7 + 6 = 13.
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 1000
+	* 1 <= m * n <= 10^5
+	* grid[i][j] is either 0 or 1."""
+
+    def countPyramids(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        vals = [[inf]*n for _ in range(m)]
+        for i in range(m):
+            for j in range(n): 
+                if grid[i][j] == 0: vals[i][j] = 0
+                elif j == 0: vals[i][j] = 1
+                else: vals[i][j] = min(vals[i][j], 1 + vals[i][j-1])
+                if grid[i][~j] == 0: vals[i][~j] = 0
+                elif j == 0: vals[i][~j] = 1
+                else: vals[i][~j] = min(vals[i][~j], 1 + vals[i][~j+1])
+        
+        def fn(vals): 
+            """Return count of pyramid in given grid."""
+            ans = 0 
+            for j in range(n):
+                width = 0
+                for i in range(m): 
+                    if vals[i][j]: width = min(width+1, vals[i][j])
+                    else: width = 0
+                    ans += max(0, width-1)
+            return ans 
+        
+        return fn(vals) + fn(vals[::-1])
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
