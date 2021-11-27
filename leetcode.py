@@ -11371,6 +11371,39 @@ class Solution:
         return "".join(map(str, reversed(ans)))
 
 
+    """416. Partition Equal Subset Sum (Medium)
+	Given a non-empty array nums containing only positive integers, find if the 
+	array can be partitioned into two subsets such that the sum of elements in 
+	both subsets is equal.
+
+	Example 1:
+	Input: nums = [1,5,11,5]
+	Output: true
+	Explanation: The array can be partitioned as [1, 5, 5] and [11].
+
+	Example 2:
+	Input: nums = [1,2,3,5]
+	Output: false
+	Explanation: The array cannot be partitioned into equal sum subsets.
+
+	Constraints:
+	* 1 <= nums.length <= 200
+	* 1 <= nums[i] <= 100"""
+
+    def canPartition(self, nums: List[int]) -> bool:
+        sm = sum(nums)
+        if sm & 1: return False 
+        
+        @cache # knapsack
+        def fn(i, x): 
+            """Return True if possible to find subset of nums[k:] summing to t."""
+            if x <= 0: return x == 0 
+            if i == len(nums): return False 
+            return fn(i+1, x) or fn(i+1, x-nums[i])
+        
+        return fn(0, sm//2)
+
+
     """418. Sentence Screen Fitting (Medium)
 	Given a rows x cols screen and a sentence represented by a list of non-
 	empty words, find how many times the given sentence can be fitted on the 
