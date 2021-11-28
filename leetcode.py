@@ -51891,6 +51891,233 @@ class Trie:
         return fn(vals) + fn(vals[::-1])
 
 
+    """2089. Find Target Indices After Sorting Array (Easy)
+	You are given a 0-indexed integer array nums and a target element target. 
+	A target index is an index i such that nums[i] == target. Return a list of 
+	the target indices of nums after sorting nums in non-decreasing order. If 
+	there are no target indices, return an empty list. The returned list must 
+	be sorted in increasing order.
+
+	Example 1:
+	Input: nums = [1,2,5,2,3], target = 2
+	Output: [1,2]
+	Explanation: After sorting, nums is [1,2,2,3,5]. The indices where 
+	             nums[i] == 2 are 1 and 2.
+	
+	Example 2:
+	Input: nums = [1,2,5,2,3], target = 3
+	Output: [3]
+	Explanation: After sorting, nums is [1,2,2,3,5]. The index where 
+	             nums[i] == 3 is 3.
+	
+	Example 3:
+	Input: nums = [1,2,5,2,3], target = 5
+	Output: [4]
+	Explanation: After sorting, nums is [1,2,2,3,5]. The index where 
+	             nums[i] == 5 is 4.
+	
+	Example 4:
+	Input: nums = [1,2,5,2,3], target = 4
+	Output: []
+	Explanation: There are no elements in nums with value 4.
+
+	Constraints:
+	* 1 <= nums.length <= 100
+	* 1 <= nums[i], target <= 100"""
+
+    def targetIndices(self, nums: List[int], target: int) -> List[int]:
+        lo, mid, hi = 0, 0, len(nums)-1
+        while mid <= hi: 
+            if nums[mid] < target: 
+                nums[lo], nums[mid] = nums[mid], nums[lo]
+                lo += 1
+                mid += 1
+            elif nums[mid] == target: mid += 1
+            else: 
+                nums[mid], nums[hi] = nums[hi], nums[mid]
+                hi -= 1
+        return range(lo, hi+1)
+
+
+    """2090. K Radius Subarray Averages (Medium)
+	You are given a 0-indexed array nums of n integers, and an integer k. The 
+	k-radius average for a subarray of nums centered at some index i with the 
+	radius k is the average of all elements in nums between the indices i - k 
+	and i + k (inclusive). If there are less than k elements before or after 
+	the index i, then the k-radius average is -1. Build and return an array 
+	avgs of length n where avgs[i] is the k-radius average for the subarray 
+	centered at index i. The average of x elements is the sum of the x elements 
+	divided by x, using integer division. The integer division truncates toward 
+	zero, which means losing its fractional part. For example, the average of 
+	four elements 2, 3, 1, and 5 is (2 + 3 + 1 + 5) / 4 = 11 / 4 = 2.75, which 
+	truncates to 2.
+
+	Example 1:
+	Input: nums = [7,4,3,9,1,8,5,2,6], k = 3
+	Output: [-1,-1,-1,5,4,4,-1,-1,-1]
+	Explanation:
+	- avg[0], avg[1], and avg[2] are -1 because there are less than k elements before each index.
+	- The sum of the subarray centered at index 3 with radius 3 is: 7 + 4 + 3 + 9 + 1 + 8 + 5 = 37.
+	  Using integer division, avg[3] = 37 / 7 = 5.
+	- For the subarray centered at index 4, avg[4] = (4 + 3 + 9 + 1 + 8 + 5 + 2) / 7 = 4.
+	- For the subarray centered at index 5, avg[5] = (3 + 9 + 1 + 8 + 5 + 2 + 6) / 7 = 4.
+	- avg[6], avg[7], and avg[8] are -1 because there are less than k elements after each index.
+
+	Example 2:
+	Input: nums = [100000], k = 0
+	Output: [100000]
+	Explanation:
+	- The sum of the subarray centered at index 0 with radius 0 is: 100000.
+	  avg[0] = 100000 / 1 = 100000.
+
+	Example 3:
+	Input: nums = [8], k = 100000
+	Output: [-1]
+	Explanation: 
+	- avg[0] is -1 because there are less than k elements before and after index 0.
+
+	Constraints:
+	* n == nums.length
+	* 1 <= n <= 10^5
+	* 0 <= nums[i], k <= 10^5"""
+
+    def getAverages(self, nums: List[int], k: int) -> List[int]:
+        ans = [-1]*len(nums)
+        rsm = 0 # range sum
+        for i, x in enumerate(nums): 
+            rsm += x
+            if i >= 2*k+1: rsm -= nums[i-(2*k+1)]
+            if i+1 >= 2*k+1: ans[i-k] = rsm//(2*k+1)
+        return ans 
+
+
+    """2091. Removing Minimum and Maximum From Array (Medium)
+	You are given a 0-indexed array of distinct integers nums. There is an 
+	element in nums that has the lowest value and an element that has the 
+	highest value. We call them the minimum and maximum respectively. Your goal 
+	is to remove both these elements from the array. A deletion is defined as 
+	either removing an element from the front of the array or removing an 
+	element from the back of the array. Return the minimum number of deletions 
+	it would take to remove both the minimum and maximum element from the array.
+
+	Example 1:
+	Input: nums = [2,10,7,5,4,1,8,6]
+	Output: 5
+	Explanation: The minimum element in the array is nums[5], which is 1. The 
+	             maximum element in the array is nums[1], which is 10. We can 
+	             remove both the minimum and maximum by removing 2 elements 
+	             from the front and 3 elements from the back. This results in 
+	             2 + 3 = 5 deletions, which is the minimum number possible.
+	
+	Example 2:
+	Input: nums = [0,-4,19,1,8,-2,-3,5]
+	Output: 3
+	Explanation: The minimum element in the array is nums[1], which is -4. The 
+	             maximum element in the array is nums[2], which is 19. We can 
+	             remove both the minimum and maximum by removing 3 elements 
+	             from the front. This results in only 3 deletions, which is the 
+	             minimum number possible.
+	
+	Example 3:
+	Input: nums = [101]
+	Output: 1
+	Explanation: There is only one element in the array, which makes it both 
+	             the minimum and maximum element. We can remove it with 1 
+	             deletion.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* -10^5 <= nums[i] <= 10^5
+	* The integers in nums are distinct."""
+
+    def minimumDeletions(self, nums: List[int]) -> int:
+        imin = nums.index(min(nums))
+        imax = nums.index(max(nums))
+        k, kk = min(imin, imax), max(imin, imax)
+        return min(kk+1, len(nums)-k, len(nums)+1+k-kk)
+
+
+    """2092. Find All People With Secret (Hard)
+	You are given an integer n indicating there are n people numbered from 0 to 
+	n - 1. You are also given a 0-indexed 2D integer array meetings where 
+	meetings[i] = [xi, yi, timei] indicates that person xi and person yi have a 
+	meeting at timei. A person may attend multiple meetings at the same time. 
+	Finally, you are given an integer firstPerson. Person 0 has a secret and 
+	initially shares the secret with a person firstPerson at time 0. This 
+	secret is then shared every time a meeting takes place with a person that 
+	has the secret. More formally, for every meeting, if a person xi has the 
+	secret at timei, then they will share the secret with person yi, and vice 
+	versa. The secrets are shared instantaneously. That is, a person may 
+	receive the secret and share it with people in other meetings within the 
+	same time frame. Return a list of all the people that have the secret after 
+	all the meetings have taken place. You may return the answer in any order.
+
+	Example 1:
+	Input: n = 6, meetings = [[1,2,5],[2,3,8],[1,5,10]], firstPerson = 1
+	Output: [0,1,2,3,5]
+	Explanation: At time 0, person 0 shares the secret with person 1.
+	             At time 5, person 1 shares the secret with person 2.
+	             At time 8, person 2 shares the secret with person 3.
+	             At time 10, person 1 shares the secret with person 5.
+	             Thus, people 0, 1, 2, 3, and 5 know the secret after all the 
+	             meetings.
+	
+	Example 2:
+	Input: n = 4, meetings = [[3,1,3],[1,2,2],[0,3,3]], firstPerson = 3
+	Output: [0,1,3]
+	Explanation: At time 0, person 0 shares the secret with person 3.
+	             At time 2, neither person 1 nor person 2 know the secret.
+	             At time 3, person 3 shares the secret with person 0 and person 1.
+	             Thus, people 0, 1, and 3 know the secret after all the meetings.
+	
+	Example 3:
+	Input: n = 5, meetings = [[3,4,2],[1,2,1],[2,3,1]], firstPerson = 1
+	Output: [0,1,2,3,4]
+	Explanation: At time 0, person 0 shares the secret with person 1.
+	             At time 1, person 1 shares the secret with person 2, and 
+	             person 2 shares the secret with person 3. Note that person 2 
+	             can share the secret at the same time as receiving it.
+	             At time 2, person 3 shares the secret with person 4.
+	             Thus, people 0, 1, 2, 3, and 4 know the secret after all the 
+	             meetings.
+	
+	Example 4:
+	Input: n = 6, meetings = [[0,2,1],[1,3,1],[4,5,1]], firstPerson = 1
+	Output: [0,1,2,3]
+	Explanation: At time 0, person 0 shares the secret with person 1.
+	             At time 1, person 0 shares the secret with person 2, and person 1 shares the secret with person 3.
+	             Thus, people 0, 1, 2, and 3 know the secret after all the meetings.
+
+	Constraints:
+	* 2 <= n <= 10^5
+	* 1 <= meetings.length <= 10^5
+	* meetings[i].length == 3
+	* 0 <= xi, yi <= n - 1
+	* xi != yi
+	* 1 <= timei <= 10^5
+	* 1 <= firstPerson <= n - 1"""
+
+    def findAllPeople(self, n: int, meetings: List[List[int]], firstPerson: int) -> List[int]:
+        can = {0, firstPerson}
+        for _, grp in groupby(sorted(meetings, key=lambda x: x[2]), key=lambda x: x[2]): 
+            queue = set()
+            graph = defaultdict(list)
+            for x, y, _ in grp: 
+                graph[x].append(y)
+                graph[y].append(x)
+                if x in can: queue.add(x)
+                if y in can: queue.add(y)
+                    
+            queue = deque(queue)
+            while queue: 
+                x = queue.popleft()
+                for y in graph[x]: 
+                    if y not in can: 
+                        can.add(y)
+                        queue.append(y)
+        return can
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
