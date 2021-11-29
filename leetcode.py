@@ -16368,33 +16368,11 @@ class Trie:
 	* 2 <= accounts[i].length <= 10
 	* 1 <= accounts[i][j] <= 30
 	* accounts[i][0] consists of English letters.
-	* accounts[i][j] (for j > 0) is a valid email.
-
-class UnionFind:
-    def __init__(self): 
-        self.parent = {}
-        self.rank = defaultdict(lambda: 1)
-    
-    def find(self, p):
-        if p not in self.parent: 
-            self.parent[p] = p
-        elif p != self.parent[p]:
-            self.parent[p] = self.find(self.parent[p])
-        return self.parent[p]
-    
-    def union(self, p, q):
-        prt, qrt = self.find(p), self.find(q)
-        if prt == qrt: return False # already connected 
-        if self.rank[prt] > self.rank[qrt]: prt, qrt = qrt, prt 
-        self.parent[prt] = qrt
-        self.rank[qrt] += self.rank[prt]
-        return True 
-
-	"""
+	* accounts[i][j] (for j > 0) is a valid email."""
 
     def accountsMerge(self, accounts: List[List[str]]) -> List[List[str]]:
         email = {}
-        uf = UnionFind()
+        uf = UnionFindDict()
         for account in accounts: 
             for i in range(1, len(account)):
                 email[account[i]] = account[0]
