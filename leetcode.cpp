@@ -2514,14 +2514,14 @@ public:
 	Follow up: Could you solve it both recursively and iteratively?*/
 
     bool isSymmetric(TreeNode* root) {
-        stack<pair<TreeNode*, TreeNode*>> stk; 
-        stk.emplace(root, root); 
-        while (stk.size()) {
-            auto [left, right] = stk.top(); stk.pop(); 
-            if (!left && !right) continue; 
-            if (!left || !right || left->val != right->val) return false; 
-            stk.emplace(left->left, right->right); 
-            stk.emplace(left->right, right->left); 
+        if (root) {
+            stack<pair<TreeNode*, TreeNode*>> stk; stk.emplace(root, root); 
+            while (stk.size()) {
+                auto [p, q] = stk.top(); stk.pop(); 
+                if (!p || !q || p->val != q->val) return false; 
+                if (p->left) stk.emplace(p->left, q->right); 
+                if (p->right) stk.emplace(p->right, q->left); 
+            }
         }
         return true; 
     }
