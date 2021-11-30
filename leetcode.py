@@ -5209,12 +5209,12 @@ class Solution:
 
     def maxProduct(self, nums: List[int]) -> int:
         ans = -inf 
-        large = small = 1
+        pmin = pmax = 1
         for x in nums: 
-            if x < 0: large, small = small, large
-            large = max(x, large*x)
-            small = min(x, small*x)
-            ans = max(ans, large)
+            if x < 0: pmin, pmax = pmax, pmin
+            pmin = min(x, pmin * x)
+            pmax = max(x, pmax * x)
+            ans = max(ans, pmax)
         return ans 
 
 

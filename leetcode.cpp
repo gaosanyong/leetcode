@@ -4013,12 +4013,12 @@ public:
 	  32-bit integer.*/
 
     int maxProduct(vector<int>& nums) {
-        int ans = INT_MIN, large = 1, small = 1; 
+        int ans = INT_MIN, pmin = 1, pmax = 1; 
         for (auto& x : nums) {
-            if (x < 0) swap(large, small); 
-            large = max(x, large*x); 
-            small = min(x, small*x); 
-            ans = max(ans, large); 
+            if (x < 0) swap(pmin, pmax); 
+            pmin = min(x, pmin * x); 
+            pmax = max(x, pmax * x); 
+            ans = max(ans, pmax); 
         }
         return ans; 
     }
