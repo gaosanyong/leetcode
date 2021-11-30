@@ -3468,9 +3468,9 @@ class Solution:
 
     def zigzagLevelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
         ans = []
-        flag = 0
         if root: 
             queue = deque([root])
+            stride = 1
             while queue: 
                 vals = []
                 for _ in range(len(queue)): 
@@ -3478,8 +3478,8 @@ class Solution:
                     vals.append(node.val)
                     if node.left: queue.append(node.left)
                     if node.right: queue.append(node.right)
-                ans.append(vals[::-1] if flag else vals)
-                flag ^= 1
+                ans.append(vals[::stride])
+                stride *= -1
         return ans 
 
 
