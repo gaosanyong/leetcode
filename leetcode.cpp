@@ -1976,6 +1976,59 @@ public:
     }
 
 
+    /*85. Maximal Rectangle (Hard)
+	Given a rows x cols binary matrix filled with 0's and 1's, find the largest 
+	rectangle containing only 1's and return its area.
+
+	Example 1:
+	Input: matrix = [["1","0","1","0","0"],["1","0","1","1","1"],["1","1","1","1","1"],["1","0","0","1","0"]]
+	Output: 6
+	Explanation: The maximal rectangle is shown in the above picture.
+
+	Example 2:
+	Input: matrix = []
+	Output: 0
+
+	Example 3:
+	Input: matrix = [["0"]]
+	Output: 0
+
+	Example 4:
+	Input: matrix = [["1"]]
+	Output: 1
+
+	Example 5:
+	Input: matrix = [["0","0"]]
+	Output: 0
+	 
+	Constraints:
+	* rows == matrix.length
+	* cols == matrix[i].length
+	* 0 <= row, cols <= 200
+	* matrix[i][j] is '0' or '1'.*/
+
+    int maximalRectangle(vector<vector<char>>& matrix) {
+        int ans = 0; 
+        if (matrix.size()) {
+            int m = matrix.size(), n = matrix[0].size(); 
+            vector<int> lo(n), hi(n, n-1), ht(n); 
+            for (int i = 0; i < m; ++i) {
+                int left = 0, right = n-1; 
+                for (int j = 0; j < n; ++j) {
+                    if (matrix[i][j] == '1') ++ht[j], lo[j] = max(lo[j], left);
+                    else ht[j] = lo[j] = 0, left = j+1; 
+                    
+                    if (matrix[i][n-1-j] == '1') hi[n-1-j] = min(hi[n-1-j], right); 
+                    else hi[n-1-j] = n-1, right = n-2-j; 
+                }
+                for (int j = 0; j < n; ++j) 
+                    ans = max(ans, (hi[j] - lo[j] + 1) * ht[j]); 
+            }
+        }
+        return ans; 
+    }
+
+
     /*86. Partition List (Medium)
 	Given the head of a linked list and a value x, partition it such that all 
 	nodes less than x come before nodes greater than or equal to x. You should 

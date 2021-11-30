@@ -2857,26 +2857,24 @@ class Solution:
 	Output: 6"""
 
     def maximalRectangle(self, matrix: List[List[str]]) -> int:
-        if not matrix: return 0
-        ans, m, n = 0, len(matrix), len(matrix[0])
-        height, lo, hi = [0]*n, [0]*n, [n]*n #height, lower & upper bound 
-        
-        for i in range(m): 
-            left, right = 0, n #[left:right]
-            for j in range(n): 
-                if matrix[i][j] == "0": 
-                    height[j] = lo[j] = 0
-                    left = j+1
-                else: 
-                    height[j] += 1
-                    lo[j] = max(lo[j], left)
-                    
-                if matrix[i][~j] == "0": 
-                    right = n-j-1
-                    hi[~j] = n
-                else: 
-                    hi[~j] = min(hi[~j], right)
-            ans = max(ans, max(x*(z-y) for x, y, z in zip(height, lo, hi)))
+        ans = 0
+        if matrix:
+            m, n = len(matrix), len(matrix[0])
+            ht, lo, hi = [0]*n, [0]*n, [n]*n
+            for i in range(m):
+                left, right = 0, n
+                for j in range(n):
+                    if matrix[i][j] == "1": 
+                        ht[j] += 1
+                        lo[j] = max(lo[j], left)
+                    else: 
+                        ht[j] = lo[j] = 0
+                        left = j+1
+                    if matrix[i][~j] == "1": hi[~j] = min(hi[~j], right)
+                    else: 
+                        hi[~j] = n
+                        right = n-j-1
+                ans = max(ans, max((x-y)*h for x, y, h in zip(hi, lo, ht)))
         return ans 
 
 
