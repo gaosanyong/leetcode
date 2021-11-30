@@ -23447,7 +23447,7 @@ class Trie:
     def maxScoreSightseeingPair(self, A: List[int]) -> int:
         ans = most = 0
         for i, x in enumerate(A): 
-            ans = max(ans, most + x - i)
+            if i: ans = max(ans, most + x - i)
             most = max(most, x + i)
         return ans 
 
