@@ -12059,14 +12059,12 @@ public:
 
     string longestWord(vector<string>& words) {
         sort(words.begin(), words.end()); 
-        
         string ans; 
         unordered_set<string> seen = {""}; 
         for (int i = 0; i < words.size(); ++i) {
             int n = words[i].size(); 
             if (seen.count(words[i].substr(0, n-1))) {
-                if (n > ans.size())
-                    ans = words[i]; 
+                if (n > ans.size()) ans = words[i]; 
                 seen.insert(words[i]); 
             }
         }
