@@ -9359,15 +9359,14 @@ class Solution:
 	* The first node is considered odd, the second node even and so on ...
 	* The length of the linked list is between [0, 10^4]."""
 
-    def oddEvenList(self, head: ListNode) -> ListNode:
-        if not head: return 
-        odd = head
-        even = ehead = head.next 
-        while even and even.next:
-            odd.next = odd.next.next
-            even.next = even.next.next 
-            odd, even = odd.next, even.next
-        odd.next = ehead
+    def oddEvenList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if head: 
+            odd = head
+            even = h0 = head.next 
+            while even and even.next:
+                odd.next = odd = odd.next.next
+                even.next = even = even.next.next 
+            odd.next = h0
         return head 
 
 
