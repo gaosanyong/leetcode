@@ -11771,6 +11771,42 @@ class Solution:
         return stack[-1]
 
 
+    """440. K-th Smallest in Lexicographical Order (Hard)
+	Given two integers n and k, return the kth lexicographically smallest 
+	integer in the range [1, n].
+
+	Example 1:
+	Input: n = 13, k = 2
+	Output: 10
+	Explanation: The lexicographical order is 
+	             [1, 10, 11, 12, 13, 2, 3, 4, 5, 6, 7, 8, 9], so the second 
+	             smallest number is 10.
+	
+	Example 2:
+	Input: n = 1, k = 1
+	Output: 1
+
+	Constraints: 1 <= k <= n <= 10^9"""
+
+    def findKthNumber(self, n: int, k: int) -> int:
+        
+        def fn(x): 
+            """Return node counts in denary trie."""
+            ans, diff = 0, 1
+            while x <= n: 
+                ans += min(n - x + 1, diff)
+                x *= 10 
+                diff *= 10 
+            return ans 
+        
+        x = 1
+        while k > 1: 
+            cnt = fn(x)
+            if k > cnt: k -= cnt; x += 1
+            else: k -= 1; x *= 10 
+        return x
+
+
     """441. Arranging Coins (Easy)
 	You have n coins and you want to build a staircase with these coins. The 
 	staircase consists of k rows where the ith row has exactly i coins. The 
