@@ -4771,12 +4771,21 @@ class Solution:
 	Output: false"""
 
     def wordBreak(self, s: str, wordDict: List[str]) -> bool:
-        dp = [False]*(1 + len(s))
-        dp[0] = True
+        trie = {}
+        for word in wordDict: 
+            node = trie
+            for ch in word: node = node.setdefault(ch, {})
+            node['$'] = word
+        
+        dp = [False] * (len(s) + 1)
+        dp[0] = True 
         for i in range(len(s)): 
             if dp[i]: 
-                for word in wordDict: 
-                    if s[i:i+len(word)] == word: dp[i+len(word)] = True
+                node = trie 
+                for ii in range(i, len(s)): 
+                    if s[ii] not in node: break 
+                    node = node[s[ii]]
+                    if '$' in node: dp[ii+1] = True 
         return dp[-1]
 
 
