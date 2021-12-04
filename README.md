@@ -1,4 +1,4 @@
-# Welcome to my leetcode solutions 
+# Welcome to my LeetCode solutions 
 This project is a minimal collection of my solutions (in Python & C++) to leetcode problems. 
 
 As new problems are distributed in weekly and biweekly contests, you could expect my solutions to those problems when the contests are over. 
