@@ -9650,9 +9650,9 @@ class Solution:
         
         def fn(node): 
             """Return max money possible of robbing & skipping this house."""
-            if not node: return 0, 0 # null node 
-            if node.left is node.right: return node.val, 0 # leaf node 
-            left, right = fn(node.left), fn(node.right) # post-order traversal 
+            if not node: return 0, 0 
+            if node.left is node.right: return node.val, 0 
+            left, right = fn(node.left), fn(node.right) 
             return node.val+left[1]+right[1], max(left)+max(right)
         
         return max(fn(root))
