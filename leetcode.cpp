@@ -35440,6 +35440,244 @@ public:
             if (can[i]) ans.push_back(i); 
         return ans; 
     }
+
+
+    /*2094. Finding 3-Digit Even Numbers (Easy)
+	You are given an integer array digits, where each element is a digit. The 
+	array may contain duplicates. You need to find all the unique integers that 
+	follow the given requirements:
+	* The integer consists of the concatenation of three elements from digits 
+	  in any arbitrary order.
+	* The integer does not have leading zeros.
+	* The integer is even.
+	For example, if the given digits were [1, 2, 3], integers 132 and 312 
+	follow the requirements. Return a sorted array of the unique integers.
+
+	Example 1:
+	Input: digits = [2,1,3,0]
+	Output: [102,120,130,132,210,230,302,310,312,320]
+	Explanation: All the possible integers that follow the requirements are in 
+	             the output array. Notice that there are no odd integers or 
+	             integers with leading zeros.
+	
+	Example 2:
+	Input: digits = [2,2,8,8,2]
+	Output: [222,228,282,288,822,828,882]
+	Explanation: The same digit can be used as many times as it appears in 
+	             digits. In this example, the digit 8 is used twice each time 
+	             in 288, 828, and 882. 
+	
+	Example 3:
+	Input: digits = [3,7,5]
+	Output: []
+	Explanation: No even integers can be formed using the given digits.
+	
+	Example 4:
+	Input: digits = [0,2,0,0]
+	Output: [200]
+	Explanation: The only valid integer that can be formed with three digits 
+	             and no leading zeros is 200.
+	
+	Example 5:
+	Input: digits = [0,0,0]
+	Output: []
+	Explanation: All the integers that can be formed have leading zeros. Thus, 
+	             there are no valid integers.
+
+	Constraints:
+	* 3 <= digits.length <= 100
+	* 0 <= digits[i] <= 9*/
+
+    vector<int> findEvenNumbers(vector<int>& digits) {
+        vector<int> freq(10), ans; 
+        for (auto& x : digits) ++freq[x]; 
+        for (int val = 100; val < 1000; val += 2) {
+            vector<int> f = freq; 
+            for (int x = val; x; x /= 10) --f[x % 10]; 
+            if (all_of(f.begin(), f.end(), [&](int x) { return x >= 0; })) ans.push_back(val); 
+        }
+        return ans; 
+    }
+
+
+    /*2095. Delete the Middle Node of a Linked List (Medium)
+	You are given the head of a linked list. Delete the middle node, and return 
+	the head of the modified linked list. The middle node of a linked list of 
+	size n is the ⌊n / 2⌋th node from the start using 0-based indexing, where 
+	⌊x⌋ denotes the largest integer less than or equal to x. For n = 1, 2, 3, 4, 
+	and 5, the middle nodes are 0, 1, 1, 2, and 2, respectively.
+
+	Example 1:
+	Input: head = [1,3,4,7,1,2,6]
+	Output: [1,3,4,1,2,6]
+	Explanation: The above figure represents the given linked list. The indices 
+	             of the nodes are written below. Since n = 7, node 3 with value 
+	             7 is the middle node, which is marked in red. We return the 
+	             new list after removing this node. 
+	
+	Example 2:
+	Input: head = [1,2,3,4]
+	Output: [1,2,4]
+	Explanation: The above figure represents the given linked list. For n = 4, 
+	             node 2 with value 3 is the middle node, which is marked in red.
+	
+	Example 3:
+	Input: head = [2,1]
+	Output: [2]
+	Explanation: The above figure represents the given linked list. For n = 2, 
+	             node 1 with value 1 is the middle node, which is marked in red.
+	             Node 0 with value 2 is the only node remaining after removing 
+	             node 1.
+
+	Constraints:
+	* The number of nodes in the list is in the range [1, 10^5].
+	* 1 <= Node.val <= 10^5*/
+
+    ListNode* deleteMiddle(ListNode* head) {
+        ListNode dummy(0, head), *fast = &dummy, *slow = &dummy; 
+        while (fast->next && fast->next->next) {
+            fast = fast->next->next; 
+            slow = slow->next; 
+        }
+        slow->next = slow->next->next; 
+        return dummy.next; 
+    }
+
+
+    /*2096. Step-By-Step Directions From a Binary Tree Node to Another (Medium)
+	You are given the root of a binary tree with n nodes. Each node is uniquely 
+	assigned a value from 1 to n. You are also given an integer startValue 
+	representing the value of the start node s, and a different integer 
+	destValue representing the value of the destination node t. Find the 
+	shortest path starting from node s and ending at node t. Generate step-by-
+	step directions of such path as a string consisting of only the uppercase 
+	letters 'L', 'R', and 'U'. Each letter indicates a specific direction:
+	* 'L' means to go from a node to its left child node.
+	* 'R' means to go from a node to its right child node.
+	* 'U' means to go from a node to its parent node.
+	Return the step-by-step directions of the shortest path from node s to node 
+	t.
+
+	Example 1:
+	Input: root = [5,1,2,3,null,6,4], startValue = 3, destValue = 6
+	Output: "UURL"
+	Explanation: The shortest path is: 3 → 1 → 5 → 2 → 6.
+
+	Example 2:
+	Input: root = [2,1], startValue = 2, destValue = 1
+	Output: "L"
+	Explanation: The shortest path is: 2 → 1.
+
+	Constraints:
+	* The number of nodes in the tree is n.
+	* 2 <= n <= 10^5
+	* 1 <= Node.val <= n
+	* All the values in the tree are unique.
+	* 1 <= startValue, destValue <= n
+	* startValue != destValue*/
+
+    string getDirections(TreeNode* root, int startValue, int destValue) {
+        
+        function<TreeNode*(TreeNode*)> lca = [&](TreeNode* node) {
+            if (!node || node->val == startValue || node->val == destValue) return node; 
+            TreeNode *left = lca(node->left), *right = lca(node->right); 
+            if (left && right) return node; 
+            return left ? left : right;
+        }; 
+        
+        root = lca(root); 
+        string ps, pd, path; 
+        
+        function<void(TreeNode*)> fn = [&] (TreeNode* node) {
+            if (node->val == startValue) ps = path; 
+            if (node->val == destValue) pd = path; 
+            if (node->left) {
+                path.push_back('L'); 
+                fn(node->left); 
+                path.pop_back(); 
+            }
+            if (node->right) {
+                path.push_back('R'); 
+                fn(node->right); 
+                path.pop_back(); 
+            }
+        }; 
+        
+        fn(root); 
+        return string(ps.size(), 'U') + pd; 
+    }
+
+
+    /*2097. Valid Arrangement of Pairs (Hard)
+	You are given a 0-indexed 2D integer array pairs where 
+	pairs[i] = [starti, endi]. An arrangement of pairs is valid if for every 
+	index i where 1 <= i < pairs.length, we have endi-1 == starti. Return any 
+	valid arrangement of pairs. Note: The inputs will be generated such that 
+	there exists a valid arrangement of pairs.
+
+	Example 1:
+	Input: pairs = [[5,1],[4,5],[11,9],[9,4]]
+	Output: [[11,9],[9,4],[4,5],[5,1]]
+	Explanation: This is a valid arrangement since endi-1 always equals starti.
+	             end0 = 9 == 9 = start1 
+	             end1 = 4 == 4 = start2
+	             end2 = 5 == 5 = start3
+	
+	Example 2:
+	Input: pairs = [[1,3],[3,2],[2,1]]
+	Output: [[1,3],[3,2],[2,1]]
+	Explanation: This is a valid arrangement since endi-1 always equals starti.
+	             end0 = 3 == 3 = start1
+	             end1 = 2 == 2 = start2
+	             The arrangements [[2,1],[1,3],[3,2]] and [[3,2],[2,1],[1,3]] 
+	             are also valid.
+	
+	Example 3:
+	Input: pairs = [[1,2],[1,3],[2,1]]
+	Output: [[1,2],[2,1],[1,3]]
+	Explanation: This is a valid arrangement since endi-1 always equals starti.
+	             end0 = 2 == 2 = start1
+	             end1 = 1 == 1 = start2
+
+	Constraints:
+	* 1 <= pairs.length <= 10^5
+	* pairs[i].length == 2
+	* 0 <= starti, endi <= 10^9
+	* starti != endi
+	* No two pairs are exactly the same.
+	* There exists a valid arrangement of pairs.*/
+
+    vector<vector<int>> validArrangement(vector<vector<int>>& pairs) {
+        unordered_map<int, vector<int>> graph; 
+        unordered_map<int, int> degree;
+        
+        int start = 0; 
+        for (auto& edge : pairs) {
+            graph[edge[0]].push_back(edge[1]); 
+            ++degree[edge[0]]; 
+            --degree[edge[1]]; 
+            start = edge[0]; 
+        }
+        
+        for (auto& [k, v] : degree) 
+            if (v == 1) start = k; 
+        
+        // iterative implementation of Hierholzer's algo 
+        vector<int> path; 
+        stack<int> stk; stk.push(start); 
+        while (stk.size()) {
+            while (graph[stk.top()].size()) {
+                int x = stk.top(); 
+                stk.push(graph[x].back()); 
+                graph[x].pop_back(); 
+            }
+            path.push_back(stk.top()); stk.pop(); 
+        }
+        reverse(path.begin(), path.end()); 
+        vector<vector<int>> ans; 
+        for (int i = 0; i < path.size()-1; ++i) ans.push_back({path[i], path[i+1]}); 
+        return ans; 
+    }
 };
 
 
