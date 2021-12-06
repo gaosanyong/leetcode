@@ -52349,11 +52349,11 @@ class Trie:
 	* 0 <= digits[i] <= 9"""
 
     def findEvenNumbers(self, digits: List[int]) -> List[int]:
-        ans = set()
-        for x, y, z in permutations(digits, 3): 
-            if x != 0 and z & 1 == 0: 
-                ans.add(100*x + 10*y + z) 
-        return sorted(ans)
+        ans = []
+        freq = Counter(digits)
+        for x in range(100, 1000, 2): 
+            if not Counter(int(d) for d in str(x)) - freq: ans.append(x)
+        return ans 
 
 
     """2095. Delete the Middle Node of a Linked List (Medium)
@@ -52443,18 +52443,15 @@ class Trie:
         
         root = lca(root) # only this sub-tree matters
         
-        def fn(val): 
-            """Return path from root to node with val."""
-            stack = [(root, "")]
-            while stack: 
-                node, path = stack.pop()
-                if node.val == val: return path 
-                if node.left: stack.append((node.left, path + "L"))
-                if node.right: stack.append((node.right, path + "R"))
-        
-        path0 = fn(startValue)
-        path1 = fn(destValue)
-        return "U"*len(path0) + path1
+        path0 = path1 = ""
+        stack = [(root, "")]
+        while stack: 
+            node, path = stack.pop()
+            if node.val == startValue: path0 = path 
+            if node.val == destValue: path1 = path
+            if node.left: stack.append((node.left, path + "L"))
+            if node.right: stack.append((node.right, path + "R"))
+        return "U"*len(path0) + path1 
 
 
     """2097. Valid Arrangement of Pairs (Hard)
