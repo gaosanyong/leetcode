@@ -8694,8 +8694,17 @@ public:
 	Constraints: 0 <= n <= 30*/
 
     int fib(int n) {
-        double phi = (1 + sqrt(5))/2; 
-        return round((pow(phi, n) - pow(1-phi, n))/sqrt(5)); // Fibonacci formula
+        
+        function<pair<int, int>(int)> fn = [&](int n) -> pair<int, int> {
+            // Return nth and (n+1)st Fibonacci numbers via "fast doubling method".
+            if (n == 0) return {0, 1}; 
+            auto [x, y] = fn(n >> 1); 
+            int xx = x*(2*y - x), yy = x*x + y*y; 
+            if (n&1) return {yy, xx+yy}; 
+            return {xx, yy}; 
+        };
+        
+        return fn(n).first; 
     }
 
 

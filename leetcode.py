@@ -12650,8 +12650,16 @@ class Trie:
 	Constraints: 0 <= n <= 30"""
 
     def fib(self, n: int) -> int:
-        phi = (1 + sqrt(5))/2 
-        return round((phi**n - (1-phi)**n)/sqrt(5)) # Fibonacci formula
+        
+        def fn(n): 
+            """Return nth and (n+1)st Fibonacci numbers via "fast doubling method"."""
+            if n == 0: return [0, 1]
+            x, y = fn(n >> 1)
+            xx = x * (2* y - x)
+            yy = x*x + y*y 
+            return [yy, xx+yy] if n&1 else [xx, yy]
+        
+        return fn(n)[0]
 
 
     """510. Inorder Successor in BST II (Medium)
