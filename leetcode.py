@@ -52491,15 +52491,15 @@ class Trie:
         
         root = lca(root) # only this sub-tree matters
         
-        path0 = path1 = ""
+        ps = pd = ""
         stack = [(root, "")]
         while stack: 
             node, path = stack.pop()
-            if node.val == startValue: path0 = path 
-            if node.val == destValue: path1 = path
+            if node.val == startValue: ps = path 
+            if node.val == destValue: pd = path
             if node.left: stack.append((node.left, path + "L"))
             if node.right: stack.append((node.right, path + "R"))
-        return "U"*len(path0) + path1 
+        return "U"*len(ps) + pd
 
 
     """2097. Valid Arrangement of Pairs (Hard)
