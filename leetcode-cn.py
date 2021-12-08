@@ -917,6 +917,33 @@ class Solution:
         return ans 
 
 
+    """剑指 Offer 45. 把数组排成最小的数 (中等)
+	输入一个非负整数数组，把数组里所有数字拼接起来排成一个数，打印能拼接出的所有数字中最小的一个。
+
+	示例 1:
+	输入: [10,2]
+	输出: "102"
+
+	示例 2:
+	输入: [3,30,34,5,9]
+	输出: "3033459"
+
+	提示: 0 < nums.length <= 100
+	
+	说明:
+	* 输出结果可能非常大，所以你需要返回一个字符串而不是整数
+	* 拼接起来的数字可能会有前导 0，最后结果不需要去掉前导 0"""
+
+    def minNumber(self, nums: List[int]) -> str:
+        
+        def cmp(s1, s2): 
+            if s1+s2 < s2+s1: return -1
+            elif s1+s2 == s2+s1: return 0
+            else: return 1
+        
+        return "".join(sorted(map(str, nums), key=cmp_to_key(cmp)))
+
+
     """剑指 Offer 50. 第一个只出现一次的字符 (简单)
 	在字符串 s 中找出第一个只出现一次的字符。如果没有，返回一个单空格。 s 只包含小写字母。
 
