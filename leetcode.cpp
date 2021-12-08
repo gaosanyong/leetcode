@@ -13992,6 +13992,65 @@ public:
     }
 
 
+    /*794. Valid Tic-Tac-Toe State (Medium)
+	Given a Tic-Tac-Toe board as a string array board, return true if and only 
+	if it is possible to reach this board position during the course of a valid 
+	tic-tac-toe game. The board is a 3 x 3 array that consists of characters 
+	' ', 'X', and 'O'. The ' ' character represents an empty square. Here are 
+	the rules of Tic-Tac-Toe:
+	* Players take turns placing characters into empty squares ' '.
+	* The first player always places 'X' characters, while the second player 
+	  always places 'O' characters.
+	* 'X' and 'O' characters are always placed into empty squares, never filled 
+	  ones.
+	* The game ends when there are three of the same (non-empty) character 
+	  filling any row, column, or diagonal.
+	* The game also ends if all squares are non-empty.
+	* No more moves can be played if the game is over.
+
+	Example 1:
+	Input: board = ["O  ","   ","   "]
+	Output: false
+	Explanation: The first player always plays "X".
+
+	Example 2:
+	Input: board = ["XOX"," X ","   "]
+	Output: false
+	Explanation: Players take turns making moves.
+
+	Example 3:
+	Input: board = ["XXX","   ","OOO"]
+	Output: false
+
+	Example 4:
+	Input: board = ["XOX","O O","XOX"]
+	Output: true
+
+	Constraints:
+	* board.length == 3
+	* board[i].length == 3
+	* board[i][j] is either 'X', 'O', or ' '.*/
+
+    bool validTicTacToe(vector<string>& board) {
+        int diff = 0; 
+        vector<int> freq(8); 
+        unordered_map<char, int> mp = {{'O', -1}, {' ', 0}, {'X', 1}}; 
+        for (int i = 0; i < 3; ++i) 
+            for (int j = 0; j < 3; ++j) {
+                int x = mp[board[i][j]]; 
+                diff += x; 
+                freq[i] += x; 
+                freq[j+3] += x; 
+                if (i == j) freq[6] += x; 
+                if (i+j == 2) freq[7] += x; 
+            }
+        bool xwin = false, owin = false; 
+        if (find(freq.begin(), freq.end(), 3) != freq.end()) xwin = true; 
+        if (find(freq.begin(), freq.end(), -3) != freq.end()) owin = true; 
+        if ((xwin && owin) || (xwin && diff != 1) || (owin && diff != 0))  return false; 
+        return 0 <= diff && diff <= 1; 
+    }
+
     /*795. Number of Subarrays with Bounded Maximum (Medium)
 	We are given an array nums of positive integers, and two positive integers 
 	left and right (left <= right). Return the number of (contiguous, non-empty) 
