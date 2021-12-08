@@ -1387,3 +1387,101 @@ class Solution:
         if not root or root in (p, q): return root 
         left, right = self.lowestCommonAncestor(root.left, p, q), self.lowestCommonAncestor(root.right, p, q)
         return root if left and right else left or right 
+
+
+    """meituan-001. 小美的用户名 (简单)
+	小美是美团的前端工程师，为了防止系统被恶意攻击，小美必须要在用户输入用户名之前做一个合法性
+	检查，一个合法的用户名必须满足以下几个要求：
+	* 用户名的首字符必须是大写或者小写字母。
+	* 用户名只能包含大小写字母，数字。
+	* 用户名需要包含至少一个字母和一个数字。
+	如果用户名合法，请输出 "Accept"，反之输出 "Wrong"。
+	
+	格式：
+	输入：
+	- 输入第一行包含一个正整数 T，表示需要检验的用户名数量。
+	- 接下来有 T 行，每行一个字符串 s，表示输入的用户名。
+	输出：
+	- 对于每一个输入的用户名 s，请输出一行，即按题目要求输出一个字符串。
+
+	示例：
+	输入：5
+	     Ooook
+	     Hhhh666
+	     ABCD
+	     Meituan
+	     6666
+	输出：Wrong
+	     Accept
+	     Wrong
+	     Wrong
+	     Wrong
+	提示：
+	* 1 <= T <= 100
+	* s 的长度不超过 20
+	* 请注意，本题需要自行编写「标准输入」和「标准输出」逻辑，以及自行 import/include 需要的 
+	  library。了解书写规则"""
+
+    def meituan_001(self): 
+        n = int(input())
+        for _ in range(n): 
+            name = input()
+            if name.isalnum() and name[0].isalpha() and any(x.isdigit() for x in name): print("Accept")
+            else: print("Wrong")
+
+
+    """meituan-002. 小美的仓库整理 (中等)
+	小美是美团仓库的管理员，她会根据单据的要求按顺序取出仓库中的货物，每取出一件货物后会把剩余
+	货物重新堆放，使得自己方便查找。已知货物入库的时候是按顺序堆放在一起的。如果小美取出其中一
+	件货物，则会把货物所在的一堆物品以取出的货物为界分成两堆，这样可以保证货物局部的顺序不变。
+	已知货物最初是按 1~n 的顺序堆放的，每件货物的重量为 w[i] ,小美会根据单据依次不放回的取出
+	货物。请问根据上述操作，小美每取出一件货物之后，重量和最大的一堆货物重量是多少？
+
+	格式：
+	输入：
+	- 输入第一行包含一个正整数 n ，表示货物的数量。
+	- 输入第二行包含 n 个正整数，表示 1~n 号货物的重量 w[i] 。
+	- 输入第三行有 n 个数，表示小美按顺序取出的货物的编号，也就是一个 1~n 的全排列。
+	输出：
+	- 输出包含 n 行，每行一个整数，表示每取出一件货物以后，对于重量和最大的一堆货物，其重量和为多少。
+
+	示例：
+	输入：
+	     5
+	     3 2 4 4 5 
+	     4 3 5 2 1
+	输出：
+	     9
+	     5
+	     5
+	     3
+	     0
+	解释：
+	原本的状态是 {{3,2,4,4,5}} ，取出 4 号货物后，得到 {{3,2,4},{5}} ，第一堆货物的和是 9 ，
+	然后取出 3 号货物得到 {{3,2}{5}} ，此时第一堆和第二堆的和都是 5 ，以此类推。
+	
+	提示：
+	* 1 <= n <= 50000
+	* 1 <= w[i] <= 100
+	* 请注意，本题需要自行编写「标准输入」和「标准输出」逻辑，以及自行 import/include 需要的 
+	  library。了解书写规则"""
+
+    def meituan_002(self): 
+        n = int(input())
+        prefix = [0]
+        for x in input().split(): prefix.append(prefix[-1] + int(x))
+        ans = []
+        most = 0
+        seen = [0]*n
+        lower = list(range(n))
+        upper = list(range(n))
+        for i in reversed(input().split()): 
+            ans.append(most)
+            i = int(i) - 1
+            seen[i] = 1
+            if i and seen[i-1]: lower[i] = lower[i-1]
+            if i+1 < n and seen[i+1]: upper[i] = upper[i+1]
+            upper[lower[i]] = upper[i]
+            lower[upper[i]] = lower[i]
+            most = max(most, prefix[upper[i]+1] - prefix[lower[i]])
+        for x in reversed(ans): print(x)
