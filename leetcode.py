@@ -24123,7 +24123,8 @@ class Trie:
 	* 1 <= color <= 1000"""
 
     def colorBorder(self, grid: List[List[int]], r0: int, c0: int, color: int) -> List[List[int]]:
-        m, n, orig = len(grid), len(grid[0]), grid[r0][c0] # dimensions 
+        m, n = len(grid), len(grid[0])
+        orig = grid[r0][c0]
         seen = {(r0, c0)}
         stack = [(r0, c0)]
         while stack: 
@@ -24133,8 +24134,7 @@ class Trie:
                     if 0 <= ii < m and 0 <= jj < n and grid[ii][jj] == orig: 
                         stack.append((ii, jj))
                         seen.add((ii, jj))
-                    else: 
-                        grid[i][j] = color 
+                    else: grid[i][j] = color 
         return grid 
 
 
