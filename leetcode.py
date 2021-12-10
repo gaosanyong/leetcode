@@ -18594,9 +18594,8 @@ class Trie:
 
     def numTilings(self, N: int) -> int:
         f0, f1, f2 = 0, 1, 1
-        for i in range(N-1): 
-            f0, f1, f2 = f1, f2, 2*f2 + f0
-        return f2 % 1_000_000_007
+        for i in range(N-1): f0, f1, f2 = f1, f2, (2*f2 + f0) % 1_000_000_007
+        return f2
 
 
     """791. Custom Sort String (Medium)
