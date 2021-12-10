@@ -55200,10 +55200,10 @@ class TopVotedCandidate:
         self.winner = []
         
         pp = 0 
-        freq = {} # frequency table 
+        freq = defualtdict(int)
         for p in persons: 
-            freq[p] = 1 + freq.get(p, 0)
-            if freq[p] >= freq.get(pp, 0): pp = p
+            freq[p] += 1
+            if freq[p] >= freq[pp]: pp = p
             self.winner.append(pp)
 
 
