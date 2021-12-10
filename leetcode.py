@@ -55197,24 +55197,19 @@ class TopVotedCandidate:
 
     def __init__(self, persons: List[int], times: List[int]):
         self.times = times 
-        self.winner = []
+        self.lead = []
         
         pp = 0 
-        freq = defualtdict(int)
+        freq = defaultdict(int)
         for p in persons: 
             freq[p] += 1
             if freq[p] >= freq[pp]: pp = p
-            self.winner.append(pp)
+            self.lead.append(pp)
 
 
     def q(self, t: int) -> int:
-        """Standard last-true binary search."""
-        lo, hi = -1, len(self.times)-1
-        while lo < hi: 
-            mid = lo + hi + 1 >> 1
-            if self.times[mid] <= t: lo = mid
-            else: hi = mid - 1
-        return self.winner[lo]
+        k = bisect_right(self.times, t) - 1
+        return self.lead[k]
 
 
 """919. Complete Binary Tree Inserter (Medium)
