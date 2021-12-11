@@ -16230,7 +16230,7 @@ public:
 
     int nthMagicalNumber(int n, int a, int b) {
         // inclusion-exclusion principle
-        int ab = a*b/gcd(a, b); 
+        int ab = lcm(a, b); 
         long lo = 0, hi = (long) n*min(a,b); 
         while (lo < hi) {
             long mid = lo + (hi - lo)/2; 

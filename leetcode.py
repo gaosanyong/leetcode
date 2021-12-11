@@ -20862,7 +20862,7 @@ class Trie:
 
     def nthMagicalNumber(self, n: int, a: int, b: int) -> int:
 	    # inclusion-exclusion principle
-        ab = a*b//gcd(a,b)
+        ab = lcm(a,b)
         lo, hi = 0, n*min(a, b)
         while lo < hi: 
             mid = lo + hi >> 1
