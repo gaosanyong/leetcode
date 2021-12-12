@@ -12025,6 +12025,44 @@ class Solution:
         return "".join(ch*x for ch, x in Counter(s).most_common())
 
 
+    """456. 132 Pattern (Medium)
+	Given an array of n integers nums, a 132 pattern is a subsequence of three 
+	integers nums[i], nums[j] and nums[k] such that i < j < k and 
+	nums[i] < nums[k] < nums[j]. Return true if there is a 132 pattern in nums, 
+	otherwise, return false.
+
+	Example 1:
+	Input: nums = [1,2,3,4]
+	Output: false
+	Explanation: There is no 132 pattern in the sequence.
+
+	Example 2:
+	Input: nums = [3,1,4,2]
+	Output: true
+	Explanation: There is a 132 pattern in the sequence: [1, 4, 2].
+
+	Example 3:
+	Input: nums = [-1,3,2,0]
+	Output: true
+	Explanation: There are three 132 patterns in the sequence: [-1, 3, 2], 
+	             [-1, 3, 0] and [-1, 2, 0].
+
+	Constraints:
+	* n == nums.length
+	* 1 <= n <= 2 * 10^5
+	* -10^9 <= nums[i] <= 10^9"""
+
+    def find132pattern(self, nums: List[int]) -> bool:
+        prev = -inf
+        stack = []
+        for x in reversed(nums): 
+            if x < prev: return True 
+            while stack and stack[-1] < x: 
+                prev = max(prev, stack.pop())
+            stack.append(x)
+        return False 
+
+
     """462. Minimum Moves to Equal Array Elements II (Medium)
 	Given an integer array nums of size n, return the minimum number of moves 
 	required to make all array elements equal. In one move, you can increment 
