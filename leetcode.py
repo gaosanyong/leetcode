@@ -53187,15 +53187,13 @@ class Trie:
         ans = 0 
         lo, hi = 0, len(plants)-1
         canA, canB = capacityA, capacityB
-        while lo <= hi: 
-            if lo < hi:
-                if canA < plants[lo]: ans += 1; canA = capacityA
-                canA -= plants[lo]
-                if canB < plants[hi]: ans += 1; canB = capacityB
-                canB -= plants[hi]
-            elif canB <= canA < plants[lo] or canA < canB < plants[hi]: ans += 1
-            lo += 1
-            hi -= 1
+        while lo < hi: 
+            if canA < plants[lo]: ans += 1; canA = capacityA
+            canA -= plants[lo]
+            if canB < plants[hi]: ans += 1; canB = capacityB
+            canB -= plants[hi]
+            lo, hi = lo+1, hi-1
+        if lo == hi and (canB <= canA < plants[lo] or canA < canB < plants[hi]): ans += 1
         return ans 
 
 
