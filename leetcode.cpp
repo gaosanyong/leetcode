@@ -36000,6 +36000,190 @@ public:
     }
 
 
+    /*2099. Find Subsequence of Length K With the Largest Sum (Easy)
+	You are given an integer array nums and an integer k. You want to find a 
+	subsequence of nums of length k that has the largest sum. Return any such 
+	subsequence as an integer array of length k. A subsequence is an array that 
+	can be derived from another array by deleting some or no elements without 
+	changing the order of the remaining elements.
+
+	Example 1:
+	Input: nums = [2,1,3,3], k = 2
+	Output: [3,3]
+	Explanation: The subsequence has the largest sum of 3 + 3 = 6.
+	
+	Example 2:
+	Input: nums = [-1,-2,3,4], k = 3
+	Output: [-1,3,4]
+	Explanation: The subsequence has the largest sum of -1 + 3 + 4 = 6.
+	
+	Example 3:
+	Input: nums = [3,4,3,3], k = 2
+	Output: [3,4]
+	Explanation: The subsequence has the largest sum of 3 + 4 = 7. Another 
+	             possible subsequence is [4, 3].
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* -10^5 <= nums[i] <= 10^5
+	* 1 <= k <= nums.length*/
+
+    vector<int> maxSubsequence(vector<int>& nums, int k) {
+        vector<int> tmp = nums;
+        nth_element(tmp.begin(), tmp.end()-k, tmp.end()); 
+        
+        int n = nums.size(), threshold = tmp[n-k], larger = 0; 
+        for (auto& x : nums) 
+            if (x > threshold) ++larger; 
+        int equal = k - larger; 
+        vector<int> ans; 
+        for (auto& x : nums) 
+            if (x > threshold || (x == threshold && equal-- > 0)) ans.push_back(x); 
+        return ans; 
+    }
+
+
+    /*2100. Find Good Days to Rob the Bank (Medium)
+	You and a gang of thieves are planning on robbing a bank. You are given a 
+	0-indexed integer array security, where security[i] is the number of guards 
+	on duty on the ith day. The days are numbered starting from 0. You are also 
+	given an integer time. The ith day is a good day to rob the bank if:
+	* There are at least time days before and after the ith day,
+	* The number of guards at the bank for the time days before i are non-
+	  increasing, and
+	* The number of guards at the bank for the time days after i are non-
+	  decreasing.
+	More formally, this means day i is a good day to rob the bank if and only 
+	if security[i - time] >= security[i - time + 1] >= ... >= security[i] 
+	<= ... <= security[i + time - 1] <= security[i + time]. Return a list of 
+	all days (0-indexed) that are good days to rob the bank. The order that the 
+	days are returned in does not matter.
+
+	Example 1:
+	Input: security = [5,3,3,3,5,6,2], time = 2
+	Output: [2,3]
+	Explanation: On day 2, we have security[0] >= security[1] >= security[2] 
+	             <= security[3] <= security[4]. On day 3, we have security[1] 
+	             >= security[2] >= security[3] <= security[4] <= security[5].
+	             No other days satisfy this condition, so days 2 and 3 are the 
+	             only good days to rob the bank.
+	
+	Example 2:
+	Input: security = [1,1,1,1,1], time = 0
+	Output: [0,1,2,3,4]
+	Explanation: Since time equals 0, every day is a good day to rob the bank, 
+	             so return every day.
+	
+	Example 3:
+	Input: security = [1,2,3,4,5,6], time = 2
+	Output: []
+	Explanation: No day has 2 days before it that have a non-increasing number 
+	             of guards. Thus, no day is a good day to rob the bank, so 
+	             return an empty list.
+	
+	Example 4:
+	Input: security = [1], time = 5
+	Output: []
+	Explanation: No day has 5 days before and after it. Thus, no day is a good 
+	             day to rob the bank, so return an empty list. 
+
+	Constraints:
+	* 1 <= security.length <= 10^5
+	* 0 <= security[i], time <= 10^5*/
+
+    vector<int> goodDaysToRobBank(vector<int>& security, int time) {
+        int n = security.size(); 
+        vector<int> suffix(n); 
+        for (int i = n-2; i >= 0; --i) 
+            if (security[i] <= security[i+1]) suffix[i] = suffix[i+1] + 1; 
+        
+        vector<int> ans; 
+        int prefix = 0; 
+        for (int i = 0; i < n-time; ++i) {
+            if (i && security[i-1] >= security[i]) ++prefix; 
+            else prefix = 0; 
+            if (prefix >= time && suffix[i] >= time) ans.push_back(i); 
+        }
+        return ans; 
+    }
+
+
+    /*2101. Detonate the Maximum Bombs (Medium)
+	You are given a list of bombs. The range of a bomb is defined as the area 
+	where its effect can be felt. This area is in the shape of a circle with 
+	the center as the location of the bomb. The bombs are represented by a 0-
+	indexed 2D integer array bombs where bombs[i] = [xi, yi, ri]. xi and yi 
+	denote the X-coordinate and Y-coordinate of the location of the ith bomb, 
+	whereas ri denotes the radius of its range. You may choose to detonate a 
+	single bomb. When a bomb is detonated, it will detonate all bombs that lie 
+	in its range. These bombs will further detonate the bombs that lie in their 
+	ranges. Given the list of bombs, return the maximum number of bombs that 
+	can be detonated if you are allowed to detonate only one bomb.
+
+	Example 1:
+	Input: bombs = [[2,1,3],[6,1,4]]
+	Output: 2
+	Explanation: The above figure shows the positions and ranges of the 2 bombs.
+	             If we detonate the left bomb, the right bomb will not be 
+	             affected. But if we detonate the right bomb, both bombs will 
+	             be detonated. So the maximum bombs that can be detonated is 
+	             max(1, 2) = 2.
+	
+	Example 2:
+	Input: bombs = [[1,1,5],[10,10,5]]
+	Output: 1
+	Explanation: Detonating either bomb will not detonate the other bomb, so 
+	             the maximum number of bombs that can be detonated is 1.
+	
+	Example 3:
+	Input: bombs = [[1,2,3],[2,3,1],[3,4,2],[4,5,3],[5,6,4]]
+	Output: 5
+	Explanation: The best bomb to detonate is bomb 0 because:
+	             - Bomb 0 detonates bombs 1 and 2. The red circle denotes the 
+	               range of bomb 0.
+	             - Bomb 2 detonates bomb 3. The blue circle denotes the range 
+	               of bomb 2.
+	             - Bomb 3 detonates bomb 4. The green circle denotes the range 
+	               of bomb 3.
+	             Thus all 5 bombs are detonated.
+
+	Constraints:
+	* 1 <= bombs.length <= 100
+	* bombs[i].length == 3
+	* 1 <= xi, yi, ri <= 10^5*/
+
+    int maximumDetonation(vector<vector<int>>& bombs) {
+        int n = bombs.size(); 
+        vector<vector<int>> graph(n); 
+        for (int i = 0; i < n; ++i) 
+            for (int j = i+1; j < n; ++j) {
+                long dist2 = pow(bombs[i][0] - bombs[j][0], 2) + pow(bombs[i][1] - bombs[j][1], 2); 
+                if (dist2 <= pow(bombs[i][2], 2)) graph[i].push_back(j); 
+                if (dist2 <= pow(bombs[j][2], 2)) graph[j].push_back(i); 
+            }
+        
+        auto fn = [&](int x) {
+            int ans = 1; 
+            stack<int> stk; stk.push(x); 
+            vector<bool> seen(n); seen[x] = true; 
+            while (stk.size()) {
+                auto u = stk.top(); stk.pop(); 
+                for (auto& v : graph[u]) 
+                    if (!seen[v]) {
+                        ++ans; 
+                        seen[v] = true; 
+                        stk.push(v); 
+                    }
+            }
+            return ans; 
+        }; 
+        
+        int most = 0; 
+        for (int x = 0; x < n; ++x) most = max(most, fn(x)); 
+        return most; 
+    }
+
+
     /*2103. Rings and Rods (Easy)
 	There are n rings and each ring is either red, green, or blue. The rings 
 	are distributed across ten rods labeled from 0 to 9. You are given a string 
@@ -38770,5 +38954,79 @@ public:
         auto lo = lower_bound(loc[value].begin(), loc[value].end(), left); 
         auto hi = upper_bound(loc[value].begin(), loc[value].end(), right); 
         return hi - lo; 
+    }
+};
+
+
+/*2102. Sequentially Ordinal Rank Tracker (Hard)
+A scenic location is represented by its name and attractiveness score, where 
+name is a unique string among all locations and score is an integer. Locations 
+can be ranked from the best to the worst. The higher the score, the better the 
+location. If the scores of two locations are equal, then the location with the 
+lexicographically smaller name is better. You are building a system that tracks 
+the ranking of locations with the system initially starting with no locations. 
+It supports:
+* Adding scenic locations, one at a time.
+* Querying the ith best location of all locations already added, where i is the 
+  number of times the system has been queried (including the current query).
+For example, when the system is queried for the 4th time, it returns the 4th 
+best location of all locations already added. Note that the test data are 
+generated so that at any time, the number of queries does not exceed the number 
+of locations added to the system. Implement the SORTracker class:
+* SORTracker() Initializes the tracker system.
+* void add(string name, int score) Adds a scenic location with name and score 
+  to the system.
+* string get() Queries and returns the ith best location, where i is the number 
+  of times this method has been invoked (including this invocation).
+
+Example 1:
+Input: ["SORTracker", "add", "add", "get", "add", "get", "add", "get", "add", "get", "add", "get", "get"]
+       [[], ["bradford", 2], ["branford", 3], [], ["alps", 2], [], ["orland", 2], [], ["orlando", 3], [], ["alpine", 2], [], []]
+Output: [null, null, null, "branford", null, "alps", null, "bradford", null, "bradford", null, "bradford", "orland"]
+Explanation
+SORTracker tracker = new SORTracker(); // Initialize the tracker system.
+tracker.add("bradford", 2); // Add location with name="bradford" and score=2 to the system.
+tracker.add("branford", 3); // Add location with name="branford" and score=3 to the system.
+tracker.get();              // The sorted locations, from best to worst, are: branford, bradford.
+                            // Note that branford precedes bradford due to its higher score (3 > 2).
+                            // This is the 1st time get() is called, so return the best location: "branford".
+tracker.add("alps", 2);     // Add location with name="alps" and score=2 to the system.
+tracker.get();              // Sorted locations: branford, alps, bradford.
+                            // Note that alps precedes bradford even though they have the same score (2).
+                            // This is because "alps" is lexicographically smaller than "bradford".
+                            // Return the 2nd best location "alps", as it is the 2nd time get() is called.
+tracker.add("orland", 2);   // Add location with name="orland" and score=2 to the system.
+tracker.get();              // Sorted locations: branford, alps, bradford, orland.
+                            // Return "bradford", as it is the 3rd time get() is called.
+tracker.add("orlando", 3);  // Add location with name="orlando" and score=3 to the system.
+tracker.get();              // Sorted locations: branford, orlando, alps, bradford, orland.
+                            // Return "bradford".
+tracker.add("alpine", 2);   // Add location with name="alpine" and score=2 to the system.
+tracker.get();              // Sorted locations: branford, orlando, alpine, alps, bradford, orland.
+                            // Return "bradford".
+tracker.get();              // Sorted locations: branford, orlando, alpine, alps, bradford, orland.
+                            // Return "orland".
+ 
+Constraints:
+* name consists of lowercase English letters, and is unique among all locations.
+* 1 <= name.length <= 10
+* 1 <= score <= 10^5
+* At any time, the number of calls to get does not exceed the number of calls 
+  to add.
+* At most 4 * 10^4 calls in total will be made to add and get.*/
+
+class SORTracker {
+    set<pair<int, string>> st; 
+    set<pair<int, string>>::iterator it = st.end(); 
+public:
+    SORTracker() {}
+    
+    void add(string name, int score) {
+        auto cand = st.insert({-score, name}).first; 
+        if (it == st.end() || *cand < *it) --it; 
+    }
+    
+    string get() {
+        return (it++)->second; 
     }
 };
