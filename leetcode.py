@@ -53078,18 +53078,18 @@ class Trie:
     def subArrayRanges(self, nums: List[int]) -> int:
         
         def fn(op): 
-            """Return min sum (if given ge) or max sum (if given le)."""
-            ans, stack = [], []
-            for i, x in enumerate(nums): 
-                while stack and op(nums[stack[-1]], x): stack.pop()
-                if stack: 
-                    ii = stack[-1]
-                    ans.append(ans[ii] + x*(i-ii))
-                else: ans.append(x*(i+1))
+            """Return min sum (if given gt) or max sum (if given lt)."""
+            ans = 0 
+            stack = []
+            for i in range(len(nums) + 1): 
+                while stack and (i == len(nums) or op(nums[stack[-1]], nums[i])): 
+                    mid = stack.pop()
+                    ii = stack[-1] if stack else -1 
+                    ans += nums[mid] * (i - mid) * (mid - ii)
                 stack.append(i)
-            return sum(ans)
+            return ans 
         
-        return fn(le) - fn(ge)
+        return fn(lt) - fn(gt)
 
 
     """2105. Watering Plants II (Medium)
@@ -53193,7 +53193,7 @@ class Trie:
             if canB < plants[hi]: ans += 1; canB = capacityB
             canB -= plants[hi]
             lo, hi = lo+1, hi-1
-        if lo == hi and (canB <= canA < plants[lo] or canA < canB < plants[hi]): ans += 1
+        if lo == hi and max(canA, canB) < plants[lo]: ans += 1
         return ans 
 
 

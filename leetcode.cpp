@@ -35998,6 +35998,285 @@ public:
         for (int i = 0; i < path.size()-1; ++i) ans.push_back({path[i], path[i+1]}); 
         return ans; 
     }
+
+
+    /*2103. Rings and Rods (Easy)
+	There are n rings and each ring is either red, green, or blue. The rings 
+	are distributed across ten rods labeled from 0 to 9. You are given a string 
+	rings of length 2n that describes the n rings that are placed onto the rods. 
+	Every two characters in rings forms a color-position pair that is used to 
+	describe each ring where:
+	* The first character of the ith pair denotes the ith ring's color 
+	  ('R', 'G', 'B').
+	* The second character of the ith pair denotes the rod that the ith ring is 
+	  placed on ('0' to '9').
+	For example, "R3G2B1" describes n == 3 rings: a red ring placed onto the 
+	rod labeled 3, a green ring placed onto the rod labeled 2, and a blue ring 
+	placed onto the rod labeled 1. Return the number of rods that have all 
+	three colors of rings on them.
+
+	Example 1:
+	Input: rings = "B0B6G0R6R0R6G9"
+	Output: 1
+	Explanation: 
+	- The rod labeled 0 holds 3 rings with all colors: red, green, and blue.
+	- The rod labeled 6 holds 3 rings, but it only has red and blue.
+	- The rod labeled 9 holds only a green ring.
+	Thus, the number of rods with all three colors is 1.
+
+	Example 2:
+	Input: rings = "B0R0G0R9R0B0G0"
+	Output: 1
+	Explanation: 
+	- The rod labeled 0 holds 6 rings with all colors: red, green, and blue.
+	- The rod labeled 9 holds only a red ring.
+	Thus, the number of rods with all three colors is 1.
+
+	Example 3:
+	Input: rings = "G4"
+	Output: 0
+	Explanation: Only one ring is given. Thus, no rods have all three colors.
+
+	Constraints:
+	* rings.length == 2 * n
+	* 1 <= n <= 100
+	* rings[i] where i is even is either 'R', 'G', or 'B' (0-indexed).
+	* rings[i] where i is odd is a digit from '0' to '9' (0-indexed).*/
+
+    int countPoints(string rings) {
+        vector<int> mask(10);
+        unordered_map<char, int> mp = {{'R', 0}, {'G', 1}, {'B', 2}}; 
+        for (int i = 0; i < rings.size(); i += 2) 
+            mask[rings[i+1] - '0'] |= 1 << mp[rings[i]]; 
+        return count(mask.begin(), mask.end(), 7); 
+    }
+
+
+    /*2104. Sum of Subarray Ranges (Medium)
+	You are given an integer array nums. The range of a subarray of nums is the 
+	difference between the largest and smallest element in the subarray. Return 
+	the sum of all subarray ranges of nums. A subarray is a contiguous non-
+	empty sequence of elements within an array.
+
+	Example 1:
+	Input: nums = [1,2,3]
+	Output: 4
+	Explanation: The 6 subarrays of nums are the following:
+	             [1], range = largest - smallest = 1 - 1 = 0 
+	             [2], range = 2 - 2 = 0
+	             [3], range = 3 - 3 = 0
+	             [1,2], range = 2 - 1 = 1
+	             [2,3], range = 3 - 2 = 1
+	             [1,2,3], range = 3 - 1 = 2
+	             So the sum of all ranges is 0 + 0 + 0 + 1 + 1 + 2 = 4.
+	
+	Example 2:
+	Input: nums = [1,3,3]
+	Output: 4
+	Explanation: The 6 subarrays of nums are the following:
+	             [1], range = largest - smallest = 1 - 1 = 0
+	             [3], range = 3 - 3 = 0
+	             [3], range = 3 - 3 = 0
+	             [1,3], range = 3 - 1 = 2
+	             [3,3], range = 3 - 3 = 0
+	             [1,3,3], range = 3 - 1 = 2
+	             So the sum of all ranges is 0 + 0 + 0 + 2 + 0 + 2 = 4.
+	
+	Example 3:
+	Input: nums = [4,-2,-3,4,1]
+	Output: 59
+	Explanation: The sum of all subarray ranges of nums is 59.
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* -10^9 <= nums[i] <= 10^9*/
+
+    long long subArrayRanges(vector<int>& nums) {
+        
+        auto fn = [&](function<bool(int, int)> op) {
+            long long ans = 0; 
+            stack<int> stk; 
+            for (int i = 0; i <= nums.size(); ++i) {
+                while (stk.size() && (i == nums.size() || op(nums[stk.top()], nums[i]))) {
+                    int mid = stk.top(); stk.pop(); 
+                    int ii = stk.size() ? stk.top() : -1; 
+                    ans += (long) nums[mid] * (i - mid) * (mid - ii); 
+                }
+                stk.push(i); 
+            }
+            return ans; 
+        }; 
+        
+        return fn(less<int>()) - fn(greater<int>());
+    }
+
+
+    /*2105. Watering Plants II (Medium)
+	Alice and Bob want to water n plants in their garden. The plants are 
+	arranged in a row and are labeled from 0 to n - 1 from left to right where 
+	the ith plant is located at x = i. Each plant needs a specific amount of 
+	water. Alice and Bob have a watering can each, initially full. They water 
+	the plants in the following way:
+	* Alice waters the plants in order from left to right, starting from the 
+	  0th plant. Bob waters the plants in order from right to left, starting 
+	  from the (n - 1)th plant. They begin watering the plants simultaneously.
+	* If one does not have enough water to completely water the current plant, 
+	  he/she refills the watering can instantaneously.
+	* It takes the same amount of time to water each plant regardless of how 
+	  much water it needs.
+	* One cannot refill the watering can early.
+	* Each plant can be watered either by Alice or by Bob.
+	* In case both Alice and Bob reach the same plant, the one with more water 
+	  currently in his/her watering can should water this plant. If they have 
+	  the same amount of water, then Alice should water this plant.
+	Given a 0-indexed integer array plants of n integers, where plants[i] is 
+	the amount of water the ith plant needs, and two integers capacityA and 
+	capacityB representing the capacities of Alice's and Bob's watering cans 
+	respectively, return the number of times they have to refill to water all 
+	the plants.
+
+	Example 1:
+	Input: plants = [2,2,3,3], capacityA = 5, capacityB = 5
+	Output: 1
+	Explanation:
+	- Initially, Alice and Bob have 5 units of water each in their watering 
+	  cans.
+	- Alice waters plant 0, Bob waters plant 3.
+	- Alice and Bob now have 3 units and 2 units of water respectively.
+	- Alice has enough water for plant 1, so she waters it. Bob does not have 
+	  enough water for plant 2, so he refills his can then waters it.
+	So, the total number of times they have to refill to water all the plants 
+	is 0 + 0 + 1 + 0 = 1.
+	
+	Example 2:
+	Input: plants = [2,2,3,3], capacityA = 3, capacityB = 4
+	Output: 2
+	Explanation:
+	- Initially, Alice and Bob have 3 units and 4 units of water in their 
+	  watering cans respectively.
+	- Alice waters plant 0, Bob waters plant 3.
+	- Alice and Bob now have 1 unit of water each, and need to water plants 1 
+	  and 2 respectively.
+	- Since neither of them have enough water for their current plants, they 
+	  refill their cans and then water the plants.
+	So, the total number of times they have to refill to water all the plants 
+	is 0 + 1 + 1 + 0 = 2.
+	
+	Example 3:
+	Input: plants = [5], capacityA = 10, capacityB = 8
+	Output: 0
+	Explanation:
+	- There is only one plant.
+	- Alice's watering can has 10 units of water, whereas Bob's can has 8 units. 
+	  Since Alice has more water in her can, she waters this plant.
+	So, the total number of times they have to refill is 0.
+	
+	Example 4:
+	Input: plants = [1,2,4,4,5], capacityA = 6, capacityB = 5
+	Output: 2
+	Explanation:
+	- Initially, Alice and Bob have 6 units and 5 units of water in their 
+	  watering cans respectively.
+	- Alice waters plant 0, Bob waters plant 4.
+	- Alice and Bob now have 5 units and 0 units of water respectively.
+	- Alice has enough water for plant 1, so she waters it. Bob does not have 
+	  enough water for plant 3, so he refills his can then waters it.
+	- Alice and Bob now have 3 units and 1 unit of water respectively.
+	- Since Alice has more water, she waters plant 2. However, she does not 
+	  have enough water to completely water this plant. Hence she refills her 
+	  can then waters it.
+	So, the total number of times they have to refill to water all the plants 
+	is 0 + 0 + 1 + 1 + 0 = 2.
+	
+	Example 5:
+	Input: plants = [2,2,5,2,2], capacityA = 5, capacityB = 5
+	Output: 1
+	Explanation: Both Alice and Bob will reach the middle plant with the same 
+	             amount of water, so Alice will water it. She will have 1 unit 
+	             of water when she reaches it, so she will refill her can. This 
+	             is the only refill needed.
+
+	Constraints:
+	* n == plants.length
+	* 1 <= n <= 10^5
+	* 1 <= plants[i] <= 10^6
+	* max(plants[i]) <= capacityA, capacityB <= 10^9*/
+
+    int minimumRefill(vector<int>& plants, int capacityA, int capacityB) {
+        int ans = 0, lo = 0, hi = plants.size()-1, canA = capacityA, canB = capacityB; 
+        for (; lo < hi; ++lo, --hi) {
+            if (canA < plants[lo]) ++ans, canA = capacityA; 
+            canA -= plants[lo]; 
+            if (canB < plants[hi]) ++ans, canB = capacityB; 
+            canB -= plants[hi]; 
+        }
+        if (lo == hi && max(canA, canB) < plants[lo]) ++ans; 
+        return ans; 
+    }
+
+
+    /*2106. Maximum Fruits Harvested After at Most K Steps (Hard)
+	Fruits are available at some positions on an infinite x-axis. You are given 
+	a 2D integer array fruits where fruits[i] = [positioni, amounti] depicts 
+	amounti fruits at the position positioni. fruits is already sorted by 
+	positioni in ascending order, and each positioni is unique. You are also 
+	given an integer startPos and an integer k. Initially, you are at the 
+	position startPos. From any position, you can either walk to the left or 
+	right. It takes one step to move one unit on the x-axis, and you can walk 
+	at most k steps in total. For every position you reach, you harvest all the 
+	fruits at that position, and the fruits will disappear from that position.
+	Return the maximum total number of fruits you can harvest.
+
+	Example 1:
+	Input: fruits = [[2,8],[6,3],[8,6]], startPos = 5, k = 4
+	Output: 9
+	Explanation: The optimal way is to:
+	             - Move right to position 6 and harvest 3 fruits
+	             - Move right to position 8 and harvest 6 fruits
+	             You moved 3 steps and harvested 3 + 6 = 9 fruits in total.
+	
+	Example 2:
+	Input: fruits = [[0,9],[4,1],[5,7],[6,2],[7,4],[10,9]], startPos = 5, k = 4
+	Output: 14
+	Explanation: You can move at most k = 4 steps, so you cannot reach position 
+	             0 nor 10. The optimal way is to:
+	             - Harvest the 7 fruits at the starting position 5
+	             - Move left to position 4 and harvest 1 fruit
+	             - Move right to position 6 and harvest 2 fruits
+	             - Move right to position 7 and harvest 4 fruits
+	             You moved 1 + 3 = 4 steps and harvested 7 + 1 + 2 + 4 = 14 
+	             fruits in total.
+	
+	Example 3:
+	Input: fruits = [[0,3],[6,4],[8,5]], startPos = 3, k = 2
+	Output: 0
+	Explanation: You can move at most k = 2 steps and cannot reach any position 
+	             with fruits.
+
+	Constraints:
+	* 1 <= fruits.length <= 10^5
+	* fruits[i].length == 2
+	* 0 <= startPos, positioni <= 2 * 10^5
+	* positioni-1 < positioni for any i > 0 (0-indexed)
+	* 1 <= amounti <= 10^4
+	* 0 <= k <= 2 * 10^5*/
+
+    int maxTotalFruits(vector<vector<int>>& fruits, int startPos, int k) {
+        int ans = 0; 
+        for (int i = 0, ii = 0, rsm = 0; i < fruits.size(); ++i) {
+            int p = fruits[i][0], x = fruits[i][1]; 
+            if (p > startPos + k) break; 
+            rsm += x; 
+            if (p <= startPos) 
+                while (ii <= i && startPos - fruits[ii][0] > k) 
+                    rsm -= fruits[ii++][1]; 
+            else
+                while (ii <= i && 2*(p-startPos)+(startPos-fruits[ii][0]) > k && (p-startPos)+2*(startPos-fruits[ii][0]) > k) 
+                    rsm -= fruits[ii++][1]; 
+            ans = max(ans, rsm); 
+        }
+        return ans; 
+    }
 };
 
 
