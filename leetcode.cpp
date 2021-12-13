@@ -6929,6 +6929,30 @@ public:
     }
 
 
+    /*371. Sum of Two Integers (Medium)
+	Given two integers a and b, return the sum of the two integers without 
+	using the operators + and -.
+
+	Example 1:
+	Input: a = 1, b = 2
+	Output: 3
+
+	Example 2:
+	Input: a = 2, b = 3
+	Output: 5
+
+	Constraints: -1000 <= a, b <= 1000*/
+
+    int getSum(int a, int b) {
+        while (b) {
+            int diff = a^b, carry = (unsigned)(a&b) << 1; 
+            a = diff; 
+            b = carry; 
+        }
+        return a; 
+    }
+
+
     /*374. Guess Number Higher or Lower (Easy)
 	We are playing the Guess Game. The game is as follows:
 	* I pick a number from 1 to n. You have to guess which number I picked.
