@@ -831,6 +831,35 @@ class Solution:
                 ans.append(vals)
         return ans 
 
+
+    """剑指 Offer 33. 二叉搜索树的后序遍历序列 (中等)
+	输入一个整数数组，判断该数组是不是某二叉搜索树的后序遍历结果。如果是则返回 true，否则
+	返回 false。假设输入的数组的任意两个数字都互不相同。参考以下这颗二叉搜索树：
+	     5
+	    / \
+	   2   6
+	  / \
+	 1   3
+
+	示例 1：
+	输入: [1,6,3,2,5]
+	输出: false
+
+	示例 2：
+	输入: [1,3,2,6,5]
+	输出: true
+
+	提示：数组长度 <= 1000"""
+
+    def verifyPostorder(self, postorder: List[int]) -> bool:
+        upper = inf 
+        stack = []
+        for x in reversed(postorder): 
+            if upper < x: return False 
+            while stack and stack[-1] > x: upper = stack.pop()
+            stack.append(x)
+        return True 
+
  
     """剑指 Offer 39. 数组中出现次数超过一半的数字 (简单)
 	数组中有一个数字出现的次数超过数组长度的一半，请找出这个数字。	你可以假设数组是非空的，
