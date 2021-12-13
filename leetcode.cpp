@@ -10661,7 +10661,7 @@ public:
         for (auto& course : courses) {
             prefix += course[0]; 
             pq.push(course[0]); 
-            while (prefix > course[1]) {
+            if (prefix > course[1]) {
                 prefix -= pq.top(); 
                 pq.pop(); 
             }

@@ -14772,7 +14772,7 @@ class Trie:
         for x, y in sorted(courses, key=lambda x: x[1]): 
             prefix += x
             heappush(pq, -x)
-            while prefix > y: prefix += heappop(pq)
+            if prefix > y: prefix += heappop(pq)
         return len(pq)
 
 
