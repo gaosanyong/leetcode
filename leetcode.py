@@ -5026,20 +5026,17 @@ class Solution:
 	Output: -1->0->3->4->5"""
 
     def insertionSortList(self, head: ListNode) -> ListNode:
-        node, prev = head, None
-        while node: 
-            if not prev or prev.val <= node.val: #append node 
-                node.next, node, prev = prev, node.next, node
+        dummy = node = ListNode(val=-inf, next=head)
+        while node.next: 
+            if node.val <= node.next.val: node = node.next 
             else: 
-                temp = prev
-                while temp.next and temp.next.val > node.val: 
-                    temp = temp.next
-                node.next, node, temp.next = temp.next, node.next, node
-                
-        node, prev = prev, None
-        while node:
-            node.next, node, prev = prev, node.next, node
-        return prev 
+                temp = node.next 
+                prev = dummy 
+                while prev.next and prev.next.val <= temp.val: prev = prev.next 
+                node.next = node.next.next 
+                temp.next = prev.next 
+                prev.next = temp
+        return dummy.next 
 
 
     """148. Sort List (Medium)
