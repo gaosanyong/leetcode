@@ -20328,15 +20328,14 @@ class Trie:
 	* The observations in richer are all logically consistent."""
 
     def loudAndRich(self, richer: List[List[int]], quiet: List[int]) -> List[int]:
-        graph = {} # graph as adjacency list 
-        for x, y in richer: graph.setdefault(y, []).append(x)
+        graph = [[] for _ in quiet]
+        for u, v in richer: graph[v].append(u)
         
         @cache
         def fn(x): 
             """Return richer & loudest person given person."""
             ans = x
-            for xx in graph.get(x, []): 
-                if quiet[fn(xx)] < quiet[ans]: ans = fn(xx)
+            for xx in graph[x]: ans = min(ans, fn(xx), key=quiet.__getitem__)
             return ans 
         
         return [fn(x) for x in range(len(quiet))]
