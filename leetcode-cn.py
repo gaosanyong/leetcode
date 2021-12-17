@@ -541,6 +541,34 @@ class Solution:
         return numbers[lo]
 
 
+    """剑指 Offer 14- I. 剪绳子 (中等)
+	给你一根长度为 n 的绳子，请把绳子剪成整数长度的 m 段（m、n都是整数，n>1并且m>1），
+	每段绳子的长度记为 k[0],k[1]...k[m-1] 。请问 k[0]*k[1]*...*k[m-1] 可能的最大
+	乘积是多少？例如，当绳子的长度是8时，我们把它剪成长度分别为2、3、3的三段，此时得到
+	的最大乘积是18。
+
+	示例 1：
+	输入: 2
+	输出: 1
+	解释: 2 = 1 + 1, 1 × 1 = 1
+
+	示例 2:
+	输入: 10
+	输出: 36
+	解释: 10 = 3 + 3 + 4, 3 × 3 × 4 = 36
+
+	提示：
+	* 2 <= n <= 58
+	* 注意：本题与主站 343 题相同：https://leetcode-cn.com/problems/integer-break/"""
+
+    def cuttingRope(self, n: int) -> int:
+        if n == 2: return 1 
+        if n == 3: return 2 
+        if n % 3 == 0: return 3**(n//3)
+        if n % 3 == 1: return 3**((n-4)//3) * 4 
+        return 3**((n-2)//3) * 2
+
+
     """剑指 Offer 15. 二进制中1的个数 (简单)
 	编写一个函数，输入是一个无符号整数（以二进制串的形式），返回其二进制表达式中数字位数为 '1' 
 	的个数（也被称为 汉明重量).）。
@@ -1192,6 +1220,33 @@ class Solution:
         return True 
 
 
+    """剑指 Offer 56 - II. 数组中数字出现的次数 II (中等)
+	在一个数组 nums 中除一个数字只出现一次之外，其他数字都出现了三次。请找出那个只出现一
+	次的数字。
+
+	示例 1：
+	输入：nums = [3,4,3,3]
+	输出：4
+
+	示例 2：
+	输入：nums = [9,1,7,9,7,9,7]
+	输出：1
+	 
+	限制：
+	* 1 <= nums.length <= 10000
+	* 1 <= nums[i] < 2^31"""
+
+    def singleNumber(self, nums: List[int]) -> int:
+        one = two = 0 
+        for x in nums: 
+            two |= one & x 
+            one ^= x 
+            common = one & two 
+            one &= ~common 
+            two &= ~common 
+        return one 
+
+
     """剑指 Offer 57. 和为s的两个数字 (简单)
 	输入一个递增排序的数组和一个数字s，在数组中查找两个数，使得它们的和正好是s。如果有多对数
 	字的和等于s，则输出任意一对即可。
@@ -1357,6 +1412,30 @@ class Solution:
         mask = 0xffffffff
         while b & mask: a, b = a^b, (a&b) << 1
         return a&mask if b > mask else a 
+
+
+    """剑指 Offer 66. 构建乘积数组 (中等)
+	给定一个数组 A[0,1,…,n-1]，请构建一个数组 B[0,1,…,n-1]，其中 B[i] 的值是数组 A 
+	中除了下标 i 以外的元素的积, 即 B[i]=A[0]×A[1]×…×A[i-1]×A[i+1]×…×A[n-1]。不能
+	使用除法。
+
+	示例:
+	输入: [1,2,3,4,5]
+	输出: [120,60,40,30,24]
+
+	提示：
+	* 所有元素乘积之和不会溢出 32 位整数
+	* a.length <= 100000"""
+
+    def constructArr(self, a: List[int]) -> List[int]:
+        ans = [1] * len(a)
+        prefix = suffix = 1
+        for i, x in enumerate(a): 
+            ans[i] *= prefix 
+            ans[~i] *= suffix 
+            prefix *= a[i]
+            suffix *= a[~i]
+        return ans 
 
 
     """剑指 Offer 68 - I. 二叉搜索树的最近公共祖先 (简单)
