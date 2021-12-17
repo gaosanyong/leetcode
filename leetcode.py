@@ -9473,18 +9473,24 @@ class Solution:
 	* 0 <= matrix[i][j] <= 2^31 - 1"""
 
     def longestIncreasingPath(self, matrix: List[List[int]]) -> int:
-        m, n = len(matrix), len(matrix[0]) # dimensions 
-        
-        @cache
-        def fn(i, j): 
-            """Return max increasing path starting from (i, j)."""
-            ans = 1
-            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
-                if 0 <= ii < m and 0 <= jj < n and matrix[i][j] < matrix[ii][jj]: 
-                    ans = max(ans, 1 + fn(ii, jj))
-            return ans 
-        
-        return max(fn(i, j) for i in range(m) for j in range(n))
+        m, n = len(matrix), len(matrix[0])
+        indeg = [[0]*n for _ in range(m)]
+        for i in range(m):
+            for j in range(n): 
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                    if 0 <= ii < m and 0 <= jj < n and matrix[i][j] < matrix[ii][jj]: 
+                        indeg[ii][jj] += 1
+        queue = deque([(i, j) for i in range(m) for j in range(n) if indeg[i][j] == 0])
+        ans = 0
+        while queue: 
+            for _ in range(len(queue)): 
+                i, j = queue.popleft()
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                    if 0 <= ii < m and 0 <= jj < n and matrix[i][j] < matrix[ii][jj]: 
+                        indeg[ii][jj] -= 1
+                        if indeg[ii][jj] == 0: queue.append((ii, jj))
+            ans += 1
+        return ans 
 
 
     """330. Patching Array (Hard)

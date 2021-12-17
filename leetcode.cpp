@@ -6551,28 +6551,31 @@ public:
 	* 0 <= matrix[i][j] <= 2^31 - 1*/
 
     int longestIncreasingPath(vector<vector<int>>& matrix) {
-        int m = matrix.size(), n = matrix[0].size(); 
-        
-        vector<vector<int>> memo(m, vector<int>(n, 0)); 
-        function<int(int, int)> fn = [&](int i, int j) {
-            if (memo[i][j] == 0) {
-                memo[i][j] = 1; 
-                for (auto &d : vector<vector<int>>{{-1, 0}, {0, -1}, {0, 1}, {1, 0}}) {
-                    int ii = i + d[0], jj = j + d[1]; 
-                    if (0 <= ii && ii < m && 0 <= jj && jj < n && matrix[i][j] < matrix[ii][jj]) {
-                        memo[i][j] = max(memo[i][j], 1 + fn(ii, jj)); 
-                    }
+        int m = matrix.size(), n = matrix[0].size(), dir[5] = {-1, 0, 1, 0, -1}; 
+        vector<vector<int>> indeg(m, vector<int>(n)); 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                for (int k = 0; k < 4; ++k) {
+                    int ii = i + dir[k], jj = j + dir[k+1]; 
+                    if (0 <= ii && ii < m && 0 <= jj && jj < n && matrix[i][j] < matrix[ii][jj]) 
+                        ++indeg[ii][jj]; 
                 }
-            } 
-            return memo[i][j]; 
-        };
+        
+        queue<pair<int, int>> q; 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if (indeg[i][j] == 0) q.emplace(i, j); 
         
         int ans = 0; 
-        for (int i = 0; i < m; ++i) {
-            for (int j = 0; j < n; ++j) {
-                ans = max(ans, fn(i, j)); 
+        for (; q.size(); ++ans) 
+            for (int sz = q.size(); sz; --sz) {
+                auto [i, j] = q.front(); q.pop(); 
+                for (int k = 0; k < 4; ++k) {
+                    int ii = i + dir[k], jj = j + dir[k+1]; 
+                    if (0 <= ii && ii < m && 0 <= jj && jj < n && matrix[i][j] < matrix[ii][jj]) 
+                        if (--indeg[ii][jj] == 0) q.emplace(ii, jj); 
+                }
             }
-        }
         return ans; 
     }
 
