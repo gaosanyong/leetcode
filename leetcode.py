@@ -18606,19 +18606,22 @@ class Trie:
 	* k is in the range of [0, n - 1].
 	* There will not be any duplicated flights or self cycles."""
 
-    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, K: int) -> int:
-        graph = {} # digraph 
-        for u, v, p in flights: 
-            graph.setdefault(u, []).append((v, p)) 
-            
-        pq = [(0, -1, src)] # min-heap (cost-stop-city)
+    def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
+        graph = [[] for _ in range(n)]
+        for u, v, p in flights: graph[u].append((v, p))
+        
+        pq = [(0, src, 0)]
+        dist = [(inf, inf)] * n
+        dist[src] = (0, 0)
         while pq: 
-            p, k, u = heappop(pq) # current stop 
-            if k <= K: 
-                if u == dst: return p
-                for v, pp in graph.get(u, []): 
-                    heappush(pq, (p + pp, k+1, v))
-        return -1
+            p, u, x = heappop(pq)
+            if u == dst: return p
+            if x <= k: 
+                for v, pp in graph[u]: 
+                    if p+pp < dist[v][0] or x+1 < dist[v][1]: 
+                        heappush(pq, (p+pp, v, x+1))
+                        dist[v] = min(dist[v], (p+pp, x+1))
+        return -1 
 
 
     """789. Escape The Ghosts (Medium)

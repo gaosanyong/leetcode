@@ -14126,6 +14126,59 @@ public:
     }
 
 
+    /*787. Cheapest Flights Within K Stops (Medium)
+	There are n cities connected by some number of flights. You are given an 
+	array flights where flights[i] = [fromi, toi, pricei] indicates that there 
+	is a flight from city fromi to city toi with cost pricei. You are also 
+	given three integers src, dst, and k, return the cheapest price from src to 
+	dst with at most k stops. If there is no such route, return -1.
+
+	Example 1:
+	Input: n = 3, flights = [[0,1,100],[1,2,100],[0,2,500]], src = 0, dst = 2, k = 1
+	Output: 200
+	Explanation: The graph is shown. The cheapest price from city 0 to city 2 
+	             with at most 1 stop costs 200, as marked red in the picture.
+	
+	Example 2:
+	Input: n = 3, flights = [[0,1,100],[1,2,100],[0,2,500]], src = 0, dst = 2, k = 0
+	Output: 500
+	Explanation: The graph is shown. The cheapest price from city 0 to city 2 
+	             with at most 0 stop costs 500, as marked blue in the picture.
+
+	Constraints:
+	* 1 <= n <= 100
+	* 0 <= flights.length <= (n * (n - 1) / 2)
+	* flights[i].length == 3
+	* 0 <= fromi, toi < n
+	* fromi != toi
+	* 1 <= pricei <= 104
+	* There will not be any multiple flights between two cities.
+	* 0 <= src, dst, k < n
+	* src != dst*/
+
+    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) {
+        vector<vector<pair<int, int>>> graph(n); 
+        for (auto& flight : flights) 
+            graph[flight[0]].emplace_back(flight[1], flight[2]); 
+        
+        priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<>> pq; 
+        pq.emplace(0, src, 0); 
+        vector<pair<int, int>> dist(n, {INT_MAX, INT_MAX}); 
+        dist[src] = {0, 0}; 
+        while (pq.size()) {
+            auto [p, u, x] = pq.top(); pq.pop(); 
+            if (u == dst) return p; 
+            if (x <= k) 
+                for (auto& [v, pp] : graph[u]) 
+                    if (p + pp < dist[v].first || x+1 < dist[v].second) {
+                        pq.emplace(p+pp, v, x+1); 
+                        dist[v] = min(dist[v], {p+pp, x+1}); 
+                    }
+        }
+        return -1; 
+    }
+
+
     /*790. Domino and Tromino Tiling (Medium)
 	You have two types of tiles: a 2 x 1 domino shape and a tromino shape. You 
 	may rotate these shapes. Given an integer n, return the number of ways to 
