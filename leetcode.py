@@ -6797,8 +6797,8 @@ class Solution:
         for i in range(m): 
             for j in range(n): 
                 if matrix[i][j] == "1": 
-                    if i == 0 or j == 0: dp[i][j] = 1
-                    else: dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
+                	if i and j: dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
+                    else: dp[i][j] = 1
         return max(map(max, dp))**2
 
 
@@ -14732,8 +14732,8 @@ class Trie:
 	* -10^4 <= Node.val <= 10^4"""
 
     def mergeTrees(self, root1: Optional[TreeNode], root2: Optional[TreeNode]) -> Optional[TreeNode]:
-        if not root1 or not root2: return root1 or root2
-        return TreeNode(root1.val + root2.val, self.mergeTrees(root1.left, root2.left), self.mergeTrees(root1.right, root2.right))
+        if root1 and root2: return TreeNode(root1.val + root2.val, self.mergeTrees(root1.left, root2.left), self.mergeTrees(root1.right, root2.right))
+        return root1 or root2
 
 
     """625. Minimum Factorization (Medium)
