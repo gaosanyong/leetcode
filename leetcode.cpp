@@ -17204,13 +17204,14 @@ public:
         string s = to_string(n); 
         int ans = 0, sz = digits.size(); 
         for (int i = 1, p = sz; i < s.size(); ++i, p *= sz) ans += p; 
-        
-        for (int i = 0; i < s.size(); ++i) {
+        for (int i = 0, p = pow(sz, s.size()-1); i < s.size(); ++i, p /= sz) {
             string ch = string(1, s[i]); 
-            for (auto& x : digits) 
-                if (x < ch) ans += pow(sz, s.size()-1-i); 
-            auto it = find(digits.begin(), digits.end(), ch); 
-            if (it == digits.end()) return ans; 
+            bool found = false; 
+            for (auto& x : digits) {
+                if (x < ch) ans += p; 
+                if (x == ch) found = true; 
+            }
+            if (!found) return ans; 
         }
         return ans + 1; 
     }
