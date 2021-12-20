@@ -7301,7 +7301,7 @@ class Solution:
         for i, x in enumerate(nums): 
             while queue and queue[-1][1] <= x: queue.pop() #remove redundant 
             queue.append((i, x))
-            if queue and queue[0][0] <= i-k: queue.popleft() #remove expired 
+            if queue and i - queue[0][0] == k: queue.popleft() #remove expired 
             if i+1 >= k: ans.append(queue[0][1])
         return ans 
 

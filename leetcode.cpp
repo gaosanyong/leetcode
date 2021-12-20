@@ -5490,6 +5490,46 @@ public:
     }
 
 
+    /*239. Sliding Window Maximum (Hard)
+	You are given an array of integers nums, there is a sliding window of size 
+	k which is moving from the very left of the array to the very right. You 
+	can only see the k numbers in the window. Each time the sliding window 
+	moves right by one position. Return the max sliding window.
+
+	Example 1:
+	Input: nums = [1,3,-1,-3,5,3,6,7], k = 3
+	Output: [3,3,5,5,6,7]
+	Explanation: Window position                Max
+	             ---------------               -----
+	             [1  3  -1] -3  5  3  6  7       3
+	              1 [3  -1  -3] 5  3  6  7       3
+	              1  3 [-1  -3  5] 3  6  7       5
+	              1  3  -1 [-3  5  3] 6  7       5
+	              1  3  -1  -3 [5  3  6] 7       6
+	              1  3  -1  -3  5 [3  6  7]      7
+	
+	Example 2:
+	Input: nums = [1], k = 1
+	Output: [1]
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* -10^4 <= nums[i] <= 10^4
+	* 1 <= k <= nums.length*/
+
+    vector<int> maxSlidingWindow(vector<int>& nums, int k) {
+        deque<int> q; 
+        vector<int> ans; 
+        for (int i = 0; i < nums.size(); ++i) {
+            while (q.size() && nums[q.back()] <= nums[i]) q.pop_back(); 
+            q.push_back(i); 
+            if (q.size() && i-q.front() == k) q.pop_front(); 
+            if (i >= k-1) ans.push_back(nums[q.front()]);
+        }
+        return ans; 
+    }
+
+
     /*240. Search a 2D Matrix II (Medium)
 	Write an efficient algorithm that searches for a target value in an m x n 
 	integer matrix. The matrix has the following properties:
