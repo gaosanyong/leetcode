@@ -28251,14 +28251,15 @@ class UnionFind:
 
     def minimumAbsDifference(self, arr: List[int]) -> List[List[int]]:
         arr.sort()
-        ans, mn = [], inf
+        ans = []
+        diff = inf 
         for i in range(1, len(arr)): 
-            if arr[i] - arr[i-1] <= mn: 
-                if arr[i] - arr[i-1] < mn: 
-                    mn = arr[i] - arr[i-1]
+            if arr[i] - arr[i-1] <= diff: 
+                if arr[i] - arr[i-1] < diff: 
                     ans = []
+                    diff = arr[i] - arr[i-1]
                 ans.append([arr[i-1], arr[i]])
-        return ans
+        return ans 
 
 
     """1201. Ugly Number III (Medium)
