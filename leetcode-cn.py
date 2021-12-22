@@ -1019,6 +1019,39 @@ class Solution:
         return next((ch for ch in s if freq[ch] == 1), ' ')
 
 
+    """剑指 Offer 51. 数组中的逆序对 (困难)
+	在数组中的两个数字，如果前面一个数字大于后面的数字，则这两个数字组成一个逆序对。输入一个数
+	组，求出这个数组中的逆序对的总数。
+
+	示例 1:
+	输入: [7,5,6,4]
+	输出: 5
+
+	限制：0 <= 数组长度 <= 50000"""
+
+    def reversePairs(self, nums: List[int]) -> int:
+        
+        def fn(nums, aux, lo, hi): 
+            """Return inversions of nums[lo:hi]."""
+            if lo+1 >= hi: return 0 
+            mid = lo + hi >> 1
+            left = fn(aux, nums, lo, mid)
+            right = fn(aux, nums, mid, hi)
+            split = 0 
+            i, j = lo, mid 
+            for k in range(lo, hi): 
+                if j >= hi or i < mid and aux[i] <= aux[j]: 
+                    nums[k] = aux[i]
+                    i += 1
+                else: 
+                    nums[k] = aux[j]
+                    j += 1
+                    split += mid - i 
+            return left + split + right 
+        
+        return fn(nums, nums.copy(), 0, len(nums))
+
+
     """剑指 Offer 52. 两个链表的第一个公共节点 (简单)
 	输入两个链表，找出它们的第一个公共节点。
 
