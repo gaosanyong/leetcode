@@ -283,15 +283,12 @@ class Solution:
 	* 1 <= source[i][j], target[i][j] <=10^4"""
 
     def minimumSwitchingTimes(self, source: List[List[int]], target: List[List[int]]) -> int:
-        m, n = len(source), len(source[0])
         freq = Counter()
         for row in source: 
             for x in row: freq[x] += 1
-        
-        for row in target:
+        for row in target: 
             for x in row: freq[x] -= 1
-
-        return sum(abs(x) for x in freq.values())//2
+        return sum(map(abs, freq.values()))//2
 
 
     """LCP 40. 心算挑战 (简单)
