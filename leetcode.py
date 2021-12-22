@@ -4928,21 +4928,18 @@ class Solution:
 	Given 1->2->3->4->5, reorder it to 1->5->2->4->3."""
 
     def reorderList(self, head: ListNode) -> None:
-        fast = slow = head 
-        while fast and fast.next: 
+        fast = slow = head
+        while fast and fast.next:
             fast = fast.next.next
             slow = slow.next 
-        if slow: slow.next, slow = None, slow.next
         
-        hi = None
-        while slow: 
-            slow.next, slow, hi = hi, slow.next, slow
+        prev = None
+        while slow: slow.next, slow, prev = prev, slow.next, slow
             
-        lo = head 
-        while hi: 
-            hi.next, hi, lo.next, lo = lo.next, hi.next, hi, lo.next
-            
-        return head 
+        node = head
+        while prev and prev.next: 
+            node.next, node = prev, node.next
+            prev.next, prev = node, prev.next 
 
     
     """144. Binary Tree Preorder Traversal (Medium)

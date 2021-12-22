@@ -3797,24 +3797,16 @@ public:
 
     void reorderList(ListNode* head) {
         ListNode *fast = head, *slow = head; 
-        while (fast && fast->next) {
-            fast = fast->next->next; 
-            slow = slow->next; 
-        }
+        for (; fast && fast->next; fast = fast->next->next, slow = slow->next); 
+        
         ListNode *prev = nullptr; 
-        while (slow) {
-            ListNode* temp = slow->next; 
-            slow->next = prev; 
-            prev = slow; 
-            slow = temp; 
-        }
+        while (slow) 
+            tie(slow->next, slow, prev) = make_tuple(prev, slow->next, slow); 
+        
         ListNode *node = head; 
         while (prev && prev->next) {
-            ListNode *temp = prev->next; 
-            prev->next = node->next; 
-            node->next = prev; 
-            prev = temp; 
-            node = node->next->next; 
+            tie(node->next, node) = make_pair(prev, node->next); 
+            tie(prev->next, prev) = make_pair(node, prev->next); 
         }
     }
 
