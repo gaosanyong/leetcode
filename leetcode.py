@@ -6453,22 +6453,19 @@ class Solution:
 	* You may assume that there are no duplicate edges in the input prerequisites."""
 
     def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
-        #graph as adjacency list
-        digraph = dict()
-        for u, v in prerequisites: digraph.setdefault(u, []).append(v)
-            
-        def cyclic(n):
-            """Return True if cycle is detected involving given node"""
-            if seen[n]: return seen[n] == -1
-            seen[n] = -1 #GRAY
-            if any(cyclic(nn) for nn in digraph.get(n, []) if seen[nn] != 1): return True
-            seen[n] = 1 #BLACK
-            ans.append(n)
-            return False 
-        
+        graph = [[] for _ in range(numCourses)]
+        indeg = [0] * numCourses
+        for v, u in prerequisites: 
+            graph[u].append(v)
+            indeg[v] += 1
         ans = []
-        seen = [0]*numCourses #WHITE
-        return [] if any(cyclic(i) for i in range(numCourses)) else ans 
+        for i, x in enumerate(indeg):
+            if x == 0: ans.append(i)
+        for u in ans: 
+            for v in graph[u]: 
+                indeg[v] -= 1
+                if indeg[v] == 0: ans.append(v)
+        return ans if len(ans) == numCourses else []
 
 
     """212. Word Search II (Hard)
