@@ -7556,6 +7556,30 @@ public:
     }
 
 
+    /*400. Nth Digit (Medium)
+	Given an integer n, return the nth digit of the infinite integer sequence 
+	[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, ...].
+
+	Example 1:
+	Input: n = 3
+	Output: 3
+
+	Example 2:
+	Input: n = 11
+	Output: 0
+	Explanation: The 11th digit of the sequence 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
+	             11, ... is a 0, which is part of the number 10.
+
+	Constraints: 1 <= n <= 2^31 - 1*/
+
+    int findNthDigit(int n) {
+        long base = 1, mult = 1; 
+        for (; n > 9*base*mult; n -= 9*base*mult, base *= 10, ++mult);
+        int q = (n-1)/mult, r = (n-1) % mult; 
+        return to_string(q+base)[r] - '0'; 
+    }
+
+
     /*403. Frog Jump (Hard)
 	A frog is crossing a river. The river is divided into some number of units, 
 	and at each unit, there may or may not exist a stone. The frog can jump on 

@@ -11071,7 +11071,7 @@ class Solution:
     """400. Nth Digit (Medium)
 	Find the nth digit of the infinite integer sequence 1, 2, 3, 4, 5, 6, 7, 8, 
 	9, 10, 11, ... Note that n is positive and will fit within the range of a 
-	32-bit signed integer (n < 231).
+	32-bit signed integer (n < 2^31).
 
 	Example 1:
 	Input: 3
@@ -11084,12 +11084,12 @@ class Solution:
 	             11, ... is a 0, which is part of the number 10."""
 
     def findNthDigit(self, n: int) -> int:
-        digit = base = 1 # starting from 1 digit
-        while n > 9*base*digit: # upper limit of d digits 
-            n -= 9*base*digit
-            digit += 1
+        base = mult = 1 
+        while n > 9*base*mult: 
+            n -= 9*base*mult
             base *= 10 
-        q, r = divmod(n-1, digit)
+            mult += 1
+        q, r = divmod(n-1, mult)
         return int(str(base + q)[r])
 
 
