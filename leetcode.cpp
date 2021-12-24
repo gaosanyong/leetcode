@@ -29036,7 +29036,7 @@ public:
         fact[0] = ifact[0] = 1; 
         
         for (int i = 1; i < N; ++i) {
-            if (i >= 2) inv[i] = MOD - MOD/i * inv[MOD % i] % MOD; 
+            if (i >= 2) inv[i] = MOD - MOD/i * inv[MOD % i] % MOD; // modular inverse
             fact[i] = fact[i-1] * i % MOD; 
             ifact[i] = ifact[i-1] * inv[i] % MOD; 
         }
