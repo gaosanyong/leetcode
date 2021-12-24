@@ -7085,17 +7085,15 @@ class Solution:
 	Explanation: Digit 1 occurred in the following numbers: 1, 10, 11, 12, 13."""
 
     def countDigitOne(self, n: int) -> int:
-        if n < 0: return 0 #edge case 
-        
         ans = digit = tail = 0
-        magn = 1 #magnitude 
+        magn = 1 # magnitude 
         while n: 
-            tail = digit * magn//10 + tail #move digit to tail 
-            n, digit = divmod(n, 10) #seprate digit from head 
+            tail = digit * magn//10 + tail # move digit to tail 
+            n, digit = divmod(n, 10) # seprate digit from head 
             
             ans += n * magn
             if digit > 1: ans += magn
-            elif digit == 1: ans += tail + 1 #tail + 1 considering 000...
+            elif digit == 1: ans += tail + 1 # tail + 1 considering 000...
                 
             magn *= 10
         return ans 

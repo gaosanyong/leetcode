@@ -5407,6 +5407,34 @@ public:
     }
 
 
+    /*233. Number of Digit One (Hard)
+	Given an integer n, count the total number of digit 1 appearing in all non-
+	negative integers less than or equal to n.
+
+	Example 1:
+	Input: n = 13
+	Output: 6
+
+	Example 2:
+	Input: n = 0
+	Output: 0
+
+	Constraints: 0 <= n <= 10^9*/
+
+    int countDigitOne(int n) {
+        int ans = 0; 
+        for (long digit = 0, tail = 0, magn = 1; n; magn *= 10) {
+            tail = digit*magn/10 + tail; 
+            digit = n % 10; 
+            n /= 10; 
+            ans += n * magn; 
+            if (digit > 1) ans += magn; 
+            else if (digit == 1) ans += tail + 1; 
+        }
+        return ans; 
+    }
+
+
     /*234. Palindrome Linked List (Easy)
 	Given the head of a singly linked list, return true if it is a palindrome.
 
