@@ -11822,7 +11822,7 @@ class Solution:
         for i, x in enumerate(s): 
             freq[x] -= 1; 
             if len(p) <= i: freq[s[i-len(p)]] += 1
-            if all(x == 0 for x in freq.values()): ans.append(i-len(p)+1)
+            if not any(freq.values()): ans.append(i-len(p)+1)
         return ans 
 
 
