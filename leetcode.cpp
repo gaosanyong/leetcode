@@ -29026,27 +29026,25 @@ public:
 
     int waysToBuildRooms(vector<int>& prevRoom) {
         int n = size(prevRoom); 
-        unordered_map<int, vector<int>> tree(n); 
+        vector<vector<int>> tree(n); 
         for (int i = 0; i < size(prevRoom); ++i) 
             if (prevRoom[i] >= 0) tree[prevRoom[i]].push_back(i); 
         
-        const int MOD = 1'000'000'007, N = 100001; 
-        int inv[N], fact[N], ifact[N]; 
+        const long MOD = 1'000'000'007, N = 100'001; 
+        long inv[N], fact[N], ifact[N]; 
         inv[1] = 1; 
-        
-        for (int i = 2; i < N; ++i) 
-            inv[i] = (long long) (MOD - MOD/i) * inv[MOD % i] % MOD; // cuiaoxiang's trick
-        
         fact[0] = ifact[0] = 1; 
+        
         for (int i = 1; i < N; ++i) {
-            fact[i] = (long long) fact[i-1] * i % MOD; 
-            ifact[i] = (long long) ifact[i-1] * inv[i] % MOD; 
+            if (i >= 2) inv[i] = MOD - MOD/i * inv[MOD % i] % MOD; 
+            fact[i] = fact[i-1] * i % MOD; 
+            ifact[i] = ifact[i-1] * inv[i] % MOD; 
         }
         
-        function<pair<int, long long>(int)> fn = [&](int x) {
-            if (size(tree[x]) == 0) return make_pair(1, 1ll); 
+        function<pair<int, long>(int)> fn = [&](int x) {
+            if (size(tree[x]) == 0) return make_pair(1, 1l); 
             int c = 0; 
-            long long m = 1; 
+            long m = 1; 
             for (auto& xx : tree[x]) {
                 auto [cc, mm] = fn(xx); 
                 c += cc; 

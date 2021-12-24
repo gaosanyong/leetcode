@@ -45571,6 +45571,68 @@ class Fenwick:
         return sum(max(0, nums[i-1] - nums[i]) for i in range(1, len(nums))) + nums[-1]
 
 
+    """1916. Count Ways to Build Rooms in an Ant Colony (Hard)
+	You are an ant tasked with adding n new rooms numbered 0 to n-1 to your 
+	colony. You are given the expansion plan as a 0-indexed integer array of 
+	length n, prevRoom, where prevRoom[i] indicates that you must build room 
+	prevRoom[i] before building room i, and these two rooms must be connected 
+	directly. Room 0 is already built, so prevRoom[0] = -1. The expansion plan 
+	is given such that once all the rooms are built, every room will be 
+	reachable from room 0. You can only build one room at a time, and you can 
+	travel freely between rooms you have already built only if they are 
+	connected. You can choose to build any room as long as its previous room is 
+	already built. Return the number of different orders you can build all the 
+	rooms in. Since the answer may be large, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: prevRoom = [-1,0,1]
+	Output: 1
+	Explanation: There is only one way to build the additional rooms: 0 → 1 → 2
+
+	Example 2:
+	Input: prevRoom = [-1,0,0,1,2]
+	Output: 6
+	Explanation: The 6 ways are:
+	             0 → 1 → 3 → 2 → 4
+	             0 → 2 → 4 → 1 → 3
+	             0 → 1 → 2 → 3 → 4
+	             0 → 1 → 2 → 4 → 3
+	             0 → 2 → 1 → 3 → 4
+	             0 → 2 → 1 → 4 → 3
+
+	Constraints:
+	* n == prevRoom.length
+	* 2 <= n <= 10^5
+	* prevRoom[0] == -1
+	* 0 <= prevRoom[i] < n for all 1 <= i < n
+	* Every room is reachable from room 0 once all the rooms are built."""
+
+    def waysToBuildRooms(self, prevRoom: List[int]) -> int:
+        tree = [[] for _ in prevRoom]
+        for i, x in enumerate(prevRoom): 
+            if x >= 0: tree[x].append(i)
+            
+        N = 100_001
+        MOD = 1_000_000_007
+        fact, ifact, inv = [1] * N, [1] * N, [1] * N
+        for i in range(1, N): 
+            if i >= 2: inv[i] = MOD - MOD//i * inv[MOD % i] % MOD # modular inverse
+            fact[i] = fact[i-1] * i % MOD 
+            ifact[i] = ifact[i-1] * inv[i] % MOD 
+        
+        def fn(n): 
+            """Return number of nodes and ways to build sub-tree."""
+            if not tree[n]: return 1, 1 # leaf 
+            c, m = 0, 1
+            for nn in tree[n]: 
+                cc, mm = fn(nn)
+                c += cc
+                m = m * mm * ifact[cc] % MOD
+            return c+1, m * fact[c] % MOD
+        
+        return fn(0)[1]
+
+
     """1918. Kth Smallest Subarray Sum (Medium)
 	Given an integer array nums of length n and an integer k, return the kth 
 	smallest subarray sum. A subarray is defined as a non-empty contiguous 
