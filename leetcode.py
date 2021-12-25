@@ -53706,6 +53706,228 @@ class Trie:
         return len(arr) - ans
 
 
+    """2114. Maximum Number of Words Found in Sentences (Easy)
+	A sentence is a list of words that are separated by a single space with no 
+	leading or trailing spaces. You are given an array of strings sentences, 
+	where each sentences[i] represents a single sentence. Return the maximum 
+	number of words that appear in a single sentence.
+
+	Example 1:
+	Input: sentences = ["alice and bob love leetcode", "i think so too", "this is great thanks very much"]
+	Output: 6
+	Explanation: 
+	- The first sentence, "alice and bob love leetcode", has 5 words in total.
+	- The second sentence, "i think so too", has 4 words in total.
+	- The third sentence, "this is great thanks very much", has 6 words in total.
+	Thus, the maximum number of words in a single sentence comes from the third 
+	sentence, which has 6 words.
+	
+	Example 2:
+	Input: sentences = ["please wait", "continue to fight", "continue to win"]
+	Output: 3
+	Explanation: It is possible that multiple sentences contain the same number 
+	             of words. In this example, the second and third sentences 
+	             (underlined) have the same number of words.
+
+	Constraints:
+	* 1 <= sentences.length <= 100
+	* 1 <= sentences[i].length <= 100
+	* sentences[i] consists only of lowercase English letters and ' ' only.
+	* sentences[i] does not have leading or trailing spaces.
+	* All the words in sentences[i] are separated by a single space."""
+
+    def mostWordsFound(self, sentences: List[str]) -> int:
+        return max(len(x.split()) for x in sentences)
+
+
+    """2115. Find All Possible Recipes from Given Supplies (Medium)
+	You have information about n different recipes. You are given a string 
+	array recipes and a 2D string array ingredients. The ith recipe has the 
+	name recipes[i], and you can create it if you have all the needed 
+	ingredients from ingredients[i]. Ingredients to a recipe may need to be 
+	created from other recipes, i.e., ingredients[i] may contain a string that 
+	is in recipes. You are also given a string array supplies containing all 
+	the ingredients that you initially have, and you have an infinite supply of 
+	all of them. Return a list of all the recipes that you can create. You may 
+	return the answer in any order. Note that two recipes may contain each 
+	other in their ingredients.
+
+	Example 1:
+	Input: recipes = ["bread"], ingredients = [["yeast","flour"]], supplies = ["yeast","flour","corn"]
+	Output: ["bread"]
+	Explanation: We can create "bread" since we have the ingredients "yeast" 
+	             and "flour".
+	
+	Example 2:
+	Input: recipes = ["bread","sandwich"], ingredients = [["yeast","flour"],["bread","meat"]], supplies = ["yeast","flour","meat"]
+	Output: ["bread","sandwich"]
+	Explanation: We can create "bread" since we have the ingredients "yeast" 
+	             and "flour". We can create "sandwich" since we have the 
+	             ingredient "meat" and can create the ingredient "bread".
+	
+	Example 3:
+	Input: recipes = ["bread","sandwich","burger"], ingredients = [["yeast","flour"],["bread","meat"],["sandwich","meat","bread"]], supplies = ["yeast","flour","meat"]
+	Output: ["bread","sandwich","burger"]
+	Explanation: We can create "bread" since we have the ingredients "yeast" 
+	             and "flour". We can create "sandwich" since we have the 
+	             ingredient "meat" and can create the ingredient "bread". We 
+	             can create "burger" since we have the ingredient "meat" and 
+	             can create the ingredients "bread" and "sandwich".
+
+	Constraints:
+	* n == recipes.length == ingredients.length
+	* 1 <= n <= 100
+	* 1 <= ingredients[i].length, supplies.length <= 100
+	* 1 <= recipes[i].length, ingredients[i][j].length, supplies[k].length <= 10
+	* recipes[i], ingredients[i][j], and supplies[k] consist only of lowercase 
+	  English letters.
+	* All the values of recipes and supplies combined are unique.
+	* Each ingredients[i] does not contain any duplicate values."""
+
+    def findAllRecipes(self, recipes: List[str], ingredients: List[List[str]], supplies: List[str]) -> List[str]:
+        indeg = defaultdict(int)
+        graph = defaultdict(list)
+        for r, ing in zip(recipes, ingredients): 
+            indeg[r] = len(ing)
+            for i in ing: graph[i].append(r)
+        
+        ans = []
+        queue = deque(supplies)
+        recipes = set(recipes)
+        while queue: 
+            x = queue.popleft()
+            if x in recipes: ans.append(x)
+            for xx in graph[x]: 
+                indeg[xx] -= 1
+                if indeg[xx] == 0: queue.append(xx)
+        return ans 
+
+
+    """2116. Check if a Parentheses String Can Be Valid (Medium)
+	A parentheses string is a non-empty string consisting only of '(' and ')'. 
+	It is valid if any of the following conditions is true:
+	* It is ().
+	* It can be written as AB (A concatenated with B), where A and B are valid 
+	  parentheses strings.
+	* It can be written as (A), where A is a valid parentheses string.
+	You are given a parentheses string s and a string locked, both of length n. 
+	locked is a binary string consisting only of '0's and '1's. For each index 
+	i of locked,
+	* If locked[i] is '1', you cannot change s[i].
+	* But if locked[i] is '0', you can change s[i] to either '(' or ')'.
+	Return true if you can make s a valid parentheses string. Otherwise, return 
+	false.
+
+	Example 1:
+	Input: s = "))()))", locked = "010100"
+	Output: true
+	Explanation: locked[1] == '1' and locked[3] == '1', so we cannot change s[1] 
+	             or s[3]. We change s[0] and s[4] to '(' while leaving s[2] and 
+	             s[5] unchanged to make s valid.
+	
+	Example 2:
+	Input: s = "()()", locked = "0000"
+	Output: true
+	Explanation: We do not need to make any changes because s is already valid.
+
+	Example 3:
+	Input: s = ")", locked = "0"
+	Output: false
+	Explanation: locked permits us to change s[0]. Changing s[0] to either '(' 
+	             or ')' will not make s valid.
+
+	Constraints:
+	* n == s.length == locked.length
+	* 1 <= n <= 10^5
+	* s[i] is either '(' or ')'.
+	* locked[i] is either '0' or '1'."""
+
+    def canBeValid(self, s: str, locked: str) -> bool:
+        if len(s)&1: return False
+        bal = 0
+        for ch, lock in zip(s, locked):
+            if lock == '0' or ch == '(': bal += 1
+            elif ch == ')': bal -= 1
+            if bal < 0: return False 
+        bal = 0
+        for ch, lock in zip(reversed(s), reversed(locked)): 
+            if lock == '0' or ch == ')': bal += 1
+            elif ch == '(': bal -= 1
+            if bal < 0: return False
+        return True
+
+
+    """2117. Abbreviating the Product of a Range (Hard)
+	You are given two positive integers left and right with left <= right. 
+	Calculate the product of all integers in the inclusive range [left, right].
+	Since the product may be very large, you will abbreviate it following these 
+	steps:
+	* Count all trailing zeros in the product and remove them. Let us denote 
+	  this count as C.
+	  For example, there are 3 trailing zeros in 1000, and there are 0 trailing 
+	  zeros in 546.
+	* Denote the remaining number of digits in the product as d. If d > 10, 
+	  then express the product as <pre>...<suf> where <pre> denotes the first 5 
+	  digits of the product, and <suf> denotes the last 5 digits of the product 
+	  after removing all trailing zeros. If d <= 10, we keep it unchanged.
+	  For example, we express 1234567654321 as 12345...54321, but 1234567 is 
+	  represented as 1234567.
+	* Finally, represent the product as a string "<pre>...<suf>eC".
+	  For example, 12345678987600000 will be represented as "12345...89876e5".
+	Return a string denoting the abbreviated product of all integers in the 
+	inclusive range [left, right].
+
+	Example 1:
+	Input: left = 1, right = 4
+	Output: "24e0"
+	Explanation: The product is 1 × 2 × 3 × 4 = 24. There are no trailing zeros, 
+	             so 24 remains the same. The abbreviation will end with "e0". 
+	             Since the number of digits is 2, which is less than 10, we do 
+	             not have to abbreviate it further. Thus, the final 
+	             representation is "24e0". 
+	
+	Example 2:
+	Input: left = 2, right = 11
+	Output: "399168e2"
+	Explanation: The product is 39916800. There are 2 trailing zeros, which we 
+	             remove to get 399168. The abbreviation will end with "e2". The 
+	             number of digits after removing the trailing zeros is 6, so we 
+	             do not abbreviate it further. Hence, the abbreviated product 
+	             is "399168e2".  
+	
+	Example 3:
+	Input: left = 999998, right = 1000000
+	Output: "99999...00002e6"
+	Explanation: The above diagram shows how we abbreviate the product to 
+	             "99999...00002e6". 
+	             - It has 6 trailing zeros. The abbreviation will end with "e6".
+	             - The first 5 digits are 99999.
+	             - The last 5 digits after removing trailing zeros is 00002.
+
+	Constraints: 1 <= left <= right <= 10^6"""
+
+    def abbreviateProduct(self, left: int, right: int) -> str:
+        ans = prefix = suffix = 1
+        trailing = 0 
+        flag = False 
+        for x in range(left, right+1): 
+            if not flag: 
+                ans *= x
+                while ans % 10 == 0: ans //= 10 
+                if ans >= 1e10: flag = True 
+            prefix *= x
+            suffix *= x
+            while prefix >= 1e12: prefix //= 10 
+            while suffix % 10 == 0: 
+                trailing += 1
+                suffix //= 10 
+            if suffix >= 1e10: suffix %= 10_000_000_000
+        while prefix >= 100000: prefix //= 10 
+        suffix %= 100000
+        if flag: return f"{prefix:<05}...{suffix:>05}e{trailing}"
+        return f"{ans}e{trailing}"
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
