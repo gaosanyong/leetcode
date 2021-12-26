@@ -20772,6 +20772,40 @@ public:
     }
 
 
+    /*1078. Occurrences After Bigram (Easy)
+	Given two strings first and second, consider occurrences in some text of 
+	the form "first second third", where second comes immediately after first, 
+	and third comes immediately after second. Return an array of all the words 
+	third for each occurrence of "first second third".
+
+	Example 1:
+	Input: text = "alice is a good girl she is a good student", first = "a", second = "good"
+	Output: ["girl","student"]
+	
+	Example 2:
+	Input: text = "we will we will rock you", first = "we", second = "will"
+	Output: ["we","rock"]
+
+	Constraints:
+	* 1 <= text.length <= 1000
+	* text consists of lowercase English letters and spaces.
+	* All the words in text a separated by a single space.
+	* 1 <= first.length, second.length <= 10
+	* first and second consist of lowercase English letters.*/
+
+    vector<string> findOcurrences(string text, string first, string second) {
+        vector<string> ans; 
+        bool f0 = false, f1 = false; 
+        istringstream iss(text); 
+        for (string word; iss >> word; ) {
+            if (f1) ans.push_back(word); 
+            f1 = f0 && word == second; 
+            f0 = word == first; 
+        }
+        return ans; 
+    }
+
+
     /*1087. Brace Expansion (Medium)
 	You are given a string s representing a list of words. Each letter in the 
 	word has one or more options.
