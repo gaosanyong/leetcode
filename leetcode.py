@@ -19542,15 +19542,12 @@ class Trie:
 	* 1 <= ages[i] <= 120."""
 
     def numFriendRequests(self, ages: List[int]) -> int:
-        freq = {}
-        for x in ages: freq[x] = 1 + freq.get(x, 0)
-        
-        ans = 0 
-        for x in freq: 
-            for y in freq: 
-                if 0.5*x + 7 < y <= x: 
-                    ans += freq[x] * freq[y]
-                    if x == y: ans -= freq[x]
+        ages.sort()
+        ans = lo = hi = 0 
+        for x in ages: 
+            while hi < len(ages) and x == ages[hi]: hi += 1
+            while lo+1 < hi and ages[lo] <= x//2 + 7: lo += 1
+            ans += hi - lo - 1
         return ans 
 
 
