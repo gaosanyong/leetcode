@@ -23163,7 +23163,7 @@ class Trie:
 
     def kClosest(self, points: List[List[int]], k: int) -> List[List[int]]:
         
-        def partition(lo, hi): 
+        def part(lo, hi): 
             """Return partition of dist[lo:hi]."""
             i, j = lo+1, hi-1
             while i <= j: 
@@ -23180,7 +23180,7 @@ class Trie:
         shuffle(dist)
         lo, hi = 0, len(dist)
         while lo < hi: 
-            mid = partition(lo, hi)
+            mid = part(lo, hi)
             if mid + 1 < k: lo = mid + 1
             elif mid + 1 == k: break 
             else: hi = mid
