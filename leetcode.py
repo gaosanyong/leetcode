@@ -53959,6 +53959,210 @@ class Trie:
         return f"{ans}e{trailing}"
 
 
+    """2119. A Number After a Double Reversal (Easy)
+	Reversing an integer means to reverse all its digits. For example, 
+	reversing 2021 gives 1202. Reversing 12300 gives 321 as the leading zeros 
+	are not retained. Given an integer num, reverse num to get reversed1, then 
+	reverse reversed1 to get reversed2. Return true if reversed2 equals num. 
+	Otherwise return false.
+
+	Example 1:
+	Input: num = 526
+	Output: true
+	Explanation: Reverse num to get 625, then reverse 625 to get 526, which 
+	             equals num.
+	
+	Example 2:
+	Input: num = 1800
+	Output: false
+	Explanation: Reverse num to get 81, then reverse 81 to get 18, which does 
+	             not equal num.
+	
+	Example 3:
+	Input: num = 0
+	Output: true
+	Explanation: Reverse num to get 0, then reverse 0 to get 0, which equals 
+	             num.
+
+	Constraints: 0 <= num <= 10^6"""
+
+    def isSameAfterReversals(self, num: int) -> bool:
+        return num == 0 or num % 10 
+
+
+    """2120. Execution of All Suffix Instructions Staying in a Grid (Medium)
+	There is an n x n grid, with the top-left cell at (0, 0) and the bottom-
+	right cell at (n - 1, n - 1). You are given the integer n and an integer 
+	array startPos where startPos = [startrow, startcol] indicates that a robot 
+	is initially at cell (startrow, startcol). You are also given a 0-indexed 
+	string s of length m where s[i] is the ith instruction for the robot: 
+	'L' (move left), 'R' (move right), 'U' (move up), and 'D' (move down).
+	The robot can begin executing from any ith instruction in s. It executes 
+	the instructions one by one towards the end of s but it stops if either of 
+	these conditions is met:
+	* The next instruction will move the robot off the grid.
+	* There are no more instructions left to execute.
+	Return an array answer of length m where answer[i] is the number of 
+	instructions the robot can execute if the robot begins executing from the 
+	ith instruction in s.
+
+	Example 1:
+	Input: n = 3, startPos = [0,1], s = "RRDDLU"
+	Output: [1,5,4,3,1,0]
+	Explanation: Starting from startPos and beginning execution from the ith instruction:
+	- 0th: "RRDDLU". Only one instruction "R" can be executed before it moves off the grid.
+	- 1st:  "RDDLU". All five instructions can be executed while it stays in the grid and ends at (1, 1).
+	- 2nd:   "DDLU". All four instructions can be executed while it stays in the grid and ends at (1, 0).
+	- 3rd:    "DLU". All three instructions can be executed while it stays in the grid and ends at (0, 0).
+	- 4th:     "LU". Only one instruction "L" can be executed before it moves off the grid.
+	- 5th:      "U". If moving up, it would move off the grid.
+
+	Example 2:
+	Input: n = 2, startPos = [1,1], s = "LURD"
+	Output: [4,1,0,0]
+	Explanation: - 0th: "LURD".
+	             - 1st:  "URD".
+	             - 2nd:   "RD".
+	             - 3rd:    "D".
+	
+	Example 3:
+	Input: n = 1, startPos = [0,0], s = "LRUD"
+	Output: [0,0,0,0]
+	Explanation: No matter which instruction the robot begins execution from, 
+	             it would move off the grid.
+
+	Constraints:
+	* m == s.length
+	* 1 <= n, m <= 500
+	* startPos.length == 2
+	* 0 <= startrow, startcol < n
+	* s consists of 'L', 'R', 'U', and 'D'."""
+
+    def executeInstructions(self, n: int, startPos: List[int], s: str) -> List[int]:
+        ans = []
+        for k in range(len(s)): 
+            i, j = startPos
+            val = 0 
+            for kk in range(k, len(s)): 
+                if s[kk] == 'L': j -= 1
+                elif s[kk] == 'R': j += 1
+                elif s[kk] == 'U': i -= 1
+                else: i += 1
+                if 0 <= i < n and 0 <= j < n: val += 1
+                else: break 
+            ans.append(val)
+        return ans 
+
+
+    """2121. Intervals Between Identical Elements (Medium)
+	You are given a 0-indexed array of n integers arr. The interval between two 
+	elements in arr is defined as the absolute difference between their indices. 
+	More formally, the interval between arr[i] and arr[j] is |i - j|. Return an 
+	array intervals of length n where intervals[i] is the sum of intervals 
+	between arr[i] and each element in arr with the same value as arr[i]. Note: 
+	|x| is the absolute value of x.
+
+	Example 1:
+	Input: arr = [2,1,3,1,2,3,3]
+	Output: [4,2,7,2,4,4,5]
+	Explanation:
+	- Index 0: Another 2 is found at index 4. |0 - 4| = 4
+	- Index 1: Another 1 is found at index 3. |1 - 3| = 2
+	- Index 2: Two more 3s are found at indices 5 and 6. |2 - 5| + |2 - 6| = 7
+	- Index 3: Another 1 is found at index 1. |3 - 1| = 2
+	- Index 4: Another 2 is found at index 0. |4 - 0| = 4
+	- Index 5: Two more 3s are found at indices 2 and 6. |5 - 2| + |5 - 6| = 4
+	- Index 6: Two more 3s are found at indices 2 and 5. |6 - 2| + |6 - 5| = 5
+	
+	Example 2:
+	Input: arr = [10,5,10,10]
+	Output: [5,0,3,4]
+	Explanation:
+	- Index 0: Two more 10s are found at indices 2 and 3. |0 - 2| + |0 - 3| = 5
+	- Index 1: There is only one 5 in the array, so its sum of intervals to identical elements is 0.
+	- Index 2: Two more 10s are found at indices 0 and 3. |2 - 0| + |2 - 3| = 3
+	- Index 3: Two more 10s are found at indices 0 and 2. |3 - 0| + |3 - 2| = 4
+
+	Constraints:
+	* n == arr.length
+	* 1 <= n <= 10^5
+	* 1 <= arr[i] <= 10^5"""
+
+    def getDistances(self, arr: List[int]) -> List[int]:
+        loc = defaultdict(list)
+        for i, x in enumerate(arr): loc[x].append(i)
+        
+        for k, idx in loc.items(): 
+            prefix = list(accumulate(idx, initial=0))
+            vals = []
+            for i, x in enumerate(idx): 
+                vals.append(prefix[-1] - prefix[i] - prefix[i+1] - (len(idx)-2*i-1)*x)
+            loc[k] = deque(vals)
+        
+        return [loc[x].popleft() for x in arr]
+
+
+    """2122. Recover the Original Array (Hard)
+	Alice had a 0-indexed array arr consisting of n positive integers. She 
+	chose an arbitrary positive integer k and created two new 0-indexed integer 
+	arrays lower and higher in the following manner:
+	* lower[i] = arr[i] - k, for every index i where 0 <= i < n
+	* higher[i] = arr[i] + k, for every index i where 0 <= i < n
+	Unfortunately, Alice lost all three arrays. However, she remembers the 
+	integers that were present in the arrays lower and higher, but not the 
+	array each integer belonged to. Help Alice and recover the original array.
+	Given an array nums consisting of 2n integers, where exactly n of the 
+	integers were present in lower and the remaining in higher, return the 
+	original array arr. In case the answer is not unique, return any valid 
+	array. Note: The test cases are generated such that there exists at least 
+	one valid array arr.
+
+	Example 1:
+	Input: nums = [2,10,6,4,8,12]
+	Output: [3,7,11]
+	Explanation: If arr = [3,7,11] and k = 1, we get lower = [2,6,10] and 
+	             higher = [4,8,12]. Combining lower and higher gives us 
+	             [2,6,10,4,8,12], which is a permutation of nums. Another valid 
+	             possibility is that arr = [5,7,9] and k = 3. In that case, 
+	             lower = [2,4,6] and higher = [8,10,12]. 
+	
+	Example 2:
+	Input: nums = [1,1,3,3]
+	Output: [2,2]
+	Explanation: If arr = [2,2] and k = 1, we get lower = [1,1] and 
+	             higher = [3,3]. Combining lower and higher gives us [1,1,3,3], 
+	             which is equal to nums. Note that arr cannot be [1,3] because 
+	             in that case, the only possible way to obtain [1,1,3,3] is 
+	             with k = 0. This is invalid since k must be positive.
+	
+	Example 3:
+	Input: nums = [5,435]
+	Output: [220]
+	Explanation: The only possible combination is arr = [220] and k = 215. 
+	             Using them, we get lower = [5] and higher = [435].
+
+	Constraints:
+	* 2 * n == nums.length
+	* 1 <= n <= 1000
+	* 1 <= nums[i] <= 10^9
+	* The test cases are generated such that there exists at least one valid 
+	  array arr."""
+
+    def recoverArray(self, nums: List[int]) -> List[int]:
+        nums.sort()
+        for i in range(1, len(nums)): 
+            diff = nums[i] - nums[0]
+            if diff > 0 and diff&1 == 0: 
+                ans = []
+                freq = Counter(nums)
+                for k, v in freq.items(): 
+                    if v: 
+                        if freq[k+diff] < v: break 
+                        ans.extend([k+diff//2]*v)
+                        freq[k+diff] -= v
+                else: return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
