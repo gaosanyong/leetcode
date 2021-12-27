@@ -12321,39 +12321,26 @@ class Solution:
 	* 1 <= words.length <= 10^4
 	* 0 <= words[i].length <= 1000
 	* words[i] consists of only lowercase English letters.
-	* 0 <= sum(words[i].length) <= 10^5
-
-class Trie: 
-    
-    def __init__(self): 
-        self.root = {}
-        
-    def insert(self, word): 
-        node = self.root
-        for ch in reversed(word): 
-            node = node.setdefault(ch, {})
-        node["#"] = True
-        
-    def search(self, word): 
-        dp = [True] + [False] * len(word)
-        for i in range(len(word)): 
-            node = self.root
-            for j in reversed(range(i+1)): 
-                if word[j] not in node: break 
-                node = node[word[j]]
-                if dp[j] and node.get("#"):
-                    dp[i+1] = True 
-                    break 
-        return dp[-1]"""
+	* 0 <= sum(words[i].length) <= 10^5"""
 
     def findAllConcatenatedWordsInADict(self, words: List[str]) -> List[str]:
         ans = []
         trie = Trie()
         for word in sorted(words, key=len): 
             if word: 
-                if trie.search(word): ans.append(word)
-                trie.insert(word)
-        return ans
+                dp = [False]*(len(word) + 1)
+                dp[0] = True 
+                for i in range(len(word)): 
+                    node = trie.root
+                    for ii in range(i, -1, -1): 
+                        if word[ii] not in node: break 
+                        node = node[word[ii]]
+                        if dp[ii] and node.get('$'): 
+                            dp[i+1] = True 
+                            break 
+                if dp[-1]: ans.append(word)
+                trie.insert(word[::-1])
+        return ans 
 
 
     """475. Heaters (Medium)

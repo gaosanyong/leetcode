@@ -8707,61 +8707,32 @@ public:
 	* 1 <= words.length <= 10^4
 	* 0 <= words[i].length <= 1000
 	* words[i] consists of only lowercase English letters.
-	* 0 <= sum(words[i].length) <= 10^5
-
-	class TrieNode {
-	public: 
-	    TrieNode* children[26] = {nullptr}; 
-	    bool word = false; 
-	    ~TrieNode() {
-	        for (auto& child : children) 
-	            delete child; 
-	    }
-	}; 
-
-	class Trie {
-	    TrieNode* root = nullptr; 
-	public: 
-	    Trie() { root = new TrieNode(); }
-	    
-	    ~Trie() { delete root; }
-	    
-	    void insert(string word) {
-	        TrieNode* node = root; 
-	        for (int i = word.size()-1; i >= 0; --i) {
-	            if (!node->children[word[i] - 'a'])
-	                node->children[word[i] - 'a'] = new TrieNode(); 
-	            node = node->children[word[i] - 'a']; 
-	        }
-	        node->word = true; 
-	    }
-	    
-	    bool search(string word) {
-	        vector<bool> dp(1 + word.size()); 
-	        dp[0] = true; 
-	        for (int i = 0; i < word.size(); ++i) {
-	            TrieNode* node = root; 
-	            for (int j = i; j >= 0; --j) {
-	                if (!node->children[word[j] - 'a']) break; 
-	                node = node->children[word[j] - 'a']; 
-	                if (dp[j] && node->word) {
-	                    dp[i+1] = true; 
-	                    break; 
-	                }
-	            }
-	        }
-	        return dp.back(); 
-	    }
-	}; */
+	* 0 <= sum(words[i].length) <= 10^5*/
 
     vector<string> findAllConcatenatedWordsInADict(vector<string>& words) {
-        sort(words.begin(), words.end(), [](const string& w1, const string& w2) { return (w1.size() < w2.size()); });
-        vector<string> ans;
+        sort(words.begin(), words.end(), [](auto& lhs, auto& rhs) { 
+            return lhs.size() < rhs.size(); 
+        });
         
+        vector<string> ans;
         Trie* trie = new Trie(); 
         for (auto& word : words) 
             if (word.size()) {
-                if (trie->search(word)) ans.push_back(word); 
+                vector<bool> dp(1 + word.size()); 
+                dp[0] = true; 
+                for (int i = 0; i < word.size(); ++i) {
+                    TrieNode* node = trie->root; 
+                    for (int ii = i; ii >= 0; --ii) {
+                        if (!node->children[word[ii]-'a']) break; 
+                        node = node->children[word[ii]-'a']; 
+                        if (dp[ii] && node->is_word) {
+                            dp[i+1] = true; 
+                            break; 
+                        }
+                    }
+                }
+                if (dp.back()) ans.push_back(word); 
+                reverse(word.begin(), word.end()); 
                 trie->insert(word); 
             }
         
