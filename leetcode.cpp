@@ -1,5 +1,25 @@
+#include <algorithm>
+#include <bitset>
+#include <deque>
+#include <iostream>
+#include <map>
+#include <multimap>
+#include <numeric>
+#include <pair>
+#include <queue> // including priority_queue
+#include <set>
+#include <multiset>
+#include <stack>
+#include <string>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
+
+#include "trie.h"
 #include "unionfind.h"
 
+using namespace std; 
 
 class Solution {
 public:
