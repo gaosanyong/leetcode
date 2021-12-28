@@ -48854,13 +48854,11 @@ class Trie:
 	* 1 <= nums[i] <= 100"""
 
     def countQuadruplets(self, nums: List[int]) -> int:
-        ans = 0
-        freq = defaultdict(int)
-        for i in range(len(nums)):
-            for j in range(i+1, len(nums)):
-                for k in range(j+1, len(nums)):
-                    ans += freq[nums[k] - nums[i] - nums[j]]
-            freq[nums[i]] += 1
+        ans = 0 
+        freq = Counter()
+        for i in range(len(nums)): 
+            for j in range(i+1, len(nums)): ans += freq[nums[j] - nums[i]]
+            for ii in range(i): freq[nums[ii] + nums[i]] += 1
         return ans 
 
 

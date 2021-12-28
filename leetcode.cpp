@@ -32671,10 +32671,8 @@ public:
         int ans = 0; 
         unordered_map<int, int> freq; 
         for (int i = 0; i < nums.size(); ++i) {
-            for (int j = i+1; j < nums.size(); ++j) 
-                for (int k = j+1; k < nums.size(); ++k) 
-                    ans += freq[nums[k] - nums[i] - nums[j]]; 
-            freq[nums[i]]++; 
+            for (int j = i+1; j < nums.size(); ++j) ans += freq[nums[j] - nums[i]]; 
+            for (int ii = 0; ii < i; ++ii) ++freq[nums[ii] + nums[i]]; 
         }
         return ans; 
     }
