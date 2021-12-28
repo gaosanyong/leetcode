@@ -322,6 +322,77 @@ class Solution:
         return ans 
 
 
+    """LCP 41. 黑白翻转棋 (中等)
+	在 n*m 大小的棋盘中，有黑白两种棋子，黑棋记作字母 "X", 白棋记作字母 "O"，空余位置
+	记作 "."。当落下的棋子与其他相同颜色的棋子在行、列或对角线完全包围（中间不存在空白位
+	置）另一种颜色的棋子，则可以翻转这些棋子的颜色。
+
+	「力扣挑战赛」黑白翻转棋项目中，将提供给选手一个未形成可翻转棋子的棋盘残局，其状态记作 
+	chessboard。若下一步可放置一枚黑棋，请问选手最多能翻转多少枚白棋。
+
+	注意：
+	* 若翻转白棋成黑棋后，棋盘上仍存在可以翻转的白棋，将可以 继续 翻转白棋
+	* 输入数据保证初始棋盘状态无可以翻转的棋子且存在空余位置
+	
+	示例 1：
+	输入：chessboard = ["....X.","....X.","XOOO..","......","......"]
+	输出：3
+	解释：可以选择下在 [2,4] 处，能够翻转白方三枚棋子。
+
+	示例 2：
+	输入：chessboard = [".X.",".O.","XO."]
+	输出：2
+	解释：可以选择下在 [2,2] 处，能够翻转白方两枚棋子。
+
+	示例 3：
+	输入：chessboard = [".......",".......",".......","X......",".O.....","..O....","....OOX"]
+	输出：4
+	解释：可以选择下在 [6,3] 处，能够翻转白方四枚棋子。
+
+	提示：
+	* 1 <= chessboard.length, chessboard[i].length <= 8
+	* chessboard[i] 仅包含 "."、"O" 和 "X" """
+
+    def flipChess(self, chessboard: List[str]) -> int:
+        chessboard = [list(x) for x in chessboard]
+        m, n = len(chessboard), len(chessboard[0])
+        
+        def fn(i, j): 
+            """Return position of 'O' flipped when placing a 'X' at (i, j)."""
+            ans = []
+            for di, dj in (-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1): 
+                vals = []
+                ii, jj = i+di, j+dj
+                while 0 <= ii < m and 0 <= jj < n and chessboard[ii][jj] != '.': 
+                    if chessboard[ii][jj] == 'X': 
+                        x, y = i+di, j+dj
+                        while (x, y) != (ii, jj): 
+                            vals.append((x, y))
+                            chessboard[x][y] = 'X'
+                            x, y = x+di, y+dj
+                        break 
+                    ii, jj = ii+di, jj+dj
+                ans.extend(vals)
+            return ans 
+        
+        ans = 0
+        for r in range(m):
+            for c in range(n): 
+                if chessboard[r][c] == '.': 
+                    orig = deepcopy(chessboard)
+                    cand = 0
+                    stack = [(r, c)]
+                    chessboard[r][c] = 'X'
+                    while stack: 
+                        i, j = stack.pop()
+                        vals = fn(i, j)
+                        cand += len(vals)
+                        stack.extend(vals)
+                    ans = max(ans, cand)
+                    chessboard = orig
+        return ans
+
+
     """LCP 44. 开幕式焰火 (简单)
 	「力扣挑战赛」开幕式开始了，空中绽放了一颗二叉树形的巨型焰火。给定一棵二叉树 root 代表焰火，
 	节点值表示巨型焰火这一位置的颜色种类。请帮小扣计算巨型焰火有多少种不同的颜色。
