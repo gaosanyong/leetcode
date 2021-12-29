@@ -16011,13 +16011,17 @@ public:
     bool isNStraightHand(vector<int>& hand, int groupSize) {
         map<int, int> freq; 
         for (auto& x : hand) ++freq[x]; 
-        for (auto& [x, v] : freq) 
-            if (v) 
-                for (int dx = 1; dx < groupSize; ++dx) {
-                    if (freq[x+dx] < freq[x]) return false; 
-                    freq[x+dx] -= freq[x]; 
-                }
-        return true; 
+        
+        queue<pair<int, int>> q; 
+        int need = 0, prev = -1; 
+        for (auto& [x, v] : freq) {
+            if (need > v || (need && x > prev + 1)) return false; 
+            if (v > need) q.emplace(x, v - need); 
+            prev = x; 
+            need = v; 
+            if (q.size() && x-q.front().first == groupSize-1) need -= q.front().second, q.pop(); 
+        }
+        return need == 0; 
     }
 
 

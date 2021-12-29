@@ -20315,14 +20315,16 @@ class Solution:
 	Note: This question is the same as 1296: 
 	      https://leetcode.com/problems/divide-array-in-sets-of-k-consecutive-numbers/"""
 
-    def isNStraightHand(self, hand: List[int], W: int) -> bool:
+    def isNStraightHand(self, hand: List[int], groupSize: int) -> bool:
         freq = Counter(hand)
-        for x in sorted(freq): 
-            if freq[x]: 
-                for dx in range(1, W): 
-                    if freq[x+dx] < freq[x]: return False 
-                    freq[x+dx] -= freq[x]
-        return True 
+        queue = deque()
+        prev, need = -1, 0
+        for x, v in sorted(freq.items()): 
+            if need and x > prev+1 or need > v: return False 
+            if v > need: queue.append((x, v - need))
+            prev, need = x, v
+            if queue and x-queue[0][0] == groupSize-1: need -= queue.popleft()[1]
+        return need == 0 
 
 
     """847. Shortest Path Visiting All Nodes (Hard)
