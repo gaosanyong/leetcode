@@ -12811,6 +12811,35 @@ class Solution:
                     dist[ii, jj] = xx
         return -1
 
+
+    """507. Perfect Number (Easy)
+	A perfect number is a positive integer that is equal to the sum of its 
+	positive divisors, excluding the number itself. A divisor of an integer x 
+	is an integer that can divide x evenly. Given an integer n, return true if 
+	n is a perfect number, otherwise return false.
+
+	Example 1:
+	Input: num = 28
+	Output: true
+	Explanation: 28 = 1 + 2 + 4 + 7 + 14
+	             1, 2, 4, 7, and 14 are all divisors of 28.
+	
+	Example 2:
+	Input: num = 7
+	Output: false
+
+	Constraints: 1 <= num <= 10^8"""
+
+    def checkPerfectNumber(self, num: int) -> bool:
+        """Euclid-Euler theorem
+		An even number is perfect iff it is of form 2^(p−1)(2^p − 1), where 
+		2^p − 1 is a Mersenne prime. The only perfect numbers no larger than 
+		10^8 are 6, 28, 496, 8128, 33550336. 
+        """
+        for p in 2,3,5,7,13:
+            if (1<<p-1)*((1<<p) - 1) == num: return True
+        return False 
+
     
     """509. Fibonacci Number (Easy)
 	The Fibonacci numbers, commonly denoted F(n) form a sequence, called the 
