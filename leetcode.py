@@ -24315,18 +24315,17 @@ class Solution:
 	* The number of nodes in the tree is in the range [2, 5000].
 	* 0 <= Node.val <= 10^5"""
 
-    def maxAncestorDiff(self, root: TreeNode) -> int:
-        
-        def fn(node, mn, mx): 
-            """Return maximum difference on sub-tree rooted at node."""
-            if not node: return mx - mn 
-            mn = min(mn, node.val)
-            mx = max(mx, node.val)
-            lv = fn(node.left, mn, mx)
-            rv = fn(node.right, mn, mx)
-            return max(lv, rv)
-        
-        return fn(root, root.val, root.val)
+    def maxAncestorDiff(self, root: Optional[TreeNode]) -> int:
+        ans = 0 
+        stack = [(root, inf, -inf)]
+        while stack: 
+            node, lo, hi = stack.pop()
+            lo = min(lo, node.val)
+            hi = max(hi, node.val)
+            ans = max(ans, node.val - lo, hi - node.val)
+            if node.left: stack.append((node.left, lo, hi))
+            if node.right: stack.append((node.right, lo, hi))
+        return ans 
 
 
     """1027. Longest Arithmetic Subsequence (Medium)
