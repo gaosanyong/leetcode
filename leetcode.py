@@ -807,7 +807,7 @@ class Solution:
 	Given 1->2->3->4, you should return the list as 2->1->4->3."""
 
     def swapPairs(self, head: ListNode) -> ListNode:
-        node = dummy = ListNode(0, head)
+        node = dummy = ListNode(next=head)
         while node.next and node.next.next: 
             node.next.next.next, node.next.next, node.next = node.next, node.next.next.next, node.next.next
             node = node.next.next 
