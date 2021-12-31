@@ -472,10 +472,10 @@ public:
         if (digits.empty()) return {}; 
         const vector<string> phone = {"abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
         vector<string> ans = {""}; 
-        for (auto& c : digits) {
+        for (auto& ch : digits) {
             vector<string> tmp; 
             for (auto& x : ans) 
-                for (auto& xx : phone[c - '2']) 
+                for (auto& xx : phone[ch-'2']) 
                     tmp.push_back(x + xx); 
             ans = tmp; 
         }

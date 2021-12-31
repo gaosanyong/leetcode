@@ -610,12 +610,9 @@ class Solution:
 	could be in any order you want."""
 
     def letterCombinations(self, digits: str) -> List[str]:
-        if not digits: return [] # edge case 
         phone = ["", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"]
-        ans = [""]
-        for d in digits: 
-            ans = [x+xx for x in ans for xx in phone[int(d)]]
-        return ans 
+        letters = [phone[int(ch)] for ch in digits]
+        return ["".join(x) for x in product(*letters) if x]
 
 
     """18. 4Sum (Medium)
