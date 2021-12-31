@@ -56372,17 +56372,17 @@ class ListNode:
 class MyLinkedList:
 
     def __init__(self):
-        self.head = ListNode(-1)
-        self.tail = ListNode(-1)
+        self.size = 0
+        self.head = ListNode()
+        self.tail = ListNode()
         self.head.next = self.tail
         self.tail.prev = self.head 
-        self.size = 0
 
     def _moveTo(self, index: int) -> ListNode: 
         if 0 <= index <= self.size: 
-            if index <= self.size//2: 
-                node = self.head.next 
-                for _ in range(index): node = node.next 
+            if index < self.size//2: 
+                node = self.head 
+                for _ in range(index+1): node = node.next 
             else: 
                 node = self.tail
                 for _ in range(self.size-index): node = node.prev 
@@ -56390,7 +56390,7 @@ class MyLinkedList:
     
     def get(self, index: int) -> int:
         node = self._moveTo(index)
-        return node.val if node else -1 
+        return node.val if node and node != self.tail else -1 
 
     def addAtHead(self, val: int) -> None:
         self.addAtIndex(0, val)
