@@ -826,17 +826,16 @@ class Solution:
 	You may not alter the values in the list's nodes, only nodes itself may be changed."""
     
     def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
-        dummy = tail = ListNode(next=head)
-        node = head 
-        while node: 
-            temp = node
+        dummy = node = ListNode(next=head)
+        while True: 
+            temp = node.next 
             for _ in range(k): 
                 if not temp: return dummy.next 
                 temp = temp.next 
-            prev = None
-            for _ in range(k): node.next, node, prev = prev, node.next, node
-            tail.next.next, tail.next, tail = node, prev, tail.next
-        return dummy.next
+            prev, curr = node, node.next
+            for _ in range(k): curr.next, curr, prev = prev, curr.next, curr
+            node.next.next, node.next, node = curr, prev, node.next
+        return dummy.next 
 
 
     """26. Remove Duplicates from Sorted Array (Easy)

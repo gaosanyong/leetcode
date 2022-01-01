@@ -742,20 +742,20 @@ public:
 
     ListNode* reverseKGroup(ListNode* head, int k) {
         int sz = 0; 
-        for (ListNode* node = head; node; ++sz, node = node->next); 
-        ListNode dummy(0, head), *tail = &dummy, *node = head; 
+        for (ListNode* node = head; node; node = node->next, ++sz); 
+        ListNode dummy(0, head), *node = &dummy; 
         for (sz /= k; sz; --sz) {
-            ListNode *prev = nullptr; 
-            for (int kk = k; kk; --kk) {
-                ListNode *temp = node->next; 
-                node->next = prev; 
-                prev = node; 
-                node = temp; 
+            ListNode *prev = node, *curr = node->next; 
+            for (int i = 0; i < k; ++i) {
+                ListNode *temp = curr->next; 
+                curr->next = prev; 
+                prev = curr; 
+                curr = temp; 
             }
-            tail->next = prev; 
-            head->next = node; 
-            tail = head; 
-            head = node; 
+            ListNode *temp = node->next; 
+            node->next->next = curr; 
+            node->next = prev; 
+            node = temp; 
         }
         return dummy.next; 
     }
