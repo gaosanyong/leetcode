@@ -10749,15 +10749,12 @@ class Solution:
 	number that remains starting with a list of length n.
 
 	Example:
-	Input:
-	n = 9,
-	1 2 3 4 5 6 7 8 9
-	2 4 6 8
-	2 6
-	6
-
-	Output:
-	6"""
+	Input:  n = 9,
+	        1 2 3 4 5 6 7 8 9
+	        2 4 6 8
+	        2 6
+	        6
+	Output: 6"""
 
     def lastRemaining(self, n: int) -> int:
         if n == 1: return 1
