@@ -20271,9 +20271,8 @@ public:
         int ans = 0; 
         unordered_map<int, int> freq; 
         for (auto& x : time) {
-            x %= 60; 
-            ans += x == 0 ? freq[x] : freq[60-x]; 
-            ++freq[x]; 
+            ans += freq[(600-x) % 60];
+            ++freq[x % 60]; 
         }
         return ans; 
     }
