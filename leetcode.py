@@ -28122,10 +28122,10 @@ class UnionFind:
             if m < 3: 
                 y -= 1
                 m += 12
-            return 365*y + y//4 + y//400 - y//100 + (153*m + 8)//5 + d
+            return 365*y + y//4 + y//400 - y//100 + (153*m+8)//5 + d
         
-        weekday = ("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
-        return weekday[(fn(year, month, day) - fn(2021, 4, 11)) % 7]
+        import calendar
+        return calendar.day_name[(fn(year, month, day)-fn(1971, 1, 1)+4) % 7] 
 
 
     """1186. Maximum Subarray Sum with One Deletion (Medium)
