@@ -38563,7 +38563,7 @@ public:
             }
         
         vector<int> dp(n); 
-        for (int i = 0; i < n; ++i) {
+        for (int i = 0; i < n; ++i) 
             if (dp[i] == 0) {
                 bool found = false; 
                 int ii = i, val = 0, cycle = 0; 
@@ -38575,7 +38575,6 @@ public:
                 if (!found) cycle = val - memo[ii]; 
                 for (auto& [k, v] : memo) dp[k] = cycle; 
             }
-        }
         return max(ans, *max_element(dp.begin(), dp.end())); 
     }
 };
