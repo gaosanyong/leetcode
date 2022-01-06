@@ -26169,6 +26169,42 @@ class UnionFind:
         return "".join(ans) + str1[i:] + str2[j:]
 
 
+    """1094. Car Pooling (Medium)
+	There is a car with capacity empty seats. The vehicle only drives east (i.e., 
+	it cannot turn around and drive west). You are given the integer capacity 
+	and an array trips where trip[i] = [numPassengersi, fromi, toi] indicates 
+	that the ith trip has numPassengersi passengers and the locations to pick 
+	them up and drop them off are fromi and toi respectively. The locations are 
+	given as the number of kilometers due east from the car's initial location.
+	Return true if it is possible to pick up and drop off all passengers for 
+	all the given trips, or false otherwise.
+
+	Example 1:
+	Input: trips = [[2,1,5],[3,3,7]], capacity = 4
+	Output: false
+
+	Example 2:
+	Input: trips = [[2,1,5],[3,3,7]], capacity = 5
+	Output: true
+
+	Constraints:
+	* 1 <= trips.length <= 1000
+	* trips[i].length == 3
+	* 1 <= numPassengersi <= 100
+	* 0 <= fromi < toi <= 1000
+	* 1 <= capacity <= 10^5"""
+
+    def carPooling(self, trips: List[List[int]], capacity: int) -> bool:
+        vals = []
+        for n, start, end in trips: 
+            vals.append((start, n))
+            vals.append((end, -n))
+        for _, x in sorted(vals): 
+            capacity -= x
+            if capacity < 0: return False 
+        return True 
+
+
     """1095. Find in Mountain Array (Hard)
 	(This problem is an interactive problem.)
 	You may recall that an array A is a mountain array if and only if:

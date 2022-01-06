@@ -21308,6 +21308,46 @@ public:
     }
 
 
+    /*1094. Car Pooling (Medium)
+	There is a car with capacity empty seats. The vehicle only drives east (i.e., 
+	it cannot turn around and drive west). You are given the integer capacity 
+	and an array trips where trip[i] = [numPassengersi, fromi, toi] indicates 
+	that the ith trip has numPassengersi passengers and the locations to pick 
+	them up and drop them off are fromi and toi respectively. The locations are 
+	given as the number of kilometers due east from the car's initial location.
+	Return true if it is possible to pick up and drop off all passengers for 
+	all the given trips, or false otherwise.
+
+	Example 1:
+	Input: trips = [[2,1,5],[3,3,7]], capacity = 4
+	Output: false
+
+	Example 2:
+	Input: trips = [[2,1,5],[3,3,7]], capacity = 5
+	Output: true
+
+	Constraints:
+	* 1 <= trips.length <= 1000
+	* trips[i].length == 3
+	* 1 <= numPassengersi <= 100
+	* 0 <= fromi < toi <= 1000
+	* 1 <= capacity <= 10^5*/
+
+    bool carPooling(vector<vector<int>>& trips, int capacity) {
+        vector<pair<int, int>> vals; 
+        for (auto& trip : trips) {
+            vals.emplace_back(trip[1], trip[0]); 
+            vals.emplace_back(trip[2], -trip[0]); 
+        }
+        sort(vals.begin(), vals.end()); 
+        for (auto& [k, x] : vals) {
+            capacity -= x; 
+            if (capacity < 0) return false; 
+        }
+        return true; 
+    }
+
+
     /*1095. Find in Mountain Array (Hard)
 	(This problem is an interactive problem.)
 	You may recall that an array A is a mountain array if and only if:
