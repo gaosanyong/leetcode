@@ -56131,16 +56131,15 @@ Solution solution = new Solution(head);
 solution.getRandom();"""
 
 class Solution:
-
     def __init__(self, head: ListNode):
-        self.head = head # store head of linked list 
-
+        self.head = head 
+        
     def getRandom(self) -> int:
-        cnt = 0
         node = self.head 
+        n = 0
         while node: 
-            cnt += 1
-            if randint(1, cnt) == cnt: ans = node.val # reservoir sampling 
+            if randint(0, n) == 0: ans = node.val
+            n += 1
             node = node.next 
         return ans 
 
