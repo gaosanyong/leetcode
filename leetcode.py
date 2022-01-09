@@ -54626,6 +54626,216 @@ class Trie:
         return max(ans, max(dp))
 
 
+    """2133. Check if Every Row and Column Contains All Numbers (Easy)
+	An n x n matrix is valid if every row and every column contains all the 
+	integers from 1 to n (inclusive). Given an n x n integer matrix matrix, 
+	return true if the matrix is valid. Otherwise, return false.
+
+	Example 1:
+	Input: matrix = [[1,2,3],[3,1,2],[2,3,1]]
+	Output: true
+	Explanation: In this case, n = 3, and every row and column contains the 
+	             numbers 1, 2, and 3. Hence, we return true.
+
+	Example 2:
+	Input: matrix = [[1,1,1],[1,2,3],[1,2,3]]
+	Output: false
+	Explanation: In this case, n = 3, but the first row and the first column do 
+	             not contain the numbers 2 or 3. Hence, we return false.
+
+	Constraints:
+	* n == matrix.length == matrix[i].length
+	* 1 <= n <= 100
+	* 1 <= matrix[i][j] <= n"""
+
+    def checkValid(self, matrix: List[List[int]]) -> bool:
+        return all(len(set(row)) == len(matrix) for row in matrix) and all(len(set(col)) == len(matrix) for col in zip(*matrix))
+
+
+    """2134. Minimum Swaps to Group All 1's Together II (Medium)
+	A swap is defined as taking two distinct positions in an array and swapping 
+	the values in them. A circular array is defined as an array where we 
+	consider the first element and the last element to be adjacent. Given a 
+	binary circular array nums, return the minimum number of swaps required to 
+	group all 1's present in the array together at any location.
+
+	Example 1:
+	Input: nums = [0,1,0,1,1,0,0]
+	Output: 1
+	Explanation: Here are a few of the ways to group all the 1's together:
+	             [0,0,1,1,1,0,0] using 1 swap. [0,1,1,1,0,0,0] using 1 swap.
+	             [1,1,0,0,0,0,1] using 2 swaps (using the circular property of 
+	             the array). There is no way to group all 1's together with 0 
+	             swaps. Thus, the minimum number of swaps required is 1. 
+	
+	Example 2:
+	Input: nums = [0,1,1,1,0,0,1,1,0]
+	Output: 2
+	Explanation: Here are a few of the ways to group all the 1's together:
+	             [1,1,1,0,0,0,0,1,1] using 2 swaps (using the circular property 
+	             of the array). [1,1,1,1,1,0,0,0,0] using 2 swaps. There is no 
+	             way to group all 1's together with 0 or 1 swaps. Thus, the 
+	             minimum number of swaps required is 2.
+	
+	Example 3:
+	Input: nums = [1,1,0,0,1]
+	Output: 0
+	Explanation: All the 1's are already grouped together due to the circular 
+	             property of the array. Thus, the minimum number of swaps 
+	             required is 0.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* nums[i] is either 0 or 1."""
+
+    def minSwaps(self, nums: List[int]) -> int:
+        rsm = 0 
+        ans = inf 
+        ones = nums.count(1)
+        for i in range(len(nums) + ones): 
+            rsm += nums[i % len(nums)]
+            if i >= ones: rsm -= nums[i - ones]
+            ans = min(ans, ones - rsm)
+        return ans 
+
+
+    """2135. Count Words Obtained After Adding a Letter (Medium)
+	You are given two 0-indexed arrays of strings startWords and targetWords. 
+	Each string consists of lowercase English letters only. For each string in 
+	targetWords, check if it is possible to choose a string from startWords and 
+	perform a conversion operation on it to be equal to that from targetWords.
+
+	The conversion operation is described in the following two steps:
+	* Append any lowercase letter that is not present in the string to its end.
+	  + For example, if the string is "abc", the letters 'd', 'e', or 'y' can 
+	    be added to it, but not 'a'. If 'd' is added, the resulting string will 
+	    be "abcd".
+	* Rearrange the letters of the new string in any arbitrary order.
+	  + For example, "abcd" can be rearranged to "acbd", "bacd", "cbda", and so 
+	    on. Note that it can also be rearranged to "abcd" itself.
+	Return the number of strings in targetWords that can be obtained by 
+	performing the operations on any string of startWords. Note that you will 
+	only be verifying if the string in targetWords can be obtained from a 
+	string in startWords by performing the operations. The strings in 
+	startWords do not actually change during this process.
+
+	Example 1:
+	Input: startWords = ["ant","act","tack"], targetWords = ["tack","act","acti"]
+	Output: 2
+	Explanation: - In order to form targetWords[0] = "tack", we use 
+	               startWords[1] = "act", append 'k' to it, and rearrange "actk" 
+	               to "tack".
+	             - There is no string in startWords that can be used to obtain 
+	               targetWords[1] = "act". Note that "act" does exist in 
+	               startWords, but we must append one letter to the string 
+	               before rearranging it.
+	             - In order to form targetWords[2] = "acti", we use 
+	               startWords[1] = "act", append 'i' to it, and rearrange "acti" 
+	               to "acti" itself.
+	
+	Example 2:
+	Input: startWords = ["ab","a"], targetWords = ["abc","abcd"]
+	Output: 1
+	Explanation: - In order to form targetWords[0] = "abc", we use 
+	               startWords[0] = "ab", add 'c' to it, and rearrange it to 
+	               "abc".
+	             - There is no string in startWords that can be used to obtain 
+	               targetWords[1] = "abcd".
+
+	Constraints:
+	* 1 <= startWords.length, targetWords.length <= 5 * 10^4
+	* 1 <= startWords[i].length, targetWords[j].length <= 26
+	* Each string of startWords and targetWords consists of lowercase English 
+	  letters only.
+	* No letter occurs more than once in any string of startWords or 
+	  targetWords."""
+
+    def wordCount(self, startWords: List[str], targetWords: List[str]) -> int:
+        seen = set()
+        for word in startWords: 
+            m = 0
+            for ch in word: m ^= 1 << ord(ch)-97
+            seen.add(m)
+            
+        ans = 0 
+        for word in targetWords: 
+            m = 0 
+            for ch in word: m ^= 1 << ord(ch) - 97
+            for ch in word: 
+                if m ^ (1 << ord(ch)-97) in seen: 
+                    ans += 1
+                    break 
+        return ans 
+
+
+    """2136. Earliest Possible Day of Full Bloom (Hard)
+	You have n flower seeds. Every seed must be planted first before it can 
+	begin to grow, then bloom. Planting a seed takes time and so does the 
+	growth of a seed. You are given two 0-indexed integer arrays plantTime and 
+	growTime, of length n each:
+	* plantTime[i] is the number of full days it takes you to plant the ith 
+	  seed. Every day, you can work on planting exactly one seed. You do not 
+	  have to work on planting the same seed on consecutive days, but the 
+	  planting of a seed is not complete until you have worked plantTime[i] 
+	  days on planting it in total.
+	* growTime[i] is the number of full days it takes the ith seed to grow 
+	  after being completely planted. After the last day of its growth, the 
+	  flower blooms and stays bloomed forever.
+	From the beginning of day 0, you can plant the seeds in any order. Return 
+	the earliest possible day where all seeds are blooming.
+
+	Example 1:
+	Input: plantTime = [1,4,3], growTime = [2,3,1]
+	Output: 9
+	Explanation: The grayed out pots represent planting days, colored pots 
+	             represent growing days, and the flower represents the day it 
+	             blooms.
+	             One optimal way is:
+	             - On day 0, plant the 0th seed. The seed grows for 2 full days 
+	               and blooms on day 3.
+	             - On days 1, 2, 3, and 4, plant the 1st seed. The seed grows 
+	               for 3 full days and blooms on day 8.
+	             - On days 5, 6, and 7, plant the 2nd seed. The seed grows for 
+	               1 full day and blooms on day 9.
+	             Thus, on day 9, all the seeds are blooming.
+	
+	Example 2:
+	Input: plantTime = [1,2,3,2], growTime = [2,1,2,1]
+	Output: 9
+	Explanation: The grayed out pots represent planting days, colored pots 
+	             represent growing days, and the flower represents the day it 
+	             blooms.
+	             One optimal way is:
+	             - On day 1, plant the 0th seed. The seed grows for 2 full days 
+	               and blooms on day 4.
+	             - On days 0 and 3, plant the 1st seed. The seed grows for 1 
+	               full day and blooms on day 5.
+	             - On days 2, 4, and 5, plant the 2nd seed. The seed grows for 
+	               2 full days and blooms on day 8.
+	             - On days 6 and 7, plant the 3rd seed. The seed grows for 1 
+	               full day and blooms on day 9.
+	             Thus, on day 9, all the seeds are blooming.
+	
+	Example 3:
+	Input: plantTime = [1], growTime = [1]
+	Output: 2
+	Explanation: On day 0, plant the 0th seed. The seed grows for 1 full day 
+	             and blooms on day 2. Thus, on day 2, all the seeds are 
+	             blooming.
+
+	Constraints:
+	* n == plantTime.length == growTime.length
+	* 1 <= n <= 10^5
+	* 1 <= plantTime[i], growTime[i] <= 10^4"""
+
+    def earliestFullBloom(self, plantTime: List[int], growTime: List[int]) -> int:
+        ans = prefix = 0 
+        for p, g in sorted(zip(plantTime, growTime), key=lambda x: x[1], reverse=True): 
+            prefix += p
+            ans = max(ans, prefix + g)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
