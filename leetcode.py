@@ -2236,13 +2236,15 @@ class Solution:
 	Each string is either "0" or doesn't contain any leading zero."""
 
     def addBinary(self, a: str, b: str) -> str:
-        ans, carry = [], 0
-        for x, y in zip_longest(reversed(a), reversed(b), fillvalue=0):
-            carry += (x == "1") + (y == "1")
+        ans = []
+        carry = 0 
+        for x, y in zip_longest(reversed(a), reversed(b), fillvalue='0'): 
+            if x == '1': carry += 1
+            if y == '1': carry += 1
             carry, d = divmod(carry, 2)
             ans.append(d)
         if carry: ans.append(carry)
-        return "".join(map(str, reversed(ans)))
+        return ''.join(map(str, reversed(ans)))
 
 
     """68. Text Justification (Hard)
