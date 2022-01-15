@@ -23235,6 +23235,63 @@ public:
     }
 
 
+    /*1345. Jump Game IV (Hard)
+	Given an array of integers arr, you are initially positioned at the first 
+	index of the array. In one step you can jump from index i to index:
+	* i + 1 where: i + 1 < arr.length.
+	* i - 1 where: i - 1 >= 0.
+	* j where: arr[i] == arr[j] and i != j.
+	Return the minimum number of steps to reach the last index of the array.
+	Notice that you can not jump outside of the array at any time.
+
+	Example 1:
+	Input: arr = [100,-23,-23,404,100,23,23,23,3,404]
+	Output: 3
+	Explanation: You need three jumps from index 0 --> 4 --> 3 --> 9. Note that 
+	             index 9 is the last index of the array.
+	
+	Example 2:
+	Input: arr = [7]
+	Output: 0
+	Explanation: Start index is the last index. You do not need to jump.
+
+	Example 3:
+	Input: arr = [7,6,9,6,9,6,9,7]
+	Output: 1
+	Explanation: You can jump directly from index 0 to index 7 which is last 
+	             index of the array.
+
+	Constraints:
+	* 1 <= arr.length <= 5 * 10^4
+	* -10^8 <= arr[i] <= 10^8*/
+
+    int minJumps(vector<int>& arr) {
+        unordered_map<int, vector<int>> loc; 
+        for (int i = 0; i < arr.size(); ++i) loc[arr[i]].push_back(i); 
+        
+        int ans = 0, n = arr.size(); 
+        deque<int> q; q.push_back(0); 
+        vector<bool> seen(n); 
+        seen[0] = true; 
+        
+        for (; q.size(); ++ans) 
+            for (int sz = q.size(); sz; --sz) {
+                int i = q.front(); q.pop_front();
+                if (i+1 == n) return ans; 
+                vector<int>& cand = loc[arr[i]]; 
+                cand.push_back(i-1); 
+                cand.push_back(i+1); 
+                for (auto& ii : cand) 
+                    if (0 <= ii && ii < arr.size() && !seen[ii]) {
+                        seen[ii] = true; 
+                        q.push_back(ii); 
+                    }
+                cand.clear(); 
+            }
+        return -1; 
+    }
+
+
     /*1354. Construct Target Array With Multiple Sums (Hard)
 	Given an array of integers target. From a starting array, A consisting of 
 	all 1's, you may perform the following procedure :

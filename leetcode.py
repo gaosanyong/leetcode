@@ -30724,6 +30724,55 @@ class UnionFind:
         return max((total-x)*x for x in vals) % 1_000_000_007
 
 
+    """1345. Jump Game IV (Hard)
+	Given an array of integers arr, you are initially positioned at the first 
+	index of the array. In one step you can jump from index i to index:
+	* i + 1 where: i + 1 < arr.length.
+	* i - 1 where: i - 1 >= 0.
+	* j where: arr[i] == arr[j] and i != j.
+	Return the minimum number of steps to reach the last index of the array.
+	Notice that you can not jump outside of the array at any time.
+
+	Example 1:
+	Input: arr = [100,-23,-23,404,100,23,23,23,3,404]
+	Output: 3
+	Explanation: You need three jumps from index 0 --> 4 --> 3 --> 9. Note that 
+	             index 9 is the last index of the array.
+	
+	Example 2:
+	Input: arr = [7]
+	Output: 0
+	Explanation: Start index is the last index. You do not need to jump.
+
+	Example 3:
+	Input: arr = [7,6,9,6,9,6,9,7]
+	Output: 1
+	Explanation: You can jump directly from index 0 to index 7 which is last 
+	             index of the array.
+
+	Constraints:
+	* 1 <= arr.length <= 5 * 10^4
+	* -10^8 <= arr[i] <= 10^8"""
+
+    def minJumps(self, arr: List[int]) -> int:
+        loc = defaultdict(list)
+        for i, x in enumerate(arr): loc[x].append(i)
+        ans = 0
+        seen = {0}
+        queue = deque([0])
+        while queue: 
+            for _ in range(len(queue)): 
+                i = queue.popleft()
+                if i+1 == len(arr): return ans 
+                rng = [i-1, i+1]
+                if arr[i] in loc: rng += loc.pop(arr[i])
+                for ii in rng: 
+                    if 0 <= ii < len(arr) and ii not in seen: 
+                        seen.add(ii)
+                        queue.append(ii)
+            ans += 1
+
+
     """1349. Maximum Students Taking Exam (Hard)
 	Given a m * n matrix seats  that represent seats distributions in a 
 	classroom. If a seat is broken, it is denoted by '#' character otherwise it 
