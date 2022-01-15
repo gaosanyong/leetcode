@@ -30764,12 +30764,11 @@ class UnionFind:
             for _ in range(len(queue)): 
                 i = queue.popleft()
                 if i+1 == len(arr): return ans 
-                rng = [i-1, i+1]
-                if arr[i] in loc: rng += loc.pop(arr[i])
-                for ii in rng: 
+                for ii in [i-1, i+1] + loc[arr[i]]: 
                     if 0 <= ii < len(arr) and ii not in seen: 
                         seen.add(ii)
                         queue.append(ii)
+                loc.pop(arr[i])
             ans += 1
 
 
