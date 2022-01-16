@@ -54921,6 +54921,210 @@ class Trie:
         return ans 
 
 
+    """2138. Divide a String Into Groups of Size k (Easy)
+	A string s can be partitioned into groups of size k using the following 
+	procedure:
+	* The first group consists of the first k characters of the string, the 
+	  second group consists of the next k characters of the string, and so on. 
+	  Each character can be a part of exactly one group.
+	* For the last group, if the string does not have k characters remaining, a 
+	  character fill is used to complete the group.
+	Note that the partition is done so that after removing the fill character 
+	from the last group (if it exists) and concatenating all the groups in 
+	order, the resultant string should be s. Given the string s, the size of 
+	each group k and the character fill, return a string array denoting the 
+	composition of every group s has been divided into, using the above 
+	procedure.
+
+	Example 1:
+	Input: s = "abcdefghi", k = 3, fill = "x"
+	Output: ["abc","def","ghi"]
+	Explanation: The first 3 characters "abc" form the first group. The next 3 
+	             characters "def" form the second group. The last 3 characters 
+	             "ghi" form the third group. Since all groups can be completely 
+	             filled by characters from the string, we do not need to use 
+	             fill. Thus, the groups formed are "abc", "def", and "ghi".
+	
+	Example 2:
+	Input: s = "abcdefghij", k = 3, fill = "x"
+	Output: ["abc","def","ghi","jxx"]
+	Explanation: Similar to the previous example, we are forming the first 
+	             three groups "abc", "def", and "ghi". For the last group, we 
+	             can only use the character 'j' from the string. To complete 
+	             this group, we add 'x' twice. Thus, the 4 groups formed are 
+	             "abc", "def", "ghi", and "jxx".
+
+	Constraints:
+	* 1 <= s.length <= 100
+	* s consists of lowercase English letters only.
+	* 1 <= k <= 100
+	* fill is a lowercase English letter."""
+
+    def divideString(self, s: str, k: int, fill: str) -> List[str]:
+        ans = []
+        for i in range(0, len(s), k): 
+            ss = s[i:i+k]
+            ans.append(ss + (k-len(ss))*fill)
+        return ans 
+
+
+    """2139. Minimum Moves to Reach Target Score (Medium)
+	You are playing a game with integers. You start with the integer 1 and you 
+	want to reach the integer target. In one move, you can either:
+	* Increment the current integer by one (i.e., x = x + 1).
+	* Double the current integer (i.e., x = 2 * x).
+	You can use the increment operation any number of times, however, you can 
+	only use the double operation at most maxDoubles times. Given the two 
+	integers target and maxDoubles, return the minimum number of moves needed 
+	to reach target starting with 1.
+
+	Example 1:
+	Input: target = 5, maxDoubles = 0
+	Output: 4
+	Explanation: Keep incrementing by 1 until you reach target.
+
+	Example 2:
+	Input: target = 19, maxDoubles = 2
+	Output: 7
+	Explanation: Initially, x = 1
+	             Increment 3 times so x = 4
+	             Double once so x = 8
+	             Increment once so x = 9
+	             Double again so x = 18
+	             Increment once so x = 19
+	
+	Example 3:
+	Input: target = 10, maxDoubles = 4
+	Output: 4
+	Explanation: Initially, x = 1
+	             Increment once so x = 2
+	             Double once so x = 4
+	             Increment once so x = 5
+	             Double again so x = 10
+
+	Constraints:
+	* 1 <= target <= 10^9
+	* 0 <= maxDoubles <= 100"""
+
+    def minMoves(self, target: int, maxDoubles: int) -> int:
+        ans = 0 
+        while target > 1 and maxDoubles: 
+            ans += 1
+            if target&1: target -= 1
+            else: 
+                target //= 2
+                maxDoubles -= 1
+        return ans + target - 1
+
+
+    """2140. Solving Questions With Brainpower (Medium)
+	You are given a 0-indexed 2D integer array questions where 
+	questions[i] = [pointsi, brainpoweri]. The array describes the questions of 
+	an exam, where you have to process the questions in order (i.e., starting 
+	from question 0) and make a decision whether to solve or skip each question. 
+	Solving question i will earn you pointsi points but you will be unable to 
+	solve each of the next brainpoweri questions. If you skip question i, you 
+	get to make the decision on the next question.
+	* For example, given questions = [[3, 2], [4, 3], [4, 4], [2, 5]]:
+	  + If question 0 is solved, you will earn 3 points but you will be unable 
+	    to solve questions 1 and 2.
+	  + If instead, question 0 is skipped and question 1 is solved, you will 
+	    earn 4 points but you will be unable to solve questions 2 and 3.
+	Return the maximum points you can earn for the exam.
+
+	Example 1:
+	Input: questions = [[3,2],[4,3],[4,4],[2,5]]
+	Output: 5
+	Explanation: The maximum points can be earned by solving questions 0 and 3.
+	             - Solve question 0: Earn 3 points, will be unable to solve the 
+	               next 2 questions
+	             - Unable to solve questions 1 and 2
+	             - Solve question 3: Earn 2 points
+	             Total points earned: 3 + 2 = 5. There is no other way to earn 
+	             5 or more points.
+	
+	Example 2:
+	Input: questions = [[1,1],[2,2],[3,3],[4,4],[5,5]]
+	Output: 7
+	Explanation: The maximum points can be earned by solving questions 1 and 4.
+	             - Skip question 0
+	             - Solve question 1: Earn 2 points, will be unable to solve the 
+	               next 2 questions
+	             - Unable to solve questions 2 and 3
+	             - Solve question 4: Earn 5 points
+	             Total points earned: 2 + 5 = 7. There is no other way to earn 
+	             7 or more points.
+
+	Constraints:
+	* 1 <= questions.length <= 10^5
+	* questions[i].length == 2
+	* 1 <= pointsi, brainpoweri <= 10^5"""
+
+    def mostPoints(self, questions: List[List[int]]) -> int:
+        n = len(questions)
+        dp = [0]*(n+1)
+        for i in range(n-1, -1, -1): 
+            dp[i] = dp[i+1]
+            cand = questions[i][0]
+            if i+questions[i][1]+1 <= n: cand += dp[i+questions[i][1]+1]
+            dp[i] = max(dp[i], cand)
+        return dp[0]
+
+
+    """2141. Maximum Running Time of N Computers (Hard)
+	You have n computers. You are given the integer n and a 0-indexed integer 
+	array batteries where the ith battery can run a computer for batteries[i] 
+	minutes. You are interested in running all n computers simultaneously using 
+	the given batteries. Initially, you can insert at most one battery into 
+	each computer. After that and at any integer time moment, you can remove a 
+	battery from a computer and insert another battery any number of times. The 
+	inserted battery can be a totally new battery or a battery from another 
+	computer. You may assume that the removing and inserting processes take no 
+	time. Note that the batteries cannot be recharged. Return the maximum 
+	number of minutes you can run all the n computers simultaneously.
+
+	Example 1:
+	Input: n = 2, batteries = [3,3,3]
+	Output: 4
+	Explanation: Initially, insert battery 0 into the first computer and 
+	             battery 1 into the second computer. After two minutes, remove 
+	             battery 1 from the second computer and insert battery 2 
+	             instead. Note that battery 1 can still run for one minute. At 
+	             the end of the third minute, battery 0 is drained, and you 
+	             need to remove it from the first computer and insert battery 1 
+	             instead. By the end of the fourth minute, battery 1 is also 
+	             drained, and the first computer is no longer running. We can 
+	             run the two computers simultaneously for at most 4 minutes, so 
+	             we return 4.
+
+	Example 2:
+	Input: n = 2, batteries = [1,1,1,1]
+	Output: 2
+	Explanation: Initially, insert battery 0 into the first computer and 
+	             battery 2 into the second computer. After one minute, battery 
+	             0 and battery 2 are drained so you need to remove them and 
+	             insert battery 1 into the first computer and battery 3 into 
+	             the second computer. After another minute, battery 1 and 
+	             battery 3 are also drained so the first and second computers 
+	             are no longer running. We can run the two computers 
+	             simultaneously for at most 2 minutes, so we return 2.
+
+	Constraints:
+	* 1 <= n <= batteries.length <= 10^5
+	* 1 <= batteries[i] <= 10^9"""
+
+    def maxRunTime(self, n: int, batteries: List[int]) -> int:
+        batteries.sort()
+        extra = sum(batteries[:-n])
+        batteries = batteries[-n:]
+        
+        ans = prefix = 0 
+        for i, x in enumerate(batteries): 
+            prefix += x 
+            if i+1 < len(batteries) and batteries[i+1]*(i+1) - prefix > extra: return (prefix + extra) // (i+1)
+        return (prefix + extra) // n
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
