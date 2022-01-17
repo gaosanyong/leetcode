@@ -20491,12 +20491,12 @@ class Solution:
 
     def maxDistToClosest(self, seats: List[int]) -> int:
         ans = 0
-        ii = -1
+        prev = -1
         for i, x in enumerate(seats): 
             if x: 
-                ans = max(ans, i) if ii < 0 else max(ans, (i-ii)//2)
-                ii = i 
-        return max(ans, i - ii)
+                ans = max(ans, i) if prev < 0 else max(ans, (i-prev)//2)
+                prev = i 
+        return max(ans, i - prev)
 
 
     """850. Rectangle Area II (Hard)
