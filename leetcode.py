@@ -14818,10 +14818,10 @@ class Solution:
 	* 0 <= n <= flowerbed.length"""
 
     def canPlaceFlowers(self, flowerbed: List[int], n: int) -> bool:
-        for i in range(len(flowerbed)):
-            if (i == 0 or flowerbed[i-1] == 0) and flowerbed[i] == 0 and (i+1 == len(flowerbed) or flowerbed[i+1] == 0): 
-                flowerbed[i] = 1
+        for i, x in enumerate(flowerbed): 
+            if x == 0 and (i == 0 or flowerbed[i-1] == 0) and (i+1 == len(flowerbed) or flowerbed[i+1] == 0): 
                 n -= 1
+                flowerbed[i] = 1
         return n <= 0
 
 
