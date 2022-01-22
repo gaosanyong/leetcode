@@ -55195,6 +55195,251 @@ class Trie:
         return (prefix + extra) // n
 
 
+    """2144. Minimum Cost of Buying Candies With Discount (Easy)
+	A shop is selling candies at a discount. For every two candies sold, the 
+	shop gives a third candy for free. The customer can choose any candy to 
+	take away for free as long as the cost of the chosen candy is less than or 
+	equal to the minimum cost of the two candies bought. For example, if there 
+	are 4 candies with costs 1, 2, 3, and 4, and the customer buys candies with 
+	costs 2 and 3, they can take the candy with cost 1 for free, but not the 
+	candy with cost 4. Given a 0-indexed integer array cost, where cost[i] 
+	denotes the cost of the ith candy, return the minimum cost of buying all 
+	the candies.
+
+	Example 1:
+	Input: cost = [1,2,3]
+	Output: 5
+	Explanation: We buy the candies with costs 2 and 3, and take the candy with 
+	             cost 1 for free. The total cost of buying all candies is 
+	             2 + 3 = 5. This is the only way we can buy the candies. Note 
+	             that we cannot buy candies with costs 1 and 3, and then take 
+	             the candy with cost 2 for free. The cost of the free candy has 
+	             to be less than or equal to the minimum cost of the purchased 
+	             candies.
+	
+	Example 2:
+	Input: cost = [6,5,7,9,2,2]
+	Output: 23
+	Explanation: The way in which we can get the minimum cost is described below:
+	             - Buy candies with costs 9 and 7
+	             - Take the candy with cost 6 for free
+	             - We buy candies with costs 5 and 2
+	             - Take the last remaining candy with cost 2 for free
+	             Hence, the minimum cost to buy all candies is 9 + 7 + 5 + 2 = 23.
+	
+	Example 3:
+	Input: cost = [5,5]
+	Output: 10
+	Explanation: Since there are only 2 candies, we buy both of them. There is 
+	             not a third candy we can take for free. Hence, the minimum 
+	             cost to buy all candies is 5 + 5 = 10.
+
+	Constraints:
+	* 1 <= cost.length <= 100
+	* 1 <= cost[i] <= 100"""
+
+    def minimumCost(self, cost: List[int]) -> int:
+        return sum(x for i, x in enumerate(sorted(cost, reverse=True)) if (i+1)%3)
+
+
+    """2145. Count the Hidden Sequences (Medium)
+	You are given a 0-indexed array of n integers differences, which describes 
+	the differences between each pair of consecutive integers of a hidden 
+	sequence of length (n + 1). More formally, call the hidden sequence hidden, 
+	then we have that differences[i] = hidden[i + 1] - hidden[i]. You are 
+	further given two integers lower and upper that describe the inclusive 
+	range of values [lower, upper] that the hidden sequence can contain.
+	* For example, given differences = [1, -3, 4], lower = 1, upper = 6, the 
+	  hidden sequence is a sequence of length 4 whose elements are in between 1 
+	  and 6 (inclusive).
+	  [3, 4, 1, 5] and [4, 5, 2, 6] are possible hidden sequences.
+	  [5, 6, 3, 7] is not possible since it contains an element greater than 6.
+	  [1, 2, 3, 4] is not possible since the differences are not correct.
+	Return the number of possible hidden sequences there are. If there are no 
+	possible sequences, return 0.
+
+	Example 1:
+	Input: differences = [1,-3,4], lower = 1, upper = 6
+	Output: 2
+	Explanation: The possible hidden sequences are:
+	             - [3, 4, 1, 5]
+	             - [4, 5, 2, 6]
+	             Thus, we return 2.
+	
+	Example 2:
+	Input: differences = [3,-4,5,1,-2], lower = -4, upper = 5
+	Output: 4
+	Explanation: The possible hidden sequences are:
+	             - [-3, 0, -4, 1, 2, 0]
+	             - [-2, 1, -3, 2, 3, 1]
+	             - [-1, 2, -2, 3, 4, 2]
+	             - [0, 3, -1, 4, 5, 3]
+	             Thus, we return 4.
+	
+	Example 3:
+	Input: differences = [4,-7,2], lower = 3, upper = 6
+	Output: 0
+	Explanation: There are no possible hidden sequences. Thus, we return 0.
+
+	Constraints:
+	* n == differences.length
+	* 1 <= n <= 10^5
+	* -10^5 <= differences[i] <= 10^5
+	* -10^5 <= lower <= upper <= 10^5"""
+
+    def numberOfArrays(self, differences: List[int], lower: int, upper: int) -> int:
+        prefix = mn = mx = 0 
+        for x in differences: 
+            prefix += x
+            mn = min(mn, prefix)
+            mx = max(mx, prefix)
+        return max(0, (upper-lower) - (mx-mn) + 1)
+
+
+    """2146. K Highest Ranked Items Within a Price Range (Medium)
+	You are given a 0-indexed 2D integer array grid of size m x n that 
+	represents a map of the items in a shop. The integers in the grid represent 
+	the following:
+	* 0 represents a wall that you cannot pass through.
+	* 1 represents an empty cell that you can freely move to and from.
+	* All other positive integers represent the price of an item in that cell. 
+	  You may also freely move to and from these item cells.
+	It takes 1 step to travel between adjacent grid cells. You are also given 
+	integer arrays pricing and start where pricing = [low, high] and 
+	start = [row, col] indicates that you start at the position (row, col) and 
+	are interested only in items with a price in the range of [low, high] 
+	(inclusive). You are further given an integer k. You are interested in the 
+	positions of the k highest-ranked items whose prices are within the given 
+	price range. The rank is determined by the first of these criteria that is 
+	different:
+	* Distance, defined as the length of the shortest path from the start 
+	  (shorter distance has a higher rank).
+	* Price (lower price has a higher rank, but it must be in the price range).
+	* The row number (smaller row number has a higher rank).
+	* The column number (smaller column number has a higher rank).
+	Return the k highest-ranked items within the price range sorted by their 
+	rank (highest to lowest). If there are fewer than k reachable items within 
+	the price range, return all of them.
+
+	Example 1:
+	Input: grid = [[1,2,0,1],[1,3,0,1],[0,2,5,1]], pricing = [2,5], start = [0,0], k = 3
+	Output: [[0,1],[1,1],[2,1]]
+	Explanation: You start at (0,0). With a price range of [2,5], we can take 
+	             items from (0,1), (1,1), (2,1) and (2,2). The ranks of these 
+	             items are:
+	             - (0,1) with distance 1
+	             - (1,1) with distance 2
+	             - (2,1) with distance 3
+	             - (2,2) with distance 4
+	             Thus, the 3 highest ranked items in the price range are (0,1), 
+	             (1,1), and (2,1).
+	
+	Example 2:
+	Input: grid = [[1,2,0,1],[1,3,3,1],[0,2,5,1]], pricing = [2,3], start = [2,3], k = 2
+	Output: [[2,1],[1,2]]
+	Explanation: You start at (2,3). With a price range of [2,3], we can take 
+	             items from (0,1), (1,1), (1,2) and (2,1). The ranks of these 
+	             items are:
+	             - (2,1) with distance 2, price 2
+	             - (1,2) with distance 2, price 3
+	             - (1,1) with distance 3
+	             - (0,1) with distance 4
+	             Thus, the 2 highest ranked items in the price range are (2,1) 
+	             and (1,2).
+	
+	Example 3:
+	Input: grid = [[1,1,1],[0,0,1],[2,3,4]], pricing = [2,3], start = [0,0], k = 3
+	Output: [[2,1],[2,0]]
+	Explanation: You start at (0,0). With a price range of [2,3], we can take 
+	             items from (2,0) and (2,1). The ranks of these items are: 
+	             - (2,1) with distance 5
+	             - (2,0) with distance 6
+	             Thus, the 2 highest ranked items in the price range are (2,1) 
+	             and (2,0). Note that k = 3 but there are only 2 reachable 
+	             items within the price range.
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 10^5
+	* 1 <= m * n <= 10^5
+	* 0 <= grid[i][j] <= 10^5
+	* pricing.length == 2
+	* 2 <= low <= high <= 10^5
+	* start.length == 2
+	* 0 <= row <= m - 1
+	* 0 <= col <= n - 1
+	* grid[row][col] > 0
+	* 1 <= k <= m * n"""
+
+    def highestRankedKItems(self, grid: List[List[int]], pricing: List[int], start: List[int], k: int) -> List[List[int]]:
+        m, n = len(grid), len(grid[0])
+        ans = []
+        queue = deque([(0, *start)])
+        grid[start[0]][start[1]] *= -1 
+        while queue: 
+            x, i, j = queue.popleft()
+            if pricing[0] <= -grid[i][j] <= pricing[1]: ans.append((x, -grid[i][j], i, j))
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                if 0 <= ii < m and 0 <= jj < n and grid[ii][jj] > 0: 
+                    queue.append((x+1, ii, jj))
+                    grid[ii][jj] *= -1
+        return [[i, j] for _, _, i, j in sorted(ans)[:k]]
+
+
+    """2147. Number of Ways to Divide a Long Corridor (Hard)
+	Along a long library corridor, there is a line of seats and decorative 
+	plants. You are given a 0-indexed string corridor of length n consisting of 
+	letters 'S' and 'P' where each 'S' represents a seat and each 'P' 
+	represents a plant. One room divider has already been installed to the left 
+	of index 0, and another to the right of index n - 1. Additional room 
+	dividers can be installed. For each position between indices i - 1 and i 
+	(1 <= i <= n - 1), at most one divider can be installed. Divide the 
+	corridor into non-overlapping sections, where each section has exactly two 
+	seats with any number of plants. There may be multiple ways to perform the 
+	division. Two ways are different if there is a position with a room divider 
+	installed in the first way but not in the second way. Return the number of 
+	ways to divide the corridor. Since the answer may be very large, return it 
+	modulo 10^9 + 7. If there is no way, return 0.
+
+	Example 1:
+	Input: corridor = "SSPPSPS"
+	Output: 3
+	Explanation: There are 3 different ways to divide the corridor. The black 
+	             bars in the above image indicate the two room dividers already 
+	             installed. Note that in each of the ways, each section has 
+	             exactly two seats.
+	
+	Example 2:
+	Input: corridor = "PPSPSP"
+	Output: 1
+	Explanation: There is only 1 way to divide the corridor, by not installing 
+	             any additional dividers. Installing any would create some 
+	             section that does not have exactly two seats.
+	
+	Example 3:
+	Input: corridor = "S"
+	Output: 0
+	Explanation: There is no way to divide the corridor because there will 
+	             always be a section that does not have exactly two seats.
+
+	Constraints:
+	* n == corridor.length
+	* 1 <= n <= 10^5
+	* corridor[i] is either 'S' or 'P'."""
+
+    def numberOfWays(self, corridor: str) -> int:
+        ans = seats = pines = 0 
+        for i, x in enumerate(corridor): 
+            if x == 'S': 
+                if seats and seats % 2 == 0: ans = ans * (pines+1) % 1_000_000_007
+                pines = 0 
+                seats += 1
+                if seats % 2 == 0 and ans == 0: ans = 1
+            elif seats and seats % 2 == 0: pines += 1
+        return ans if seats % 2 == 0 else 0 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
