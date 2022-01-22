@@ -55429,15 +55429,14 @@ class Trie:
 	* corridor[i] is either 'S' or 'P'."""
 
     def numberOfWays(self, corridor: str) -> int:
-        ans = seats = pines = 0 
+        ans = 1
+        seats = ii = 0 
         for i, x in enumerate(corridor): 
             if x == 'S': 
-                if seats and seats % 2 == 0: ans = ans * (pines+1) % 1_000_000_007
-                pines = 0 
+                if seats and seats % 2 == 0: ans = ans * (i-ii) % 1_000_000_007
                 seats += 1
-                if seats % 2 == 0 and ans == 0: ans = 1
-            elif seats and seats % 2 == 0: pines += 1
-        return ans if seats % 2 == 0 else 0 
+                ii = i
+        return ans if seats and seats % 2 == 0 else 0 
 
 
 """146. LRU Cache (Medium)
