@@ -23171,6 +23171,35 @@ public:
     }
 
 
+    /*1291. Sequential Digits (Medium)
+	An integer has sequential digits if and only if each digit in the number is 
+	one more than the previous digit. Return a sorted list of all the integers 
+	in the range [low, high] inclusive that have sequential digits.
+
+	Example 1:
+	Input: low = 100, high = 300
+	Output: [123,234]
+
+	Example 2:
+	Input: low = 1000, high = 13000
+	Output: [1234,2345,3456,4567,5678,6789,12345]
+
+	Constraints: 10 <= low <= high <= 10^9*/
+
+    vector<int> sequentialDigits(int low, int high) {
+        vector<int> ans; 
+        for (int x = 1; x <= 9; ++x) {
+            int val = 0; 
+            for (int d = x; d <= 9; ++d) {
+                val = 10*val + d; 
+                if (low <= val && val <= high) ans.push_back(val); 
+            }
+        }
+        sort(ans.begin(), ans.end()); 
+        return ans; 
+    }
+
+
     /*1306. Jump Game III (Medium)
 	Given an array of non-negative integers arr, you are initially positioned 
 	at start index of the array. When you are at index i, you can jump to 

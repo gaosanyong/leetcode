@@ -30261,6 +30261,31 @@ class UnionFind:
         return ans 
 
 
+    """1291. Sequential Digits (Medium)
+	An integer has sequential digits if and only if each digit in the number is 
+	one more than the previous digit. Return a sorted list of all the integers 
+	in the range [low, high] inclusive that have sequential digits.
+
+	Example 1:
+	Input: low = 100, high = 300
+	Output: [123,234]
+
+	Example 2:
+	Input: low = 1000, high = 13000
+	Output: [1234,2345,3456,4567,5678,6789,12345]
+
+	Constraints: 10 <= low <= high <= 10^9"""
+
+    def sequentialDigits(self, low: int, high: int) -> List[int]:
+        ans = []
+        for x in range(1, 10): 
+            val = 0 
+            for d in range(x, 10): 
+                val = 10*val + d
+                if low <= val <= high: ans.append(val)
+        return sorted(ans)
+
+
     """1306. Jump Game III (Medium)
 	Given an array of non-negative integers arr, you are initially positioned 
 	at start index of the array. When you are at index i, you can jump to 
