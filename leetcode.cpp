@@ -39861,6 +39861,212 @@ public:
             } 
         return seats && seats % 2 == 0 ? ans : 0; 
     }
+
+
+    /*2148. Count Elements With Strictly Smaller and Greater Elements (Easy)
+	Given an integer array nums, return the number of elements that have both a 
+	strictly smaller and a strictly greater element appear in nums.
+
+	Example 1:
+	Input: nums = [11,7,2,15]
+	Output: 2
+	Explanation: The element 7 has the element 2 strictly smaller than it and 
+	             the element 11 strictly greater than it. Element 11 has 
+	             element 7 strictly smaller than it and element 15 strictly 
+	             greater than it. In total there are 2 elements having both a 
+	             strictly smaller and a strictly greater element appear in nums.
+	
+	Example 2:
+	Input: nums = [-3,3,3,90]
+	Output: 2
+	Explanation: The element 3 has the element -3 strictly smaller than it and 
+	             the element 90 strictly greater than it. Since there are two 
+	             elements with the value 3, in total there are 2 elements 
+	             having both a strictly smaller and a strictly greater element 
+	             appear in nums.
+
+	Constraints:
+	* 1 <= nums.length <= 100
+	* -10^5 <= nums[i] <= 10^5*/
+
+    int countElements(vector<int>& nums) {
+        int ans = 0, mx = *max_element(nums.begin(), nums.end()), mn = *min_element(nums.begin(), nums.end()); 
+        for (auto& x : nums) 
+            if (mn < x && x < mx) ++ans; 
+        return ans; 
+    }
+
+
+    /*2149. Rearrange Array Elements by Sign (Medium)
+	You are given a 0-indexed integer array nums of even length consisting of 
+	an equal number of positive and negative integers. You should rearrange the 
+	elements of nums such that the modified array follows the given conditions:
+	* Every consecutive pair of integers have opposite signs.
+	* For all integers with the same sign, the order in which they were present 
+	  in nums is preserved.
+	* The rearranged array begins with a positive integer.
+	Return the modified array after rearranging the elements to satisfy the 
+	aforementioned conditions.
+
+	Example 1:
+	Input: nums = [3,1,-2,-5,2,-4]
+	Output: [3,-2,1,-5,2,-4]
+	Explanation: The positive integers in nums are [3,1,2]. The negative 
+	             integers are [-2,-5,-4]. The only possible way to rearrange 
+	             them such that they satisfy all conditions is [3,-2,1,-5,2,-4].
+	             Other ways such as [1,-2,2,-5,3,-4], [3,1,2,-2,-5,-4], 
+	             [-2,3,-5,1,-4,2] are incorrect because they do not satisfy one 
+	             or more conditions.  
+	
+	Example 2:
+	Input: nums = [-1,1]
+	Output: [1,-1]
+	Explanation: 1 is the only positive integer and -1 the only negative 
+	             integer in nums. So nums is rearranged to [1,-1].
+
+	Constraints:
+	* 2 <= nums.length <= 2 * 10^5
+	* nums.length is even
+	* 1 <= |nums[i]| <= 10^5
+	* nums consists of equal number of positive and negative integers.*/
+
+    vector<int> rearrangeArray(vector<int>& nums) {
+        vector<int> ans, pos, neg; 
+        for (auto& x : nums) 
+            if (x > 0) pos.push_back(x); 
+            else neg.push_back(x); 
+        for (int i = 0; i < pos.size(); ++i) {
+            ans.push_back(pos[i]); 
+            ans.push_back(neg[i]); 
+        }
+        return ans; 
+    }
+
+
+    /*2150. Find All Lonely Numbers in the Array (Medium)
+	You are given an integer array nums. A number x is lonely when it appears 
+	only once, and no adjacent numbers (i.e. x + 1 and x - 1) appear in the 
+	array. Return all lonely numbers in nums. You may return the answer in any 
+	order.
+
+	Example 1:
+	Input: nums = [10,6,5,8]
+	Output: [10,8]
+	Explanation: - 10 is a lonely number since it appears exactly once and 9 
+	               and 11 does not appear in nums.
+	             - 8 is a lonely number since it appears exactly once and 7 and 
+	               9 does not appear in nums.
+	             - 5 is not a lonely number since 6 appears in nums and vice 
+	               versa.
+	             Hence, the lonely numbers in nums are [10, 8]. Note that 
+	             [8, 10] may also be returned.
+	
+	Example 2:
+	Input: nums = [1,3,5,3]
+	Output: [1,5]
+	Explanation: - 1 is a lonely number since it appears exactly once and 0 and 
+	               2 does not appear in nums.
+	             - 5 is a lonely number since it appears exactly once and 4 and 
+	               6 does not appear in nums.
+	             - 3 is not a lonely number since it appears twice.
+	             Hence, the lonely numbers in nums are [1, 5]. Note that [5, 1] 
+	             may also be returned.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 0 <= nums[i] <= 10^6*/
+
+    vector<int> findLonely(vector<int>& nums) {
+        unordered_map<int, int> freq; 
+        for (auto& x : nums) ++freq[x]; 
+        vector<int> ans; 
+        for (auto& [k, v] : freq) 
+            if (v == 1 && !freq.count(k-1) && !freq.count(k+1)) ans.push_back(k); 
+        return ans; 
+    }
+
+
+    /*2151. Maximum Good People Based on Statements (Hard)
+	There are two types of persons:
+	* The good person: The person who always tells the truth.
+	* The bad person: The person who might tell the truth and might lie.
+	You are given a 0-indexed 2D integer array statements of size n x n that 
+	represents the statements made by n people about each other. More 
+	specifically, statements[i][j] could be one of the following:
+	* 0 which represents a statement made by person i that person j is a bad 
+	  person.
+	* 1 which represents a statement made by person i that person j is a good 
+	  person.
+	* 2 represents that no statement is made by person i about person j.
+	Additionally, no person ever makes a statement about themselves. Formally, 
+	we have that statements[i][i] = 2 for all 0 <= i < n. Return the maximum 
+	number of people who can be good based on the statements made by the n people.
+
+	Example 1:
+	Input: statements = [[2,1,2],[1,2,2],[2,0,2]]
+	Output: 2
+	Explanation: Each person makes a single statement.
+	             - Person 0 states that person 1 is good.
+	             - Person 1 states that person 0 is good.
+	             - Person 2 states that person 1 is bad.
+	             Let's take person 2 as the key.
+	             - Assuming that person 2 is a good person:
+	                 - Based on the statement made by person 2, person 1 is a bad person.
+	                 - Now we know for sure that person 1 is bad and person 2 is good.
+	                 - Based on the statement made by person 1, and since person 1 is bad, they could be:
+	                     - telling the truth. There will be a contradiction in this case and this assumption is invalid.
+	                     - lying. In this case, person 0 is also a bad person and lied in their statement.
+	                 - Following that person 2 is a good person, there will be only one good person in the group.
+	             - Assuming that person 2 is a bad person:
+	                 - Based on the statement made by person 2, and since person 2 is bad, they could be:
+	                     - telling the truth. Following this scenario, person 0 and 1 are both bad as explained before.
+	                         - Following that person 2 is bad but told the truth, there will be no good persons in the group.
+	                     - lying. In this case person 1 is a good person.
+	                         - Since person 1 is a good person, person 0 is also a good person.
+	                         - Following that person 2 is bad and lied, there will be two good persons in the group.
+	             We can see that at most 2 persons are good in the best case, so we return 2.
+	             Note that there is more than one way to arrive at this conclusion.
+	
+	Example 2:
+	Input: statements = [[2,0],[0,2]]
+	Output: 1
+	Explanation: Each person makes a single statement.
+	             - Person 0 states that person 1 is bad.
+	             - Person 1 states that person 0 is bad.
+	             Let's take person 0 as the key.
+	             - Assuming that person 0 is a good person:
+	                 - Based on the statement made by person 0, person 1 is a bad person and was lying.
+	                 - Following that person 0 is a good person, there will be only one good person in the group.
+	             - Assuming that person 0 is a bad person:
+	                 - Based on the statement made by person 0, and since person 0 is bad, they could be:
+	                     - telling the truth. Following this scenario, person 0 and 1 are both bad.
+	                         - Following that person 0 is bad but told the truth, there will be no good persons in the group.
+	                     - lying. In this case person 1 is a good person.
+	                         - Following that person 0 is bad and lied, there will be only one good person in the group.
+	             We can see that at most, one person is good in the best case, so we return 1.
+	             Note that there is more than one way to arrive at this conclusion.
+
+	Constraints:
+	* n == statements.length == statements[i].length
+	* 2 <= n <= 15
+	* statements[i][j] is either 0, 1, or 2.
+	* statements[i][i] == 2*/
+
+    int maximumGood(vector<vector<int>>& statements) {
+        int ans = 0, n = statements.size(); 
+        for (int m = (1<<n)-1; m >= 0; --m) {
+            bool cand = true; 
+            for (int i = 0; i < n; ++i) 
+                if ((m & (1<<i)) && cand) 
+                    for (int j = 0; j < n; ++j) 
+                        if ((statements[i][j]==1 && !(m & 1<<j)) || (statements[i][j]==0 && (m & 1<<j))) {
+                            cand = false; 
+                            break; 
+                        }
+            if (cand) ans = max(ans, __builtin_popcount(m)); 
+        }
+        return ans; 
+    }
 };
 
 
