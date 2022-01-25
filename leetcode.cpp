@@ -18869,10 +18869,10 @@ public:
 	* 0 <= arr[i] <= 10^4*/
 
     bool validMountainArray(vector<int>& arr) {
-        int lo = 0, hi = arr.size() - 1; 
-        for (; lo < hi && arr[lo] < arr[lo+1]; ++lo) {}
-        for (; lo < hi && arr[hi-1] > arr[hi]; --hi) {}
-        return 0 < lo && hi < arr.size() - 1 && lo == hi; 
+        int lo = 0, hi = arr.size()-1; 
+        for (; lo < hi && arr[lo] < arr[lo+1]; ++lo); 
+        for (; lo < hi && arr[hi-1] > arr[hi]; --hi); 
+        return 0 < lo && lo == hi && hi < arr.size()-1; 
     }
 
 
