@@ -23229,6 +23229,47 @@ public:
     }
 
 
+    /*1305. All Elements in Two Binary Search Trees (Medium)
+	Given two binary search trees root1 and root2, return a list containing all 
+	the integers from both trees sorted in ascending order.
+
+	Example 1:
+	Input: root1 = [2,1,4], root2 = [1,0,3]
+	Output: [0,1,1,2,3,4]
+
+	Example 2:
+	Input: root1 = [1,null,8], root2 = [8,1]
+	Output: [1,1,8,8]
+
+	Constraints:
+	* The number of nodes in each tree is in the range [0, 5000].
+	* -10^5 <= Node.val <= 10^5*/
+
+    vector<int> getAllElements(TreeNode* root1, TreeNode* root2) {
+        
+        auto fn = [&](TreeNode* node) {
+            vector<int> ans; 
+            stack<TreeNode*> stk; 
+            while (node || stk.size()) 
+                if (node) {
+                    stk.push(node); 
+                    node = node->left; 
+                } else {
+                    node = stk.top(); stk.pop(); 
+                    ans.push_back(node->val); 
+                    node = node->right; 
+                }
+            return ans; 
+        }; 
+        
+        vector<int> ans, vals1 = fn(root1), vals2 = fn(root2); 
+        for (int i = 0, j = 0; i < vals1.size() || j < vals2.size(); ) 
+            if (j == vals2.size() || (i < vals1.size() && vals1[i] < vals2[j])) ans.push_back(vals1[i++]); 
+            else ans.push_back(vals2[j++]); 
+        return ans; 
+    }
+
+
     /*1306. Jump Game III (Medium)
 	Given an array of non-negative integers arr, you are initially positioned 
 	at start index of the array. When you are at index i, you can jump to 

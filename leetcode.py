@@ -30341,6 +30341,50 @@ class UnionFind:
         return sorted(ans)
 
 
+    """1305. All Elements in Two Binary Search Trees (Medium)
+	Given two binary search trees root1 and root2, return a list containing all 
+	the integers from both trees sorted in ascending order.
+
+	Example 1:
+	Input: root1 = [2,1,4], root2 = [1,0,3]
+	Output: [0,1,1,2,3,4]
+
+	Example 2:
+	Input: root1 = [1,null,8], root2 = [8,1]
+	Output: [1,1,8,8]
+
+	Constraints:
+	* The number of nodes in each tree is in the range [0, 5000].
+	* -10^5 <= Node.val <= 10^5"""
+
+    def getAllElements(self, root1: TreeNode, root2: TreeNode) -> List[int]:
+        
+        def fn(node): 
+            ans, stack = [], []
+            while node or stack: 
+                if node: 
+                    stack.append(node)
+                    node = node.left 
+                else: 
+                    node = stack.pop()
+                    ans.append(node.val)
+                    node = node.right
+            return ans 
+        
+        vals1 = fn(root1)
+        vals2 = fn(root2)
+        ans = []
+        i = j = 0 
+        while i < len(vals1) or j < len(vals2): 
+            if j == len(vals2) or i < len(vals1) and vals1[i] < vals2[j]: 
+                ans.append(vals1[i])
+                i += 1
+            else: 
+                ans.append(vals2[j])
+                j += 1
+        return ans 
+
+
     """1306. Jump Game III (Medium)
 	Given an array of non-negative integers arr, you are initially positioned 
 	at start index of the array. When you are at index i, you can jump to 
