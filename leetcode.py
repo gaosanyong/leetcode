@@ -6033,12 +6033,11 @@ class Solution:
 
     def rotate(self, nums: List[int], k: int) -> None:
         n = len(nums)
-        g = gcd(n, k)
-        for i in range(g): 
-            ii = i 
-            for _ in range(n//g): 
-                ii = (ii + k) % n
+        for i in range(gcd(n, k)): 
+            ii = (i+k) % n
+            while i != ii: 
                 nums[i], nums[ii] = nums[ii], nums[i]
+                ii = (ii+k) % n
 
 
     """190. Reverse Bits (Easy)
