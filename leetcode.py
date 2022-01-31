@@ -56063,26 +56063,22 @@ Note: You may assume that all words are consist of lowercase letters a-z."""
 class WordDictionary:
 
     def __init__(self):
-        self.root = {}
+        self.trie = {}
 
     def addWord(self, word: str) -> None:
-        node = self.root
-        for letter in word:
-            node = node.setdefault(letter, {})
-        node["#"] = True #sentinel 
+        node = self.trie
+        for ch in word: node = node.setdefault(ch, {})
+        node['$'] = word
 
     def search(self, word: str) -> bool:
         
         def fn(node, i): 
-            """Return True if word[i:] is found at trie rooted at n"""
             if not node: return False 
-            if i == len(word): return node.get("#", False)
-            if word[i] == ".": 
-                return any(fn(node[k], i+1) for k in node if k != "#")
-            else: 
-                return fn(node.get(word[i]), i+1)
-        
-        return fn(self.root, 0)
+            if i == len(word): return node.get('$')
+            if word[i] == '.': return any(fn(node[k], i+1) for k in node if k != '$')
+            return fn(node.get(word[i]), i+1)
+                
+        return fn(self.trie, 0)
 
 
 """225. Implement Stack using Queues (Easy)
