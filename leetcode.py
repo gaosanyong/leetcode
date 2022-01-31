@@ -2830,10 +2830,9 @@ class Solution:
 	Output: 10"""
 
     def largestRectangleArea(self, heights: List[int]) -> int:
-        ans, stack = 0, [] #mono-stack (non-decreasing)
+        ans, stack = 0, [] # non-decreasing stack
         for i in range(len(heights)+1): 
             height = heights[i] if i < len(heights) else 0
-            
             while stack and heights[stack[-1]] > height: 
                 h = heights[stack.pop()]
                 w = i - 1 - stack[-1] if stack else i

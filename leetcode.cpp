@@ -2227,6 +2227,42 @@ public:
     }
 
 
+    /*84. Largest Rectangle in Histogram (Hard)
+	Given an array of integers heights representing the histogram's bar height 
+	where the width of each bar is 1, return the area of the largest rectangle 
+	in the histogram.
+
+	Example 1:
+	Input: heights = [2,1,5,6,2,3]
+	Output: 10
+	Explanation: The above is a histogram where width of each bar is 1. The 
+	             largest rectangle is shown in the red area, which has an 
+	             area = 10 units.
+	
+	Example 2:
+	Input: heights = [2,4]
+	Output: 4
+
+	Constraints:
+	* 1 <= heights.length <= 10^5
+	* 0 <= heights[i] <= 10^4*/
+
+    int largestRectangleArea(vector<int>& heights) {
+        int ans = 0; 
+        stack<int> stk; // non-decreasing stack
+        for (int i = 0; i <= heights.size(); ++i) {
+            int ht = i < heights.size() ? heights[i] : 0; 
+            while (stk.size() && heights[stk.top()] > ht) {
+                int h = heights[stk.top()]; stk.pop(); 
+                int w = stk.size() ? i-1-stk.top() : i; 
+                ans = max(ans, h*w); 
+            }
+            stk.push(i); 
+        }
+        return ans; 
+    }
+
+
     /*85. Maximal Rectangle (Hard)
 	Given a rows x cols binary matrix filled with 0's and 1's, find the largest 
 	rectangle containing only 1's and return its area.
