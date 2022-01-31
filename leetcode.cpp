@@ -8308,6 +8308,52 @@ public:
     }
 
 
+    /*421. Maximum XOR of Two Numbers in an Array (Medium)
+	Given an integer array nums, return the maximum result of nums[i] XOR 
+	nums[j], where 0 <= i <= j < n.
+
+	Example 1:
+	Input: nums = [3,10,5,25,2,8]
+	Output: 28
+	Explanation: The maximum result is 5 XOR 25 = 28.
+
+	Example 2:
+	Input: nums = [14,70,53,83,49,91,36,80,92,51,66,70]
+	Output: 127
+
+	Constraints:
+	* 1 <= nums.length <= 2 * 10^5
+	* 0 <= nums[i] <= 2^31 - 1
+
+	class TrieNode {
+	public: 
+	    TrieNode *next[2] = {nullptr}; 
+	    int val = 0; 
+	    ~TrieNode() {
+	        delete next[0]; 
+	        delete next[1];
+	    }
+	};*/
+
+    int findMaximumXOR(vector<int>& nums) {
+        int ans = 0; 
+        TrieNode *trie = new TrieNode(); 
+        for (auto& x : nums) {
+            TrieNode *node = trie, *oppo = trie; 
+            for (int i = 31; i >= 0; --i) {
+                int bit = (x >> i) & 1; 
+                if (!node->next[bit]) node->next[bit] = new TrieNode(); 
+                node = node->next[bit]; 
+                oppo = oppo->next[1-bit] ? oppo->next[1-bit] : oppo->next[bit]; 
+            }
+            node->val = x; 
+            ans = max(ans, x ^ oppo->val); 
+        }
+        delete trie; 
+        return ans; 
+    }
+
+
     /*429. N-ary Tree Level Order Traversal (Medium)
 	Given an n-ary tree, return the level order traversal of its nodes' values. 
 	Nary-Tree input serialization is represented in their level order traversal, 

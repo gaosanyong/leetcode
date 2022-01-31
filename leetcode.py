@@ -11579,6 +11579,36 @@ class Solution:
         return ans 
 
 
+    """421. Maximum XOR of Two Numbers in an Array (Medium)
+	Given an integer array nums, return the maximum result of nums[i] XOR 
+	nums[j], where 0 <= i <= j < n.
+
+	Example 1:
+	Input: nums = [3,10,5,25,2,8]
+	Output: 28
+	Explanation: The maximum result is 5 XOR 25 = 28.
+
+	Example 2:
+	Input: nums = [14,70,53,83,49,91,36,80,92,51,66,70]
+	Output: 127
+
+	Constraints:
+	* 1 <= nums.length <= 2 * 10^5
+	* 0 <= nums[i] <= 2^31 - 1"""
+
+    def findMaximumXOR(self, nums: List[int]) -> int:
+        ans = 0 
+        trie = {}
+        for x in nums: 
+            node = oppo = trie
+            for bit in map(int, bin(x)[2:].zfill(32)): 
+                node = node.setdefault(bit, {})
+                oppo = oppo.get(1-bit) or oppo[bit]
+            node['$'] = x
+            ans = max(ans, oppo['$'] ^ x)
+        return ans 
+
+
     """422. Valid Word Square (Easy)
 	Given a sequence of words, check whether it forms a valid word square. A 
 	sequence of words forms a valid word square if the kth row and column read 
