@@ -20897,6 +20897,89 @@ public:
     }
 
 
+    /*1018. Binary Prefix Divisible By 5 (Easy)
+	You are given a binary array nums (0-indexed). We define xi as the number 
+	whose binary representation is the subarray nums[0..i] (from 
+	most-significant-bit to least-significant-bit).
+	* For example, if nums = [1,0,1], then x0 = 1, x1 = 2, and x2 = 5.
+	Return an array of booleans answer where answer[i] is true if xi is 
+	divisible by 5.
+
+	Example 1:
+	Input: nums = [0,1,1]
+	Output: [true,false,false]
+	Explanation: The input numbers in binary are 0, 01, 011; which are 0, 1, 
+	             and 3 in base-10. Only the first number is divisible by 5, so 
+	             answer[0] is true.
+	
+	Example 2:
+	Input: nums = [1,1,1]
+	Output: [false,false,false]
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* nums[i] is either 0 or 1.*/
+
+    vector<bool> prefixesDivBy5(vector<int>& nums) {
+        vector<bool> ans; 
+        int prefix = 0; 
+        for (auto& x : nums) {
+            prefix = (2*prefix + x) % 5; 
+            ans.push_back(!prefix); 
+        }
+        return ans; 
+    }
+
+
+    /*1021. Remove Outermost Parentheses (Easy)
+	A valid parentheses string is either empty "", "(" + A + ")", or A + B, 
+	where A and B are valid parentheses strings, and + represents string 
+	concatenation.
+	* For example, "", "()", "(())()", and "(()(()))" are all valid parentheses 
+	  strings.
+	A valid parentheses string s is primitive if it is nonempty, and there does 
+	not exist a way to split it into s = A + B, with A and B nonempty valid 
+	parentheses strings. Given a valid parentheses string s, consider its 
+	primitive decomposition: s = P1 + P2 + ... + Pk, where Pi are primitive 
+	valid parentheses strings. Return s after removing the outermost 
+	parentheses of every primitive string in the primitive decomposition of s.
+
+	Example 1:
+	Input: s = "(()())(())"
+	Output: "()()()"
+	Explanation: The input string is "(()())(())", with primitive decomposition 
+	             "(()())" + "(())". After removing outer parentheses of each 
+	             part, this is "()()" + "()" = "()()()".
+	
+	Example 2:
+	Input: s = "(()())(())(()(()))"
+	Output: "()()()()(())"
+	Explanation: The input string is "(()())(())(()(()))", with primitive 
+	             decomposition "(()())" + "(())" + "(()(()))". After removing 
+	             outer parentheses of each part, this is 
+	             "()()" + "()" + "()(())" = "()()()()(())".
+	
+	Example 3:
+	Input: s = "()()"
+	Output: ""
+	Explanation: The input string is "()()", with primitive decomposition 
+	             "()" + "()". After removing outer parentheses of each part, 
+	             this is "" + "" = "".
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s[i] is either '(' or ')'.
+	* s is a valid parentheses string.*/
+
+    string removeOuterParentheses(string s) {
+        string ans; 
+        int level = 0; 
+        for (auto& ch : s) 
+            if ((ch == '(' && ++level > 1) || (ch == ')' && --level)) ans.push_back(ch); 
+        return ans; 
+    }
+
+
     /*1022. Sum of Root To Leaf Binary Numbers (Easy)
 	You are given the root of a binary tree where each node has a value 0 or 1. 
 	Each root-to-leaf path represents a binary number starting with the most 

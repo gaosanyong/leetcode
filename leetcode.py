@@ -24390,6 +24390,33 @@ class Solution:
         return "".join(map(str, ans[::-1] or [0]))
 
 
+    """1018. Binary Prefix Divisible By 5 (Easy)
+	You are given a binary array nums (0-indexed). We define xi as the number 
+	whose binary representation is the subarray nums[0..i] (from 
+	most-significant-bit to least-significant-bit).
+	* For example, if nums = [1,0,1], then x0 = 1, x1 = 2, and x2 = 5.
+	Return an array of booleans answer where answer[i] is true if xi is 
+	divisible by 5.
+
+	Example 1:
+	Input: nums = [0,1,1]
+	Output: [true,false,false]
+	Explanation: The input numbers in binary are 0, 01, 011; which are 0, 1, 
+	             and 3 in base-10. Only the first number is divisible by 5, so 
+	             answer[0] is true.
+	
+	Example 2:
+	Input: nums = [1,1,1]
+	Output: [false,false,false]
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* nums[i] is either 0 or 1."""
+
+    def prefixesDivBy5(self, nums: List[int]) -> List[bool]:
+        return [x == 0 for x in accumulate(nums, lambda x, y: (2*x+y)%5)]
+
+
     """1019. Next Greater Node In Linked List (Medium)
 	We are given a linked list with head as the first node. Let's number the 
 	nodes in the list: node_1, node_2, node_3, ... etc. Each node may have a 
@@ -24470,6 +24497,59 @@ class Solution:
                 if 0 <= ii < m and 0 <= jj < n and A[ii][jj]: stack.append((ii, jj))
         
         return sum(map(sum, A))
+
+
+    """1021. Remove Outermost Parentheses (Easy)
+	A valid parentheses string is either empty "", "(" + A + ")", or A + B, 
+	where A and B are valid parentheses strings, and + represents string 
+	concatenation.
+	* For example, "", "()", "(())()", and "(()(()))" are all valid parentheses 
+	  strings.
+	A valid parentheses string s is primitive if it is nonempty, and there does 
+	not exist a way to split it into s = A + B, with A and B nonempty valid 
+	parentheses strings. Given a valid parentheses string s, consider its 
+	primitive decomposition: s = P1 + P2 + ... + Pk, where Pi are primitive 
+	valid parentheses strings. Return s after removing the outermost 
+	parentheses of every primitive string in the primitive decomposition of s.
+
+	Example 1:
+	Input: s = "(()())(())"
+	Output: "()()()"
+	Explanation: The input string is "(()())(())", with primitive decomposition 
+	             "(()())" + "(())". After removing outer parentheses of each 
+	             part, this is "()()" + "()" = "()()()".
+	
+	Example 2:
+	Input: s = "(()())(())(()(()))"
+	Output: "()()()()(())"
+	Explanation: The input string is "(()())(())(()(()))", with primitive 
+	             decomposition "(()())" + "(())" + "(()(()))". After removing 
+	             outer parentheses of each part, this is 
+	             "()()" + "()" + "()(())" = "()()()()(())".
+	
+	Example 3:
+	Input: s = "()()"
+	Output: ""
+	Explanation: The input string is "()()", with primitive decomposition 
+	             "()" + "()". After removing outer parentheses of each part, 
+	             this is "" + "" = "".
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s[i] is either '(' or ')'.
+	* s is a valid parentheses string."""
+
+    def removeOuterParentheses(self, s: str) -> str:
+        ans = []
+        level = 0 
+        for i, ch in enumerate(s): 
+            if ch == '(': 
+                if level: ans.append(ch)
+                level += 1
+            else: 
+                level -= 1
+                if level: ans.append(ch)
+        return ''.join(ans)
 
 
     """1022. Sum of Root To Leaf Binary Numbers (Easy)
