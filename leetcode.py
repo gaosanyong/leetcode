@@ -32117,17 +32117,16 @@ class UnionFind:
 	Constraints: 1 <= k <= 10^9"""
 
     def findMinFibonacciNumbers(self, k: int) -> int:
-        fibo = [1]
+        vals = []
         f0 = f1 = 1
-        while f1 < k: 
+        while f1 <= k: 
+            vals.append(f1)
             f0, f1 = f1, f0+f1
-            fibo.append(f1)
-        
         ans = 0
         while k: 
             ans += 1
-            i = bisect_right(fibo, k) - 1
-            k -= fibo[i]
+            i = bisect_right(vals, k)
+            k -= vals[i-1]
         return ans 
 
 
