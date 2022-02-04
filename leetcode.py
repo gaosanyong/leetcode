@@ -13411,10 +13411,10 @@ class Solution:
 	Note: The length of the given binary array will not exceed 50,000."""
 
     def findMaxLength(self, nums: List[int]) -> int:
-        seen = {0:-1}
+        seen = {0: -1}
         ans = prefix = 0
         for i, x in enumerate(nums):
-            prefix += x-0.5
+            prefix += 2*x-1
             ans = max(ans, i - seen.setdefault(prefix, i))
         return ans 
 

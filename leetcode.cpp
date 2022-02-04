@@ -9993,6 +9993,38 @@ public:
     }
 
 
+    /*525. Contiguous Array (Medium)
+	Given a binary array nums, return the maximum length of a contiguous 
+	subarray with an equal number of 0 and 1.
+
+	Example 1:
+	Input: nums = [0,1]
+	Output: 2
+	Explanation: [0, 1] is the longest contiguous subarray with an equal number 
+	             of 0 and 1.
+
+	Example 2:
+	Input: nums = [0,1,0]
+	Output: 2
+	Explanation: [0, 1] (or [1, 0]) is a longest contiguous subarray with equal 
+	             number of 0 and 1.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* nums[i] is either 0 or 1.*/
+
+    int findMaxLength(vector<int>& nums) {
+        int ans = 0; 
+        unordered_map<int, int> seen = {{0, -1}}; 
+        for (int i = 0, prefix = 0; i < nums.size(); ++i) {
+            prefix += 2*nums[i] - 1; 
+            if (seen.count(prefix)) ans = max(ans, i - seen[prefix]); 
+            else seen[prefix] = i; 
+        }
+        return ans; 
+    }
+
+
     /*531. Lonely Pixel I (Medium)
 	Given an m x n picture consisting of black 'B' and white 'W' pixels, return 
 	the number of black lonely pixels. A black lonely pixel is a character 'B' 
