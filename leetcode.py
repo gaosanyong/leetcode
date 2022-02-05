@@ -40113,9 +40113,8 @@ class Fenwick:
 	* 1 <= nums[i] <= 100"""
 
     def sumOfUnique(self, nums: List[int]) -> int:
-        freq = {}
-        for x in nums: freq[x] = 1 + freq.get(x, 0)
-        return sum(x for x in nums if freq[x] == 1)
+        freq = Counter(nums)
+        return sum(k for k, v in freq.items() if v == 1)
 
 
     """1749. Maximum Absolute Sum of Any Subarray (Medium)
