@@ -786,7 +786,6 @@ class Solution:
         pq = [(x.val, i, x) for i, x in enumerate(lists) if x]
         heapify(pq)
         dummy = node = ListNode()
-        
         while pq: 
             _, i, x = heappop(pq)
             node.next = node = x
