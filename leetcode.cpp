@@ -40802,6 +40802,249 @@ public:
         }
         return ans; 
     }
+
+
+    /*2160. Minimum Sum of Four Digit Number After Splitting Digits (Easy)
+	You are given a positive integer num consisting of exactly four digits. 
+	Split num into two new integers new1 and new2 by using the digits found in 
+	num. Leading zeros are allowed in new1 and new2, and all the digits found 
+	in num must be used. For example, given num = 2932, you have the following 
+	digits: two 2's, one 9 and one 3. Some of the possible pairs [new1, new2] 
+	are [22, 93], [23, 92], [223, 9] and [2, 329]. Return the minimum possible 
+	sum of new1 and new2.
+
+	Example 1:
+	Input: num = 2932
+	Output: 52
+	Explanation: Some possible pairs [new1, new2] are [29, 23], [223, 9], etc.
+	             The minimum sum can be obtained by the pair [29, 23]: 
+	             29 + 23 = 52.
+	
+	Example 2:
+	Input: num = 4009
+	Output: 13
+	Explanation: Some possible pairs [new1, new2] are [0, 49], [490, 0], etc. 
+	             The minimum sum can be obtained by the pair [4, 9]: 4 + 9 = 13.
+
+	Constraints: 1000 <= num <= 9999*/
+
+    int minimumSum(int num) {
+        string s = to_string(num); 
+        sort(s.begin(), s.end()); 
+        return (s[0] - '0' + s[1] - '0') * 10 + (s[2] - '0' + s[3] - '0'); 
+    }
+
+
+    /*2161. Partition Array According to Given Pivot (Medium)
+	You are given a 0-indexed integer array nums and an integer pivot. 
+	Rearrange nums such that the following conditions are satisfied:
+	* Every element less than pivot appears before every element greater than 
+	  pivot.
+	* Every element equal to pivot appears in between the elements less than 
+	  and greater than pivot.
+	* The relative order of the elements less than pivot and the elements 
+	  greater than pivot is maintained.
+	More formally, consider every pi, pj where pi is the new position of the 
+	ith element and pj is the new position of the jth element. For elements 
+	less than pivot, if i < j and nums[i] < pivot and nums[j] < pivot, then 
+	pi < pj. Similarly for elements greater than pivot, if i < j and 
+	nums[i] > pivot and nums[j] > pivot, then pi < pj. Return nums after the 
+	rearrangement.
+
+	Example 1:
+	Input: nums = [9,12,5,10,14,3,10], pivot = 10
+	Output: [9,5,3,10,10,12,14]
+	Explanation: The elements 9, 5, and 3 are less than the pivot so they are 
+	             on the left side of the array. The elements 12 and 14 are 
+	             greater than the pivot so they are on the right side of the 
+	             array. The relative ordering of the elements less than and 
+	             greater than pivot is also maintained. [9, 5, 3] and [12, 14] 
+	             are the respective orderings.
+	
+	Example 2:
+	Input: nums = [-3,4,3,2], pivot = 2
+	Output: [-3,2,4,3]
+	Explanation: The element -3 is less than the pivot so it is on the left 
+	             side of the array. The elements 4 and 3 are greater than the 
+	             pivot so they are on the right side of the array. The relative 
+	             ordering of the elements less than and greater than pivot is 
+	             also maintained. [-3] and [4, 3] are the respective orderings.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* -10^6 <= nums[i] <= 10^6
+	* pivot equals to an element of nums.*/
+
+    vector<int> pivotArray(vector<int>& nums, int pivot) {
+        vector<int> small, equal, large; 
+        for (auto& x : nums) 
+            if (x < pivot) small.push_back(x); 
+            else if (x == pivot) equal.push_back(x); 
+            else large.push_back(x);
+        vector<int> ans = small; 
+        ans.insert(ans.end(), equal.begin(), equal.end()); 
+        ans.insert(ans.end(), large.begin(), large.end()); 
+        return ans; 
+    }
+
+
+    /*2162. Minimum Cost to Set Cooking Time (Medium)
+	A generic microwave supports cooking times for:
+	* at least 1 second.
+	* at most 99 minutes and 99 seconds.
+	To set the cooking time, you push at most four digits. The microwave 
+	normalizes what you push as four digits by prepending zeroes. It interprets 
+	the first two digits as the minutes and the last two digits as the seconds. 
+	It then adds them up as the cooking time. For example,
+	* You push 9 5 4 (three digits). It is normalized as 0954 and interpreted 
+	  as 9 minutes and 54 seconds.
+	* You push 0 0 0 8 (four digits). It is interpreted as 0 minutes and 8 
+	  seconds.
+	* You push 8 0 9 0. It is interpreted as 80 minutes and 90 seconds.
+	* You push 8 1 3 0. It is interpreted as 81 minutes and 30 seconds.
+	You are given integers startAt, moveCost, pushCost, and targetSeconds. 
+	Initially, your finger is on the digit startAt. Moving the finger above any 
+	specific digit costs moveCost units of fatigue. Pushing the digit below the 
+	finger once costs pushCost units of fatigue. There can be multiple ways to 
+	set the microwave to cook for targetSeconds seconds but you are interested 
+	in the way with the minimum cost. Return the minimum cost to set 
+	targetSeconds seconds of cooking time. Remember that one minute consists of 
+	60 seconds.
+
+	Example 1:
+	Input: startAt = 1, moveCost = 2, pushCost = 1, targetSeconds = 600
+	Output: 6
+	Explanation: The following are the possible ways to set the cooking time.
+	             - 1 0 0 0, interpreted as 10 minutes and 0 seconds. The finger 
+	               is already on digit 1, pushes 1 (with cost 1), moves to 0 
+	               (with cost 2), pushes 0 (with cost 1), pushes 0 (with cost 
+	               1), and pushes 0 (with cost 1). The cost is: 
+	               1 + 2 + 1 + 1 + 1 = 6. This is the minimum cost.
+	             - 0 9 6 0, interpreted as 9 minutes and 60 seconds. That is 
+	               also 600 seconds. The finger moves to 0 (with cost 2), 
+	               pushes 0 (with cost 1), moves to 9 (with cost 2), pushes 9 
+	               (with cost 1), moves to 6 (with cost 2), pushes 6 (with cost 
+	               1), moves to 0 (with cost 2), and pushes 0 (with cost 1).
+	               The cost is: 2 + 1 + 2 + 1 + 2 + 1 + 2 + 1 = 12.
+	             - 9 6 0, normalized as 0960 and interpreted as 9 minutes and 
+	               60 seconds. The finger moves to 9 (with cost 2), pushes 9 
+	               (with cost 1), moves to 6 (with cost 2), pushes 6 (with cost 
+	               1), moves to 0 (with cost 2), and pushes 0 (with cost 1).
+	               The cost is: 2 + 1 + 2 + 1 + 2 + 1 = 9.
+	
+	Example 2:
+	Input: startAt = 0, moveCost = 1, pushCost = 2, targetSeconds = 76
+	Output: 6
+	Explanation: The optimal way is to push two digits: 7 6, interpreted as 76 
+	             seconds. The finger moves to 7 (with cost 1), pushes 7 (with 
+	             cost 2), moves to 6 (with cost 1), and pushes 6 (with cost 2). 
+	             The total cost is: 1 + 2 + 1 + 2 = 6. Note other possible ways 
+	             are 0076, 076, 0116, and 116, but none of them produces the 
+	             minimum cost.
+
+	Constraints:
+	* 0 <= startAt <= 9
+	* 1 <= moveCost, pushCost <= 10^5
+	* 1 <= targetSeconds <= 6039*/
+
+    int minCostSetTime(int startAt, int moveCost, int pushCost, int targetSeconds) {
+        int minute = targetSeconds/60, second = targetSeconds%60; 
+        int ans = INT_MAX; 
+        for (auto& [m, s] : vector<pair<int, int>>{{minute, second}, {minute-1, second+60}}) {
+            if (0 <= m && m < 100 && s < 100) {
+                int cost = 0, prev = startAt; 
+                bool found = false; 
+                for (auto& x : {m/10, m%10, s/10, s%10}) 
+                    if (x || found) {
+                        if (x != prev) {cost += moveCost; prev = x;}
+                        cost += pushCost; 
+                        found = true; 
+                    }
+                ans = min(ans, cost); 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*2163. Minimum Difference in Sums After Removal of Elements (Hard)
+	You are given a 0-indexed integer array nums consisting of 3 * n elements.
+	You are allowed to remove any subsequence of elements of size exactly n 
+	from nums. The remaining 2 * n elements will be divided into two equal 
+	parts:
+	* The first n elements belonging to the first part and their sum is 
+	  sumfirst.
+	* The next n elements belonging to the second part and their sum is 
+	  sumsecond.
+	The difference in sums of the two parts is denoted as sumfirst - sumsecond.
+	* For example, if sumfirst = 3 and sumsecond = 2, their difference is 1.
+	* Similarly, if sumfirst = 2 and sumsecond = 3, their difference is -1.
+	Return the minimum difference possible between the sums of the two parts 
+	after the removal of n elements.
+
+	Example 1:
+	Input: nums = [3,1,2]
+	Output: -1
+	Explanation: Here, nums has 3 elements, so n = 1. Thus we have to remove 1 
+	             element from nums and divide the array into two equal parts.
+	             - If we remove nums[0] = 3, the array will be [1,2]. The 
+	               difference in sums of the two parts will be 1 - 2 = -1.
+	             - If we remove nums[1] = 1, the array will be [3,2]. The 
+	               difference in sums of the two parts will be 3 - 2 = 1.
+	             - If we remove nums[2] = 2, the array will be [3,1]. The 
+	               difference in sums of the two parts will be 3 - 1 = 2.
+	             The minimum difference between sums of the two parts is 
+	             min(-1,1,2) = -1. 
+	
+	Example 2:
+	Input: nums = [7,9,5,8,1,3]
+	Output: 1
+	Explanation: Here n = 2. So we must remove 2 elements and divide the 
+	             remaining array into two parts containing two elements each.
+	             If we remove nums[2] = 5 and nums[3] = 8, the resultant array 
+	             will be [7,9,1,3]. The difference in sums will be 
+	             (7+9) - (1+3) = 12. To obtain the minimum difference, we 
+	             should remove nums[1] = 9 and nums[4] = 1. The resultant array 
+	             becomes [7,5,8,3]. The difference in sums of the two parts is 
+	             (7+5) - (8+3) = 1. It can be shown that it is not possible to 
+	             obtain a difference smaller than 1.
+
+	Constraints:
+	* nums.length == 3 * n
+	* 1 <= n <= 10^5
+	* 1 <= nums[i] <= 10^5*/
+
+    long long minimumDifference(vector<int>& nums) {
+        int n = nums.size()/3;
+        long ans = 0;  
+        priority_queue<int> left; 
+        for (int i = 0; i < n; ++i) {
+            left.push(nums[i]); 
+            ans += nums[i]; 
+        }
+        priority_queue<int, vector<int>, greater<>> right; 
+        for (int i = 2*n; i < 3*n; ++i) {
+            right.push(nums[i]); 
+            ans -= nums[i]; 
+        }
+        vector<long> prefix = {0}; 
+        for (int i = n; i < 2*n; ++i) 
+            if (nums[i] < left.top()) {
+                prefix.push_back(prefix.back() + nums[i] - left.top()); 
+                left.pop(); 
+                left.push(nums[i]); 
+            } else prefix.push_back(prefix.back()); 
+        long extra = prefix.back(), suffix = 0;
+        for (int i = 2*n-1; i >= n; --i) {
+            if (nums[i] > right.top()) {
+                suffix += right.top() - nums[i]; 
+                right.pop(); 
+                right.push(nums[i]); 
+            }
+            extra = min(extra, prefix[i-n] + suffix); 
+        }
+        return ans + extra; 
+    }
 };
 
 
