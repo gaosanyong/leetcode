@@ -24019,6 +24019,56 @@ public:
     }
 
 
+    /*1405. Longest Happy String (Medium)
+	A string s is called happy if it satisfies the following conditions:
+	* s only contains the letters 'a', 'b', and 'c'.
+	* s does not contain any of "aaa", "bbb", or "ccc" as a substring.
+	* s contains at most a occurrences of the letter 'a'.
+	* s contains at most b occurrences of the letter 'b'.
+	* s contains at most c occurrences of the letter 'c'.
+	Given three integers a, b, and c, return the longest possible happy string. 
+	If there are multiple longest happy strings, return any of them. If there 
+	is no such string, return the empty string "". A substring is a contiguous 
+	sequence of characters within a string.
+
+	Example 1:
+	Input: a = 1, b = 1, c = 7
+	Output: "ccaccbcc"
+	Explanation: "ccbccacc" would also be a correct answer.
+
+	Example 2:
+	Input: a = 7, b = 1, c = 0
+	Output: "aabaa"
+	Explanation: It is the only correct answer in this case.
+
+	Constraints:
+	* 0 <= a, b, c <= 100
+	* a + b + c > 0*/
+
+    string longestDiverseString(int a, int b, int c) {
+        priority_queue<pair<int, char>> pq; 
+        if (a) pq.emplace(a, 'a'); 
+        if (b) pq.emplace(b, 'b'); 
+        if (c) pq.emplace(c, 'c'); 
+        string ans; 
+        while (pq.size()) {
+            auto [x, c] = pq.top(); pq.pop(); 
+            if (ans.size() >= 2 && ans.back() == c && *(ans.rbegin()+1) == c) 
+                if (pq.size()) {
+                    auto [xx, cc] = pq.top(); pq.pop(); 
+                    ans.push_back(cc); 
+                    if (xx-1) pq.emplace(xx-1, cc); 
+                    pq.emplace(x, c); 
+                } else break; 
+            else {
+                ans.push_back(c); 
+                if (x-1) pq.emplace(x-1, c); 
+            }
+        }
+        return ans; 
+    }
+
+
     /*1413. Minimum Value to Get Positive Step by Step Sum (Easy)
 	Given an array of integers nums, you start with an initial positive value 
 	startValue. In each iteration, you calculate the step by step sum of 

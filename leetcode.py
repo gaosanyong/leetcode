@@ -32070,22 +32070,21 @@ class UnionFind:
 	* a + b + c > 0"""
 
     def longestDiverseString(self, a: int, b: int, c: int) -> str:
-        pq = [] # max-heap 
+        pq = []
         for x, c in zip((a, b, c), "abc"): 
             if x: heappush(pq, (-x, c))
-        
         ans = []
         while pq: 
-            n, x = heappop(pq)
-            if ans[-2:] != [x, x]: 
-                ans.append(x)
-                if n+1: heappush(pq, (n+1, x))
-            else: 
+            x, c = heappop(pq)
+            if ans[-2:] == [c, c]: 
                 if not pq: break 
-                nn, xx = heappop(pq)
-                ans.append(xx)
-                if nn+1: heappush(pq, (nn+1, xx))
-                heappush(pq, (n, x))
+                xx, cc = heappop(pq)
+                ans.append(cc)
+                if xx+1: heappush(pq, (xx+1, cc))
+                heappush(pq, (x, c))
+            else: 
+                ans.append(c)
+                if x+1: heappush(pq, (x+1, c))
         return "".join(ans)
 
 
