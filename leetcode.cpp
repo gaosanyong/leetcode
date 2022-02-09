@@ -24315,10 +24315,17 @@ public:
 
     vector<string> simplifiedFractions(int n) {
         vector<string> ans; 
-        for (int d = 2; d <= n; ++d) 
-            for (int n = 1; n < d; ++n) 
-                if (gcd(n, d) == 1) 
-                    ans.push_back(to_string(n) + "/" + to_string(d)); 
+        stack<tuple<int, int, int, int>> stk; // Stern-Brocot tree
+        stk.emplace(0, 1, 1, 1); 
+        while (stk.size()) {
+            auto [px, pd, x, d] = stk.top(); stk.pop(); 
+            int cx = px + x, cd = pd + d; // mediant 
+            if (cd <= n) {
+                stk.emplace(px, pd, cx, cd); 
+                stk.emplace(cx, cd, x, d); 
+                ans.push_back(to_string(cx) + "/" + to_string(cd)); 
+            }
+        }
         return ans; 
     }
 
