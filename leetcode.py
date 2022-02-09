@@ -13606,12 +13606,8 @@ class Solution:
 	* 0 <= k <= 10^7"""
 
     def findPairs(self, nums: List[int], k: int) -> int:
-        ans, seen = set(), set()
-        for x in nums: 
-            if x - k in seen: ans.add(x)
-            if x + k in seen: ans.add(x+k)
-            seen.add(x)
-        return len(ans)
+        freq = Counter(nums)
+        return sum(k == 0 and v > 1 or k and x-k in freq for x, v in freq.items())
 
 
     """533. Lonely Pixel II (Medium)
