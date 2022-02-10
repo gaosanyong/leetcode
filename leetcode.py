@@ -14305,7 +14305,7 @@ class Solution:
 
     def subarraySum(self, nums: List[int], k: int) -> int:
         ans = prefix = 0
-        freq = defaultdict(int, {0:1})
+        freq = Counter({0 : 1})
         for x in nums: 
             prefix += x
             ans += freq[prefix - k]
