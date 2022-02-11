@@ -24473,25 +24473,21 @@ class Solution:
 	* 0 <= A[i][j] <= 1
 	* All rows have the same size."""
 
-    def numEnclaves(self, A: List[List[int]]) -> int:
-        m, n = len(A), len(A[0])
-        
+    def numEnclaves(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
         stack = []
-        for i in range(m):
-            if A[i][0]: stack.append((i, 0))
-            if A[i][n-1]: stack.append((i, n-1))
-        
-        for j in range(n):
-            if A[0][j]: stack.append((0, j))
-            if A[m-1][j]: stack.append((m-1, j))
-                
+        for i in range(m): 
+            for j in range(n): 
+                if (i in (0, m-1) or j in (0, n-1)) and grid[i][j]: 
+                    stack.append((i, j))
+                    grid[i][j] = 0 
         while stack: 
             i, j = stack.pop()
-            A[i][j] = 0 # mark as visited 
             for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
-                if 0 <= ii < m and 0 <= jj < n and A[ii][jj]: stack.append((ii, jj))
-        
-        return sum(map(sum, A))
+                if 0 <= ii < m and 0 <= jj < n and grid[ii][jj]: 
+                    stack.append((ii, jj))
+                    grid[ii][jj] = 0
+        return sum(map(sum, grid))
 
 
     """1021. Remove Outermost Parentheses (Easy)
