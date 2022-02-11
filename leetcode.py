@@ -49160,7 +49160,7 @@ class Trie:
 
     def minimumDifference(self, nums: List[int], k: int) -> int:
         nums.sort()
-        return min(nums[i+k-1]-nums[i] for i in range(len(nums)-k+1))
+        return min(nums[i]-nums[i-k+1] for i in range(k-1, len(nums)))
 
 
     """1985. Find the Kth Largest Integer in the Array (Medium)
