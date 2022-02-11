@@ -14489,7 +14489,7 @@ class Solution:
         for i, x in enumerate(s2): 
             freq[x] -= 1
             if i >= len(s1): freq[s2[i-len(s1)]] += 1
-            if all(x == 0 for x in freq.values()): return True 
+            if not any(freq.values()): return True 
         return False
 
 
