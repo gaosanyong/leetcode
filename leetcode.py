@@ -4306,31 +4306,28 @@ class Solution:
 	transformation."""
 
     def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
-        if endWord not in wordList: return 0 #shortcut 
-        
-        graph = dict()
-        for word in wordList: 
-            for i in range(len(word)):
-                graph.setdefault(word[:i] + "*" + word[i+1:], []).append(word)
-        
-        #two-end bfs
-        front0, front1 = {beginWord}, {endWord}
-        seen = {beginWord, endWord}
-        
-        ans = 1
-        while front0 and front1: 
-            ans += 1
-            if len(front0) > len(front1): front0, front1 = front1, front0
-            #move forward frontier
-            temp = set()
-            for word in front0: 
+        if endWord in wordList: 
+            mp = {}
+            for word in wordList: 
                 for i in range(len(word)):
-                    for node in graph.get(word[:i] + "*" + word[i+1:], []):
-                        if node in front1: return ans 
-                        if node in seen: continue
-                        temp.add(node)
-                        seen.add(node)
-            front0 = temp
+                    key = word[:i] + "*" + word[i+1:]
+                    mp.setdefault(key, []).append(word)
+            ans = 1
+            seen = {beginWord, endWord}
+            fwd, bwd = {beginWord}, {endWord}
+            while fwd and bwd: 
+                ans += 1
+                if len(fwd) > len(bwd): fwd, bwd = bwd, fwd
+                temp = set()
+                for word in fwd: 
+                    for i in range(len(w)):
+                        key = word[:i] + "*" + word[i+1:]
+                        for w in mp.get(key, []):
+                            if w in bwd: return ans 
+                            if w not in seen: 
+                                temp.add(w)
+                                seen.add(w)
+                fwd = temp
         return 0
 
 
