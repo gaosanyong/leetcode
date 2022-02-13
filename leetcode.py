@@ -56450,9 +56450,8 @@ class Trie:
     def countOperations(self, num1: int, num2: int) -> int:
         ans = 0 
         while num1 and num2: 
-            if num1 < num2: num1, num2 = num2, num1
-            q, num1 = divmod(num1, num2)
-            ans += q
+            ans += num1//num2
+            num1, num2 = num2, num1%num2
         return ans 
 
 

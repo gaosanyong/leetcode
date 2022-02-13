@@ -41313,6 +41313,201 @@ public:
         }
         return ans + extra; 
     }
+
+
+    /*2169. Count Operations to Obtain Zero (Easy)
+	You are given two non-negative integers num1 and num2. In one operation, if 
+	num1 >= num2, you must subtract num2 from num1, otherwise subtract num1 
+	from num2.
+	* For example, if num1 = 5 and num2 = 4, subtract num2 from num1, thus 
+	  obtaining num1 = 1 and num2 = 4. However, if num1 = 4 and num2 = 5, after 
+	  one operation, num1 = 4 and num2 = 1.
+	Return the number of operations required to make either num1 = 0 or 
+	num2 = 0.
+
+	Example 1:
+	Input: num1 = 2, num2 = 3
+	Output: 3
+	Explanation: - Operation 1: num1 = 2, num2 = 3. Since num1 < num2, we 
+	               subtract num1 from num2 and get num1 = 2, num2 = 3 - 2 = 1.
+	             - Operation 2: num1 = 2, num2 = 1. Since num1 > num2, we 
+	               subtract num2 from num1.
+	             - Operation 3: num1 = 1, num2 = 1. Since num1 == num2, we 
+	               subtract num2 from num1.
+	             Now num1 = 0 and num2 = 1. Since num1 == 0, we do not need to 
+	             perform any further operations. So the total number of 
+	             operations required is 3.
+	
+	Example 2:
+	Input: num1 = 10, num2 = 10
+	Output: 1
+	Explanation: - Operation 1: num1 = 10, num2 = 10. Since num1 == num2, we 
+	               subtract num2 from num1 and get num1 = 10 - 10 = 0.
+	             Now num1 = 0 and num2 = 10. Since num1 == 0, we are done. So 
+	             the total number of operations required is 1.
+
+	Constraints: 0 <= num1, num2 <= 10^5*/
+
+    int countOperations(int num1, int num2) {
+        int ans = 0; 
+        while (num1 && num2) {
+            ans += num1/num2; 
+            num1 %= num2; 
+            swap(num1, num2); 
+        }
+        return ans; 
+    }
+
+
+    /*2170. Minimum Operations to Make the Array Alternating (Medium)
+	You are given a 0-indexed array nums consisting of n positive integers. The 
+	array nums is called alternating if:
+	* nums[i - 2] == nums[i], where 2 <= i <= n - 1.
+	* nums[i - 1] != nums[i], where 1 <= i <= n - 1.
+	In one operation, you can choose an index i and change nums[i] into any 
+	positive integer. Return the minimum number of operations required to make 
+	the array alternating.
+
+	Example 1:
+	Input: nums = [3,1,3,2,4,3]
+	Output: 3
+	Explanation: One way to make the array alternating is by converting it to 
+	             [3,1,3,1,3,1]. The number of operations required in this case 
+	             is 3. It can be proven that it is not possible to make the 
+	             array alternating in less than 3 operations. 
+	
+	Example 2:
+	Input: nums = [1,2,2,2,2]
+	Output: 2
+	Explanation: One way to make the array alternating is by converting it to 
+	             [1,2,1,2,1]. The number of operations required in this case is 
+	             2. Note that the array cannot be converted to [2,2,2,2,2] 
+	             because in this case nums[0] == nums[1] which violates the 
+	             conditions of an alternating array.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^5*/
+
+    int minimumOperations(vector<int>& nums) {
+        unordered_map<int, int> even, odd; 
+        for (int i = 0; i < nums.size(); ++i) 
+            if (i&1) ++odd[nums[i]]; 
+            else ++even[nums[i]]; 
+        
+        auto fn = [&](unordered_map<int, int> freq) {
+            int key = 0, m0 = 0, m1 = 0; 
+            for (auto& [k, v] : freq) 
+                if (v > m0) tie(key, m1, m0) = make_tuple(k, m0, v); 
+                else m1 = v;
+            return make_tuple(key, m0, m1); 
+        };
+        
+        auto [k0, m00, m01] = fn(even); 
+        auto [k1, m10, m11] = fn(odd); 
+        return k0 == k1 ? nums.size() - max(m00 + m11, m01 + m10) : nums.size() - m00 - m10; 
+    }
+
+
+    /*2171. Removing Minimum Number of Magic Beans (Medium)
+	You are given an array of positive integers beans, where each integer 
+	represents the number of magic beans found in a particular magic bag.
+	Remove any number of beans (possibly none) from each bag such that the 
+	number of beans in each remaining non-empty bag (still containing at least 
+	one bean) is equal. Once a bean has been removed from a bag, you are not 
+	allowed to return it to any of the bags. Return the minimum number of magic 
+	beans that you have to remove.
+
+	Example 1:
+	Input: beans = [4,1,6,5]
+	Output: 4
+	Explanation: - We remove 1 bean from the bag with only 1 bean. This results 
+	               in the remaining bags: [4,0,6,5]
+	             - Then we remove 2 beans from the bag with 6 beans. This 
+	               results in the remaining bags: [4,0,4,5]
+	             - Then we remove 1 bean from the bag with 5 beans. This 
+	               results in the remaining bags: [4,0,4,4]
+	             We removed a total of 1 + 2 + 1 = 4 beans to make the 
+	             remaining non-empty bags have an equal number of beans. There 
+	             are no other solutions that remove 4 beans or fewer.
+	
+	Example 2:
+	Input: beans = [2,10,3,2]
+	Output: 7
+	Explanation: - We remove 2 beans from one of the bags with 2 beans. This 
+	               results in the remaining bags: [0,10,3,2]
+	             - Then we remove 2 beans from the other bag with 2 beans. This 
+	               results in the remaining bags: [0,10,3,0]
+	             - Then we remove 3 beans from the bag with 3 beans. This 
+	               results in the remaining bags: [0,10,0,0]
+	             We removed a total of 2 + 2 + 3 = 7 beans to make the 
+	             remaining non-empty bags have an equal number of beans. There 
+	             are no other solutions that removes 7 beans or fewer.
+
+	Constraints:
+	* 1 <= beans.length <= 10^5
+	* 1 <= beans[i] <= 10^5*/
+
+    long long minimumRemoval(vector<int>& beans) {
+        sort(beans.begin(), beans.end()); 
+        long most = 0; 
+        for (int i = 0, n = beans.size(); i < n; ++i) most = max(most, (long)(n-i)*beans[i]); 
+        return accumulate(beans.begin(), beans.end(), 0l) - most; 
+    }
+
+
+    /*2172. Maximum AND Sum of Array (Hard)
+	You are given an integer array nums of length n and an integer numSlots 
+	such that 2 * numSlots >= n. There are numSlots slots numbered from 1 to 
+	numSlots. You have to place all n integers into the slots such that each 
+	slot contains at most two numbers. The AND sum of a given placement is the 
+	sum of the bitwise AND of every number with its respective slot number.
+	* For example, the AND sum of placing the numbers [1, 3] into slot 1 and 
+	  [4, 6] into slot 2 is equal to 
+	  (1 AND 1) + (3 AND 1) + (4 AND 2) + (6 AND 2) = 1 + 1 + 0 + 2 = 4.
+	Return the maximum possible AND sum of nums given numSlots slots.
+
+	Example 1:
+	Input: nums = [1,2,3,4,5,6], numSlots = 3
+	Output: 9
+	Explanation: One possible placement is [1, 4] into slot 1, [2, 6] into slot 
+	             2, and [3, 5] into slot 3. This gives the maximum AND sum of 
+	             (1 AND 1) + (4 AND 1) + (2 AND 2) + (6 AND 2) + (3 AND 3) + 
+	             (5 AND 3) = 1 + 0 + 2 + 2 + 3 + 1 = 9.
+	
+	Example 2:
+	Input: nums = [1,3,10,4,7,1], numSlots = 9
+	Output: 24
+	Explanation: One possible placement is [1, 1] into slot 1, [3] into slot 3, 
+	             [4] into slot 4, [7] into slot 7, and [10] into slot 9. This 
+	             gives the maximum AND sum of (1 AND 1) + (1 AND 1) + (3 AND 3) 
+	             + (4 AND 4) + (7 AND 7) + (10 AND 9) = 1 + 1 + 3 + 4 + 7 + 8 = 24.
+	             Note that slots 2, 5, 6, and 8 are empty which is permitted.
+
+	Constraints:
+	* n == nums.length
+	* 1 <= numSlots <= 9
+	* 1 <= n <= 2 * numSlots
+	* 1 <= nums[i] <= 15*/
+
+    int maximumANDSum(vector<int>& nums, int numSlots) {
+        vector<vector<int>> memo(nums.size(), vector<int>(1<<2*numSlots, -1)); 
+        
+        function<int(int, int)> fn = [&](int k, int m) {
+            if (k == nums.size()) return 0; 
+            if (memo[k][m] == -1) 
+                for (int i = 0; i < numSlots; ++i) 
+                    if ((m & 1<<2*i) == 0 || (m & 1<<2*i+1) == 0) {
+                        int mm = m; 
+                        if ((m & 1<<2*i) == 0) mm ^= 1<<2*i; 
+                        else mm ^= 1<<2*i+1; 
+                        memo[k][m] = max(memo[k][m], (nums[k] & i+1) + fn(k+1, mm)); 
+                    }
+            return memo[k][m]; 
+        }; 
+        
+        return fn(0, 0); 
+    }
 };
 
 
