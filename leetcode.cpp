@@ -3024,13 +3024,14 @@ public:
 
     int maxDepth(TreeNode* root) {
         int ans = 0; 
-        stack<pair<TreeNode*, int>> stk; stk.emplace(root, 1); 
-        while (stk.size()) {
-            auto [node, x] = stk.top(); stk.pop(); 
-            if (node) {
+        if (root) {
+            stack<pair<TreeNode*, int>> stk; 
+            stk.emplace(root, 1); 
+            while (stk.size()) {
+                auto [node, x] = stk.top(); stk.pop(); 
                 ans = max(ans, x); 
-                stk.emplace(node->right, x+1); 
-                stk.emplace(node->left, x+1); 
+                if (node->left) stk.emplace(node->left, x+1); 
+                if (node->right) stk.emplace(node->right, x+1); 
             }
         }
         return ans; 
