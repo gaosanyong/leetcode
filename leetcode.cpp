@@ -44,9 +44,9 @@ public:
 	Output: [0,1]
 
 	Constraints:
-	* 2 <= nums.length <= 103
-	* -109 <= nums[i] <= 109
-	* -109 <= target <= 109
+	* 2 <= nums.length <= 10^3
+	* -10^9 <= nums[i] <= 10^9
+	* -10^9 <= target <= 10^9
 	* Only one valid answer exists.*/
 
     vector<int> twoSum(vector<int>& nums, int target) {
@@ -665,7 +665,7 @@ public:
 	Output: true
 
 	Constraints:
-	* 1 <= s.length <= 104
+	* 1 <= s.length <= 10^4
 	* s consists of parentheses only '()[]{}'.*/
 
     bool isValid(string s) {
@@ -927,8 +927,8 @@ public:
 	             returned length.
 	
 	Constraints:
-	* 0 <= nums.length <= 3 * 104
-	* -104 <= nums[i] <= 104
+	* 0 <= nums.length <= 3 * 10^4
+	* -10^4 <= nums[i] <= 10^4
 	* nums is sorted in ascending order.*/
 
     int removeDuplicates(vector<int>& nums) {
@@ -965,7 +965,7 @@ public:
 	Output: 0
 
 	Constraints:
-	* 0 <= haystack.length, needle.length <= 5 * 104
+	* 0 <= haystack.length, needle.length <= 5 * 10^4
 	* haystack and needle consist of only lower-case English characters.*/
 
     int strStr(string haystack, string needle) {
@@ -1873,7 +1873,7 @@ public:
 	Output: "10101"
 
 	Constraints:
-	* 1 <= a.length, b.length <= 104
+	* 1 <= a.length, b.length <= 10^4
 	* a and b consist only of '0' or '1' characters.
 	* Each string does not contain leading zeros except for the zero itself.*/
 
@@ -2477,7 +2477,7 @@ public:
 	* nums2.length == n
 	* 0 <= m, n <= 200
 	* 1 <= m + n <= 200
-	* -109 <= nums1[i], nums2[i] <= 10^9*/
+	* -10^9 <= nums1[i], nums2[i] <= 10^9*/
 
     void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
         for (int k = m+n-1, i = m-1, j = n-1; j >= 0; --k) 
@@ -5269,7 +5269,7 @@ public:
 	Output: []
 
 	Constraints:
-	* The number of nodes in the list is in the range [0, 104].
+	* The number of nodes in the list is in the range [0, 10^4].
 	* 1 <= Node.val <= 50
 	* 0 <= val <= 50*/
 
@@ -5473,7 +5473,7 @@ public:
 	* n == board[i].length
 	* 1 <= m, n <= 12
 	* board[i][j] is a lowercase English letter.
-	* 1 <= words.length <= 3 * 104
+	* 1 <= words.length <= 3 * 10^4
 	* 1 <= words[i].length <= 10
 	* words[i] consists of lowercase English letters.
 	* All the strings of words are unique.
@@ -6098,7 +6098,7 @@ public:
 	Output: [0,0,9,0,0]
 
 	Constraints:
-	* 2 <= nums.length <= 105
+	* 2 <= nums.length <= 10^5
 	* -30 <= nums[i] <= 30
 	* The product of any prefix or suffix of nums is guaranteed to fit in a 32-
 	  bit integer.
@@ -8093,7 +8093,7 @@ public:
 
 	Constraints:
 	* 0 <= s.length <= 100
-	* 0 <= t.length <= 104
+	* 0 <= t.length <= 10^4
 	* s and t consist only of lowercase English letters.
 
 	Follow up: Suppose there are lots of incoming s, say s1, s2, ..., sk where 
@@ -9678,7 +9678,7 @@ public:
 
 	Constraints:
 	* 1 <= nums1.length <= nums2.length <= 1000
-	* 0 <= nums1[i], nums2[i] <= 104
+	* 0 <= nums1[i], nums2[i] <= 10^4
 	* All integers in nums1 and nums2 are unique.
 	* All the integers of nums1 also appear in nums2.
 
@@ -11575,8 +11575,8 @@ public:
 	Output: [1,2,3,6,7,11,14,4,8,12,5,9,13,10]
 
 	Constraints:
-	* The number of nodes in the tree is in the range [0, 104].
-	* 0 <= Node.val <= 104
+	* The number of nodes in the tree is in the range [0, 10^4].
+	* 0 <= Node.val <= 10^4
 	* The height of the n-ary tree is less than or equal to 1000.
 
 	Follow up: Recursive solution is trivial, could you do it iteratively? */
@@ -12825,7 +12825,7 @@ public:
 
 	Constraints:
 	* 1 <= ops.length <= 1000
-	* ops[i] is "C", "D", "+", or a string representing an integer in the range [-3 * 104, 3 * 104].
+	* ops[i] is "C", "D", "+", or a string representing an integer in the range [-3 * 10^4, 3 * 10^4].
 	* For operation "+", there will always be at least two previous scores on the record.
 	* For operations "C" and "D", there will always be at least one previous score on the record.*/
 
@@ -15320,7 +15320,7 @@ public:
 	* flights[i].length == 3
 	* 0 <= fromi, toi < n
 	* fromi != toi
-	* 1 <= pricei <= 104
+	* 1 <= pricei <= 10^4
 	* There will not be any multiple flights between two cities.
 	* 0 <= src, dst, k < n
 	* src != dst*/
@@ -16932,7 +16932,7 @@ public:
 	Example 2:
 	Input: rectangles = [[0,0,1000000000,1000000000]]
 	Output: 49
-	Explanation: The answer is 1018 modulo (109 + 7), which is (109)2 = (-7)2 = 49.
+	Explanation: The answer is 1018 modulo (10^9 + 7), which is (109)2 = (-7)2 = 49.
 
 	Constraints:
 	* 1 <= rectangles.length <= 200
@@ -17206,7 +17206,7 @@ public:
 	Output: true
 
 	Constraints:
-	* 1 <= a.length, b.length <= 2 * 104
+	* 1 <= a.length, b.length <= 2 * 10^4
 	* a and b consist of lowercase letters.*/
 
     bool buddyStrings(string a, string b) {
@@ -17861,7 +17861,7 @@ public:
 	Output: 8
 
 	Constraints:
-	* 1 <= n <= 109
+	* 1 <= n <= 10^9
 	* 2 <= a, b <= 4 * 10^4*/
 
     int nthMagicalNumber(int n, int a, int b) {
@@ -18640,7 +18640,7 @@ public:
 
 	Note:
 	* 2 <= nums.length <= 30000
-	* 0 <= nums[i] <= 106
+	* 0 <= nums[i] <= 10^6
 	* It is guaranteed there is at least one way to partition nums as described.*/
 
     int partitionDisjoint(vector<int>& nums) {
@@ -20803,7 +20803,7 @@ public:
 	Output: [1,1,0]
 
 	Constraints:
-	* 1 <= n <= 109
+	* 1 <= n <= 10^9
 	* 0 <= lamps.length <= 20000
 	* 0 <= queries.length <= 20000
 	* lamps[i].length == 2
@@ -21864,10 +21864,10 @@ public:
 	             number is 6.
 
 	Constraints:
-	* 1 <= nums.length <= 5 * 104
-	* 1 <= nums[i] <= 107
+	* 1 <= nums.length <= 5 * 10^4
+	* 1 <= nums[i] <= 10^7
 	* nums is sorted in ascending order, and all the elements are unique.
-	* 1 <= k <= 108
+	* 1 <= k <= 10^8
 
 	Follow up: Can you find a logarithmic time complexity (i.e., O(log(n))) 
 	           solution?*/
@@ -22796,7 +22796,7 @@ public:
 	* 3 <= username.length <= 50
 	* 1 <= username[i].length <= 10
 	* timestamp.length == username.length
-	* 1 <= timestamp[i] <= 109
+	* 1 <= timestamp[i] <= 10^9
 	* website.length == username.length
 	* 1 <= website[i].length <= 10
 	* username[i] and website[i] consist of lowercase English letters.
@@ -24697,7 +24697,7 @@ public:
 
 	Constraints:
 	* The depth of the n-ary tree is less than or equal to 1000.
-	* The total number of nodes is between [0, 104].
+	* The total number of nodes is between [0, 10^4].
 
 	Follow up: Can your solution work for the graph problem?*/
 
@@ -26272,11 +26272,11 @@ public:
 	Input: orders = [[7,1000000000,1],[15,3,0],[5,999999995,0],[5,1,1]]
 	Output: 999999984
 	Explanation: Here is what happens with the orders:
-	- 109 orders of type sell with price 7 are placed. There are no buy orders, so the 109 orders are added to the backlog.
+	- 10^9 orders of type sell with price 7 are placed. There are no buy orders, so the 10^9 orders are added to the backlog.
 	- 3 orders of type buy with price 15 are placed. They are matched with the 3 sell orders with the least price which is 7, and those 3 sell orders are removed from the backlog.
 	- 999999995 orders of type buy with price 5 are placed. The least price of a sell order is 7, so the 999999995 orders are added to the backlog.
 	- 1 order of type sell with price 5 is placed. It is matched with the buy order of the highest price, which is 5, and that buy order is removed from the backlog.
-	Finally, the backlog has (1000000000-3) sell orders with price 7, and (999999995-1) buy orders with price 5. So the total number of orders = 1999999991, which is equal to 999999984 % (109 + 7).
+	Finally, the backlog has (1000000000-3) sell orders with price 7, and (999999995-1) buy orders with price 5. So the total number of orders = 1999999991, which is equal to 999999984 % (10^9 + 7).
 
 	Constraints:
 	* 1 <= orders.length <= 10^5
@@ -26693,7 +26693,7 @@ public:
 	* 0 <= i < j < nums.length
 	* nums[i] + rev(nums[j]) == nums[j] + rev(nums[i])
 	Return the number of nice pairs of indices. Since that number can be too 
-	large, return it modulo 109 + 7.
+	large, return it modulo 10^9 + 7.
 
 	Example 1:
 	Input: nums = [42,11,1,97]
@@ -27295,7 +27295,7 @@ public:
 	* Swap the two characters at indices i - 1 and j.
 	* Reverse the suffix starting at index i.
 	Return the number of operations needed to make the string sorted. Since the 
-	answer can be too large, return it modulo 109 + 7.
+	answer can be too large, return it modulo 10^9 + 7.
 
 	Example 1:
 	Input: s = "cba"
@@ -28752,7 +28752,7 @@ public:
 	the left of it. For example, if the sticks are arranged [1,3,2,5,4], then 
 	the sticks with lengths 1, 3, and 5 are visible from the left. Given n and 
 	k, return the number of such arrangements. Since the answer may be large, 
-	return it modulo 109 + 7.
+	return it modulo 10^9 + 7.
 
 	Example 1:
 	Input: n = 3, k = 2
@@ -28770,7 +28770,7 @@ public:
 	Example 3:
 	Input: n = 20, k = 11
 	Output: 647427950
-	Explanation: There are 647427950 (mod 109 + 7) ways to rearrange the sticks 
+	Explanation: There are 647427950 (mod 10^9 + 7) ways to rearrange the sticks 
 	             such that exactly 11 sticks are visible.
 
 	Constraints:
@@ -33088,7 +33088,7 @@ public:
 
 	Constraints:
 	* n == s.length
-	* 2 <= n <= 106
+	* 2 <= n <= 10^6
 	* n is even.
 	* s[i] is either '[' or ']'.
 	* The number of opening brackets '[' equals n / 2, and the number of 
@@ -34027,7 +34027,7 @@ public:
 
 	Constraints:
 	* n == nums1.length == nums2.length
-	* 1 <= n <= 105
+	* 1 <= n <= 10^5
 	* nums1[i] is either 0 or 1.
 	* nums2[i] is either 0 or 1.*/
 
@@ -34775,7 +34775,7 @@ public:
 
 	Constraints:
 	* n == rectangles.length
-	* 1 <= n <= 105
+	* 1 <= n <= 10^5
 	* rectangles[i].length == 2
 	* 1 <= widthi, heighti <= 10^5*/
 
@@ -34889,7 +34889,7 @@ public:
 	* 0 <= parents[i] <= n - 1 for i != 0
 	* parents[0] == -1
 	* parents represents a valid tree.
-	* 1 <= nums[i] <= 105
+	* 1 <= nums[i] <= 10^5
 	* Each nums[i] is distinct.*/
 
     vector<int> smallestMissingValueSubtree(vector<int>& parents, vector<int>& nums) {
@@ -36583,7 +36583,7 @@ public:
 
 	Constraints:
 	* 2 <= n <= 10^4
-	* n - 1 <= edges.length <= min(2 * 104, n * (n - 1) / 2)
+	* n - 1 <= edges.length <= min(2 * 10^4, n * (n - 1) / 2)
 	* edges[i].length == 2
 	* 1 <= ui, vi <= n
 	* ui != vi
@@ -37401,7 +37401,7 @@ public:
 	Constraints:
 	* n == values.length
 	* 1 <= n <= 1000
-	* 0 <= values[i] <= 108
+	* 0 <= values[i] <= 10^8
 	* 0 <= edges.length <= 2000
 	* edges[j].length == 3
 	* 0 <= uj < vj <= n - 1
@@ -41539,7 +41539,7 @@ Constraints:
 * -2^31 <= val <= 2^31 - 1
 * Methods pop, top and getMin operations will always be called on non-empty 
   stacks.
-* At most 3 * 104 calls will be made to push, pop, top, and getMin.*/
+* At most 3 * 10^4 calls will be made to push, pop, top, and getMin.*/
 
 class MinStack {
     stack<pair<int, int>> stk; 
@@ -41599,7 +41599,7 @@ bSTIterator.hasNext(); // return False
 Constraints:
 * The number of nodes in the tree is in the range [1, 10^5].
 * 0 <= Node.val <= 10^6
-* At most 105 calls will be made to hasNext, and next.
+* At most 10^5 calls will be made to hasNext, and next.
 
 Follow up: Could you implement next() and hasNext() to run in average O(1) time 
            and use O(h) memory, where h is the height of the tree?*/
@@ -42060,10 +42060,10 @@ Constraints:
 * m == matrix.length
 * n == matrix[i].length
 * 1 <= m, n <= 200
-* -105 <= matrix[i][j] <= 105
+* -10^5 <= matrix[i][j] <= 10^5
 * 0 <= row1 <= row2 < m
 * 0 <= col1 <= col2 < n
-* At most 104 calls will be made to sumRegion.*/
+* At most 10^4 calls will be made to sumRegion.*/
 
 class NumMatrix {
     vector<vector<int>> prefix; 
@@ -42234,7 +42234,7 @@ solution.getRandom(); // return 3
 Constraints:
 * The number of nodes in the linked list will be in the range [1, 10^4].
 * -10^4 <= Node.val <= 10^4
-* At most 104 calls will be made to getRandom.
+* At most 10^4 calls will be made to getRandom.
 
 Follow up:
 * What if the linked list is extremely large and its length is unknown to you?
@@ -42569,8 +42569,8 @@ kthLargest.add(4);   // return 8
 Constraints:
 * 1 <= k <= 10^4
 * 0 <= nums.length <= 10^4
-* -104 <= nums[i] <= 10^4
-* -104 <= val <= 10^4
+* -10^4 <= nums[i] <= 10^4
+* -10^4 <= val <= 10^4
 * At most 10^4 calls will be made to add.
 * It is guaranteed that there will be at least k elements in the array when you 
   search for the kth element.*/
@@ -42964,9 +42964,9 @@ timeMap.get("foo", 5);         // return "bar2"
 Constraints:
 * 1 <= key.length, value.length <= 100
 * key and value consist of lowercase English letters and digits.
-* 1 <= timestamp <= 107
+* 1 <= timestamp <= 10^7
 * All the timestamps timestamp of set are strictly increasing.
-* At most 2 * 105 calls will be made to set and get.*/
+* At most 2 * 10^5 calls will be made to set and get.*/
 
 class TimeMap {
     unordered_map<string, map<int, string>> mp; 
@@ -43087,7 +43087,7 @@ fileSystem.createPath("/c/d", 1); // return false because the parent path "/c" d
 fileSystem.get("/c"); // return -1 because this path doesn't exist.
 
 Constraints:
-* The number of calls to the two functions is less than or equal to 104 in total.
+* The number of calls to the two functions is less than or equal to 10^4 in total.
 * 2 <= path.length <= 100
 * 1 <= value <= 10^9*/
 
@@ -43385,7 +43385,7 @@ bSTIterator.prev(); // state becomes [3, 7, 9, 15, 20], return 9
 Constraints:
 * The number of nodes in the tree is in the range [1, 10^5].
 * 0 <= Node.val <= 10^6
-* At most 105 calls will be made to hasNext, next, hasPrev, and prev.
+* At most 10^5 calls will be made to hasNext, next, hasPrev, and prev.
 
 Follow up: Could you solve the problem without precalculating the values of the 
            tree?*/
@@ -43677,7 +43677,7 @@ Constraints:
 * 0 <= shopi < n
 * 1 <= moviei, pricei <= 10^4
 * Each shop carries at most one copy of a movie moviei.
-* At most 105 calls in total will be made to search, rent, drop and report.*/
+* At most 10^5 calls in total will be made to search, rent, drop and report.*/
 
 class MovieRentingSystem {
     unordered_map<int, set<array<int,2>>> avail; 
@@ -43775,7 +43775,7 @@ Constraints:
 * 0 <= parent[i] <= n - 1 for i != 0
 * parent[0] == -1
 * 0 <= num <= n - 1
-* 1 <= user <= 104
+* 1 <= user <= 10^4
 * parent represents a valid tree.
 * At most 2000 calls in total will be made to lock, unlock, and upgrade.*/
 

@@ -5482,8 +5482,8 @@ class Solution:
 	Output: true
 
 	Constraints:
-	* 0 <= s.length <= 104
-	* 0 <= t.length <= 104
+	* 0 <= s.length <= 10^4
+	* 0 <= t.length <= 10^4
 	* s and t consist of lower-case letters, upper-case letters and/or digits."""
 
     def isOneEditDistance(self, s: str, t: str) -> bool:
@@ -5565,7 +5565,7 @@ class Solution:
 	Output: ["-2"]
 	 
 	Constraints:
-	* -109 <= lower <= upper <= 109
+	* -10^9 <= lower <= upper <= 10^9
 	* 0 <= nums.length <= 100
 	* lower <= nums[i] <= upper
 	* All the values of nums are unique."""
@@ -7580,8 +7580,8 @@ class Solution:
 	Output: 1
 
 	Constraints:
-	*1 <= intervals.length <= 104
-	*0 <= starti < endi <= 106"""
+	*1 <= intervals.length <= 10^4
+	*0 <= starti < endi <= 10^6"""
 
     def minMeetingRooms(self, intervals: List[List[int]]) -> int:
         pq = []
@@ -9073,7 +9073,7 @@ class Solution:
 	Note:
 	* 1 is a super ugly number for any given primes.
 	* The given numbers in primes are in ascending order.
-	* 0 < k ≤ 100, 0 < n ≤ 106, 0 < primes[i] < 1000.
+	* 0 < k ≤ 100, 0 < n ≤ 10^6, 0 < primes[i] < 1000.
 	* The nth super ugly number is guaranteed to fit in a 32-bit signed integer."""
 
     def nthSuperUglyNumber(self, n: int, primes: List[int]) -> int:
@@ -9142,7 +9142,7 @@ class Solution:
 	Output: "acdb"
 
 	Constraints:
-	* 1 <= s.length <= 104
+	* 1 <= s.length <= 10^4
 	* s consists of lowercase English letters."""
 
     def removeDuplicateLetters(self, s: str) -> str:
@@ -9655,8 +9655,8 @@ class Solution:
 	Output: 2
 
 	Constraints:
-	* The number of nodes in the tree is in the range [0, 104].
-	* -104 <= Node.val <= 104"""
+	* The number of nodes in the tree is in the range [0, 10^4].
+	* -10^4 <= Node.val <= 10^4"""
 
     def largestBSTSubtree(self, root: TreeNode) -> int:
         
@@ -9828,7 +9828,7 @@ class Solution:
 	Explanation: The substring is "aa" with length 2.
 
 	Constraints:
-	* 1 <= s.length <= 5 * 104
+	* 1 <= s.length <= 5 * 10^4
 	* 0 <= k <= 50"""
 
     def lengthOfLongestSubstringKDistinct(self, s: str, k: int) -> int:
@@ -10741,7 +10741,7 @@ class Solution:
 	Explanation: We don't have any files.
 
 	Constraints:
-	1 <= input.length <= 104
+	1 <= input.length <= 10^4
 	input may contain lower-case or upper-case English letters, a new line 
 	character '\n', a tab character '\t', a dot '.', a space ' ' or digits."""
 
@@ -12755,7 +12755,7 @@ class Solution:
 
 	Constraints:
 	* 1 <= nums1.length <= nums2.length <= 1000
-	* 0 <= nums1[i], nums2[i] <= 104
+	* 0 <= nums1[i], nums2[i] <= 10^4
 	* All integers in nums1 and nums2 are unique.
 	* All the integers of nums1 also appear in nums2.
 
@@ -13140,7 +13140,7 @@ class Solution:
 	Output: []
 
 	Constraints:
-	* The number of nodes in the tree will be in the range [0, 104].
+	* The number of nodes in the tree will be in the range [0, 10^4].
 	* -231 <= Node.val <= 231 - 1"""
 
     def largestValues(self, root: TreeNode) -> List[int]:
@@ -13761,8 +13761,8 @@ class Solution:
 	Output: [7,9,4,10]
 
 	Constraints:
-	* The number of nodes in the tree is in the range [0, 104].
-	* -104 <= Node.val <= 104
+	* The number of nodes in the tree is in the range [0, 10^4].
+	* -10^4 <= Node.val <= 10^4
 	* All the values in the tree are unique.
 	* root is guaranteed to be a valid binary search tree."""
 
@@ -14776,8 +14776,8 @@ class Solution:
 	Output: 0
 
 	Constraints:
-	* 1 <= nums.length <= 2 * 104
-	* -109 <= nums[i] <= 109"""
+	* 1 <= nums.length <= 2 * 10^4
+	* -10^9 <= nums[i] <= 10^9"""
 
     def findLHS(self, nums: List[int]) -> int:
         freq = {}
@@ -15809,7 +15809,7 @@ class Solution:
 	             from 1 to 3, and the [2, 1] has exactly 2 distinct integers: 1 
 	             and 2.
 	
-	Note: The n and k are in the range 1 <= k < n <= 104."""
+	Note: The n and k are in the range 1 <= k < n <= 10^4."""
 
     def constructArray(self, n: int, k: int) -> List[int]:
         lo, hi = 1, n 
@@ -16152,8 +16152,8 @@ class Solution:
 	Output: -1
 
 	Constraints:
-	* 1 <= a.length <= 104
-	* 1 <= b.length <= 104
+	* 1 <= a.length <= 10^4
+	* 1 <= b.length <= 10^4
 	* a and b consist of lower-case English letters."""
 
     def repeatedStringMatch(self, a: str, b: str) -> int:
@@ -16176,7 +16176,7 @@ class Solution:
 	Output: 2
 
 	Constraints:
-	* The number of nodes in the tree is in the range [0, 104].
+	* The number of nodes in the tree is in the range [0, 10^4].
 	* -1000 <= Node.val <= 1000
 	* The depth of the tree will not exceed 1000."""
 
@@ -18438,7 +18438,7 @@ class Solution:
 	Output: false
 
 	Constraints:
-	* 1 <= start.length <= 104
+	* 1 <= start.length <= 10^4
 	* start.length == end.length
 	* Both start and end will only consist of characters in 'L', 'R', and 'X'."""
 
@@ -18564,7 +18564,7 @@ class Solution:
 	Input: sx = 1, sy = 1, tx = 1, ty = 1
 	Output: true
 
-	Constraints: 1 <= sx, sy, tx, ty <= 109"""
+	Constraints: 1 <= sx, sy, tx, ty <= 10^9"""
 
     def reachingPoints(self, sx: int, sy: int, tx: int, ty: int) -> bool:
         while sx < tx or sy < ty: 
@@ -19586,7 +19586,7 @@ class Solution:
 	Output: [3,2,1,0]
 
 	Constraints:
-	* 1 <= s.length <= 104
+	* 1 <= s.length <= 10^4
 	* s[i] and c are lowercase English letters.
 	* c occurs at least once in s."""
 
@@ -20554,7 +20554,7 @@ class Solution:
 	Output: 1
 
 	Constraints:
-	* 2 <= seats.length <= 2 * 104
+	* 2 <= seats.length <= 2 * 10^4
 	* seats[i] is 0 or 1.
 	* At least one seat is empty.
 	* At least one seat is occupied."""
@@ -20585,7 +20585,7 @@ class Solution:
 	Example 2:
 	Input: rectangles = [[0,0,1000000000,1000000000]]
 	Output: 49
-	Explanation: The answer is 1018 modulo (109 + 7), which is (109)2 = (-7)2 = 49.
+	Explanation: The answer is 1018 modulo (10^9 + 7), which is (109)2 = (-7)2 = 49.
 
 	Constraints:
 	* 1 <= rectangles.length <= 200
@@ -21250,7 +21250,7 @@ class Solution:
 	Output: 8
 
 	Constraints:
-	* 1 <= n <= 109
+	* 1 <= n <= 10^9
 	* 2 <= a, b <= 4 * 10^4"""
 
     def nthMagicalNumber(self, n: int, a: int, b: int) -> int:
@@ -21723,7 +21723,7 @@ class Solution:
 	* If s[i] == 'D', then p[i] > p[i+1], and;
 	* If s[i] == 'I', then p[i] < p[i+1].
 	How many valid permutations are there?  Since the answer may be large, 
-	return your answer modulo 109 + 7.
+	return your answer modulo 10^9 + 7.
 
 	Example 1:
 	Input: s = "DID"
@@ -22134,7 +22134,7 @@ class Solution:
     """923. 3Sum With Multiplicity (Medium)
 	Given an integer array A, and an integer target, return the number of 
 	tuples i, j, k  such that i < j < k and A[i] + A[j] + A[k] == target. As 
-	the answer can be very large, return it modulo 109 + 7.
+	the answer can be very large, return it modulo 10^9 + 7.
 
 	Example 1:
 	Input: A = [1,1,2,2,3,3,4,4,5,5], target = 8
@@ -22509,7 +22509,7 @@ class Solution:
 	of length n we can dial. You are allowed to place the knight on any numeric 
 	cell initially and then you should perform n - 1 jumps to dial a number of 
 	length n. All jumps should be valid knight jumps. As the answer may be very 
-	large, return the answer modulo 109 + 7.
+	large, return the answer modulo 10^9 + 7.
 
 	Example 1:
 	Input: n = 1
@@ -22804,7 +22804,7 @@ class Solution:
 
 	Constraints:
 	* 0 <= tokens.length <= 1000
-	* 0 <= tokens[i], P < 104"""
+	* 0 <= tokens[i], P < 10^4"""
 
     def bagOfTokensScore(self, tokens: List[int], P: int) -> int:
         tokens.sort()
@@ -24054,7 +24054,7 @@ class Solution:
 	Output: [1,1,0]
 
 	Constraints:
-	* 1 <= n <= 109
+	* 1 <= n <= 10^9
 	* 0 <= lamps.length <= 20000
 	* 0 <= queries.length <= 20000
 	* lamps[i].length == 2
@@ -25184,8 +25184,8 @@ class Solution:
 	Output: [1,2,3,4]
 
 	Constraints:
-	* 1 <= n <= 104
-	* 0 <= paths.length <= 2 * 104
+	* 1 <= n <= 10^4
+	* 0 <= paths.length <= 2 * 10^4
 	* paths[i].length == 2
 	* 1 <= xi, yi <= n
 	* xi != yi
@@ -25224,7 +25224,7 @@ class Solution:
 
 	Constraints:
 	* 1 <= arr.length <= 500
-	* 0 <= arr[i] <= 109
+	* 0 <= arr[i] <= 10^9
 	* 1 <= k <= arr.length"""
 
     def maxSumAfterPartitioning(self, arr: List[int], k: int) -> int:
@@ -25692,10 +25692,10 @@ class Solution:
 	             number is 6.
 
 	Constraints:
-	* 1 <= nums.length <= 5 * 104
-	* 1 <= nums[i] <= 107
+	* 1 <= nums.length <= 5 * 10^4
+	* 1 <= nums[i] <= 10^7
 	* nums is sorted in ascending order, and all the elements are unique.
-	* 1 <= k <= 108
+	* 1 <= k <= 10^8
 
 	Follow up: Can you find a logarithmic time complexity (i.e., O(log(n))) 
 	           solution?"""
@@ -25851,8 +25851,8 @@ class UnionFind:
 	Explanation: There is no such i that arr[i] == i, thus the output is -1.
 
 	Constraints:
-	* 1 <= arr.length < 104
-	* -109 <= arr[i] <= 109
+	* 1 <= arr.length < 10^4
+	* -10^9 <= arr[i] <= 10^9
 
 	Follow up: The O(n) solution is very straightforward. Can we do better?"""
 
@@ -27843,7 +27843,7 @@ class UnionFind:
 	* 3 <= username.length <= 50
 	* 1 <= username[i].length <= 10
 	* timestamp.length == username.length
-	* 1 <= timestamp[i] <= 109
+	* 1 <= timestamp[i] <= 10^9
 	* website.length == username.length
 	* 1 <= website[i].length <= 10
 	* username[i] and website[i] consist of lowercase English letters.
@@ -28077,8 +28077,8 @@ class UnionFind:
 	Explanation: There is only one stick, so you don't need to do anything. The total cost is 0.
 
 	Constraints:
-	* 1 <= sticks.length <= 104
-	* 1 <= sticks[i] <= 104"""
+	* 1 <= sticks.length <= 10^4
+	* 1 <= sticks[i] <= 10^4"""
 
     def connectSticks(self, sticks: List[int]) -> int:
         heapify(sticks)
@@ -28667,7 +28667,7 @@ class UnionFind:
 	Constraints:
 	* 1 <= arr.length <= 10^5
 	* 1 <= k <= 10^5
-	* -104 <= arr[i] <= 10^4"""
+	* -10^4 <= arr[i] <= 10^4"""
 
     def kConcatenationMaxSum(self, arr: List[int], k: int) -> int:
         rsm = val = 0 
@@ -28873,9 +28873,9 @@ class UnionFind:
 	Output: 1999999984
 
 	Constraints:
-	* 1 <= n, a, b, c <= 109
+	* 1 <= n, a, b, c <= 10^9
 	* 1 <= a * b * c <= 1018
-	* It is guaranteed that the result will be in range [1, 2 * 109]."""
+	* It is guaranteed that the result will be in range [1, 2 * 10^9]."""
 
     def nthUglyNumber(self, n: int, a: int, b: int, c: int) -> int:
         # inclusion-exclusion principle
@@ -33640,7 +33640,7 @@ class UnionFind:
 
 	Constraints:
 	* The depth of the n-ary tree is less than or equal to 1000.
-	* The total number of nodes is between [0, 104].
+	* The total number of nodes is between [0, 10^4].
 
 	Follow up: Can your solution work for the graph problem?"""
 
@@ -35054,7 +35054,7 @@ class UnionFind:
 	(0, 0) and ending in the bottom-right corner (rows - 1, cols - 1), find the 
 	path with the maximum non-negative product. The product of a path is the 
 	product of all integers in the grid cells visited along the path. Return 
-	the maximum non-negative product modulo 109 + 7. If the maximum product is 
+	the maximum non-negative product modulo 10^9 + 7. If the maximum product is 
 	negative return -1. Notice that the modulo is performed after getting the 
 	maximum product.
 
@@ -35551,7 +35551,7 @@ class UnionFind:
 	* points[i].length == 2
 	* location.length == 2
 	* 0 <= angle < 360
-	* 0 <= posx, posy, xi, yi <= 109"""
+	* 0 <= posx, posy, xi, yi <= 10^9"""
 
     def visiblePoints(self, points: List[List[int]], angle: int, location: List[int]) -> int:
         x0, y0 = location
@@ -35607,7 +35607,7 @@ class UnionFind:
 	Input: n = 333
 	Output: 393
 
-	Constraints: 0 <= n <= 109"""
+	Constraints: 0 <= n <= 10^9"""
 
     def minimumOneBitOperations(self, n: int) -> int:
         if not n: return 0 # edge case 
@@ -36016,7 +36016,7 @@ class UnionFind:
 	Constraints:
 	* 1 <= scores.length, ages.length <= 1000
 	* scores.length == ages.length
-	* 1 <= scores[i] <= 106
+	* 1 <= scores[i] <= 10^6
 	* 1 <= ages[i] <= 1000"""
 
     def bestTeamScore(self, scores: List[int], ages: List[int]) -> int:
@@ -36082,7 +36082,7 @@ class UnionFind:
 	[x, y], and that the query [x, y] is equivalent to the query [y, x].
 
 	Constraints:
-	* 2 <= n <= 104
+	* 2 <= n <= 10^4
 	* 0 <= threshold <= n
 	* 1 <= queries.length <= 10^5
 	* queries[i].length == 2
@@ -36240,7 +36240,7 @@ class UnionFind:
 	* rows == heights.length
 	* columns == heights[i].length
 	* 1 <= rows, columns <= 100
-	* 1 <= heights[i][j] <= 106"""
+	* 1 <= heights[i][j] <= 10^6"""
 
     def minimumEffortPath(self, heights: List[List[int]]) -> int:
         m, n = len(heights), len(heights[0])
@@ -36783,7 +36783,7 @@ class UnionFind:
 	Explanation: Node 10 does not exist in the tree, so return null.
 
 	Constraints:
-	* The number of nodes in the tree is in the range [1, 104].
+	* The number of nodes in the tree is in the range [1, 10^4].
 	* -10^9 <= Node.val <= 10^9
 	* All Node.val are unique.
 	* p != q
@@ -36934,12 +36934,12 @@ class UnionFind:
 	Input: inventory = [1000000000], orders = 1000000000
 	Output: 21
 	Explanation: Sell the 1st color 1000000000 times for a total value of 
-	             500000000500000000. 500000000500000000 modulo 109 + 7 = 21.
+	             500000000500000000. 500000000500000000 modulo 10^9 + 7 = 21.
 	 
 	Constraints:
 	* 1 <= inventory.length <= 10^5
 	* 1 <= inventory[i] <= 10^9
-	* 1 <= orders <= min(sum(inventory[i]), 109)"""
+	* 1 <= orders <= min(sum(inventory[i]), 10^9)"""
 
     def maxProfit(self, inventory: List[int], orders: int) -> int:
         inventory.sort(reverse=True) # inventory high to low 
@@ -36967,7 +36967,7 @@ class UnionFind:
 	insertion is min(2, 1) (elements 1 and 2 are less than 3, element 5 is 
 	greater than 3) and nums will become [1,2,3,3,5]. Return the total cost to 
 	insert all elements from instructions into nums. Since the answer may be 
-	large, return it modulo 109 + 7
+	large, return it modulo 10^9 + 7
 
 	Example 1:
 	Input: instructions = [1,5,6,2]
@@ -37410,9 +37410,9 @@ class Fenwick:
 	Output: true
 
 	Constraints:
-	* 1 <= word1.length, word2.length <= 103
-	* 1 <= word1[i].length, word2[i].length <= 103
-	* 1 <= sum(word1[i].length), sum(word2[i].length) <= 103
+	* 1 <= word1.length, word2.length <= 10^3
+	* 1 <= word1[i].length, word2[i].length <= 10^3
+	* 1 <= sum(word1[i].length), sum(word2[i].length) <= 10^3
 	* word1[i] and word2[i] consist of lowercase letters."""
 
     def arrayStringsAreEqual(self, word1: List[str], word2: List[str]) -> bool:
@@ -37585,7 +37585,7 @@ class Fenwick:
 
 	Constraints:
 	* The number of nodes in the tree is in the range [2, 100].
-	* -109 <= Node.val <= 109
+	* -10^9 <= Node.val <= 10^9
 	* All Node.val are unique.
 	* leaf exist in the tree."""
 
@@ -37945,8 +37945,8 @@ class Fenwick:
 	Explanation: The lowest common ancestor of all the nodes is the root node.
 
 	Constraints:
-	* The number of nodes in the tree is in the range [1, 104].
-	* -109 <= Node.val <= 109
+	* The number of nodes in the tree is in the range [1, 10^4].
+	* -10^9 <= Node.val <= 10^9
 	* All Node.val are unique.
 	* All nodes[i] will exist in the tree.
 	* All nodes[i] are distinct."""
@@ -38036,7 +38036,7 @@ class Fenwick:
 
     """1680. Concatenation of Consecutive Binary Numbers (Medium)
 	Given an integer n, return the decimal value of the binary string formed by 
-	concatenating the binary representations of 1 to n in order, modulo 109 + 7.
+	concatenating the binary representations of 1 to n in order, modulo 10^9 + 7.
 
 	Example 1:
 	Input: n = 1
@@ -38128,7 +38128,7 @@ class Fenwick:
 	Explanation: Strings "cc", "acd", "ac", and "d" are consistent.
 
 	Constraints:
-	* 1 <= words.length <= 104
+	* 1 <= words.length <= 10^4
 	* 1 <= allowed.length <= 26
 	* 1 <= words[i].length <= 10
 	* The characters in allowed are distinct.
@@ -38526,7 +38526,7 @@ class Fenwick:
 
 	Constraints:
 	* 1 <= nums.length, k <= 10^5
-	* -104 <= nums[i] <= 10^4"""
+	* -10^4 <= nums[i] <= 10^4"""
 
     def maxResult(self, nums: List[int], k: int) -> int:
         queue = deque()
@@ -38578,7 +38578,7 @@ class Fenwick:
 	* 0 <= ui, vi, pj, qj <= n - 1
 	* ui != vi
 	* pj != qj
-	* 1 <= disi, limitj <= 109
+	* 1 <= disi, limitj <= 10^9
 	* There may be multiple edges between two nodes."""
 
     def distanceLimitedPathsExist(self, n: int, edgeList: List[List[int]], queries: List[List[int]]) -> List[bool]:
@@ -38837,8 +38837,8 @@ class Fenwick:
 	Constraints:
 	* apples.length == n
 	* days.length == n
-	* 1 <= n <= 2 * 104
-	* 0 <= apples[i], days[i] <= 2 * 104
+	* 1 <= n <= 2 * 10^4
+	* 0 <= apples[i], days[i] <= 2 * 10^4
 	* days[i] = 0 if and only if apples[i] = 0."""
 
     def eatenApples(self, apples: List[int], days: List[int]) -> int:
@@ -39039,7 +39039,7 @@ class Fenwick:
 	Constraints:
 	* 1 <= boxTypes.length <= 1000
 	* 1 <= numberOfBoxesi, numberOfUnitsPerBoxi <= 1000
-	* 1 <= truckSize <= 106"""
+	* 1 <= truckSize <= 10^6"""
 
     def maximumUnits(self, boxTypes: List[List[int]], truckSize: int) -> int:
         ans = 0 
@@ -39812,7 +39812,7 @@ class Fenwick:
 	* m == matrix.length
 	* n == matrix[i].length
 	* 1 <= m, n <= 1000
-	* 0 <= matrix[i][j] <= 106
+	* 0 <= matrix[i][j] <= 10^6
 	* 1 <= k <= m * n"""
 
     def kthLargestValue(self, matrix: List[List[int]], k: int) -> int:
@@ -40221,9 +40221,9 @@ class Fenwick:
 
 	Constraints:
 	* 1 <= k <= events.length
-	* 1 <= k * events.length <= 106
-	* 1 <= startDayi <= endDayi <= 109
-	* 1 <= valuei <= 106"""
+	* 1 <= k * events.length <= 10^6
+	* 1 <= startDayi <= endDayi <= 10^9
+	* 1 <= valuei <= 10^6"""
 
     def maxValue(self, events: List[List[int]], k: int) -> int:
         events.sort()
@@ -40460,7 +40460,7 @@ class Fenwick:
 	Explanation: You need two operations to reach "0101" or "1010".
 
 	Constraints:
-	* 1 <= s.length <= 104
+	* 1 <= s.length <= 10^4
 	* s[i] is either '0' or '1'."""
 
     def minOperations(self, s: str) -> int:
@@ -41121,7 +41121,7 @@ class Fenwick:
 	Explanation: There are only two items matching the given rule, which are ["phone","blue","pixel"] and ["phone","gold","iphone"]. Note that the item ["computer","silver","phone"] does not match.
 
 	Constraints:
-	* 1 <= items.length <= 104
+	* 1 <= items.length <= 10^4
 	* 1 <= typei.length, colori.length, namei.length, ruleValue.length <= 10
 	* ruleKey is equal to either "type", "color", or "name".
 	* All strings consist only of lowercase letters."""
@@ -41526,7 +41526,7 @@ class Fenwick:
 	distance of a path between node n and node x. A restricted path is a path 
 	that also satisfies that distanceToLastNode(zi) > distanceToLastNode(zi+1) 
 	where 0 <= i <= k-1. Return the number of restricted paths from node 1 to 
-	node n. Since that number may be too large, return it modulo 109 + 7.
+	node n. Since that number may be too large, return it modulo 10^9 + 7.
 
 	Example 1:
 	Input: n = 5, edges = [[1,2,3],[1,3,3],[2,3,1],[1,4,2],[5,2,2],[3,5,1],[5,4,10]]
@@ -42023,11 +42023,11 @@ class Fenwick:
 	Input: orders = [[7,1000000000,1],[15,3,0],[5,999999995,0],[5,1,1]]
 	Output: 999999984
 	Explanation: Here is what happens with the orders:
-	- 109 orders of type sell with price 7 are placed. There are no buy orders, so the 109 orders are added to the backlog.
+	- 10^9 orders of type sell with price 7 are placed. There are no buy orders, so the 10^9 orders are added to the backlog.
 	- 3 orders of type buy with price 15 are placed. They are matched with the 3 sell orders with the least price which is 7, and those 3 sell orders are removed from the backlog.
 	- 999999995 orders of type buy with price 5 are placed. The least price of a sell order is 7, so the 999999995 orders are added to the backlog.
 	- 1 order of type sell with price 5 is placed. It is matched with the buy order of the highest price, which is 5, and that buy order is removed from the backlog.
-	Finally, the backlog has (1000000000-3) sell orders with price 7, and (999999995-1) buy orders with price 5. So the total number of orders = 1999999991, which is equal to 999999984 % (109 + 7).
+	Finally, the backlog has (1000000000-3) sell orders with price 7, and (999999995-1) buy orders with price 5. So the total number of orders = 1999999991, which is equal to 999999984 % (10^9 + 7).
 
 	Constraints:
 	* 1 <= orders.length <= 10^5
@@ -42404,7 +42404,7 @@ class Fenwick:
 	* 0 <= i < j < nums.length
 	* nums[i] + rev(nums[j]) == nums[j] + rev(nums[i])
 	Return the number of nice pairs of indices. Since that number can be too 
-	large, return it modulo 109 + 7.
+	large, return it modulo 10^9 + 7.
 
 	Example 1:
 	Input: nums = [42,11,1,97]
@@ -42577,7 +42577,7 @@ class Fenwick:
 	at most one element of nums1 with any other element in nums1 to minimize 
 	the absolute sum difference. Return the minimum absolute sum difference 
 	after replacing at most one element in the array nums1. Since the answer 
-	may be large, return it modulo 109 + 7. |x| is defined as:
+	may be large, return it modulo 10^9 + 7. |x| is defined as:
 	* x if x >= 0, or
 	* -x if x < 0.
 
@@ -42991,7 +42991,7 @@ class Fenwick:
 	* Swap the two characters at indices i - 1 and j.
 	* Reverse the suffix starting at index i.
 	Return the number of operations needed to make the string sorted. Since the 
-	answer can be too large, return it modulo 109 + 7.
+	answer can be too large, return it modulo 10^9 + 7.
 
 	Example 1:
 	Input: s = "cba"
@@ -44347,7 +44347,7 @@ class Fenwick:
 	the left of it. For example, if the sticks are arranged [1,3,2,5,4], then 
 	the sticks with lengths 1, 3, and 5 are visible from the left. Given n and 
 	k, return the number of such arrangements. Since the answer may be large, 
-	return it modulo 109 + 7.
+	return it modulo 10^9 + 7.
 
 	Example 1:
 	Input: n = 3, k = 2
@@ -44365,7 +44365,7 @@ class Fenwick:
 	Example 3:
 	Input: n = 20, k = 11
 	Output: 647427950
-	Explanation: There are 647427950 (mod 109 + 7) ways to rearrange the sticks 
+	Explanation: There are 647427950 (mod 10^9 + 7) ways to rearrange the sticks 
 	             such that exactly 11 sticks are visible.
 
 	Constraints:
@@ -44625,7 +44625,7 @@ class Fenwick:
 	Constraints:
 	* n == stones.length
 	* 2 <= n <= 10^5
-	* -104 <= stones[i] <= 10^4"""
+	* -10^4 <= stones[i] <= 10^4"""
 
     def stoneGameVIII(self, stones: List[int]) -> int:
         prefix = [0]
@@ -48244,7 +48244,7 @@ class Trie:
 
 	Constraints:
 	* n == s.length
-	* 2 <= n <= 106
+	* 2 <= n <= 10^6
 	* n is even.
 	* s[i] is either '[' or ']'.
 	* The number of opening brackets '[' equals n / 2, and the number of 
@@ -49107,7 +49107,7 @@ class Trie:
 
 	Constraints:
 	* n == nums1.length == nums2.length
-	* 1 <= n <= 105
+	* 1 <= n <= 10^5
 	* nums1[i] is either 0 or 1.
 	* nums2[i] is either 0 or 1."""
 
@@ -49801,7 +49801,7 @@ class Trie:
 
 	Constraints:
 	* n == rectangles.length
-	* 1 <= n <= 105
+	* 1 <= n <= 10^5
 	* rectangles[i].length == 2
 	* 1 <= widthi, heighti <= 10^5"""
 
@@ -49911,7 +49911,7 @@ class Trie:
 	* 0 <= parents[i] <= n - 1 for i != 0
 	* parents[0] == -1
 	* parents represents a valid tree.
-	* 1 <= nums[i] <= 105
+	* 1 <= nums[i] <= 10^5
 	* Each nums[i] is distinct."""
 
     def smallestMissingValueSubtree(self, parents: List[int], nums: List[int]) -> List[int]:
@@ -51482,7 +51482,7 @@ class Trie:
 
 	Constraints:
 	* 2 <= n <= 10^4
-	* n - 1 <= edges.length <= min(2 * 104, n * (n - 1) / 2)
+	* n - 1 <= edges.length <= min(2 * 10^4, n * (n - 1) / 2)
 	* edges[i].length == 2
 	* 1 <= ui, vi <= n
 	* ui != vi
@@ -52506,7 +52506,7 @@ class Trie:
 	Constraints:
 	* n == values.length
 	* 1 <= n <= 1000
-	* 0 <= values[i] <= 108
+	* 0 <= values[i] <= 10^8
 	* 0 <= edges.length <= 2000
 	* edges[j].length == 3
 	* 0 <= uj < vj <= n - 1
@@ -57293,7 +57293,7 @@ validWordAbbr.isUnique("make"); // return true, no words in the dictionary have 
 validWordAbbr.isUnique("cake"); // return true, because "cake" is already in the dictionary and no other word in the dictionary has "c2e" abbreviation.
  
 Constraints:
-* 1 <= dictionary.length <= 3 * 104
+* 1 <= dictionary.length <= 3 * 10^4
 * 1 <= dictionary[i].length <= 20
 * dictionary[i] consists of lowercase English letters.
 * 1 <= word.length <= 20
@@ -57491,7 +57491,7 @@ movingAverage.next(5); // return 6.0 = (10 + 3 + 5) / 3
 Constraints:
 * 1 <= size <= 1000
 * -10^5 <= val <= 10^5
-* At most 104 calls will be made to next."""
+* At most 10^4 calls will be made to next."""
 
 class MovingAverage:
 
@@ -57683,14 +57683,14 @@ snakeGame.move("L"); // return 2, snake eats the second food. No more food appea
 snakeGame.move("U"); // return -1, game over because snake collides with border
  
 Constraints:
-* 1 <= width, height <= 104
+* 1 <= width, height <= 10^4
 * 1 <= food.length <= 50
 * food[i].length == 2
 * 0 <= ri < height
 * 0 <= ci < width
 * direction.length == 1
 * direction is 'U', 'D', 'L', or 'R'.
-* At most 104 calls will be made to move."""
+* At most 10^4 calls will be made to move."""
 
 class SnakeGame:
 
@@ -58753,7 +58753,7 @@ stk.top();     // return 5, [5] the stack did not change.
  
 Constraints:
 * -10^7 <= x <= 10^7
-* At most 104 calls will be made to push, pop, top, peekMax, and popMax.
+* At most 10^4 calls will be made to push, pop, top, peekMax, and popMax.
 * There will be at least one element in the stack when pop, top, peekMax, or 
   popMax is called.
 
@@ -59087,9 +59087,9 @@ timeMap.get("foo", 5);         // return "bar2"
 Constraints:
 * 1 <= key.length, value.length <= 100
 * key and value consist of lowercase English letters and digits.
-* 1 <= timestamp <= 107
+* 1 <= timestamp <= 10^7
 * All the timestamps timestamp of set are strictly increasing.
-* At most 2 * 105 calls will be made to set and get."""
+* At most 2 * 10^5 calls will be made to set and get."""
 
 class TimeMap:
 
@@ -59366,7 +59366,7 @@ fileSystem.createPath("/c/d", 1); // return false because the parent path "/c" d
 fileSystem.get("/c"); // return -1 because this path doesn't exist.
 
 Constraints:
-* The number of calls to the two functions is less than or equal to 104 in total.
+* The number of calls to the two functions is less than or equal to 10^4 in total.
 * 2 <= path.length <= 100
 * 1 <= value <= 10^9"""
 
@@ -60040,7 +60040,7 @@ bSTIterator.prev(); // state becomes [3, 7, 9, 15, 20], return 9
 Constraints:
 * The number of nodes in the tree is in the range [1, 10^5].
 * 0 <= Node.val <= 10^6
-* At most 105 calls will be made to hasNext, next, hasPrev, and prev.
+* At most 10^5 calls will be made to hasNext, next, hasPrev, and prev.
 
 Follow up: Could you solve the problem without precalculating the values of the 
            tree?"""
@@ -60127,7 +60127,7 @@ multAll operations. Implement the Fancy class:
 * void multAll(m) Multiplies all existing values in the sequence by an integer 
   m.
 * int getIndex(idx) Gets the current value at index idx (0-indexed) of the 
-  sequence modulo 109 + 7. If the index is greater or equal than the length of 
+  sequence modulo 10^9 + 7. If the index is greater or equal than the length of 
   the sequence, return -1.
 
 Example 1:
@@ -60264,7 +60264,7 @@ q.popBack();      // return 2 -> []
 q.popFront();     // return -1 -> [] (The queue is empty)
  
 Constraints:
-* 1 <= val <= 109
+* 1 <= val <= 10^9
 * At most 1000 calls will be made to pushFront, pushMiddle, pushBack, popFront, 
   popMiddle, and popBack."""
 
@@ -60673,7 +60673,7 @@ Constraints:
 * 0 <= shopi < n
 * 1 <= moviei, pricei <= 10^4
 * Each shop carries at most one copy of a movie moviei.
-* At most 105 calls in total will be made to search, rent, drop and report."""
+* At most 10^5 calls in total will be made to search, rent, drop and report."""
 
 class MovieRentingSystem:
 
@@ -60756,7 +60756,7 @@ Constraints:
 * 0 <= parent[i] <= n - 1 for i != 0
 * parent[0] == -1
 * 0 <= num <= n - 1
-* 1 <= user <= 104
+* 1 <= user <= 10^4
 * parent represents a valid tree.
 * At most 2000 calls in total will be made to lock, unlock, and upgrade."""
 
