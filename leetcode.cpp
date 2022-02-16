@@ -828,12 +828,11 @@ public:
 
     ListNode* swapPairs(ListNode* head) {
         ListNode dummy(0, head), *node = &dummy; 
-        while (node->next && node->next->next) {
+        for (; node->next && node->next->next; node = node->next->next) {
             ListNode *temp = node->next->next; 
             node->next->next = temp->next; 
             temp->next = node->next; 
             node->next = temp; 
-            node = node->next->next; 
         }
         return dummy.next; 
     }
