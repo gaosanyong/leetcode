@@ -13659,16 +13659,10 @@ public:
 	* bits[i] is always 0 or 1.*/
 
     bool isOneBitCharacter(vector<int>& bits) {
-        bool ans = false; 
-        for (int i = 0; i < bits.size(); ++i) {
-            if (bits[i]) {
-                ++i; 
-                ans = false; 
-            } else {
-                ans = true; 
-            }
-        }
-        return ans; 
+        int i = 0; 
+        for (; i < bits.size()-1; ++i) 
+            if (bits[i]) ++i; 
+        return i == bits.size()-1; 
     }
 
 
