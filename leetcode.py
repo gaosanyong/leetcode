@@ -37935,16 +37935,15 @@ class Fenwick:
 	* 1 <= nums[i] <= 10^9"""
 
     def minimumDeviation(self, nums: List[int]) -> int:
-        pq = [-2*x if x&1 else -x for x in nums] # max-heap 
+        pq = [-2*x if x&1 else -x for x in nums]
         heapify(pq)
-        
-        mn = -max(pq)
-        ans = -pq[0] - mn 
-        while not pq[0] & 1: 
-            x = heappop(pq)
-            heappush(pq, x//2)
-            mn = min(mn, -x//2)
-            ans = min(ans, -pq[0] - mn)
+        most = max(pq)
+        ans = most - pq[0]
+        while pq[0] & 1 == 0: 
+            x = heappop(pq)//2
+            heappush(pq, x)
+            most = max(most, x)
+            ans = min(ans, most - pq[0])
         return ans 
 
 
