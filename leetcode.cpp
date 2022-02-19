@@ -41786,14 +41786,14 @@ public:
         unordered_map<int, int> mp; 
         for (int i = 0; i < n; ++i) mp[nums1[i]] = i; 
         long long ans = 0; 
-        Fenwick<int> *f = new Fenwick<int>(n); 
-        Fenwick<long long> *ff = new Fenwick<long long>(n); 
+        Fenwick<int> *fw = new Fenwick<int>(n); 
         for (auto& x : nums2) {
             x = mp[x]; 
-            ans += ff->query(x); 
-            f->update(x, 1); 
-            ff->update(x, f->query(x-1)); 
+            int left = fw->query(x), right = (n-1-x) - (fw->query(n-1)-fw->query(x)); 
+            ans += (long long) left * right; 
+            fw->update(x, 1); 
         }
+        delete fw; 
         return ans; 
     }
 };

@@ -56753,16 +56753,13 @@ class Trie:
 
     def goodTriplets(self, nums1: List[int], nums2: List[int]) -> int:
         mp = {x : i for i, x in enumerate(nums1)}
-        nums2 = [mp[x] for x in nums2]
-        prefix = []
         sl = SortedList()
-        for x in nums2: 
-            prefix.append(sl.bisect_left(x))
-            sl.add(x)
         ans = 0 
-        sl.clear()
-        for i, x in enumerate(reversed(nums2)): 
-            ans += prefix[~i] * (len(sl)-sl.bisect_left(x))
+        for i, x in enumerate(nums2):
+            x = mp[x]
+            left = sl.bisect_left(x)
+            right = (len(nums2)-1-x) - (len(sl)-left)
+            ans += left * right
             sl.add(x)
         return ans
 
