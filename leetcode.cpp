@@ -41645,6 +41645,157 @@ public:
         
         return fn(0, 0); 
     }
+
+
+    /*2176. Count Equal and Divisible Pairs in an Array (Easy)
+	Given a 0-indexed integer array nums of length n and an integer k, return 
+	the number of pairs (i, j) where 0 <= i < j < n, such that 
+	nums[i] == nums[j] and (i * j) is divisible by k.
+
+	Example 1:
+	Input: nums = [3,1,2,2,2,1,3], k = 2
+	Output: 4
+	Explanation: There are 4 pairs that meet all the requirements:
+	             - nums[0] == nums[6], and 0 * 6 == 0, which is divisible by 2.
+	             - nums[2] == nums[3], and 2 * 3 == 6, which is divisible by 2.
+	             - nums[2] == nums[4], and 2 * 4 == 8, which is divisible by 2.
+	             - nums[3] == nums[4], and 3 * 4 == 12, which is divisible by 2.
+	
+	Example 2:
+	Input: nums = [1,2,3,4], k = 1
+	Output: 0
+	Explanation: Since no value in nums is repeated, there are no pairs (i,j) 
+	             that meet all the requirements.
+
+	Constraints:
+	* 1 <= nums.length <= 100
+	* 1 <= nums[i], k <= 100*/
+
+    int countPairs(vector<int>& nums, int k) {
+        int ans = 0; 
+        for (int i = 0; i < nums.size(); ++i) 
+            for (int j = i+1; j < nums.size(); ++j) 
+                if (nums[i] == nums[j] && i*j%k == 0)
+                    ++ans; 
+        return ans; 
+    }
+
+
+    /*2177. Find Three Consecutive Integers That Sum to a Given Number (Medium)
+	Given an integer num, return three consecutive integers (as a sorted array) 
+	that sum to num. If num cannot be expressed as the sum of three consecutive 
+	integers, return an empty array.
+
+	Example 1:
+	Input: num = 33
+	Output: [10,11,12]
+	Explanation: 33 can be expressed as 10 + 11 + 12 = 33. 10, 11, 12 are 3 
+	             consecutive integers, so we return [10, 11, 12].
+
+	Example 2:
+	Input: num = 4
+	Output: []
+	Explanation: There is no way to express 4 as the sum of 3 consecutive 
+	             integers.
+
+	Constraints: 0 <= num <= 10^15*/
+
+    vector<long long> sumOfThree(long long num) {
+        if (num % 3) return {}; 
+        return {num/3-1, num/3, num/3+1}; 
+    }
+
+
+    /*2178. Maximum Split of Positive Even Integers (Medium)
+	You are given an integer finalSum. Split it into a sum of a maximum number 
+	of unique positive even integers.
+	* For example, given finalSum = 12, the following splits are valid (unique 
+	  positive even integers summing up to finalSum): (2 + 10), (2 + 4 + 6), 
+	  and (4 + 8). Among them, (2 + 4 + 6) contains the maximum number of 
+	  integers. Note that finalSum cannot be split into (2 + 2 + 4 + 4) as all 
+	  the numbers should be unique.
+	Return a list of integers that represent a valid split containing a maximum 
+	number of integers. If no valid split exists for finalSum, return an empty 
+	list. You may return the integers in any order.
+
+	Example 1:
+	Input: finalSum = 12
+	Output: [2,4,6]
+	Explanation: The following are some valid splits: (2 + 10), (2 + 4 + 6), 
+	             and (4 + 8). (2 + 4 + 6) has the maximum number of integers, 
+	             which is 3. Thus, we return [2,4,6]. Note that [2,6,4], [6,2,4], 
+	             etc. are also accepted.
+	
+	Example 2:
+	Input: finalSum = 7
+	Output: []
+	Explanation: There are no valid splits for the given finalSum. Thus, we 
+	             return an empty array.
+	
+	Example 3:
+	Input: finalSum = 28
+	Output: [6,8,2,12]
+	Explanation: The following are some valid splits: (2 + 26), (6 + 8 + 2 + 12), 
+	             and (4 + 24). (6 + 8 + 2 + 12) has the maximum number of 
+	             integers, which is 4. Thus, we return [6,8,2,12]. Note that 
+	             [10,2,4,12], [6,2,4,16], etc. are also accepted.
+
+	Constraints: 1 <= finalSum <= 10^10*/
+
+    vector<long long> maximumEvenSplit(long long finalSum) {
+        if (finalSum & 1) return {}; 
+        vector<long long> ans; 
+        for (long long x = 2; x <= finalSum; finalSum -= x, x += 2) 
+            ans.push_back(x); 
+        ans.back() += finalSum; 
+        return ans; 
+    }
+
+
+    /*2179. Count Good Triplets in an Array (Hard)
+	You are given two 0-indexed arrays nums1 and nums2 of length n, both of 
+	which are permutations of [0, 1, ..., n - 1]. A good triplet is a set of 3 
+	distinct values which are present in increasing order by position both in 
+	nums1 and nums2. In other words, if we consider pos1v as the index of the 
+	value v in nums1 and pos2v as the index of the value v in nums2, then a 
+	good triplet will be a set (x, y, z) where 0 <= x, y, z <= n - 1, such that 
+	pos1x < pos1y < pos1z and pos2x < pos2y < pos2z. Return the total number of 
+	good triplets.
+
+	Example 1:
+	Input: nums1 = [2,0,1,3], nums2 = [0,1,2,3]
+	Output: 1
+	Explanation: There are 4 triplets (x,y,z) such that pos1x < pos1y < pos1z. 
+	             They are (2,0,1), (2,0,3), (2,1,3), and (0,1,3). Out of those 
+	             triplets, only the triplet (0,1,3) satisfies 
+	             pos2x < pos2y < pos2z. Hence, there is only 1 good triplet.
+	
+	Example 2:
+	Input: nums1 = [4,0,1,3,2], nums2 = [4,1,0,2,3]
+	Output: 4
+	Explanation: The 4 good triplets are (4,0,3), (4,0,2), (4,1,3), and (4,1,2).
+
+	Constraints:
+	* n == nums1.length == nums2.length
+	* 3 <= n <= 10^5
+	* 0 <= nums1[i], nums2[i] <= n - 1
+	* nums1 and nums2 are permutations of [0, 1, ..., n - 1].*/
+
+    long long goodTriplets(vector<int>& nums1, vector<int>& nums2) {
+        int n = nums1.size(); 
+        unordered_map<int, int> mp; 
+        for (int i = 0; i < n; ++i) mp[nums1[i]] = i; 
+        long long ans = 0; 
+        Fenwick<int> *f = new Fenwick<int>(n); 
+        Fenwick<long long> *ff = new Fenwick<long long>(n); 
+        for (auto& x : nums2) {
+            x = mp[x]; 
+            ans += ff->query(x); 
+            f->update(x, 1); 
+            ff->update(x, f->query(x-1)); 
+        }
+        return ans; 
+    }
 };
 
 
