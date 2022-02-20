@@ -56827,6 +56827,183 @@ class Trie:
         return ans
 
 
+    """2180. Count Integers With Even Digit Sum (Easy)
+	Given a positive integer num, return the number of positive integers less 
+	than or equal to num whose digit sums are even. The digit sum of a positive 
+	integer is the sum of all its digits.
+
+	Example 1:
+	Input: num = 4
+	Output: 2
+	Explanation: The only integers less than or equal to 4 whose digit sums are 
+	             even are 2 and 4.    
+	
+	Example 2:
+	Input: num = 30
+	Output: 14
+	Explanation: The 14 integers less than or equal to 30 whose digit sums are 
+	             even are 2, 4, 6, 8, 11, 13, 15, 17, 19, 20, 22, 24, 26, and 
+	             28.
+
+	Constraints: 1 <= num <= 1000"""
+
+    def countEven(self, num: int) -> int:
+        ans = 0 
+        for x in range(1, num+1): 
+            sm = sum(map(int, str(x)))
+            if not sm&1: ans += 1
+        return ans 
+
+
+    """2181. Merge Nodes in Between Zeros (Medium)
+	You are given the head of a linked list, which contains a series of 
+	integers separated by 0's. The beginning and end of the linked list will 
+	have Node.val == 0. For every two consecutive 0's, merge all the nodes 
+	lying in between them into a single node whose value is the sum of all the 
+	merged nodes. The modified list should not contain any 0's. Return the head 
+	of the modified linked list.
+
+	Example 1:
+	Input: head = [0,3,1,0,4,5,2,0]
+	Output: [4,11]
+	Explanation: The above figure represents the given linked list. The 
+	             modified list contains
+	             - The sum of the nodes marked in green: 3 + 1 = 4.
+	             - The sum of the nodes marked in red: 4 + 5 + 2 = 11.
+	
+	Example 2:
+	Input: head = [0,1,0,3,0,2,2,0]
+	Output: [1,3,4]
+	Explanation: The above figure represents the given linked list. The 
+	             modified list contains
+	             - The sum of the nodes marked in green: 1 = 1.
+	             - The sum of the nodes marked in red: 3 = 3.
+	             - The sum of the nodes marked in yellow: 2 + 2 = 4.
+
+	Constraints:
+	* The number of nodes in the list is in the range [3, 2 * 10^5].
+	* 0 <= Node.val <= 1000
+	* There are no two consecutive nodes with Node.val == 0.
+	* The beginning and end of the linked list have Node.val == 0."""
+
+    def mergeNodes(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        dummy = node = ListNode()
+        chunk = head
+        while chunk: 
+            chunk = chunk.next 
+            sm = 0 
+            while chunk and chunk.val: 
+                sm += chunk.val 
+                chunk = chunk.next 
+            if sm: node.next = node = ListNode(sm)
+        return dummy.next 
+
+
+    """2182. Construct String With Repeat Limit (Medium)
+	You are given a string s and an integer repeatLimit. Construct a new string 
+	repeatLimitedString using the characters of s such that no letter appears 
+	more than repeatLimit times in a row. You do not have to use all characters 
+	from s. Return the lexicographically largest repeatLimitedString possible.
+	A string a is lexicographically larger than a string b if in the first 
+	position where a and b differ, string a has a letter that appears later in 
+	the alphabet than the corresponding letter in b. If the first 
+	min(a.length, b.length) characters do not differ, then the longer string is 
+	the lexicographically larger one.
+
+	Example 1:
+	Input: s = "cczazcc", repeatLimit = 3
+	Output: "zzcccac"
+	Explanation: We use all of the characters from s to construct the 
+	             repeatLimitedString "zzcccac". The letter 'a' appears at most 
+	             1 time in a row. The letter 'c' appears at most 3 times in a 
+	             row. The letter 'z' appears at most 2 times in a row. Hence, 
+	             no letter appears more than repeatLimit times in a row and the 
+	             string is a valid repeatLimitedString. The string is the 
+	             lexicographically largest repeatLimitedString possible so we 
+	             return "zzcccac". Note that the string "zzcccca" is 
+	             lexicographically larger but the letter 'c' appears more than 
+	             3 times in a row, so it is not a valid repeatLimitedString.
+	
+	Example 2:
+	Input: s = "aababab", repeatLimit = 2
+	Output: "bbabaa"
+	Explanation: We use only some of the characters from s to construct the 
+	             repeatLimitedString "bbabaa". The letter 'a' appears at most 2 
+	             times in a row. The letter 'b' appears at most 2 times in a 
+	             row. Hence, no letter appears more than repeatLimit times in a 
+	             row and the string is a valid repeatLimitedString. The string 
+	             is the lexicographically largest repeatLimitedString possible 
+	             so we return "bbabaa". Note that the string "bbabaaa" is 
+	             lexicographically larger but the letter 'a' appears more than 
+	             2 times in a row, so it is not a valid repeatLimitedString.
+
+	Constraints:
+	* 1 <= repeatLimit <= s.length <= 10^5
+	* s consists of lowercase English letters."""
+
+    def repeatLimitedString(self, s: str, repeatLimit: int) -> str:
+        pq = [(-ord(k), v) for k, v in Counter(s).items()] 
+        heapify(pq)
+        ans = []
+        cnt = 0 
+        while pq: 
+            k, v = heappop(pq)
+            if ans and ans[-1] == k and cnt == repeatLimit: 
+                if not pq: break 
+                kk, vv = heappop(pq)
+                ans.append(kk)
+                cnt = 1
+                if vv-1: heappush(pq, (kk, vv-1))
+                heappush(pq, (k, v))
+            else: 
+                if not ans or ans[-1] != k: cnt = 0 
+                cnt += 1
+                ans.append(k)
+                if v-1: heappush(pq, (k, v-1))
+        return "".join(chr(-x) for x in ans)
+
+
+    """2183. Count Array Pairs Divisible by K (Hard)
+	Given a 0-indexed integer array nums of length n and an integer k, return 
+	the number of pairs (i, j) such that:
+	* 0 <= i < j <= n - 1 and
+	* nums[i] * nums[j] is divisible by k.
+
+	Example 1:
+	Input: nums = [1,2,3,4,5], k = 2
+	Output: 7
+	Explanation: The 7 pairs of indices whose corresponding products are 
+	             divisible by 2 are (0, 1), (0, 3), (1, 2), (1, 3), (1, 4), 
+	             (2, 3), and (3, 4). Their products are 2, 4, 6, 8, 10, 12, and 
+	             20 respectively. Other pairs such as (0, 2) and (2, 4) have 
+	             products 3 and 15 respectively, which are not divisible by 2.    
+	
+	Example 2:
+	Input: nums = [1,2,3,4], k = 5
+	Output: 0
+	Explanation: There does not exist any pair of indices whose corresponding 
+	             product is divisible by 5.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i], k <= 10^5"""
+
+    def coutPairs(self, nums: List[int], k: int) -> int:
+        factors = []
+        for x in range(1, int(sqrt(k))+1):
+            if k % x == 0: factors.append(x)
+        ans = 0 
+        freq = Counter()
+        for x in nums: 
+            x = gcd(x, k)
+            ans += freq[k//x]
+            for f in factors: 
+                if x % f == 0 and f <= x//f: 
+                    freq[f] += 1
+                    if f < x//f: freq[x//f] += 1
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
