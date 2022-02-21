@@ -41951,21 +41951,17 @@ public:
         priority_queue<pair<char, int>> pq; 
         for (auto& [ch, v] : freq) pq.emplace(ch, v); 
         string ans; 
-        int cnt = 0; 
         while (pq.size()) {
             auto [c, v] = pq.top(); pq.pop(); 
-            if (ans.size() && ans.back() == c && cnt == repeatLimit) {
+            if (ans.size() && ans.back() == c) {
                 if (pq.empty()) break; 
                 auto [cc, vv] = pq.top(); pq.pop(); 
                 ans.push_back(cc); 
-                cnt = 1; 
                 if (vv - 1) pq.emplace(cc, vv-1); 
                 pq.emplace(c, v); 
             } else {
-                if (ans.empty() || ans.back() != c) cnt = 0; 
-                int m = min(v, repeatLimit-cnt); 
+                int m = min(v, repeatLimit); 
                 ans += string(m, c); 
-                cnt += m; 
                 if (v - m) pq.emplace(c, v-m); 
             }
         }
