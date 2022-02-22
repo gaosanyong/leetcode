@@ -5816,11 +5816,8 @@ class Solution:
 	* s consists only of uppercase English letters.
 	* s is between "A" and "FXSHRXW"."""
 
-    def titleToNumber(self, s: str) -> int:
-        ans = 0
-        for c in s:
-            ans = 26*ans + ord(c) - 64
-        return ans 
+    def titleToNumber(self, columnTitle: str) -> int:
+        return reduce(lambda x, y: 26*x+ord(y)-64, columnTitle, 0)
 
 
     """172. Factorial Trailing Zeroes (Easy)
