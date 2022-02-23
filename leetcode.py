@@ -4528,7 +4528,8 @@ class Solution:
 	Input: adjList = [[]]
 	Output: [[]]
 	Explanation: Note that the input contains one empty list. The graph consists 
-	of only one node with val = 1 and it does not have any neighbors.
+	             of only one node with val = 1 and it does not have any 
+	             neighbors.
 
 	Example 3:
 	Input: adjList = []
@@ -4550,7 +4551,7 @@ class Solution:
         memo = dict()
         
         def fn(n): 
-            """Return (deep) clonded node"""
+            """Return (deep) cloned node"""
             if n not in memo: 
                 cln = memo[n] = Node(n.val)
                 cln.neighbors = [fn(nn) for nn in n.neighbors]
