@@ -13722,13 +13722,14 @@ class Solution:
 	             it to the form of 0+-2i.
 	
 	Note: The input strings will not have extra blank. The input strings will 
-	be given in the form of a+bi, where the integer a and b will both belong to 
-	the range of [-100, 100]. And the output should be also in this form."""
+	      be given in the form of a+bi, where the integer a and b will both 
+	      belong to the range of [-100, 100]. And the output should be also in 
+	      this form."""
 
-    def complexNumberMultiply(self, a: str, b: str) -> str:
-        ra, ia = map(int, a[:-1].split("+"))
-        rb, ib = map(int, b[:-1].split("+"))
-        return f"{ra*rb-ia*ib}+{ra*ib+ia*rb}i"
+    def complexNumberMultiply(self, num1: str, num2: str) -> str:
+        r1, i1 = map(int, num1[:-1].split('+'))
+        r2, i2 = map(int, num2[:-1].split('+'))
+        return f"{r1*r2-i1*i2}+{r1*i2+r2*i1}i"
 
 
     """538. Convert BST to Greater Tree (Medium)
