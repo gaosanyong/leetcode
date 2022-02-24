@@ -5039,19 +5039,19 @@ class Solution:
 	Output: -1->0->3->4->5"""
 
     def sortList(self, head: ListNode) -> ListNode:
-        if not head or not head.next: return head # boundary condition (null or single node)
+        if not head or not head.next: return head
         
         fast = prev = slow = head 
         while fast and fast.next: fast, prev, slow = fast.next.next, slow, slow.next
             
-        prev.next = None # break list into two pieces 
-        list1, list2 = self.sortList(head), self.sortList(slow) # sort two pieces repectively 
-        dummy = node = ListNode() # merge 
-        while list1 and list2:
-            if list1.val > list2.val: list1, list2 = list2, list1
-            node.next = node = list1
-            list1 = list1.next 
-        node.next = list1 or list2 
+        prev.next = None
+        l1, l2 = self.sortList(head), self.sortList(slow)
+        dummy = node = ListNode()
+        while l1 and l2:
+            if l1.val > l2.val: l1, l2 = l2, l1
+            node.next = node = l1
+            l1 = l1.next 
+        node.next = l1 or l2 
         return dummy.next
 
 

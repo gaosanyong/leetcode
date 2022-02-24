@@ -4453,6 +4453,49 @@ public:
     }
 
 
+    /*148. Sort List (Medium)
+	Given the head of a linked list, return the list after sorting it in 
+	ascending order.
+
+	Example 1:
+	Input: head = [4,2,1,3]
+	Output: [1,2,3,4]
+
+	Example 2:
+	Input: head = [-1,5,3,4,0]
+	Output: [-1,0,3,4,5]
+
+	Example 3:
+	Input: head = []
+	Output: []
+
+	Constraints:
+	* The number of nodes in the list is in the range [0, 5 * 10^4].
+	* -10^5 <= Node.val <= 10^5
+
+	Follow up: Can you sort the linked list in O(n logn) time and O(1) memory 
+	           (i.e. constant space)?*/
+
+    ListNode* sortList(ListNode* head) {
+        if (!head || !head->next) return head; 
+        ListNode *fast = head, *prev = head, *slow = head; 
+        while (fast && fast->next) {
+            fast = fast->next->next; 
+            prev = slow; 
+            slow = slow->next; 
+        }
+        prev->next = nullptr; 
+        ListNode *l1 = sortList(head), *l2 = sortList(slow), dummy, *node = &dummy; 
+        while (l1 && l2) {
+            if (l1->val > l2->val) swap(l1, l2); 
+            node = node->next = l1; 
+            l1 = l1->next; 
+        }
+        node->next = l1 ? l1 : l2; 
+        return dummy.next; 
+    }
+
+
     /*149. Max Points on a Line (Hard)
 	Given an array of points where points[i] = [xi, yi] represents a point on 
 	the X-Y plane, return the maximum number of points that lie on the same 
