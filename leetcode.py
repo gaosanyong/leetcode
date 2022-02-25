@@ -5653,13 +5653,14 @@ class Solution:
 	Input: version1 = "1.01", version2 = "1.001"
 	Output: 0
 	Explanation: Ignoring leading zeroes, both “01” and “001" represent the 
-	same number “1”
+	             same number "1"
 
 	Example 5:
 	Input: version1 = "1.0", version2 = "1.0.0"
 	Output: 0
 	Explanation: The first version number does not have a third level revision 
-	number, which means its third level revision number is default to "0"
+	             number, which means its third level revision number is default 
+	             to "0"
 	 
 	Note:
 	* Version strings are composed of numeric strings separated by dots . and 
