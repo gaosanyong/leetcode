@@ -50422,8 +50422,8 @@ class Trie:
     def maximumDifference(self, nums: List[int]) -> int:
         ans = -1 
         prefix = inf
-        for i, x in enumerate(nums): 
-            if i and x > prefix: ans = max(ans, x - prefix)
+        for x in nums: 
+            if x > prefix: ans = max(ans, x - prefix)
             prefix = min(prefix, x)
         return ans 
 

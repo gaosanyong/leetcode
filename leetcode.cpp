@@ -35762,9 +35762,9 @@ public:
 
     int maximumDifference(vector<int>& nums) {
         int ans = -1, prefix = INT_MAX; 
-        for (int i = 0; i < nums.size(); ++i) {
-            if (i && prefix < nums[i]) ans = max(ans, nums[i] - prefix); 
-            prefix = min(prefix, nums[i]); 
+        for (auto& x : nums) {
+            if (prefix < x) ans = max(ans, x - prefix); 
+            prefix = min(prefix, x); 
         }
         return ans; 
     }
