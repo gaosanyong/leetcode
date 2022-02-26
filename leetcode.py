@@ -20517,18 +20517,17 @@ class Solution:
 	* The input graph is always connected."""
 
     def shortestPathLength(self, graph: List[List[int]]) -> int:
-        queue = [(i, 1 << i) for i in range(len(graph))]
+        queue = deque([(i, 1<<i) for i in range(len(graph))])
         seen = set(queue)
-        ans = 0
+        ans = 0 
         while queue: 
-            newq = []
-            for i, mask in queue: 
-                if mask == (1 << len(graph)) - 1: return ans 
-                for ii in graph[i]: 
-                    if (ii, mask | (1 << ii)) not in seen: 
-                        newq.append((ii, mask | (1 << ii)))
-                        seen.add((ii, mask | (1 << ii)))
-            queue = newq
+            for _ in range(len(queue)): 
+                u, m = queue.popleft()
+                if m == (1<<len(graph)) - 1: return ans 
+                for v in graph[u]: 
+                    if (v, m | 1<<v) not in seen: 
+                        queue.append((v, m | 1<<v))
+                        seen.add((v, m | 1<<v))
             ans += 1
 
 
