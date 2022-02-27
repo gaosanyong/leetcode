@@ -42322,6 +42322,183 @@ public:
         }
         return ans; 
     }
+
+
+    /*2185. Counting Words With a Given Prefix (Easy)
+	You are given an array of strings words and a string pref. Return the 
+	number of strings in words that contain pref as a prefix. A prefix of a 
+	string s is any leading contiguous substring of s.
+
+	Example 1:
+	Input: words = ["pay","attention","practice","attend"], pref = "at"
+	Output: 2
+	Explanation: The 2 strings that contain "at" as a prefix are: "attention" 
+	             and "attend".
+
+	Example 2:
+	Input: words = ["leetcode","win","loops","success"], pref = "code"
+	Output: 0
+	Explanation: There are no strings that contain "code" as a prefix.
+
+	Constraints:
+	* 1 <= words.length <= 100
+	* 1 <= words[i].length, pref.length <= 100
+	* words[i] and pref consist of lowercase English letters.*/
+
+    int prefixCount(vector<string>& words, string pref) {
+        return count_if(words.begin(), words.end(), [&](auto& word) {
+            return word.rfind(pref, 0) == 0; 
+        }); 
+    }
+
+
+    /*2186. Minimum Number of Steps to Make Two Strings Anagram II (Medium)
+	You are given two strings s and t. In one step, you can append any 
+	character to either s or t. Return the minimum number of steps to make s 
+	and t anagrams of each other. An anagram of a string is a string that 
+	contains the same characters with a different (or the same) ordering.
+
+	Example 1:
+	Input: s = "leetcode", t = "coats"
+	Output: 7
+	Explanation: - In 2 steps, we can append the letters in "as" onto 
+	               s = "leetcode", forming s = "leetcodeas".
+	             - In 5 steps, we can append the letters in "leede" onto 
+	               t = "coats", forming t = "coatsleede".
+	             "leetcodeas" and "coatsleede" are now anagrams of each other.
+	             We used a total of 2 + 5 = 7 steps. It can be shown that there 
+	             is no way to make them anagrams of each other with less than 7 
+	             steps.
+	
+	Example 2:
+	Input: s = "night", t = "thing"
+	Output: 0
+	Explanation: The given strings are already anagrams of each other. Thus, we 
+	             do not need any further steps.
+
+	Constraints:
+	* 1 <= s.length, t.length <= 2 * 10^5
+	* s and t consist of lowercase English letters.*/
+
+    int minSteps(string s, string t) {
+        vector<int> freq(26); 
+        for (auto& ch : s) ++freq[ch-'a']; 
+        for (auto& ch : t) --freq[ch-'a']; 
+        return transform_reduce(freq.begin(), freq.end(), 0, plus<>{}, static_cast<int(*)(int)>(abs));
+    }
+
+
+    /*2187. Minimum Time to Complete Trips (Medium)
+	You are given an array time where time[i] denotes the time taken by the ith 
+	bus to complete one trip. Each bus can make multiple trips successively; 
+	that is, the next trip can start immediately after completing the current 
+	trip. Also, each bus operates independently; that is, the trips of one bus 
+	do not influence the trips of any other bus. You are also given an integer 
+	totalTrips, which denotes the number of trips all buses should make in 
+	total. Return the minimum time required for all buses to complete at least 
+	totalTrips trips.
+
+	Example 1:
+	Input: time = [1,2,3], totalTrips = 5
+	Output: 3
+	Explanation: - At time t = 1, the number of trips completed by each bus are 
+	               [1,0,0]. The total number of trips completed is 1 + 0 + 0 = 1.
+	             - At time t = 2, the number of trips completed by each bus are 
+	               [2,1,0]. The total number of trips completed is 2 + 1 + 0 = 3.
+	             - At time t = 3, the number of trips completed by each bus are 
+	               [3,1,1]. The total number of trips completed is 3 + 1 + 1 = 5.
+	             So the minimum time needed for all buses to complete at least 
+	             5 trips is 3.
+	
+	Example 2:
+	Input: time = [2], totalTrips = 1
+	Output: 2
+	Explanation: There is only one bus, and it will complete its first trip at 
+	             t = 2. So the minimum time needed to complete 1 trip is 2.
+
+	Constraints:
+	1 <= time.length <= 10^5
+	1 <= time[i], totalTrips <= 10^7*/
+
+    long long minimumTime(vector<int>& time, int totalTrips) {
+        long long lo = 0, hi = (long long) *max_element(time.begin(), time.end()) * totalTrips; 
+        while (lo < hi) {
+            long long mid = lo + (hi - lo)/2, cnt = 0; 
+            for (auto& t : time) cnt += mid/t; 
+            if (cnt < totalTrips) lo = mid + 1; 
+            else hi = mid; 
+        }
+        return lo; 
+    }
+
+
+    /*2188. Minimum Time to Finish the Race (Hard)
+	You are given a 0-indexed 2D integer array tires where tires[i] = [fi, ri] 
+	indicates that the ith tire can finish its xth successive lap in 
+	fi * ri^(x-1) seconds. For example, if fi = 3 and ri = 2, then the tire 
+	would finish its 1st lap in 3 seconds, its 2nd lap in 3 * 2 = 6 seconds, 
+	its 3rd lap in 3 * 22 = 12 seconds, etc. You are also given an integer 
+	changeTime and an integer numLaps. The race consists of numLaps laps and 
+	you may start the race with any tire. You have an unlimited supply of each 
+	tire and after every lap, you may change to any given tire (including the 
+	current tire type) if you wait changeTime seconds. Return the minimum time 
+	to finish the race.
+
+	Example 1:
+	Input: tires = [[2,3],[3,4]], changeTime = 5, numLaps = 4
+	Output: 21
+	Explanation: Lap 1: Start with tire 0 and finish the lap in 2 seconds.
+	             Lap 2: Continue with tire 0 and finish the lap in 2 * 3 = 6 
+	                    seconds.
+	             Lap 3: Change tires to a new tire 0 for 5 seconds and then 
+	                    finish the lap in another 2 seconds.
+	             Lap 4: Continue with tire 0 and finish the lap in 2 * 3 = 6 
+	                    seconds.
+	             Total time = 2 + 6 + 5 + 2 + 6 = 21 seconds. The minimum time 
+	             to complete the race is 21 seconds.
+	
+	Example 2:
+	Input: tires = [[1,10],[2,2],[3,4]], changeTime = 6, numLaps = 5
+	Output: 25
+	Explanation: Lap 1: Start with tire 1 and finish the lap in 2 seconds.
+	             Lap 2: Continue with tire 1 and finish the lap in 2 * 2 = 4 
+	                    seconds.
+	             Lap 3: Change tires to a new tire 1 for 6 seconds and then 
+	                    finish the lap in another 2 seconds.
+	             Lap 4: Continue with tire 1 and finish the lap in 2 * 2 = 4 
+	                    seconds.
+	             Lap 5: Change tires to tire 0 for 6 seconds then finish the 
+	                    lap in another 1 second.
+	             Total time = 2 + 4 + 6 + 2 + 4 + 6 + 1 = 25 seconds. The 
+	             minimum time to complete the race is 25 seconds. 
+
+	Constraints:
+	* 1 <= tires.length <= 10^5
+	* tires[i].length == 2
+	* 1 <= fi, changeTime <= 10^5
+	* 2 <= ri <= 10^5
+	* 1 <= numLaps <= 1000*/
+
+    int minimumFinishTime(vector<vector<int>>& tires, int changeTime, int numLaps) {
+        vector<long> nonstop(20, INT_MAX); 
+        for (auto& tire : tires) {
+            long prefix = tire[0], term = tire[0]; 
+            for (int i = 1; i < 20; ++i) {
+                nonstop[i] = min(nonstop[i], prefix); 
+                term *= tire[1]; 
+                if (term >= tire[0] + changeTime) break; 
+                prefix += term; 
+            }
+        }
+        vector<int> dp(numLaps+1, INT_MAX); 
+        dp[1] = nonstop[1]; 
+        for (int x = 2; x <= numLaps; ++x) {
+            if (x < 20) dp[x] = nonstop[x]; 
+            for (int xx = 1; xx < min(20, x/2+1); ++xx) 
+                dp[x] = min(dp[x], dp[xx] + dp[x-xx] + changeTime); 
+        }
+        return dp.back(); 
+    }
 };
 
 
