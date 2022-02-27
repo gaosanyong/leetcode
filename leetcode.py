@@ -15624,17 +15624,16 @@ class Solution:
 	 
 	Constraints: The given binary tree will have between 1 and 3000 nodes."""
 
-    def widthOfBinaryTree(self, root: TreeNode) -> int:
-        ans = 1
-        queue = [(root, 0)]
+    def widthOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        ans = 0 
+        queue = deque([(root, 0)])
         while queue: 
             ans = max(ans, queue[-1][1] - queue[0][1] + 1)
-            newq = []
-            for node, i in queue: 
-                if node.left: newq.append((node.left, 2*i))
-                if node.right: newq.append((node.right, 2*i+1))
-            queue = newq
-        return ans 
+            for _ in range(len(queue)): 
+                node, x = queue.popleft()
+                if node.left: queue.append((node.left, 2*x))
+                if node.right: queue.append((node.right, 2*x+1))
+        return ans
 
 
     """663. Equal Tree Partition (Medium)
