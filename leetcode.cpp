@@ -7689,9 +7689,9 @@ public:
 	           (i.e., like __builtin_popcount in C++)?*/
 
     vector<int> countBits(int n) {
-        vector<int> ans(n+1, 0); 
+        vector<int> ans(n+1); 
         for (int x = 1; x <= n; ++x) 
-            ans[x] = 1 + ans[x&(x-1)];
+            ans[x] = ans[x&(x-1)] + 1; 
         return ans; 
     }
 
