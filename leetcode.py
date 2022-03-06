@@ -31363,7 +31363,7 @@ class UnionFind:
     def countOrders(self, n: int) -> int:
         ans = 1
         for x in range(2, n+1): 
-            ans = (ans*x*(2*x-1)) % 1_000_000_007
+            ans = ans*x*(2*x-1) % 1_000_000_007
         return ans 
 
 
@@ -57330,7 +57330,7 @@ class Trie:
 	* 1 <= nums.length <= 10^5
 	* 1 <= nums[i] <= 10^5
 	* The test cases are generated such that the values in the final array are 
-	  less than or equal to 108."""
+	  less than or equal to 10^8."""
 
     def replaceNonCoprimes(self, nums: List[int]) -> List[int]:
         ans = []
