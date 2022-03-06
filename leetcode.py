@@ -57169,6 +57169,183 @@ class Trie:
         return fn(numLaps)
 
 
+    """2194. Cells in a Range on an Excel Sheet (Easy)
+	A cell (r, c) of an excel sheet is represented as a string "<col><row>" 
+	where:
+	* <col> denotes the column number c of the cell. It is represented by 
+	  alphabetical letters.
+	  + For example, the 1st column is denoted by 'A', the 2nd by 'B', the 3rd 
+	    by 'C', and so on.
+	* <row> is the row number r of the cell. The rth row is represented by the 
+	  integer r.
+	You are given a string s in the format "<col1><row1>:<col2><row2>", where 
+	<col1> represents the column c1, <row1> represents the row r1, <col2> 
+	represents the column c2, and <row2> represents the row r2, such that 
+	r1 <= r2 and c1 <= c2. Return the list of cells (x, y) such that 
+	r1 <= x <= r2 and c1 <= y <= c2. The cells should be represented as strings 
+	in the format mentioned above and be sorted in non-decreasing order first 
+	by columns and then by rows.
+
+	Example 1:
+	Input: s = "K1:L2"
+	Output: ["K1","K2","L1","L2"]
+	Explanation: The above diagram shows the cells which should be present in 
+	             the list. The red arrows denote the order in which the cells 
+	             should be presented.
+	
+	Example 2:
+	Input: s = "A1:F1"
+	Output: ["A1","B1","C1","D1","E1","F1"]
+	Explanation: The above diagram shows the cells which should be present in 
+	             the list. The red arrow denotes the order in which the cells 
+	             should be presented.
+
+	Constraints:
+	* s.length == 5
+	* 'A' <= s[0] <= s[3] <= 'Z'
+	* '1' <= s[1] <= s[4] <= '9'
+	* s consists of uppercase English letters, digits and ':'."""
+
+    def cellsInRange(self, s: str) -> List[str]:
+        return [chr(c)+str(r) for c in range(ord(s[0]), ord(s[3])+1) for r in range(int(s[1]), int(s[4])+1)]
+
+
+    """2195. Append K Integers With Minimal Sum (Medium)
+	You are given an integer array nums and an integer k. Append k unique 
+	positive integers that do not appear in nums to nums such that the 
+	resulting total sum is minimum. Return the sum of the k integers appended 
+	to nums.
+
+	Example 1:
+	Input: nums = [1,4,25,10,25], k = 2
+	Output: 5
+	Explanation: The two unique positive integers that do not appear in nums 
+	             which we append are 2 and 3. The resulting sum of nums is 
+	             1 + 4 + 25 + 10 + 25 + 2 + 3 = 70, which is the minimum. The 
+	             sum of the two integers appended is 2 + 3 = 5, so we return 5.
+	
+	Example 2:
+	Input: nums = [5,6], k = 6
+	Output: 25
+	Explanation: The six unique positive integers that do not appear in nums 
+	             which we append are 1, 2, 3, 4, 7, and 8. The resulting sum of 
+	             nums is 5 + 6 + 1 + 2 + 3 + 4 + 7 + 8 = 36, which is the 
+	             minimum. The sum of the six integers appended is 
+	             1 + 2 + 3 + 4 + 7 + 8 = 25, so we return 25.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i], k <= 10^9"""
+
+    def minimalKSum(self, nums: List[int], k: int) -> int:
+        ans = k*(k+1)//2
+        prev = -inf 
+        for x in sorted(nums): 
+            if prev < x: 
+                if x <= k: 
+                    k += 1
+                    ans += k - x
+                else: break
+                prev = x
+        return ans 
+
+
+    """2196. Create Binary Tree From Descriptions (Medium)
+	You are given a 2D integer array descriptions where 
+	descriptions[i] = [parenti, childi, isLefti] indicates that parenti is the 
+	parent of childi in a binary tree of unique values. Furthermore,
+	* If isLefti == 1, then childi is the left child of parenti.
+	* If isLefti == 0, then childi is the right child of parenti.
+	Construct the binary tree described by descriptions and return its root. 
+	The test cases will be generated such that the binary tree is valid.
+
+	Example 1:
+	Input: descriptions = [[20,15,1],[20,17,0],[50,20,1],[50,80,0],[80,19,1]]
+	Output: [50,20,80,15,17,19]
+	Explanation: The root node is the node with value 50 since it has no parent.
+	             The resulting binary tree is shown in the diagram.
+	
+	Example 2:
+	Input: descriptions = [[1,2,1],[2,3,0],[3,4,1]]
+	Output: [1,2,null,null,3,4]
+	Explanation: The root node is the node with value 1 since it has no parent.
+	             The resulting binary tree is shown in the diagram.
+
+	Constraints:
+	* 1 <= descriptions.length <= 10^4
+	* descriptions[i].length == 3
+	* 1 <= parenti, childi <= 10^5
+	* 0 <= isLefti <= 1
+	* The binary tree described by descriptions is valid."""
+
+    def createBinaryTree(self, descriptions: List[List[int]]) -> Optional[TreeNode]:
+        mp = {}
+        seen = set()
+        for p, c, left in descriptions: 
+            if p not in mp: mp[p] = TreeNode(p)
+            if c not in mp: mp[c] = TreeNode(c)
+            if left: mp[p].left = mp[c]
+            else: mp[p].right = mp[c]
+            seen.add(c)
+        for p, _, _ in descriptions: 
+            if p not in seen: return mp[p]
+
+
+    """2197. Replace Non-Coprime Numbers in Array (Hard)
+	You are given an array of integers nums. Perform the following steps:
+	* Find any two adjacent numbers in nums that are non-coprime.
+	* If no such numbers are found, stop the process.
+	* Otherwise, delete the two numbers and replace them with their LCM (Least 
+	  Common Multiple).
+	* Repeat this process as long as you keep finding two adjacent non-coprime 
+	  numbers.
+	Return the final modified array. It can be shown that replacing adjacent 
+	non-coprime numbers in any arbitrary order will lead to the same result.
+	The test cases are generated such that the values in the final array are 
+	less than or equal to 10^8. Two values x and y are non-coprime if 
+	GCD(x, y) > 1 where GCD(x, y) is the Greatest Common Divisor of x and y.
+
+	Example 1:
+	Input: nums = [6,4,3,2,7,6,2]
+	Output: [12,7,6]
+	Explanation: - (6, 4) are non-coprime with LCM(6, 4) = 12. Now, nums = [12,3,2,7,6,2].
+	             - (12, 3) are non-coprime with LCM(12, 3) = 12. Now, nums = [12,2,7,6,2].
+	             - (12, 2) are non-coprime with LCM(12, 2) = 12. Now, nums = [12,7,6,2].
+	             - (6, 2) are non-coprime with LCM(6, 2) = 6. Now, nums = [12,7,6].
+	             There are no more adjacent non-coprime numbers in nums. Thus, 
+	             the final modified array is [12,7,6]. Note that there are 
+	             other ways to obtain the same resultant array.
+	
+	Example 2:
+	Input: nums = [2,2,1,1,3,3,3]
+	Output: [2,1,1,3]
+	Explanation: - (3, 3) are non-coprime with LCM(3, 3) = 3. Now, nums = [2,2,1,1,3,3].
+	             - (3, 3) are non-coprime with LCM(3, 3) = 3. Now, nums = [2,2,1,1,3].
+	             - (2, 2) are non-coprime with LCM(2, 2) = 2. Now, nums = [2,1,1,3].
+	             There are no more adjacent non-coprime numbers in nums. Thus, 
+	             the final modified array is [2,1,1,3]. Note that there are 
+	             other ways to obtain the same resultant array.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^5
+	* The test cases are generated such that the values in the final array are 
+	  less than or equal to 108."""
+
+    def replaceNonCoprimes(self, nums: List[int]) -> List[int]:
+        ans = []
+        prev = nums[0]
+        for i in range(1, len(nums)): 
+            if gcd(prev, nums[i]) == 1: 
+                ans.append(prev)
+                prev = nums[i]
+            else: 
+                prev = lcm(prev, nums[i])
+                while ans and gcd(ans[-1], prev) > 1: prev = lcm(prev, ans.pop())
+        ans.append(prev)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
