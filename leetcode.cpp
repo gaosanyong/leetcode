@@ -713,18 +713,15 @@ public:
 
 	*/
 
-    ListNode* mergeTwoLists(ListNode* l1, ListNode* l2) {
+    ListNode* mergeTwoLists(ListNode* list1, ListNode* list2) {
         ListNode dummy(0), *node = &dummy; 
-        while (l1 && l2) 
-            if (l1->val < l2->val) {
-                node = node->next = l1; 
-                l1 = l1->next; 
-            } else {
-                node = node->next = l2; 
-                l2 = l2->next; 
-            }
-        node->next = l1 ? l1 : l2; 
-        return dummy.next;
+        while (list1 && list2) {
+            if (list1->val > list2->val) swap(list1, list2); 
+            node = node->next = list1; 
+            list1 = list1->next; 
+        }
+        node->next = list1 ? list1 : list2; 
+        return dummy.next; 
     }
 
 

@@ -731,16 +731,13 @@ class Solution:
 	* -100 <= Node.val <= 100
 	* Both l1 and l2 are sorted in non-decreasing order."""
     
-    def mergeTwoLists(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
         dummy = node = ListNode()
-        while l1 and l2:
-            if l1.val <= l2.val: 
-                node.next = node = l1
-                l1 = l1.next 
-            else: 
-                node.next = node = l2
-                l2 = l2.next 
-        node.next = l1 or l2
+        while list1 and list2: 
+            if list1.val > list2.val: list1, list2 = list2, list1
+            node.next = node = list1
+            list1 = list1.next 
+        node.next = list1 or list2
         return dummy.next 
 
 
