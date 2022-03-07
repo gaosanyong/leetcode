@@ -42702,21 +42702,15 @@ public:
 	  less than or equal to 10^8.*/
 
     vector<int> replaceNonCoprimes(vector<int>& nums) {
-        vector<int> ans; 
-        int prev = nums[0]; 
-        for (int i = 1; i < nums.size(); ++i) 
-            if (gcd(prev, nums[i]) == 1) {
-                ans.push_back(prev); 
-                prev = nums[i]; 
-            } else {
-                prev = lcm(prev, nums[i]); 
-                while (ans.size() && gcd(ans.back(), prev) > 1) {
-                    prev = lcm(prev, ans.back()); 
-                    ans.pop_back(); 
-                }
+        vector<int> stk; 
+        for (auto& x : nums) {
+            while (stk.size() && gcd(stk.back(), x) > 1) {
+                x = lcm(x, stk.back()); 
+                stk.pop_back(); 
             }
-        ans.push_back(prev); 
-        return ans; 
+            stk.push_back(x); 
+        }
+        return stk; 
     }
 };
 

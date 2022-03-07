@@ -57330,17 +57330,11 @@ class Trie:
 	  less than or equal to 10^8."""
 
     def replaceNonCoprimes(self, nums: List[int]) -> List[int]:
-        ans = []
-        prev = nums[0]
-        for i in range(1, len(nums)): 
-            if gcd(prev, nums[i]) == 1: 
-                ans.append(prev)
-                prev = nums[i]
-            else: 
-                prev = lcm(prev, nums[i])
-                while ans and gcd(ans[-1], prev) > 1: prev = lcm(prev, ans.pop())
-        ans.append(prev)
-        return ans 
+        stack = []
+        for x in nums: 
+            while stack and gcd(stack[-1], x) > 1: x = lcm(x, stack.pop())
+            stack.append(x)
+        return stack
 
 
 """146. LRU Cache (Medium)
