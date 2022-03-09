@@ -2291,12 +2291,12 @@ public:
 	* The list is guaranteed to be sorted in ascending order.*/
 
     ListNode* deleteDuplicates(ListNode* head) {
-        ListNode dummy(0, head), *slow = &dummy, *fast = slow->next; 
-        while (fast) {
-            while (fast->next && fast->val == fast->next->val) fast = fast->next; 
-            if (slow->next == fast) slow = slow->next; 
-            else slow->next = fast->next; 
-            fast = slow->next; 
+        ListNode dummy(0, head), *node = &dummy; 
+        while (node && node->next) {
+            ListNode *temp = node->next; 
+            while (temp && node->next->val == temp->val) temp = temp->next; 
+            if (node->next->next == temp) node = node->next; 
+            else node->next = temp; 
         }
         return dummy.next; 
     }
