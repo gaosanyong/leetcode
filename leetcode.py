@@ -4719,9 +4719,9 @@ class Solution:
 	Explanation: Given linked list is empty (null pointer), so return null.
 
 	Constraints:
-	+ -10000 <= Node.val <= 10000
-	+ Node.random is null or pointing to a node in the linked list.
-	+ Number of Nodes will not exceed 1000."""
+	* -10000 <= Node.val <= 10000
+	* Node.random is null or pointing to a node in the linked list.
+	* Number of Nodes will not exceed 1000."""
 
     def copyRandomList(self, head: 'Node') -> 'Node':
         mp = {}
