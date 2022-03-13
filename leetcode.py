@@ -57337,6 +57337,228 @@ class Trie:
         return stack
 
 
+    """2200. Find All K-Distant Indices in an Array (Easy)
+	You are given a 0-indexed integer array nums and two integers key and k. A 
+	k-distant index is an index i of nums for which there exists at least one 
+	index j such that |i - j| <= k and nums[j] == key. Return a list of all 
+	k-distant indices sorted in increasing order.
+
+	Example 1:
+	Input: nums = [3,4,9,1,3,9,5], key = 9, k = 1
+	Output: [1,2,3,4,5,6]
+	Explanation: Here, nums[2] == key and nums[5] == key.
+	             - For index 0, |0 - 2| > k and |0 - 5| > k, so there is no j 
+	               where |0 - j| <= k and nums[j] == key. Thus, 0 is not a 
+	               k-distant index.
+	             - For index 1, |1 - 2| <= k and nums[2] == key, so 1 is a 
+	               k-distant index.
+	             - For index 2, |2 - 2| <= k and nums[2] == key, so 2 is a 
+	               k-distant index.
+	             - For index 3, |3 - 2| <= k and nums[2] == key, so 3 is a 
+	               k-distant index.
+	             - For index 4, |4 - 5| <= k and nums[5] == key, so 4 is a 
+	               k-distant index.
+	             - For index 5, |5 - 5| <= k and nums[5] == key, so 5 is a 
+	               k-distant index.
+	             - For index 6, |6 - 5| <= k and nums[5] == key, so 6 is a 
+	               k-distant index.
+	             Thus, we return [1,2,3,4,5,6] which is sorted in increasing 
+	             order. 
+	
+	Example 2:
+	Input: nums = [2,2,2,2,2], key = 2, k = 2
+	Output: [0,1,2,3,4]
+	Explanation: For all indices i in nums, there exists some index j such that 
+	             |i - j| <= k and nums[j] == key, so every index is a k-distant 
+	             index. Hence, we return [0,1,2,3,4].
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* 1 <= nums[i] <= 1000
+	* key is an integer from the array nums.
+	* 1 <= k <= nums.length"""
+
+    def findKDistantIndices(self, nums: List[int], key: int, k: int) -> List[int]:
+        ans = []
+        ii = 0
+        for i, x in enumerate(nums): 
+            if x == key: 
+                lo, hi = max(ii, i-k), min(i+k+1, len(nums))
+                ans.extend(list(range(lo, hi)))
+                ii = hi
+        return ans 
+
+
+    """2201. Count Artifacts That Can Be Extracted (Medium)
+	There is an n x n 0-indexed grid with some artifacts buried in it. You are 
+	given the integer n and a 0-indexed 2D integer array artifacts describing 
+	the positions of the rectangular artifacts where 
+	artifacts[i] = [r1i, c1i, r2i, c2i] denotes that the ith artifact is buried 
+	in the subgrid where:
+	* (r1i, c1i) is the coordinate of the top-left cell of the ith artifact and
+	* (r2i, c2i) is the coordinate of the bottom-right cell of the ith artifact.
+	You will excavate some cells of the grid and remove all the mud from them. 
+	If the cell has a part of an artifact buried underneath, it will be 
+	uncovered. If all the parts of an artifact are uncovered, you can extract 
+	it. Given a 0-indexed 2D integer array dig where dig[i] = [ri, ci] 
+	indicates that you will excavate the cell (ri, ci), return the number of 
+	artifacts that you can extract. The test cases are generated such that:
+	* No two artifacts overlap.
+	* Each artifact only covers at most 4 cells.
+	* The entries of dig are unique.
+
+	Example 1:
+	Input: n = 2, artifacts = [[0,0,0,0],[0,1,1,1]], dig = [[0,0],[0,1]]
+	Output: 1
+	Explanation: The different colors represent different artifacts. Excavated 
+	             cells are labeled with a 'D' in the grid. There is 1 artifact 
+	             that can be extracted, namely the red artifact. The blue 
+	             artifact has one part in cell (1,1) which remains uncovered, 
+	             so we cannot extract it. Thus, we return 1.
+	
+	Example 2:
+	Input: n = 2, artifacts = [[0,0,0,0],[0,1,1,1]], dig = [[0,0],[0,1],[1,1]]
+	Output: 2
+	Explanation: Both the red and blue artifacts have all parts uncovered 
+	             (labeled with a 'D') and can be extracted, so we return 2. 
+
+	Constraints:
+	* 1 <= n <= 1000
+	* 1 <= artifacts.length, dig.length <= min(n2, 105)
+	* artifacts[i].length == 4
+	* dig[i].length == 2
+	* 0 <= r1i, c1i, r2i, c2i, ri, ci <= n - 1
+	* r1i <= r2i
+	* c1i <= c2i
+	* No two artifacts will overlap.
+	* The number of cells covered by an artifact is at most 4.
+	* The entries of dig are unique."""
+
+    def digArtifacts(self, n: int, artifacts: List[List[int]], dig: List[List[int]]) -> int:
+        dig = {(x, y) for x, y in dig}
+        ans = 0 
+        for i1, j1, i2, j2 in artifacts: 
+            for i in range(i1, i2+1):
+                for j in range(j1, j2+1): 
+                    if (i, j) not in dig: break 
+                else: continue 
+                break 
+            else: ans += 1
+        return ans
+
+
+    """2202. Maximize the Topmost Element After K Moves (Medium)
+	You are given a 0-indexed integer array nums representing the contents of a 
+	pile, where nums[0] is the topmost element of the pile. In one move, you 
+	can perform either of the following:
+	* If the pile is not empty, remove the topmost element of the pile.
+	* If there are one or more removed elements, add any one of them back onto 
+	  the pile. This element becomes the new topmost element.
+	You are also given an integer k, which denotes the total number of moves to 
+	be made. Return the maximum value of the topmost element of the pile 
+	possible after exactly k moves. In case it is not possible to obtain a non-
+	empty pile after k moves, return -1.
+
+	Example 1:
+	Input: nums = [5,2,2,4,0,6], k = 4
+	Output: 5
+	Explanation: One of the ways we can end with 5 at the top of the pile after 
+	             4 moves is as follows:
+	             - Step 1: Remove the topmost element = 5. The pile becomes 
+	               [2,2,4,0,6].
+	             - Step 2: Remove the topmost element = 2. The pile becomes 
+	               [2,4,0,6].
+	             - Step 3: Remove the topmost element = 2. The pile becomes 
+	               [4,0,6].
+	             - Step 4: Add 5 back onto the pile. The pile becomes [5,4,0,6].
+	             Note that this is not the only way to end with 5 at the top of 
+	             the pile. It can be shown that 5 is the largest answer 
+	             possible after 4 moves.
+	
+	Example 2:
+	Input: nums = [2], k = 1
+	Output: -1
+	Explanation: In the first move, our only option is to pop the topmost 
+	             element of the pile. Since it is not possible to obtain a non-
+	             empty pile after one move, we return -1.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 0 <= nums[i], k <= 10^9"""
+
+    def maximumTop(self, nums: List[int], k: int) -> int:
+        if len(nums) == 1 and k&1: return -1
+        ans = 0 
+        for i in range(min(k-1, len(nums))): ans = max(ans, nums[i])
+        if k < len(nums): ans = max(ans, nums[k])
+        return ans 
+
+
+    """2203. Minimum Weighted Subgraph With the Required Paths (Hard)
+	You are given an integer n denoting the number of nodes of a weighted 
+	directed graph. The nodes are numbered from 0 to n - 1. You are also given 
+	a 2D integer array edges where edges[i] = [fromi, toi, weighti] denotes 
+	that there exists a directed edge from fromi to toi with weight weighti.
+	Lastly, you are given three distinct integers src1, src2, and dest denoting 
+	three distinct nodes of the graph. Return the minimum weight of a subgraph 
+	of the graph such that it is possible to reach dest from both src1 and src2 
+	via a set of edges of this subgraph. In case such a subgraph does not exist, 
+	return -1. A subgraph is a graph whose vertices and edges are subsets of 
+	the original graph. The weight of a subgraph is the sum of weights of its 
+	constituent edges.
+
+	Example 1:
+	Input: n = 6, edges = [[0,2,2],[0,5,6],[1,0,3],[1,4,5],[2,1,1],[2,3,3],[2,3,4],[3,4,2],[4,5,1]], src1 = 0, src2 = 1, dest = 5
+	Output: 9
+	Explanation: The above figure represents the input graph. The blue edges 
+	             represent one of the subgraphs that yield the optimal answer.
+	             Note that the subgraph [[1,0,3],[0,5,6]] also yields the 
+	             optimal answer. It is not possible to get a subgraph with less 
+	             weight satisfying all the constraints.
+	
+	Example 2:
+	Input: n = 3, edges = [[0,1,1],[2,1,1]], src1 = 0, src2 = 1, dest = 2
+	Output: -1
+	Explanation: The above figure represents the input graph. It can be seen 
+	             that there does not exist any path from node 1 to node 2, 
+	             hence there are no subgraphs satisfying all the constraints.
+	Constraints:
+	* 3 <= n <= 10^5
+	* 0 <= edges.length <= 10^5
+	* edges[i].length == 3
+	* 0 <= fromi, toi, src1, src2, dest <= n - 1
+	* fromi != toi
+	* src1, src2, and dest are pairwise distinct.
+	* 1 <= weight[i] <= 10^5"""
+
+    def minimumWeight(self, n: int, edges: List[List[int]], src1: int, src2: int, dest: int) -> int:
+        graph = [[] for _ in range(n)]
+        trans = [[] for _ in range(n)]
+        for u, v, w in edges: 
+            graph[u].append((v, w))
+            trans[v].append((u, w))
+        
+        def bfs(x, graph): 
+            dist = [inf] * n
+            dist[x] = 0 
+            queue = deque([(x, 0)])
+            while queue: 
+                u, w = queue.popleft()
+                if dist[u] == w: 
+                    for v, ww in graph[u]: 
+                        if w+ww < dist[v]: 
+                            dist[v] = w+ww
+                            queue.append((v, w+ww))
+            return dist
+        
+        ds1 = bfs(src1, graph)
+        ds2 = bfs(src2, graph)
+        dd = bfs(dest, trans)
+        
+        ans = min(x+y+z for x, y, z in zip(ds1, ds2, dd))
+        return ans if ans < inf else -1 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
