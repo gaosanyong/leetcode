@@ -20806,8 +20806,8 @@ class Solution:
 
     def scoreOfParentheses(self, S: str) -> int:
         ans, stack = 0, []
-        for c in S: 
-            if c == "(": 
+        for ch in S: 
+            if ch == "(": 
                 stack.append(ans)
                 ans = 0
             else: ans = max(1, 2*ans) + stack.pop()
