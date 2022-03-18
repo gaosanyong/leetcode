@@ -7297,6 +7297,39 @@ public:
     }
 
 
+    /*316. Remove Duplicate Letters (Medium)
+	Given a string s, remove duplicate letters so that every letter appears 
+	once and only once. You must make sure your result is the smallest in 
+	lexicographical order among all possible results.
+
+	Example 1:
+	Input: s = "bcabc"
+	Output: "abc"
+
+	Example 2:
+	Input: s = "cbacdcbc"
+	Output: "acdb"
+
+	Constraints:
+	* 1 <= s.length <= 10^4
+	* s consists of lowercase English letters.
+
+	Note: This question is the same as 1081: 
+	      https://leetcode.com/problems/smallest-subsequence-of-distinct-characters/*/
+
+    string removeDuplicateLetters(string s) {
+        vector<int> last(26, -1); 
+        for (int i = 0; i < s.size(); ++i) last[s[i] - 'a'] = i; 
+        string ans; 
+        for (int i = 0; i < s.size(); ++i) 
+            if (ans.find(s[i]) == string::npos) {
+                while (ans.size() && ans.back() > s[i] && last[ans.back() - 'a'] > i) ans.pop_back(); 
+                ans.push_back(s[i]); 
+            }
+        return ans; 
+    }
+
+
     /*318. Maximum Product of Word Lengths (Medium)
 	Given a string array words, return the maximum value of 
 	length(word[i]) * length(word[j]) where the two words do not share common 

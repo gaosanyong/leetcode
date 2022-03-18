@@ -9142,13 +9142,13 @@ class Solution:
 	* s consists of lowercase English letters."""
 
     def removeDuplicateLetters(self, s: str) -> str:
-        mp = {c: i for i, c in enumerate(s)}
+        last = {ch : i for i, ch in enumerate(s)}
         stack = []
-        for i, c in enumerate(s): 
-            if c not in stack: 
-                while stack and c < stack[-1] and i < mp[stack[-1]]: stack.pop()
-                stack.append(c)
-        return "".join(map(str, stack))
+        for i, ch in enumerate(s): 
+            if ch not in stack: 
+                while stack and stack[-1] > ch and last[stack[-1]] > i: stack.pop()
+                stack.append(ch)
+        return ''.join(stack)
 
 
     """318. Maximum Product of Word Lengths (Medium)
