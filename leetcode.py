@@ -57599,6 +57599,179 @@ class Trie:
         return ans if ans < inf else -1 
 
 
+    """2206. Divide Array Into Equal Pairs (Easy)
+	You are given an integer array nums consisting of 2 * n integers. You need 
+	to divide nums into n pairs such that:
+	* Each element belongs to exactly one pair.
+	* The elements present in a pair are equal.
+	Return true if nums can be divided into n pairs, otherwise return false.
+
+	Example 1:
+	Input: nums = [3,2,3,2,2,2]
+	Output: true
+	Explanation: There are 6 elements in nums, so they should be divided into 
+	             6 / 2 = 3 pairs. If nums is divided into the pairs (2, 2), 
+	             (3, 3), and (2, 2), it will satisfy all the conditions.
+	
+	Example 2:
+	Input: nums = [1,2,3,4]
+	Output: false
+	Explanation: There is no way to divide nums into 4 / 2 = 2 pairs such that 
+	             the pairs satisfy every condition.
+
+	Constraints:
+	* nums.length == 2 * n
+	* 1 <= n <= 500
+	* 1 <= nums[i] <= 500"""
+
+    def divideArray(self, nums: List[int]) -> bool:
+        return all(x & 1 == 0 for x in Counter(nums).values())
+
+
+    """2207. Maximize Number of Subsequences in a String (Medium)
+	You are given a 0-indexed string text and another 0-indexed string pattern 
+	of length 2, both of which consist of only lowercase English letters. You 
+	can add either pattern[0] or pattern[1] anywhere in text exactly once. Note 
+	that the character can be added even at the beginning or at the end of text.
+	Return the maximum number of times pattern can occur as a subsequence of 
+	the modified text. A subsequence is a string that can be derived from 
+	another string by deleting some or no characters without changing the order 
+	of the remaining characters.
+
+	Example 1:
+	Input: text = "abdcdbc", pattern = "ac"
+	Output: 4
+	Explanation: If we add pattern[0] = 'a' in between text[1] and text[2], we 
+	             get "abadcdbc". Now, the number of times "ac" occurs as a 
+	             subsequence is 4. Some other strings which have 4 subsequences 
+	             "ac" after adding a character to text are "aabdcdbc" and 
+	             "abdacdbc". However, strings such as "abdcadbc", "abdccdbc", 
+	             and "abdcdbcc", although obtainable, have only 3 subsequences 
+	             "ac" and are thus suboptimal. It can be shown that it is not 
+	             possible to get more than 4 subsequences "ac" by adding only 
+	             one character.
+	
+	Example 2:
+	Input: text = "aabb", pattern = "ab"
+	Output: 6
+	Explanation: Some of the strings which can be obtained from text and have 6 
+	             subsequences "ab" are "aaabb", "aaabb", and "aabbb".
+
+	Constraints:
+	* 1 <= text.length <= 10^5
+	* pattern.length == 2
+	* text and pattern consist only of lowercase English letters."""
+
+    def maximumSubsequenceCount(self, text: str, pattern: str) -> int:
+        ans = cnt0 = cnt1 = 0 
+        for ch in text: 
+            if ch == pattern[1]: 
+                ans += cnt0 
+                cnt1 += 1
+            if ch == pattern[0]: cnt0 += 1
+        return ans + max(cnt0, cnt1)
+
+
+    """2208. Minimum Operations to Halve Array Sum (Medium)
+	You are given an array nums of positive integers. In one operation, you can 
+	choose any number from nums and reduce it to exactly half the number. (Note 
+	that you may choose this reduced number in future operations.) Return the 
+	minimum number of operations to reduce the sum of nums by at least half.
+
+	Example 1:
+	Input: nums = [5,19,8,1]
+	Output: 3
+	Explanation: The initial sum of nums is equal to 5 + 19 + 8 + 1 = 33. The 
+	             following is one of the ways to reduce the sum by at least 
+	             half: 
+	             * Pick the number 19 and reduce it to 9.5.
+	             * Pick the number 9.5 and reduce it to 4.75.
+	             * Pick the number 8 and reduce it to 4.
+	             The final array is [5, 4.75, 4, 1] with a total sum of 
+	             5 + 4.75 + 4 + 1 = 14.75. The sum of nums has been reduced by 
+	             33 - 14.75 = 18.25, which is at least half of the initial sum, 
+	             18.25 >= 33/2 = 16.5. Overall, 3 operations were used so we 
+	             return 3. It can be shown that we cannot reduce the sum by at 
+	             least half in less than 3 operations.
+	
+	Example 2:
+	Input: nums = [3,8,20]
+	Output: 3
+	Explanation: The initial sum of nums is equal to 3 + 8 + 20 = 31. The 
+	             following is one of the ways to reduce the sum by at least 
+	             half:
+	             * Pick the number 20 and reduce it to 10.
+	             * Pick the number 10 and reduce it to 5.
+	             * Pick the number 3 and reduce it to 1.5.
+	             The final array is [1.5, 8, 5] with a total sum of 
+	             1.5 + 8 + 5 = 14.5. The sum of nums has been reduced by 
+	             31 - 14.5 = 16.5, which is at least half of the initial sum, 
+	             16.5 >= 31/2 = 16.5. Overall, 3 operations were used so we 
+	             return 3. It can be shown that we cannot reduce the sum by at 
+	             least half in less than 3 operations.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^7"""
+
+    def halveArray(self, nums: List[int]) -> int:
+        pq = [-x for x in nums]
+        heapify(pq)
+        sm = ss = sum(nums)
+        ans = 0 
+        while sm > ss/2: 
+            ans += 1
+            x = heappop(pq)
+            sm -= -x/2
+            heappush(pq, x/2)
+        return ans 
+
+
+    """2209. Minimum White Tiles After Covering With Carpets (Hard)
+	You are given a 0-indexed binary string floor, which represents the colors 
+	of tiles on a floor:
+	* floor[i] = '0' denotes that the ith tile of the floor is colored black.
+	* On the other hand, floor[i] = '1' denotes that the ith tile of the floor 
+	  is colored white.
+	You are also given numCarpets and carpetLen. You have numCarpets black 
+	carpets, each of length carpetLen tiles. Cover the tiles with the given 
+	carpets such that the number of white tiles still visible is minimum. 
+	Carpets may overlap one another. Return the minimum number of white tiles 
+	still visible.
+
+	Example 1:
+	Input: floor = "10110101", numCarpets = 2, carpetLen = 2
+	Output: 2
+	Explanation: The figure above shows one way of covering the tiles with the 
+	             carpets such that only 2 white tiles are visible. No other way 
+	             of covering the tiles with the carpets can leave less than 2 
+	             white tiles visible.
+	
+	Example 2:
+	Input: floor = "11111", numCarpets = 2, carpetLen = 3
+	Output: 0
+	Explanation: The figure above shows one way of covering the tiles with the 
+	             carpets such that no white tiles are visible. Note that the 
+	             carpets are able to overlap one another.
+
+	Constraints:
+	* 1 <= carpetLen <= floor.length <= 1000
+	* floor[i] is either '0' or '1'.
+	* 1 <= numCarpets <= 1000"""
+
+    def minimumWhiteTiles(self, floor: str, numCarpets: int, carpetLen: int) -> int:
+        
+        @cache
+        def fn(i, n):
+            """Return min while tiles at k with n carpets left."""
+            if n < 0: return inf 
+            if i >= len(floor): return 0 
+            if floor[i] == '1': return min(fn(i+carpetLen, n-1), 1 + fn(i+1, n))
+            return fn(i+1, n)
+        
+        return fn(0, numCarpets)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
