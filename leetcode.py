@@ -21359,14 +21359,13 @@ class Solution:
 
     def numRescueBoats(self, people: List[int], limit: int) -> int:
         people.sort()
-        
-        ans = 0
+        ans = 0 
         lo, hi = 0, len(people)-1
-        while lo < hi: 
-            if people[lo] + people[hi] <= limit: lo += 1
-            ans += 1
+        while lo <= hi: 
+            if lo < hi and people[lo] + people[hi] <= limit: lo += 1
             hi -= 1
-        return ans + (lo == hi)
+            ans += 1
+        return ans 
 
 
     """882. Reachable Nodes In Subdivided Graph (Hard)
