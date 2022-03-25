@@ -24868,12 +24868,12 @@ class Solution:
 	Example 1:
 	Input: costs = [[10,20],[30,200],[400,50],[30,20]]
 	Output: 110
-	Explanation: 
-	The first person goes to city A for a cost of 10.
-	The second person goes to city A for a cost of 30.
-	The third person goes to city B for a cost of 50.
-	The fourth person goes to city B for a cost of 20.
-	The total minimum cost is 10 + 30 + 50 + 20 = 110 to have half the people interviewing in each city.
+	Explanation: The first person goes to city A for a cost of 10.
+	             The second person goes to city A for a cost of 30.
+	             The third person goes to city B for a cost of 50.
+	             The fourth person goes to city B for a cost of 20.
+	             The total minimum cost is 10 + 30 + 50 + 20 = 110 to have half 
+	             the people interviewing in each city.
 
 	Example 2:
 	Input: costs = [[259,770],[448,54],[926,667],[184,139],[840,118],[577,469]]
@@ -24890,9 +24890,8 @@ class Solution:
 	* 1 <= aCosti, bCosti <= 1000"""
 
     def twoCitySchedCost(self, costs: List[List[int]]) -> int:
-        costs.sort(key=lambda x: x[1] - x[0])
         ans = 0
-        for i, (a, b) in enumerate(costs): 
+        for i, (a, b) in enumerate(sorted(costs, key=lambda x: x[1]-x[0])): 
             if i < len(costs)//2: ans += b
             else: ans += a
         return ans 
