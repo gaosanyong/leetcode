@@ -57770,6 +57770,159 @@ class Trie:
         return fn(0, numCarpets)
 
 
+    """2215. Find the Difference of Two Arrays (Easy)
+	Given two 0-indexed integer arrays nums1 and nums2, return a list answer of 
+	size 2 where:
+	* answer[0] is a list of all distinct integers in nums1 which are not 
+	  present in nums2.
+	* answer[1] is a list of all distinct integers in nums2 which are not 
+	  present in nums1.
+	Note that the integers in the lists may be returned in any order.
+
+	Example 1:
+	Input: nums1 = [1,2,3], nums2 = [2,4,6]
+	Output: [[1,3],[4,6]]
+	Explanation: For nums1, nums1[1] = 2 is present at index 0 of nums2, 
+	             whereas nums1[0] = 1 and nums1[2] = 3 are not present in nums2. 
+	             Therefore, answer[0] = [1,3]. For nums2, nums2[0] = 2 is 
+	             present at index 1 of nums1, whereas nums2[1] = 4 and 
+	             nums2[2] = 6 are not present in nums2. Therefore, 
+	             answer[1] = [4,6].
+	
+	Example 2:
+	Input: nums1 = [1,2,3,3], nums2 = [1,1,2,2]
+	Output: [[3],[]]
+	Explanation: For nums1, nums1[2] and nums1[3] are not present in nums2. 
+	             Since nums1[2] == nums1[3], their value is only included once 
+	             and answer[0] = [3]. Every integer in nums2 is present in 
+	             nums1. Therefore, answer[1] = [].
+
+	Constraints:
+	* 1 <= nums1.length, nums2.length <= 1000
+	* -1000 <= nums1[i], nums2[i] <= 1000"""
+
+    def findDifference(self, nums1: List[int], nums2: List[int]) -> List[List[int]]:
+        s1, s2 = set(nums1), set(nums2)
+        return [s1-s2, s2-s1]
+
+
+    """2216. Minimum Deletions to Make Array Beautiful (Medium)
+	You are given a 0-indexed integer array nums. The array nums is beautiful 
+	if:
+	* nums.length is even.
+	* nums[i] != nums[i + 1] for all i % 2 == 0.
+	Note that an empty array is considered beautiful. You can delete any number 
+	of elements from nums. When you delete an element, all the elements to the 
+	right of the deleted element will be shifted one unit to the left to fill 
+	the gap created and all the elements to the left of the deleted element 
+	will remain unchanged. Return the minimum number of elements to delete from 
+	nums to make it beautiful.
+
+	Example 1:
+	Input: nums = [1,1,2,3,5]
+	Output: 1
+	Explanation: You can delete either nums[0] or nums[1] to make 
+	             nums = [1,2,3,5] which is beautiful. It can be proven you need 
+	             at least 1 deletion to make nums beautiful.
+	
+	Example 2:
+	Input: nums = [1,1,2,2,3,3]
+	Output: 2
+	Explanation: You can delete nums[0] and nums[5] to make nums = [1,2,2,3] 
+	             which is beautiful. It can be proven you need at least 2 
+	             deletions to make nums beautiful.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 0 <= nums[i] <= 10^5"""
+
+    def minDeletion(self, nums: List[int]) -> int:
+        ans = 0 
+        for i in range(len(nums)-1): 
+            if nums[i] == nums[i+1] and (i-ans) % 2 == 0: ans += 1
+        return ans + (len(nums)-ans) % 2
+
+
+    """2217. Find Palindrome With Fixed Length (Medium)
+	Given an integer array queries and a positive integer intLength, return an 
+	array answer where answer[i] is either the queries[i]th smallest positive 
+	palindrome of length intLength or -1 if no such palindrome exists. A 
+	palindrome is a number that reads the same backwards and forwards. 
+	Palindromes cannot have leading zeros.
+
+	Example 1:
+	Input: queries = [1,2,3,4,5,90], intLength = 3
+	Output: [101,111,121,131,141,999]
+	Explanation: The first few palindromes of length 3 are: 
+	             101, 111, 121, 131, 141, 151, 161, 171, 181, 191, 201, ...
+	             The 90th palindrome of length 3 is 999.
+	
+	Example 2:
+	Input: queries = [2,4,6], intLength = 4
+	Output: [1111,1331,1551]
+	Explanation: The first six palindromes of length 4 are:
+	             1001, 1111, 1221, 1331, 1441, and 1551.
+
+	Constraints:
+	* 1 <= queries.length <= 5 * 10^4
+	* 1 <= queries[i] <= 10^9
+	* 1 <= intLength <= 15"""
+
+    def kthPalindrome(self, queries: List[int], intLength: int) -> List[int]:
+        ans = []
+        end = -1 if intLength&1 else None
+        lo, hi = 10**((intLength-1)//2), 10**((intLength+1)//2)
+        for q in queries: 
+            if lo + q - 1 < hi: 
+                x = lo + q - 1
+                ans.append(int(str(x) + str(x)[:end][::-1]))
+            else: ans.append(-1)
+        return ans 
+
+
+    """2218. Maximum Value of K Coins From Piles (Hard)
+	There are n piles of coins on a table. Each pile consists of a positive 
+	number of coins of assorted denominations. In one move, you can choose any 
+	coin on top of any pile, remove it, and add it to your wallet. Given a list 
+	piles, where piles[i] is a list of integers denoting the composition of the 
+	ith pile from top to bottom, and a positive integer k, return the maximum 
+	total value of coins you can have in your wallet if you choose exactly k 
+	coins optimally.
+
+	Example 1:
+	Input: piles = [[1,100,3],[7,8,9]], k = 2
+	Output: 101
+	Explanation: The above diagram shows the different ways we can choose k 
+	             coins. The maximum total we can obtain is 101.
+	
+	Example 2:
+	Input: piles = [[100],[100],[100],[100],[100],[100],[1,1,1,1,1,1,700]], k = 7
+	Output: 706
+	Explanation: The maximum total can be obtained if we choose all coins from 
+	             the last pile.
+
+	Constraints:
+	* n == piles.length
+	* 1 <= n <= 1000
+	* 1 <= piles[i][j] <= 10^5
+	* 1 <= k <= sum(piles[i].length) <= 2000"""
+
+    def maxValueOfCoins(self, piles: List[List[int]], k: int) -> int:
+        
+        @cache
+        def fn(i, k): 
+            """Return max value to pick k coins from piles[i:]."""
+            if i == len(piles) or k == 0: return 0 
+            ans = fn(i+1, k)
+            prefix = 0 
+            for j in range(min(k, len(piles[i]))): 
+                prefix += piles[i][j]
+                ans = max(ans, prefix + fn(i+1, k-j-1))
+            return ans 
+        
+        return fn(0, k)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
