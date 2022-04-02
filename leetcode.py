@@ -15999,6 +15999,35 @@ class Solution:
         return fn(*cards)
 
 
+    """680. Valid Palindrome II (Easy)
+	Given a string s, return true if the s can be palindrome after deleting at 
+	most one character from it.
+
+	Example 1:
+	Input: s = "aba"
+	Output: true
+
+	Example 2:
+	Input: s = "abca"
+	Output: true
+	Explanation: You could delete the character 'c'.
+
+	Example 3:
+	Input: s = "abc"
+	Output: false
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s consists of lowercase English letters."""
+
+    def validPalindrome(self, s: str) -> bool:
+        for i in range(len(s)//2):
+            if s[i] != s[~i]:
+                ss = s[i:~i+1 or None]
+                return ss[1:] == ss[1:][::-1] or ss[:-1] == ss[:-1][::-1]
+        return True  
+
+
     """681. Next Closest Time (Medium)
 	Given a time represented in the format "HH:MM", form the next closest time 
 	by reusing the current digits. There is no limit on how many times a digit 

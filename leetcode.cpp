@@ -13093,15 +13093,14 @@ public:
 	length of the string is 50000.*/
 
     bool validPalindrome(string s) {
-        for (int lo = 0, hi = s.size()-1; lo < hi; ++lo, --hi) {
-            if (s[lo] != s[hi]) {
-                for (int l = lo+1, h = hi; s[l] == s[h]; ++l, --h) 
-                    if (l >= h) return true; 
-                for (int l = lo, h = hi-1; s[l] == s[h]; ++l, --h) 
-                    if (l >= h) return true; 
+        for (int i = 0, n = s.size(); i < n/2; ++i) 
+            if (s[i] != s[n-i-1]) {
+                for (int lo = i+1, hi = n-i-1; s[lo] == s[hi]; ++lo, --hi) 
+                    if (lo >= hi) return true; 
+                for (int lo = i, hi = n-i-2; s[lo] == s[hi]; ++lo, --hi) 
+                    if (lo >= hi) return true; 
                 return false; 
             }
-        }
         return true; 
     }
 
