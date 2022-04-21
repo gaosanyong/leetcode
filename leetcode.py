@@ -58136,6 +58136,224 @@ class Trie:
         return lo 
 
 
+    """2243. Calculate Digit Sum of a String (Easy)
+	You are given a string s consisting of digits and an integer k. A round can 
+	be completed if the length of s is greater than k. In one round, do the 
+	following:
+	* Divide s into consecutive groups of size k such that the first k 
+	  characters are in the first group, the next k characters are in the 
+	  second group, and so on. Note that the size of the last group can be 
+	  smaller than k.
+	* Replace each group of s with a string representing the sum of all its 
+	  digits. For example, "346" is replaced with "13" because 3 + 4 + 6 = 13.
+	* Merge consecutive groups together to form a new string. If the length of 
+	  the string is greater than k, repeat from step 1.
+	Return s after all rounds have been completed.
+
+	Example 1:
+	Input: s = "11111222223", k = 3
+	Output: "135"
+	Explanation: 
+	- For the first round, we divide s into groups of size 3: "111", "112", 
+	  "222", and "23". Then we calculate the digit sum of each group: 
+	  1 + 1 + 1 = 3, 1 + 1 + 2 = 4, 2 + 2 + 2 = 6, and 2 + 3 = 5. So, s becomes 
+	  "3" + "4" + "6" + "5" = "3465" after the first round.
+	- For the second round, we divide s into "346" and "5". Then we calculate 
+	  the digit sum of each group: 3 + 4 + 6 = 13, 5 = 5. So, s becomes 
+	  "13" + "5" = "135" after second round. 
+	Now, s.length <= k, so we return "135" as the answer.
+	
+	Example 2:
+	Input: s = "00000000", k = 3
+	Output: "000"
+	Explanation: We divide s into "000", "000", and "00". Then we calculate the 
+	             digit sum of each group: 0 + 0 + 0 = 0, 0 + 0 + 0 = 0, and 
+	             0 + 0 = 0. s becomes "0" + "0" + "0" = "000", whose length is 
+	             equal to k, so we return "000".
+
+	Constraints:
+	* 1 <= s.length <= 100
+	* 2 <= k <= 100
+	* s consists of digits only."""
+
+    def digitSum(self, s: str, k: int) -> str:
+        while len(s) > k: 
+            ss = []
+            for i in range(0, len(s), k): ss.append(sum(map(int, s[i:i+k])))
+            s = "".join(map(str, ss))
+        return s 
+
+
+    """2244. Minimum Rounds to Complete All Tasks (Medium)
+	You are given a 0-indexed integer array tasks, where tasks[i] represents 
+	the difficulty level of a task. In each round, you can complete either 2 or 
+	3 tasks of the same difficulty level. Return the minimum rounds required to 
+	complete all the tasks, or -1 if it is not possible to complete all the 
+	tasks.
+
+	Example 1:
+	Input: tasks = [2,2,3,3,2,4,4,4,4,4]
+	Output: 4
+	Explanation: To complete all the tasks, a possible plan is:
+	- In the first round, you complete 3 tasks of difficulty level 2. 
+	- In the second round, you complete 2 tasks of difficulty level 3. 
+	- In the third round, you complete 3 tasks of difficulty level 4. 
+	- In the fourth round, you complete 2 tasks of difficulty level 4.  
+	It can be shown that all the tasks cannot be completed in fewer than 4 
+	rounds, so the answer is 4.
+	
+	Example 2:
+	Input: tasks = [2,3,3]
+	Output: -1
+	Explanation: There is only 1 task of difficulty level 2, but in each round, 
+	             you can only complete either 2 or 3 tasks of the same 
+	             difficulty level. Hence, you cannot complete all the tasks, 
+	             and the answer is -1.
+
+	Constraints:
+	* 1 <= tasks.length <= 10^5
+	* 1 <= tasks[i] <= 10^9"""
+
+    def minimumRounds(self, nums: List[int]) -> int:
+        ans = 0 
+        for v in Counter(nums).values(): 
+            if v == 1: return -1 
+            ans += (v + 2)//3
+        return ans 
+
+
+    """2245. Maximum Trailing Zeros in a Cornered Path (Medium)
+	You are given a 2D integer array grid of size m x n, where each cell 
+	contains a positive integer. A cornered path is defined as a set of 
+	adjacent cells with at most one turn. More specifically, the path should 
+	exclusively move either horizontally or vertically up to the turn (if there 
+	is one), without returning to a previously visited cell. After the turn, 
+	the path will then move exclusively in the alternate direction: move 
+	vertically if it moved horizontally, and vice versa, also without returning 
+	to a previously visited cell. The product of a path is defined as the 
+	product of all the values in the path. Return the maximum number of 
+	trailing zeros in the product of a cornered path found in grid.
+
+	Note:
+	* Horizontal movement means moving in either the left or right direction.
+	* Vertical movement means moving in either the up or down direction.
+
+	Example 1:
+	Input: grid = [[23,17,15,3,20],[8,1,20,27,11],[9,4,6,2,21],[40,9,1,10,6],[22,7,4,5,3]]
+	Output: 3
+	Explanation: The grid on the left shows a valid cornered path. It has a 
+	             product of 15 * 20 * 6 * 1 * 10 = 18000 which has 3 trailing 
+	             zeros. It can be shown that this is the maximum trailing zeros 
+	             in the product of a cornered path. The grid in the middle is 
+	             not a cornered path as it has more than one turn. The grid on 
+	             the right is not a cornered path as it requires a return to a 
+	             previously visited cell.
+	
+	Example 2:
+	Input: grid = [[4,3,2],[7,6,1],[8,8,8]]
+	Output: 0
+	Explanation: The grid is shown in the figure above. There are no cornered 
+	             paths in the grid that result in a product with a trailing 
+	             zero.
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 10^5
+	* 1 <= m * n <= 10^5
+	* 1 <= grid[i][j] <= 1000"""
+
+    def maxTrailingZeros(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        f2 = [[0]*n for _ in range(m)]
+        f5 = [[0]*n for _ in range(m)]
+        for i in range(m): 
+            for j in range(n): 
+                x = grid[i][j]
+                while x % 2 == 0: 
+                    f2[i][j] += 1
+                    x //= 2 
+                x = grid[i][j]
+                while x % 5 == 0: 
+                    f5[i][j] += 1
+                    x //= 5 
+        
+        h = [[[0, 0] for j in range(n+1)] for i in range(m+1)]
+        v = [[[0, 0] for j in range(n+1)] for i in range(m+1)]
+
+        for i in range(m): 
+            for j in range(n): 
+                h[i][j+1][0] = h[i][j][0] + f2[i][j]
+                h[i][j+1][1] = h[i][j][1] + f5[i][j]
+                v[i+1][j][0] = v[i][j][0] + f2[i][j]
+                v[i+1][j][1] = v[i][j][1] + f5[i][j]
+        
+        ans = 0 
+        for i in range(m): 
+            for j in range(n): 
+                hh = [h[i][n][0] - h[i][j][0], h[i][n][1] - h[i][j][1]]
+                vv = [v[m][j][0] - v[i][j][0], v[m][j][1] - v[i][j][1]]
+                ans = max(ans, min(h[i][j][0]+v[i][j][0]+f2[i][j], h[i][j][1]+v[i][j][1]+f5[i][j]))
+                ans = max(ans, min(h[i][j][0]+vv[0], h[i][j][1]+vv[1]))
+                ans = max(ans, min(hh[0]+v[i][j][0], hh[1]+v[i][j][1]))
+                ans = max(ans, min(hh[0]+vv[0]-f2[i][j], hh[1]+vv[1]-f5[i][j]))
+        return ans
+
+
+    """2246. Longest Path With Different Adjacent Characters (Hard)
+	You are given a tree (i.e. a connected, undirected graph that has no cycles) 
+	rooted at node 0 consisting of n nodes numbered from 0 to n - 1. The tree 
+	is represented by a 0-indexed array parent of size n, where parent[i] is 
+	the parent of node i. Since node 0 is the root, parent[0] == -1. You are 
+	also given a string s of length n, where s[i] is the character assigned to 
+	node i. Return the length of the longest path in the tree such that no pair 
+	of adjacent nodes on the path have the same character assigned to them.
+
+	Example 1:
+	Input: parent = [-1,0,0,1,1,2], s = "abacbe"
+	Output: 3
+	Explanation: The longest path where each two adjacent nodes have different 
+	             characters in the tree is the path: 0 -> 1 -> 3. The length of 
+	             this path is 3, so 3 is returned. It can be proven that there 
+	             is no longer path that satisfies the conditions. 
+	
+	Example 2:
+	Input: parent = [-1,0,0,0], s = "aabc"
+	Output: 3
+	Explanation: The longest path where each two adjacent nodes have different 
+	             characters is the path: 2 -> 0 -> 3. The length of this path 
+	             is 3, so 3 is returned.
+
+	Constraints:
+	* n == parent.length == s.length
+	* 1 <= n <= 105
+	* 0 <= parent[i] <= n - 1 for all i >= 1
+	* parent[0] == -1
+	* parent represents a valid tree.
+	* s consists of only lowercase English letters."""
+
+    def longestPath(self, parent: List[int], s: str) -> int:
+        tree = [[] for _ in parent]
+        for i, x in enumerate(parent): 
+            if x != -1: tree[x].append(i)
+        
+        def fn(u): 
+            """Return longest depth."""
+            nonlocal ans 
+            m0 = m1 = 0
+            for v in tree[u]: 
+                val = fn(v)
+                if s[u] != s[v]: 
+                    if val >= m0: m0, m1 = val, m0
+                    elif val > m1: m1 = val 
+            ans = max(ans, 1 + m0 + m1)
+            return 1 + m0
+        
+        ans = 0
+        fn(0)
+        return ans
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
