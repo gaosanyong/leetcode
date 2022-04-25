@@ -58354,6 +58354,189 @@ class Trie:
         return ans
 
 
+    """2248. Intersection of Multiple Arrays (Easy)
+	Given a 2D integer array nums where nums[i] is a non-empty array of 
+	distinct positive integers, return the list of integers that are present in 
+	each array of nums sorted in ascending order.
+
+	Example 1:
+	Input: nums = [[3,1,2,4,5],[1,2,3,4],[3,4,5,6]]
+	Output: [3,4]
+	Explanation: The only integers present in each of nums[0] = [3,1,2,4,5], 
+	             nums[1] = [1,2,3,4], and nums[2] = [3,4,5,6] are 3 and 4, so 
+	             we return [3,4].
+	
+	Example 2:
+	Input: nums = [[1,2,3],[4,5,6]]
+	Output: []
+	Explanation: There does not exist any integer present both in nums[0] and 
+	             nums[1], so we return an empty list [].
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* 1 <= sum(nums[i].length) <= 1000
+	* 1 <= nums[i][j] <= 1000
+	* All the values of nums[i] are unique."""
+
+    def intersection(self, nums: List[List[int]]) -> List[int]:
+        return sorted(reduce(set.intersection, map(set, nums)))
+
+
+    """2249. Count Lattice Points Inside a Circle (Medium)
+	Given a 2D integer array circles where circles[i] = [xi, yi, ri] represents 
+	the center (xi, yi) and radius ri of the ith circle drawn on a grid, return 
+	the number of lattice points that are present inside at least one circle.
+
+	Note:
+	* A lattice point is a point with integer coordinates.
+	* Points that lie on the circumference of a circle are also considered to 
+	  be inside it.
+
+	Example 1:
+	Input: circles = [[2,2,1]]
+	Output: 5
+	Explanation: The figure above shows the given circle. The lattice points 
+	             present inside the circle are (1, 2), (2, 1), (2, 2), (2, 3), 
+	             and (3, 2) and are shown in green. Other points such as (1, 1) 
+	             and (1, 3), which are shown in red, are not considered inside 
+	             the circle. Hence, the number of lattice points present inside 
+	             at least one circle is 5.
+	
+	Example 2:
+	Input: circles = [[2,2,2],[3,4,1]]
+	Output: 16
+	Explanation: The figure above shows the given circles. There are exactly 16 
+	             lattice points which are present inside at least one circle. 
+	             Some of them are (0, 2), (2, 0), (2, 4), (3, 2), and (4, 4).
+
+	Constraints:
+	* 1 <= circles.length <= 200
+	* circles[i].length == 3
+	* 1 <= xi, yi <= 100
+	* 1 <= ri <= min(xi, yi)"""
+
+    def countLatticePoints(self, circles: List[List[int]]) -> int:
+        intervals = [[] for _ in range(201)]
+        for x, y, r in circles: 
+            intervals[x].append((y-r, y+r))
+            for dx in range(1, r+1): 
+                dy = int(sqrt(r**2 - dx**2))
+                intervals[x+dx].append((y-dy, y+dy))
+                intervals[x-dx].append((y-dy, y+dy))
+        
+        ans = 0 
+        for interval in intervals: 
+            if interval: 
+                end = -inf
+                for i, (lo, hi) in enumerate(sorted(interval)): 
+                    if end < lo: 
+                        if i: ans += end - start + 1
+                        start, end = lo, hi 
+                    else: end = max(end, hi)
+                ans += end - start + 1
+        return ans 
+
+
+    """2250. Count Number of Rectangles Containing Each Point (Medium)
+	You are given a 2D integer array rectangles where rectangles[i] = [li, hi] 
+	indicates that ith rectangle has a length of li and a height of hi. You are 
+	also given a 2D integer array points where points[j] = [xj, yj] is a point 
+	with coordinates (xj, yj). The ith rectangle has its bottom-left corner 
+	point at the coordinates (0, 0) and its top-right corner point at (li, hi).
+	Return an integer array count of length points.length where count[j] is the 
+	number of rectangles that contain the jth point. The ith rectangle contains 
+	the jth point if 0 <= xj <= li and 0 <= yj <= hi. Note that points that lie 
+	on the edges of a rectangle are also considered to be contained by that 
+	rectangle.
+
+	Example 1:
+	Input: rectangles = [[1,2],[2,3],[2,5]], points = [[2,1],[1,4]]
+	Output: [2,1]
+	Explanation: The first rectangle contains no points. The second rectangle 
+	             contains only the point (2, 1). The third rectangle contains 
+	             the points (2, 1) and (1, 4). The number of rectangles that 
+	             contain the point (2, 1) is 2. The number of rectangles that 
+	             contain the point (1, 4) is 1. Therefore, we return [2, 1].
+	
+	Example 2:
+	Input: rectangles = [[1,1],[2,2],[3,3]], points = [[1,3],[1,1]]
+	Output: [1,3]
+	Explanation: The first rectangle contains only the point (1, 1). The second 
+	             rectangle contains only the point (1, 1). The third rectangle 
+	             contains the points (1, 3) and (1, 1). The number of 
+	             rectangles that contain the point (1, 3) is 1. The number of 
+	             rectangles that contain the point (1, 1) is 3. Therefore, we 
+	             return [1, 3].
+
+	Constraints:
+	* 1 <= rectangles.length, points.length <= 5 * 10^4
+	* rectangles[i].length == points[j].length == 2
+	* 1 <= li, xj <= 10^9
+	* 1 <= hi, yj <= 100
+	* All the rectangles are unique.
+	* All the points are unique."""
+
+    def countRectangles(self, rectangles: List[List[int]], points: List[List[int]]) -> List[int]:
+        mp = defaultdict(list)
+        for l, h in rectangles: mp[h].append(l)
+        for v in mp.values(): v.sort()
+        ans = []
+        for x, y in points: 
+            cnt = 0 
+            for yy in range(y, 101): 
+                if yy in mp: cnt += len(mp[yy]) - bisect_left(mp[yy], x)
+            ans.append(cnt)
+        return ans 
+
+
+    """2251. Number of Flowers in Full Bloom (Hard)
+	You are given a 0-indexed 2D integer array flowers, where 
+	flowers[i] = [starti, endi] means the ith flower will be in full bloom from 
+	starti to endi (inclusive). You are also given a 0-indexed integer array 
+	persons of size n, where persons[i] is the time that the ith person will 
+	arrive to see the flowers. Return an integer array answer of size n, where 
+	answer[i] is the number of flowers that are in full bloom when the ith 
+	person arrives.
+
+	Example 1:
+	Input: flowers = [[1,6],[3,7],[9,12],[4,13]], persons = [2,3,7,11]
+	Output: [1,2,2,2]
+	Explanation: The figure above shows the times when the flowers are in full 
+	             bloom and when the people arrive. For each person, we return 
+	             the number of flowers in full bloom during their arrival.
+	
+	Example 2:
+	Input: flowers = [[1,10],[3,3]], persons = [3,3,2]
+	Output: [2,2,1]
+	Explanation: The figure above shows the times when the flowers are in full 
+	             bloom and when the people arrive. For each person, we return 
+	             the number of flowers in full bloom during their arrival.
+
+	Constraints:
+	* 1 <= flowers.length <= 5 * 10^4
+	* flowers[i].length == 2
+	* 1 <= starti <= endi <= 10^9
+	* 1 <= persons.length <= 5 * 10^4
+	* 1 <= persons[i] <= 10^9"""
+
+    def fullBloomFlowers(self, flowers: List[List[int]], persons: List[int]) -> List[int]:
+        line = []
+        for start, end in flowers: 
+            line.append((start, +1))
+            line.append((end+1, -1))
+        vals = []
+        prefix = 0 
+        for x, y in sorted(line): 
+            prefix += y
+            vals.append((x, prefix))
+        ans = []
+        for p in persons: 
+            i = bisect_right(vals, p, key=lambda x: x[0])
+            if i: ans.append(vals[i-1][1])
+            else: ans.append(0)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
