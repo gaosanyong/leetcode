@@ -58537,6 +58537,200 @@ class Trie:
         return ans 
 
 
+    """2264. Largest 3-Same-Digit Number in String (Easy)
+	You are given a string num representing a large integer. An integer is good 
+	if it meets the following conditions:
+	* It is a substring of num with length 3.
+	* It consists of only one unique digit.
+	Return the maximum good integer as a string or an empty string "" if no 
+	such integer exists.
+
+	Note:
+	* A substring is a contiguous sequence of characters within a string.
+	* There may be leading zeroes in num or a good integer.
+
+	Example 1:
+	Input: num = "6777133339"
+	Output: "777"
+	Explanation: There are two distinct good integers: "777" and "333". "777" 
+	             is the largest, so we return "777".
+	
+	Example 2:
+	Input: num = "2300019"
+	Output: "000"
+	Explanation: "000" is the only good integer.
+
+	Example 3:
+	Input: num = "42352338"
+	Output: ""
+	Explanation: No substring of length 3 consists of only one unique digit. 
+	             Therefore, there are no good integers.
+
+	Constraints:
+	* 3 <= num.length <= 1000
+	* num only consists of digits."""
+
+    def largestGoodInteger(self, num: str) -> str:
+        return next((x*3 for x in "9876543210" if x*3 in num), "")
+
+
+    """2265. Count Nodes Equal to Average of Subtree (Medium)
+	Given the root of a binary tree, return the number of nodes where the value 
+	of the node is equal to the average of the values in its subtree.
+
+	Note:
+	* The average of n elements is the sum of the n elements divided by n and 
+	  rounded down to the nearest integer.
+	* A subtree of root is a tree consisting of root and all of its descendants.
+
+	Example 1:
+	Input: root = [4,8,5,0,1,null,6]
+	Output: 5
+	Explanation: For the node with value 4: The average of its subtree is 
+	             (4 + 8 + 5 + 0 + 1 + 6) / 6 = 24 / 6 = 4. For the node with 
+	             value 5: The average of its subtree is (5 + 6) / 2 = 11 / 2 = 5.
+	             For the node with value 0: The average of its subtree is 0 / 1 = 0.
+	             For the node with value 1: The average of its subtree is 1 / 1 = 1.
+	             For the node with value 6: The average of its subtree is 6 / 1 = 6.
+	
+	Example 2:
+	Input: root = [1]
+	Output: 1
+	Explanation: For the node with value 1: The average of its subtree is 1 / 1 = 1.
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 1000].
+	* 0 <= Node.val <= 1000"""
+
+    def averageOfSubtree(self, root: Optional[TreeNode]) -> int:
+        ans = 0 
+        mp = {None: (0, 0)}
+        node, stack = root, []
+        prev = None
+        while node or stack: 
+            if node: 
+                stack.append(node)
+                node = node.left 
+            else: 
+                node = stack[-1]
+                if node.right and node.right != prev: node = node.right
+                else: 
+                    stack.pop()
+                    ls, lc = mp[node.left]
+                    rs, rc = mp[node.right]
+                    sm, cnt = ls + node.val + rs, lc + 1 + rc
+                    mp[node] = (sm, cnt)
+                    if sm//cnt == node.val: ans += 1
+                    prev = node 
+                    node = None
+        return ans 
+
+
+    """2266. Count Number of Texts (Medium)
+	Alice is texting Bob using her phone. The mapping of digits to letters is 
+	shown in the figure below. In order to add a letter, Alice has to press the 
+	key of the corresponding digit i times, where i is the position of the 
+	letter in the key.
+	* For example, to add the letter 's', Alice has to press '7' four times. 
+	  Similarly, to add the letter 'k', Alice has to press '5' twice.
+	* Note that the digits '0' and '1' do not map to any letters, so Alice does 
+	  not use them.
+	However, due to an error in transmission, Bob did not receive Alice's text 
+	message but received a string of pressed keys instead.
+	* For example, when Alice sent the message "bob", Bob received the string 
+	  "2266622".
+	Given a string pressedKeys representing the string received by Bob, return 
+	the total number of possible text messages Alice could have sent. Since the 
+	answer may be very large, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: pressedKeys = "22233"
+	Output: 8
+	Explanation: The possible text messages Alice could have sent are: "aaadd", 
+	             "abdd", "badd", "cdd", "aaae", "abe", "bae", and "ce". Since 
+	             there are 8 possible messages, we return 8.
+	
+	Example 2:
+	Input: pressedKeys = "222222222222222222222222222222222222"
+	Output: 82876089
+	Explanation: There are 2082876103 possible text messages Alice could have 
+	             sent. Since we need to return the answer modulo 10^9 + 7, we 
+	             return 2082876103 % (10^9 + 7) = 82876089.
+
+	Constraints:
+	* 1 <= pressedKeys.length <= 10^5
+	* pressedKeys only consists of digits from '2' - '9'."""
+
+    def countTexts(self, pressedKeys: str) -> int:
+        dp = [0] * (len(pressedKeys)+1)
+        dp[0] = 1
+        for i, ch in enumerate(pressedKeys):
+            dp[i+1] = dp[i]
+            if i and pressedKeys[i-1] == ch: 
+                dp[i+1] += dp[i-1]
+                if i >= 2 and pressedKeys[i-2] == ch: 
+                    dp[i+1] += dp[i-2]
+                    if i >= 3 and pressedKeys[i-3] == ch and ch in "79": dp[i+1] += dp[i-3]
+            dp[i+1] %= 1_000_000_007
+        return dp[-1]
+
+
+    """2267. Check if There Is a Valid Parentheses String Path (Hard)
+	A parentheses string is a non-empty string consisting only of '(' and ')'. 
+	It is valid if any of the following conditions is true:
+	* It is ().
+	* It can be written as AB (A concatenated with B), where A and B are valid 
+	  parentheses strings.
+	* It can be written as (A), where A is a valid parentheses string.
+	You are given an m x n matrix of parentheses grid. A valid parentheses 
+	string path in the grid is a path satisfying all of the following 
+	conditions:
+	* The path starts from the upper left cell (0, 0).
+	* The path ends at the bottom-right cell (m - 1, n - 1).
+	* The path only ever moves down or right.
+	* The resulting parentheses string formed by the path is valid.
+	Return true if there exists a valid parentheses string path in the grid. 
+	Otherwise, return false.
+
+	Example 1:
+	Input: grid = [["(","(","("],[")","(",")"],["(","(",")"],["(","(",")"]]
+	Output: true
+	Explanation: The above diagram shows two possible paths that form valid 
+	             parentheses strings. The first path shown results in the valid 
+	             parentheses string "()(())". The second path shown results in 
+	             the valid parentheses string "((()))". Note that there may be 
+	             other valid parentheses string paths.
+	
+	Example 2:
+	Input: grid = [[")",")"],["(","("]]
+	Output: false
+	Explanation: The two possible paths form the parentheses strings "))(" and 
+	             ")((". Since neither of them are valid parentheses strings, we 
+	             return false.
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 100
+	* grid[i][j] is either '(' or ')'."""
+
+    def hasValidPath(self, grid: List[List[str]]) -> bool:
+        m, n = len(grid), len(grid[0])
+        
+        @cache
+        def fn(i, j, v): 
+            """Return True if value of v at (i, j) is possible."""
+            if i == m-1 and j == n-1: return v == 0 
+            for ii, jj in (i+1, j), (i, j+1): 
+                if 0 <= ii < m and 0 <= jj < n: 
+                    if grid[ii][jj] == '(': vv = v+1
+                    else: vv = v-1
+                    if 0 <= vv <= min(ii+jj+1, m+n-ii-jj) and fn(ii, jj, vv): return True 
+            return False 
+        
+        return fn(0, 0, 1)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
