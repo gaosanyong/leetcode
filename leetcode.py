@@ -58845,6 +58845,176 @@ class Trie:
         return max(sum(bool(x & 1<<i) for x in candidates) for i in range(24))
 
 
+    """2278. Percentage of Letter in String (Easy)
+	Given a string s and a character letter, return the percentage of 
+	characters in s that equal letter rounded down to the nearest whole percent.
+
+	Example 1:
+	Input: s = "foobar", letter = "o"
+	Output: 33
+	Explanation: The percentage of characters in s that equal the letter 'o' is 
+	             2 / 6 * 100% = 33% when rounded down, so we return 33.
+	
+	Example 2:
+	Input: s = "jjjj", letter = "k"
+	Output: 0
+	Explanation: The percentage of characters in s that equal the letter 'k' is 
+	             0%, so we return 0.
+
+	Constraints:
+	* 1 <= s.length <= 100
+	* s consists of lowercase English letters.
+	* letter is a lowercase English letter."""
+
+    def percentageLetter(self, s: str, letter: str) -> int:
+        return 100*s.count(letter)//len(s)
+
+   
+    """2279. Maximum Bags With Full Capacity of Rocks (Medium)
+	You have n bags numbered from 0 to n - 1. You are given two 0-indexed 
+	integer arrays capacity and rocks. The ith bag can hold a maximum of 
+	capacity[i] rocks and currently contains rocks[i] rocks. You are also given 
+	an integer additionalRocks, the number of additional rocks you can place in 
+	any of the bags. Return the maximum number of bags that could have full 
+	capacity after placing the additional rocks in some bags.
+
+	Example 1:
+	Input: capacity = [2,3,4,5], rocks = [1,2,4,4], additionalRocks = 2
+	Output: 3
+	Explanation: Place 1 rock in bag 0 and 1 rock in bag 1. The number of rocks 
+	             in each bag are now [2,3,4,4]. Bags 0, 1, and 2 have full 
+	             capacity. There are 3 bags at full capacity, so we return 3. 
+	             It can be shown that it is not possible to have more than 3 
+	             bags at full capacity. Note that there may be other ways of 
+	             placing the rocks that result in an answer of 3.
+	
+	Example 2:
+	Input: capacity = [10,2,2], rocks = [2,2,0], additionalRocks = 100
+	Output: 3
+	Explanation: Place 8 rocks in bag 0 and 2 rocks in bag 2. The number of 
+	             rocks in each bag are now [10,2,2]. Bags 0, 1, and 2 have full 
+	             capacity. There are 3 bags at full capacity, so we return 3.
+	             It can be shown that it is not possible to have more than 3 
+	             bags at full capacity. Note that we did not use all of the 
+	             additional rocks.
+
+	Constraints:
+	* n == capacity.length == rocks.length
+	* 1 <= n <= 5 * 10^4
+	* 1 <= capacity[i] <= 10^9
+	* 0 <= rocks[i] <= capacity[i]
+	* 1 <= additionalRocks <= 10^9"""
+
+    def maximumBags(self, capacity: List[int], rocks: List[int], additionalRocks: int) -> int:
+        ans = 0 
+        for x in sorted(c - r for c, r in zip(capacity, rocks)): 
+            if x <= additionalRocks: 
+                ans += 1
+                additionalRocks -= x
+        return ans 
+
+
+    """2280. Minimum Lines to Represent a Line Chart (Medium)
+	You are given a 2D integer array stockPrices where 
+	stockPrices[i] = [dayi, pricei] indicates the price of the stock on day 
+	dayi is pricei. A line chart is created from the array by plotting the 
+	points on an XY plane with the X-axis representing the day and the Y-axis 
+	representing the price and connecting adjacent points. Return the minimum 
+	number of lines needed to represent the line chart.
+
+	Example 1:
+	Input: stockPrices = [[1,7],[2,6],[3,5],[4,4],[5,4],[6,3],[7,2],[8,1]]
+	Output: 3
+	Explanation: The diagram above represents the input, with the X-axis 
+	             representing the day and Y-axis representing the price. The 
+	             following 3 lines can be drawn to represent the line chart:
+	             - Line 1 (in red) from (1,7) to (4,4) passing through (1,7), 
+	               (2,6), (3,5), and (4,4).
+	             - Line 2 (in blue) from (4,4) to (5,4).
+	             - Line 3 (in green) from (5,4) to (8,1) passing through (5,4), 
+	               (6,3), (7,2), and (8,1).
+	             It can be shown that it is not possible to represent the line 
+	             chart using less than 3 lines.
+	
+	Example 2:
+	Input: stockPrices = [[3,4],[1,2],[7,8],[2,3]]
+	Output: 1
+	Explanation: As shown in the diagram above, the line chart can be 
+	             represented with a single line.
+
+	Constraints:
+	* 1 <= stockPrices.length <= 10^5
+	* stockPrices[i].length == 2
+	* 1 <= dayi, pricei <= 10^9
+	* All dayi are distinct."""
+
+    def minimumLines(self, stockPrices: List[List[int]]) -> int:
+        stockPrices.sort()
+        ans = 0 
+        for i in range(1, len(stockPrices)):
+            if i == 1 or (stockPrices[i][1]-stockPrices[i-1][1])*(stockPrices[i-1][0]-stockPrices[i-2][0]) != (stockPrices[i-1][1]-stockPrices[i-2][1])*(stockPrices[i][0]-stockPrices[i-1][0]): ans += 1
+        return ans 
+
+
+    """2281. Sum of Total Strength of Wizards (Hard)
+	As the ruler of a kingdom, you have an army of wizards at your command. You 
+	are given a 0-indexed integer array strength, where strength[i] denotes the 
+	strength of the ith wizard. For a contiguous group of wizards (i.e. the 
+	wizards' strengths form a subarray of strength), the total strength is 
+	defined as the product of the following two values:
+	* The strength of the weakest wizard in the group.
+	* The total of all the individual strengths of the wizards in the group.
+	Return the sum of the total strengths of all contiguous groups of wizards. 
+	Since the answer may be very large, return it modulo 10^9 + 7. A subarray 
+	is a contiguous non-empty sequence of elements within an array.
+
+	Example 1:
+	Input: strength = [1,3,1,2]
+	Output: 44
+	Explanation: The following are all the contiguous groups of wizards:
+	             - [1] from [1,3,1,2] has a total strength of min([1]) * sum([1]) = 1 * 1 = 1
+	             - [3] from [1,3,1,2] has a total strength of min([3]) * sum([3]) = 3 * 3 = 9
+	             - [1] from [1,3,1,2] has a total strength of min([1]) * sum([1]) = 1 * 1 = 1
+	             - [2] from [1,3,1,2] has a total strength of min([2]) * sum([2]) = 2 * 2 = 4
+	             - [1,3] from [1,3,1,2] has a total strength of min([1,3]) * sum([1,3]) = 1 * 4 = 4
+	             - [3,1] from [1,3,1,2] has a total strength of min([3,1]) * sum([3,1]) = 1 * 4 = 4
+	             - [1,2] from [1,3,1,2] has a total strength of min([1,2]) * sum([1,2]) = 1 * 3 = 3
+	             - [1,3,1] from [1,3,1,2] has a total strength of min([1,3,1]) * sum([1,3,1]) = 1 * 5 = 5
+	             - [3,1,2] from [1,3,1,2] has a total strength of min([3,1,2]) * sum([3,1,2]) = 1 * 6 = 6
+	             - [1,3,1,2] from [1,3,1,2] has a total strength of min([1,3,1,2]) * sum([1,3,1,2]) = 1 * 7 = 7
+	             The sum of all the total strengths is 1 + 9 + 1 + 4 + 4 + 4 + 3 + 5 + 6 + 7 = 44.
+	
+	Example 2:
+	Input: strength = [5,4,6]
+	Output: 213
+	Explanation: The following are all the contiguous groups of wizards: 
+	             - [5] from [5,4,6] has a total strength of min([5]) * sum([5]) = 5 * 5 = 25
+	             - [4] from [5,4,6] has a total strength of min([4]) * sum([4]) = 4 * 4 = 16
+	             - [6] from [5,4,6] has a total strength of min([6]) * sum([6]) = 6 * 6 = 36
+	             - [5,4] from [5,4,6] has a total strength of min([5,4]) * sum([5,4]) = 4 * 9 = 36
+	             - [4,6] from [5,4,6] has a total strength of min([4,6]) * sum([4,6]) = 4 * 10 = 40
+	             - [5,4,6] from [5,4,6] has a total strength of min([5,4,6]) * sum([5,4,6]) = 4 * 15 = 60
+	             The sum of all the total strengths is 25 + 16 + 36 + 36 + 40 + 60 = 213.
+
+	Constraints:
+	* 1 <= strength.length <= 10^5
+	* 1 <= strength[i] <= 10^9"""
+
+    def totalStrength(self, strength: List[int]) -> int:
+        ans = 0 
+        stack = []
+        prefix = list(accumulate(accumulate(strength), initial=0))
+        for i, x in enumerate(strength + [0]): 
+            while stack and stack[-1][1] >= x: 
+                mid = stack.pop()[0]
+                lo = stack[-1][0] if stack else -1 
+                left = prefix[mid] - prefix[max(lo, 0)]
+                right = prefix[i] - prefix[mid]
+                ans = (ans + strength[mid]*(right*(mid-lo) - left*(i-mid))) % 1_000_000_007
+            stack.append((i, x))
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
