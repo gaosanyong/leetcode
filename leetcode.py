@@ -58780,6 +58780,194 @@ class Trie:
         return fn(0, 0, 1)
 
 
+    """2269. Find the K-Beauty of a Number (Easy)
+	The k-beauty of an integer num is defined as the number of substrings of 
+	num when it is read as a string that meet the following conditions:
+	* It has a length of k.
+	* It is a divisor of num.
+	Given integers num and k, return the k-beauty of num.
+
+	Note:
+	* Leading zeros are allowed.
+	* 0 is not a divisor of any value.
+	A substring is a contiguous sequence of characters in a string.
+
+	Example 1:
+	Input: num = 240, k = 2
+	Output: 2
+	Explanation: The following are the substrings of num of length k:
+	             - "24" from "240": 24 is a divisor of 240.
+	             - "40" from "240": 40 is a divisor of 240.
+	             Therefore, the k-beauty is 2.
+	
+	Example 2:
+	Input: num = 430043, k = 2
+	Output: 2
+	Explanation: The following are the substrings of num of length k:
+	             - "43" from "430043": 43 is a divisor of 430043.
+	             - "30" from "430043": 30 is not a divisor of 430043.
+	             - "00" from "430043": 0 is not a divisor of 430043.
+	             - "04" from "430043": 4 is not a divisor of 430043.
+	             - "43" from "430043": 43 is a divisor of 430043.
+	             Therefore, the k-beauty is 2.
+
+	Constraints:
+	* 1 <= num <= 10^9
+	* 1 <= k <= num.length (taking num as a string)"""
+
+    def divisorSubstrings(self, num: int, k: int) -> int:
+        s = str(num)
+        ans = div = 0 
+        for i in range(len(s)-k+1): 
+            div = int(s[i:i+k])
+            if div and num % div == 0: ans += 1
+        return ans 
+
+
+    """2270. Number of Ways to Split Array (Medium)
+	You are given a 0-indexed integer array nums of length n. nums contains a 
+	valid split at index i if the following are true:
+	* The sum of the first i + 1 elements is greater than or equal to the sum 
+	  of the last n - i - 1 elements.
+	* There is at least one element to the right of i. That is, 0 <= i < n - 1.
+	Return the number of valid splits in nums.
+
+	Example 1:
+	Input: nums = [10,4,-8,7]
+	Output: 2
+	Explanation: There are three ways of splitting nums into two non-empty 
+	             parts:
+	             - Split nums at index 0. Then, the first part is [10], and its 
+	               sum is 10. The second part is [4,-8,7], and its sum is 3. 
+	               Since 10 >= 3, i = 0 is a valid split.
+	             - Split nums at index 1. Then, the first part is [10,4], and 
+	               its sum is 14. The second part is [-8,7], and its sum is -1. 
+	               Since 14 >= -1, i = 1 is a valid split.
+	             - Split nums at index 2. Then, the first part is [10,4,-8], 
+	               and its sum is 6. The second part is [7], and its sum is 7. 
+	               Since 6 < 7, i = 2 is not a valid split.
+	             Thus, the number of valid splits in nums is 2.
+	
+	Example 2:
+	Input: nums = [2,3,1,0]
+	Output: 2
+	Explanation: There are two valid splits in nums:
+	             - Split nums at index 1. Then, the first part is [2,3], and 
+	               its sum is 5. The second part is [1,0], and its sum is 1. 
+	               Since 5 >= 1, i = 1 is a valid split. 
+	             - Split nums at index 2. Then, the first part is [2,3,1], and 
+	               its sum is 6. The second part is [0], and its sum is 0. 
+	               Since 6 >= 0, i = 2 is a valid split.
+
+	Constraints:
+	* 2 <= nums.length <= 10^5
+	* -10^5 <= nums[i] <= 10^5"""
+
+    def waysToSplitArray(self, nums: List[int]) -> int:
+        ans = prefix = 0 
+        total = sum(nums)
+        for i, x in enumerate(nums): 
+            prefix += x 
+            if i < len(nums) - 1 and prefix >= total - prefix: ans += 1
+        return ans 
+
+
+    """2271. Maximum White Tiles Covered by a Carpet (Medium)
+	You are given a 2D integer array tiles where tiles[i] = [li, ri] represents 
+	that every tile j in the range li <= j <= ri is colored white. You are also 
+	given an integer carpetLen, the length of a single carpet that can be 
+	placed anywhere. Return the maximum number of white tiles that can be 
+	covered by the carpet.
+
+	Example 1:
+	Input: tiles = [[1,5],[10,11],[12,18],[20,25],[30,32]], carpetLen = 10
+	Output: 9
+	Explanation: Place the carpet starting on tile 10. It covers 9 white tiles, 
+	             so we return 9. Note that there may be other places where the 
+	             carpet covers 9 white tiles. It can be shown that the carpet 
+	             cannot cover more than 9 white tiles.
+	
+	Example 2:
+	Input: tiles = [[10,11],[1,1]], carpetLen = 2
+	Output: 2
+	Explanation: Place the carpet starting on tile 10. It covers 2 white tiles, 
+	             so we return 2.
+
+	Constraints:
+	* 1 <= tiles.length <= 5 * 10^4
+	* tiles[i].length == 2
+	* 1 <= li <= ri <= 10^9
+	* 1 <= carpetLen <= 10^9
+	* The tiles are non-overlapping."""
+
+    def maximumWhiteTiles(self, tiles: List[List[int]], carpetLen: int) -> int:
+        tiles.sort()
+        ans = ii = val = 0 
+        for i in range(len(tiles)): 
+            hi = tiles[i][0] + carpetLen - 1
+            while ii < len(tiles) and tiles[ii][1] <= hi:
+                val += tiles[ii][1] - tiles[ii][0] + 1
+                ii += 1
+            partial = 0 
+            if ii < len(tiles): partial = max(0, hi - tiles[ii][0] + 1)
+            ans = max(ans, val + partial)
+            val -= tiles[i][1] - tiles[i][0] + 1
+        return ans 
+
+
+    """2272. Substring With Largest Variance (Hard)
+	The variance of a string is defined as the largest difference between the 
+	number of occurrences of any 2 characters present in the string. Note the 
+	two characters may or may not be the same. Given a string s consisting of 
+	lowercase English letters only, return the largest variance possible among 
+	all substrings of s. A substring is a contiguous sequence of characters 
+	within a string.
+
+	Example 1:
+	Input: s = "aababbb"
+	Output: 3
+	Explanation: All possible variances along with their respective substrings 
+	             are listed below:
+	             - Variance 0 for substrings "a", "aa", "ab", "abab", "aababb", 
+	               "ba", "b", "bb", and "bbb".
+	             - Variance 1 for substrings "aab", "aba", "abb", "aabab", 
+	               "ababb", "aababbb", and "bab".
+	             - Variance 2 for substrings "aaba", "ababbb", "abbb", and 
+	               "babb".
+	             - Variance 3 for substring "babbb".
+	             Since the largest possible variance is 3, we return it.
+	
+	Example 2:
+	Input: s = "abcde"
+	Output: 0
+	Explanation: No letter occurs more than once in s, so the variance of every 
+	             substring is 0.
+
+	Constraints:
+	* 1 <= s.length <= 10^4
+	* s consists of lowercase English letters."""
+
+    def largestVariance(self, s: str) -> int:
+        ans = 0 
+        seen = set(s)
+        for x in ascii_lowercase: 
+            for y in ascii_lowercase: 
+                if x != y and x in seen and y in seen: 
+                    vals = []
+                    for ch in s: 
+                        if ch == x: vals.append(1)
+                        elif ch == y: vals.append(-1)
+                    cand = prefix = least = 0 
+                    ii = -1 
+                    for i, v in enumerate(vals): 
+                        prefix += v
+                        if prefix < least: 
+                            least = prefix 
+                            ii = i 
+                        ans = max(ans, min(prefix-least, i-ii-1))
+        return ans 
+
+
     """2273. Find Resultant Array After Removing Anagrams (Easy)
 	You are given a 0-indexed string array words, where words[i] consists of 
 	lowercase English letters. In one operation, select any index i such that 
