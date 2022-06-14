@@ -57294,6 +57294,194 @@ class Trie:
         return fn(numLaps)
 
 
+    """2190. Most Frequent Number Following Key In an Array (Easy)
+	You are given a 0-indexed integer array nums. You are also given an integer 
+	key, which is present in nums. For every unique integer target in nums, 
+	count the number of times target immediately follows an occurrence of key 
+	in nums. In other words, count the number of indices i such that:
+	* 0 <= i <= nums.length - 2,
+	* nums[i] == key and,
+	* nums[i + 1] == target.
+	Return the target with the maximum count. The test cases will be generated 
+	such that the target with maximum count is unique.
+
+	Example 1:
+	Input: nums = [1,100,200,1,100], key = 1
+	Output: 100
+	Explanation: For target = 100, there are 2 occurrences at indices 1 and 4 
+	             which follow an occurrence of key. No other integers follow an 
+	             occurrence of key, so we return 100.
+	
+	Example 2:
+	Input: nums = [2,2,2,2,3], key = 2
+	Output: 2
+	Explanation: For target = 2, there are 3 occurrences at indices 1, 2, and 3 
+	             which follow an occurrence of key. For target = 3, there is 
+	             only one occurrence at index 4 which follows an occurrence of 
+	             key. target = 2 has the maximum number of occurrences 
+	             following an occurrence of key, so we return 2.
+
+	Constraints:
+	* 2 <= nums.length <= 1000
+	* 1 <= nums[i] <= 1000
+	* The test cases will be generated such that the answer is unique."""
+
+    def mostFrequent(self, nums: List[int], key: int) -> int:
+        freq = Counter(x for i, x in enumerate(nums) if i and nums[i-1] == key)
+        return max(freq, key=freq.get)
+
+
+    """2191. Sort the Jumbled Numbers (Medium)
+	You are given a 0-indexed integer array mapping which represents the 
+	mapping rule of a shuffled decimal system. mapping[i] = j means digit i 
+	should be mapped to digit j in this system. The mapped value of an integer 
+	is the new integer obtained by replacing each occurrence of digit i in the 
+	integer with mapping[i] for all 0 <= i <= 9. You are also given another 
+	integer array nums. Return the array nums sorted in non-decreasing order 
+	based on the mapped values of its elements.
+
+	Notes:
+	* Elements with the same mapped values should appear in the same relative 
+	  order as in the input.
+	* The elements of nums should only be sorted based on their mapped values 
+	  and not be replaced by them.
+
+	Example 1:
+	Input: mapping = [8,9,4,0,2,1,3,5,7,6], nums = [991,338,38]
+	Output: [338,38,991]
+	Explanation: Map the number 991 as follows:
+	             1. mapping[9] = 6, so all occurrences of the digit 9 will 
+	                become 6.
+	             2. mapping[1] = 9, so all occurrences of the digit 1 will 
+	                become 9.
+	             Therefore, the mapped value of 991 is 669. 338 maps to 007, or 
+	             7 after removing the leading zeros. 38 maps to 07, which is 
+	             also 7 after removing leading zeros. Since 338 and 38 share 
+	             the same mapped value, they should remain in the same relative 
+	             order, so 338 comes before 38. Thus, the sorted array is 
+	             [338,38,991].
+	
+	Example 2:
+	Input: mapping = [0,1,2,3,4,5,6,7,8,9], nums = [789,456,123]
+	Output: [123,456,789]
+	Explanation: 789 maps to 789, 456 maps to 456, and 123 maps to 123. Thus, 
+	             the sorted array is [123,456,789].
+
+	Constraints:
+	* mapping.length == 10
+	* 0 <= mapping[i] <= 9
+	* All the values of mapping[i] are unique.
+	* 1 <= nums.length <= 3 * 10^4
+	* 0 <= nums[i] < 10^9"""
+
+    def sortJumbled(self, mapping: List[int], nums: List[int]) -> List[int]:
+        return sorted(nums, key=lambda x: int(''.join(str(mapping[int(d)]) for d in str(x))))
+
+
+    """2192. All Ancestors of a Node in a Directed Acyclic Graph (Medium)
+	You are given a positive integer n representing the number of nodes of a 
+	Directed Acyclic Graph (DAG). The nodes are numbered from 0 to n - 1 
+	(inclusive). You are also given a 2D integer array edges, where 
+	edges[i] = [fromi, toi] denotes that there is a unidirectional edge from 
+	fromi to toi in the graph. Return a list answer, where answer[i] is the 
+	list of ancestors of the ith node, sorted in ascending order. A node u is 
+	an ancestor of another node v if u can reach v via a set of edges.
+
+	Example 1:
+	Input: n = 8, edgeList = [[0,3],[0,4],[1,3],[2,4],[2,7],[3,5],[3,6],[3,7],[4,6]]
+	Output: [[],[],[],[0,1],[0,2],[0,1,3],[0,1,2,3,4],[0,1,2,3]]
+	Explanation: The above diagram represents the input graph.
+	             - Nodes 0, 1, and 2 do not have any ancestors.
+	             - Node 3 has two ancestors 0 and 1.
+	             - Node 4 has two ancestors 0 and 2.
+	             - Node 5 has three ancestors 0, 1, and 3.
+	             - Node 6 has five ancestors 0, 1, 2, 3, and 4.
+	             - Node 7 has four ancestors 0, 1, 2, and 3.
+	
+	Example 2:
+	Input: n = 5, edgeList = [[0,1],[0,2],[0,3],[0,4],[1,2],[1,3],[1,4],[2,3],[2,4],[3,4]]
+	Output: [[],[0],[0,1],[0,1,2],[0,1,2,3]]
+	Explanation: The above diagram represents the input graph.
+	             - Node 0 does not have any ancestor.
+	             - Node 1 has one ancestor 0.
+	             - Node 2 has two ancestors 0 and 1.
+	             - Node 3 has three ancestors 0, 1, and 2.
+	             - Node 4 has four ancestors 0, 1, 2, and 3.
+
+	Constraints:
+	* 1 <= n <= 1000
+	* 0 <= edges.length <= min(2000, n * (n - 1) / 2)
+	* edges[i].length == 2
+	* 0 <= fromi, toi <= n - 1
+	* fromi != toi
+	* There are no duplicate edges.
+	* The graph is directed and acyclic."""
+
+    def getAncestors(self, n: int, edges: List[List[int]]) -> List[List[int]]:
+        graph = [[] for _ in range(n)]
+        rev = [[] for _ in range(n)]
+        indeg = [0]*n
+        for u, v in edges: 
+            graph[u].append(v) 
+            rev[v].append(u)
+            indeg[v] += 1
+        ans = [set() for _ in range(n)]
+        queue = deque([u for u in range(n) if not indeg[u]])
+        while queue: 
+            u = queue.popleft()
+            for v in graph[u]: 
+                indeg[v] -= 1
+                if indeg[v] == 0: queue.append(v)
+            for v in rev[u]: ans[u] |= ans[v] | {v}
+        return [sorted(x) for x in ans]
+
+
+    """2193. Minimum Number of Moves to Make Palindrome (Hard)
+	You are given a string s consisting only of lowercase English letters. In 
+	one move, you can select any two adjacent characters of s and swap them.
+	Return the minimum number of moves needed to make s a palindrome. Note that 
+	the input will be generated such that s can always be converted to a 
+	palindrome.
+
+	Example 1:
+	Input: s = "aabb"
+	Output: 2
+	Explanation: We can obtain two palindromes from s, "abba" and "baab". 
+	             - We can obtain "abba" from s in 2 moves: "aabb" -> "abab" -> 
+	               "abba".
+	             - We can obtain "baab" from s in 2 moves: "aabb" -> "abab" -> 
+	               "baab".
+	             Thus, the minimum number of moves needed to make s a 
+	             palindrome is 2.
+	
+	Example 2:
+	Input: s = "letelt"
+	Output: 2
+	Explanation: One of the palindromes we can obtain from s in 2 moves is 
+	             "lettel". One of the ways we can obtain it is "letelt" -> 
+	             "letetl" -> "lettel". Other palindromes such as "tleelt" can 
+	             also be obtained in 2 moves. It can be shown that it is not 
+	             possible to obtain a palindrome in less than 2 moves.
+
+	Constraints:
+	* 1 <= s.length <= 2000
+	* s consists only of lowercase English letters.
+	* s can be converted to a palindrome using a finite number of moves."""
+
+    def minMovesToMakePalindrome(self, s: str) -> int:
+        ans = 0 
+        while len(s) > 2: 
+            lo = s.find(s[-1])
+            hi = s.rfind(s[0])
+            if lo < len(s)-hi-1: 
+                ans += lo 
+                s = s[:lo] + s[lo+1:-1]
+            else: 
+                ans += len(s)-hi-1
+                s = s[1:hi] + s[hi+1:]
+        return ans
+
+
     """2194. Cells in a Range on an Excel Sheet (Easy)
 	A cell (r, c) of an excel sheet is represented as a string "<col><row>" 
 	where:
