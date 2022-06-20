@@ -59677,6 +59677,193 @@ class Trie:
         return ans 
 
 
+    """2309. Greatest English Letter in Upper and Lower Case (Easy)
+	Given a string of English letters s, return the greatest English letter 
+	which occurs as both a lowercase and uppercase letter in s. The returned 
+	letter should be in uppercase. If no such letter exists, return an empty 
+	string. An English letter b is greater than another letter a if b appears 
+	after a in the English alphabet.
+
+	Example 1:
+	Input: s = "lEeTcOdE"
+	Output: "E"
+	Explanation: The letter 'E' is the only letter to appear in both lower and 
+	             upper case.
+	
+	Example 2:
+	Input: s = "arRAzFif"
+	Output: "R"
+	Explanation: The letter 'R' is the greatest letter to appear in both lower 
+	             and upper case. Note that 'A' and 'F' also appear in both 
+	             lower and upper case, but 'R' is greater than 'F' or 'A'.
+	
+	Example 3:
+	Input: s = "AbCdEfGhIjK"
+	Output: ""
+	Explanation: There is no letter that appears in both lower and upper case.
+
+	Constraints:
+	* 1 <= s.length <= 1000
+	* s consists of lowercase and uppercase English letters."""
+
+    def greatestLetter(self, s: str) -> str:
+        seen = set(s)
+        for ch in reversed(ascii_uppercase): 
+            if ch in seen and ch.swapcase() in seen: return ch 
+        return ""
+
+
+    """2310. Sum of Numbers With Units Digit K (Medium)
+	Given two integers num and k, consider a set of positive integers with the 
+	following properties:
+	* The units digit of each integer is k.
+	* The sum of the integers is num.
+	Return the minimum possible size of such a set, or -1 if no such set exists.
+
+	Note:
+	* The set can contain multiple instances of the same integer, and the sum 
+	  of an empty set is considered 0.
+	* The units digit of a number is the rightmost digit of the number.
+
+	Example 1:
+	Input: num = 58, k = 9
+	Output: 2
+	Explanation: One valid set is [9,49], as the sum is 58 and each integer has 
+	             a units digit of 9. Another valid set is [19,39]. It can be 
+	             shown that 2 is the minimum possible size of a valid set.
+	
+	Example 2:
+	Input: num = 37, k = 2
+	Output: -1
+	Explanation: It is not possible to obtain a sum of 37 using only integers 
+	             that have a units digit of 2.
+	
+	Example 3:
+	Input: num = 0, k = 7
+	Output: 0
+	Explanation: The sum of an empty set is considered 0.
+
+	Constraints:
+	* 0 <= num <= 3000
+	* 0 <= k <= 9"""
+
+    def minimumNumbers(self, num: int, k: int) -> int:
+        if num == 0: return 0 
+        for x in range(1, 11): 
+            if x*k <= num and (num - x*k) % 10 == 0: return x
+        return -1 
+
+
+    """2311. Longest Binary Subsequence Less Than or Equal to K (Medium)
+	You are given a binary string s and a positive integer k. Return the length 
+	of the longest subsequence of s that makes up a binary number less than or 
+	equal to k.
+
+	Note:
+	* The subsequence can contain leading zeroes.
+	* The empty string is considered to be equal to 0.
+	* A subsequence is a string that can be derived from another string by 
+	  deleting some or no characters without changing the order of the 
+	  remaining characters.
+
+	Example 1:
+	Input: s = "1001010", k = 5
+	Output: 5
+	Explanation: The longest subsequence of s that makes up a binary number 
+	             less than or equal to 5 is "00010", as this number is equal to 
+	             2 in decimal. Note that "00100" and "00101" are also possible, 
+	             which are equal to 4 and 5 in decimal, respectively. The 
+	             length of this subsequence is 5, so 5 is returned.
+	
+	Example 2:
+	Input: s = "00101001", k = 1
+	Output: 6
+	Explanation: "000001" is the longest subsequence of s that makes up a 
+	             binary number less than or equal to 1, as this number is equal 
+	             to 1 in decimal. The length of this subsequence is 6, so 6 is 
+	             returned.
+
+	Constraints:
+	* 1 <= s.length <= 1000
+	* s[i] is either '0' or '1'.
+	* 1 <= k <= 10^9"""
+
+    def longestSubsequence(self, s: str, k: int) -> int:
+        ans = val = 0 
+        for i, ch in enumerate(reversed(s)): 
+            if ch == '0': ans += 1
+            elif i < 30 and val + (1<<i) <= k: 
+                ans += 1
+                val += 1<<i
+        return ans 
+
+
+    """2312. Selling Pieces of Wood (Hard)
+	You are given two integers m and n that represent the height and width of a 
+	rectangular piece of wood. You are also given a 2D integer array prices, 
+	where prices[i] = [hi, wi, pricei] indicates you can sell a rectangular 
+	piece of wood of height hi and width wi for pricei dollars. To cut a piece 
+	of wood, you must make a vertical or horizontal cut across the entire 
+	height or width of the piece to split it into two smaller pieces. After 
+	cutting a piece of wood into some number of smaller pieces, you can sell 
+	pieces according to prices. You may sell multiple pieces of the same shape, 
+	and you do not have to sell all the shapes. The grain of the wood makes a 
+	difference, so you cannot rotate a piece to swap its height and width. 
+	Return the maximum money you can earn after cutting an m x n piece of wood.
+	Note that you can cut the piece of wood as many times as you want.
+
+	Example 1:
+	Input: m = 3, n = 5, prices = [[1,4,2],[2,2,7],[2,1,3]]
+	Output: 19
+	Explanation: The diagram above shows a possible scenario. It consists of:
+	             - 2 pieces of wood shaped 2 x 2, selling for a price of 
+	               2 * 7 = 14.
+	             - 1 piece of wood shaped 2 x 1, selling for a price of 
+	               1 * 3 = 3.
+	             - 1 piece of wood shaped 1 x 4, selling for a price of 
+	               1 * 2 = 2.
+	             This obtains a total of 14 + 3 + 2 = 19 money earned. It can 
+	             be shown that 19 is the maximum amount of money that can be 
+	             earned.
+	
+	Example 2:
+	Input: m = 4, n = 6, prices = [[3,2,10],[1,4,2],[4,1,3]]
+	Output: 32
+	Explanation: The diagram above shows a possible scenario. It consists of:
+	             - 3 pieces of wood shaped 3 x 2, selling for a price of 
+	               3 * 10 = 30.
+	             - 1 piece of wood shaped 1 x 4, selling for a price of 
+	               1 * 2 = 2.
+	             This obtains a total of 30 + 2 = 32 money earned. It can be 
+	             shown that 32 is the maximum amount of money that can be 
+	             earned. Notice that we cannot rotate the 1 x 4 piece of wood 
+	             to obtain a 4 x 1 piece of wood.
+
+	Constraints:
+	* 1 <= m, n <= 200
+	* 1 <= prices.length <= 2 * 10^4
+	* prices[i].length == 3
+	* 1 <= hi <= m
+	* 1 <= wi <= n
+	* 1 <= pricei <= 10^6
+	* All the shapes of wood (hi, wi) are pairwise distinct."""
+
+    def sellingWood(self, m: int, n: int, prices: List[List[int]]) -> int:
+        mp = {(h, w) : p for h, w, p in prices}
+        
+        @cache
+        def fn(m, n): 
+            """Return max money of a mxn piece of wood."""
+            if m == 0 or n == 0: return 0
+            ans = 0 
+            if (m, n) in mp: ans = mp[m, n]
+            if m > 1: ans = max(ans, max(fn(i, n) + fn(m-i, n) for i in range(1, m//2+1)))
+            if n > 1: ans = max(ans, max(fn(m, j) + fn(m, n-j) for j in range(1, n//2+1)))
+            return ans 
+        
+        return fn(m, n)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
