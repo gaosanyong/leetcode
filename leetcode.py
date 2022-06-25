@@ -59864,6 +59864,168 @@ class Trie:
         return fn(m, n)
 
 
+    """2315. Count Asterisks (Easy)
+	You are given a string s, where every two consecutive vertical bars '|' are 
+	grouped into a pair. In other words, the 1st and 2nd '|' make a pair, the 
+	3rd and 4th '|' make a pair, and so forth. Return the number of '*' in s, 
+	excluding the '*' between each pair of '|'. Note that each '|' will belong 
+	to exactly one pair.
+
+	Example 1:
+	Input: s = "l|*e*et|c**o|*de|"
+	Output: 2
+	Explanation: The considered characters are underlined: "l|*e*et|c**o|*de|".
+	             The characters between the first and second '|' are excluded 
+	             from the answer. Also, the characters between the third and 
+	             fourth '|' are excluded from the answer. There are 2 asterisks 
+	             considered. Therefore, we return 2.
+	
+	Example 2:
+	Input: s = "iamprogrammer"
+	Output: 0
+	Explanation: In this example, there are no asterisks in s. Therefore, we 
+	             return 0.
+	
+	Example 3:
+	Input: s = "yo|uar|e**|b|e***au|tifu|l"
+	Output: 5
+	Explanation: The considered characters are underlined: 
+	             "yo|uar|e**|b|e***au|tifu|l". There are 5 asterisks considered. 
+	             Therefore, we return 5.
+
+	Constraints:
+	* 1 <= s.length <= 1000
+	* s consists of lowercase English letters, vertical bars '|', and asterisks 
+	  '*'.
+	* s contains an even number of vertical bars '|'."""
+
+    def countAsterisks(self, s: str) -> int:
+        return sum(w.count('*') for i, w in enumerate(s.split('|')) if not i&1)
+
+
+    """2316. Count Unreachable Pairs of Nodes in an Undirected Graph (Medium)
+	You are given an integer n. There is an undirected graph with n nodes, 
+	numbered from 0 to n - 1. You are given a 2D integer array edges where 
+	edges[i] = [ai, bi] denotes that there exists an undirected edge connecting 
+	nodes ai and bi. Return the number of pairs of different nodes that are 
+	unreachable from each other.
+
+	Example 1:
+	Input: n = 3, edges = [[0,1],[0,2],[1,2]]
+	Output: 0
+	Explanation: There are no pairs of nodes that are unreachable from each 
+	             other. Therefore, we return 0.
+	
+	Example 2:
+	Input: n = 7, edges = [[0,2],[0,5],[2,4],[1,6],[5,4]]
+	Output: 14
+	Explanation: There are 14 pairs of nodes that are unreachable from each 
+	             other: 0,1],[0,3],[0,6],[1,2],[1,3],[1,4],[1,5],[2,3],[2,6],
+	             [3,4],[3,5],[3,6],[4,6],[5,6]]. Therefore, we return 14.
+
+	Constraints:
+	* 1 <= n <= 10^5
+	* 0 <= edges.length <= 2 * 10^5
+	* edges[i].length == 2
+	* 0 <= ai, bi < n
+	* ai != bi
+	* There are no repeated edges."""
+
+    def countPairs(self, n: int, edges: List[List[int]]) -> int:
+        parent = list(range(n))
+        
+        def find(p): 
+            if parent[p] != p: parent[p] = find(parent[p])
+            return parent[p]
+        
+        for p, q in edges: 
+            prt, qrt = find(p), find(q)
+            if prt != qrt: parent[prt] = qrt
+        
+        freq = Counter(find(p) for p in range(n))
+        return sum(v*(n-v) for v in freq.values())//2
+
+
+    """2317. Maximum XOR After Operations (Medium)
+	You are given a 0-indexed integer array nums. In one operation, select any 
+	non-negative integer x and an index i, then update nums[i] to be equal to 
+	nums[i] AND (nums[i] XOR x). Note that AND is the bitwise AND operation and 
+	XOR is the bitwise XOR operation. Return the maximum possible bitwise XOR 
+	of all elements of nums after applying the operation any number of times.
+
+	Example 1:
+	Input: nums = [3,2,4,6]
+	Output: 7
+	Explanation: Apply the operation with x = 4 and i = 3, 
+	             num[3] = 6 AND (6 XOR 4) = 6 AND 2 = 2. Now, 
+	             nums = [3, 2, 4, 2] and the bitwise XOR of all the 
+	             elements = 3 XOR 2 XOR 4 XOR 2 = 7. It can be shown that 7 is 
+	             the maximum possible bitwise XOR. Note that other operations 
+	             may be used to achieve a bitwise XOR of 7.
+	
+	Example 2:
+	Input: nums = [1,2,3,9,2]
+	Output: 11
+	Explanation: Apply the operation zero times. The bitwise XOR of all the 
+	             elements = 1 XOR 2 XOR 3 XOR 9 XOR 2 = 11. It can be shown 
+	             that 11 is the maximum possible bitwise XOR.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 0 <= nums[i] <= 10^8"""
+
+    def maximumXOR(self, nums: List[int]) -> int:
+        return reduce(or_, nums)
+
+
+    """2318. Number of Distinct Roll Sequences (Hard)
+	You are given an integer n. You roll a fair 6-sided dice n times. Determine 
+	the total number of distinct sequences of rolls possible such that the 
+	following conditions are satisfied:
+	* The greatest common divisor of any adjacent values in the sequence is 
+	  equal to 1.
+	* There is at least a gap of 2 rolls between equal valued rolls. More 
+	  formally, if the value of the ith roll is equal to the value of the jth 
+	  roll, then abs(i - j) > 2.
+	Return the total number of distinct sequences possible. Since the answer 
+	may be very large, return it modulo 10^9 + 7. Two sequences are considered 
+	distinct if at least one element is different.
+
+	Example 1:
+	Input: n = 4
+	Output: 184
+	Explanation: Some of the possible sequences are (1, 2, 3, 4), (6, 1, 2, 3), 
+	             (1, 2, 3, 1), etc. Some invalid sequences are (1, 2, 1, 3), 
+	             (1, 2, 3, 6). (1, 2, 1, 3) is invalid since the first and 
+	             third roll have an equal value and abs(1 - 3) = 2 (i and j are 
+	             1-indexed). (1, 2, 3, 6) is invalid since the greatest common 
+	             divisor of 3 and 6 = 3. There are a total of 184 distinct 
+	             sequences possible, so we return 184.
+	
+	Example 2:
+	Input: n = 2
+	Output: 22
+	Explanation: Some of the possible sequences are (1, 2), (2, 1), (3, 2). 
+	             Some invalid sequences are (3, 6), (2, 4) since the greatest 
+	             common divisor is not equal to 1. There are a total of 22 
+	             distinct sequences possible, so we return 22.
+
+	Constraints: 1 <= n <= 10^4"""
+
+    def distinctSequences(self, n: int) -> int:
+        
+        @lru_cache
+        def fn(n, p, pp): 
+            """Return total number of distinct sequences."""
+            if n == 0: return 1
+            ans = 0
+            for x in range(1, 7): 
+                if x not in (p, pp) and gcd(x, p) == 1: ans += fn(n-1, x, p)
+            return ans % 1_000_000_007
+        
+        return fn(n, -1, -1)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
