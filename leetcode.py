@@ -60087,14 +60087,9 @@ class Trie:
 	Constraints: 1 <= n <= 10^4"""
 
     def countHousePlacements(self, n: int) -> int:
-        MOD = 1_000_000_007
-        dp = [[1] * 4 for _ in range(n+1)]
-        for i in range(1, n+1): 
-            dp[i][0] = (dp[i-1][0] + dp[i-1][1] + dp[i-1][2] + dp[i-1][3]) % MOD
-            dp[i][1] = (dp[i-1][0] + dp[i-1][2]) % MOD
-            dp[i][2] = (dp[i-1][0] + dp[i-1][1]) % MOD
-            dp[i][3] = dp[i-1][0]
-        return dp[n][0]
+        f0 = f1 = 1
+        for _ in range(n): f0, f1 = f1, (f0+f1) % 1_000_000_007
+        return f1*f1 % 1_000_000_007
 
 
     """2321. Maximum Score Of Spliced Array (Hard)
@@ -60138,16 +60133,13 @@ class Trie:
 	* 1 <= nums1[i], nums2[i] <= 10^4"""
 
     def maximumsSplicedArray(self, nums1: List[int], nums2: List[int]) -> int:
-        sm1 = sum(nums1)
-        sm2 = sum(nums2)
-        prefix = minv = maxv = diff1 = diff2 = 0
+        v1 = v2 = m1 = m2 = 0
         for x1, x2 in zip(nums1, nums2): 
-            prefix += x2-x1
-            minv = min(minv, prefix)
-            maxv = max(maxv, prefix)
-            diff1 = max(diff1, prefix - minv)
-            diff2 = max(diff2, maxv - prefix)
-        return max(sm1+diff1, sm2+diff2)
+            v1 = max(0, v1+x2-x1)
+            v2 = max(0, v2+x1-x2)
+            m1 = max(m1, v1)
+            m2 = max(m2, v2)
+        return max(sum(nums1)+m1, sum(nums2)+m2)
 
 
     """2322. Minimum Score After Removals on a Tree (Hard)
@@ -60214,29 +60206,30 @@ class Trie:
             graph[u].append(v)
             graph[v].append(u)
             
-        def fn(u): 
+        def fn(u, p): 
+            nonlocal t
             score[u] = nums[u]
-            child[u] = {u}
+            tin[u] = (t := t+1) # time to enter
             for v in graph[u]: 
-                if seen[v] == 0: 
-                    seen[v] = 1
-                    fn(v)
+                if v != p: 
+                    fn(v, u)
                     score[u] ^= score[v]
-                    child[u] |= child[v]
+            tout[u] = t # time to exit 
         
-        seen = [1] + [0]*(n-1)
+        t = 0 
         score = [0]*n
-        child = [set() for _ in range(n)]
-        fn(0)
+        tin = [0]*n 
+        tout = [0]*n 
+        fn(0, -1)
         
         ans = inf 
         for u in range(1, n): 
             for v in range(u+1, n): 
-                if u in child[v]: 
+                if tin[v] <= tin[u] and tout[v] >= tout[u]: # enter earlier & exit later == parent 
                     uu = score[u]
                     vv = score[v] ^ score[u]
                     xx = score[0] ^ score[v]
-                elif v in child[u]: 
+                elif tin[v] >= tin[u] and tout[v] <= tout[u]: 
                     uu = score[u] ^ score[v]
                     vv = score[v]
                     xx = score[0] ^ score[u]
