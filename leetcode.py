@@ -60026,6 +60026,228 @@ class Trie:
         return fn(n, -1, -1)
 
 
+    """2319. Check if Matrix Is X-Matrix (Easy)
+	A square matrix is said to be an X-Matrix if both of the following 
+	conditions hold:
+	* All the elements in the diagonals of the matrix are non-zero.
+	* All other elements are 0.
+	Given a 2D integer array grid of size n x n representing a square matrix, 
+	return true if grid is an X-Matrix. Otherwise, return false.
+
+	Example 1:
+	Input: grid = [[2,0,0,1],[0,3,1,0],[0,5,2,0],[4,0,0,2]]
+	Output: true
+	Explanation: Refer to the diagram above. An X-Matrix should have the green 
+	             elements (diagonals) be non-zero and the red elements be 0.
+	             Thus, grid is an X-Matrix.
+	
+	Example 2:
+	Input: grid = [[5,7,0],[0,3,1],[0,5,0]]
+	Output: false
+	Explanation: Refer to the diagram above. An X-Matrix should have the green 
+	             elements (diagonals) be non-zero and the red elements be 0.
+	             Thus, grid is not an X-Matrix.
+
+	Constraints:
+	* n == grid.length == grid[i].length
+	* 3 <= n <= 100
+	* 0 <= grid[i][j] <= 10^5"""
+
+    def checkXMatrix(self, grid: List[List[int]]) -> bool:
+        n = len(grid)
+        for i, row in enumerate(grid): 
+            for j, x in enumerate(row):
+                if (i == j or i+j == n-1) and not x or i != j and i+j != n-1 and x: return False 
+        return True 
+
+
+    """2320. Count Number of Ways to Place Houses (Medium)
+	There is a street with n * 2 plots, where there are n plots on each side of 
+	the street. The plots on each side are numbered from 1 to n. On each plot, 
+	a house can be placed. Return the number of ways houses can be placed such 
+	that no two houses are adjacent to each other on the same side of the 
+	street. Since the answer may be very large, return it modulo 10^9 + 7. Note 
+	that if a house is placed on the ith plot on one side of the street, a 
+	house can also be placed on the ith plot on the other side of the street.
+
+	Example 1:
+	Input: n = 1
+	Output: 4
+	Explanation: Possible arrangements:
+	             1. All plots are empty.
+	             2. A house is placed on one side of the street.
+	             3. A house is placed on the other side of the street.
+	             4. Two houses are placed, one on each side of the street.
+	
+	Example 2:
+	Input: n = 2
+	Output: 9
+	Explanation: The 9 possible arrangements are shown in the diagram above.
+
+	Constraints: 1 <= n <= 10^4"""
+
+    def countHousePlacements(self, n: int) -> int:
+        MOD = 1_000_000_007
+        dp = [[1] * 4 for _ in range(n+1)]
+        for i in range(1, n+1): 
+            dp[i][0] = (dp[i-1][0] + dp[i-1][1] + dp[i-1][2] + dp[i-1][3]) % MOD
+            dp[i][1] = (dp[i-1][0] + dp[i-1][2]) % MOD
+            dp[i][2] = (dp[i-1][0] + dp[i-1][1]) % MOD
+            dp[i][3] = dp[i-1][0]
+        return dp[n][0]
+
+
+    """2321. Maximum Score Of Spliced Array (Hard)
+	You are given two 0-indexed integer arrays nums1 and nums2, both of length 
+	n. You can choose two integers left and right where 0 <= left <= right < n 
+	and swap the subarray nums1[left...right] with the subarray 
+	nums2[left...right].
+	* For example, if nums1 = [1,2,3,4,5] and nums2 = [11,12,13,14,15] and you 
+	  choose left = 1 and right = 2, nums1 becomes [1,12,13,4,5] and nums2 
+	  becomes [11,2,3,14,15].
+	You may choose to apply the mentioned operation once or not do anything.
+	The score of the arrays is the maximum of sum(nums1) and sum(nums2), where 
+	sum(arr) is the sum of all the elements in the array arr. Return the 
+	maximum possible score. A subarray is a contiguous sequence of elements 
+	within an array. arr[left...right] denotes the subarray that contains the 
+	elements of nums between indices left and right (inclusive).
+
+	Example 1:
+	Input: nums1 = [60,60,60], nums2 = [10,90,10]
+	Output: 210
+	Explanation: Choosing left = 1 and right = 1, we have nums1 = [60,90,60] 
+	             and nums2 = [10,60,10]. The score is 
+	             max(sum(nums1), sum(nums2)) = max(210, 80) = 210.
+	
+	Example 2:
+	Input: nums1 = [20,40,20,70,30], nums2 = [50,20,50,40,20]
+	Output: 220
+	Explanation: Choosing left = 3, right = 4, we have 
+	             nums1 = [20,40,20,40,20] and nums2 = [50,20,50,70,30]. The 
+	             score is max(sum(nums1), sum(nums2)) = max(140, 220) = 220.
+	
+	Example 3:
+	Input: nums1 = [7,11,13], nums2 = [1,1,1]
+	Output: 31
+	Explanation: We choose not to swap any subarray. The score is 
+	             max(sum(nums1), sum(nums2)) = max(31, 3) = 31.
+
+	Constraints:
+	* n == nums1.length == nums2.length
+	* 1 <= n <= 10^5
+	* 1 <= nums1[i], nums2[i] <= 10^4"""
+
+    def maximumsSplicedArray(self, nums1: List[int], nums2: List[int]) -> int:
+        sm1 = sum(nums1)
+        sm2 = sum(nums2)
+        prefix = minv = maxv = diff1 = diff2 = 0
+        for x1, x2 in zip(nums1, nums2): 
+            prefix += x2-x1
+            minv = min(minv, prefix)
+            maxv = max(maxv, prefix)
+            diff1 = max(diff1, prefix - minv)
+            diff2 = max(diff2, maxv - prefix)
+        return max(sm1+diff1, sm2+diff2)
+
+
+    """2322. Minimum Score After Removals on a Tree (Hard)
+	There is an undirected connected tree with n nodes labeled from 0 to n - 1 
+	and n - 1 edges. You are given a 0-indexed integer array nums of length n 
+	where nums[i] represents the value of the ith node. You are also given a 2D 
+	integer array edges of length n - 1 where edges[i] = [ai, bi] indicates 
+	that there is an edge between nodes ai and bi in the tree. Remove two 
+	distinct edges of the tree to form three connected components. For a pair 
+	of removed edges, the following steps are defined:
+	* Get the XOR of all the values of the nodes for each of the three 
+	  components respectively.
+	* The difference between the largest XOR value and the smallest XOR value 
+	  is the score of the pair.
+	* For example, say the three components have the node values: [4,5,7], 
+	  [1,9], and [3,3,3]. The three XOR values are 4 ^ 5 ^ 7 = 6, 1 ^ 9 = 8, 
+	  and 3 ^ 3 ^ 3 = 3. The largest XOR value is 8 and the smallest XOR value 
+	  is 3. The score is then 8 - 3 = 5.
+	Return the minimum score of any possible pair of edge removals on the given 
+	tree.
+
+	Example 1:
+	Input: nums = [1,5,5,4,11], edges = [[0,1],[1,2],[1,3],[3,4]]
+	Output: 9
+	Explanation: The diagram above shows a way to make a pair of removals.
+	             - The 1st component has nodes [1,3,4] with values [5,4,11]. 
+	               Its XOR value is 5 ^ 4 ^ 11 = 10.
+	             - The 2nd component has node [0] with value [1]. Its XOR value 
+	               is 1 = 1.
+	             - The 3rd component has node [2] with value [5]. Its XOR value 
+	               is 5 = 5.
+	             The score is the difference between the largest and smallest 
+	             XOR value which is 10 - 1 = 9. It can be shown that no other 
+	             pair of removals will obtain a smaller score than 9.
+	
+	Example 2:
+	Input: nums = [5,5,2,4,4,2], edges = [[0,1],[1,2],[5,2],[4,3],[1,3]]
+	Output: 0
+	Explanation: The diagram above shows a way to make a pair of removals.
+	             - The 1st component has nodes [3,4] with values [4,4]. Its XOR 
+	               value is 4 ^ 4 = 0.
+	             - The 2nd component has nodes [1,0] with values [5,5]. Its XOR 
+	               value is 5 ^ 5 = 0.
+	             - The 3rd component has nodes [2,5] with values [2,2]. Its XOR 
+	               value is 2 ^ 2 = 0.
+	             The score is the difference between the largest and smallest 
+	             XOR value which is 0 - 0 = 0. We cannot obtain a smaller score 
+	             than 0.
+
+	Constraints:
+	* n == nums.length
+	* 3 <= n <= 1000
+	* 1 <= nums[i] <= 10^8
+	* edges.length == n - 1
+	* edges[i].length == 2
+	* 0 <= ai, bi < n
+	* ai != bi
+	* edges represents a valid tree."""
+
+    def minimumScore(self, nums: List[int], edges: List[List[int]]) -> int:        
+        n = len(nums)
+        graph = [[] for _ in range(n)]
+        for u, v in edges: 
+            graph[u].append(v)
+            graph[v].append(u)
+            
+        def fn(u): 
+            score[u] = nums[u]
+            child[u] = {u}
+            for v in graph[u]: 
+                if seen[v] == 0: 
+                    seen[v] = 1
+                    fn(v)
+                    score[u] ^= score[v]
+                    child[u] |= child[v]
+        
+        seen = [1] + [0]*(n-1)
+        score = [0]*n
+        child = [set() for _ in range(n)]
+        fn(0)
+        
+        ans = inf 
+        for u in range(1, n): 
+            for v in range(u+1, n): 
+                if u in child[v]: 
+                    uu = score[u]
+                    vv = score[v] ^ score[u]
+                    xx = score[0] ^ score[v]
+                elif v in child[u]: 
+                    uu = score[u] ^ score[v]
+                    vv = score[v]
+                    xx = score[0] ^ score[u]
+                else: 
+                    uu = score[u]
+                    vv = score[v]
+                    xx = score[0] ^ score[u] ^ score[v]
+                ans = min(ans, max(uu, vv, xx) - min(uu, vv, xx))
+        return ans  
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
