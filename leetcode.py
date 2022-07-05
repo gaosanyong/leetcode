@@ -60241,6 +60241,179 @@ class Trie:
         return ans  
 
 
+    """2325. Decode the Message (Easy)
+	You are given the strings key and message, which represent a cipher key and 
+	a secret message, respectively. The steps to decode message are as follows:
+	* Use the first appearance of all 26 lowercase English letters in key as 
+	  the order of the substitution table.
+	* Align the substitution table with the regular English alphabet.
+	* Each letter in message is then substituted using the table.
+	* Spaces ' ' are transformed to themselves.
+	  + For example, given key = "happy boy" (actual key would have at least 
+	    one instance of each letter in the alphabet), we have the partial 
+	    substitution table of ('h' -> 'a', 'a' -> 'b', 'p' -> 'c', 'y' -> 'd', 
+	    'b' -> 'e', 'o' -> 'f').
+	Return the decoded message.
+
+	Example 1:
+	Input: key = "the quick brown fox jumps over the lazy dog", message = "vkbs bs t suepuv"
+	Output: "this is a secret"
+	Explanation: The diagram above shows the substitution table. It is obtained 
+	             by taking the first appearance of each letter in "the quick 
+	             brown fox jumps over the lazy dog".
+	
+	Example 2:
+	Input: key = "eljuxhpwnyrdgtqkviszcfmabo", message = "zwx hnfx lqantp mnoeius ycgk vcnjrdb"
+	Output: "the five boxing wizards jump quickly"
+	Explanation: The diagram above shows the substitution table. It is obtained 
+	             by taking the first appearance of each letter in 
+	             "eljuxhpwnyrdgtqkviszcfmabo".
+
+	Constraints:
+	* 26 <= key.length <= 2000
+	* key consists of lowercase English letters and ' '.
+	* key contains every letter in the English alphabet ('a' to 'z') at least 
+	  once.
+	* 1 <= message.length <= 2000
+	* message consists of lowercase English letters and ' '."""
+
+    def decodeMessage(self, key: str, message: str) -> str:
+        mp = dict(zip(OrderedDict.fromkeys(key.replace(' ', '')).keys(), ascii_lowercase), **{' ' : ' '})
+        return ''.join(map(mp.get, message))
+
+
+    """2326. Spiral Matrix IV (Medium)
+	You are given two integers m and n, which represent the dimensions of a 
+	matrix. You are also given the head of a linked list of integers. Generate 
+	an m x n matrix that contains the integers in the linked list presented in 
+	spiral order (clockwise), starting from the top-left of the matrix. If 
+	there are remaining empty spaces, fill them with -1. Return the generated 
+	matrix.
+
+	Example 1:
+	Input: m = 3, n = 5, head = [3,0,2,6,8,1,7,9,4,2,5,5,0]
+	Output: [[3,0,2,6,8],[5,0,-1,-1,1],[5,2,4,9,7]]
+	Explanation: The diagram above shows how the values are printed in the 
+	             matrix. Note that the remaining spaces in the matrix are 
+	             filled with -1.
+	
+	Example 2:
+	Input: m = 1, n = 4, head = [0,1,2]
+	Output: [[0,1,2,-1]]
+	Explanation: The diagram above shows how the values are printed from left 
+	             to right in the matrix. The last space in the matrix is set to 
+	             -1.
+
+	Constraints:
+	* 1 <= m, n <= 10^5
+	* 1 <= m * n <= 10^5
+	* The number of nodes in the list is in the range [1, m * n].
+	* 0 <= Node.val <= 1000"""
+
+    def spiralMatrix(self, m: int, n: int, head: Optional[ListNode]) -> List[List[int]]:
+        ans = [[-1]*n for _ in range(m)]
+        node = head
+        i, j, di, dj = 0, 0, 0, 1
+        while node: 
+            ans[i][j] = node.val 
+            node = node.next 
+            if not (0 <= i+di < m and 0 <= j+dj < n and ans[i+di][j+dj] == -1): di, dj = dj, -di
+            i, j = i+di, j+dj
+        return ans 
+
+
+    """2327. Number of People Aware of a Secret (Medium)
+	On day 1, one person discovers a secret. You are given an integer delay, 
+	which means that each person will share the secret with a new person every 
+	day, starting from delay days after discovering the secret. You are also 
+	given an integer forget, which means that each person will forget the 
+	secret forget days after discovering it. A person cannot share the secret 
+	on the same day they forgot it, or on any day afterwards. Given an integer 
+	n, return the number of people who know the secret at the end of day n. 
+	Since the answer may be very large, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: n = 6, delay = 2, forget = 4
+	Output: 5
+	Explanation: Day 1: Suppose the first person is named A. (1 person)
+	             Day 2: A is the only person who knows the secret. (1 person)
+	             Day 3: A shares the secret with a new person, B. (2 people)
+	             Day 4: A shares the secret with a new person, C. (3 people)
+	             Day 5: A forgets the secret, and B shares the secret with a 
+	                    new person, D. (3 people)
+	             Day 6: B shares the secret with E, and C shares the secret 
+	                    with F. (5 people)
+	
+	Example 2:
+	Input: n = 4, delay = 1, forget = 3
+	Output: 6
+	Explanation: Day 1: The first person is named A. (1 person)
+	             Day 2: A shares the secret with B. (2 people)
+	             Day 3: A and B share the secret with 2 new people, C and D. 
+	                    (4 people)
+	             Day 4: A forgets the secret. B, C, and D share the secret with 
+	                    3 new people. (6 people)
+
+	Constraints:
+	* 2 <= n <= 1000
+	* 1 <= delay < forget <= n"""
+
+    def peopleAwareOfSecret(self, n: int, delay: int, forget: int) -> int:
+        dp = [0] * (n+1)
+        dp[1] = 1
+        rsm = 0 
+        for x in range(2, n+1): 
+            if x >= delay: rsm += dp[x-delay]
+            if x >= forget: rsm -= dp[x-forget]
+            dp[x] = rsm = rsm % 1_000_000_007
+        return sum(dp[-forget:]) % 1_000_000_007
+
+
+    """2328. Number of Increasing Paths in a Grid (Hard)
+	You are given an m x n integer matrix grid, where you can move from a cell 
+	to any adjacent cell in all 4 directions. Return the number of strictly 
+	increasing paths in the grid such that you can start from any cell and end 
+	at any cell. Since the answer may be very large, return it modulo 10^9 + 7.
+	Two paths are considered different if they do not have exactly the same 
+	sequence of visited cells.
+
+	Example 1:
+	Input: grid = [[1,1],[3,4]]
+	Output: 8
+	Explanation: The strictly increasing paths are:
+	             - Paths with length 1: [1], [1], [3], [4].
+	             - Paths with length 2: [1 -> 3], [1 -> 4], [3 -> 4].
+	             - Paths with length 3: [1 -> 3 -> 4].
+	             The total number of paths is 4 + 3 + 1 = 8.
+	
+	Example 2:
+	Input: grid = [[1],[2]]
+	Output: 3
+	Explanation: The strictly increasing paths are:
+	             - Paths with length 1: [1], [2].
+	             - Paths with length 2: [1 -> 2].
+	             The total number of paths is 2 + 1 = 3.
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 1000
+	* 1 <= m * n <= 10^5
+	* 1 <= grid[i][j] <= 10^5"""
+
+    def countPaths(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        
+        @cache
+        def fn(i, j):
+            ans = 1
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                if 0 <= ii < m and 0 <= jj < n and grid[ii][jj] < grid[i][j]: ans += fn(ii, jj)
+            return ans % 1_000_000_007
+        
+        return sum(fn(i, j) for i in range(m) for j in range(n)) % 1_000_000_007
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
