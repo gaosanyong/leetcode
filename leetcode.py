@@ -58201,6 +58201,176 @@ class Trie:
         return fn(0, k)
 
 
+    """2220. Minimum Bit Flips to Convert Number (Easy)
+	A bit flip of a number x is choosing a bit in the binary representation of 
+	x and flipping it from either 0 to 1 or 1 to 0. 
+	* For example, for x = 7, the binary representation is 111 and we may 
+	  choose any bit (including any leading zeros not shown) and flip it. We 
+	  can flip the first bit from the right to get 110, flip the second bit 
+	  from the right to get 101, flip the fifth bit from the right (a leading 
+	  zero) to get 10111, etc.
+	Given two integers start and goal, return the minimum number of bit flips 
+	to convert start to goal.
+
+	Example 1:
+	Input: start = 10, goal = 7
+	Output: 3
+	Explanation: The binary representation of 10 and 7 are 1010 and 0111 
+	             respectively. We can convert 10 to 7 in 3 steps:
+	             - Flip the first bit from the right: 1010 -> 1011.
+	             - Flip the third bit from the right: 1011 -> 1111.
+	             - Flip the fourth bit from the right: 1111 -> 0111.
+	             It can be shown we cannot convert 10 to 7 in less than 3 steps. 
+	             Hence, we return 3.
+	
+	Example 2:
+	Input: start = 3, goal = 4
+	Output: 3
+	Explanation: The binary representation of 3 and 4 are 011 and 100 
+	             respectively. We can convert 3 to 4 in 3 steps:
+	             - Flip the first bit from the right: 011 -> 010.
+	             - Flip the second bit from the right: 010 -> 000.
+	             - Flip the third bit from the right: 000 -> 100.
+	             It can be shown we cannot convert 3 to 4 in less than 3 steps. 
+	             Hence, we return 3.
+
+	Constraints: 0 <= start, goal <= 10^9"""
+
+    def minBitFlips(self, start: int, goal: int) -> int:
+        return bin(start^goal).count('1')
+
+
+    """2221. Find Triangular Sum of an Array (Medium)
+	You are given a 0-indexed integer array nums, where nums[i] is a digit 
+	between 0 and 9 (inclusive). The triangular sum of nums is the value of the 
+	only element present in nums after the following process terminates:
+	* Let nums comprise of n elements. If n == 1, end the process. Otherwise, 
+	  create a new 0-indexed integer array newNums of length n - 1.
+	* For each index i, where 0 <= i < n - 1, assign the value of newNums[i] as 
+	  (nums[i] + nums[i+1]) % 10, where % denotes modulo operator.
+	* Replace the array nums with newNums.
+	* Repeat the entire process starting from step 1.
+	Return the triangular sum of nums.
+
+	Example 1:
+	Input: nums = [1,2,3,4,5]
+	Output: 8
+	Explanation: The above diagram depicts the process from which we obtain the 
+	             triangular sum of the array.
+	
+	Example 2:
+	Input: nums = [5]
+	Output: 5
+	Explanation: Since there is only one element in nums, the triangular sum is 
+	             the value of that element itself.
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* 0 <= nums[i] <= 9"""
+
+    def triangularSum(self, nums: List[int]) -> int:
+        comb = [1]
+        for i in range(len(nums)-1): 
+            comb.append(comb[-1]*(len(nums)-1-i)//(i+1))
+        return sum(x*y for x, y in zip(nums, comb)) % 10
+
+
+    """2222. Number of Ways to Select Buildings (Medium)
+	You are given a 0-indexed binary string s which represents the types of 
+	buildings along a street where:
+	* s[i] = '0' denotes that the ith building is an office and
+	* s[i] = '1' denotes that the ith building is a restaurant.
+	As a city official, you would like to select 3 buildings for random 
+	inspection. However, to ensure variety, no two consecutive buildings out of 
+	the selected buildings can be of the same type.
+	* For example, given s = "001101", we cannot select the 1st, 3rd, and 5th 
+	  buildings as that would form "011" which is not allowed due to having two 
+	  consecutive buildings of the same type.
+	Return the number of valid ways to select 3 buildings.
+
+	Example 1:
+	Input: s = "001101"
+	Output: 6
+	Explanation: The following sets of indices selected are valid:
+	             - [0,2,4] from "001101" forms "010"
+	             - [0,3,4] from "001101" forms "010"
+	             - [1,2,4] from "001101" forms "010"
+	             - [1,3,4] from "001101" forms "010"
+	             - [2,4,5] from "001101" forms "101"
+	             - [3,4,5] from "001101" forms "101"
+	             No other selection is valid. Thus, there are 6 total ways.
+	
+	Example 2:
+	Input: s = "11100"
+	Output: 0
+	Explanation: It can be shown that there are no valid selections.
+
+	Constraints:
+	* 3 <= s.length <= 10^5
+	* s[i] is either '0' or '1'."""
+
+    def numberOfWays(self, s: str) -> int:
+        ans = n0 = n1 = n01 = n10 = 0 
+        for ch in s: 
+            if ch == '0': 
+                ans += n01
+                n10 += n1
+                n0 += 1
+            else: 
+                ans += n10
+                n01 += n0 
+                n1 += 1
+        return ans 
+
+
+    """2223. Sum of Scores of Built Strings (Hard)
+	You are building a string s of length n one character at a time, prepending 
+	each new character to the front of the string. The strings are labeled from 
+	1 to n, where the string with length i is labeled si.
+	* For example, for s = "abaca", s1 == "a", s2 == "ca", s3 == "aca", etc.
+	The score of si is the length of the longest common prefix between si and 
+	sn (Note that s == sn). Given the final string s, return the sum of the 
+	score of every si.
+
+	Example 1:
+	Input: s = "babab"
+	Output: 9
+	Explanation: For s1 == "b", the longest common prefix is "b" which has a 
+	             score of 1. For s2 == "ab", there is no common prefix so the 
+	             score is 0. For s3 == "bab", the longest common prefix is "bab" 
+	             which has a score of 3. For s4 == "abab", there is no common 
+	             prefix so the score is 0. For s5 == "babab", the longest 
+	             common prefix is "babab" which has a score of 5. The sum of 
+	             the scores is 1 + 0 + 3 + 0 + 5 = 9, so we return 9.
+	
+	Example 2:
+	Input: s = "azbazbzaz"
+	Output: 14
+	Explanation: For s2 == "az", the longest common prefix is "az" which has a 
+	             score of 2. For s6 == "azbzaz", the longest common prefix is 
+	             "azb" which has a score of 3. For s9 == "azbazbzaz", the 
+	             longest common prefix is "azbazbzaz" which has a score of 9.
+	             For all other si, the score is 0. The sum of the scores is 
+	             2 + 3 + 9 = 14, so we return 14.
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s consists of lowercase English letters."""
+
+    def sumScores(self, s: str) -> int:
+        ans = [0] * len(s)
+        lo = hi = ii = 0 
+        for i in range(1, len(s)): 
+            if i <= hi: ii = i - lo 
+            if i + ans[ii] <= hi: ans[i] = ans[ii]
+            else: 
+                lo, hi = i, max(hi, i)
+                while hi < len(s) and s[hi] == s[hi - lo]: hi += 1
+                ans[i] = hi - lo 
+                hi -= 1
+        return sum(ans) + len(s)
+
+
     """2224. Minimum Number of Operations to Convert Time (Easy)
 	You are given two strings current and correct representing two 24-hour 
 	times. 24-hour times are formatted as "HH:MM", where HH is between 00 and 
