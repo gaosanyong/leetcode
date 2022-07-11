@@ -60584,6 +60584,222 @@ class Trie:
         return sum(fn(i, j) for i in range(m) for j in range(n)) % 1_000_000_007
 
 
+    """2331. Evaluate Boolean Binary Tree (Easy)
+	You are given the root of a full binary tree with the following properties:
+	* Leaf nodes have either the value 0 or 1, where 0 represents False and 1 
+	  represents True.
+	* Non-leaf nodes have either the value 2 or 3, where 2 represents the 
+	  boolean OR and 3 represents the boolean AND.
+	The evaluation of a node is as follows:
+	* If the node is a leaf node, the evaluation is the value of the node, i.e. 
+	  True or False.
+	* Otherwise, evaluate the node's two children and apply the boolean 
+	  operation of its value with the children's evaluations.
+	Return the boolean result of evaluating the root node. A full binary tree 
+	is a binary tree where each node has either 0 or 2 children. A leaf node is 
+	a node that has zero children.
+
+	Example 1:
+	Input: root = [2,1,3,null,null,0,1]
+	Output: true
+	Explanation: The above diagram illustrates the evaluation process. The AND 
+	             node evaluates to False AND True = False. The OR node 
+	             evaluates to True OR False = True. The root node evaluates to 
+	             True, so we return true.
+	
+	Example 2:
+	Input: root = [0]
+	Output: false
+	Explanation: The root node is a leaf node and it evaluates to false, so we 
+	             return false.
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 1000].
+	* 0 <= Node.val <= 3
+	* Every node has either 0 or 2 children.
+	* Leaf nodes have a value of 0 or 1.
+	* Non-leaf nodes have a value of 2 or 3."""
+
+    def evaluateTree(self, root: Optional[TreeNode]) -> bool:
+        mp = {}
+        stack = []
+        prev, node = None, root
+        while node or stack: 
+            if node: 
+                stack.append(node)
+                node = node.left
+            else: 
+                node = stack[-1]
+                if node.right and node.right != prev: node = node.right 
+                else: 
+                    if not node.left and not node.right: mp[node] = node.val
+                    elif node.val == 2: mp[node] = mp[node.left] or mp[node.right]
+                    else: mp[node] = mp[node.left] and mp[node.right]
+                    stack.pop()
+                    prev = node 
+                    node = None
+        return mp[root] 
+
+
+    """2332. The Latest Time to Catch a Bus (Medium)
+	You are given a 0-indexed integer array buses of length n, where buses[i] 
+	represents the departure time of the ith bus. You are also given a 0-
+	indexed integer array passengers of length m, where passengers[j] 
+	represents the arrival time of the jth passenger. All bus departure times 
+	are unique. All passenger arrival times are unique. You are given an 
+	integer capacity, which represents the maximum number of passengers that 
+	can get on each bus. The passengers will get on the next available bus. You 
+	can get on a bus that will depart at x minutes if you arrive at y minutes 
+	where y <= x, and the bus is not full. Passengers with the earliest arrival 
+	times get on the bus first. Return the latest time you may arrive at the 
+	bus station to catch a bus. You cannot arrive at the same time as another 
+	passenger. Note: The arrays buses and passengers are not necessarily sorted.
+
+	Example 1:
+	Input: buses = [10,20], passengers = [2,17,18,19], capacity = 2
+	Output: 16
+	Explanation: The 1st bus departs with the 1st passenger. The 2nd bus 
+	             departs with you and the 2nd passenger. Note that you must not 
+	             arrive at the same time as the passengers, which is why you 
+	             must arrive before the 2nd passenger to catch the bus.
+	
+	Example 2:
+	Input: buses = [20,30,10], passengers = [19,13,26,4,25,11,21], capacity = 2
+	Output: 20
+	Explanation: The 1st bus departs with the 4th passenger. The 2nd bus 
+	             departs with the 6th and 2nd passengers. The 3rd bus departs 
+	             with the 1st passenger and you.
+
+	Constraints:
+	* n == buses.length
+	* m == passengers.length
+	* 1 <= n, m, capacity <= 10^5
+	* 2 <= buses[i], passengers[i] <= 10^9
+	* Each element in buses is unique.
+	* Each element in passengers is unique."""
+
+    def latestTimeCatchTheBus(self, buses: List[int], passengers: List[int], capacity: int) -> int:
+        buses.sort()
+        passengers.sort()
+        prev = -inf 
+        queue = deque()
+        prefix = i = j = 0 
+        while i < len(buses) or j < len(passengers): 
+            if i == len(buses) or j < len(passengers) and passengers[j] <= buses[i]: 
+                if j == 0 or passengers[j-1] + 1 < passengers[j]: prev = passengers[j]-1
+                prefix += 1
+                if prefix and prefix % capacity == 0: queue.append(prev)
+                j += 1
+            else: 
+                if prefix < capacity: 
+                    if j == 0 or buses[i] != passengers[j-1]: ans = buses[i]
+                    else: ans = prev 
+                    prefix = 0 
+                elif queue: 
+                    ans = queue.popleft()
+                    prefix -= capacity 
+                i += 1
+        return ans 
+
+
+    """2333. Minimum Sum of Squared Difference (Medium)
+	You are given two positive 0-indexed integer arrays nums1 and nums2, both 
+	of length n. The sum of squared difference of arrays nums1 and nums2 is 
+	defined as the sum of (nums1[i] - nums2[i])2 for each 0 <= i < n. You are 
+	also given two positive integers k1 and k2. You can modify any of the 
+	elements of nums1 by +1 or -1 at most k1 times. Similarly, you can modify 
+	any of the elements of nums2 by +1 or -1 at most k2 times. Return the 
+	minimum sum of squared difference after modifying array nums1 at most k1 
+	times and modifying array nums2 at most k2 times. Note: You are allowed to 
+	modify the array elements to become negative integers.
+
+	Example 1:
+	Input: nums1 = [1,2,3,4], nums2 = [2,10,20,19], k1 = 0, k2 = 0
+	Output: 579
+	Explanation: The elements in nums1 and nums2 cannot be modified because 
+	             k1 = 0 and k2 = 0. The sum of square difference will be: 
+	             (1 - 2)^2 + (2 - 10)^2 + (3 - 20)^2 + (4 - 19)^2 = 579.
+	
+	Example 2:
+	Input: nums1 = [1,4,10,12], nums2 = [5,8,6,9], k1 = 1, k2 = 1
+	Output: 43
+	Explanation: One way to obtain the minimum sum of square difference is: 
+	             - Increase nums1[0] once.
+	             - Increase nums2[2] once.
+	             The minimum of the sum of square difference will be: 
+	             (2 - 5)^2 + (4 - 8)^2 + (10 - 7)^2 + (12 - 9)^2 = 43.
+	             Note that, there are other ways to obtain the minimum of the 
+	             sum of square difference, but there is no way to obtain a sum 
+	             smaller than 43.
+
+	Constraints:
+	* n == nums1.length == nums2.length
+	* 1 <= n <= 10^5
+	* 0 <= nums1[i], nums2[i] <= 10^5
+	* 0 <= k1, k2 <= 10^9"""
+
+    def minSumSquareDiff(self, nums1: List[int], nums2: List[int], k1: int, k2: int) -> int:
+        freq = Counter(abs(x1-x2) for x1, x2 in zip(nums1, nums2) if x1 != x2)
+        pq = [(-k, v) for k, v in freq.items()]
+        total = k1 + k2
+        heapify(pq)
+        while total and pq: 
+            k, v = heappop(pq)
+            if pq: kk, vv = heappop(pq)
+            else: kk = vv = 0
+            diff = kk - k
+            if diff * v <= total: 
+                total -= diff * v 
+                if vv: heappush(pq, (kk, v+vv))
+            else: 
+                q, r = divmod(total, v)
+                total = 0
+                heappush(pq, (k+q+1, r))
+                heappush(pq, (k+q, v-r))
+                if vv: heappush(pq, (kk, vv))
+        return sum(k*k*v for k, v in pq)
+
+
+    """2334. Subarray With Elements Greater Than Varying Threshold (Hard)
+	You are given an integer array nums and an integer threshold. Find any 
+	subarray of nums of length k such that every element in the subarray is 
+	greater than threshold / k. Return the size of any such subarray. If there 
+	is no such subarray, return -1. A subarray is a contiguous non-empty 
+	sequence of elements within an array.
+
+	Example 1:
+	Input: nums = [1,3,4,3,1], threshold = 6
+	Output: 3
+	Explanation: The subarray [3,4,3] has a size of 3, and every element is 
+	             greater than 6 / 3 = 2. Note that this is the only valid 
+	             subarray.
+	
+	Example 2:
+	Input: nums = [6,5,6,5,8], threshold = 7
+	Output: 1
+	Explanation: The subarray [8] has a size of 1, and 8 > 7 / 1 = 7. So 1 is 
+	             returned. Note that the subarray [6,5] has a size of 2, and 
+	             every element is greater than 7 / 2 = 3.5.  Similarly, the 
+	             subarrays [6,5,6], [6,5,6,5], [6,5,6,5,8] also satisfy the 
+	             given conditions. Therefore, 2, 3, 4, or 5 may also be 
+	             returned.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i], threshold <= 10^9"""
+
+    def validSubarraySize(self, nums: List[int], threshold: int) -> int:
+        stack = []
+        for i, x in enumerate(nums + [0]): 
+            while stack and stack[-1][1] > x: 
+                val = stack.pop()[1]
+                if stack: ii = stack[-1][0]
+                else: ii = -1
+                if val > threshold // (i - ii - 1): return i - ii - 1
+            stack.append((i, x))
+        return -1 
+
+
     """2335. Minimum Amount of Time to Fill Cups (Easy)
 	You have a water dispenser that can dispense cold, warm, and hot water. 
 	Every second, you can either fill up 2 cups with different types of water, 
