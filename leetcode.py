@@ -59610,6 +59610,150 @@ class Trie:
         return ans 
 
 
+    """2293. Min Max Game (Easy)
+	You are given a 0-indexed integer array nums whose length is a power of 2.
+	Apply the following algorithm on nums:
+	* Let n be the length of nums. If n == 1, end the process. Otherwise, 
+	  create a new 0-indexed integer array newNums of length n / 2.
+	* For every even index i where 0 <= i < n / 2, assign the value of 
+	  newNums[i] as min(nums[2 * i], nums[2 * i + 1]).
+	* For every odd index i where 0 <= i < n / 2, assign the value of 
+	  newNums[i] as max(nums[2 * i], nums[2 * i + 1]).
+	* Replace the array nums with newNums.
+	* Repeat the entire process starting from step 1.
+	Return the last number that remains in nums after applying the algorithm.
+
+	Example 1:
+	Input: nums = [1,3,5,2,4,8,2,2]
+	Output: 1
+	Explanation: The following arrays are the results of applying the algorithm 
+	             repeatedly.
+	             First: nums = [1,5,4,2]
+	             Second: nums = [1,4]
+	             Third: nums = [1]
+	             1 is the last remaining number, so we return 1.
+	
+	Example 2:
+	Input: nums = [3]
+	Output: 3
+	Explanation: 3 is already the last remaining number, so we return 3.
+
+	Constraints:
+	* 1 <= nums.length <= 1024
+	* 1 <= nums[i] <= 10^9
+	* nums.length is a power of 2."""
+
+    def minMaxGame(self, nums: List[int]) -> int:
+        n = len(nums)
+        while n > 1: 
+            for i in range(n//2): 
+                if i&1: nums[i] = max(nums[2*i], nums[2*i+1])
+                else: nums[i] = min(nums[2*i], nums[2*i+1])
+            n //= 2
+        return nums[0]
+
+
+    """2294. Partition Array Such That Maximum Difference Is K (Medium)
+	You are given an integer array nums and an integer k. You may partition 
+	nums into one or more subsequences such that each element in nums appears 
+	in exactly one of the subsequences. Return the minimum number of 
+	subsequences needed such that the difference between the maximum and 
+	minimum values in each subsequence is at most k. A subsequence is a 
+	sequence that can be derived from another sequence by deleting some or no 
+	elements without changing the order of the remaining elements.
+
+	Example 1:
+	Input: nums = [3,6,1,2,5], k = 2
+	Output: 2
+	Explanation: We can partition nums into the two subsequences [3,1,2] and 
+	             [6,5]. The difference between the maximum and minimum value 
+	             in the first subsequence is 3 - 1 = 2. The difference between 
+	             the maximum and minimum value in the second subsequence is 
+	             6 - 5 = 1. Since two subsequences were created, we return 2. 
+	             It can be shown that 2 is the minimum number of subsequences 
+	             needed.
+	
+	Example 2:
+	Input: nums = [1,2,3], k = 1
+	Output: 2
+	Explanation: We can partition nums into the two subsequences [1,2] and [3].
+            	 The difference between the maximum and minimum value in the 
+            	 first subsequence is 2 - 1 = 1. The difference between the 
+            	 maximum and minimum value in the second subsequence is 
+            	 3 - 3 = 0. Since two subsequences were created, we return 2. 
+            	 Note that another optimal solution is to partition nums into 
+            	 the two subsequences [1] and [2,3].
+	
+	Example 3:
+	Input: nums = [2,2,4,5], k = 0
+	Output: 3
+	Explanation: We can partition nums into the three subsequences [2,2], [4], 
+	             and [5]. The difference between the maximum and minimum value 
+	             in the first subsequences is 2 - 2 = 0. The difference between 
+	             the maximum and minimum value in the second subsequences is 
+	             4 - 4 = 0. The difference between the maximum and minimum 
+	             value in the third subsequences is 5 - 5 = 0. Since three 
+	             subsequences were created, we return 3. It can be shown that 3 
+	             is the minimum number of subsequences needed.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 0 <= nums[i] <= 10^5
+	* 0 <= k <= 10^5"""
+
+    def partitionArray(self, nums: List[int], k: int) -> int:
+        ans = 0 
+        prev = -inf 
+        for x in sorted(set(nums)): 
+            if x > prev+k: 
+                ans += 1
+                prev = x
+        return ans 
+
+
+    """2295. Replace Elements in an Array (Medium)
+	You are given a 0-indexed array nums that consists of n distinct positive 
+	integers. Apply m operations to this array, where in the ith operation you 
+	replace the number operations[i][0] with operations[i][1]. It is guaranteed 
+	that in the ith operation:
+	* operations[i][0] exists in nums.
+	* operations[i][1] does not exist in nums.
+	Return the array obtained after applying all the operations.
+
+	Example 1:
+	Input: nums = [1,2,4,6], operations = [[1,3],[4,7],[6,1]]
+	Output: [3,2,7,1]
+	Explanation: We perform the following operations on nums:
+	             - Replace the number 1 with 3. nums becomes [3,2,4,6].
+	             - Replace the number 4 with 7. nums becomes [3,2,7,6].
+	             - Replace the number 6 with 1. nums becomes [3,2,7,1].
+	             We return the final array [3,2,7,1].
+	
+	Example 2:
+	Input: nums = [1,2], operations = [[1,3],[2,1],[3,2]]
+	Output: [2,1]
+	Explanation: We perform the following operations to nums:
+	             - Replace the number 1 with 3. nums becomes [3,2].
+	             - Replace the number 2 with 1. nums becomes [3,1].
+	             - Replace the number 3 with 2. nums becomes [2,1].
+	             We return the array [2,1].
+
+	Constraints:
+	* n == nums.length
+	* m == operations.length
+	* 1 <= n, m <= 10^5
+	* All the values of nums are distinct.
+	* operations[i].length == 2
+	* 1 <= nums[i], operations[i][0], operations[i][1] <= 10^6
+	* operations[i][0] will exist in nums when applying the ith operation.
+	* operations[i][1] will not exist in nums when applying the ith operation."""
+
+    def arrayChange(self, nums: List[int], operations: List[List[int]]) -> List[int]:
+        mp = {}
+        for x, y in reversed(operations): mp[x] = mp.get(y, y)
+        return [mp.get(x, x) for x in nums]
+
+
     """2303. Calculate Amount Paid in Taxes (Easy)
 	You are given a 0-indexed 2D integer array brackets where 
 	brackets[i] = [upperi, percenti] means that the ith tax bracket has an 
@@ -65849,6 +65993,94 @@ class CountIntervals:
 
     def count(self) -> int:
         return self.cnt
+
+
+"""2296. Design a Text Editor (Hard)
+Design a text editor with a cursor that can do the following:
+* Add text to where the cursor is.
+* Delete text from where the cursor is (simulating the backspace key).
+* Move the cursor either left or right.
+When deleting text, only characters to the left of the cursor will be deleted. 
+The cursor will also remain within the actual text and cannot be moved beyond 
+it. More formally, we have that 0 <= cursor.position <= currentText.length 
+always holds. Implement the TextEditor class:
+* TextEditor() Initializes the object with empty text.
+* void addText(string text) Appends text to where the cursor is. The cursor 
+  ends to the right of text.
+* int deleteText(int k) Deletes k characters to the left of the cursor. Returns 
+  the number of characters actually deleted.
+* string cursorLeft(int k) Moves the cursor to the left k times. Returns the 
+  last min(10, len) characters to the left of the cursor, where len is the 
+  number of characters to the left of the cursor.
+* string cursorRight(int k) Moves the cursor to the right k times. Returns the 
+  last min(10, len) characters to the left of the cursor, where len is the 
+  number of characters to the left of the cursor.
+
+Example 1:
+Input: ["TextEditor", "addText", "deleteText", "addText", "cursorRight", "cursorLeft", "deleteText", "cursorLeft", "cursorRight"]
+       [[], ["leetcode"], [4], ["practice"], [3], [8], [10], [2], [6]]
+Output: [null, null, 4, null, "etpractice", "leet", 4, "", "practi"]
+Explanation: 
+TextEditor textEditor = new TextEditor(); // The current text is "|". (The '|' character represents the cursor)
+textEditor.addText("leetcode"); // The current text is "leetcode|".
+textEditor.deleteText(4); // return 4
+                          // The current text is "leet|". 
+                          // 4 characters were deleted.
+textEditor.addText("practice"); // The current text is "leetpractice|". 
+textEditor.cursorRight(3); // return "etpractice"
+                           // The current text is "leetpractice|". 
+                           // The cursor cannot be moved beyond the actual text and thus did not move.
+                           // "etpractice" is the last 10 characters to the left of the cursor.
+textEditor.cursorLeft(8); // return "leet"
+                          // The current text is "leet|practice".
+                          // "leet" is the last min(10, 4) = 4 characters to the left of the cursor.
+textEditor.deleteText(10); // return 4
+                           // The current text is "|practice".
+                           // Only 4 characters were deleted.
+textEditor.cursorLeft(2); // return ""
+                          // The current text is "|practice".
+                          // The cursor cannot be moved beyond the actual text and thus did not move. 
+                          // "" is the last min(10, 0) = 0 characters to the left of the cursor.
+textEditor.cursorRight(6); // return "practi"
+                           // The current text is "practi|ce".
+                           // "practi" is the last min(10, 6) = 6 characters to the left of the cursor.
+ 
+Constraints:
+* 1 <= text.length, k <= 40
+* text consists of lowercase English letters.
+* At most 2 * 10^4 calls in total will be made to addText, deleteText, 
+  cursorLeft and cursorRight.
+ 
+Follow-up: Could you find a solution with time complexity of O(k) per call?"""
+
+class TextEditor:
+
+    def __init__(self):
+        self.left = []
+        self.right = []
+
+    def addText(self, text: str) -> None:
+        for ch in text: self.left.append(ch)
+
+    def deleteText(self, k: int) -> int:
+        ans = 0 
+        while self.left and k: 
+            k -= 1
+            self.left.pop()
+            ans += 1
+        return ans 
+
+    def cursorLeft(self, k: int) -> str:
+        while k and self.left: 
+            k -= 1
+            self.right.append(self.left.pop())
+        return ''.join(self.left[-min(10, len(self.left)):])
+
+    def cursorRight(self, k: int) -> str:
+        while k and self.right: 
+            k -= 1
+            self.left.append(self.right.pop())
+        return ''.join(self.left[-min(10, len(self.left)):])
 
 
 """2336. Smallest Number in Infinite Set (Medium)
