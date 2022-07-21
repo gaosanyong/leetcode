@@ -59817,6 +59817,177 @@ class Trie:
         return ans 
 
 
+    """2287. Rearrange Characters to Make Target String (Easy)
+	You are given two 0-indexed strings s and target. You can take some letters 
+	from s and rearrange them to form new strings. Return the maximum number of 
+	copies of target that can be formed by taking letters from s and 
+	rearranging them.
+
+	Example 1:
+	Input: s = "ilovecodingonleetcode", target = "code"
+	Output: 2
+	Explanation: For the first copy of "code", take the letters at indices 4, 5, 
+	             6, and 7. For the second copy of "code", take the letters at 
+	             indices 17, 18, 19, and 20. The strings that are formed are 
+	             "ecod" and "code" which can both be rearranged into "code". We 
+	             can make at most two copies of "code", so we return 2.
+	
+	Example 2:
+	Input: s = "abcba", target = "abc"
+	Output: 1
+	Explanation: We can make one copy of "abc" by taking the letters at indices 
+	             0, 1, and 2. We can make at most one copy of "abc", so we 
+	             return 1. Note that while there is an extra 'a' and 'b' at 
+	             indices 3 and 4, we cannot reuse the letter 'c' at index 2, so 
+	             we cannot make a second copy of "abc".
+	
+	Example 3:
+	Input: s = "abbaccaddaeea", target = "aaaaa"
+	Output: 1
+	Explanation: We can make one copy of "aaaaa" by taking the letters at 
+	             indices 0, 3, 6, 9, and 12. We can make at most one copy of 
+	             "aaaaa", so we return 1.
+
+	Constraints:
+	* 1 <= s.length <= 100
+	* 1 <= target.length <= 10
+	* s and target consist of lowercase English letters."""
+
+    def rearrangeCharacters(self, s: str, target: str) -> int:
+        freq = Counter(s)
+        return min(freq[k]//v for k, v in Counter(target).items())
+
+
+    """2288. Apply Discount to Prices (Medium)
+	A sentence is a string of single-space separated words where each word can 
+	contain digits, lowercase letters, and the dollar sign '$'. A word 
+	represents a price if it is a sequence of digits preceded by a dollar sign.
+	* For example, "$100", "$23", and "$6" represent prices while "100", "$", 
+	  and "$1e5" do not.
+	You are given a string sentence representing a sentence and an integer 
+	discount. For each word representing a price, apply a discount of discount% 
+	on the price and update the word in the sentence. All updated prices should 
+	be represented with exactly two decimal places. Return a string 
+	representing the modified sentence. Note that all prices will contain at 
+	most 10 digits.
+
+	Example 1:
+	Input: sentence = "there are $1 $2 and 5$ candies in the shop", discount = 50
+	Output: "there are $0.50 $1.00 and 5$ candies in the shop"
+	Explanation: The words which represent prices are "$1" and "$2". 
+	             - A 50% discount on "$1" yields "$0.50", so "$1" is replaced 
+	               by "$0.50".
+	             - A 50% discount on "$2" yields "$1". Since we need to have 
+	               exactly 2 decimal places after a price, we replace "$2" with 
+	               "$1.00".
+	
+	Example 2:
+	Input: sentence = "1 2 $3 4 $5 $6 7 8$ $9 $10$", discount = 100
+	Output: "1 2 $0.00 4 $0.00 $0.00 7 8$ $0.00 $10$"
+	Explanation: Applying a 100% discount on any price will result in 0. The 
+	             words representing prices are "$3", "$5", "$6", and "$9". Each 
+	             of them is replaced by "$0.00".
+
+	Constraints:
+	* 1 <= sentence.length <= 10^5
+	* sentence consists of lowercase English letters, digits, ' ', and '$'.
+	* sentence does not have leading or trailing spaces.
+	* All words in sentence are separated by a single space.
+	* All prices will be positive numbers without leading zeros.
+	* All prices will have at most 10 digits.
+	* 0 <= discount <= 100"""
+
+    def discountPrices(self, sentence: str, discount: int) -> str:
+        words = sentence.split()
+        ans = []
+        for word in words: 
+            if word.startswith('$') and word[1:].isdigit(): 
+                word = f'${int(word[1:])*(1-discount/100):.2f}'
+            ans.append(word)
+        return ' '.join(ans)
+
+
+    """2289. Steps to Make Array Non-decreasing (Medium)
+	You are given a 0-indexed integer array nums. In one step, remove all 
+	elements nums[i] where nums[i - 1] > nums[i] for all 0 < i < nums.length.
+	Return the number of steps performed until nums becomes a non-decreasing 
+	array.
+
+	Example 1:
+	Input: nums = [5,3,4,4,7,3,6,11,8,5,11]
+	Output: 3
+	Explanation: The following are the steps performed:
+	             - Step 1: [5,3,4,4,7,3,6,11,8,5,11] becomes [5,4,4,7,6,11,11]
+	             - Step 2: [5,4,4,7,6,11,11] becomes [5,4,7,11,11]
+	             - Step 3: [5,4,7,11,11] becomes [5,7,11,11]
+	             [5,7,11,11] is a non-decreasing array. Therefore, we return 3.
+	
+	Example 2:
+	Input: nums = [4,5,7,7,13]
+	Output: 0
+	Explanation: nums is already a non-decreasing array. Therefore, we return 0.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^9"""
+
+    def totalSteps(self, nums: List[int]) -> int:
+        ans = 0 
+        stack = []
+        for x in nums: 
+            val = 1
+            while stack and stack[-1][0] <= x: val = max(val, stack.pop()[1]+1)
+            if not stack: val = 0
+            stack.append((x, val))
+            ans = max(ans, val)
+        return ans 
+
+
+    """2290. Minimum Obstacle Removal to Reach Corner (Hard)
+	You are given a 0-indexed 2D integer array grid of size m x n. Each cell 
+	has one of two values:
+	* 0 represents an empty cell,
+	* 1 represents an obstacle that may be removed.
+	You can move up, down, left, or right from and to an empty cell. Return the 
+	minimum number of obstacles to remove so you can move from the upper left 
+	corner (0, 0) to the lower right corner (m - 1, n - 1).
+
+	Example 1:
+	Input: grid = [[0,1,1],[1,1,0],[1,1,0]]
+	Output: 2
+	Explanation: We can remove the obstacles at (0, 1) and (0, 2) to create a 
+	             path from (0, 0) to (2, 2). It can be shown that we need to 
+	             remove at least 2 obstacles, so we return 2. Note that there 
+	             may be other ways to remove 2 obstacles to create a path.
+	
+	Example 2:
+	Input: grid = [[0,1,0,0,0],[0,1,0,1,0],[0,0,0,1,0]]
+	Output: 0
+	Explanation: We can move from (0, 0) to (2, 4) without removing any 
+	             obstacles, so we return 0.
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 10^5
+	* 2 <= m * n <= 10^5
+	* grid[i][j] is either 0 or 1.
+	* grid[0][0] == grid[m - 1][n - 1] == 0"""
+
+    def minimumObstacles(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        dist = [[inf]*n for _ in range(m)]
+        dist[0][0] = 0
+        pq = [(0, 0, 0)]
+        while pq: 
+            x, i, j = heappop(pq)
+            if i == m-1 and j == n-1: return x
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                if 0 <= ii < m and 0 <= jj < n and x + grid[ii][jj] < dist[ii][jj]: 
+                    dist[ii][jj] = x + grid[ii][jj]
+                    heappush(pq, (dist[ii][jj], ii, jj))
+
+
     """2293. Min Max Game (Easy)
 	You are given a 0-indexed integer array nums whose length is a power of 2.
 	Apply the following algorithm on nums:
