@@ -58494,6 +58494,213 @@ class Trie:
         return lo 
 
 
+    """2231. Largest Number After Digit Swaps by Parity (Easy)
+	You are given a positive integer num. You may swap any two digits of num 
+	that have the same parity (i.e. both odd digits or both even digits). 
+	Return the largest possible value of num after any number of swaps.
+
+	Example 1:
+	Input: num = 1234
+	Output: 3412
+	Explanation: Swap the digit 3 with the digit 1, this results in the number 
+	             3214. Swap the digit 2 with the digit 4, this results in the 
+	             number 3412. Note that there may be other sequences of swaps 
+	             but it can be shown that 3412 is the largest possible number.
+	             Also note that we may not swap the digit 4 with the digit 1 
+	             since they are of different parities.
+	
+	Example 2:
+	Input: num = 65875
+	Output: 87655
+	Explanation: Swap the digit 8 with the digit 6, this results in the number 
+	             85675. Swap the first digit 5 with the digit 7, this results 
+	             in the number 87655. Note that there may be other sequences of 
+	             swaps but it can be shown that 87655 is the largest possible 
+	             number.
+
+	Constraints: 1 <= num <= 10^9"""
+
+    def largestInteger(self, num: int) -> int:
+        odd = []
+        even = []
+        for x in map(int, str(num)): 
+            if x & 1: odd.append(x)
+            else: even.append(x)
+        odd.sort()
+        even.sort()
+        ans = 0
+        for x in map(int, str(num)): 
+            if x & 1: ans = 10*ans + odd.pop()
+            else: ans = 10*ans + even.pop()
+        return ans 
+
+
+    """2232. Minimize Result by Adding Parentheses to Expression (Medium)
+	You are given a 0-indexed string expression of the form "<num1>+<num2>" 
+	where <num1> and <num2> represent positive integers. Add a pair of 
+	parentheses to expression such that after the addition of parentheses, 
+	expression is a valid mathematical expression and evaluates to the smallest 
+	possible value. The left parenthesis must be added to the left of '+' and 
+	the right parenthesis must be added to the right of '+'. Return expression 
+	after adding a pair of parentheses such that expression evaluates to the 
+	smallest possible value. If there are multiple answers that yield the same 
+	result, return any of them. The input has been generated such that the 
+	original value of expression, and the value of expression after adding any 
+	pair of parentheses that meets the requirements fits within a signed 32-bit 
+	integer.
+
+	Example 1:
+	Input: expression = "247+38"
+	Output: "2(47+38)"
+	Explanation: The expression evaluates to 2 * (47 + 38) = 2 * 85 = 170. Note 
+	             that "2(4)7+38" is invalid because the right parenthesis must 
+	             be to the right of the '+'. It can be shown that 170 is the 
+	             smallest possible value.
+	
+	Example 2:
+	Input: expression = "12+34"
+	Output: "1(2+3)4"
+	Explanation: The expression evaluates to 1 * (2 + 3) * 4 = 1 * 5 * 4 = 20.
+
+	Example 3:
+	Input: expression = "999+999"
+	Output: "(999+999)"
+	Explanation: The expression evaluates to 999 + 999 = 1998.
+
+	Constraints:
+	* 3 <= expression.length <= 10
+	* expression consists of digits from '1' to '9' and '+'.
+	* expression starts and ends with digits.
+	* expression contains exactly one '+'.
+	* The original value of expression, and the value of expression after 
+	  adding any pair of parentheses that meets the requirements fits within a 
+	  signed 32-bit integer."""
+
+    def minimizeResult(self, expression: str) -> str:
+        k = expression.find('+')
+        ans = "inf"
+        for i in range(k): 
+            for j in range(k+1, len(expression)): 
+                cand = f'{expression[:i]}({expression[i:k]}+{expression[k+1:j+1]}){expression[j+1:]}'
+                ans = min(ans, cand, key=lambda x: eval(x.replace('(', '*(').replace(')', ')*').strip('*')))
+        return ans 
+
+
+    """2233. Maximum Product After K Increments (Medium)
+	You are given an array of non-negative integers nums and an integer k. In 
+	one operation, you may choose any element from nums and increment it by 1.
+	Return the maximum product of nums after at most k operations. Since the 
+	answer may be very large, return it modulo 109 + 7. Note that you should 
+	maximize the product before taking the modulo. 
+
+	Example 1:
+	Input: nums = [0,4], k = 5
+	Output: 20
+	Explanation: Increment the first number 5 times. Now nums = [5, 4], with a 
+	             product of 5 * 4 = 20. It can be shown that 20 is maximum 
+	             product possible, so we return 20. Note that there may be 
+	             other ways to increment nums to have the maximum product.
+	
+	Example 2:
+	Input: nums = [6,3,3,2], k = 2
+	Output: 216
+	Explanation: Increment the second number 1 time and increment the fourth 
+	             number 1 time. Now nums = [6, 4, 3, 3], with a product of 
+	             6 * 4 * 3 * 3 = 216. It can be shown that 216 is maximum 
+	             product possible, so we return 216. Note that there may be 
+	             other ways to increment nums to have the maximum product.
+
+	Constraints:
+	* 1 <= nums.length, k <= 10^5
+	* 0 <= nums[i] <= 10^6"""
+
+    def maximumProduct(self, nums: List[int], k: int) -> int:
+        mod = 1_000_000_007
+        nums.sort()
+        for i, x in enumerate(nums): 
+            target = nums[i+1] if i+1 < len(nums) else inf
+            diff = (target-x) * (i+1)
+            if diff <= k: k -= diff 
+            else: break 
+        q, r = divmod(k, i+1)
+        ans = pow(x+q+1, r, mod) * pow(x+q, i+1-r, mod) % mod
+        for ii in range(i+1, len(nums)): 
+            ans = ans * nums[ii] % mod
+        return ans
+
+
+    """2234. Maximum Total Beauty of the Gardens (Hard)
+	Alice is a caretaker of n gardens and she wants to plant flowers to 
+	maximize the total beauty of all her gardens. You are given a 0-indexed 
+	integer array flowers of size n, where flowers[i] is the number of flowers 
+	already planted in the ith garden. Flowers that are already planted cannot 
+	be removed. You are then given another integer newFlowers, which is the 
+	maximum number of flowers that Alice can additionally plant. You are also 
+	given the integers target, full, and partial. A garden is considered 
+	complete if it has at least target flowers. The total beauty of the gardens 
+	is then determined as the sum of the following:
+	* The number of complete gardens multiplied by full.
+	* The minimum number of flowers in any of the incomplete gardens multiplied 
+	  by partial. If there are no incomplete gardens, then this value will be 0.
+	Return the maximum total beauty that Alice can obtain after planting at 
+	most newFlowers flowers.
+
+	Example 1:
+	Input: flowers = [1,3,1,1], newFlowers = 7, target = 6, full = 12, partial = 1
+	Output: 14
+	Explanation: Alice can plant
+	             - 2 flowers in the 0th garden
+	             - 3 flowers in the 1st garden
+	             - 1 flower in the 2nd garden
+	             - 1 flower in the 3rd garden
+	             The gardens will then be [3,6,2,2]. She planted a total of 
+	             2 + 3 + 1 + 1 = 7 flowers. There is 1 garden that is complete.
+	             The minimum number of flowers in the incomplete gardens is 2.
+	             Thus, the total beauty is 1 * 12 + 2 * 1 = 12 + 2 = 14. No 
+	             other way of planting flowers can obtain a total beauty higher 
+	             than 14.
+	
+	Example 2:
+	Input: flowers = [2,4,5,3], newFlowers = 10, target = 5, full = 2, partial = 6
+	Output: 30
+	Explanation: Alice can plant
+	             - 3 flowers in the 0th garden
+	             - 0 flowers in the 1st garden
+	             - 0 flowers in the 2nd garden
+	             - 2 flowers in the 3rd garden
+	             The gardens will then be [5,4,5,5]. She planted a total of 
+	             3 + 0 + 0 + 2 = 5 flowers. There are 3 gardens that are 
+	             complete. The minimum number of flowers in the incomplete 
+	             gardens is 4. Thus, the total beauty is 
+	             3 * 2 + 4 * 6 = 6 + 24 = 30. No other way of planting flowers 
+	             can obtain a total beauty higher than 30. Note that Alice 
+	             could make all the gardens complete but in this case, she 
+	             would obtain a lower total beauty.
+
+	Constraints:
+	* 1 <= flowers.length <= 10^5
+	* 1 <= flowers[i], target <= 10^5
+	* 1 <= newFlowers <= 10^10
+	* 1 <= full, partial <= 10^5"""
+
+    def maximumBeauty(self, flowers: List[int], newFlowers: int, target: int, full: int, partial: int) -> int:
+        flowers = sorted(min(target, x) for x in flowers)
+        prefix = [0]
+        ii = -1 
+        for i in range(len(flowers)): 
+            if flowers[i] < target: ii = i 
+            if i: prefix.append(prefix[-1] + (flowers[i]-flowers[i-1])*i)
+        ans = 0 
+        for k in range(len(flowers)+1): 
+            if k: newFlowers -= target - flowers[-k]
+            if newFlowers >= 0: 
+                while 0 <= ii and (ii+k >= len(flowers) or prefix[ii] > newFlowers): ii -= 1
+                if 0 <= ii: kk = min(target-1, flowers[ii] + (newFlowers - prefix[ii])//(ii+1))
+                else: kk = 0 
+                ans = max(ans, k*full + kk*partial)
+        return ans 
+
+
     """2235. Add Two Integers (Easy)
 	Given two integers num1 and num2, return the sum of the two integers.
 
