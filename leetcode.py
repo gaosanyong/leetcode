@@ -61900,16 +61900,8 @@ class Trie:
 	* 1 <= k <= 60"""
 
     def countExcellentPairs(self, nums: List[int], k: int) -> int:
-        nums = set(nums)
-        freq = [0]*30
-        for x in nums: freq[bin(x).count('1')] += 1
-        prefix = list(accumulate(freq, initial=0))
-        ans = 0 
-        for x in nums: 
-            bits = bin(x).count('1')
-            lo = min(30, max(0, k-bits))
-            ans += prefix[-1] - prefix[lo]
-        return ans 
+        freq = Counter(map(int.bit_count, set(nums)))
+        return sum(v1*v2 for k1, v1 in freq.items() for k2, v2 in freq.items() if k1+k2 >= k)
 
 
 """146. LRU Cache (Medium)
