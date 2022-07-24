@@ -61856,13 +61856,8 @@ class Trie:
 	* 1 <= grid[i][j] <= 10^5"""
 
     def equalPairs(self, grid: List[List[int]]) -> int:
-        n = len(grid)
-        ans = 0 
-        freq = Counter(hash(tuple(grid[i])) for i in range(n))
-        for j in range(n): 
-            hs = hash(tuple(grid[i][j] for i in range(n)))
-            ans += freq[hs]
-        return ans 
+        freq = Counter(tuple(row) for row in grid)
+        return sum(freq[tuple(col)] for col in zip(*grid))
 
 
     """2354. Number of Excellent Pairs (Hard)
