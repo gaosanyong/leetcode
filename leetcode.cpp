@@ -43070,6 +43070,96 @@ public:
     bool checkTree(TreeNode* root) {
         return root->val == root->left->val + root->right->val; 
     }
+
+
+    /*2347. Best Poker Hand (Easy)
+	You are given an integer array ranks and a character array suits. You have 
+	5 cards where the ith card has a rank of ranks[i] and a suit of suits[i].
+	The following are the types of poker hands you can make from best to worst:
+	* "Flush": Five cards of the same suit.
+	* "Three of a Kind": Three cards of the same rank.
+	* "Pair": Two cards of the same rank.
+	* "High Card": Any single card.
+	Return a string representing the best type of poker hand you can make with 
+	the given cards. Note that the return values are case-sensitive.
+
+	Example 1:
+	Input: ranks = [13,2,3,1,9], suits = ["a","a","a","a","a"]
+	Output: "Flush"
+	Explanation: The hand with all the cards consists of 5 cards with the same 
+	             suit, so we have a "Flush".
+	
+	Example 2:
+	Input: ranks = [4,4,2,4,4], suits = ["d","a","a","b","c"]
+	Output: "Three of a Kind"
+	Explanation: The hand with the first, second, and fourth card consists of 3 
+	             cards with the same rank, so we have a "Three of a Kind". Note 
+	             that we could also make a "Pair" hand but "Three of a Kind" is 
+	             a better hand. Also note that other cards could be used to 
+	             make the "Three of a Kind" hand.
+	
+	Example 3:
+	Input: ranks = [10,10,2,12,9], suits = ["a","b","c","a","d"]
+	Output: "Pair"
+	Explanation: The hand with the first and second card consists of 2 cards 
+	             with the same rank, so we have a "Pair". Note that we cannot 
+	             make a "Flush" or a "Three of a Kind".
+
+	Constraints:
+	* ranks.length == suits.length == 5
+	* 1 <= ranks[i] <= 13
+	* 'a' <= suits[i] <= 'd'
+	* No two cards have the same rank and suit.*/
+
+    string bestHand(vector<int>& ranks, vector<char>& suits) {
+        if (*max_element(suits.begin(), suits.end()) == *min_element(suits.begin(), suits.end())) return "Flush"; 
+        unordered_map<int, int> freq; 
+        for (auto& x : ranks) ++freq[x]; 
+        auto p = max_element(freq.begin(), freq.end(), [](const auto& lhs, const auto& rhs) {return lhs.second < rhs.second;}); 
+        if (p->second >= 3) return "Three of a Kind"; 
+        else if (p->second == 2) return "Pair"; 
+        return "High Card"; 
+    }
+
+
+    /*2348. Number of Zero-Filled Subarrays (Medium)
+	Given an integer array nums, return the number of subarrays filled with 0.
+	A subarray is a contiguous non-empty sequence of elements within an array.
+
+	Example 1:
+	Input: nums = [1,3,0,0,2,0,0,4]
+	Output: 6
+	Explanation: There are 4 occurrences of [0] as a subarray. There are 2 
+	             occurrences of [0,0] as a subarray. There is no occurrence of 
+	             a subarray with a size more than 2 filled with 0. Therefore, 
+	             we return 6.
+	
+	Example 2:
+	Input: nums = [0,0,0,2,0,0]
+	Output: 9
+	Explanation: There are 5 occurrences of [0] as a subarray. There are 3 
+	             occurrences of [0,0] as a subarray. There is 1 occurrence of 
+	             [0,0,0] as a subarray. There is no occurrence of a subarray 
+	             with a size more than 3 filled with 0. Therefore, we return 9.
+	
+	Example 3:
+	Input: nums = [2,10,2019]
+	Output: 0
+	Explanation: There is no subarray filled with 0. Therefore, we return 0.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* -10^9 <= nums[i] <= 10^9*/
+
+    long long zeroFilledSubarray(vector<int>& nums) {
+        long long ans = 0, cnt = 0; 
+        for (auto& x : nums) {
+            if (x) cnt = 0; 
+            else ++cnt; 
+            ans += cnt; 
+        }
+        return ans; 
+    }
 };
 
 

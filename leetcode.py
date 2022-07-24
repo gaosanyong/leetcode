@@ -61699,12 +61699,12 @@ class Trie:
 	* 'a' <= suits[i] <= 'd'
 	* No two cards have the same rank and suit."""
 
-    def bestHand(self, ranks: List[int], suits: List[str]) -> str:
-        if len(set(suits)) == 1: return 'Flush'
-        m = max(Counter(ranks).values())
-        if m >= 3: return "Three of a Kind"
-        if m == 2: return "Pair"
-        return "High Card"
+    def bestHand(self, r: List[int], s: List[str]) -> str:
+        if len(set(s)) == 1: return "Flush" 
+        match m := max(Counter(r).values()):
+            case _ if m >= 3: return "Three of a Kind"
+            case 2: return "Pair"
+            case _: return "High Card"
 
 
     """2348. Number of Zero-Filled Subarrays (Medium)
@@ -61792,6 +61792,129 @@ class Trie:
                 ans += 1
                 seen.clear()
         return ans
+
+
+    """2351. First Letter to Appear Twice (Easy)
+	Given a string s consisting of lowercase English letters, return the first 
+	letter to appear twice. Note:
+	* A letter a appears twice before another letter b if the second occurrence 
+	  of a is before the second occurrence of b.
+	* s will contain at least one letter that appears twice.
+
+	Example 1:
+	Input: s = "abccbaacz"
+	Output: "c"
+	Explanation: The letter 'a' appears on the indexes 0, 5 and 6.
+	             The letter 'b' appears on the indexes 1 and 4.
+	             The letter 'c' appears on the indexes 2, 3 and 7.
+	             The letter 'z' appears on the index 8.
+	             The letter 'c' is the first letter to appear twice, because 
+	             out of all the letters the index of its second occurrence is 
+	             the smallest.
+	
+	Example 2:
+	Input: s = "abcdd"
+	Output: "d"
+	Explanation:
+	The only letter that appears twice is 'd' so we return 'd'.
+
+	Constraints:
+	* 2 <= s.length <= 100
+	* s consists of lowercase English letters.
+	* s has at least one repeated letter."""
+
+    def repeatedCharacter(self, s: str) -> str:
+        mask = 0 
+        for ch in s: 
+            if mask & 1<<ord(ch)-97: return ch 
+            mask ^= 1<<ord(ch)-97
+
+
+    """2352. Equal Row and Column Pairs (Medium)
+	Given a 0-indexed n x n integer matrix grid, return the number of pairs 
+	(Ri, Cj) such that row Ri and column Cj are equal. A row and column pair is 
+	considered equal if they contain the same elements in the same order (i.e. 
+	an equal array).
+
+	Example 1:
+	Input: grid = [[3,2,1],[1,7,6],[2,7,7]]
+	Output: 1
+	Explanation: There is 1 equal row and column pair:
+	             - (Row 2, Column 1): [2,7,7]
+	
+	Example 2:
+	Input: grid = [[3,1,2,2],[1,4,4,5],[2,4,2,2],[2,4,2,2]]
+	Output: 3
+	Explanation: There are 3 equal row and column pairs:
+	             - (Row 0, Column 0): [3,1,2,2]
+	             - (Row 2, Column 2): [2,4,2,2]
+	             - (Row 3, Column 2): [2,4,2,2]
+
+	Constraints:
+	* n == grid.length == grid[i].length
+	* 1 <= n <= 200
+	* 1 <= grid[i][j] <= 10^5"""
+
+    def equalPairs(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        ans = 0 
+        freq = Counter(hash(tuple(grid[i])) for i in range(n))
+        for j in range(n): 
+            hs = hash(tuple(grid[i][j] for i in range(n)))
+            ans += freq[hs]
+        return ans 
+
+
+    """2354. Number of Excellent Pairs (Hard)
+	You are given a 0-indexed positive integer array nums and a positive 
+	integer k. A pair of numbers (num1, num2) is called excellent if the 
+	following conditions are satisfied: 
+	* Both the numbers num1 and num2 exist in the array nums.
+	* The sum of the number of set bits in num1 OR num2 and num1 AND num2 is 
+	  greater than or equal to k, where OR is the bitwise OR operation and AND 
+	  is the bitwise AND operation.
+	Return the number of distinct excellent pairs. Two pairs (a, b) and (c, d) 
+	are considered distinct if either a != c or b != d. For example, (1, 2) and 
+	(2, 1) are distinct. Note that a pair (num1, num2) such that num1 == num2 
+	can also be excellent if you have at least one occurrence of num1 in the 
+	array.
+
+	Example 1:
+	Input: nums = [1,2,3,1], k = 3
+	Output: 5
+	Explanation: The excellent pairs are the following:
+	             - (3, 3). (3 AND 3) and (3 OR 3) are both equal to (11) in 
+	               binary. The total number of set bits is 2 + 2 = 4, which is 
+	               greater than or equal to k = 3.
+	             - (2, 3) and (3, 2). (2 AND 3) is equal to (10) in binary, and 
+	               (2 OR 3) is equal to (11) in binary. The total number of set 
+	               bits is 1 + 2 = 3.
+	             - (1, 3) and (3, 1). (1 AND 3) is equal to (01) in binary, and 
+	               (1 OR 3) is equal to (11) in binary. The total number of set 
+	               bits is 1 + 2 = 3.
+	             So the number of excellent pairs is 5.
+	
+	Example 2:
+	Input: nums = [5,1,1], k = 10
+	Output: 0
+	Explanation: There are no excellent pairs for this array.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^9
+	* 1 <= k <= 60"""
+
+    def countExcellentPairs(self, nums: List[int], k: int) -> int:
+        nums = set(nums)
+        freq = [0]*30
+        for x in nums: freq[bin(x).count('1')] += 1
+        prefix = list(accumulate(freq, initial=0))
+        ans = 0 
+        for x in nums: 
+            bits = bin(x).count('1')
+            lo = min(30, max(0, k-bits))
+            ans += prefix[-1] - prefix[lo]
+        return ans 
 
 
 """146. LRU Cache (Medium)
@@ -66696,12 +66819,81 @@ class NumberContainers:
         self.data = defaultdict(SortedList) # number-to-index 
         
     def change(self, index: int, number: int) -> None:
-        if index in self.mp: 
-            oldNumber = self.mp[index]
-            self.data[oldNumber].remove(index)
+        if index in self.mp: self.data[self.mp[index]].remove(index)
         self.mp[index] = number 
         self.data[number].add(index)
         
     def find(self, number: int) -> int:
         if self.data[number]: return self.data[number][0]
         return -1
+
+
+"""2353. Design a Food Rating System (Medium)
+Design a food rating system that can do the following:
+* Modify the rating of a food item listed in the system.
+* Return the highest-rated food item for a type of cuisine in the system.
+Implement the FoodRatings class:
+* FoodRatings(String[] foods, String[] cuisines, int[] ratings) Initializes the 
+  system. The food items are described by foods, cuisines and ratings, all of 
+  which have a length of n.
+* foods[i] is the name of the ith food,
+* cuisines[i] is the type of cuisine of the ith food, and
+* ratings[i] is the initial rating of the ith food.
+* void changeRating(String food, int newRating) Changes the rating of the food 
+  item with the name food.
+* String highestRated(String cuisine) Returns the name of the food item that 
+  has the highest rating for the given type of cuisine. If there is a tie, 
+  return the item with the lexicographically smaller name.
+Note that a string x is lexicographically smaller than string y if x comes 
+before y in dictionary order, that is, either x is a prefix of y, or if i is 
+the first position such that x[i] != y[i], then x[i] comes before y[i] in 
+alphabetic order.
+
+Example 1:
+Input: ["FoodRatings", "highestRated", "highestRated", "changeRating", "highestRated", "changeRating", "highestRated"]
+       [[["kimchi", "miso", "sushi", "moussaka", "ramen", "bulgogi"], ["korean", "japanese", "japanese", "greek", "japanese", "korean"], [9, 12, 8, 15, 14, 7]], ["korean"], ["japanese"], ["sushi", 16], ["japanese"], ["ramen", 16], ["japanese"]]
+Output: [null, "kimchi", "ramen", null, "sushi", null, "ramen"]
+Explanation: 
+FoodRatings foodRatings = new FoodRatings(["kimchi", "miso", "sushi", "moussaka", "ramen", "bulgogi"], ["korean", "japanese", "japanese", "greek", "japanese", "korean"], [9, 12, 8, 15, 14, 7]);
+foodRatings.highestRated("korean"); // return "kimchi"
+                                    // "kimchi" is the highest rated korean food with a rating of 9.
+foodRatings.highestRated("japanese"); // return "ramen"
+                                      // "ramen" is the highest rated japanese food with a rating of 14.
+foodRatings.changeRating("sushi", 16); // "sushi" now has a rating of 16.
+foodRatings.highestRated("japanese"); // return "sushi"
+                                      // "sushi" is the highest rated japanese food with a rating of 16.
+foodRatings.changeRating("ramen", 16); // "ramen" now has a rating of 16.
+foodRatings.highestRated("japanese"); // return "ramen"
+                                      // Both "sushi" and "ramen" have a rating of 16.
+                                      // However, "ramen" is lexicographically smaller than "sushi".
+
+Constraints:
+* 1 <= n <= 2 * 10^4
+* n == foods.length == cuisines.length == ratings.length
+* 1 <= foods[i].length, cuisines[i].length <= 10
+* foods[i], cuisines[i] consist of lowercase English letters.
+* 1 <= ratings[i] <= 10^8
+* All the strings in foods are distinct.
+* food will be the name of a food item in the system across all calls to 
+  changeRating.
+* cuisine will be a type of cuisine of at least one food item in the system 
+  across all calls to highestRated.
+* At most 2 * 10^4 calls in total will be made to changeRating and highestRated."""
+
+class FoodRatings:
+
+    def __init__(self, foods: List[str], cuisines: List[str], ratings: List[int]):
+        self.mp = {}
+        self.data = defaultdict(SortedList)
+        for food, cuisine, rating in zip(foods, cuisines, ratings): 
+            self.mp[food] = (cuisine, rating)
+            self.data[cuisine].add((-rating, food))
+
+    def changeRating(self, food: str, newRating: int) -> None:
+        cuisine, rating = self.mp[food]
+        self.mp[food] = cuisine, newRating
+        self.data[cuisine].remove((-rating, food))
+        self.data[cuisine].add((-newRating, food))
+
+    def highestRated(self, cuisine: str) -> str:
+        return self.data[cuisine][0][1]
