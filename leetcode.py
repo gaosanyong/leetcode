@@ -61904,6 +61904,173 @@ class Trie:
         return sum(v1*v2 for k1, v1 in freq.items() for k2, v2 in freq.items() if k1+k2 >= k)
 
 
+    """2357. Make Array Zero by Subtracting Equal Amounts (Easy)
+	You are given a non-negative integer array nums. In one operation, you must:
+	* Choose a positive integer x such that x is less than or equal to the 
+	  smallest non-zero element in nums.
+	* Subtract x from every positive element in nums.
+	Return the minimum number of operations to make every element in nums equal 
+	to 0.
+
+	Example 1:
+	Input: nums = [1,5,0,3,5]
+	Output: 3
+	Explanation: In the first operation, choose x = 1. Now, nums = [0,4,0,2,4].
+	             In the second operation, choose x = 2. Now, nums = [0,2,0,0,2].
+	             In the third operation, choose x = 2. Now, nums = [0,0,0,0,0].
+	
+	Example 2:
+	Input: nums = [0]
+	Output: 0
+	Explanation: Each element in nums is already 0 so no operations are needed.
+
+	Constraints:
+	* 1 <= nums.length <= 100
+	* 0 <= nums[i] <= 100"""
+
+    def minimumOperations(self, nums: List[int]) -> int:
+        return len(set(x for x in nums if x))
+
+
+    """2358. Maximum Number of Groups Entering a Competition (Medium)
+	You are given a positive integer array grades which represents the grades 
+	of students in a university. You would like to enter all these students 
+	into a competition in ordered non-empty groups, such that the ordering 
+	meets the following conditions:
+	* The sum of the grades of students in the ith group is less than the sum 
+	  of the grades of students in the (i + 1)th group, for all groups (except 
+	  the last).
+	* The total number of students in the ith group is less than the total 
+	  number of students in the (i + 1)th group, for all groups (except the 
+	  last).
+	Return the maximum number of groups that can be formed.
+
+	Example 1:
+	Input: grades = [10,6,12,7,3,5]
+	Output: 3
+	Explanation: The following is a possible way to form 3 groups of students:
+	             - 1st group has the students with grades = [12]. Sum of grades: 
+	               12. Student count: 1
+	             - 2nd group has the students with grades = [6,7]. Sum of 
+	               grades: 6 + 7 = 13. Student count: 2
+	             - 3rd group has the students with grades = [10,3,5]. Sum of 
+	               grades: 10 + 3 + 5 = 18. Student count: 3
+	             It can be shown that it is not possible to form more than 3 
+	             groups.
+	
+	Example 2:
+	Input: grades = [8,8]
+	Output: 1
+	Explanation: We can only form 1 group, since forming 2 groups would lead to 
+	             an equal number of students in both groups.
+
+	Constraints:
+	* 1 <= grades.length <= 10^5
+	* 1 <= grades[i] <= 10^5"""
+
+    def maximumGroups(self, grades: List[int]) -> int:
+        return int((sqrt(1+8*len(grades))-1)//2)
+
+
+    """2359. Find Closest Node to Given Two Nodes (Medium)
+	You are given a directed graph of n nodes numbered from 0 to n - 1, where 
+	each node has at most one outgoing edge. The graph is represented with a 
+	given 0-indexed array edges of size n, indicating that there is a directed 
+	edge from node i to node edges[i]. If there is no outgoing edge from i, 
+	then edges[i] == -1. You are also given two integers node1 and node2. 
+	Return the index of the node that can be reached from both node1 and node2, 
+	such that the maximum between the distance from node1 to that node, and 
+	from node2 to that node is minimized. If there are multiple answers, return 
+	the node with the smallest index, and if no possible answer exists, return 
+	-1. Note that edges may contain cycles.
+
+	Example 1:
+	Input: edges = [2,2,3,-1], node1 = 0, node2 = 1
+	Output: 2
+	Explanation: The distance from node 0 to node 2 is 1, and the distance from 
+	             node 1 to node 2 is 1. The maximum of those two distances is 1. 
+	             It can be proven that we cannot get a node with a smaller 
+	             maximum distance than 1, so we return node 2.
+	
+	Example 2:
+	Input: edges = [1,2,-1], node1 = 0, node2 = 2
+	Output: 2
+	Explanation: The distance from node 0 to node 2 is 2, and the distance from 
+	             node 2 to itself is 0. The maximum of those two distances is 2. 
+	             It can be proven that we cannot get a node with a smaller 
+	             maximum distance than 2, so we return node 2.
+
+	Constraints:
+	* n == edges.length
+	* 2 <= n <= 10^5
+	* -1 <= edges[i] < n
+	* edges[i] != i
+	* 0 <= node1, node2 < n"""
+
+    def closestMeetingNode(self, edges: List[int], node1: int, node2: int) -> int:
+        
+        def bfs(u): 
+            """Return distance from node u to reachable nodes."""
+            k = 0 
+            dist = [inf]*len(edges)
+            while u != -1 and dist[u] == inf: 
+                dist[u] = k 
+                k += 1
+                u = edges[u]
+            return dist 
+        
+        dist1 = bfs(node1)
+        dist2 = bfs(node2)
+        ans, m = -1, inf
+        for i, (x1, x2) in enumerate(zip(dist1, dist2)): 
+            if max(x1, x2) < m: ans, m = i, max(x1, x2)
+        return ans 
+
+
+    """2360. Longest Cycle in a Graph (Hard)
+	You are given a directed graph of n nodes numbered from 0 to n - 1, where 
+	each node has at most one outgoing edge. The graph is represented with a 
+	given 0-indexed array edges of size n, indicating that there is a directed 
+	edge from node i to node edges[i]. If there is no outgoing edge from node i, 
+	then edges[i] == -1. Return the length of the longest cycle in the graph. 
+	If no cycle exists, return -1. A cycle is a path that starts and ends at 
+	the same node.
+
+	Example 1:
+	Input: edges = [3,3,4,2,3]
+	Output: 3
+	Explanation: The longest cycle in the graph is the cycle: 2 -> 4 -> 3 -> 2.
+	             The length of this cycle is 3, so 3 is returned.
+	
+	Example 2:
+	Input: edges = [2,-1,3,1]
+	Output: -1
+	Explanation: There are no cycles in this graph.
+
+	Constraints:
+	* n == edges.length
+	* 2 <= n <= 10^5
+	* -1 <= edges[i] < n
+	* edges[i] != i"""
+
+    def longestCycle(self, edges: List[int]) -> int:
+        
+        def dfs(u, k): 
+            """Update longest cycle while traversing the graph from u."""
+            nonlocal ans
+            if u > -1: 
+                if dist[u] == -1: 
+                    dist[u] = k 
+                    dfs(edges[u], k+1)
+                elif dist[u]: ans = max(ans, k - dist[u])
+                dist[u] = 0     
+            
+        ans = -1 
+        dist = [-1]*len(edges)
+        for x in range(len(edges)): dfs(x, 1)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
