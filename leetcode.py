@@ -62242,6 +62242,172 @@ class Trie:
         return ans 
 
 
+    """2367. Number of Arithmetic Triplets (Easy)
+	You are given a 0-indexed, strictly increasing integer array nums and a 
+	positive integer diff. A triplet (i, j, k) is an arithmetic triplet if the 
+	following conditions are met:
+	* i < j < k,
+	* nums[j] - nums[i] == diff, and
+	* nums[k] - nums[j] == diff.
+	Return the number of unique arithmetic triplets.
+
+	Example 1:
+	Input: nums = [0,1,4,6,7,10], diff = 3
+	Output: 2
+	Explanation: (1, 2, 4) is an arithmetic triplet because both 7 - 4 == 3 and 
+	             4 - 1 == 3. (2, 4, 5) is an arithmetic triplet because both 
+	             10 - 7 == 3 and 7 - 4 == 3. 
+	
+	Example 2:
+	Input: nums = [4,5,6,7,8,9], diff = 2
+	Output: 2
+	Explanation: (0, 2, 4) is an arithmetic triplet because both 8 - 6 == 2 and 
+	             6 - 4 == 2. (1, 3, 5) is an arithmetic triplet because both 
+	             9 - 7 == 2 and 7 - 5 == 2.
+
+	Constraints:
+	* 3 <= nums.length <= 200
+	* 0 <= nums[i] <= 200
+	* 1 <= diff <= 50
+	* nums is strictly increasing."""
+
+    def arithmeticTriplets(self, nums: List[int], diff: int) -> int:
+        ans = 0 
+        seen = set()
+        for x in nums: 
+            if x-diff in seen and x-2*diff in seen: ans += 1
+            seen.add(x)
+        return ans 
+
+
+    """2368. Reachable Nodes With Restrictions (Medium)
+	There is an undirected tree with n nodes labeled from 0 to n - 1 and n - 1 
+	edges. You are given a 2D integer array edges of length n - 1 where 
+	edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi 
+	in the tree. You are also given an integer array restricted which 
+	represents restricted nodes. Return the maximum number of nodes you can 
+	reach from node 0 without visiting a restricted node. Note that node 0 will 
+	not be a restricted node.
+
+	Example 1:
+	Input: n = 7, edges = [[0,1],[1,2],[3,1],[4,0],[0,5],[5,6]], restricted = [4,5]
+	Output: 4
+	Explanation: The diagram above shows the tree. We have that [0,1,2,3] are 
+	             the only nodes that can be reached from node 0 without 
+	             visiting a restricted node.
+	
+	Example 2:
+	Input: n = 7, edges = [[0,1],[0,2],[0,5],[0,4],[3,2],[6,5]], restricted = [4,2,1]
+	Output: 3
+	Explanation: The diagram above shows the tree. We have that [0,5,6] are the 
+	             only nodes that can be reached from node 0 without visiting a 
+	             restricted node.
+
+	Constraints:
+	* 2 <= n <= 10^5
+	* edges.length == n - 1
+	* edges[i].length == 2
+	* 0 <= ai, bi < n
+	* ai != bi
+	* edges represents a valid tree.
+	* 1 <= restricted.length < n
+	* 1 <= restricted[i] < n
+	* All the values of restricted are unique."""
+
+    def reachableNodes(self, n: int, edges: List[List[int]], restricted: List[int]) -> int:
+        graph = [[] for _ in range(n)]
+        for u, v in edges: 
+            graph[u].append(v)
+            graph[v].append(u)
+        ans = 0 
+        seen = set(restricted)
+        stack = [0]
+        while stack: 
+            u = stack.pop()
+            ans += 1
+            seen.add(u)
+            for v in graph[u]: 
+                if v not in seen: stack.append(v)
+        return ans 
+
+
+    """2369. Check if There is a Valid Partition For The Array (Medium)
+	You are given a 0-indexed integer array nums. You have to partition the 
+	array into one or more contiguous subarrays. We call a partition of the 
+	array valid if each of the obtained subarrays satisfies one of the 
+	following conditions:
+	* The subarray consists of exactly 2 equal elements. For example, the 
+	  subarray [2,2] is good.
+	* The subarray consists of exactly 3 equal elements. For example, the 
+	  subarray [4,4,4] is good.
+	* The subarray consists of exactly 3 consecutive increasing elements, that 
+	  is, the difference between adjacent elements is 1. For example, the 
+	  subarray [3,4,5] is good, but the subarray [1,3,5] is not.
+	Return true if the array has at least one valid partition. Otherwise, 
+	return false.
+
+	Example 1:
+	Input: nums = [4,4,4,5,6]
+	Output: true
+	Explanation: The array can be partitioned into the subarrays [4,4] and 
+	             [4,5,6]. This partition is valid, so we return true.
+	
+	Example 2:
+	Input: nums = [1,1,1,2]
+	Output: false
+	Explanation: There is no valid partition for this array.
+
+	Constraints:
+	* 2 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^6"""
+
+    def validPartition(self, nums: List[int]) -> bool:
+        dp = [False]*(len(nums)+1)
+        dp[-1] = True 
+        for i in range(len(nums)-1, -1, -1): 
+            if i+1 < len(nums) and dp[i+2] and nums[i] == nums[i+1] \
+            or i+2 < len(nums) and dp[i+3] and (nums[i] == nums[i+1] == nums[i+2] or nums[i]+2 == nums[i+1]+1 == nums[i+2]): dp[i] = True
+        return dp[0]
+
+
+    """2370. Longest Ideal Subsequence (Medium)
+	You are given a string s consisting of lowercase letters and an integer k. 
+	We call a string t ideal if the following conditions are satisfied:
+	* t is a subsequence of the string s.
+	* The absolute difference in the alphabet order of every two adjacent 
+	  letters in t is less than or equal to k.
+	Return the length of the longest ideal string. A subsequence is a string 
+	that can be derived from another string by deleting some or no characters 
+	without changing the order of the remaining characters. Note that the 
+	alphabet order is not cyclic. For example, the absolute difference in the 
+	alphabet order of 'a' and 'z' is 25, not 1.
+
+	Example 1:
+	Input: s = "acfgbd", k = 2
+	Output: 4
+	Explanation: The longest ideal string is "acbd". The length of this string 
+	             is 4, so 4 is returned. Note that "acfgbd" is not ideal 
+	             because 'c' and 'f' have a difference of 3 in alphabet order.
+	
+	Example 2:
+	Input: s = "abcd", k = 3
+	Output: 4
+	Explanation: The longest ideal string is "abcd". The length of this string 
+	             is 4, so 4 is returned.
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* 0 <= k <= 25
+	* s consists of lowercase English letters."""
+
+    def longestIdealString(self, s: str, k: int) -> int:
+        dp = [0]*26
+        for ch in s: 
+            i = ord(ch)-97
+            dp[i] = 1 + max(dp[max(0, i-k) : i+k+1], default=0)
+        return max(dp)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
