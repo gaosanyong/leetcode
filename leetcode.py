@@ -40250,7 +40250,7 @@ class Fenwick:
 
     """1745. Palindrome Partitioning IV (Hard)
 	Given a string s, return true if it is possible to split the string s into 
-	three non-empty palindromic substrings. Otherwise, return false.​​​​​ A string 
+	three non-empty palindromic substrings. Otherwise, return false. A string 
 	is said to be palindrome if it the same string when reversed.
 
 	Example 1:
@@ -43840,7 +43840,7 @@ class Fenwick:
 	  ["00", "1"], or ["0", "0", "1"]. However all the ways are invalid because 
 	  they have numerical values [0,1], [0,1], and [0,0,1] respectively, all of 
 	  which are not in descending order.
-	Return true if it is possible to split s​​​​​​ as described above, or false 
+	Return true if it is possible to split s as described above, or false 
 	otherwise. A substring is a contiguous sequence of characters in a string.
 
 	Example 1:
@@ -62068,6 +62068,177 @@ class Trie:
         ans = -1 
         dist = [-1]*len(edges)
         for x in range(len(edges)): dfs(x, 1)
+        return ans 
+
+
+    """2363. Merge Similar Items (Easy)
+	You are given two 2D integer arrays, items1 and items2, representing two 
+	sets of items. Each array items has the following properties:
+	* items[i] = [valuei, weighti] where valuei represents the value and 
+	  weighti represents the weight of the ith item.
+	* The value of each item in items is unique.
+	Return a 2D integer array ret where ret[i] = [valuei, weighti], with 
+	weighti being the sum of weights of all items with value valuei. Note: ret 
+	should be returned in ascending order by value.
+
+	Example 1:
+	Input: items1 = [[1,1],[4,5],[3,8]], items2 = [[3,1],[1,5]]
+	Output: [[1,6],[3,9],[4,5]]
+	Explanation: The item with value = 1 occurs in items1 with weight = 1 and 
+	             in items2 with weight = 5, total weight = 1 + 5 = 6. The item 
+	             with value = 3 occurs in items1 with weight = 8 and in items2 
+	             with weight = 1, total weight = 8 + 1 = 9. The item with 
+	             value = 4 occurs in items1 with weight = 5, total weight = 5.  
+	             Therefore, we return [[1,6],[3,9],[4,5]].
+	
+	Example 2:
+	Input: items1 = [[1,1],[3,2],[2,3]], items2 = [[2,1],[3,2],[1,3]]
+	Output: [[1,4],[2,4],[3,4]]
+	Explanation: The item with value = 1 occurs in items1 with weight = 1 and 
+	             in items2 with weight = 3, total weight = 1 + 3 = 4. The item 
+	             with value = 2 occurs in items1 with weight = 3 and in items2 
+	             with weight = 1, total weight = 3 + 1 = 4. The item with 
+	             value = 3 occurs in items1 with weight = 2 and in items2 with 
+	             weight = 2, total weight = 2 + 2 = 4. Therefore, we return 
+	             [[1,4],[2,4],[3,4]].
+	
+	Example 3:
+	Input: items1 = [[1,3],[2,2]], items2 = [[7,1],[2,2],[1,4]]
+	Output: [[1,7],[2,4],[7,1]]
+	Explanation: The item with value = 1 occurs in items1 with weight = 3 and 
+	             in items2 with weight = 4, total weight = 3 + 4 = 7. The item 
+	             with value = 2 occurs in items1 with weight = 2 and in items2 
+	             with weight = 2, total weight = 2 + 2 = 4. The item with 
+	             value = 7 occurs in items2 with weight = 1, total weight = 1.
+	             Therefore, we return [[1,7],[2,4],[7,1]].
+
+	Constraints:
+	* 1 <= items1.length, items2.length <= 1000
+	* items1[i].length == items2[i].length == 2
+	* 1 <= valuei, weighti <= 1000
+	* Each valuei in items1 is unique.
+	* Each valuei in items2 is unique."""
+
+    def mergeSimilarItems(self, items1: List[List[int]], items2: List[List[int]]) -> List[List[int]]:
+        mp = Counter(dict(items1)) + Counter(dict(items2))
+        return sorted(mp.items())
+
+
+    """2364. Count Number of Bad Pairs (Medium)
+	You are given a 0-indexed integer array nums. A pair of indices (i, j) is a 
+	bad pair if i < j and j - i != nums[j] - nums[i]. Return the total number 
+	of bad pairs in nums.
+
+	Example 1:
+	Input: nums = [4,1,3,3]
+	Output: 5
+	Explanation: The pair (0, 1) is a bad pair since 1 - 0 != 1 - 4.
+	             The pair (0, 2) is a bad pair since 2 - 0 != 3 - 4, 2 != -1.
+	             The pair (0, 3) is a bad pair since 3 - 0 != 3 - 4, 3 != -1.
+	             The pair (1, 2) is a bad pair since 2 - 1 != 3 - 1, 1 != 2.
+	             The pair (2, 3) is a bad pair since 3 - 2 != 3 - 3, 1 != 0.
+	             There are a total of 5 bad pairs, so we return 5.
+	
+	Example 2:
+	Input: nums = [1,2,3,4,5]
+	Output: 0
+	Explanation: There are no bad pairs.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^9"""
+
+    def countBadPairs(self, nums: List[int]) -> int:
+        freq = Counter(i-x for i, x in enumerate(nums))
+        return sum(v*(len(nums)-v) for v in freq.values())//2
+
+
+    """2365. Task Scheduler II (Medium)
+	You are given a 0-indexed array of positive integers tasks, representing 
+	tasks that need to be completed in order, where tasks[i] represents the 
+	type of the ith task. You are also given a positive integer space, which 
+	represents the minimum number of days that must pass after the completion 
+	of a task before another task of the same type can be performed. Each day, 
+	until all tasks have been completed, you must either:
+	* Complete the next task from tasks, or
+	* Take a break.
+	Return the minimum number of days needed to complete all tasks.
+
+	Example 1:
+	Input: tasks = [1,2,1,2,3,1], space = 3
+	Output: 9
+	Explanation: One way to complete all tasks in 9 days is as follows:
+	             Day 1: Complete the 0th task.
+	             Day 2: Complete the 1st task.
+	             Day 3: Take a break.
+	             Day 4: Take a break.
+	             Day 5: Complete the 2nd task.
+	             Day 6: Complete the 3rd task.
+	             Day 7: Take a break.
+	             Day 8: Complete the 4th task.
+	             Day 9: Complete the 5th task.
+	             It can be shown that the tasks cannot be completed in less than 9 days.
+	
+	Example 2:
+	Input: tasks = [5,8,8,5], space = 2
+	Output: 6
+	Explanation: One way to complete all tasks in 6 days is as follows:
+	             Day 1: Complete the 0th task.
+	             Day 2: Complete the 1st task.
+	             Day 3: Take a break.
+	             Day 4: Take a break.
+	             Day 5: Complete the 2nd task.
+	             Day 6: Complete the 3rd task.
+	             It can be shown that the tasks cannot be completed in less than 6 days.
+
+	Constraints:
+	* 1 <= tasks.length <= 10^5
+	* 1 <= tasks[i] <= 10^9
+	* 1 <= space <= tasks.length"""
+
+    def taskSchedulerII(self, tasks: List[int], space: int) -> int:
+        ans = 0 
+        prev = defaultdict(lambda: -inf)
+        for t in tasks: ans = prev[t] = max(ans, prev[t]+space)+1
+        return ans 
+
+
+    """2366. Minimum Replacements to Sort the Array (Hard)
+	You are given a 0-indexed integer array nums. In one operation you can 
+	replace any element of the array with any two elements that sum to it.
+	For example, consider nums = [5,6,7]. In one operation, we can replace 
+	nums[1] with 2 and 4 and convert nums to [5,2,4,7]. Return the minimum 
+	number of operations to make an array that is sorted in non-decreasing 
+	order.
+
+	Example 1:
+	Input: nums = [3,9,3]
+	Output: 2
+	Explanation: Here are the steps to sort the array in non-decreasing order:
+	             - From [3,9,3], replace the 9 with 3 and 6 so the array 
+	               becomes [3,3,6,3]
+	             - From [3,3,6,3], replace the 6 with 3 and 3 so the array 
+	               becomes [3,3,3,3,3]
+	             There are 2 steps to sort the array in non-decreasing order. 
+	             Therefore, we return 2.
+
+	Example 2:
+	Input: nums = [1,2,3,4,5]
+	Output: 0
+	Explanation: The array is already in non-decreasing order. Therefore, we 
+	             return 0. 
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^9"""
+
+    def minimumReplacement(self, nums: List[int]) -> int:
+        ans = 0 
+        prev = 1_000_000_001
+        for x in reversed(nums): 
+            d = ceil(x/prev)
+            ans += d-1
+            prev = x//d
         return ans 
 
 
