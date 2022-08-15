@@ -62408,6 +62408,171 @@ class Trie:
         return max(dp)
 
 
+    """2373. Largest Local Values in a Matrix (Easy)
+	You are given an n x n integer matrix grid. Generate an integer matrix 
+	maxLocal of size (n - 2) x (n - 2) such that:
+	* maxLocal[i][j] is equal to the largest value of the 3 x 3 matrix in grid 
+	  centered around row i + 1 and column j + 1.
+	In other words, we want to find the largest value in every contiguous 3 x 3 
+	matrix in grid. Return the generated matrix.
+
+	Example 1:
+	Input: grid = [[9,9,8,1],[5,6,2,6],[8,2,6,4],[6,2,2,2]]
+	Output: [[9,9],[8,6]]
+	Explanation: The diagram above shows the original matrix and the generated 
+	             matrix. Notice that each value in the generated matrix 
+	             corresponds to the largest value of a contiguous 3 x 3 matrix 
+	             in grid.
+	
+	Example 2:
+	Input: grid = [[1,1,1,1,1],[1,1,1,1,1],[1,1,2,1,1],[1,1,1,1,1],[1,1,1,1,1]]
+	Output: [[2,2,2],[2,2,2],[2,2,2]]
+	Explanation: Notice that the 2 is contained within every contiguous 3 x 3 
+	             matrix in grid.
+
+	Constraints:
+	* n == grid.length == grid[i].length
+	* 3 <= n <= 100
+	* 1 <= grid[i][j] <= 100"""
+
+    def largestLocal(self, grid: List[List[int]]) -> List[List[int]]:
+        n = len(grid)
+        ans = [[0]*(n-2) for _ in range(n-2)]
+        for i in range(n-2): 
+            for j in range(n-2): 
+                ans[i][j] = max(grid[ii][jj] for ii in range(i, i+3) for jj in range(j, j+3))
+        return ans 
+
+
+    """2374. Node With Highest Edge Score (Medium)
+	You are given a directed graph with n nodes labeled from 0 to n - 1, where 
+	each node has exactly one outgoing edge. The graph is represented by a 
+	given 0-indexed integer array edges of length n, where edges[i] indicates 
+	that there is a directed edge from node i to node edges[i]. The edge score 
+	of a node i is defined as the sum of the labels of all the nodes that have 
+	an edge pointing to i. Return the node with the highest edge score. If 
+	multiple nodes have the same edge score, return the node with the smallest 
+	index.
+
+	Example 1:
+	Input: edges = [1,0,0,0,0,7,7,5]
+	Output: 7
+	Explanation: - The nodes 1, 2, 3 and 4 have an edge pointing to node 0. The 
+	               edge score of node 0 is 1 + 2 + 3 + 4 = 10.
+	             - The node 0 has an edge pointing to node 1. The edge score of 
+	               node 1 is 0.
+	             - The node 7 has an edge pointing to node 5. The edge score of 
+	               node 5 is 7.
+	             - The nodes 5 and 6 have an edge pointing to node 7. The edge 
+	               score of node 7 is 5 + 6 = 11.
+	             Node 7 has the highest edge score so return 7.
+	
+	Example 2:
+	Input: edges = [2,0,0,2]
+	Output: 0
+	Explanation: - The nodes 1 and 2 have an edge pointing to node 0. The edge 
+	               score of node 0 is 1 + 2 = 3.
+	             - The nodes 0 and 3 have an edge pointing to node 2. The edge 
+	               score of node 2 is 0 + 3 = 3.
+	             Nodes 0 and 2 both have an edge score of 3. Since node 0 has a 
+	             smaller index, we return 0.
+
+	Constraints:
+	* n == edges.length
+	* 2 <= n <= 10^5
+	* 0 <= edges[i] < n
+	* edges[i] != i"""
+
+    def edgeScore(self, edges: List[int]) -> int:
+        score = [0]*len(edges)
+        for i, x in enumerate(edges): score[x] += i
+        return score.index(max(score))
+
+
+    """2375. Construct Smallest Number From DI String (Medium)
+	You are given a 0-indexed string pattern of length n consisting of the 
+	characters 'I' meaning increasing and 'D' meaning decreasing. A 0-indexed 
+	string num of length n + 1 is created using the following conditions:
+	* num consists of the digits '1' to '9', where each digit is used at most 
+	  once.
+	* If pattern[i] == 'I', then num[i] < num[i + 1].
+	* If pattern[i] == 'D', then num[i] > num[i + 1].
+	Return the lexicographically smallest possible string num that meets the 
+	conditions.
+
+	Example 1:
+	Input: pattern = "IIIDIDDD"
+	Output: "123549876"
+	Explanation: At indices 0, 1, 2, and 4 we must have that num[i] < num[i+1].
+	             At indices 3, 5, 6, and 7 we must have that num[i] > num[i+1].
+	             Some possible values of num are "245639871", "135749862", and 
+	             "123849765". It can be proven that "123549876" is the smallest 
+	             possible num that meets the conditions. Note that "123414321" 
+	             is not possible because the digit '1' is used more than once.
+	
+	Example 2:
+	Input: pattern = "DDD"
+	Output: "4321"
+	Explanation: Some possible values of num are "9876", "7321", and "8742". It 
+	             can be proven that "4321" is the smallest possible num that 
+	             meets the conditions.
+
+	Constraints:
+	* 1 <= pattern.length <= 8
+	* pattern consists of only the letters 'I' and 'D'."""
+
+    def smallestNumber(self, pattern: str) -> str:
+        ans = []
+        stack = []
+        for i in range(len(pattern)+1): 
+            stack.append(str(i+1))
+            if i == len(pattern) or pattern[i] == 'I': 
+                while stack: ans.append(stack.pop())
+        return ''.join(ans) 
+
+
+    """2376. Count Special Integers (Hard)
+	We call a positive integer special if all of its digits are distinct. Given 
+	a positive integer n, return the number of special integers that belong to 
+	the interval [1, n].
+
+	Example 1:
+	Input: n = 20
+	Output: 19
+	Explanation: All the integers from 1 to 20, except 11, are special. Thus, 
+	             there are 19 special integers.
+	
+	Example 2:
+	Input: n = 5
+	Output: 5
+	Explanation: All the integers from 1 to 5 are special.
+
+	Example 3:
+	Input: n = 135
+	Output: 110
+	Explanation: There are 110 integers from 1 to 135 that are special. Some of 
+	             the integers that are not special are: 22, 114, and 131.
+	 
+	Constraints: 1 <= n <= 2 * 10^9"""
+
+    def countSpecialNumbers(self, n: int) -> int:
+        vals = list(map(int, str(n)))
+        
+        @cache
+        def fn(i, m, on): 
+            """Return count at index i with mask m and profile flag (True/False)"""
+            ans = 0 
+            if i == len(vals): return 1
+            for v in range(vals[i] if on else 10 ): 
+                if m & 1<<v == 0: 
+                    if m or v: ans += fn(i+1, m ^ 1<<v, False)
+                    else: ans += fn(i+1, m, False)
+            if on and m & 1<<vals[i] == 0: ans += fn(i+1, m ^ 1<<vals[i], True)
+            return ans 
+        
+        return fn(0, 0, True)-1
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
