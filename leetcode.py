@@ -59828,6 +59828,137 @@ class Trie:
         return ans 
 
 
+    """2283. Check if Number Has Equal Digit Count and Digit Value (Easy)
+	You are given a 0-indexed string num of length n consisting of digits. 
+	Return true if for every index i in the range 0 <= i < n, the digit i 
+	occurs num[i] times in num, otherwise return false.
+
+	Example 1:
+	Input: num = "1210"
+	Output: true
+	Explanation: num[0] = '1'. The digit 0 occurs once in num.
+	             num[1] = '2'. The digit 1 occurs twice in num.
+	             num[2] = '1'. The digit 2 occurs once in num.
+	             num[3] = '0'. The digit 3 occurs zero times in num.
+	             The condition holds true for every index in "1210", so return 
+	             true.
+	
+	Example 2:
+	Input: num = "030"
+	Output: false
+	Explanation: num[0] = '0'. The digit 0 should occur zero times, but 
+	                           actually occurs twice in num.
+	             num[1] = '3'. The digit 1 should occur three times, but 
+	                           actually occurs zero times in num.
+	             num[2] = '0'. The digit 2 occurs zero times in num.
+	             The indices 0 and 1 both violate the condition, so return 
+	             false.
+
+	Constraints:
+	* n == num.length
+	* 1 <= n <= 10
+	* num consists of digits."""
+
+    def digitCount(self, num: str) -> bool:
+        freq = Counter(map(int, str(num)))
+        return all(freq[i] == int(ch) for i, ch in enumerate(str(num)))
+
+
+    """2284. Sender With Largest Word Count (Medium)
+	You have a chat log of n messages. You are given two string arrays messages 
+	and senders where messages[i] is a message sent by senders[i]. A message is 
+	list of words that are separated by a single space with no leading or 
+	trailing spaces. The word count of a sender is the total number of words 
+	sent by the sender. Note that a sender may send more than one message. 
+	Return the sender with the largest word count. If there is more than one 
+	sender with the largest word count, return the one with the 
+	lexicographically largest name.
+
+	Note: Uppercase letters come before lowercase letters in lexicographical 
+	      order. "Alice" and "alice" are distinct.
+
+	Example 1:
+	Input: messages = ["Hello userTwooo","Hi userThree","Wonderful day Alice","Nice day userThree"], senders = ["Alice","userTwo","userThree","Alice"]
+	Output: "Alice"
+	Explanation: Alice sends a total of 2 + 3 = 5 words. userTwo sends a total 
+	             of 2 words. userThree sends a total of 3 words. Since Alice 
+	             has the largest word count, we return "Alice".
+	
+	Example 2:
+	Input: messages = ["How is leetcode for everyone","Leetcode is useful for practice"], senders = ["Bob","Charlie"]
+	Output: "Charlie"
+	Explanation: Bob sends a total of 5 words. Charlie sends a total of 5 words. 
+	             Since there is a tie for the largest word count, we return the 
+	             sender with the lexicographically larger name, Charlie.
+
+	Constraints:
+	* n == messages.length == senders.length
+	* 1 <= n <= 10^4
+	* 1 <= messages[i].length <= 100
+	* 1 <= senders[i].length <= 10
+	* messages[i] consists of uppercase and lowercase English letters and ' '.
+	* All the words in messages[i] are separated by a single space.
+	* messages[i] does not have leading or trailing spaces.
+	* senders[i] consists of uppercase and lowercase English letters only."""
+
+    def largestWordCount(self, messages: List[str], senders: List[str]) -> str:
+        freq = defaultdict(int)
+        for m, s in zip(messages, senders): freq[s] += len(m.split())
+        return max(freq, key=lambda x: (freq[x], x))
+
+
+    """2285. Maximum Total Importance of Roads (Medium)
+	You are given an integer n denoting the number of cities in a country. The 
+	cities are numbered from 0 to n - 1. You are also given a 2D integer array 
+	roads where roads[i] = [ai, bi] denotes that there exists a bidirectional 
+	road connecting cities ai and bi. You need to assign each city with an 
+	integer value from 1 to n, where each value can only be used once. The 
+	importance of a road is then defined as the sum of the values of the two 
+	cities it connects. Return the maximum total importance of all roads 
+	possible after assigning the values optimally.
+
+	Example 1:
+	Input: n = 5, roads = [[0,1],[1,2],[2,3],[0,2],[1,3],[2,4]]
+	Output: 43
+	Explanation: The figure above shows the country and the assigned values of 
+	             [2,4,5,3,1].
+	             - The road (0,1) has an importance of 2 + 4 = 6.
+	             - The road (1,2) has an importance of 4 + 5 = 9.
+	             - The road (2,3) has an importance of 5 + 3 = 8.
+	             - The road (0,2) has an importance of 2 + 5 = 7.
+	             - The road (1,3) has an importance of 4 + 3 = 7.
+	             - The road (2,4) has an importance of 5 + 1 = 6.
+	             The total importance of all roads is 
+	             6 + 9 + 8 + 7 + 7 + 6 = 43. It can be shown that we cannot 
+	             obtain a greater total importance than 43.
+	
+	Example 2:
+	Input: n = 5, roads = [[0,3],[2,4],[1,3]]
+	Output: 20
+	Explanation: The figure above shows the country and the assigned values of 
+	             [4,3,2,5,1].
+	             - The road (0,3) has an importance of 4 + 5 = 9.
+	             - The road (2,4) has an importance of 2 + 1 = 3.
+	             - The road (1,3) has an importance of 3 + 5 = 8.
+	             The total importance of all roads is 9 + 3 + 8 = 20. It can be 
+	             shown that we cannot obtain a greater total importance than 20.
+
+	Constraints:
+	* 2 <= n <= 5 * 10^4
+	* 1 <= roads.length <= 5 * 10^4
+	* roads[i].length == 2
+	* 0 <= ai, bi <= n - 1
+	* ai != bi
+	* There are no duplicate roads."""
+
+    def maximumImportance(self, n: int, roads: List[List[int]]) -> int:
+        degree = [0]*n
+        for u, v in roads: 
+            degree[u] += 1
+            degree[v] += 1
+        return sum(x*y for x, y in zip(range(1, n+1), sorted(degree)))
+
+
     """2287. Rearrange Characters to Make Target String (Easy)
 	You are given two 0-indexed strings s and target. You can take some letters 
 	from s and rearrange them to form new strings. Return the maximum number of 
@@ -67295,6 +67426,150 @@ class CountIntervals:
 
     def count(self) -> int:
         return self.cnt
+
+
+"""2286. Booking Concert Tickets in Groups (Hard)
+A concert hall has n rows numbered from 0 to n - 1, each with m seats, numbered 
+from 0 to m - 1. You need to design a ticketing system that can allocate seats 
+in the following cases:
+* If a group of k spectators can sit together in a row.
+* If every member of a group of k spectators can get a seat. They may or may 
+  not sit together.
+Note that the spectators are very picky. Hence:
+* They will book seats only if each member of their group can get a seat with 
+  row number less than or equal to maxRow. maxRow can vary from group to group.
+* In case there are multiple rows to choose from, the row with the smallest 
+  number is chosen. If there are multiple seats to choose in the same row, the 
+  seat with the smallest number is chosen.
+Implement the BookMyShow class:
+* BookMyShow(int n, int m) Initializes the object with n as number of rows and 
+  m as number of seats per row.
+* int[] gather(int k, int maxRow) Returns an array of length 2 denoting the 
+  row and seat number (respectively) of the first seat being allocated to the k 
+  members of the group, who must sit together. In other words, it returns the 
+  smallest possible r and c such that all [c, c + k - 1] seats are valid and 
+  empty in row r, and r <= maxRow. Returns [] in case it is not possible to 
+  allocate seats to the group.
+* boolean scatter(int k, int maxRow) Returns true if all k members of the group 
+  can be allocated seats in rows 0 to maxRow, who may or may not sit together. 
+  If the seats can be allocated, it allocates k seats to the group with the 
+  smallest row numbers, and the smallest possible seat numbers in each row. 
+  Otherwise, returns false.
+
+Example 1:
+Input: ["BookMyShow", "gather", "gather", "scatter", "scatter"]
+       [[2, 5], [4, 0], [2, 0], [5, 1], [5, 1]]
+Output: [null, [0, 0], [], true, false]
+Explanation
+BookMyShow bms = new BookMyShow(2, 5); // There are 2 rows with 5 seats each 
+bms.gather(4, 0); // return [0, 0]
+                  // The group books seats [0, 3] of row 0. 
+bms.gather(2, 0); // return []
+                  // There is only 1 seat left in row 0,
+                  // so it is not possible to book 2 consecutive seats. 
+bms.scatter(5, 1); // return True
+                   // The group books seat 4 of row 0 and seats [0, 3] of row 1. 
+bms.scatter(5, 1); // return False
+                   // There is only one seat left in the hall.
+ 
+Constraints:
+* 1 <= n <= 5 * 10^4
+* 1 <= m, k <= 10^9
+* 0 <= maxRow <= n - 1
+* At most 5 * 10^4 calls in total will be made to gather and scatter."""
+
+class SegTree: 
+
+    def __init__(self, arr: List[int]): 
+        """Build the segmentation tree."""
+        self.n = n = len(arr)
+        self.mtree = [0]*(4*n) # for max 
+        self.stree = [0]*(4*n) # for sum 
+        self._build(arr, 0, 0, n)
+
+    def _build(self, arr: List[int], k: int, lo: int, hi: int) -> None: 
+        """Build segment tree from array."""
+        if lo+1 == hi: 
+            self.mtree[k] = self.stree[k] = arr[lo]
+            return 
+        mid = lo + hi >> 1
+        self._build(arr, 2*k+1, lo, mid)
+        self._build(arr, 2*k+2, mid, hi)
+        self.mtree[k] = max(self.mtree[2*k+1], self.mtree[2*k+2])
+        self.stree[k] = self.stree[2*k+1] + self.stree[2*k+2]
+
+    def update(self, i: int, delta: int, k: int = 0, lo: int = 0, hi: int = 0) -> None:
+        """Update segment tree when array value at i is incresed by delta."""
+        if lo+1 == hi: # leaf node
+            self.mtree[k] += delta
+            self.stree[k] += delta
+            return 
+        mid = lo + hi >> 1
+        if i < mid: self.update(i, delta, 2*k+1, lo, mid) 
+        else: self.update(i, delta, 2*k+2, mid, hi)
+        self.mtree[k] = max(self.mtree[2*k+1], self.mtree[2*k+2])
+        self.stree[k] = self.stree[2*k+1] + self.stree[2*k+2]
+
+    def query_max(self, qlo: int, qhi: int, k, lo, hi, val) -> int: 
+        """Query max value from qlo (inclusive) and qhi (exclusive)."""
+        if qhi <= lo or  hi <= qlo: return -1
+        if qlo <= lo and hi <= qhi: 
+            if self.mtree[k] < val: return -1 
+            while lo+1 < hi: 
+                mid = lo + hi >> 1
+                if self.mtree[2*k+1] >= val: 
+                    k = 2*k+1
+                    hi = mid
+                else: 
+                    k = 2*k+2
+                    lo = mid
+            return lo
+        mid = lo + hi >> 1
+        ans = self.query_max(qlo, qhi, 2*k+1, lo, mid, val)
+        if ans != -1: return ans 
+        return self.query_max(qlo, qhi, 2*k+2, mid, hi, val)
+    
+    def query_sum(self, qlo: int, qhi: int, k: int = 0, lo: int = 0, hi: int = 0, val = 0) -> int: 
+        """Query sum value from qlo (inclusive) and qhi (exclusive)."""
+        if qhi <= lo or  hi <= qlo: return 0
+        if qlo <= lo and hi <= qhi: return self.stree[k]
+        mid = lo + hi >> 1
+        return self.query_sum(qlo, qhi, 2*k+1, lo, mid) + self.query_sum(qlo, qhi, 2*k+2, mid, hi)
+
+
+class BookMyShow:
+
+    def __init__(self, n: int, m: int):
+        self.i = 0 
+        self.n = n
+        self.m = m
+        self.seats = [m]*n
+        self.tree = SegTree(self.seats)
+        
+    def gather(self, k: int, maxRow: int) -> List[int]:
+        lo = self.tree.query_max(self.i, maxRow+1, 0, 0, self.n, k)
+        if lo == -1: return []
+        ans = [lo, self.m - self.seats[lo]]
+        self.seats[lo] -= k 
+        self.tree.update(lo, -k, 0, 0, self.n)
+        if lo == self.i and self.seats[lo] == 0: self.i += 1
+        return ans 
+
+    def scatter(self, k: int, maxRow: int) -> bool:
+        avail = self.tree.query_sum(self.i, maxRow+1, 0, 0, self.n)
+        if avail < k: return False 
+        lo, hi = self.i, maxRow
+        while lo < hi: 
+            mid = lo + hi >> 1
+            y = self.tree.query_sum(self.i, mid+1, 0, 0, self.n)
+            if y < k: lo = mid + 1
+            else: hi = mid 
+        k -= self.tree.query_sum(self.i, lo, 0, 0, self.n)
+        self.seats[lo] -= k 
+        self.tree.update(lo, -k, 0, 0, self.n)
+        self.i = lo
+        if not self.seats[lo]: self.i += 1
+        return True 
 
 
 """2296. Design a Text Editor (Hard)
