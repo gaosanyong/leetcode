@@ -49721,7 +49721,7 @@ class Trie:
         total = sum(nums)
         prefix = 0
         for i, x in enumerate(nums): 
-            if 2*prefix == total - x: return i
+            if prefix == total - preifx - x: return i
             prefix += x
         return -1
 
