@@ -17220,6 +17220,52 @@ class Solution:
         return board 
 
 
+    """724. Find Pivot Index (Easy)
+	Given an array of integers nums, calculate the pivot index of this array. 
+	The pivot index is the index where the sum of all the numbers strictly to 
+	the left of the index is equal to the sum of all the numbers strictly to 
+	the index's right. If the index is on the left edge of the array, then the 
+	left sum is 0 because there are no elements to the left. This also applies 
+	to the right edge of the array. Return the leftmost pivot index. If no such 
+	index exists, return -1.
+
+	Example 1:
+	Input: nums = [1,7,3,6,5,6]
+	Output: 3
+	Explanation: The pivot index is 3. 
+	             Left sum = nums[0] + nums[1] + nums[2] = 1 + 7 + 3 = 11
+	             Right sum = nums[4] + nums[5] = 5 + 6 = 11
+	
+	Example 2:
+	Input: nums = [1,2,3]
+	Output: -1
+	Explanation: There is no index that satisfies the conditions in the problem 
+	             statement.
+	
+	Example 3:
+	Input: nums = [2,1,-1]
+	Output: 0
+	Explanation: The pivot index is 0.
+	             Left sum = 0 (no elements to the left of index 0)
+	             Right sum = nums[1] + nums[2] = 1 + -1 = 0
+
+	Constraints:
+	* 1 <= nums.length <= 10^4
+	* -1000 <= nums[i] <= 1000
+	 
+
+	Note: This question is the same as 1991: 
+	      https://leetcode.com/problems/find-the-middle-index-in-array/"""
+
+    def pivotIndex(self, nums: List[int]) -> int:
+        total = sum(nums)
+        prefix = 0
+        for i, x in enumerate(nums): 
+            if prefix == total - prefix - x: return i 
+            prefix += x
+        return -1 
+
+
     """725. Split Linked List in Parts (Medium)
 	Given a (singly) linked list with head node root, write a function to split 
 	the linked list into k consecutive linked list "parts". The length of each 
@@ -33784,6 +33830,37 @@ class UnionFind:
             return ans 
         
         return fn(n, k)
+
+
+    """1480. Running Sum of 1d Array (Easy)
+	Given an array nums. We define a running sum of an array as 
+	runningSum[i] = sum(nums[0]…nums[i]). Return the running sum of nums.
+
+	Example 1:
+	Input: nums = [1,2,3,4]
+	Output: [1,3,6,10]
+	Explanation: Running sum is obtained as follows: [1, 1+2, 1+2+3, 1+2+3+4].
+
+	Example 2:
+	Input: nums = [1,1,1,1,1]
+	Output: [1,2,3,4,5]
+	Explanation: Running sum is obtained as follows: 
+	             [1, 1+1, 1+1+1, 1+1+1+1, 1+1+1+1+1].
+	
+	Example 3:
+	Input: nums = [3,1,2,10,1]
+	Output: [3,4,6,16,17]
+
+	Constraints:
+	* 1 <= nums.length <= 1000
+	* -10^6 <= nums[i] <= 10^6"""
+
+    def runningSum(self, nums: List[int]) -> List[int]:
+        prefix = []
+        for x in nums: 
+            if prefix: x += prefix[-1]
+            prefix.append(x)
+        return prefix
 
 
     """1485. Clone Binary Tree With Random Pointer (Medium)
@@ -67498,7 +67575,7 @@ class SegTree:
         self.mtree[k] = max(self.mtree[2*k+1], self.mtree[2*k+2])
         self.stree[k] = self.stree[2*k+1] + self.stree[2*k+2]
 
-    def update(self, i: int, delta: int, k: int = 0, lo: int = 0, hi: int = 0) -> None:
+    def update(self, i: int, delta: int, k: int, lo: int, hi: int) -> None:
         """Update segment tree when array value at i is incresed by delta."""
         if lo+1 == hi: # leaf node
             self.mtree[k] += delta
@@ -67510,7 +67587,7 @@ class SegTree:
         self.mtree[k] = max(self.mtree[2*k+1], self.mtree[2*k+2])
         self.stree[k] = self.stree[2*k+1] + self.stree[2*k+2]
 
-    def query_max(self, qlo: int, qhi: int, k, lo, hi, val) -> int: 
+    def query_max(self, qlo: int, qhi: int, k: int, lo: int, hi: int, val: int) -> int: 
         """Query max value from qlo (inclusive) and qhi (exclusive)."""
         if qhi <= lo or  hi <= qlo: return -1
         if qlo <= lo and hi <= qhi: 
@@ -67529,7 +67606,7 @@ class SegTree:
         if ans != -1: return ans 
         return self.query_max(qlo, qhi, 2*k+2, mid, hi, val)
     
-    def query_sum(self, qlo: int, qhi: int, k: int = 0, lo: int = 0, hi: int = 0, val = 0) -> int: 
+    def query_sum(self, qlo: int, qhi: int, k: int, lo: int, hi: int, val: int) -> int: 
         """Query sum value from qlo (inclusive) and qhi (exclusive)."""
         if qhi <= lo or  hi <= qlo: return 0
         if qlo <= lo and hi <= qhi: return self.stree[k]
