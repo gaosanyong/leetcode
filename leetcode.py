@@ -62781,6 +62781,200 @@ class Trie:
         return fn(0, 0, True)-1
 
 
+    """2379. Minimum Recolors to Get K Consecutive Black Blocks (Easy)
+	You are given a 0-indexed string blocks of length n, where blocks[i] is 
+	either 'W' or 'B', representing the color of the ith block. The characters 
+	'W' and 'B' denote the colors white and black, respectively. You are also 
+	given an integer k, which is the desired number of consecutive black blocks.
+	In one operation, you can recolor a white block such that it becomes a 
+	black block. Return the minimum number of operations needed such that there 
+	is at least one occurrence of k consecutive black blocks.
+
+	Example 1:
+	Input: blocks = "WBBWWBBWBW", k = 7
+	Output: 3
+	Explanation: One way to achieve 7 consecutive black blocks is to recolor 
+	             the 0th, 3rd, and 4th blocks so that blocks = "BBBBBBBWBW". 
+	             It can be shown that there is no way to achieve 7 consecutive 
+	             black blocks in less than 3 operations. Therefore, we return 3.
+	
+	Example 2:
+	Input: blocks = "WBWBBBW", k = 2
+	Output: 0
+	Explanation: No changes need to be made, since 2 consecutive black blocks 
+	             already exist. Therefore, we return 0.
+
+	Constraints:
+	* n == blocks.length
+	* 1 <= n <= 100
+	* blocks[i] is either 'W' or 'B'.
+	* 1 <= k <= n"""
+
+    def minimumRecolors(self, blocks: str, k: int) -> int:
+        prefix = list(accumulate(blocks, func=lambda s, ch: s + int(ch == 'W'), initial=0))
+        return min(prefix[i+k] - prefix[i] for i in range(len(blocks)-k+1))
+
+
+    """2380. Time Needed to Rearrange a Binary String (Medium)
+	You are given a binary string s. In one second, all occurrences of "01" are 
+	simultaneously replaced with "10". This process repeats until no 
+	occurrences of "01" exist. Return the number of seconds needed to complete 
+	this process.
+
+	Example 1:
+	Input: s = "0110101"
+	Output: 4
+	Explanation: After one second, s becomes "1011010".
+	             After another second, s becomes "1101100".
+	             After the third second, s becomes "1110100".
+	             After the fourth second, s becomes "1111000".
+	             No occurrence of "01" exists any longer, and the process 
+	             needed 4 seconds to complete, so we return 4.
+	
+	Example 2:
+	Input: s = "11100"
+	Output: 0
+	Explanation: No occurrence of "01" exists in s, and the processes needed 0 
+	             seconds to complete, so we return 0.
+
+	Constraints:
+	* 1 <= s.length <= 1000
+	* s[i] is either '0' or '1'."""
+
+    def secondsToRemoveOccurrences(self, s: str) -> int:
+        ans = prefix = prev = 0 
+        for i, ch in enumerate(s): 
+            if ch == '1': 
+                ans = max(prev, i - prefix)
+                prefix += 1
+                if ans: prev = ans+1
+        return ans 
+
+
+    """2381. Shifting Letters II (Medium)
+	You are given a string s of lowercase English letters and a 2D integer 
+	array shifts where shifts[i] = [starti, endi, directioni]. For every i, 
+	shift the characters in s from the index starti to the index endi 
+	(inclusive) forward if directioni = 1, or shift the characters backward if 
+	directioni = 0. Shifting a character forward means replacing it with the 
+	next letter in the alphabet (wrapping around so that 'z' becomes 'a'). 
+	Similarly, shifting a character backward means replacing it with the 
+	previous letter in the alphabet (wrapping around so that 'a' becomes 'z').
+	Return the final string after all such shifts to s are applied.
+
+	Example 1:
+	Input: s = "abc", shifts = [[0,1,0],[1,2,1],[0,2,1]]
+	Output: "ace"
+	Explanation: Firstly, shift the characters from index 0 to index 1 backward. 
+	             Now s = "zac". Secondly, shift the characters from index 1 to 
+	             index 2 forward. Now s = "zbd". Finally, shift the characters 
+	             from index 0 to index 2 forward. Now s = "ace".
+	
+	Example 2:
+	Input: s = "dztz", shifts = [[0,0,0],[1,1,1]]
+	Output: "catz"
+	Explanation: Firstly, shift the characters from index 0 to index 0 backward.
+	             Now s = "cztz". Finally, shift the characters from index 1 to 
+	             index 1 forward. Now s = "catz".
+
+	Constraints:
+	* 1 <= s.length, shifts.length <= 5 * 10^4
+	* shifts[i].length == 3
+	* 0 <= starti <= endi < s.length
+	* 0 <= directioni <= 1
+	* s consists of lowercase English letters."""
+
+    def shiftingLetters(self, s: str, shifts: List[List[int]]) -> str:
+        ops = []
+        for start, end, direction in shifts: 
+            direction = 2*direction-1
+            ops.append((start, direction))
+            ops.append((end+1, -direction))
+        ops.sort()
+        ans = []
+        prefix = ii = 0 
+        for i, ch in enumerate(s): 
+            while ii < len(ops) and ops[ii][0] == i: 
+                prefix += ops[ii][1]
+                ii += 1
+            ans.append(chr((ord(ch)-97+prefix)%26+97))
+        return ''.join(ans)
+
+
+    """2382. Maximum Segment Sum After Removals (Hard)
+	You are given two 0-indexed integer arrays nums and removeQueries, both of 
+	length n. For the ith query, the element in nums at the index 
+	removeQueries[i] is removed, splitting nums into different segments. A 
+	segment is a contiguous sequence of positive integers in nums. A segment 
+	sum is the sum of every element in a segment. Return an integer array 
+	answer, of length n, where answer[i] is the maximum segment sum after 
+	applying the ith removal. Note: The same index will not be removed more 
+	than once.
+
+	Example 1:
+	Input: nums = [1,2,5,6,1], removeQueries = [0,3,2,4,1]
+	Output: [14,7,2,2,0]
+	Explanation: Using 0 to indicate a removed element, the answer is as 
+	             follows:
+	             Query 1: Remove the 0th element, nums becomes [0,2,5,6,1] and 
+	                      the maximum segment sum is 14 for segment [2,5,6,1].
+	             Query 2: Remove the 3rd element, nums becomes [0,2,5,0,1] and 
+	                      the maximum segment sum is 7 for segment [2,5].
+	             Query 3: Remove the 2nd element, nums becomes [0,2,0,0,1] and 
+	                      the maximum segment sum is 2 for segment [2]. 
+	             Query 4: Remove the 4th element, nums becomes [0,2,0,0,0] and 
+	                      the maximum segment sum is 2 for segment [2]. 
+	             Query 5: Remove the 1st element, nums becomes [0,0,0,0,0] and 
+	                      the maximum segment sum is 0, since there are no 
+	                      segments.
+	             Finally, we return [14,7,2,2,0].
+	
+	Example 2:
+	Input: nums = [3,2,11,1], removeQueries = [3,2,1,0]
+	Output: [16,5,3,0]
+	Explanation: Using 0 to indicate a removed element, the answer is as 
+	             follows:
+	             Query 1: Remove the 3rd element, nums becomes [3,2,11,0] and 
+	                      the maximum segment sum is 16 for segment [3,2,11].
+	             Query 2: Remove the 2nd element, nums becomes [3,2,0,0] and 
+	                      the maximum segment sum is 5 for segment [3,2].
+	             Query 3: Remove the 1st element, nums becomes [3,0,0,0] and 
+	                      the maximum segment sum is 3 for segment [3].
+	             Query 4: Remove the 0th element, nums becomes [0,0,0,0] and 
+	                      the maximum segment sum is 0, since there are no 
+	                      segments.
+	             Finally, we return [16,5,3,0].
+
+	Constraints:
+	* n == nums.length == removeQueries.length
+	* 1 <= n <= 10^5
+	* 1 <= nums[i] <= 10^9
+	* 0 <= removeQueries[i] < n
+	* All the values of removeQueries are unique."""
+
+    def maximumSegmentSum(self, nums: List[int], removeQueries: List[int]) -> List[int]:
+        n = len(nums)
+        sl = SortedList([-1, n])
+        prefix = list(accumulate(nums, initial=0))
+        mp = {-1 : n}
+        pq = [(-prefix[-1], -1, n)]
+        
+        ans = []
+        for q in removeQueries: 
+            sl.add(q)
+            i = sl.bisect_left(q)
+            lo = sl[i-1]
+            hi = sl[i+1]
+            mp[lo] = q
+            mp[q] = hi 
+            heappush(pq, (-(prefix[q]-prefix[lo+1]), lo, q))
+            heappush(pq, (-(prefix[hi]-prefix[q+1]), q, hi))
+            
+            while mp[pq[0][1]] != pq[0][2]: heappop(pq)
+            ans.append(-pq[0][0])
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
