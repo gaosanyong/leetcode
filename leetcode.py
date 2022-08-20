@@ -62811,8 +62811,13 @@ class Trie:
 	* 1 <= k <= n"""
 
     def minimumRecolors(self, blocks: str, k: int) -> int:
-        prefix = list(accumulate(blocks, func=lambda s, ch: s + int(ch == 'W'), initial=0))
-        return min(prefix[i+k] - prefix[i] for i in range(len(blocks)-k+1))
+        ans = inf 
+        rsm = 0 
+        for i, ch in enumerate(blocks): 
+            if ch == 'W': rsm += 1
+            if i >= k and blocks[i-k] == 'W': rsm -= 1
+            if i >= k-1: ans = min(ans, rsm)
+        return ans
 
 
     """2380. Time Needed to Rearrange a Binary String (Medium)
