@@ -62980,6 +62980,202 @@ class Trie:
         return ans 
 
 
+    """2383. Minimum Hours of Training to Win a Competition (Easy)
+	You are entering a competition, and are given two positive integers 
+	initialEnergy and initialExperience denoting your initial energy and 
+	initial experience respectively. You are also given two 0-indexed integer 
+	arrays energy and experience, both of length n. You will face n opponents 
+	in order. The energy and experience of the ith opponent is denoted by 
+	energy[i] and experience[i] respectively. When you face an opponent, you 
+	need to have both strictly greater experience and energy to defeat them and 
+	move to the next opponent if available. Defeating the ith opponent 
+	increases your experience by experience[i], but decreases your energy by 
+	energy[i]. Before starting the competition, you can train for some number 
+	of hours. After each hour of training, you can either choose to increase 
+	your initial experience by one, or increase your initial energy by one.
+	Return the minimum number of training hours required to defeat all n 
+	opponents.
+
+	Example 1:
+	Input: initialEnergy = 5, initialExperience = 3, energy = [1,4,3,2], experience = [2,6,3,1]
+	Output: 8
+	Explanation: You can increase your energy to 11 after 6 hours of training, 
+	             and your experience to 5 after 2 hours of training. You face 
+	             the opponents in the following order:
+	             - You have more energy and experience than the 0th opponent so 
+	               you win. Your energy becomes 11 - 1 = 10, and your 
+	               experience becomes 5 + 2 = 7.
+	             - You have more energy and experience than the 1st opponent so 
+	               you win. Your energy becomes 10 - 4 = 6, and your experience 
+	               becomes 7 + 6 = 13.
+	             - You have more energy and experience than the 2nd opponent so 
+	               you win. Your energy becomes 6 - 3 = 3, and your experience 
+	               becomes 13 + 3 = 16.
+	             - You have more energy and experience than the 3rd opponent so 
+	               you win. Your energy becomes 3 - 2 = 1, and your experience 
+	               becomes 16 + 1 = 17.
+	             You did a total of 6 + 2 = 8 hours of training before the 
+	             competition, so we return 8. It can be proven that no smaller 
+	             answer exists.
+	
+	Example 2:
+	Input: initialEnergy = 2, initialExperience = 4, energy = [1], experience = [3]
+	Output: 0
+	Explanation: You do not need any additional energy or experience to win the 
+	             competition, so we return 0.
+
+	Constraints:
+	* n == energy.length == experience.length
+	* 1 <= n <= 100
+	* 1 <= initialEnergy, initialExperience, energy[i], experience[i] <= 100"""
+
+    def minNumberOfHours(self, initialEnergy: int, initialExperience: int, energy: List[int], experience: List[int]) -> int:
+        ans = 0 
+        for x, y in zip(energy, experience): 
+            if initialEnergy <= x: 
+                ans += x + 1 - initialEnergy
+                initialEnergy = x + 1
+            if initialExperience <= y: 
+                ans += y + 1 - initialExperience
+                initialExperience = y + 1
+            initialEnergy -= x
+            initialExperience += y 
+        return ans 
+
+
+    """2384. Largest Palindromic Number (Medium)
+	You are given a string num consisting of digits only. Return the largest 
+	palindromic integer (in the form of a string) that can be formed using 
+	digits taken from num. It should not contain leading zeroes.
+
+	Notes:
+	* You do not need to use all the digits of num, but you must use at least 
+	  one digit.
+	* The digits can be reordered.
+
+	Example 1:
+	Input: num = "444947137"
+	Output: "7449447"
+	Explanation: Use the digits "4449477" from "444947137" to form the 
+	             palindromic integer "7449447". It can be shown that "7449447" 
+	             is the largest palindromic integer that can be formed.
+	
+	Example 2:
+	Input: num = "00009"
+	Output: "9"
+	Explanation: It can be shown that "9" is the largest palindromic integer 
+	             that can be formed. Note that the integer returned should not 
+	             contain leading zeroes.
+
+	Constraints:
+	* 1 <= num.length <= 10^5
+	* num consists of digits."""
+
+    def largestPalindromic(self, num: str) -> str:
+        freq = Counter(num)
+        mid = next((ch for ch in "9876543210" if freq[ch]&1), '')
+        half = ''.join(ch*(freq[ch]//2) for ch in "0123456789")
+        return (half[::-1] + mid + half).strip('0') or '0'
+
+
+    """2385. Amount of Time for Binary Tree to Be Infected (Medium)
+	You are given the root of a binary tree with unique values, and an integer 
+	start. At minute 0, an infection starts from the node with value start.
+	Each minute, a node becomes infected if:
+	* The node is currently uninfected.
+	* The node is adjacent to an infected node.
+	Return the number of minutes needed for the entire tree to be infected.
+
+	Example 1:
+	Input: root = [1,5,3,null,4,10,6,9,2], start = 3
+	Output: 4
+	Explanation: The following nodes are infected during:
+	             - Minute 0: Node 3
+	             - Minute 1: Nodes 1, 10 and 6
+	             - Minute 2: Node 5
+	             - Minute 3: Node 4
+	             - Minute 4: Nodes 9 and 2
+	             It takes 4 minutes for the whole tree to be infected so we 
+	             return 4.
+	
+	Example 2:
+	Input: root = [1], start = 1
+	Output: 0
+	Explanation: At minute 0, the only node in the tree is infected so we 
+	             return 0.
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 10^5].
+	* 1 <= Node.val <= 105
+	* Each node has a unique value.
+	* A node with a value of start exists in the tree."""
+
+    def amountOfTime(self, root: Optional[TreeNode], start: int) -> int:
+        graph = defaultdict(list)
+        stack = [(root, None)]
+        while stack: 
+            n, p = stack.pop()
+            if p: 
+                graph[p.val].append(n.val)
+                graph[n.val].append(p.val)
+            if n.left: stack.append((n.left, n))
+            if n.right: stack.append((n.right, n))
+        ans = -1
+        seen = {start}
+        queue = deque([start])
+        while queue: 
+            for _ in range(len(queue)): 
+                u = queue.popleft()
+                for v in graph[u]: 
+                    if v not in seen: 
+                        seen.add(v)
+                        queue.append(v)
+            ans += 1
+        return ans 
+
+
+    """2386. Find the K-Sum of an Array (Hard)
+	You are given an integer array nums and a positive integer k. You can 
+	choose any subsequence of the array and sum all of its elements together.
+	We define the K-Sum of the array as the kth largest subsequence sum that 
+	can be obtained (not necessarily distinct). Return the K-Sum of the array.
+	A subsequence is an array that can be derived from another array by 
+	deleting some or no elements without changing the order of the remaining 
+	elements. Note that the empty subsequence is considered to have a sum of 0.
+
+	Example 1:
+	Input: nums = [2,4,-2], k = 5
+	Output: 2
+	Explanation: All the possible subsequence sums that we can obtain are the 
+	             following sorted in decreasing order:
+	             - 6, 4, 4, 2, 2, 0, 0, -2.
+	             The 5-Sum of the array is 2.
+	
+	Example 2:
+	Input: nums = [1,-2,3,4,-10,12], k = 16
+	Output: 10
+	Explanation: The 16-Sum of the array is 10.
+
+	Constraints:
+	* n == nums.length
+	* 1 <= n <= 10^5
+	* -10^9 <= nums[i] <= 10^9
+	* 1 <= k <= min(2000, 2n)"""
+
+    def kthLargestSum(self, nums: List[int], k: int) -> int:
+        m = sum(x for x in nums if x > 0)
+        pq = [(-m, 0)] 
+        vals = sorted(abs(x) for x in nums)
+        for _ in range(k): 
+            for j in range(len(nums)): 
+                if j == 0: 
+                    x, i = heappop(pq)
+                    if i < len(vals): 
+                        heappush(pq, (x+vals[i], i+1))
+                        if i: heappush(pq, (x-vals[i-1]+vals[i], i+1))
+        return -x
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
