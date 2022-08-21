@@ -63167,12 +63167,10 @@ class Trie:
         pq = [(-m, 0)] 
         vals = sorted(abs(x) for x in nums)
         for _ in range(k): 
-            for j in range(len(nums)): 
-                if j == 0: 
-                    x, i = heappop(pq)
-                    if i < len(vals): 
-                        heappush(pq, (x+vals[i], i+1))
-                        if i: heappush(pq, (x-vals[i-1]+vals[i], i+1))
+            x, i = heappop(pq)
+            if i < len(vals): 
+                heappush(pq, (x+vals[i], i+1))
+                if i: heappush(pq, (x-vals[i-1]+vals[i], i+1))
         return -x
 
 
