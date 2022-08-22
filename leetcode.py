@@ -63162,7 +63162,7 @@ class Trie:
 	* -10^9 <= nums[i] <= 10^9
 	* 1 <= k <= min(2000, 2n)"""
 
-    def kthLargestSum(self, nums: List[int], k: int) -> int:
+    def kSum(self, nums: List[int], k: int) -> int:
         m = sum(x for x in nums if x > 0)
         pq = [(-m, 0)] 
         vals = sorted(abs(x) for x in nums)
