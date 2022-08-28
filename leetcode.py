@@ -63243,6 +63243,228 @@ class Trie:
         return -x
 
 
+    """2389. Longest Subsequence With Limited Sum (Easy)
+	You are given an integer array nums of length n, and an integer array 
+	queries of length m. Return an array answer of length m where answer[i] is 
+	the maximum size of a subsequence that you can take from nums such that the 
+	sum of its elements is less than or equal to queries[i]. A subsequence is 
+	an array that can be derived from another array by deleting some or no 
+	elements without changing the order of the remaining elements.
+
+	Example 1:
+	Input: nums = [4,5,2,1], queries = [3,10,21]
+	Output: [2,3,4]
+	Explanation: We answer the queries as follows:
+	             - The subsequence [2,1] has a sum less than or equal to 3. It 
+	               can be proven that 2 is the maximum size of such a 
+	               subsequence, so answer[0] = 2.
+	             - The subsequence [4,5,1] has a sum less than or equal to 10. 
+	               It can be proven that 3 is the maximum size of such a 
+	               subsequence, so answer[1] = 3.
+	             - The subsequence [4,5,2,1] has a sum less than or equal to 21. 
+	               It can be proven that 4 is the maximum size of such a 
+	               subsequence, so answer[2] = 4.
+	
+	Example 2:
+	Input: nums = [2,3,4,5], queries = [1]
+	Output: [0]
+	Explanation: The empty subsequence is the only subsequence that has a sum 
+	             less than or equal to 1, so answer[0] = 0.
+
+	Constraints:
+	* n == nums.length
+	* m == queries.length
+	* 1 <= n, m <= 1000
+	* 1 <= nums[i], queries[i] <= 10^6"""
+
+    def answerQueries(self, nums: List[int], queries: List[int]) -> List[int]:
+        prefix = list(accumulate(sorted(nums)))
+        return [bisect_right(prefix, q) for q in queries]
+
+
+    """2390. Removing Stars From a String (Medium)
+	You are given a string s, which contains stars *. In one operation, you can:
+	* Choose a star in s.
+	* Remove the closest non-star character to its left, as well as remove the 
+	  star itself.
+	Return the string after all stars have been removed.
+
+	Note:
+	* The input will be generated such that the operation is always possible.
+	* It can be shown that the resulting string will always be unique.
+
+	Example 1:
+	Input: s = "leet**cod*e"
+	Output: "lecoe"
+	Explanation: Performing the removals from left to right:
+	             - The closest character to the 1st star is 't' in "leet**cod*e". 
+	               s becomes "lee*cod*e".
+	             - The closest character to the 2nd star is 'e' in "lee*cod*e". 
+	               s becomes "lecod*e".
+	             - The closest character to the 3rd star is 'd' in "lecod*e". s 
+	               becomes "lecoe".
+	             There are no more stars, so we return "lecoe".
+	
+	Example 2:
+	Input: s = "erase*****"
+	Output: ""
+	Explanation: The entire string is removed, so we return an empty string.
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s consists of lowercase English letters and stars *.
+	* The operation above can be performed on s."""
+
+    def removeStars(self, s: str) -> str:
+        stack = []
+        for ch in s: 
+            if ch == '*': stack.pop()
+            else: stack.append(ch)
+        return ''.join(stack)
+
+
+    """2391. Minimum Amount of Time to Collect Garbage (Medium)
+	You are given a 0-indexed array of strings garbage where garbage[i] 
+	represents the assortment of garbage at the ith house. garbage[i] consists 
+	only of the characters 'M', 'P' and 'G' representing one unit of metal, 
+	paper and glass garbage respectively. Picking up one unit of any type of 
+	garbage takes 1 minute. You are also given a 0-indexed integer array travel 
+	where travel[i] is the number of minutes needed to go from house i to house 
+	i + 1. There are three garbage trucks in the city, each responsible for 
+	picking up one type of garbage. Each garbage truck starts at house 0 and 
+	must visit each house in order; however, they do not need to visit every 
+	house. Only one garbage truck may be used at any given moment. While one 
+	truck is driving or picking up garbage, the other two trucks cannot do 
+	anything. Return the minimum number of minutes needed to pick up all the 
+	garbage.
+
+	Example 1:
+	Input: garbage = ["G","P","GP","GG"], travel = [2,4,3]
+	Output: 21
+	Explanation: The paper garbage truck:
+	             1. Travels from house 0 to house 1
+	             2. Collects the paper garbage at house 1
+	             3. Travels from house 1 to house 2
+	             4. Collects the paper garbage at house 2
+	             Altogether, it takes 8 minutes to pick up all the paper 
+	             garbage. The glass garbage truck:
+	             1. Collects the glass garbage at house 0
+	             2. Travels from house 0 to house 1
+	             3. Travels from house 1 to house 2
+	             4. Collects the glass garbage at house 2
+	             5. Travels from house 2 to house 3
+	             6. Collects the glass garbage at house 3
+	             Altogether, it takes 13 minutes to pick up all the glass 
+	             garbage. Since there is no metal garbage, we do not need to 
+	             consider the metal garbage truck. Therefore, it takes a total 
+	             of 8 + 13 = 21 minutes to collect all the garbage.
+	
+	Example 2:
+	Input: garbage = ["MMM","PGM","GP"], travel = [3,10]
+	Output: 37
+	Explanation: The metal garbage truck takes 7 minutes to pick up all the 
+	             metal garbage. The paper garbage truck takes 15 minutes to 
+	             pick up all the paper garbage. The glass garbage truck takes 
+	             15 minutes to pick up all the glass garbage. It takes a total 
+	             of 7 + 15 + 15 = 37 minutes to collect all the garbage.
+
+	Constraints:
+	* 2 <= garbage.length <= 10^5
+	* garbage[i] consists of only the letters 'M', 'P', and 'G'.
+	* 1 <= garbage[i].length <= 10
+	* travel.length == garbage.length - 1
+	* 1 <= travel[i] <= 100"""
+
+    def garbageCollection(self, garbage: List[str], travel: List[int]) -> int:
+        ans = sum(map(len, garbage))
+        prefix = list(accumulate(travel, initial=0))
+        for ch in "MPG": 
+            ii = 0 
+            for i, s in enumerate(garbage): 
+                if ch in s: ii = i 
+            ans += prefix[ii]
+        return ans 
+
+
+    """2392. Build a Matrix With Conditions (Hard)
+	You are given a positive integer k. You are also given:
+	* a 2D integer array rowConditions of size n where 
+	  rowConditions[i] = [abovei, belowi], and
+	* a 2D integer array colConditions of size m where 
+	  colConditions[i] = [lefti, righti].
+	The two arrays contain integers from 1 to k. You have to build a k x k 
+	matrix that contains each of the numbers from 1 to k exactly once. The 
+	remaining cells should have the value 0. The matrix should also satisfy the 
+	following conditions:
+	* The number abovei should appear in a row that is strictly above the row 
+	  at which the number belowi appears for all i from 0 to n - 1.
+	* The number lefti should appear in a column that is strictly left of the 
+	  column at which the number righti appears for all i from 0 to m - 1.
+	Return any matrix that satisfies the conditions. If no answer exists, 
+	return an empty matrix.
+
+	Example 1:
+	Input: k = 3, rowConditions = [[1,2],[3,2]], colConditions = [[2,1],[3,2]]
+	Output: [[3,0,0],[0,0,1],[0,2,0]]
+	Explanation: The diagram above shows a valid example of a matrix that 
+	             satisfies all the conditions. The row conditions are the 
+	             following:
+	             - Number 1 is in row 1, and number 2 is in row 2, so 1 is 
+	               above 2 in the matrix.
+	             - Number 3 is in row 0, and number 2 is in row 2, so 3 is 
+	               above 2 in the matrix.
+	             The column conditions are the following:
+	             - Number 2 is in column 1, and number 1 is in column 2, so 2 
+	               is left of 1 in the matrix.
+	             - Number 3 is in column 0, and number 2 is in column 1, so 3 
+	               is left of 2 in the matrix.
+	             Note that there may be multiple correct answers.
+	
+	Example 2:
+	Input: k = 3, rowConditions = [[1,2],[2,3],[3,1],[2,3]], colConditions = [[2,1]]
+	Output: []
+	Explanation: From the first two conditions, 3 has to be below 1 but the 
+	             third conditions needs 3 to be above 1 to be satisfied. No 
+	             matrix can satisfy all the conditions, so we return the empty matrix.
+
+	Constraints:
+	* 2 <= k <= 400
+	* 1 <= rowConditions.length, colConditions.length <= 10^4
+	* rowConditions[i].length == colConditions[i].length == 2
+	* 1 <= abovei, belowi, lefti, righti <= k
+	* abovei != belowi
+	* lefti != righti"""
+
+    def buildMatrix(self, k: int, rowConditions: List[List[int]], colConditions: List[List[int]]) -> List[List[int]]:
+        
+        def fn(cond): 
+            """Return topological sort"""
+            graph = [[] for _ in range(k)]
+            indeg = [0]*k
+            for u, v in cond: 
+                graph[u-1].append(v-1)
+                indeg[v-1] += 1
+            queue = deque(u for u, x in enumerate(indeg) if x == 0)
+            ans = []
+            while queue: 
+                u = queue.popleft()
+                ans.append(u+1)
+                for v in graph[u]: 
+                    indeg[v] -= 1
+                    if indeg[v] == 0: queue.append(v)
+            return ans 
+        
+        row = fn(rowConditions)
+        col = fn(colConditions)
+        
+        if len(row) < k or len(col) < k: return []
+        ans = [[0]*k for _ in range(k)]
+        row = {x : i for i, x in enumerate(row)}
+        col = {x : j for j, x in enumerate(col)}
+        for x in range(1, k+1): ans[row[x]][col[x]] = x
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
