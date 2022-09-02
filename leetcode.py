@@ -5909,15 +5909,7 @@ class Solution:
 	of an integer."""
 
     def largestNumber(self, nums: List[int]) -> str:
-        
-        def cmp(x, y):
-            """Compure two strings and return an integer based on outcome"""
-            if x + y > y + x: return 1
-            elif x + y == y + x: return 0
-            else: return -1
-                
-        nums = [str(x) for x in nums]
-        return "".join(sorted(nums, key=cmp_to_key(cmp), reverse=True)).lstrip("0") or "0"
+        return "".join(sorted(map(str, nums), key=cmp_to_key(lambda x, y: -(x+y>y+x)))).lstrip("0") or "0"
 
 
     """186. Reverse Words in a String II (Medium)
