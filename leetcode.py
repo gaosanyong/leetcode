@@ -63606,7 +63606,7 @@ class Trie:
             masks.append(mask)
         ans = 0 
         for x in range(1<<n): 
-            if x.bit_count() <= cols: 
+            if x.bit_count() == cols: 
                 ans = max(ans, sum(mask & x == mask for mask in masks))
         return ans 
 
