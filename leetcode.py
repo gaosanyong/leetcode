@@ -63504,6 +63504,159 @@ class Trie:
         return ans 
 
 
+    """2395. Find Subarrays With Equal Sum (Easy)
+	Given a 0-indexed integer array nums, determine whether there exist two 
+	subarrays of length 2 with equal sum. Note that the two subarrays must 
+	begin at different indices. Return true if these subarrays exist, and 
+	false otherwise. A subarray is a contiguous non-empty sequence of elements 
+	within an array.
+
+	Example 1:
+	Input: nums = [4,2,4]
+	Output: true
+	Explanation: The subarrays with elements [4,2] and [2,4] have the same sum 
+	             of 6.
+
+	Example 2:
+	Input: nums = [1,2,3,4,5]
+	Output: false
+	Explanation: No two subarrays of size 2 have the same sum.
+	
+	Example 3:
+	Input: nums = [0,0,0]
+	Output: true
+	Explanation: The subarrays [nums[0],nums[1]] and [nums[1],nums[2]] have the 
+	             same sum of 0. Note that even though the subarrays have the 
+	             same content, the two subarrays are considered different 
+	             because they are in different positions in the original array.
+
+	Constraints:
+	* 2 <= nums.length <= 1000
+	* -10^9 <= nums[i] <= 10^9"""
+
+    def findSubarrays(self, nums: List[int]) -> bool:
+        seen = set()
+        for i in range(1, len(nums)): 
+            sm = nums[i-1] + nums[i]
+            if sm in seen: return True 
+            seen.add(sm)
+        return False 
+
+
+    """2396. Strictly Palindromic Number (Medium)
+	An integer n is strictly palindromic if, for every base b between 2 and 
+	n - 2 (inclusive), the string representation of the integer n in base b is 
+	palindromic. Given an integer n, return true if n is strictly palindromic 
+	and false otherwise. A string is palindromic if it reads the same forward 
+	and backward.
+
+	Example 1:
+	Input: n = 9
+	Output: false
+	Explanation: In base 2: 9 = 1001 (base 2), which is palindromic. In base 3: 
+	             9 = 100 (base 3), which is not palindromic. Therefore, 9 is 
+	             not strictly palindromic so we return false. Note that in 
+	             bases 4, 5, 6, and 7, n = 9 is also not palindromic.
+	
+	Example 2:
+	Input: n = 4
+	Output: false
+	Explanation: We only consider base 2: 4 = 100 (base 2), which is not 
+	             palindromic. Therefore, we return false.
+	 
+	Constraints: 4 <= n <= 10^5"""
+
+    def isStrictlyPalindromic(self, n: int) -> bool:
+        return False
+
+
+    """2397. Maximum Rows Covered by Columns (Medium)
+	You are given a 0-indexed m x n binary matrix mat and an integer cols, 
+	which denotes the number of columns you must choose. A row is covered by a 
+	set of columns if each cell in the row that has a value of 1 also lies in 
+	one of the columns of the chosen set. Return the maximum number of rows 
+	that can be covered by a set of cols columns.
+
+	Example 1:
+	Input: mat = [[0,0,0],[1,0,1],[0,1,1],[0,0,1]], cols = 2
+	Output: 3
+	Explanation: As shown in the diagram above, one possible way of covering 3 
+	             rows is by selecting the 0th and 2nd columns. It can be shown 
+	             that no more than 3 rows can be covered, so we return 3.
+	
+	Example 2:
+	Input: mat = [[1],[0]], cols = 1
+	Output: 2
+	Explanation: Selecting the only column will result in both rows being 
+	             covered, since the entire matrix is selected. Therefore, we 
+	             return 2.
+
+	Constraints:
+	* m == mat.length
+	* n == mat[i].length
+	* 1 <= m, n <= 12
+	* mat[i][j] is either 0 or 1.
+	* 1 <= cols <= n"""
+
+    def maximumRows(self, mat: List[List[int]], cols: int) -> int:
+        m, n = len(mat), len(mat[0])
+        masks = []
+        for i in range(m): 
+            mask = reduce(xor, (1<<j for j in range(n) if mat[i][j]), 0)
+            masks.append(mask)
+        ans = 0 
+        for x in range(1<<n): 
+            if x.bit_count() <= cols: 
+                ans = max(ans, sum(mask & x == mask for mask in masks))
+        return ans 
+
+
+    """2398. Maximum Number of Robots Within Budget (Hard)
+	You have n robots. You are given two 0-indexed integer arrays, chargeTimes 
+	and runningCosts, both of length n. The ith robot costs chargeTimes[i] 
+	units to charge and costs runningCosts[i] units to run. You are also given 
+	an integer budget. The total cost of running k chosen robots is equal to 
+	max(chargeTimes) + k * sum(runningCosts), where max(chargeTimes) is the 
+	largest charge cost among the k robots and sum(runningCosts) is the sum of 
+	running costs among the k robots. Return the maximum number of consecutive 
+	robots you can run such that the total cost does not exceed budget.
+
+	Example 1:
+	Input: chargeTimes = [3,6,1,3,4], runningCosts = [2,1,3,4,5], budget = 25
+	Output: 3
+	Explanation: It is possible to run all individual and consecutive pairs of 
+	             robots within budget. To obtain answer 3, consider the first 3 
+	             robots. The total cost will be 
+	             max(3,6,1) + 3 * sum(2,1,3) = 6 + 3 * 6 = 24 which is less 
+	             than 25. It can be shown that it is not possible to run more 
+	             than 3 consecutive robots within budget, so we return 3.
+	
+	Example 2:
+	Input: chargeTimes = [11,12,19], runningCosts = [10,8,7], budget = 19
+	Output: 0
+	Explanation: No robot can be run that does not exceed the budget, so we 
+	             return 0.
+
+	Constraints:
+	* chargeTimes.length == runningCosts.length == n
+	* 1 <= n <= 5 * 10^4
+	* 1 <= chargeTimes[i], runningCosts[i] <= 10^5
+	* 1 <= budget <= 10^15"""
+
+    def maximumRobots(self, chargeTimes: List[int], runningCosts: List[int], budget: int) -> int:
+        ii = rsm = 0
+        qq = deque()
+        for i, (ct, rc) in enumerate(zip(chargeTimes, runningCosts)): 
+            rsm += rc 
+            while qq and qq[-1][0] <= ct: qq.pop()
+            qq.append((ct, i))
+            if chargeTimes[qq[0][1]] + (i - ii + 1) * rsm > budget: 
+                if qq[0][1] == ii: qq.popleft()
+                rsm -= runningCosts[ii]
+                ii += 1
+        return len(chargeTimes)-ii
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
