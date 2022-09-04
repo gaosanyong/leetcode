@@ -63657,6 +63657,198 @@ class Trie:
         return len(chargeTimes)-ii
 
 
+    """2399. Check Distances Between Same Letters (Easy)
+	You are given a 0-indexed string s consisting of only lowercase English 
+	letters, where each letter in s appears exactly twice. You are also given a 
+	0-indexed integer array distance of length 26. Each letter in the alphabet 
+	is numbered from 0 to 25 (i.e. 'a' -> 0, 'b' -> 1, 'c' -> 2, ... , 'z' -> 
+	25). In a well-spaced string, the number of letters between the two 
+	occurrences of the ith letter is distance[i]. If the ith letter does not 
+	appear in s, then distance[i] can be ignored. Return true if s is a well-
+	spaced string, otherwise return false.
+
+	Example 1:
+	Input: s = "abaccb", distance = [1,3,0,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+	Output: true
+	Explanation: - 'a' appears at indices 0 and 2 so it satisfies distance[0] = 1.
+	             - 'b' appears at indices 1 and 5 so it satisfies distance[1] = 3.
+	             - 'c' appears at indices 3 and 4 so it satisfies distance[2] = 0.
+	             Note that distance[3] = 5, but since 'd' does not appear in s, 
+	             it can be ignored. Return true because s is a well-spaced string.
+	
+	Example 2:
+	Input: s = "aa", distance = [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+	Output: false
+	Explanation: - 'a' appears at indices 0 and 1 so there are zero letters 
+	               between them.
+	             Because distance[0] = 1, s is not a well-spaced string.
+
+	Constraints:
+	* 2 <= s.length <= 52
+	* s consists only of lowercase English letters.
+	* Each letter appears in s exactly twice.
+	* distance.length == 26
+	* 0 <= distance[i] <= 50"""
+
+    def checkDistances(self, s: str, distance: List[int]) -> bool:
+        seen = {}
+        for i, ch in enumerate(s):
+            if ch in seen: 
+                if i - seen[ch] - 1 != distance[ord(ch)-97]: return False 
+            else: seen[ch] = i 
+        return True 
+
+
+    """2400. Number of Ways to Reach a Position After Exactly k Steps (Medium)
+	You are given two positive integers startPos and endPos. Initially, you are 
+	standing at position startPos on an infinite number line. With one step, 
+	you can move either one position to the left, or one position to the right.
+	Given a positive integer k, return the number of different ways to reach 
+	the position endPos starting from startPos, such that you perform exactly k 
+	steps. Since the answer may be very large, return it modulo 10^9 + 7. Two 
+	ways are considered different if the order of the steps made is not exactly 
+	the same. Note that the number line includes negative integers.
+
+	Example 1:
+	Input: startPos = 1, endPos = 2, k = 3
+	Output: 3
+	Explanation: We can reach position 2 from 1 in exactly 3 steps in three 
+	             ways:
+	             - 1 -> 2 -> 3 -> 2.
+	             - 1 -> 2 -> 1 -> 2.
+	             - 1 -> 0 -> 1 -> 2.
+	             It can be proven that no other way is possible, so we return 3.
+	
+	Example 2:
+	Input: startPos = 2, endPos = 5, k = 10
+	Output: 0
+	Explanation: It is impossible to reach position 5 from position 2 in 
+	             exactly 10 steps.
+
+	Constraints: 1 <= startPos, endPos, k <= 1000"""
+
+    def numberOfWays(self, startPos: int, endPos: int, k: int) -> int:
+        diff = abs(endPos - startPos)
+        if k < diff or (k-diff) & 1: return 0 
+        return comb(k, (k-diff)//2) % 1_000_000_007
+
+
+    """2401. Longest Nice Subarray (Medium)
+	You are given an array nums consisting of positive integers. We call a 
+	subarray of nums nice if the bitwise AND of every pair of elements that are 
+	in different positions in the subarray is equal to 0. Return the length of 
+	the longest nice subarray. A subarray is a contiguous part of an array. 
+	Note that subarrays of length 1 are always considered nice.
+
+	Example 1:
+	Input: nums = [1,3,8,48,10]
+	Output: 3
+	Explanation: The longest nice subarray is [3,8,48]. This subarray satisfies 
+	             the conditions:
+	             - 3 AND 8 = 0.
+	             - 3 AND 48 = 0.
+	             - 8 AND 48 = 0.
+	             It can be proven that no longer nice subarray can be obtained, 
+	             so we return 3.
+	
+	Example 2:
+	Input: nums = [3,1,5,11,13]
+	Output: 1
+	Explanation: The length of the longest nice subarray is 1. Any subarray of 
+	             length 1 can be chosen.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^9"""
+
+    def longestNiceSubarray(self, nums: List[int]) -> int:
+        ans = ii = mask = 0 
+        for i, x in enumerate(nums): 
+            while mask & x: 
+                mask ^= nums[ii]
+                ii += 1
+            mask ^= x
+            ans = max(ans, i - ii + 1)
+        return ans 
+
+
+    """2402. Meeting Rooms III (Hard)
+	You are given an integer n. There are n rooms numbered from 0 to n - 1. You 
+	are given a 2D integer array meetings where meetings[i] = [starti, endi] 
+	means that a meeting will be held during the half-closed time interval 
+	[starti, endi). All the values of starti are unique. Meetings are allocated 
+	to rooms in the following manner:
+	* Each meeting will take place in the unused room with the lowest number.
+	* If there are no available rooms, the meeting will be delayed until a room 
+	  becomes free. The delayed meeting should have the same duration as the 
+	  original meeting.
+	* When a room becomes unused, meetings that have an earlier original start 
+	  time should be given the room.
+	Return the number of the room that held the most meetings. If there are 
+	multiple rooms, return the room with the lowest number. A half-closed 
+	interval [a, b) is the interval between a and b including a and not 
+	including b.
+
+	Example 1:
+	Input: n = 2, meetings = [[0,10],[1,5],[2,7],[3,4]]
+	Output: 0
+	Explanation: - At time 0, both rooms are not being used. The first meeting 
+	               starts in room 0.
+	             - At time 1, only room 1 is not being used. The second meeting 
+	               starts in room 1.
+	             - At time 2, both rooms are being used. The third meeting is 
+	               delayed.
+	             - At time 3, both rooms are being used. The fourth meeting is 
+	               delayed.
+	             - At time 5, the meeting in room 1 finishes. The third meeting 
+	               starts in room 1 for the time period [5,10).
+	             - At time 10, the meetings in both rooms finish. The fourth 
+	               meeting starts in room 0 for the time period [10,11).
+	             Both rooms 0 and 1 held 2 meetings, so we return 0. 
+	
+	Example 2:
+	Input: n = 3, meetings = [[1,20],[2,10],[3,5],[4,9],[6,8]]
+	Output: 1
+	Explanation: - At time 1, all three rooms are not being used. The first 
+	               meeting starts in room 0.
+	             - At time 2, rooms 1 and 2 are not being used. The second 
+	               meeting starts in room 1.
+	             - At time 3, only room 2 is not being used. The third meeting 
+	               starts in room 2.
+	             - At time 4, all three rooms are being used. The fourth 
+	               meeting is delayed.
+	             - At time 5, the meeting in room 2 finishes. The fourth 
+	               meeting starts in room 2 for the time period [5,10).
+	             - At time 6, all three rooms are being used. The fifth meeting 
+	               is delayed.
+	             - At time 10, the meetings in rooms 1 and 2 finish. The fifth 
+	               meeting starts in room 1 for the time period [10,12).
+	             Room 0 held 1 meeting while rooms 1 and 2 each held 2 meetings, 
+	             so we return 1. 
+
+	Constraints:
+	* 1 <= n <= 100
+	* 1 <= meetings.length <= 10^5
+	* meetings[i].length == 2
+	* 0 <= starti < endi <= 5 * 10^5
+	* All the values of starti are unique."""
+
+    def mostBooked(self, n: int, meetings: List[List[int]]) -> int:
+        freq = [0]*n
+        free = list(range(n))
+        busy = []
+        for x, y in sorted(meetings): 
+            while busy and busy[0][0] <= x: heappush(free, heappop(busy)[1])
+            if free: 
+                room = heappop(free)
+                heappush(busy, (y, room))
+            else: 
+                t, room = heappop(busy)
+                heappush(busy, (t+y-x, room))
+            freq[room] += 1
+        return freq.index(max(freq))
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
