@@ -11684,6 +11684,64 @@ public:
     }
 
 
+    /*564. Find the Closest Palindrome (Hard)
+	Given a string n representing an integer, return the closest integer (not 
+	including itself), which is a palindrome. If there is a tie, return the 
+	smaller one. The closest is defined as the absolute difference minimized 
+	between two integers.
+
+	Example 1:
+	Input: n = "123"
+	Output: "121"
+
+	Example 2:
+	Input: n = "1"
+	Output: "0"
+	Explanation: 0 and 2 are the closest palindromes but we return the smallest 
+	             which is 0.
+
+	Constraints:
+	* 1 <= n.length <= 18
+	* n consists of only digits.
+	* n does not have leading zeros.
+	* n is representing an integer in the range [1, 10^18 - 1].*/
+
+    string nearestPalindromic(string n) {
+        int sz = n.size(); 
+        string half = n.substr(0, sz/2), rev = half; 
+        reverse(rev.begin(), rev.end()); 
+        string cand = half + (sz & 1 ? string(1, n[sz/2]) : "") + rev; 
+        
+        auto fn = [&](int carry) {
+            vector<int> digits; 
+            for (int i = 0; i < (sz+1)/2; ++i) digits.push_back(n[i] - '0'); 
+            for (int i = (sz-1)/2; i >= 0 && carry; --i) {
+                digits[i] += carry; 
+                carry = digits[i] < 0 ? -1 : digits[i] / 10; 
+                digits[i] = (10 + digits[i]) % 10; 
+            }
+            string half, rev; 
+            for (auto& x : digits) 
+                if (half.size() || x || carry) half.push_back(x + '0'); 
+            if (carry) half = string(1, carry+'0') + half; 
+            if (half.size() < digits.size()) return sz > 1 ? string(sz-1, '9') : "0"; 
+            if (half.size() > digits.size()) return string(1, '1') + string(sz-1, '0') + string(1, '1'); 
+            if (half.size() == 0) half = "0"; 
+            rev = half; 
+            if (sz & 1) rev.pop_back(); 
+            reverse(rev.begin(), rev.end()); 
+            return half + rev; 
+        }; 
+        
+        string large = fn(1), small = fn(-1); 
+        if (cand == n) 
+            return abs(stol(small) - stol(n)) <= abs(stol(large) - stol(n)) ? small : large; 
+        if (cand < n) 
+            return abs(stol(cand) - stol(n)) <= abs(stol(large) - stol(n)) ? cand : large; 
+            return abs(stol(small) - stol(n)) <= abs(stol(cand) - stol(n)) ? small : cand; 
+    }
+
+
     /*565. Array Nesting (Medium)
 	You are given an integer array nums of length n where nums is a permutation 
 	of the numbers in the range [0, n - 1]. You should build a set 

@@ -14530,6 +14530,53 @@ class Solution:
         return ans
 
 
+    """564. Find the Closest Palindrome (Hard)
+	Given a string n representing an integer, return the closest integer (not 
+	including itself), which is a palindrome. If there is a tie, return the 
+	smaller one. The closest is defined as the absolute difference minimized 
+	between two integers.
+
+	Example 1:
+	Input: n = "123"
+	Output: "121"
+
+	Example 2:
+	Input: n = "1"
+	Output: "0"
+	Explanation: 0 and 2 are the closest palindromes but we return the smallest 
+	             which is 0.
+
+	Constraints:
+	* 1 <= n.length <= 18
+	* n consists of only digits.
+	* n does not have leading zeros.
+	* n is representing an integer in the range [1, 10^18 - 1]."""
+
+    def nearestPalindromic(self, n: str) -> str:
+        sz = len(n)
+        cand = n[:sz//2] + (n[sz//2] if sz&1 else "") + n[0:sz//2][::-1]
+        
+        def fn(carry): 
+            digits = list(map(int, n))[:(sz+1)//2]
+            i = (sz-1)//2
+            while i >= 0 and carry: 
+                digits[i] += carry 
+                carry = digits[i] // 10 
+                digits[i] = (digits[i] + 10) % 10 
+                i -= 1
+            half = (str(carry)+''.join(map(str, digits))).lstrip('0')
+            if len(half) < len(digits): return '9'*(sz-1) or '0'
+            if len(half) > len(digits): return '1' + '0'*(sz-1) + '1'
+            half = half or '0'
+            if sz&1: return half + half[:-1:][::-1]
+            else: return half + half[::-1]
+            
+        large = fn(1)
+        small = fn(-1)
+        if cand == n: return min(small, large, key=lambda x: (abs(int(x)-int(n)), int(x)))
+        return min(cand, large, small, key=lambda x: (abs(int(x)-int(n)), int(x)))
+
+
     """565. Array Nesting (Medium)
 	A zero-indexed array A of length N contains all integers from 0 to N-1. 
 	Find and return the longest length of set S, where 
