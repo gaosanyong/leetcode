@@ -12541,6 +12541,33 @@ class Solution:
         return num ^ (1 << num.bit_length()) - 1
 
 
+    """479. Largest Palindrome Product (Hard)
+	Given an integer n, return the largest palindromic integer that can be 
+	represented as the product of two n-digits integers. Since the answer can 
+	be very large, return it modulo 1337.
+
+	Example 1:
+	Input: n = 2
+	Output: 987
+	Explanation: 99 x 91 = 9009, 9009 % 1337 = 987
+
+	Example 2:
+	Input: n = 1
+	Output: 9
+
+	Constraints: 1 <= n <= 8"""
+
+    def largestPalindrome(self, n: int) -> int:
+        if n == 1: return 9 # edge case 
+        for z in range(2, 10**n): 
+            left = 10**n - z
+            right = int(str(left)[::-1])
+            if z**2 >= 4*right: 
+                root1 = (z + sqrt(z**2 - 4*right))/2
+                root2 = (z - sqrt(z**2 - 4*right))/2
+                if root1.is_integer() or root2.is_integer(): return (10**n * left + right) % 1337 
+
+
     """481. Magical String (Medium)
 	A magical string S consists of only '1' and '2' and obeys the following 
 	rules:

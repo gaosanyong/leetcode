@@ -9802,6 +9802,37 @@ public:
     }
 
 
+    /*479. Largest Palindrome Product (Hard)
+	Given an integer n, return the largest palindromic integer that can be 
+	represented as the product of two n-digits integers. Since the answer can 
+	be very large, return it modulo 1337.
+
+	Example 1:
+	Input: n = 2
+	Output: 987
+	Explanation: 99 x 91 = 9009, 9009 % 1337 = 987
+
+	Example 2:
+	Input: n = 1
+	Output: 9
+
+	Constraints: 1 <= n <= 8*/
+
+    int largestPalindrome(int n) {
+        if (n == 1) return 9;
+        for (int z = 2; z < pow(10, n); ++z) {
+            int left = pow(10, n) - z, right = 0; 
+            for (int x = left; x; right = 10*right + x%10, x /= 10); 
+            if ((long) z*z >= 4*right) {
+                long term = z*z - 4*right, val = sqrt(term);
+                if (val * val == term && (((z+val) & 1) == 0 || ((z-val) & 1) == 0))
+                    return ((long)pow(10, n) * left + right) % 1337; 
+            }
+        }
+        return 0; 
+    }
+
+
     /*483. Smallest Good Base (Hard)
 	Given an integer n represented as a string, return the smallest good base 
 	of n. We call k >= 2 a good base of n, if all digits of n base k are 1's.
