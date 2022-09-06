@@ -17946,6 +17946,88 @@ class Solution:
         return ans 
 
 
+    """749. Contain Virus (Hard)
+	A virus is spreading rapidly, and your task is to quarantine the infected 
+	area by installing walls. The world is modeled as an m x n binary grid 
+	isInfected, where isInfected[i][j] == 0 represents uninfected cells, and 
+	isInfected[i][j] == 1 represents cells contaminated with the virus. A wall 
+	(and only one wall) can be installed between any two 4-directionally 
+	adjacent cells, on the shared boundary. Every night, the virus spreads to 
+	all neighboring cells in all four directions unless blocked by a wall. 
+	Resources are limited. Each day, you can install walls around only one 
+	region (i.e., the affected area (continuous block of infected cells) that 
+	threatens the most uninfected cells the following night). There will never 
+	be a tie. Return the number of walls used to quarantine all the infected 
+	regions. If the world will become fully infected, return the number of 
+	walls used.
+
+	Example 1:
+	Input: isInfected = [[0,1,0,0,0,0,0,1],[0,1,0,0,0,0,0,1],[0,0,0,0,0,0,0,1],[0,0,0,0,0,0,0,0]]
+	Output: 10
+	Explanation: There are 2 contaminated regions. On the first day, add 5 
+	             walls to quarantine the viral region on the left. On the 
+	             second day, add 5 walls to quarantine the viral region on the 
+	             right. The virus is fully contained.
+
+	Example 2:
+	Input: isInfected = [[1,1,1],[1,0,1],[1,1,1]]
+	Output: 4
+	Explanation: Even though there is only one cell saved, there are 4 walls 
+	             built. Notice that walls are only built on the shared boundary 
+	             of two different cells.
+	
+	Example 3:
+	Input: isInfected = [[1,1,1,0,0,0,0,0,0],[1,0,1,0,1,1,1,1,1],[1,1,1,0,0,0,0,0,0]]
+	Output: 13
+	Explanation: The region on the left only builds two new walls.
+
+	Constraints:
+	* m == isInfected.length
+	* n == isInfected[i].length
+	* 1 <= m, n <= 50
+	* isInfected[i][j] is either 0 or 1.
+	* There is always a contiguous viral region throughout the described 
+	  process that will infect strictly more uncontaminated squares in the next 
+	  round."""
+
+    def containVirus(self, isInfected: List[List[int]]) -> int:
+        m, n = len(isInfected), len(isInfected[0])
+        ans = 0 
+        while True: 
+            regions = []
+            fronts = []
+            walls = []
+            seen = set()
+            for i in range(m): 
+                for j in range(n): 
+                    if isInfected[i][j] == 1 and (i, j) not in seen: 
+                        seen.add((i, j))
+                        stack = [(i, j)]
+                        regions.append([(i, j)])
+                        fronts.append(set())
+                        walls.append(0)
+                        while stack: 
+                            r, c = stack.pop()
+                            for rr, cc in (r-1, c), (r, c-1), (r, c+1), (r+1, c): 
+                                if 0 <= rr < m and 0 <= cc < n: 
+                                    if isInfected[rr][cc] == 1 and (rr, cc) not in seen: 
+                                        seen.add((rr, cc))
+                                        stack.append((rr, cc))
+                                        regions[-1].append((rr, cc))
+                                    elif isInfected[rr][cc] == 0: 
+                                        fronts[-1].add((rr, cc))
+                                        walls[-1] += 1
+            if not regions: break
+            idx = fronts.index(max(fronts, key = len))
+            ans += walls[idx]
+            for i, region in enumerate(regions): 
+                if i == idx: 
+                    for r, c in region: isInfected[r][c] = -1 # mark as quaranteened 
+                else: 
+                    for r, c in fronts[i]: isInfected[r][c] = 1 # mark as infected 
+        return ans 
+
+
     """750. Number Of Corner Rectangles (Medium)
 	Given a grid where each entry is only 0 or 1, find the number of corner 
 	rectangles. A corner rectangle is 4 distinct 1s on the grid that form an 
