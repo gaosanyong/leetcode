@@ -8863,6 +8863,62 @@ public:
     }
 
 
+    /*420. Strong Password Checker (Hard)
+	A password is considered strong if the below conditions are all met:
+	* It has at least 6 characters and at most 20 characters.
+	* It contains at least one lowercase letter, at least one uppercase letter, 
+	  and at least one digit.
+	* It does not contain three repeating characters in a row (i.e., "...aaa..." 
+	  is weak, but "...aa...a..." is strong, assuming other conditions are met).
+	Given a string password, return the minimum number of steps required to 
+	make password strong. if password is already strong, return 0. In one step, 
+	you can:
+	* Insert one character to password,
+	* Delete one character from password, or
+	* Replace one character of password with another character.
+
+	Example 1:
+	Input: password = "a"
+	Output: 5
+
+	Example 2:
+	Input: password = "aA1"
+	Output: 3
+
+	Example 3:
+	Input: password = "1337C0d3"
+	Output: 0
+
+	Constraints:
+	* 1 <= password.length <= 50
+	* password consists of letters, digits, dot '.' or exclamation mark '!'.*/
+
+    int strongPasswordChecker(string password) {
+        int digit = 1, lower = 1, upper = 1; 
+        for (auto& ch : password) {
+            if ('0' <= ch && ch <= '9') digit = 0; 
+            else if ('a' <= ch && ch <= 'z') lower = 0; 
+            else if ('A' <= ch && ch <= 'Z') upper = 0; 
+        }
+        int missing = digit + lower + upper, reps = 0, one = 0, two = 0; 
+        for (int i = 2; i < password.size(); ++i) 
+            if (password[i-2] == password[i-1] && password[i-1] == password[i]) {
+                int sz = 3; 
+                for (; i+1 < password.size() && password[i] == password[i+1]; ++i, ++sz); 
+                reps += sz/3; 
+                if (sz % 3 == 0) ++one; 
+                else if (sz % 3 == 1) ++two; 
+            }
+        if (password.size() < 6) return max(missing, 6 - (int) password.size()); 
+        if (password.size() <= 20) return max(missing, reps); 
+        int dels = password.size() - 20; 
+        reps -= min(dels, one); 
+        reps -= min(max(0, dels-one), 2*two)/2; 
+        reps -= max(0, dels-one-2*two)/3; 
+        return dels + max(missing, reps); 
+    }
+
+
     /*421. Maximum XOR of Two Numbers in an Array (Medium)
 	Given an integer array nums, return the maximum result of nums[i] XOR 
 	nums[j], where 0 <= i <= j < n.

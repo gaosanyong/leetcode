@@ -11572,6 +11572,65 @@ class Solution:
                     ans += 1
         return ans 
 
+    
+    """420. Strong Password Checker (Hard)
+	A password is considered strong if the below conditions are all met:
+	* It has at least 6 characters and at most 20 characters.
+	* It contains at least one lowercase letter, at least one uppercase letter, 
+	  and at least one digit.
+	* It does not contain three repeating characters in a row (i.e., "...aaa..." 
+	  is weak, but "...aa...a..." is strong, assuming other conditions are met).
+	Given a string password, return the minimum number of steps required to 
+	make password strong. if password is already strong, return 0. In one step, 
+	you can:
+	* Insert one character to password,
+	* Delete one character from password, or
+	* Replace one character of password with another character.
+
+	Example 1:
+	Input: password = "a"
+	Output: 5
+
+	Example 2:
+	Input: password = "aA1"
+	Output: 3
+
+	Example 3:
+	Input: password = "1337C0d3"
+	Output: 0
+
+	Constraints:
+	* 1 <= password.length <= 50
+	* password consists of letters, digits, dot '.' or exclamation mark '!'."""
+
+    def strongPasswordChecker(self, password: str) -> int:
+        digit = lower = upper = 1
+        for ch in password: 
+            if ch.isdigit(): digit = 0 
+            elif ch.islower(): lower = 0
+            elif ch.isupper(): upper = 0 
+        missing = digit + lower + upper 
+        reps = one = two = 0
+        i = 2
+        while i < len(password):
+            if password[i-2] == password[i-1] == password[i]:
+                sz = 3
+                while i+1 < len(password) and password[i] == password[i+1]:
+                    sz += 1
+                    i += 1
+                reps += sz // 3
+                if sz % 3 == 0: one += 1
+                elif sz % 3 == 1: two += 1
+            i += 1
+        if len(password) < 6: return max(missing, 6 - len(password))
+        elif len(password) <= 20: return max(missing, reps)
+        else: 
+            dels = len(password) - 20
+            reps -= min(dels, one)
+            reps -= min(max(dels - one, 0), two * 2) // 2
+            reps -= max(dels - one - 2 * two, 0) // 3
+            return dels + max(missing, reps)
+
 
     """421. Maximum XOR of Two Numbers in an Array (Medium)
 	Given an integer array nums, return the maximum result of nums[i] XOR 
