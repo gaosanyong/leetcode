@@ -64254,6 +64254,179 @@ class Trie:
         return freq.index(max(freq))
 
 
+    """2404. Most Frequent Even Element (Easy)
+	Given an integer array nums, return the most frequent even element. If 
+	there is a tie, return the smallest one. If there is no such element, 
+	return -1.
+
+	Example 1:
+	Input: nums = [0,1,2,2,4,4,1]
+	Output: 2
+	Explanation: The even elements are 0, 2, and 4. Of these, 2 and 4 appear 
+	             the most. We return the smallest one, which is 2.
+	
+	Example 2:
+	Input: nums = [4,4,4,9,2,4]
+	Output: 4
+	Explanation: 4 is the even element appears the most.
+
+	Example 3:
+	Input: nums = [29,47,21,41,13,37,25,7]
+	Output: -1
+	Explanation: There is no even element.
+
+	Constraints:
+	* 1 <= nums.length <= 2000
+	* 0 <= nums[i] <= 10^5"""
+
+    def mostFrequentEven(self, nums: List[int]) -> int:
+        freq = Counter(x for x in nums if x&1 == 0)
+        return min(freq, key=lambda x: (-freq[x], x), default=-1)
+
+
+    """2405. Optimal Partition of String (Medium)
+	Given a string s, partition the string into one or more substrings such 
+	that the characters in each substring are unique. That is, no letter 
+	appears in a single substring more than once. Return the minimum number of 
+	substrings in such a partition. Note that each character should belong to 
+	exactly one substring in a partition.
+
+	Example 1:
+	Input: s = "abacaba"
+	Output: 4
+	Explanation: Two possible partitions are ("a","ba","cab","a") and 
+	             ("ab","a","ca","ba"). It can be shown that 4 is the minimum 
+	             number of substrings needed.
+	
+	Example 2:
+	Input: s = "ssssss"
+	Output: 6
+	Explanation: The only valid partition is ("s","s","s","s","s","s").
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s consists of only English lowercase letters."""
+
+    def partitionString(self, s: str) -> int:
+        ans = mask = 0 
+        for i, ch in enumerate(s):
+            if mask & 1 << ord(ch)-97: 
+                ans += 1
+                mask = 0 
+            mask ^= 1 << ord(ch)-97
+        return ans+1
+
+
+    """2406. Divide Intervals Into Minimum Number of Groups (Medium)
+	You are given a 2D integer array intervals where intervals[i] = [lefti, righti] 
+	represents the inclusive interval [lefti, righti]. You have to divide the 
+	intervals into one or more groups such that each interval is in exactly one 
+	group, and no two intervals that are in the same group intersect each other.
+	Return the minimum number of groups you need to make. Two intervals 
+	intersect if there is at least one common number between them. For example, 
+	the intervals [1, 5] and [5, 8] intersect.
+
+	Example 1:
+	Input: intervals = [[5,10],[6,8],[1,5],[2,3],[1,10]]
+	Output: 3
+	Explanation: We can divide the intervals into the following groups:
+	             - Group 1: [1, 5], [6, 8].
+	             - Group 2: [2, 3], [5, 10].
+	             - Group 3: [1, 10].
+	             It can be proven that it is not possible to divide the 
+	             intervals into fewer than 3 groups.
+	
+	Example 2:
+	Input: intervals = [[1,3],[5,6],[8,10],[11,13]]
+	Output: 1
+	Explanation: None of the intervals overlap, so we can put all of them in 
+	             one group.
+
+	Constraints:
+	* 1 <= intervals.length <= 10^5
+	* intervals[i].length == 2
+	* 1 <= lefti <= righti <= 10^6"""
+
+    def minGroups(self, intervals: List[List[int]]) -> int:
+        line = []
+        for x, y in intervals: 
+            line.append((x, 1))
+            line.append((y+1, 0))
+        ans = prefix = 0 
+        for x, k in sorted(line): 
+            if k: prefix += 1
+            else: prefix -= 1
+            ans = max(ans, prefix)
+        return ans 
+
+
+    """2407. Longest Increasing Subsequence II (Hard)
+	You are given an integer array nums and an integer k. Find the longest 
+	subsequence of nums that meets the following requirements:
+	* The subsequence is strictly increasing and
+	* The difference between adjacent elements in the subsequence is at most k.
+	Return the length of the longest subsequence that meets the requirements. A 
+	subsequence is an array that can be derived from another array by deleting 
+	some or no elements without changing the order of the remaining elements.
+
+	Example 1:
+	Input: nums = [4,2,1,4,3,4,5,8,15], k = 3
+	Output: 5
+	Explanation: The longest subsequence that meets the requirements is 
+	             [1,3,4,5,8]. The subsequence has a length of 5, so we return 5.
+	             Note that the subsequence [1,3,4,5,8,15] does not meet the 
+	             requirements because 15 - 8 = 7 is larger than 3.
+	
+	Example 2:
+	Input: nums = [7,4,5,1,8,12,4,7], k = 5
+	Output: 4
+	Explanation: The longest subsequence that meets the requirements is 
+	             [4,5,8,12]. The subsequence has a length of 4, so we return 4.
+	
+	Example 3:
+	Input: nums = [1,5], k = 1
+	Output: 1
+	Explanation: The longest subsequence that meets the requirements is [1]. 
+	             The subsequence has a length of 1, so we return 1.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i], k <= 10^5
+
+class SegTree: 
+
+    def __init__(self, arr: List[int]): 
+        self.n = n = len(arr)
+        self.tree = [0]*(4*n)
+
+    def update(self, i: int, val: int, k: int = 0, lo: int = 0, hi: int = 0) -> None:
+        if not hi: hi = self.n
+        if lo+1 == hi:
+            self.tree[k] = val
+            return 
+        mid = lo + hi >> 1
+        if i < mid: self.update(i, val, 2*k+1, lo, mid) 
+        else: self.update(i, val, 2*k+2, mid, hi)
+        self.tree[k] = max(self.tree[2*k+1], self.tree[2*k+2])
+
+    def query(self, qlo: int, qhi: int, k: int = 0, lo: int = 0, hi: int = 0) -> int: 
+        if not hi: hi = self.n
+        if qhi <= lo or  hi <= qlo: return -inf
+        if qlo <= lo and hi <= qhi: return self.tree[k]
+        mid = lo + hi >> 1
+        return max(self.query(qlo, qhi, 2*k+1, lo, mid), self.query(qlo, qhi, 2*k+2, mid, hi))"""
+
+    def lengthOfLIS(self, nums: List[int], k: int) -> int:
+        m = max(nums)
+        ans = 0 
+        tree = SegTree([0] * (m+1))
+        for x in nums: 
+            val = tree.query(x-k, x) + 1
+            ans = max(ans, val)
+            tree.update(x, val)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
