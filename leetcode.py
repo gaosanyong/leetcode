@@ -64396,32 +64396,40 @@ class Trie:
 class SegTree: 
 
     def __init__(self, arr: List[int]): 
-        self.n = n = len(arr)
-        self.tree = [0]*(4*n)
+        self.n = len(arr)
+        self.tree = [0] * (2*self.n)
+        # for i in range(2*self.n-1, 0, -1): 
+        #     if i >= self.n: self.tree[i] = arr[i - self.n]
+        #     else: self.tree[i] = max(self.tree[i<<1], self.tree[i<<1|1])
 
-    def update(self, i: int, val: int, k: int = 0, lo: int = 0, hi: int = 0) -> None:
-        if not hi: hi = self.n
-        if lo+1 == hi:
-            self.tree[k] = val
-            return 
-        mid = lo + hi >> 1
-        if i < mid: self.update(i, val, 2*k+1, lo, mid) 
-        else: self.update(i, val, 2*k+2, mid, hi)
-        self.tree[k] = max(self.tree[2*k+1], self.tree[2*k+2])
+    def query(self, lo: int, hi: int) -> int: 
+        ans = 0 
+        lo += self.n 
+        hi += self.n
+        while lo < hi: 
+            if lo & 1: 
+                ans = max(ans, self.tree[lo])
+                lo += 1
+            if hi & 1: 
+                hi -= 1
+                ans = max(ans, self.tree[hi])
+            lo >>= 1
+            hi >>= 1
+        return ans 
 
-    def query(self, qlo: int, qhi: int, k: int = 0, lo: int = 0, hi: int = 0) -> int: 
-        if not hi: hi = self.n
-        if qhi <= lo or  hi <= qlo: return -inf
-        if qlo <= lo and hi <= qhi: return self.tree[k]
-        mid = lo + hi >> 1
-        return max(self.query(qlo, qhi, 2*k+1, lo, mid), self.query(qlo, qhi, 2*k+2, mid, hi))"""
+    def update(self, i: int, val: int) -> None: 
+        i += self.n 
+        self.tree[i] = val
+        while i > 1: 
+            self.tree[i>>1] = max(self.tree[i], self.tree[i^1])
+            i >>= 1"""
 
     def lengthOfLIS(self, nums: List[int], k: int) -> int:
         m = max(nums)
         ans = 0 
         tree = SegTree([0] * (m+1))
         for x in nums: 
-            val = tree.query(x-k, x) + 1
+            val = tree.query(max(0, x-k), x) + 1
             ans = max(ans, val)
             tree.update(x, val)
         return ans 
