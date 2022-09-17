@@ -64435,6 +64435,183 @@ class SegTree:
         return ans 
 
 
+    """2409. Count Days Spent Together (Easy)
+	Alice and Bob are traveling to Rome for separate business meetings. You are 
+	given 4 strings arriveAlice, leaveAlice, arriveBob, and leaveBob. Alice 
+	will be in the city from the dates arriveAlice to leaveAlice (inclusive), 
+	while Bob will be in the city from the dates arriveBob to leaveBob 
+	(inclusive). Each will be a 5-character string in the format "MM-DD", 
+	corresponding to the month and day of the date. Return the total number of 
+	days that Alice and Bob are in Rome together. You can assume that all dates 
+	occur in the same calendar year, which is not a leap year. Note that the 
+	number of days per month can be represented as: 
+	[31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31].
+
+	Example 1:
+	Input: arriveAlice = "08-15", leaveAlice = "08-18", 
+	       arriveBob = "08-16", leaveBob = "08-19"
+	Output: 3
+	Explanation: Alice will be in Rome from August 15 to August 18. Bob will be 
+	             in Rome from August 16 to August 19. They are both in Rome 
+	             together on August 16th, 17th, and 18th, so the answer is 3.
+	
+	Example 2:
+	Input: arriveAlice = "10-01", leaveAlice = "10-31", 
+	       arriveBob = "11-01", leaveBob = "12-31"
+	Output: 0
+	Explanation: There is no day when Alice and Bob are in Rome together, so we return 0.
+
+	Constraints:
+	* All dates are provided in the format "MM-DD".
+	* Alice and Bob's arrival dates are earlier than or equal to their leaving 
+	  dates.
+	* The given dates are valid dates of a non-leap year."""
+
+    def countDaysTogether(self, arriveAlice: str, leaveAlice: str, arriveBob: str, leaveBob: str) -> int:
+        days = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+        
+        def fn(date): 
+            m, d = map(int, date.split('-'))
+            return sum(days[:m-1]) + d
+        
+        arrive = max(fn(arriveAlice), fn(arriveBob))
+        leave = min(fn(leaveAlice), fn(leaveBob))
+        return max(0, leave-arrive+1)
+
+
+    """2410. Maximum Matching of Players With Trainers (Medium)
+	You are given a 0-indexed integer array players, where players[i] 
+	represents the ability of the ith player. You are also given a 0-indexed 
+	integer array trainers, where trainers[j] represents the training capacity 
+	of the jth trainer. The ith player can match with the jth trainer if the 
+	player's ability is less than or equal to the trainer's training capacity. 
+	Additionally, the ith player can be matched with at most one trainer, and 
+	the jth trainer can be matched with at most one player. Return the maximum 
+	number of matchings between players and trainers that satisfy these 
+	conditions.
+
+	Example 1:
+	Input: players = [4,7,9], trainers = [8,2,5,8]
+	Output: 2
+	Explanation: One of the ways we can form two matchings is as follows:
+	             - players[0] can be matched with trainers[0] since 4 <= 8.
+	             - players[1] can be matched with trainers[3] since 7 <= 8.
+	             It can be proven that 2 is the maximum number of matchings 
+	             that can be formed.
+	
+	Example 2:
+	Input: players = [1,1,1], trainers = [10]
+	Output: 1
+	Explanation: The trainer can be matched with any of the 3 players. Each 
+	             player can only be matched with one trainer, so the maximum 
+	             answer is 1.
+
+	Constraints:
+	* 1 <= players.length, trainers.length <= 10^5
+	* 1 <= players[i], trainers[j] <= 10^9"""
+
+    def matchPlayersAndTrainers(self, players: List[int], trainers: List[int]) -> int:
+        trainers.sort()
+        ans = j = 0 
+        for i, p in enumerate(sorted(players)):
+            while j < len(trainers) and p > trainers[j]: j += 1
+            if j < len(trainers): ans += 1
+            j += 1
+        return ans 
+
+
+    """2411. Smallest Subarrays With Maximum Bitwise OR (Medium)
+	You are given a 0-indexed array nums of length n, consisting of non-
+	negative integers. For each index i from 0 to n - 1, you must determine the 
+	size of the minimum sized non-empty subarray of nums starting at i 
+	(inclusive) that has the maximum possible bitwise OR. In other words, let 
+	Bij be the bitwise OR of the subarray nums[i...j]. You need to find the 
+	smallest subarray starting at i, such that bitwise OR of this subarray is 
+	equal to max(Bik) where i <= k <= n - 1. The bitwise OR of an array is the 
+	bitwise OR of all the numbers in it. Return an integer array answer of size 
+	n where answer[i] is the length of the minimum sized subarray starting at i 
+	with maximum bitwise OR. A subarray is a contiguous non-empty sequence of 
+	elements within an array.
+
+	Example 1:
+	Input: nums = [1,0,2,1,3]
+	Output: [3,3,2,2,1]
+	Explanation: The maximum possible bitwise OR starting at any index is 3. 
+	             - Starting at index 0, the shortest subarray that yields it is 
+	               [1,0,2].
+	             - Starting at index 1, the shortest subarray that yields the 
+	               maximum bitwise OR is [0,2,1].
+	             - Starting at index 2, the shortest subarray that yields the 
+	               maximum bitwise OR is [2,1].
+	             - Starting at index 3, the shortest subarray that yields the 
+	               maximum bitwise OR is [1,3].
+	             - Starting at index 4, the shortest subarray that yields the 
+	               maximum bitwise OR is [3].
+	             Therefore, we return [3,3,2,2,1]. 
+	
+	Example 2:
+	Input: nums = [1,2]
+	Output: [2,1]
+	Explanation: Starting at index 0, the shortest subarray that yields the 
+	             maximum bitwise OR is of length 2. Starting at index 1, the 
+	             shortest subarray that yields the maximum bitwise OR is of 
+	             length 1. Therefore, we return [2,1].
+
+	Constraints:
+	* n == nums.length
+	* 1 <= n <= 10^5
+	* 0 <= nums[i] <= 10^9"""
+
+    def smallestSubarrays(self, nums: List[int]) -> List[int]:
+        ans = [0]*len(nums)
+        seen = [0]*30 
+        for i in range(len(nums)-1, -1, -1): 
+            for j in range(30): 
+                if nums[i] & 1<<j: seen[j] = i 
+            ans[i] = max(1, max(seen)-i+1)
+        return ans 
+
+
+    """2412. Minimum Money Required Before Transactions (Hard)
+	You are given a 0-indexed 2D integer array transactions, where 
+	transactions[i] = [costi, cashbacki]. The array describes transactions, 
+	where each transaction must be completed exactly once in some order. At any 
+	given moment, you have a certain amount of money. In order to complete 
+	transaction i, money >= costi must hold true. After performing a 
+	transaction, money becomes money - costi + cashbacki. Return the minimum 
+	amount of money required before any transaction so that all of the 
+	transactions can be completed regardless of the order of the transactions.
+
+	Example 1:
+	Input: transactions = [[2,1],[5,0],[4,2]]
+	Output: 10
+	Explanation: Starting with money = 10, the transactions can be performed in 
+	             any order. It can be shown that starting with money < 10 will 
+	             fail to complete all transactions in some order.
+	
+	Example 2:
+	Input: transactions = [[3,0],[0,3]]
+	Output: 3
+	Explanation: - If transactions are in the order [[3,0],[0,3]], the minimum 
+	               money required to complete the transactions is 3.
+	             - If transactions are in the order [[0,3],[3,0]], the minimum 
+	               money required to complete the transactions is 0.
+	             Thus, starting with money = 3, the transactions can be 
+	             performed in any order.
+
+	Constraints:
+	* 1 <= transactions.length <= 10^5
+	* transactions[i].length == 2
+	* 0 <= costi, cashbacki <= 10^9"""
+
+    def minimumMoney(self, transactions: List[List[int]]) -> int:
+        ans = val = 0 
+        for cost, cashback in transactions: 
+            ans += max(0, cost - cashback)
+            val = max(val, min(cost, cashback))
+        return ans + val 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
