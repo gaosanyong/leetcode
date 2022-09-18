@@ -64612,6 +64612,167 @@ class SegTree:
         return ans + val 
 
 
+    """2413. Smallest Even Multiple (Easy)
+	Given a positive integer n, return the smallest positive integer that is a 
+	multiple of both 2 and n.
+
+	Example 1:
+	Input: n = 5
+	Output: 10
+	Explanation: The smallest multiple of both 5 and 2 is 10.
+
+	Example 2:
+	Input: n = 6
+	Output: 6
+	Explanation: The smallest multiple of both 6 and 2 is 6. Note that a number 
+	             is a multiple of itself.
+
+	Constraints: 1 <= n <= 150"""
+
+    def smallestEvenMultiple(self, n: int) -> int:
+        return ((n&1)+1)*n
+
+
+    """2414. Length of the Longest Alphabetical Continuous Substring (Medium)
+	An alphabetical continuous string is a string consisting of consecutive 
+	letters in the alphabet. In other words, it is any substring of the string 
+	"abcdefghijklmnopqrstuvwxyz".
+	* For example, "abc" is an alphabetical continuous string, while "acb" and 
+	  "za" are not.
+	Given a string s consisting of lowercase letters only, return the length of 
+	the longest alphabetical continuous substring.
+
+	Example 1:
+	Input: s = "abacaba"
+	Output: 2
+	Explanation: There are 4 distinct continuous substrings: "a", "b", "c" and 
+	             "ab". "ab" is the longest continuous substring.
+	
+	Example 2:
+	Input: s = "abcde"
+	Output: 5
+	Explanation: "abcde" is the longest continuous substring.
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s consists of only English lowercase letters."""
+
+    def longestContinuousSubstring(self, s: str) -> int:
+        ans = cnt = 0 
+        for i, ch in enumerate(s): 
+            if i and ord(s[i-1])+1 != ord(ch): cnt = 0
+            cnt += 1
+            ans = max(ans, cnt)
+        return ans 
+
+
+    """2415. Reverse Odd Levels of Binary Tree (Medium)
+	Given the root of a perfect binary tree, reverse the node values at each 
+	odd level of the tree. For example, suppose the node values at level 3 are 
+	[2,1,3,4,7,11,29,18], then it should become [18,29,11,7,4,3,1,2]. Return 
+	the root of the reversed tree. A binary tree is perfect if all parent nodes 
+	have two children and all leaves are on the same level. The level of a node 
+	is the number of edges along the path between it and the root node.
+
+	Example 1:
+	Input: root = [2,3,5,8,13,21,34]
+	Output: [2,5,3,8,13,21,34]
+	Explanation: The tree has only one odd level. The nodes at level 1 are 3, 5 
+	             respectively, which are reversed and become 5, 3.
+	
+	Example 2:
+	Input: root = [7,13,11]
+	Output: [7,11,13]
+	Explanation: The nodes at level 1 are 13, 11, which are reversed and become 
+	             11, 13.
+	
+	Example 3:
+	Input: root = [0,1,2,0,0,0,0,1,1,1,1,2,2,2,2]
+	Output: [0,2,1,0,0,0,0,2,2,2,2,1,1,1,1]
+	Explanation: The odd levels have non-zero values. The nodes at level 1 were 
+	             1, 2, and are 2, 1 after the reversal. The nodes at level 3 
+	             were 1, 1, 1, 1, 2, 2, 2, 2, and are 2, 2, 2, 2, 1, 1, 1, 1 
+	             after the reversal.
+
+	Constraints:
+	* The number of nodes in the tree is in the range [1, 2^14].
+	* 0 <= Node.val <= 10^5
+	* root is a perfect binary tree."""
+
+    def reverseOddLevels(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        level = 0 
+        queue = deque([root])
+        while queue: 
+            if level&1: 
+                for i in range(len(queue)//2): 
+                    queue[i].val, queue[~i].val = queue[~i].val, queue[i].val
+            for _ in range(len(queue)): 
+                node = queue.popleft()
+                if node.left: queue.append(node.left)
+                if node.right: queue.append(node.right)
+            level ^= 1
+        return root 
+
+
+    """2416. Sum of Prefix Scores of Strings (Hard)
+	You are given an array words of size n consisting of non-empty strings. We 
+	define the score of a string word as the number of strings words[i] such 
+	that word is a prefix of words[i]. For example, if 
+	words = ["a", "ab", "abc", "cab"], then the score of "ab" is 2, since "ab" 
+	is a prefix of both "ab" and "abc". Return an array answer of size n where 
+	answer[i] is the sum of scores of every non-empty prefix of words[i]. Note 
+	that a string is considered as a prefix of itself.
+
+	Example 1:
+	Input: words = ["abc","ab","bc","b"]
+	Output: [5,4,3,2]
+	Explanation: The answer for each string is the following:
+	             - "abc" has 3 prefixes: "a", "ab", and "abc".
+	             - There are 2 strings with the prefix "a", 2 strings with the 
+	               prefix "ab", and 1 string with the prefix "abc".
+	             The total is answer[0] = 2 + 2 + 1 = 5.
+	             - "ab" has 2 prefixes: "a" and "ab".
+	             - There are 2 strings with the prefix "a", and 2 strings with 
+	               the prefix "ab".
+	             The total is answer[1] = 2 + 2 = 4.
+	             - "bc" has 2 prefixes: "b" and "bc".
+	             - There are 2 strings with the prefix "b", and 1 string with 
+	               the prefix "bc".
+	             The total is answer[2] = 2 + 1 = 3.
+	             - "b" has 1 prefix: "b".
+	             - There are 2 strings with the prefix "b".
+	             The total is answer[3] = 2.
+	
+	Example 2:
+	Input: words = ["abcd"]
+	Output: [4]
+	Explanation: "abcd" has 4 prefixes: "a", "ab", "abc", and "abcd". Each 
+	             prefix has a score of one, so the total is 
+	             answer[0] = 1 + 1 + 1 + 1 = 4.
+
+	Constraints:
+	* 1 <= words.length <= 1000
+	* 1 <= words[i].length <= 1000
+	* words[i] consists of lowercase English letters."""
+
+    def sumPrefixScores(self, words: List[str]) -> List[int]:
+        root = {}
+        for word in words: 
+            node = root 
+            for ch in word: 
+                node = node.setdefault(ch, {})
+                node['#'] = node.get('#', 0) + 1
+        ans = []
+        for word in words: 
+            val = 0
+            node = root
+            for ch in word: 
+                node = node[ch]
+                val += node['#']
+            ans.append(val) 
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
