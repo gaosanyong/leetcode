@@ -142,7 +142,7 @@ class Solution:
 	Input: "cbbd"
 	Output: "bb"""
 
-    def longestPalindrome(self, s: str) -> str:               
+    def longestPalindrome(self, s: str) -> str:
         """Manacher's algo"""
         ss = "#" + "#".join(s) + "#" # augmented string (even-length palindromes)
         n = len(ss)
@@ -64771,6 +64771,183 @@ class SegTree:
                 val += node['#']
             ans.append(val) 
         return ans 
+
+
+    """2418. Sort the People (Easy)
+	You are given an array of strings names, and an array heights that consists 
+	of distinct positive integers. Both arrays are of length n. For each index 
+	i, names[i] and heights[i] denote the name and height of the ith person.
+	Return names sorted in descending order by the people's heights.
+
+	Example 1:
+	Input: names = ["Mary","John","Emma"], heights = [180,165,170]
+	Output: ["Mary","Emma","John"]
+	Explanation: Mary is the tallest, followed by Emma and John.
+
+	Example 2:
+	Input: names = ["Alice","Bob","Bob"], heights = [155,185,150]
+	Output: ["Bob","Alice","Bob"]
+	Explanation: The first Bob is the tallest, followed by Alice and the second 
+	             Bob.
+
+	Constraints:
+	* n == names.length == heights.length
+	* 1 <= n <= 10^3
+	* 1 <= names[i].length <= 20
+	* 1 <= heights[i] <= 10^5
+	* names[i] consists of lower and upper case English letters.
+	* All the values of heights are distinct."""
+
+    def sortPeople(self, names: List[str], heights: List[int]) -> List[str]:
+        return list(zip(*sorted(zip(heights, names), reverse=True)))[1]
+
+
+    """2419. Longest Subarray With Maximum Bitwise AND (Medium)
+	You are given an integer array nums of size n. Consider a non-empty 
+	subarray from nums that has the maximum possible bitwise AND. In other 
+	words, let k be the maximum value of the bitwise AND of any subarray of 
+	nums. Then, only subarrays with a bitwise AND equal to k should be 
+	considered. Return the length of the longest such subarray. The bitwise AND 
+	of an array is the bitwise AND of all the numbers in it. A subarray is a 
+	contiguous sequence of elements within an array.
+
+	Example 1:
+	Input: nums = [1,2,3,3,2,2]
+	Output: 2
+	Explanation: The maximum possible bitwise AND of a subarray is 3. The 
+	             longest subarray with that value is [3,3], so we return 2.
+	
+	Example 2:
+	Input: nums = [1,2,3,4]
+	Output: 1
+	Explanation: The maximum possible bitwise AND of a subarray is 4. The 
+	             longest subarray with that value is [4], so we return 1.
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 1 <= nums[i] <= 10^6"""
+
+    def longestSubarray(self, nums: List[int]) -> int:
+        most = max(nums)
+        return max(len(list(grp)) for k, grp in groupby(nums) if k == most)
+
+
+    """2420. Find All Good Indices (Medium)
+	You are given a 0-indexed integer array nums of size n and a positive 
+	integer k. We call an index i in the range k <= i < n - k good if the 
+	following conditions are satisfied:
+	* The k elements that are just before the index i are in non-increasing 
+	  order.
+	* The k elements that are just after the index i are in non-decreasing 
+	  order.
+	Return an array of all good indices sorted in increasing order.
+
+	Example 1:
+	Input: nums = [2,1,1,1,3,4,1], k = 2
+	Output: [2,3]
+	Explanation: There are two good indices in the array:
+	             - Index 2. The subarray [2,1] is in non-increasing order, and 
+	               the subarray [1,3] is in non-decreasing order.
+	             - Index 3. The subarray [1,1] is in non-increasing order, and 
+	               the subarray [3,4] is in non-decreasing order.
+	             Note that the index 4 is not good because [4,1] is not non-
+	             decreasing.
+	
+	Example 2:
+	Input: nums = [2,1,1,2], k = 2
+	Output: []
+	Explanation: There are no good indices in this array.
+
+	Constraints:
+	* n == nums.length
+	* 3 <= n <= 10^5
+	* 1 <= nums[i] <= 10^6
+	* 1 <= k <= n / 2"""
+
+    def goodIndices(self, nums: List[int], k: int) -> List[int]:
+        prefix = [1]*len(nums)
+        for i in range(1, len(nums)): 
+            if nums[i-1] >= nums[i]: prefix[i] = prefix[i-1]+1
+        ans = []
+        suffix = 0
+        for i in reversed(range(k, len(nums))): 
+            if prefix[i-1] >= k and suffix >= k: ans.append(i)
+            if i+1 < len(nums) and nums[i] > nums[i+1]: suffix = 0
+            suffix += 1
+        return ans[::-1]
+
+
+    """2421. Number of Good Paths (Hard)
+	There is a tree (i.e. a connected, undirected graph with no cycles) 
+	consisting of n nodes numbered from 0 to n - 1 and exactly n - 1 edges. You 
+	are given a 0-indexed integer array vals of length n where vals[i] denotes 
+	the value of the ith node. You are also given a 2D integer array edges 
+	where edges[i] = [ai, bi] denotes that there exists an undirected edge 
+	connecting nodes ai and bi. A good path is a simple path that satisfies the 
+	following conditions:
+	* The starting node and the ending node have the same value.
+	* All nodes between the starting node and the ending node have values less 
+	  than or equal to the starting node (i.e. the starting node's value should 
+	  be the maximum value along the path).
+	Return the number of distinct good paths. Note that a path and its reverse 
+	are counted as the same path. For example, 0 -> 1 is considered to be the 
+	same as 1 -> 0. A single node is also considered as a valid path.
+
+	Example 1:
+	Input: vals = [1,3,2,1,3], edges = [[0,1],[0,2],[2,3],[2,4]]
+	Output: 6
+	Explanation: There are 5 good paths consisting of a single node. There is 1 
+	             additional good path: 1 -> 0 -> 2 -> 4. (The reverse path 
+	             4 -> 2 -> 0 -> 1 is treated as the same as 1 -> 0 -> 2 -> 4.)
+	             Note that 0 -> 2 -> 3 is not a good path because 
+	             vals[2] > vals[0].
+	
+	Example 2:
+	Input: vals = [1,1,2,2,3], edges = [[0,1],[1,2],[2,3],[2,4]]
+	Output: 7
+	Explanation: There are 5 good paths consisting of a single node. There are 
+	             2 additional good paths: 0 -> 1 and 2 -> 3.
+	
+	Example 3:
+	Input: vals = [1], edges = []
+	Output: 1
+	Explanation: The tree consists of only one node, so there is one good path.
+
+	Constraints:
+	* n == vals.length
+	* 1 <= n <= 3 * 10^4
+	* 0 <= vals[i] <= 10^5
+	* edges.length == n - 1
+	* edges[i].length == 2
+	* 0 <= ai, bi < n
+	* ai != bi
+	* edges represents a valid tree."""
+
+    def numberOfGoodPaths(self, vals: List[int], edges: List[List[int]]) -> int:
+        n = len(vals)
+        graph = [[] for _ in range(n)]
+        for u, v in edges: 
+            graph[u].append(v)
+            graph[v].append(u)
+            
+        parent = list(range(n))
+        def find(p): 
+            if parent[p] != p: parent[p] = find(parent[p])
+            return parent[p]
+        
+        mp = defaultdict(list)
+        for i, x in enumerate(vals): mp[x].append(i)
+        
+        ans = 0 
+        seen = set()
+        for k in sorted(mp): 
+            freq = Counter()
+            for u in mp[k]: 
+                seen.add(u)
+                for v in graph[u]: 
+                    if v in seen: parent[find(u)] = find(v)
+            ans += sum(v*(v-1)//2 for v in Counter(find(u) for u in mp[k]).values())
+        return ans+n
 
 
 """146. LRU Cache (Medium)
