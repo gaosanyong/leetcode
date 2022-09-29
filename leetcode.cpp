@@ -37349,6 +37349,51 @@ public:
     }
 
 
+    /*2031. Count Subarrays With More Ones Than Zeros (Medium)
+	You are given a binary array nums containing only the integers 0 and 1. 
+	Return the number of subarrays in nums that have more 1's than 0's. Since 
+	the answer may be very large, return it modulo 10^9 + 7. A subarray is a 
+	contiguous sequence of elements within an array.
+
+	Example 1:
+	Input: nums = [0,1,1,0,1]
+	Output: 9
+	Explanation: The subarrays of size 1 that have more ones than zeros are: 
+	             [1], [1], [1]. The subarrays of size 2 that have more ones 
+	             than zeros are: [1,1]. The subarrays of size 3 that have more 
+	             ones than zeros are: [0,1,1], [1,1,0], [1,0,1]. The subarrays 
+	             of size 4 that have more ones than zeros are: [1,1,0,1]. The 
+	             subarrays of size 5 that have more ones than zeros are: 
+	             [0,1,1,0,1].
+	
+	Example 2:
+	Input: nums = [0]
+	Output: 0
+	Explanation: No subarrays have more ones than zeros.
+	
+	Example 3:
+	Input: nums = [1]
+	Output: 1
+	Explanation: The subarrays of size 1 that have more ones than zeros are: [1].
+
+	Constraints:
+	* 1 <= nums.length <= 10^5
+	* 0 <= nums[i] <= 1*/
+
+    int subarraysWithMoreZerosThanOnes(vector<int>& nums) {
+        unordered_map<int, int> freq = {{0, 1}}; 
+        long ans = 0, dp = 0, prefix = 0; 
+        for (auto& x : nums) {
+            if (x) dp += freq[prefix]; 
+            else dp -= freq[prefix-1]; 
+            ans = (ans + dp) % 1'000'000'007; 
+            prefix += 2*x-1; 
+            ++freq[prefix]; 
+        }
+        return ans; 
+    }
+
+
     /*2032. Two Out of Three (Easy)
 	Given three integer arrays nums1, nums2, and nums3, return a distinct array 
 	containing all the values that are present in at least two out of the three 
