@@ -65070,6 +65070,162 @@ class SegTree:
         return ans+n
 
 
+    """2427. Number of Common Factors (Easy)
+	Given two positive integers a and b, return the number of common factors of 
+	a and b. An integer x is a common factor of a and b if x divides both a and 
+	b.
+
+	Example 1:
+	Input: a = 12, b = 6
+	Output: 4
+	Explanation: The common factors of 12 and 6 are 1, 2, 3, 6.
+
+	Example 2:
+	Input: a = 25, b = 30
+	Output: 2
+	Explanation: The common factors of 25 and 30 are 1, 5.
+
+	Constraints: 1 <= a, b <= 1000"""
+
+    def commonFactors(self, a: int, b: int) -> int:
+        return sum(a % x == b % x == 0 for x in range(1, 1001))
+
+
+    """2428. Maximum Sum of an Hourglass (Medium)
+	You are given an m x n integer matrix grid. We define an hourglass as a 
+	part of the matrix with the following form:
+    A B C
+      D
+    E F G
+	Return the maximum sum of the elements of an hourglass. Note that an 
+	hourglass cannot be rotated and must be entirely contained within the 
+	matrix.
+
+	Example 1:
+	Input: grid = [[6,2,1,3],[4,2,1,5],[9,2,8,7],[4,1,2,9]]
+	Output: 30
+	Explanation: The cells shown above represent the hourglass with the maximum 
+	             sum: 6 + 2 + 1 + 2 + 9 + 2 + 8 = 30.
+	
+	Example 2:
+	Input: grid = [[1,2,3],[4,5,6],[7,8,9]]
+	Output: 35
+	Explanation: There is only one hourglass in the matrix, with the sum: 
+	             1 + 2 + 3 + 5 + 7 + 8 + 9 = 35.
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 3 <= m, n <= 150
+	* 0 <= grid[i][j] <= 10^6"""
+
+    def maxSum(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        ans = 0 
+        for i in range(m-2): 
+            for j in range(n-2): 
+                val = grid[i][j] + grid[i][j+1] + grid[i][j+2] + grid[i+1][j+1] + grid[i+2][j] + grid[i+2][j+1] + grid[i+2][j+2]
+                ans = max(ans, val)
+        return ans 
+
+
+    """2429. Minimize XOR (Medium)
+	Given two positive integers num1 and num2, find the integer x such that:
+	* x has the same number of set bits as num2, and
+	* The value x XOR num1 is minimal.
+	Note that XOR is the bitwise XOR operation. Return the integer x. The test 
+	cases are generated such that x is uniquely determined. The number of set 
+	bits of an integer is the number of 1's in its binary representation.
+
+	Example 1:
+	Input: num1 = 3, num2 = 5
+	Output: 3
+	Explanation: The binary representations of num1 and num2 are 0011 and 0101, 
+	             respectively. The integer 3 has the same number of set bits as 
+	             num2, and the value 3 XOR 3 = 0 is minimal.
+	
+	Example 2:
+	Input: num1 = 1, num2 = 12
+	Output: 3
+	Explanation: The binary representations of num1 and num2 are 0001 and 1100, 
+	             respectively. The integer 3 has the same number of set bits as 
+	             num2, and the value 3 XOR 1 = 2 is minimal.
+
+	Constraints: 1 <= num1, num2 <= 10^9"""
+
+    def minimizeXor(self, num1: int, num2: int) -> int:
+        n = num2.bit_count()
+        ans = 0
+        for i in range(29, -1, -1): 
+            if n and num1 & 1<<i: 
+                ans ^= 1<<i
+                n -= 1
+        for i in range(30): 
+            if n and num1 & 1<<i == 0: 
+                ans ^= 1<<i
+                n -= 1
+        return ans 
+
+
+    """2430. Maximum Deletions on a String (Hard)
+	You are given a string s consisting of only lowercase English letters. In 
+	one operation, you can:
+	* Delete the entire string s, or
+	* Delete the first i letters of s if the first i letters of s are equal to 
+	  the following i letters in s, for any i in the range 
+	  1 <= i <= s.length / 2.
+	For example, if s = "ababc", then in one operation, you could delete the 
+	first two letters of s to get "abc", since the first two letters of s and 
+	the following two letters of s are both equal to "ab". Return the maximum 
+	number of operations needed to delete all of s.
+
+	Example 1:
+	Input: s = "abcabcdabc"
+	Output: 2
+	Explanation: - Delete the first 3 letters ("abc") since the next 3 letters 
+	               are equal. Now, s = "abcdabc".
+	             - Delete all the letters.
+	             We used 2 operations so return 2. It can be proven that 2 is 
+	             the maximum number of operations needed. Note that in the 
+	             second operation we cannot delete "abc" again because the next 
+	             occurrence of "abc" does not happen in the next 3 letters.
+	
+	Example 2:
+	Input: s = "aaabaab"
+	Output: 4
+	Explanation: - Delete the first letter ("a") since the next letter is equal. 
+	               Now, s = "aabaab".
+	             - Delete the first 3 letters ("aab") since the next 3 letters  
+	               are equal. Now, s = "aab".
+	             - Delete the first letter ("a") since the next letter is equal. 
+	               Now, s = "ab".
+	             - Delete all the letters.
+	             We used 4 operations so return 4. It can be proven that 4 is 
+	             the maximum number of operations needed.
+	
+	Example 3:
+	Input: s = "aaaaa"
+	Output: 5
+	Explanation: In each operation, we can delete the first letter of s.
+
+	Constraints:
+	* 1 <= s.length <= 4000
+	* s consists only of lowercase English letters."""
+
+    def deleteString(self, s: str) -> int:
+        if len(set(s)) == 1: return len(s) # edge case but essential to pass OJ
+        dp = [1]*len(s)
+        for i in range(len(s)-2, -1, -1): 
+            lsp = [0]
+            k = 0 
+            for j in range(i+1, len(s)): 
+                while k and s[i+k] != s[j]: k = lsp[k-1]
+                if s[i+k] == s[j]: k += 1
+                lsp.append(k)
+                if 2*k == j-i+1: dp[i] = max(dp[i], 1+dp[i+k])
+        return dp[0]
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
