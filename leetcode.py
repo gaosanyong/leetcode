@@ -65329,6 +65329,199 @@ class SegTree:
         return dp[0]
 
 
+    """2432. The Employee That Worked on the Longest Task (Easy)
+	There are n employees, each with a unique id from 0 to n - 1. You are given 
+	a 2D integer array logs where logs[i] = [idi, leaveTimei] where:
+	* idi is the id of the employee that worked on the ith task, and
+	* leaveTimei is the time at which the employee finished the ith task. All 
+	  the values leaveTimei are unique.
+	Note that the ith task starts the moment right after the (i - 1)th task 
+	ends, and the 0th task starts at time 0. Return the id of the employee that 
+	worked the task with the longest time. If there is a tie between two or 
+	more employees, return the smallest id among them.
+
+	Example 1:
+	Input: n = 10, logs = [[0,3],[2,5],[0,9],[1,15]]
+	Output: 1
+	Explanation: Task 0 started at 0 and ended at 3 with 3 units of times.
+	             Task 1 started at 3 and ended at 5 with 2 units of times.
+	             Task 2 started at 5 and ended at 9 with 4 units of times.
+	             Task 3 started at 9 and ended at 15 with 6 units of times.
+	             The task with the longest time is task 3 and the employee with 
+	             id 1 is the one that worked on it, so we return 1.
+	
+	Example 2:
+	Input: n = 26, logs = [[1,1],[3,7],[2,12],[7,17]]
+	Output: 3
+	Explanation: Task 0 started at 0 and ended at 1 with 1 unit of times.
+	             Task 1 started at 1 and ended at 7 with 6 units of times.
+	             Task 2 started at 7 and ended at 12 with 5 units of times.
+	             Task 3 started at 12 and ended at 17 with 5 units of times.
+	             The tasks with the longest time is task 1. The employees that 
+	             worked on it is 3, so we return 3.
+	
+	Example 3:
+	Input: n = 2, logs = [[0,10],[1,20]]
+	Output: 0
+	Explanation: Task 0 started at 0 and ended at 10 with 10 units of times.
+	             Task 1 started at 10 and ended at 20 with 10 units of times.
+	             The tasks with the longest time are tasks 0 and 1. The 
+	             employees that worked on them are 0 and 1, so we return the 
+	             smallest id 0.
+
+	Constraints:
+	* 2 <= n <= 500
+	* 1 <= logs.length <= 500
+	* logs[i].length == 2
+	* 0 <= idi <= n - 1
+	* 1 <= leaveTimei <= 500
+	* idi != idi+1
+	* leaveTimei are sorted in a strictly increasing order."""
+
+    def hardestWorker(self, n: int, logs: List[List[int]]) -> int:
+        prefix = 0 
+        for log in logs: 
+            log[1] -= prefix
+            prefix += log[1]
+        return max(logs, key=lambda x: (x[1], -x[0]))[0]
+
+
+    """2433. Find The Original Array of Prefix Xor (Medium)
+	You are given an integer array pref of size n. Find and return the array 
+	arr of size n that satisfies:
+	* pref[i] = arr[0] ^ arr[1] ^ ... ^ arr[i].
+	Note that ^ denotes the bitwise-xor operation. It can be proven that the 
+	answer is unique.
+
+	Example 1:
+	Input: pref = [5,2,0,3,1]
+	Output: [5,7,2,3,2]
+	Explanation: From the array [5,7,2,3,2] we have the following:
+	             - pref[0] = 5.
+	             - pref[1] = 5 ^ 7 = 2.
+	             - pref[2] = 5 ^ 7 ^ 2 = 0.
+	             - pref[3] = 5 ^ 7 ^ 2 ^ 3 = 3.
+	             - pref[4] = 5 ^ 7 ^ 2 ^ 3 ^ 2 = 1.
+	
+	Example 2:
+	Input: pref = [13]
+	Output: [13]
+	Explanation: We have pref[0] = arr[0] = 13.
+
+	Constraints:
+	* 1 <= pref.length <= 10^5
+	* 0 <= pref[i] <= 10^6"""
+
+    def findArray(self, pref: List[int]) -> List[int]:
+        ans = []
+        for i, x in enumerate(pref): 
+            if i: x ^= pref[i-1]
+            ans.append(x)
+        return ans 
+
+
+    """2434. Using a Robot to Print the Lexicographically Smallest String (Medium)
+	You are given a string s and a robot that currently holds an empty string t. 
+	Apply one of the following operations until s and t are both empty:
+	* Remove the first character of a string s and give it to the robot. The 
+	  robot will append this character to the string t.
+	* Remove the last character of a string t and give it to the robot. The 
+	  robot will write this character on paper.
+	Return the lexicographically smallest string that can be written on the 
+	paper.
+
+	Example 1:
+	Input: s = "zza"
+	Output: "azz"
+	Explanation: Let p denote the written string. Initially p="", s="zza", t="".
+	             Perform first operation three times p="", s="", t="zza".
+	             Perform second operation three times p="azz", s="", t="".
+	
+	Example 2:
+	Input: s = "bac"
+	Output: "abc"
+	Explanation: Let p denote the written string. Perform first operation twice 
+	             p="", s="c", t="ba".  Perform second operation twice p="ab", 
+	             s="c", t="". Perform first operation p="ab", s="", t="c".  
+	             Perform second operation p="abc", s="", t="".
+	
+	Example 3:
+	Input: s = "bdda"
+	Output: "addb"
+	Explanation: Let p denote the written string. Initially p="", s="bdda", t="".
+	             Perform first operation four times p="", s="", t="bdda".
+	             Perform second operation four times p="addb", s="", t="".
+
+	Constraints:
+	* 1 <= s.length <= 10^5
+	* s consists of only English lowercase letters."""
+
+    def robotWithString(self, s: str) -> str:
+        last = [-1]*26
+        for i, ch in enumerate(s): last[ord(ch)-97] = i
+        ans, stack = [], []
+        for i, ch in enumerate(s): 
+            stack.append(ch)
+            while stack: 
+                for ii in range(ord(stack[-1])-97): 
+                    if i < last[ii]: break 
+                else: 
+                    ans.append(stack.pop())
+                    continue 
+                break 
+        return ''.join(ans + stack[::-1])
+
+
+    """2435. Paths in Matrix Whose Sum Is Divisible by K (Hard)
+	You are given a 0-indexed m x n integer matrix grid and an integer k. You 
+	are currently at position (0, 0) and you want to reach position 
+	(m - 1, n - 1) moving only down or right. Return the number of paths where 
+	the sum of the elements on the path is divisible by k. Since the answer 
+	may be very large, return it modulo 10^9 + 7.
+
+	Example 1:
+	Input: grid = [[5,2,4],[3,0,5],[0,7,2]], k = 3
+	Output: 2
+	Explanation: There are two paths where the sum of the elements on the path 
+	             is divisible by k. The first path highlighted in red has a sum 
+	             of 5 + 2 + 4 + 5 + 2 = 18 which is divisible by 3. The second 
+	             path highlighted in blue has a sum of 5 + 3 + 0 + 5 + 2 = 15 
+	             which is divisible by 3.
+	
+	Example 2:
+	Input: grid = [[0,0]], k = 5
+	Output: 1
+	Explanation: The path highlighted in red has a sum of 0 + 0 = 0 which is 
+	             divisible by 5.
+	
+	Example 3:
+	Input: grid = [[7,3,4,9],[2,3,6,2],[2,3,7,0]], k = 1
+	Output: 10
+	Explanation: Every integer is divisible by 1 so the sum of the elements on 
+	             every possible path is divisible by k.
+
+	Constraints:
+	* m == grid.length
+	* n == grid[i].length
+	* 1 <= m, n <= 5 * 10^4
+	* 1 <= m * n <= 5 * 10^4
+	* 0 <= grid[i][j] <= 100
+	* 1 <= k <= 50"""
+
+    def numberOfPaths(self, grid: List[List[int]], k: int) -> int:
+        mod = 1_000_000_007
+        m, n = len(grid), len(grid[0])
+        dp = [[[0]*k for _ in range(n)] for _ in range(m)]
+        dp[0][0][grid[0][0] % k] = 1
+        for i in range(m): 
+            for j in range(n): 
+                for x in range(k): 
+                    xx = (grid[i][j]+x) % k
+                    if i: dp[i][j][xx] = (dp[i][j][xx] + dp[i-1][j][x]) % mod
+                    if j: dp[i][j][xx] = (dp[i][j][xx] + dp[i][j-1][x]) % mod
+        return dp[-1][-1][0]
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
