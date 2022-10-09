@@ -65070,6 +65070,109 @@ class SegTree:
         return ans+n
 
 
+    """2423. Remove Letter To Equalize Frequency (Easy)
+	You are given a 0-indexed string word, consisting of lowercase English 
+	letters. You need to select one index and remove the letter at that index 
+	from word so that the frequency of every letter present in word is equal.
+	Return true if it is possible to remove one letter so that the frequency of 
+	all letters in word are equal, and false otherwise.
+
+	Note:
+	* The frequency of a letter x is the number of times it occurs in the 
+	  string.
+	* You must remove exactly one letter and cannot chose to do nothing.
+
+	Example 1:
+	Input: word = "abcc"
+	Output: true
+	Explanation: Select index 3 and delete it: word becomes "abc" and each 
+	             character has a frequency of 1.
+	
+	Example 2:
+	Input: word = "aazz"
+	Output: false
+	Explanation: We must delete a character, so either the frequency of "a" is 
+	             1 and the frequency of "z" is 2, or vice versa. It is 
+	             impossible to make all present letters have equal frequency.
+
+	Constraints:
+	* 2 <= word.length <= 100
+	* word consists of lowercase English letters only."""
+
+    def equalFrequency(self, word: str) -> bool:
+        freq = sorted(Counter(word).values())
+        return len(freq) == 1 or freq[0] == 1 and freq[1] == freq[-1] or freq[0] == freq[-2] and freq[-2]+1 == freq[-1]
+
+
+    """2425. Bitwise XOR of All Pairings (Medium)
+	You are given two 0-indexed arrays, nums1 and nums2, consisting of non-
+	negative integers. There exists another array, nums3, which contains the 
+	bitwise XOR of all pairings of integers between nums1 and nums2 (every 
+	integer in nums1 is paired with every integer in nums2 exactly once).
+	Return the bitwise XOR of all integers in nums3.
+
+	Example 1:
+	Input: nums1 = [2,1,3], nums2 = [10,2,5,0]
+	Output: 13
+	Explanation: A possible nums3 array is [8,0,7,2,11,3,4,1,9,1,6,3]. The 
+	             bitwise XOR of all these numbers is 13, so we return 13.
+	
+	Example 2:
+	Input: nums1 = [1,2], nums2 = [3,4]
+	Output: 0
+	Explanation: All possible pairs of bitwise XORs are nums1[0] ^ nums2[0], 
+	             nums1[0] ^ nums2[1], nums1[1] ^ nums2[0], and 
+	             nums1[1] ^ nums2[1]. Thus, one possible nums3 array is 
+	             [2,5,1,6]. 2 ^ 5 ^ 1 ^ 6 = 0, so we return 0.
+
+	Constraints:
+	* 1 <= nums1.length, nums2.length <= 10^5
+	* 0 <= nums1[i], nums2[j] <= 10^9"""
+
+    def xorAllNums(self, nums1: List[int], nums2: List[int]) -> int:
+        return (len(nums1)%2 * reduce(xor, nums2)) ^ (len(nums2)%2 * reduce(xor, nums1))
+
+
+    """2426. Number of Pairs Satisfying Inequality (Hard)
+	You are given two 0-indexed integer arrays nums1 and nums2, each of size n, 
+	and an integer diff. Find the number of pairs (i, j) such that:
+	* 0 <= i < j <= n - 1 and
+	* nums1[i] - nums1[j] <= nums2[i] - nums2[j] + diff.
+	Return the number of pairs that satisfy the conditions.
+
+	Example 1:
+	Input: nums1 = [3,2,5], nums2 = [2,2,1], diff = 1
+	Output: 3
+	Explanation: There are 3 pairs that satisfy the conditions:
+	             1. i = 0, j = 1: 3 - 2 <= 2 - 2 + 1. Since i < j and 1 <= 1, 
+	                this pair satisfies the conditions.
+	             2. i = 0, j = 2: 3 - 5 <= 2 - 1 + 1. Since i < j and -2 <= 2, 
+	                this pair satisfies the conditions.
+	             3. i = 1, j = 2: 2 - 5 <= 2 - 1 + 1. Since i < j and -3 <= 2, 
+	                this pair satisfies the conditions.
+	             Therefore, we return 3.
+	
+	Example 2:
+	Input: nums1 = [3,-1], nums2 = [-2,2], diff = -1
+	Output: 0
+	Explanation: Since there does not exist any pair that satisfies the 
+	             conditions, we return 0.
+
+	Constraints:
+	* n == nums1.length == nums2.length
+	* 2 <= n <= 10^5
+	* -10^4 <= nums1[i], nums2[i] <= 10^4
+	* -10^4 <= diff <= 10^4"""
+
+    def numberOfPairs(self, nums1: List[int], nums2: List[int], diff: int) -> int:
+        ans = 0
+        vals = SortedList()
+        for x, y in zip(nums1, nums2): 
+            ans += vals.bisect_right(x-y)
+            vals.add(x-y-diff)
+        return ans 
+
+
     """2427. Number of Common Factors (Easy)
 	Given two positive integers a and b, return the number of common factors of 
 	a and b. An integer x is a common factor of a and b if x divides both a and 
@@ -70529,3 +70632,52 @@ class FoodRatings:
 
     def highestRated(self, cuisine: str) -> str:
         return self.data[cuisine][0][1]
+
+
+"""2424. Longest Uploaded Prefix (Medium)
+You are given a stream of n videos, each represented by a distinct number from 
+1 to n that you need to "upload" to a server. You need to implement a data 
+structure that calculates the length of the longest uploaded prefix at various 
+points in the upload process. We consider i to be an uploaded prefix if all 
+videos in the range 1 to i (inclusive) have been uploaded to the server. The 
+longest uploaded prefix is the maximum value of i that satisfies this 
+definition. Implement the LUPrefix class:
+* LUPrefix(int n) Initializes the object for a stream of n videos.
+* void upload(int video) Uploads video to the server.
+* int longest() Returns the length of the longest uploaded prefix defined above.
+
+Example 1:
+Input:  ["LUPrefix", "upload", "longest", "upload", "longest", "upload", "longest"]
+        [[4], [3], [], [1], [], [2], []]
+Output: [null, null, 0, null, 1, null, 3]
+Explanation
+LUPrefix server = new LUPrefix(4);   // Initialize a stream of 4 videos.
+server.upload(3);                    // Upload video 3.
+server.longest();                    // Since video 1 has not been uploaded yet, there is no prefix.
+                                     // So, we return 0.
+server.upload(1);                    // Upload video 1.
+server.longest();                    // The prefix [1] is the longest uploaded prefix, so we return 1.
+server.upload(2);                    // Upload video 2.
+server.longest();                    // The prefix [1,2,3] is the longest uploaded prefix, so we return 3.
+
+Constraints:
+* 1 <= n <= 10^5
+* 1 <= video <= n
+* All values of video are distinct.
+* At most 2 * 10^5 calls in total will be made to upload and longest.
+* At least one call will be made to longest."""
+
+class LUPrefix:
+
+    def __init__(self, n: int):
+        self.ans = 0 
+        self.jump = [[x-1, x+1] for x in range(n+2)]
+
+    def upload(self, video: int) -> None:
+        lo, hi = self.jump[video]
+        if lo == 0: self.ans = hi-1
+        self.jump[lo][1] = hi
+        self.jump[hi][0] = lo 
+
+    def longest(self) -> int:
+        return self.ans
