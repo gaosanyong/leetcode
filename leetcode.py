@@ -65522,6 +65522,185 @@ class SegTree:
         return dp[-1][-1][0]
 
 
+    """2437. Number of Valid Clock Times (Easy)
+    You are given a string of length 5 called time, representing the current 
+    time on a digital clock in the format "hh:mm". The earliest possible time 
+    is "00:00" and the latest possible time is "23:59". In the string time, the 
+    digits represented by the ? symbol are unknown, and must be replaced with a 
+    digit from 0 to 9. Return an integer answer, the number of valid clock 
+    times that can be created by replacing every ? with a digit from 0 to 9.
+
+    Example 1:
+    Input: time = "?5:00"
+    Output: 2
+    Explanation: We can replace the ? with either a 0 or 1, producing "05:00" 
+                 or "15:00". Note that we cannot replace it with a 2, since the 
+                 time "25:00" is invalid. In total, we have two choices.
+    
+    Example 2:
+    Input: time = "0?:0?"
+    Output: 100
+    Explanation: Each ? can be replaced by any digit from 0 to 9, so we have 
+                 100 total choices.
+    
+    Example 3:
+    Input: time = "??:??"
+    Output: 1440
+    Explanation: There are 24 possible choices for the hours, and 60 possible 
+                 choices for the minutes. In total, we have 24 * 60 = 1440 
+                 choices.
+
+    Constraints:
+    * time is a valid string of length 5 in the format "hh:mm".
+    * "00" <= hh <= "23"
+    * "00" <= mm <= "59"
+    * Some of the digits might be replaced with '?' and need to be replaced 
+      with digits from 0 to 9."""
+
+    def countTime(self, time: str) -> int:
+        ans = 1
+        if time[0:2] == "??": ans *= 24 
+        elif time[0] == '?': ans *= 3 if time[1] < '4' else 2
+        elif time[1] == '?': ans *= 4 if time[0] == '2' else 10
+        if time[3] == '?': ans *= 6
+        if time[4] == '?': ans *= 10
+        return ans 
+
+
+    """2438. Range Product Queries of Powers (Medium)
+    Given a positive integer n, there exists a 0-indexed array called powers, 
+    composed of the minimum number of powers of 2 that sum to n. The array is 
+    sorted in non-decreasing order, and there is only one way to form the array.
+    You are also given a 0-indexed 2D integer array queries, where 
+    queries[i] = [lefti, righti]. Each queries[i] represents a query where you 
+    have to find the product of all powers[j] with lefti <= j <= righti. Return 
+    an array answers, equal in length to queries, where answers[i] is the 
+    answer to the ith query. Since the answer to the ith query may be too large, 
+    each answers[i] should be returned modulo 10^9 + 7.
+
+    Example 1:
+    Input: n = 15, queries = [[0,1],[2,2],[0,3]]
+    Output: [2,4,64]
+    Explanation: For n = 15, powers = [1,2,4,8]. It can be shown that powers 
+                 cannot be a smaller size. 
+                 Answer to 1st query: powers[0] * powers[1] = 1 * 2 = 2.
+                 Answer to 2nd query: powers[2] = 4.
+                 Answer to 3rd query: powers[0] * powers[1] * powers[2] * 
+                 powers[3] = 1 * 2 * 4 * 8 = 64.
+                 Each answer modulo 109 + 7 yields the same answer, so [2,4,64] 
+                 is returned.
+    
+    Example 2:
+    Input: n = 2, queries = [[0,0]]
+    Output: [2]
+    Explanation: For n = 2, powers = [2]. The answer to the only query is 
+                 powers[0] = 2. The answer modulo 109 + 7 is the same, so 
+                 [2] is returned.
+
+    Constraints:
+    * 1 <= n <= 109
+    * 1 <= queries.length <= 10^5
+    * 0 <= starti <= endi < powers.length"""
+
+    def productQueries(self, n: int, queries: List[List[int]]) -> List[int]:
+        powers = []
+        for i in range(30): 
+            if n & 1<<i: powers.append(1<<i)
+        ans = []
+        for lo, hi in queries: 
+            val = 1
+            for ii in range(lo, hi+1): 
+                val = (val * powers[ii]) % 1_000_000_007
+            ans.append(val)
+        return ans 
+
+
+    """2439. Minimize Maximum of Array (Medium)
+    You are given a 0-indexed array nums comprising of n non-negative integers.
+    In one operation, you must:
+    * Choose an integer i such that 1 <= i < n and nums[i] > 0.
+    * Decrease nums[i] by 1.
+    * Increase nums[i - 1] by 1.
+    Return the minimum possible value of the maximum integer of nums after 
+    performing any number of operations.
+
+    Example 1:
+    Input: nums = [3,7,1,6]
+    Output: 5
+    Explanation: One set of optimal operations is as follows:
+                 1. Choose i = 1, and nums becomes [4,6,1,6].
+                 2. Choose i = 3, and nums becomes [4,6,2,5].
+                 3. Choose i = 1, and nums becomes [5,5,2,5].
+                 The maximum integer of nums is 5. It can be shown that the 
+                 maximum number cannot be less than 5. Therefore, we return 5.
+    
+    Example 2:
+    Input: nums = [10,1]
+    Output: 10
+    Explanation: It is optimal to leave nums as is, and since 10 is the maximum 
+                 value, we return 10.
+
+    Constraints:
+    * n == nums.length
+    * 2 <= n <= 10^5
+    * 0 <= nums[i] <= 10^9"""
+
+    def minimizeArrayValue(self, nums: List[int]) -> int:
+        return max((x+i)//(i+1) for i, x in enumerate(accumulate(nums)))
+
+
+    """2440. Create Components With Same Value (Hard)
+    There is an undirected tree with n nodes labeled from 0 to n - 1. You are 
+    given a 0-indexed integer array nums of length n where nums[i] represents 
+    the value of the ith node. You are also given a 2D integer array edges of 
+    length n - 1 where edges[i] = [ai, bi] indicates that there is an edge 
+    between nodes ai and bi in the tree. You are allowed to delete some edges, 
+    splitting the tree into multiple connected components. Let the value of a 
+    component be the sum of all nums[i] for which node i is in the component.
+    Return the maximum number of edges you can delete, such that every 
+    connected component in the tree has the same value.
+
+    Example 1:
+    Input: nums = [6,2,2,2,6], edges = [[0,1],[1,2],[1,3],[3,4]] 
+    Output: 2 
+    Explanation: The above figure shows how we can delete the edges [0,1] and 
+                 [3,4]. The created components are nodes [0], [1,2,3] and [4]. 
+                 The sum of the values in each component equals 6. It can be 
+                 proven that no better deletion exists, so the answer is 2.
+    
+    Example 2:
+    Input: nums = [2], edges = []
+    Output: 0
+    Explanation: There are no edges to be deleted.
+
+    Constraints:
+    * 1 <= n <= 2 * 10^4
+    * nums.length == n
+    * 1 <= nums[i] <= 50
+    * edges.length == n - 1
+    * edges[i].length == 2
+    * 0 <= edges[i][0], edges[i][1] <= n - 1
+    * edges represents a valid tree."""
+
+    def componentValue(self, nums: List[int], edges: List[List[int]]) -> int:
+        tree = [[] for _ in nums]
+        for u, v in edges: 
+            tree[u].append(v)
+            tree[v].append(u)
+        
+        def fn(u, p):
+            """Post-order dfs."""
+            ans = nums[u]
+            for v in tree[u]: 
+                if v != p: ans += fn(v, u)
+            return 0 if ans == cand else ans 
+        
+        total = sum(nums)
+        for cand in range(1, total//2+1): 
+            if total % cand == 0 and fn(0, -1) == 0: return total//cand-1
+        return 0 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
