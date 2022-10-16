@@ -65701,6 +65701,131 @@ class SegTree:
         return 0 
 
 
+    """2441. Largest Positive Integer That Exists With Its Negative (Easy)
+    Given an integer array nums that does not contain any zeros, find the 
+    largest positive integer k such that -k also exists in the array. Return 
+    the positive integer k. If there is no such integer, return -1.
+
+    Example 1:
+    Input: nums = [-1,2,-3,3]
+    Output: 3
+    Explanation: 3 is the only valid k we can find in the array.
+
+    Example 2:
+    Input: nums = [-1,10,6,7,-7,1]
+    Output: 7
+    Explanation: Both 1 and 7 have their corresponding negative values in the 
+                 array. 7 has a larger value.
+    
+    Example 3:
+    Input: nums = [-10,8,6,7,-2,-3]
+    Output: -1
+    Explanation: There is no a single valid k, we return -1.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * -1000 <= nums[i] <= 1000
+    * nums[i] != 0"""
+
+    def findMaxK(self, nums: List[int]) -> int:
+        seen = set(nums)
+        return max((abs(x) for x in seen if -x in seen), default=-1)
+
+
+    """2442. Count Number of Distinct Integers After Reverse Operations (Medium)
+    You are given an array nums consisting of positive integers. You have to 
+    take each integer in the array, reverse its digits, and add it to the end 
+    of the array. You should apply this operation to the original integers in 
+    nums. Return the number of distinct integers in the final array.
+
+    Example 1:
+    Input: nums = [1,13,10,12,31]
+    Output: 6
+    Explanation: After including the reverse of each number, the resulting 
+                 array is [1,13,10,12,31,1,31,1,21,13]. The reversed integers 
+                 that were added to the end of the array are underlined. Note 
+                 that for the integer 10, after reversing it, it becomes 01 
+                 which is just 1. The number of distinct integers in this array 
+                 is 6 (The numbers 1, 10, 12, 13, 21, and 31).
+    
+    Example 2:
+    Input: nums = [2,2,2]
+    Output: 1
+    Explanation: After including the reverse of each number, the resulting 
+                 array is [2,2,2,2,2,2]. The number of distinct integers in 
+                 this array is 1 (The number 2).
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^6"""
+
+    def countDistinctIntegers(self, nums: List[int]) -> int:
+        return len(set(nums) | {int(str(x)[::-1]) for x in nums})
+
+
+    """2443. Sum of Number and Its Reverse (Medium)
+    Given a non-negative integer num, return true if num can be expressed as 
+    the sum of any non-negative integer and its reverse, or false otherwise.
+
+    Example 1:
+    Input: num = 443
+    Output: true
+    Explanation: 172 + 271 = 443 so we return true.
+
+    Example 2:
+    Input: num = 63
+    Output: false
+    Explanation: 63 cannot be expressed as the sum of a non-negative integer 
+                 and its reverse so we return false.
+    
+    Example 3:
+    Input: num = 181
+    Output: true
+    Explanation: 140 + 041 = 181 so we return true. Note that when a number is 
+                 reversed, there may be leading zeros.
+
+    Constraints: 0 <= num <= 10^5"""
+
+    def sumOfNumberAndReverse(self, num: int) -> bool:
+        return any(x + int(str(x)[::-1]) == num for x in range(0, num+1))
+
+
+    """2444. Count Subarrays With Fixed Bounds (Hard)
+    You are given an integer array nums and two integers minK and maxK. A 
+    fixed-bound subarray of nums is a subarray that satisfies the following 
+    conditions:
+    * The minimum value in the subarray is equal to minK.
+    * The maximum value in the subarray is equal to maxK.
+    Return the number of fixed-bound subarrays. A subarray is a contiguous 
+    part of an array.
+
+    Example 1:
+    Input: nums = [1,3,5,2,7,5], minK = 1, maxK = 5
+    Output: 2
+    Explanation: The fixed-bound subarrays are [1,3,5] and [1,3,5,2].
+
+    Example 2:
+    Input: nums = [1,1,1,1], minK = 1, maxK = 1
+    Output: 10
+    Explanation: Every subarray of nums is a fixed-bound subarray. There are 10 
+                 possible subarrays.
+
+    Constraints:
+    * 2 <= nums.length <= 10^5
+    * 1 <= nums[i], minK, maxK <= 10^6"""
+
+    def countSubarrays(self, nums: List[int], minK: int, maxK: int) -> int:
+        ans = 0 
+        ii = imin = imax = -1
+        for i, x in enumerate(nums): 
+            if minK <= x <= maxK: 
+                if minK == x: imin = i
+                if maxK == x: imax = i 
+                ans += max(0, min(imax, imin) - ii)
+            else: ii = i
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
