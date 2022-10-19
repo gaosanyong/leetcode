@@ -42831,6 +42831,42 @@ public:
     }
 
 
+    /*2168. Unique Substrings With Equal Digit Frequency (Medium)
+    Given a digit string s, return the number of unique substrings of s where 
+    every digit appears the same number of times.
+
+    Example 1:
+    Input: s = "1212"
+    Output: 5
+    Explanation: The substrings that meet the requirements are "1", "2", "12", 
+                 "21", "1212". Note that although the substring "12" appears 
+                 twice, it is only counted once.
+    
+    Example 2:
+    Input: s = "12321"
+    Output: 9
+    Explanation: The substrings that meet the requirements are "1", "2", "3", 
+                 "12", "23", "32", "21", "123", "321".
+
+    Constraints:
+    * 1 <= s.length <= 1000
+    * s consists of digits.*/
+
+    int equalDigitFrequency(string s) {
+        unordered_set<int> seen; 
+        for (int i = 0, n = s.size(); i < n; ++i) {
+            unordered_map<char, int> freq; 
+            long hs = 0; 
+            for (int j = i, most = 0; j < n; ++j) {
+                most = max(most, ++freq[s[j]]);
+                hs = (11*hs + s[j] - '0' + 1) % 1'000'000'007; 
+                if (most * freq.size() == j-i+1) seen.insert(hs); 
+            }
+        }
+        return seen.size(); 
+    }
+
+
     /*2169. Count Operations to Obtain Zero (Easy)
     You are given two non-negative integers num1 and num2. In one operation, if 
     num1 >= num2, you must subtract num2 from num1, otherwise subtract num1 
