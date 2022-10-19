@@ -55139,6 +55139,52 @@ class Trie:
         return ans 
 
 
+    """2107. Number of Unique Flavors After Sharing K Candies (Medium)
+    You are given a 0-indexed integer array candies, where candies[i] 
+    represents the flavor of the ith candy. Your mom wants you to share these 
+    candies with your little sister by giving her k consecutive candies, but 
+    you want to keep as many flavors of candies as possible. Return the maximum 
+    number of unique flavors of candy you can keep after sharing with your 
+    sister.
+
+    Example 1:
+    Input: candies = [1,2,2,3,4,3], k = 3
+    Output: 3
+    Explanation: Give the candies in the range [1, 3] (inclusive) with flavors 
+                 [2,2,3]. You can eat candies with flavors [1,4,3]. There are 3 
+                 unique flavors, so return 3.
+    
+    Example 2:
+    Input: candies = [2,2,2,2,3,3], k = 2
+    Output: 2
+    Explanation: Give the candies in the range [3, 4] (inclusive) with flavors 
+                 [2,3]. You can eat candies with flavors [2,2,2,3]. There are 2 
+                 unique flavors, so return 2. Note that you can also share the 
+                 candies with flavors [2,2] and eat the candies with flavors 
+                 [2,2,3,3].
+    
+    Example 3:
+    Input: candies = [2,4,5], k = 0
+    Output: 3
+    Explanation: You do not have to give any candies. You can eat the candies 
+                 with flavors [2,4,5]. There are 3 unique flavors, so return 3.
+
+    Constraints:
+    * 1 <= candies.length <= 10^5
+    * 1 <= candies[i] <= 10^5
+    * 0 <= k <= candies.length"""
+
+    def shareCandies(self, candies: List[int], k: int) -> int:
+        ans = 0 
+        freq = Counter(candies)
+        for i, x in enumerate(candies): 
+            freq[x] -= 1
+            if freq[x] == 0: freq.pop(x)
+            if i >= k: freq[candies[i-k]] += 1
+            if i >= k-1: ans = max(ans, len(freq))
+        return ans 
+
+
     """2108. Find First Palindromic String in the Array (Easy)
     Given an array of strings words, return the first palindromic string in the 
     array. If there is no such string, return an empty string "". A string is 
