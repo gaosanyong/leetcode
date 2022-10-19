@@ -38881,6 +38881,59 @@ public:
     }
 
 
+    /*2067. Number of Equal Count Substrings (Medium)
+    You are given a 0-indexed string s consisting of only lowercase English 
+    letters, and an integer count. A substring of s is said to be an equal 
+    count substring if, for each unique letter in the substring, it appears 
+    exactly count times in the substring. Return the number of equal count 
+    substrings in s. A substring is a contiguous non-empty sequence of 
+    characters within a string.
+
+    Example 1:
+    Input: s = "aaabcbbcc", count = 3
+    Output: 3
+    Explanation: The substring that starts at index 0 and ends at index 2 is 
+                 "aaa". The letter 'a' in the substring appears exactly 3 times.
+                 The substring that starts at index 3 and ends at index 8 is 
+                 "bcbbcc". The letters 'b' and 'c' in the substring appear 
+                 exactly 3 times. The substring that starts at index 0 and ends 
+                 at index 8 is "aaabcbbcc". The letters 'a', 'b', and 'c' in 
+                 the substring appear exactly 3 times.
+    
+    Example 2:
+    Input: s = "abcd", count = 2
+    Output: 0
+    Explanation: The number of times each letter appears in s is less than 
+                 count. Therefore, no substrings in s are equal count 
+                 substrings, so return 0.
+    
+    Example 3:
+    Input: s = "a", count = 5
+    Output: 0
+    Explanation: The number of times each letter appears in s is less than 
+                 count. Therefore, no substrings in s are equal count 
+                 substrings, so return 0
+
+    Constraints:
+    * 1 <= s.length <= 3 * 10^4
+    * 1 <= count <= 3 * 10^4
+    * s consists only of lowercase English letters.*/
+
+    int equalCountSubstrings(string s, int count) {
+        int ans = 0; 
+        for (int x = 1; x <= 26; ++x) {
+            unordered_map<char, int> freq; 
+            for (int i = 0, ii = 0; i < s.size(); ++i) {
+                ++freq[s[i]]; 
+                for (; freq.size() > x || freq[s[i]] > count; ++ii) 
+                    if (--freq[s[ii]] == 0) freq.erase(s[ii]); 
+                if (i - ii + 1 == x * count) ++ans; 
+            }
+        }
+        return ans; 
+    }
+
+
     /*2068. Check Whether Two Strings are Almost Equivalent (Easy)
     Two strings word1 and word2 are considered almost equivalent if the 
     differences between the frequencies of each letter from 'a' to 'z' between 
