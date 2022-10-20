@@ -61284,6 +61284,69 @@ class Trie:
         return ans 
 
 
+    """2282. Number of People That Can Be Seen in a Grid (Medium)
+    You are given an m x n 0-indexed 2D array of positive integers heights 
+    where heights[i][j] is the height of the person standing at position (i, j).
+    A person standing at position (row1, col1) can see a person standing at 
+    position (row2, col2) if:
+    * The person at (row2, col2) is to the right or below the person at 
+      (row1, col1). More formally, this means that either row1 == row2 and 
+      col1 < col2 or row1 < row2 and col1 == col2.
+    * Everyone in between them is shorter than both of them.
+    Return an m x n 2D array of integers answer where answer[i][j] is the 
+    number of people that the person at position (i, j) can see.
+
+    Example 1:
+    Input: heights = [[3,1,4,2,5]]
+    Output: [[2,1,2,1,0]]
+    Explanation: - The person at (0, 0) can see the people at (0, 1) and (0, 2).
+                   Note that he cannot see the person at (0, 4) because the 
+                   person at (0, 2) is taller than him.
+                 - The person at (0, 1) can see the person at (0, 2).
+                 - The person at (0, 2) can see the people at (0, 3) and (0, 4).
+                 - The person at (0, 3) can see the person at (0, 4).
+                 - The person at (0, 4) cannot see anybody.
+    
+    Example 2:
+    Input: heights = [[5,1],[3,1],[4,1]]
+    Output: [[3,1],[2,1],[1,0]]
+    Explanation: - The person at (0, 0) can see the people at (0, 1), (1, 0) 
+                   and (2, 0).
+                 - The person at (0, 1) can see the person at (1, 1).
+                 - The person at (1, 0) can see the people at (1, 1) and (2, 0).
+                 - The person at (1, 1) can see the person at (2, 1).
+                 - The person at (2, 0) can see the person at (2, 1).
+                 - The person at (2, 1) cannot see anybody.
+
+    Constraints:
+    * 1 <= heights.length <= 400
+    * 1 <= heights[i].length <= 400
+    * 1 <= heights[i][j] <= 10^5"""
+
+    def seePeople(self, heights: List[List[int]]) -> List[List[int]]:
+        m, n = len(heights), len(heights[0])
+        ans = [[0] * n for _ in range(m)]
+        for i in range(m): 
+            stack = []
+            for j in range(n): 
+                prev = -inf
+                while stack and heights[i][stack[-1]] < heights[i][j]: 
+                    if prev < heights[i][stack[-1]]: ans[i][stack[-1]] += 1
+                    prev = heights[i][stack.pop()]
+                if stack and prev < heights[i][stack[-1]]: ans[i][stack[-1]] += 1
+                stack.append(j)
+        for j in range(n): 
+            stack = []
+            for i in range(m): 
+                prev = -inf 
+                while stack and heights[stack[-1]][j] < heights[i][j]: 
+                    if prev < heights[stack[-1]][j]: ans[stack[-1]][j] += 1
+                    prev = heights[stack.pop()][j]
+                if stack and prev < heights[stack[-1]][j]: ans[stack[-1]][j] += 1
+                stack.append(i)
+        return ans 
+
+
     """2283. Check if Number Has Equal Digit Count and Digit Value (Easy)
     You are given a 0-indexed string num of length n consisting of digits. 
     Return true if for every index i in the range 0 <= i < n, the digit i 
