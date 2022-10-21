@@ -45064,6 +45064,48 @@ public:
     }
 
 
+    /*2387. Median of a Row Wise Sorted Matrix (Medium)
+    Given an m x n matrix grid containing an odd number of integers where each 
+    row is sorted in non-decreasing order, return the median of the matrix.
+    You must solve the problem in less than O(m * n) time complexity.
+
+    Example 1:
+    Input: grid = [[1,1,2],[2,3,3],[1,3,4]]
+    Output: 2
+    Explanation: The elements of the matrix in sorted order are 
+                 1,1,1,2,2,3,3,3,4. The median is 2.
+    
+    Example 2:
+    Input: grid = [[1,1,3,3,4]]
+    Output: 3
+    Explanation: The elements of the matrix in sorted order are 1,1,3,3,4. The 
+                 median is 3.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 500
+    * m and n are both odd.
+    * 1 <= grid[i][j] <= 10^6
+    * grid[i] is sorted in non-decreasing order.*/
+
+    int matrixMedian(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size(), lo = INT_MAX, hi = INT_MIN; 
+        for (auto& row : grid) {
+            lo = min(lo, row[0]); 
+            hi = max(hi, row[n-1]); 
+        }
+        while (lo < hi) {
+            int mid = lo + (hi-lo)/2, more = 0; 
+            for (auto& row : grid) 
+                more += row.end() - upper_bound(row.begin(), row.end(), mid); 
+            if (more > m*n/2) lo = mid + 1; 
+            else hi = mid; 
+        }
+        return lo; 
+    }
+
+
     /*2418. Sort the People (Easy)
     You are given an array of strings names, and an array heights that consists 
     of distinct positive integers. Both arrays are of length n. For each index 

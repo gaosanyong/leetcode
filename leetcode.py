@@ -64893,6 +64893,45 @@ class Trie:
         return -x
 
 
+    """2387. Median of a Row Wise Sorted Matrix (Medium)
+    Given an m x n matrix grid containing an odd number of integers where each 
+    row is sorted in non-decreasing order, return the median of the matrix.
+    You must solve the problem in less than O(m * n) time complexity.
+
+    Example 1:
+    Input: grid = [[1,1,2],[2,3,3],[1,3,4]]
+    Output: 2
+    Explanation: The elements of the matrix in sorted order are 
+                 1,1,1,2,2,3,3,3,4. The median is 2.
+    
+    Example 2:
+    Input: grid = [[1,1,3,3,4]]
+    Output: 3
+    Explanation: The elements of the matrix in sorted order are 1,1,3,3,4. The 
+                 median is 3.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 500
+    * m and n are both odd.
+    * 1 <= grid[i][j] <= 10^6
+    * grid[i] is sorted in non-decreasing order."""
+
+    def matrixMedian(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        lo, hi = inf, -inf 
+        for row in grid: 
+            lo = min(lo, row[0])
+            hi = max(hi, row[-1])
+        while lo < hi: 
+            mid = lo + hi >> 1
+            more = sum(n - bisect_right(row, mid) for row in grid)
+            if more > m*n/2: lo = mid + 1
+            else: hi = mid
+        return lo
+
+
     """2389. Longest Subsequence With Limited Sum (Easy)
     You are given an integer array nums of length n, and an integer array 
     queries of length m. Return an array answer of length m where answer[i] is 
