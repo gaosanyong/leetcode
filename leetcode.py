@@ -67136,6 +67136,60 @@ class SegTree:
         return ans 
 
 
+    """2445. Number of Nodes With Value One (Medium)
+    There is an undirected connected tree with n nodes labeled from 1 to n and 
+    n - 1 edges. You are given the integer n. The parent node of a node with a 
+    label v is the node with the label floor (v / 2). The root of the tree is 
+    the node with the label 1.
+    * For example, if n = 7, then the node with the label 3 has the node with 
+      the label floor(3 / 2) = 1 as its parent, and the node with the label 7 
+      has the node with the label floor(7 / 2) = 3 as its parent.
+    You are also given an integer array queries. Initially, every node has a 
+    value 0 on it. For each query queries[i], you should flip all values in the 
+    subtree of the node with the label queries[i]. Return the total number of 
+    nodes with the value 1 after processing all the queries.
+
+    Note that:
+    * Flipping the value of a node means that the node with the value 0 becomes 
+      1 and vice versa.
+    * floor(x) is equivalent to rounding x down to the nearest integer.
+
+    Example 1:
+    Input: n = 5 , queries = [1,2,5]
+    Output: 3
+    Explanation: The diagram above shows the tree structure and its status 
+                 after performing the queries. The blue node represents the 
+                 value 0, and the red node represents the value 1. After 
+                 processing the queries, there are three red nodes (nodes with 
+                 value 1): 1, 3, and 5.
+    
+    Example 2:
+    Input: n = 3, queries = [2,3,3]
+    Output: 1
+    Explanation: The diagram above shows the tree structure and its status 
+                 after performing the queries. The blue node represents the 
+                 value 0, and the red node represents the value 1. After 
+                 processing the queries, there are one red node (node with 
+                 value 1): 2.
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * 1 <= queries.length <= 10^5
+    * 1 <= queries[i] <= n"""
+
+    def numberOfNodes(self, n: int, queries: List[int]) -> int:
+        flip = [0] * (1+n)
+        for q in queries: flip[q] ^= 1
+        ans = 0 
+        stack = [(1, flip[1])]
+        while stack: 
+            x, f = stack.pop()
+            if f & 1: ans += 1
+            if 2*x <= n: stack.append((2*x, f^flip[2*x]))
+            if 2*x+1 <= n: stack.append((2*x+1, f^flip[2*x+1]))
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
