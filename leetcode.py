@@ -63771,6 +63771,59 @@ class Trie:
         return sum(v1*v2 for k1, v1 in freq.items() for k2, v2 in freq.items() if k1+k2 >= k)
 
 
+    """2355. Maximum Number of Books You Can Take (Hard)
+    You are given a 0-indexed integer array books of length n where books[i] 
+    denotes the number of books on the ith shelf of a bookshelf. You are going 
+    to take books from a contiguous section of the bookshelf spanning from l to 
+    r where 0 <= l <= r < n. For each index i in the range l <= i < r, you must 
+    take strictly fewer books from shelf i than shelf i + 1. Return the maximum 
+    number of books you can take from the bookshelf.
+
+    Example 1:
+    Input: books = [8,5,2,7,9]
+    Output: 19
+    Explanation: - Take 1 book from shelf 1.
+                 - Take 2 books from shelf 2.
+                 - Take 7 books from shelf 3.
+                 - Take 9 books from shelf 4.
+                 You have taken 19 books, so return 19. It can be proven that 
+                 19 is the maximum number of books you can take.
+    
+    Example 2:
+    Input: books = [7,0,3,4,5]
+    Output: 12
+    Explanation: - Take 3 books from shelf 2.
+                 - Take 4 books from shelf 3.
+                 - Take 5 books from shelf 4.
+                 You have taken 12 books so return 12. It can be proven that 12 
+                 is the maximum number of books you can take.
+    
+    Example 3:
+    Input: books = [8,2,3,7,3,4,0,1,4,3]
+    Output: 13
+    Explanation: - Take 1 book from shelf 0.
+                 - Take 2 books from shelf 1.
+                 - Take 3 books from shelf 2.
+                 - Take 7 books from shelf 3.
+                 You have taken 13 books so return 13. It can be proven that 13 
+                 is the maximum number of books you can take.
+
+    Constraints:
+    * 1 <= books.length <= 10^5
+    * 0 <= books[i] <= 10^5"""
+
+    def maximumBooks(self, books: List[int]) -> int:
+        dp = [0] * len(books)
+        stack = [(-1, -inf)]
+        for i, x in enumerate(books): 
+            while stack[-1][0]-stack[-1][1] <= i-x: stack.pop()
+            ii = max(i-x, stack[-1][0])
+            dp[i] = (i-ii)*(2*x-i+ii+1)//2
+            if 0 <= ii == stack[-1][0]: dp[i] += dp[ii]
+            stack.append((i, x))
+        return max(dp)
+
+
     """2357. Make Array Zero by Subtracting Equal Amounts (Easy)
     You are given a non-negative integer array nums. In one operation, you must:
     * Choose a positive integer x such that x is less than or equal to the 
