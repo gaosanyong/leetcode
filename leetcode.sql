@@ -4251,6 +4251,147 @@ BEGIN
 END
 
 
+/*2314. The First Day of the Maximum Recorded Degree in Each City (Medium)
+SQL Schema
+Table: Weather
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| city_id     | int  |
+| day         | date |
+| degree      | int  |
++-------------+------+
+(city_id, day) is the primary key for this table. Each row in this table 
+contains the degree of the weather of a city on a certain day. All the degrees 
+are recorded in the year 2022.
+
+Write an SQL query to report the day that has the maximum recorded degree in 
+each city. If the maximum degree was recorded for the same city multiple times, 
+return the earliest day among them. Return the result table ordered by city_id 
+in ascending order. The query result format is shown in the following example.
+
+Example 1:
+Input: 
+Weather table: +---------+------------+--------+
+               | city_id | day        | degree |
+               +---------+------------+--------+
+               | 1       | 2022-01-07 | -12    |
+               | 1       | 2022-03-07 | 5      |
+               | 1       | 2022-07-07 | 24     |
+               | 2       | 2022-08-07 | 37     |
+               | 2       | 2022-08-17 | 37     |
+               | 3       | 2022-02-07 | -7     |
+               | 3       | 2022-12-07 | -6     |
+               +---------+------------+--------+
+Output: +---------+------------+--------+
+        | city_id | day        | degree |
+        +---------+------------+--------+
+        | 1       | 2022-07-07 | 24     |
+        | 2       | 2022-08-07 | 37     |
+        | 3       | 2022-12-07 | -6     |
+        +---------+------------+--------+
+Explanation: For city 1, the maximum degree was recorded on 2022-07-07 with 24 
+                         degrees.
+             For city 1, the maximum degree was recorded on 2022-08-07 and 
+                         2022-08-17 with 37 degrees. We choose the earlier date 
+                         (2022-08-07).
+             For city 3, the maximum degree was recorded on 2022-12-07 with -6 
+                         degrees.*/
+
+SELECT 
+    city_id, 
+    day, 
+    degree
+FROM (SELECT 
+        *, 
+        RANK() OVER (PARTITION BY city_id ORDER BY degree DESC, day ASC) AS rnk 
+      FROM Weather) a 
+WHERE rnk = 1
+ORDER BY 1 ASC
+
+
+/*2324. Product Sales Analysis IV (Medium)
+SQL Schema
+Table: Sales
++-------------+-------+
+| Column Name | Type  |
++-------------+-------+
+| sale_id     | int   |
+| product_id  | int   |
+| user_id     | int   |
+| quantity    | int   |
++-------------+-------+
+sale_id is the primary key of this table. product_id is a foreign key to 
+Product table. Each row of this table shows the ID of the product and the 
+quantity purchased by a user.
+
+Table: Product
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| product_id  | int  |
+| price       | int  |
++-------------+------+
+product_id is the primary key of this table. Each row of this table indicates 
+the price of each product. Write an SQL query that reports for each user the 
+product id on which the user spent the most money. In case the same user spent 
+the most money on two or more products, report all of them. 
+
+Return the resulting table in any order. The query result format is in the 
+following example.
+
+Example 1:
+Input: 
+Sales table:
++---------+------------+---------+----------+
+| sale_id | product_id | user_id | quantity |
++---------+------------+---------+----------+
+| 1       | 1          | 101     | 10       |
+| 2       | 3          | 101     | 7        |
+| 3       | 1          | 102     | 9        |
+| 4       | 2          | 102     | 6        |
+| 5       | 3          | 102     | 10       |
+| 6       | 1          | 102     | 6        |
++---------+------------+---------+----------+
+Product table:
++------------+-------+
+| product_id | price |
++------------+-------+
+| 1          | 10    |
+| 2          | 25    |
+| 3          | 15    |
++------------+-------+
+Output: 
++---------+------------+
+| user_id | product_id |
++---------+------------+
+| 101     | 3          |
+| 102     | 1          |
+| 102     | 2          |
+| 102     | 3          |
++---------+------------+ 
+Explanation: User 101:
+                 - Spent 10 * 10 = 100 on product 1.
+                 - Spent 7 * 15 = 105 on product 3.
+             User 101 spent the most money on product 3.
+             User 102:
+                 - Spent (9 + 7) * 10 = 150 on product 1.
+                 - Spent 6 * 25 = 150 on product 2.
+                 - Spent 10 * 15 = 150 on product 3.
+             User 102 spent the most money on products 1, 2, and 3.*/
+
+SELECT 
+    user_id, 
+    product_id
+FROM (SELECT 
+        user_id, 
+        product_id, 
+        RANK() OVER (PARTITION BY user_id ORDER BY SUM(price * quantity) DESC) AS rnk 
+      FROM Sales JOIN Product USING (product_id) 
+      GROUP BY 1, 2) a 
+WHERE rnk = 1
+
+
 /*2329. Product Sales Analysis V (Easy)
 SQL Schema
 Table: Sales
@@ -4352,6 +4493,67 @@ FROM Teams AS a CROSS JOIN Teams AS b
 WHERE a.team_name != b.team_name
 
 
+/*2346. Compute the Rank as a Percentage (Medium)
+SQL Schema
+Table: Students
++---------------+------+
+| Column Name   | Type |
++---------------+------+
+| student_id    | int  |
+| department_id | int  |
+| mark          | int  |
++---------------+------+
+student_id is the primary key of this table. Each row of this table indicates a 
+student's ID, the ID of the department in which the student enrolled, and their 
+mark in the exam.
+
+Write an SQL query that reports the rank of each student in their department as 
+a percentage, where the rank as a percentage is computed using the following 
+formula: (student_rank_in_the_department - 1) * 100 / (the_number_of_students_in_the_department - 1). 
+The percentage should be rounded to 2 decimal places. student_rank_in_the_department 
+is determined by descending mark, such that the student with the highest mark 
+is rank 1. If two students get the same mark, they also get the same rank. 
+Return the result table in any order. The query result format is in the 
+following example.
+
+Example 1:
+Input: 
+Students table:
++------------+---------------+------+
+| student_id | department_id | mark |
++------------+---------------+------+
+| 2          | 2             | 650  |
+| 8          | 2             | 650  |
+| 7          | 1             | 920  |
+| 1          | 1             | 610  |
+| 3          | 1             | 530  |
++------------+---------------+------+
+Output: 
++------------+---------------+------------+
+| student_id | department_id | percentage |
++------------+---------------+------------+
+| 7          | 1             | 0.0        |
+| 1          | 1             | 50.0       |
+| 3          | 1             | 100.0      |
+| 2          | 2             | 0.0        |
+| 8          | 2             | 0.0        |
++------------+---------------+------------+
+Explanation: For Department 1:
+              - Student 7: percentage = (1 - 1) * 100 / (3 - 1) = 0.0
+              - Student 1: percentage = (2 - 1) * 100 / (3 - 1) = 50.0
+              - Student 3: percentage = (3 - 1) * 100 / (3 - 1) = 100.0
+             For Department 2:
+              - Student 2: percentage = (1 - 1) * 100 / (2 - 1) = 0.0
+              - Student 8: percentage = (1 - 1) * 100 / (2 - 1) = 0.0*/
+
+SELECT 
+    student_id, 
+    department_id, 
+    ROUND(100*PERCENT_RANK() OVER (
+        PARTITION BY department_id
+        ORDER BY mark DESC), 2) AS percentage
+FROM Students
+
 /*2356. Number of Unique Subjects Taught by Each Teacher (Easy)
 SQL Schema
 Table: Teacher
@@ -4401,6 +4603,183 @@ Explanation: Teacher 1:
 SELECT teacher_id, COUNT(DISTINCT subject_id) AS cnt
 FROM Teacher
 GROUP BY teacher_id
+
+
+/*2362. Generate the Invoice (Hard)
+SQL Schema
+Table: Products
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| product_id  | int  |
+| price       | int  |
++-------------+------+
+product_id is the primary key for this table. Each row in this table shows the 
+ID of a product and the price of one unit.
+
+Table: Purchases
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| invoice_id  | int  |
+| product_id  | int  |
+| quantity    | int  |
++-------------+------+
+(invoice_id, product_id) is the primary key for this table. Each row in this 
+table shows the quantity ordered from one product in an invoice. 
+
+Write an SQL query to show the details of the invoice with the highest price. 
+If two or more invoices have the same price, return the details of the one with 
+the smallest invoice_id. Return the result table in any order. The query result 
+format is shown in the following example.
+
+Example 1:
+Input: 
+Products table:
++------------+-------+
+| product_id | price |
++------------+-------+
+| 1          | 100   |
+| 2          | 200   |
++------------+-------+
+Purchases table:
++------------+------------+----------+
+| invoice_id | product_id | quantity |
++------------+------------+----------+
+| 1          | 1          | 2        |
+| 3          | 2          | 1        |
+| 2          | 2          | 3        |
+| 2          | 1          | 4        |
+| 4          | 1          | 10       |
++------------+------------+----------+
+Output: 
++------------+----------+-------+
+| product_id | quantity | price |
++------------+----------+-------+
+| 2          | 3        | 600   |
+| 1          | 4        | 400   |
++------------+----------+-------+
+Explanation: Invoice 1: price = (2 * 100) = $200
+             Invoice 2: price = (4 * 100) + (3 * 200) = $1000
+             Invoice 3: price = (1 * 200) = $200
+             Invoice 4: price = (10 * 100) = $1000
+The highest price is $1000, and the invoices with the highest prices are 2 and 
+4. We return the details of the one with the smallest ID, which is invoice 2.*/
+
+WITH Cte AS (
+    SELECT 
+        invoice_id, 
+        product_id, 
+        quantity, 
+        price
+    FROM Products JOIN Purchases USING (product_id)
+)
+SELECT 
+    product_id, 
+    quantity, 
+    price*quantity AS price
+FROM Cte JOIN (SELECT invoice_id, SUM(price * quantity) AS total 
+               FROM Cte 
+               GROUP BY invoice_id 
+               ORDER BY 2 DESC, 1 ASC LIMIT 1) a USING (invoice_id)
+
+
+/*2372. Calculate the Influence of Each Salesperson (Medium)
+SQL Schema
+Table: Salesperson
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| salesperson_id | int     |
+| name           | varchar |
++----------------+---------+
+salesperson_id is the primary key for this table. Each row in this table shows 
+the ID of a salesperson.
+
+Table: Customer
++----------------+------+
+| Column Name    | Type |
++----------------+------+
+| customer_id    | int  |
+| salesperson_id | int  |
++----------------+------+
+customer_id is the primary key for this table. salesperson_id is a foreign key 
+from the Salesperson table. Each row in this table shows the ID of a customer 
+and the ID of the salesperson. 
+
+Table: Sales
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| sale_id     | int  |
+| customer_id | int  |
+| price       | int  |
++-------------+------+
+sale_id is the primary key for this table. customer_id is a foreign key from 
+the Customer table. Each row in this table shows ID of a customer and the price 
+they paid for the sale with sale_id.
+
+Write an SQL query to report the sum of prices paid by the customers of each 
+salesperson. If a salesperson does not have any customers, the total value 
+should be 0. Return the result table in any order. The query result format is 
+shown in the following example.
+
+Example 1:
+Input: 
+Salesperson table:
++----------------+-------+
+| salesperson_id | name  |
++----------------+-------+
+| 1              | Alice |
+| 2              | Bob   |
+| 3              | Jerry |
++----------------+-------+
+Customer table:
++-------------+----------------+
+| customer_id | salesperson_id |
++-------------+----------------+
+| 1           | 1              |
+| 2           | 1              |
+| 3           | 2              |
++-------------+----------------+
+Sales table:
++---------+-------------+-------+
+| sale_id | customer_id | price |
++---------+-------------+-------+
+| 1       | 2           | 892   |
+| 2       | 1           | 354   |
+| 3       | 3           | 988   |
+| 4       | 3           | 856   |
++---------+-------------+-------+
+Output: 
++----------------+-------+-------+
+| salesperson_id | name  | total |
++----------------+-------+-------+
+| 1              | Alice | 1246  |
+| 2              | Bob   | 1844  |
+| 3              | Jerry | 0     |
++----------------+-------+-------+
+Explanation: Alice is the salesperson for customers 1 and 2.
+               - Customer 1 made one purchase with 354.
+               - Customer 2 made one purchase with 892.
+             The total for Alice is 354 + 892 = 1246.
+             
+             Bob is the salesperson for customers 3.
+               - Customer 1 made one purchase with 988 and 856.
+             The total for Bob is 988 + 856 = 1844.
+             
+             Jerry is not the salesperson of any customer.
+             The total for Jerry is 0.*/
+
+SELECT 
+    salesperson_id, 
+    name, 
+    COALESCE(SUM(price), 0) AS total
+FROM 
+    Salesperson 
+    LEFT JOIN Customer USING (salesperson_id)
+    LEFT JOIN Sales USING (customer_id)
+GROUP BY 1
 
 
 /*2377. Sort the Olympic Table (Easy)
@@ -4457,3 +4836,155 @@ Explanation: The tie between China and USA is broken by their lexicographical
 SELECT country, gold_medals, silver_medals, bronze_medals
 FROM Olympic
 ORDER BY 2 DESC, 3 DESC, 4 DESC, 1 ASC
+
+
+/*2388. Change Null Values in a Table to the Previous Value (Medium)
+SQL Schema
+Table: CoffeeShop
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| drink       | varchar |
++-------------+---------+
+id is the primary key for this table. Each row in this table shows the order id 
+and the name of the drink ordered. Some drink rows are nulls. 
+
+Write an SQL query to replace the null values of drink with the name of the 
+drink of the previous row that is not null. It is guaranteed that the drink of 
+the first row of the table is not null. Return the result table in the same 
+order as the input. The query result format is shown in the following example.
+
+Example 1:
+Input: 
+CoffeeShop table:
++----+------------------+
+| id | drink            |
++----+------------------+
+| 9  | Mezcal Margarita |
+| 6  | null             |
+| 7  | null             |
+| 3  | Americano        |
+| 1  | Daiquiri         |
+| 2  | null             |
++----+------------------+
+Output: 
++----+------------------+
+| id | drink            |
++----+------------------+
+| 9  | Mezcal Margarita |
+| 6  | Mezcal Margarita |
+| 7  | Mezcal Margarita |
+| 3  | Americano        |
+| 1  | Daiquiri         |
+| 2  | Daiquiri         |
++----+------------------+
+Explanation: For ID 6, the previous value that is not null is from ID 9. We 
+                       replace the null with "Mezcal Margarita".
+             For ID 7, the previous value that is not null is from ID 9. We 
+                       replace the null with "Mezcal Margarita".
+             For ID 2, the previous value that is not null is from ID 1. We 
+                       replace the null with "Daiquiri".
+             Note that the rows in the output are the same as in the input.*/
+
+WITH Cte AS (
+SELECT 
+    id, 
+    IFNULL(drink, @prev) AS drink, 
+    @prev := IFNULL(drink, @prev) AS prev
+FROM (SELECT @prev := null) as init, Coffeeshop AS c
+)
+SELECT 
+    id, 
+    drink 
+FROM Cte
+
+
+/*2394. Employees With Deductions (Medium)
+SQL Schema
+Table: Employees
++--------------+------+
+| Column Name  | Type |
++--------------+------+
+| employee_id  | int  |
+| needed_hours | int  |
++--------------+------+
+employee_id is the primary key for this table. Each row contains the id of an 
+employee and the minimum number of hours needed for them to work to get their 
+salary.
+
+Table: Logs
++-------------+----------+
+| Column Name | Type     |
++-------------+----------+
+| employee_id | int      |
+| in_time     | datetime |
+| out_time    | datetime |
++-------------+----------+
+(employee_id, in_time, out_time) is the primary key for this table. Each row of 
+this table shows the time stamps for an employee. in_time is the time the 
+employee started to work, and out_time is the time the employee ended work. All 
+the times are in October 2022. out_time can be one day after in_time which 
+means the employee worked after the midnight.
+
+In a company, each employee must work a certain number of hours every month. 
+Employees work in sessions. The number of hours an employee worked can be 
+calculated from the sum of the number of minutes the employee worked in all of 
+their sessions. The number of minutes in each session is rounded up. For 
+example, if the employee worked for 51 minutes and 2 seconds in a session, we 
+consider it 52 minutes. Write an SQL query to report the IDs of the employees 
+that will be deducted. In other words, report the IDs of the employees that did 
+not work the needed hours. Return the result table in any order. The query 
+result format is in the following example.
+
+Example 1:
+Input: 
+Employees table:
++-------------+--------------+
+| employee_id | needed_hours |
++-------------+--------------+
+| 1           | 20           |
+| 2           | 12           |
+| 3           | 2            |
++-------------+--------------+
+Logs table:
++-------------+---------------------+---------------------+
+| employee_id | in_time             | out_time            |
++-------------+---------------------+---------------------+
+| 1           | 2022-10-01 09:00:00 | 2022-10-01 17:00:00 |
+| 1           | 2022-10-06 09:05:04 | 2022-10-06 17:09:03 |
+| 1           | 2022-10-12 23:00:00 | 2022-10-13 03:00:01 |
+| 2           | 2022-10-29 12:00:00 | 2022-10-29 23:58:58 |
++-------------+---------------------+---------------------+
+Output: 
++-------------+
+| employee_id |
++-------------+
+| 2           |
+| 3           |
++-------------+
+Explanation: 
+Employee 1:
+ - Worked for three sessions:
+    - On 2022-10-01, they worked for 8 hours.
+    - On 2022-10-06, they worked for 8 hours and 4 minutes.
+    - On 2022-10-12, they worked for 4 hours and 1 minute. Note that they 
+      worked through midnight.
+ - Employee 1 worked a total of 20 hours and 5 minutes across sessions and will 
+   not be deducted.
+Employee 2:
+ - Worked for one session:
+    - On 2022-10-29, they worked for 11 hours and 59 minutes.
+ - Employee 2 did not work their hours and will be deducted.
+Employee 3:
+ - Did not work any session.
+ - Employee 3 did not work their hours and will be deducted.*/
+
+SELECT 
+    employee_id
+FROM 
+    Employees LEFT JOIN Logs USING (employee_id)
+GROUP BY 
+    1, 
+    needed_hours
+HAVING SUM(CEIL(IFNULL(TIMESTAMPDIFF(SECOND, in_time, out_time), 0)/60)/60) < needed_hours

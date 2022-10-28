@@ -53370,6 +53370,61 @@ class Trie:
         return ans 
 
 
+    """2067. Number of Equal Count Substrings (Medium)
+    You are given a 0-indexed string s consisting of only lowercase English 
+    letters, and an integer count. A substring of s is said to be an equal 
+    count substring if, for each unique letter in the substring, it appears 
+    exactly count times in the substring. Return the number of equal count 
+    substrings in s. A substring is a contiguous non-empty sequence of 
+    characters within a string.
+
+    Example 1:
+    Input: s = "aaabcbbcc", count = 3
+    Output: 3
+    Explanation: The substring that starts at index 0 and ends at index 2 is 
+                 "aaa". The letter 'a' in the substring appears exactly 3 times.
+                 The substring that starts at index 3 and ends at index 8 is 
+                 "bcbbcc". The letters 'b' and 'c' in the substring appear 
+                 exactly 3 times. The substring that starts at index 0 and ends 
+                 at index 8 is "aaabcbbcc". The letters 'a', 'b', and 'c' in 
+                 the substring appear exactly 3 times.
+    
+    Example 2:
+    Input: s = "abcd", count = 2
+    Output: 0
+    Explanation: The number of times each letter appears in s is less than 
+                 count. Therefore, no substrings in s are equal count 
+                 substrings, so return 0.
+    
+    Example 3:
+    Input: s = "a", count = 5
+    Output: 0
+    Explanation: The number of times each letter appears in s is less than 
+                 count. Therefore, no substrings in s are equal count 
+                 substrings, so return 0
+
+    Constraints:
+    * 1 <= s.length <= 3 * 10^4
+    * 1 <= count <= 3 * 10^4
+    * s consists only of lowercase English letters."""
+
+    def equalCountSubstrings(self, s: str, count: int) -> int:
+        ans = 0
+        for x in range(1, 27): 
+            cnt = 0
+            freq = Counter()
+            for i, ch in enumerate(s): 
+                if freq[ch] == count: cnt -= 1
+                freq[ch] += 1
+                if freq[ch] == count: cnt += 1
+                if i >= x*count: 
+                    if freq[s[i-x*count]] == count: cnt -= 1
+                    freq[s[i-x*count]] -= 1
+                    if freq[s[i-x*count]] == count: cnt += 1
+                if i >= x*count-1 and cnt == x: ans += 1
+        return ans 
+
+
     """2068. Check Whether Two Strings are Almost Equivalent (Easy)
     Two strings word1 and word2 are considered almost equivalent if the 
     differences between the frequencies of each letter from 'a' to 'z' between 
@@ -53806,6 +53861,53 @@ class Trie:
         return ans 
 
 
+    """2077. Paths in Maze That Lead to Same Room (Medium)
+    A maze consists of n rooms numbered from 1 to n, and some rooms are 
+    connected by corridors. You are given a 2D integer array corridors where 
+    corridors[i] = [room1i, room2i] indicates that there is a corridor 
+    connecting room1i and room2i, allowing a person in the maze to go from 
+    room1i to room2i and vice versa. The designer of the maze wants to know how 
+    confusing the maze is. The confusion score of the maze is the number of 
+    different cycles of length 3.
+    * For example, 1 → 2 → 3 → 1 is a cycle of length 3, but 1 → 2 → 3 → 4 and 
+      1 → 2 → 3 → 2 → 1 are not.
+    Two cycles are considered to be different if one or more of the rooms 
+    visited in the first cycle is not in the second cycle. Return the confusion 
+    score of the maze.
+
+    Example 1:
+    Input: n = 5, corridors = [[1,2],[5,2],[4,1],[2,4],[3,1],[3,4]]
+    Output: 2
+    Explanation: One cycle of length 3 is 4 → 1 → 3 → 4, denoted in red. Note 
+                 that this is the same cycle as 3 → 4 → 1 → 3 or 1 → 3 → 4 → 1 
+                 because the rooms are the same. Another cycle of length 3 is 
+                 1 → 2 → 4 → 1, denoted in blue. Thus, there are two different 
+                 cycles of length 3.
+    
+    Example 2:
+    Input: n = 4, corridors = [[1,2],[3,4]]
+    Output: 0
+    Explanation: There are no cycles of length 3.
+
+    Constraints:
+    * 2 <= n <= 1000
+    * 1 <= corridors.length <= 5 * 10^4
+    * corridors[i].length == 2
+    * 1 <= room1i, room2i <= n
+    * room1i != room2i
+    * There are no duplicate corridors."""
+
+    def numberOfPaths(self, n: int, corridors: List[List[int]]) -> int:
+        graph = [set() for _ in range(n)]
+        for u, v in corridors: 
+            graph[u-1].add(v-1)
+            graph[v-1].add(u-1)
+        ans = 0 
+        for u, v in corridors: 
+            ans += len(graph[u-1] & graph[v-1])
+        return ans // 3
+
+
     """2078. Two Furthest Houses With Different Colors (Easy)
     There are n houses evenly lined up on the street, and each house is 
     beautifully painted. You are given a 0-indexed integer array colors of 
@@ -53985,6 +54087,44 @@ class Trie:
                 if str(val)[::-1] == str(val): break
             ans += val
         return ans 
+
+
+    """2083. Substrings That Begin and End With the Same Letter (Medium)
+    You are given a 0-indexed string s consisting of only lowercase English 
+    letters. Return the number of substrings in s that begin and end with the 
+    same character. A substring is a contiguous non-empty sequence of 
+    characters within a string.
+
+    Example 1:
+    Input: s = "abcba"
+    Output: 7
+    Explanation: The substrings of length 1 that start and end with the same 
+                 letter are: "a", "b", "c", "b", and "a". The substring of 
+                 length 3 that starts and ends with the same letter is: "bcb".
+                 The substring of length 5 that starts and ends with the same 
+                 letter is: "abcba".
+    
+    Example 2:
+    Input: s = "abacad"
+    Output: 9
+    Explanation: The substrings of length 1 that start and end with the same 
+                 letter are: "a", "b", "a", "c", "a", and "d". The substrings 
+                 of length 3 that start and end with the same letter are: "aba" 
+                 and "aca". The substring of length 5 that starts and ends with 
+                 the same letter is: "abaca".
+    
+    Example 3:
+    Input: s = "a"
+    Output: 1
+    Explanation: The substring of length 1 that starts and ends with the same 
+                 letter is: "a".
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s consists only of lowercase English letters."""
+
+    def numberOfSubstrings(self, s: str) -> int:
+        return sum(v*(v+1)//2 for v in Counter(s).values())
 
 
     """2085. Count Common Words With One Occurrence (Easy)
@@ -54455,6 +54595,68 @@ class Trie:
         return can
 
 
+    """2093. Minimum Cost to Reach City With Discounts (Medium)
+    A series of highways connect n cities numbered from 0 to n - 1. You are 
+    given a 2D integer array highways where highways[i] = [city1i, city2i, tolli] 
+    indicates that there is a highway that connects city1i and city2i, allowing 
+    a car to go from city1i to city2i and vice versa for a cost of tolli. You 
+    are also given an integer discounts which represents the number of 
+    discounts you have. You can use a discount to travel across the ith highway 
+    for a cost of tolli / 2 (integer division). Each discount may only be used 
+    once, and you can only use at most one discount per highway. Return the 
+    minimum total cost to go from city 0 to city n - 1, or -1 if it is not 
+    possible to go from city 0 to city n - 1.
+
+    Example 1:
+    Input: n = 5, highways = [[0,1,4],[2,1,3],[1,4,11],[3,2,3],[3,4,2]], discounts = 1
+    Output: 9
+    Explanation: Go from 0 to 1 for a cost of 4. Go from 1 to 4 and use a 
+                 discount for a cost of 11 / 2 = 5. The minimum cost to go from 
+                 0 to 4 is 4 + 5 = 9.
+    
+    Example 2:
+    Input: n = 4, highways = [[1,3,17],[1,2,7],[3,2,5],[0,1,6],[3,0,20]], discounts = 20
+    Output: 8
+    Explanation: Go from 0 to 1 and use a discount for a cost of 6 / 2 = 3.
+                 Go from 1 to 2 and use a discount for a cost of 7 / 2 = 3.
+                 Go from 2 to 3 and use a discount for a cost of 5 / 2 = 2.
+                 The minimum cost to go from 0 to 3 is 3 + 3 + 2 = 8.
+    
+    Example 3:
+    Input: n = 4, highways = [[0,1,3],[2,3,2]], discounts = 0
+    Output: -1
+    Explanation: It is impossible to go from 0 to 3 so return -1.
+
+    Constraints:
+    * 2 <= n <= 1000
+    * 1 <= highways.length <= 1000
+    * highways[i].length == 3
+    * 0 <= city1i, city2i <= n - 1
+    * city1i != city2i
+    * 0 <= tolli <= 105
+    * 0 <= discounts <= 500
+    * There are no duplicate highways."""
+
+    def minimumCost(self, n: int, highways: List[List[int]], discounts: int) -> int:
+        graph = [[] for _ in range(n)]
+        for u, v, cost in highways: 
+            graph[u].append((v, cost))
+            graph[v].append((u, cost))
+        dist = defaultdict(lambda : inf, {(0, discounts) : 0})
+        pq = [(0, discounts, 0)]
+        while pq: 
+            x, d, u = heappop(pq)
+            if u == n-1: return x 
+            for v, cost in graph[u]: 
+                if x+cost < dist[v, d]: 
+                    heappush(pq, (x+cost, d, v))
+                    dist[v, d] = x+cost
+                if d and x+cost//2 < dist[v, d-1]: 
+                    heappush(pq, (x+cost//2, d-1, v))
+                    dist[v, d-1] = x+cost//2
+        return -1 
+
+
     """2094. Finding 3-Digit Even Numbers (Easy)
     You are given an integer array digits, where each element is a digit. The 
     array may contain duplicates. You need to find all the unique integers that 
@@ -54667,6 +54869,48 @@ class Trie:
             ans.append(stack.pop())
         ans.reverse()
         return [[ans[i], ans[i+1]] for i in range(len(ans)-1)]
+
+
+    """2098. Subsequence of Size K With the Largest Even Sum (Medium)
+    You are given an integer array nums and an integer k. Find the largest even 
+    sum of any subsequence of nums that has a length of k. Return this sum, or 
+    -1 if such a sum does not exist. A subsequence is an array that can be 
+    derived from another array by deleting some or no elements without changing 
+    the order of the remaining elements.
+
+    Example 1:
+    Input: nums = [4,1,5,3,1], k = 3
+    Output: 12
+    Explanation: The subsequence with the largest possible even sum is [4,5,3]. 
+                 It has a sum of 4 + 5 + 3 = 12.
+    
+    Example 2:
+    Input: nums = [4,6,2], k = 3
+    Output: 12
+    Explanation: The subsequence with the largest possible even sum is [4,6,2]. 
+                 It has a sum of 4 + 6 + 2 = 12.
+    
+    Example 3:
+    Input: nums = [1,3,5], k = 1
+    Output: -1
+    Explanation: No subsequence of nums with length 1 has an even sum.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] <= 10^5
+    * 1 <= k <= nums.length"""
+
+    def largestEvenSum(self, nums: List[int], k: int) -> int:
+        ans = -1 
+        least = [inf, inf]
+        prefix = 0 
+        for i, x in enumerate(sorted(nums, reverse=True)): 
+            if i < k: 
+                prefix += x
+                least[x&1] = min(least[x&1], x)
+                if i == k-1 and not prefix&1: return prefix 
+            else: ans = max(ans, prefix - least[not x&1] + x)
+        return ans 
 
 
     """2099. Find Subsequence of Length K With the Largest Sum (Easy)
@@ -55139,6 +55383,52 @@ class Trie:
         return ans 
 
 
+    """2107. Number of Unique Flavors After Sharing K Candies (Medium)
+    You are given a 0-indexed integer array candies, where candies[i] 
+    represents the flavor of the ith candy. Your mom wants you to share these 
+    candies with your little sister by giving her k consecutive candies, but 
+    you want to keep as many flavors of candies as possible. Return the maximum 
+    number of unique flavors of candy you can keep after sharing with your 
+    sister.
+
+    Example 1:
+    Input: candies = [1,2,2,3,4,3], k = 3
+    Output: 3
+    Explanation: Give the candies in the range [1, 3] (inclusive) with flavors 
+                 [2,2,3]. You can eat candies with flavors [1,4,3]. There are 3 
+                 unique flavors, so return 3.
+    
+    Example 2:
+    Input: candies = [2,2,2,2,3,3], k = 2
+    Output: 2
+    Explanation: Give the candies in the range [3, 4] (inclusive) with flavors 
+                 [2,3]. You can eat candies with flavors [2,2,2,3]. There are 2 
+                 unique flavors, so return 2. Note that you can also share the 
+                 candies with flavors [2,2] and eat the candies with flavors 
+                 [2,2,3,3].
+    
+    Example 3:
+    Input: candies = [2,4,5], k = 0
+    Output: 3
+    Explanation: You do not have to give any candies. You can eat the candies 
+                 with flavors [2,4,5]. There are 3 unique flavors, so return 3.
+
+    Constraints:
+    * 1 <= candies.length <= 10^5
+    * 1 <= candies[i] <= 10^5
+    * 0 <= k <= candies.length"""
+
+    def shareCandies(self, candies: List[int], k: int) -> int:
+        ans = 0 
+        freq = Counter(candies)
+        for i, x in enumerate(candies): 
+            freq[x] -= 1
+            if freq[x] == 0: freq.pop(x)
+            if i >= k: freq[candies[i-k]] += 1
+            if i >= k-1: ans = max(ans, len(freq))
+        return ans 
+
+
     """2108. Find First Palindromic String in the Array (Easy)
     Given an array of strings words, return the first palindromic string in the 
     array. If there is no such string, return an empty string "". A string is 
@@ -55310,6 +55600,67 @@ class Trie:
                 else: vals[bisect_right(vals, arr[i])] = arr[i]
             ans += len(vals)
         return len(arr) - ans
+
+
+    """2113. Elements in Array After Removing and Replacing Elements (Medium)
+    You are given a 0-indexed integer array nums. Initially on minute 0, the 
+    array is unchanged. Every minute, the leftmost element in nums is removed 
+    until no elements remain. Then, every minute, one element is appended to 
+    the end of nums, in the order they were removed in, until the original 
+    array is restored. This process repeats indefinitely.
+    * For example, the array [0,1,2] would change as follows: 
+      [0,1,2] → [1,2] → [2] → [] → [0] → [0,1] → [0,1,2] → [1,2] → [2] → [] → 
+      [0] → [0,1] → [0,1,2] → ...
+    You are also given a 2D integer array queries of size n where 
+    queries[j] = [timej, indexj]. The answer to the jth query is:
+    * nums[indexj] if indexj < nums.length at minute timej
+    * -1 if indexj >= nums.length at minute timej
+    Return an integer array ans of size n where ans[j] is the answer to the jth 
+    query.
+
+    Example 1:
+    Input: nums = [0,1,2], queries = [[0,2],[2,0],[3,2],[5,0]]
+    Output: [2,2,-1,0]
+    Explanation: Minute 0: [0,1,2] - All elements are in the nums.
+                 Minute 1: [1,2]   - The leftmost element, 0, is removed.
+                 Minute 2: [2]     - The leftmost element, 1, is removed.
+                 Minute 3: []      - The leftmost element, 2, is removed.
+                 Minute 4: [0]     - 0 is added to the end of nums.
+                 Minute 5: [0,1]   - 1 is added to the end of nums.
+                 At minute 0, nums[2] is 2.
+                 At minute 2, nums[0] is 2.
+                 At minute 3, nums[2] does not exist.
+                 At minute 5, nums[0] is 0.
+
+    Example 2:
+    Input: nums = [2], queries = [[0,0],[1,0],[2,0],[3,0]]
+    Output: [2,-1,2,-1]
+    Explanation: Minute 0: [2] - All elements are in the nums.
+                 Minute 1: []  - The leftmost element, 2, is removed.
+                 Minute 2: [2] - 2 is added to the end of nums.
+                 Minute 3: []  - The leftmost element, 2, is removed.
+                 At minute 0, nums[0] is 2.
+                 At minute 1, nums[0] does not exist.
+                 At minute 2, nums[0] is 2.
+                 At minute 3, nums[0] does not exist.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * 0 <= nums[i] <= 100
+    * n == queries.length
+    * 1 <= n <= 10^5
+    * queries[j].length == 2
+    * 0 <= timej <= 10^5
+    * 0 <= indexj < nums.length"""
+
+    def elementInNums(self, nums: List[int], queries: List[List[int]]) -> List[int]:
+        ans = []
+        for t, i in queries: 
+            t %= 2*len(nums)
+            if t < len(nums)-i: ans.append(nums[i+t])
+            elif t <= len(nums)+i: ans.append(-1)
+            else: ans.append(nums[i])
+        return ans
 
 
     """2114. Maximum Number of Words Found in Sentences (Easy)
@@ -55957,6 +56308,43 @@ class Trie:
         return max(ans, max(dp))
 
 
+    """2128. Remove All Ones With Row and Column Flips (Medium)
+    You are given an m x n binary matrix grid. In one operation, you can choose 
+    any row or column and flip each value in that row or column (i.e., changing 
+    all 0's to 1's, and all 1's to 0's). Return true if it is possible to 
+    remove all 1's from grid using any number of operations or false otherwise.
+
+    Example 1:
+    Input: grid = [[0,1,0],[1,0,1],[0,1,0]]
+    Output: true
+    Explanation: One possible way to remove all 1's from grid is to:
+                 - Flip the middle row
+                 - Flip the middle column
+    
+    Example 2:
+    Input: grid = [[1,1,0],[0,0,0],[0,0,0]]
+    Output: false
+    Explanation: It is impossible to remove all 1's from grid.
+
+    Example 3:
+    Input: grid = [[0]]
+    Output: true
+    Explanation: There are no 1's in grid.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 300
+    * grid[i][j] is either 0 or 1."""
+
+    def removeOnes(self, grid: List[List[int]]) -> bool:
+        m, n = len(grid), len(grid[0])
+        flip = [x^1 for x in grid[0]]
+        for i in range(1, m): 
+            if grid[i] != grid[0] and grid[i] != flip: return False 
+        return True 
+
+
     """2133. Check if Every Row and Column Contains All Numbers (Easy)
     An n x n matrix is valid if every row and every column contains all the 
     integers from 1 to n (inclusive). Given an n x n integer matrix matrix, 
@@ -56164,6 +56552,59 @@ class Trie:
         for p, g in sorted(zip(plantTime, growTime), key=lambda x: x[1], reverse=True): 
             prefix += p
             ans = max(ans, prefix + g)
+        return ans 
+
+
+    """2137. Pour Water Between Buckets to Make Water Levels Equal (Medium)
+    You have n buckets each containing some gallons of water in it, represented 
+    by a 0-indexed integer array buckets, where the ith bucket contains 
+    buckets[i] gallons of water. You are also given an integer loss. You want 
+    to make the amount of water in each bucket equal. You can pour any amount 
+    of water from one bucket to another bucket (not necessarily an integer). 
+    However, every time you pour k gallons of water, you spill loss percent of 
+    k. Return the maximum amount of water in each bucket after making the 
+    amount of water equal. Answers within 10-5 of the actual answer will be 
+    accepted.
+
+    Example 1:
+    Input: buckets = [1,2,7], loss = 80
+    Output: 2.00000
+    Explanation: Pour 5 gallons of water from buckets[2] to buckets[0]. 
+                 5 * 80% = 4 gallons are spilled and buckets[0] only receives 
+                 5 - 4 = 1 gallon of water. All buckets have 2 gallons of water 
+                 in them so return 2.
+    
+    Example 2:
+    Input: buckets = [2,4,6], loss = 50
+    Output: 3.50000
+    Explanation: Pour 0.5 gallons of water from buckets[1] to buckets[0].
+                 0.5 * 50% = 0.25 gallons are spilled and buckets[0] only 
+                 receives 0.5 - 0.25 = 0.25 gallons of water. Now, 
+                 buckets = [2.25, 3.5, 6]. Pour 2.5 gallons of water from 
+                 buckets[2] to buckets[0]. 2.5 * 50% = 1.25 gallons are spilled 
+                 and buckets[0] only receives 2.5 - 1.25 = 1.25 gallons of 
+                 water. All buckets have 3.5 gallons of water in them so return 
+                 3.5.
+    
+    Example 3:
+    Input: buckets = [3,3,3,3], loss = 40
+    Output: 3.00000
+    Explanation: All buckets already have the same amount of water in them.
+
+    Constraints:
+    * 1 <= buckets.length <= 10^5
+    * 0 <= buckets[i] <= 10^5
+    * 0 <= loss <= 99"""
+
+    def equalizeWater(self, buckets: List[int], loss: int) -> float:
+        buckets.sort()
+        ans = prefix = 0 
+        loss /= 100
+        total = sum(buckets)
+        for i, x in enumerate(buckets): 
+            cand = (prefix + (1-loss)*(total - prefix))/(i + (1-loss)*(len(buckets)-i))
+            if (i == 0 or buckets[i-1] <= cand) and cand <= x: ans = max(ans, cand)
+            prefix += x 
         return ans 
 
 
@@ -57320,6 +57761,40 @@ class Trie:
         return ans 
 
 
+    """2168. Unique Substrings With Equal Digit Frequency (Medium)
+    Given a digit string s, return the number of unique substrings of s where 
+    every digit appears the same number of times.
+
+    Example 1:
+    Input: s = "1212"
+    Output: 5
+    Explanation: The substrings that meet the requirements are "1", "2", "12", 
+                 "21", "1212". Note that although the substring "12" appears 
+                 twice, it is only counted once.
+    
+    Example 2:
+    Input: s = "12321"
+    Output: 9
+    Explanation: The substrings that meet the requirements are "1", "2", "3", 
+                 "12", "23", "32", "21", "123", "321".
+
+    Constraints:
+    * 1 <= s.length <= 1000
+    * s consists of digits."""
+
+    def equalDigitFrequency(self, s: str) -> int:
+        seen = set()
+        for i in range(len(s)): 
+            freq = Counter()
+            hs = most = 0 
+            for j in range(i, len(s)): 
+                freq[s[j]] += 1
+                most = max(most, freq[s[j]])
+                hs = (11*hs + ord(s[j]) - 47) % 1_000_000_007
+                if most*len(freq) == j-i+1: seen.add(hs)
+        return len(seen)
+
+
     """2169. Count Operations to Obtain Zero (Easy)
     You are given two non-negative integers num1 and num2. In one operation, if 
     num1 >= num2, you must subtract num2 from num1, otherwise subtract num1 
@@ -57491,6 +57966,73 @@ class Trie:
             return ans 
         
         return fn(0, 0)
+
+
+    """2174. Remove All Ones With Row and Column Flips II (Medium)
+    You are given a 0-indexed m x n binary matrix grid. In one operation, you 
+    can choose any i and j that meet the following conditions:
+    * 0 <= i < m
+    * 0 <= j < n
+    * grid[i][j] == 1
+    and change the values of all cells in row i and column j to zero. Return 
+    the minimum number of operations needed to remove all 1's from grid.
+
+    Example 1:
+    Input: grid = [[1,1,1],[1,1,1],[0,1,0]]
+    Output: 2
+    Explanation: In the first operation, change all cell values of row 1 and 
+                 column 1 to zero. In the second operation, change all cell 
+                 values of row 0 and column 0 to zero.
+    
+    Example 2:
+    Input: grid = [[0,1,0],[1,0,1],[0,1,0]]
+    Output: 2
+    Explanation: In the first operation, change all cell values of row 1 and 
+                 column 0 to zero. In the second operation, change all cell 
+                 values of row 2 and column 1 to zero. Note that we cannot 
+                 perform an operation using row 1 and column 1 because 
+                 grid[1][1] != 1.
+    
+    Example 3:
+    Input: grid = [[0,0],[0,0]]
+    Output: 0
+    Explanation: There are no 1's to remove so return 0.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 15
+    * 1 <= m * n <= 15
+    * grid[i][j] is either 0 or 1."""
+
+    def removeOnes(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        mask = [[(1<<m*n)-1] * n for _ in range(m)]
+        for i in range(m): 
+            for j in range(n): 
+                for ii in range(m): 
+                    if mask[i][j] & 1<<ii*n+j: mask[i][j] ^= 1<<ii*n+j
+                for jj in range(n): 
+                    if mask[i][j] & 1<<i*n+jj: mask[i][j] ^= 1<<i*n+jj
+        v = 0
+        for i in range(m): 
+            for j in range(n): 
+                if grid[i][j]: v ^= 1<<i*n+j
+        ans = 0 
+        seen = {v}
+        queue = deque([v])
+        while queue: 
+            for _ in range(len(queue)): 
+                v = queue.popleft()
+                if v == 0: return ans 
+                for i in range(m): 
+                    for j in range(n): 
+                        if v & 1<<i*n+j: 
+                            vv = v & mask[i][j]
+                            if vv not in seen: 
+                                seen.add(vv)
+                                queue.append(vv)
+            ans += 1
 
 
     """2176. Count Equal and Divisible Pairs in an Array (Easy)
@@ -58733,6 +59275,59 @@ class Trie:
         return fn(0, numCarpets)
 
 
+    """2214. Minimum Health to Beat Game (Medium)
+    You are playing a game that has n levels numbered from 0 to n - 1. You are 
+    given a 0-indexed integer array damage where damage[i] is the amount of 
+    health you will lose to complete the ith level. You are also given an 
+    integer armor. You may use your armor ability at most once during the game 
+    on any level which will protect you from at most armor damage. You must 
+    complete the levels in order and your health must be greater than 0 at all 
+    times to beat the game. Return the minimum health you need to start with to 
+    beat the game.
+
+    Example 1:
+    Input: damage = [2,7,4,3], armor = 4
+    Output: 13
+    Explanation: One optimal way to beat the game starting at 13 health is:
+                 On round 1, take 2 damage. You have 13 - 2 = 11 health.
+                 On round 2, take 7 damage. You have 11 - 7 = 4 health.
+                 On round 3, use your armor to protect you from 4 damage. You 
+                             have 4 - 0 = 4 health.
+                 On round 4, take 3 damage. You have 4 - 3 = 1 health.
+                 Note that 13 is the minimum health you need to start with to 
+                 beat the game.
+    
+    Example 2:
+    Input: damage = [2,5,3,4], armor = 7
+    Output: 10
+    Explanation: One optimal way to beat the game starting at 10 health is:
+                 On round 1, take 2 damage. You have 10 - 2 = 8 health.
+                 On round 2, use your armor to protect you from 5 damage. You 
+                             have 8 - 0 = 8 health.
+                 On round 3, take 3 damage. You have 8 - 3 = 5 health.
+                 On round 4, take 4 damage. You have 5 - 4 = 1 health.
+                 Note that 10 is the minimum health you need to start with to 
+                 beat the game.
+    
+    Example 3:
+    Input: damage = [3,3,3], armor = 0
+    Output: 10
+    Explanation: One optimal way to beat the game starting at 10 health is:
+                 On round 1, take 3 damage. You have 10 - 3 = 7 health.
+                 On round 2, take 3 damage. You have 7 - 3 = 4 health.
+                 On round 3, take 3 damage. You have 4 - 3 = 1 health.
+                 Note that you did not use your armor ability.
+
+    Constraints:
+    * n == damage.length
+    * 1 <= n <= 10^5
+    * 0 <= damage[i] <= 10^5
+    * 0 <= armor <= 10^5"""
+
+    def minimumHealth(self, damage: List[int], armor: int) -> int:
+        return 1 + sum(damage) - min(max(damage), armor)
+
+
     """2215. Find the Difference of Two Arrays (Easy)
     Given two 0-indexed integer arrays nums1 and nums2, return a list answer of 
     size 2 where:
@@ -58884,6 +59479,45 @@ class Trie:
             return ans 
         
         return fn(0, k)
+
+
+    """2219. Maximum Sum Score of Array (Medium)
+    You are given a 0-indexed integer array nums of length n. The sum score of 
+    nums at an index i where 0 <= i < n is the maximum of:
+    * The sum of the first i + 1 elements of nums.
+    * The sum of the last n - i elements of nums.
+    Return the maximum sum score of nums at any index.
+
+    Example 1:
+    Input: nums = [4,3,-2,5]
+    Output: 10
+    Explanation: The sum score at index 0 is max(4, 4 + 3 + -2 + 5) = max(4, 10) = 10.
+                 The sum score at index 1 is max(4 + 3, 3 + -2 + 5) = max(7, 6) = 7.
+                 The sum score at index 2 is max(4 + 3 + -2, -2 + 5) = max(5, 3) = 5.
+                 The sum score at index 3 is max(4 + 3 + -2 + 5, 5) = max(10, 5) = 10.
+                 The maximum sum score of nums is 10.
+    
+    Example 2:
+    Input: nums = [-3,-5]
+    Output: -3
+    Explanation: The sum score at index 0 is max(-3, -3 + -5) = max(-3, -8) = -3.
+                 The sum score at index 1 is max(-3 + -5, -5) = max(-8, -5) = -5.
+                 The maximum sum score of nums is -3.
+
+    Constraints:
+    * n == nums.length
+    * 1 <= n <= 10^5
+    * -10^5 <= nums[i] <= 10^5"""
+
+    def maximumSumScore(self, nums: List[int]) -> int:
+        prefix = 0
+        suffix = sum(nums)
+        ans = -inf 
+        for i, x in enumerate(nums):
+            prefix += x
+            ans = max(ans, prefix, suffix)
+            suffix -= x
+        return ans 
 
 
     """2220. Minimum Bit Flips to Convert Number (Easy)
@@ -59469,6 +60103,70 @@ class Trie:
 
     def checkTree(self, root: Optional[TreeNode]) -> bool:
         return root.val == root.left.val + root.right.val
+
+
+    """2237. Count Positions on Street With Required Brightness (Medium)
+    You are given an integer n. A perfectly straight street is represented by a 
+    number line ranging from 0 to n - 1. You are given a 2D integer array 
+    lights representing the street lamp(s) on the street. Each 
+    lights[i] = [positioni, rangei] indicates that there is a street lamp at 
+    position positioni that lights up the area from 
+    [max(0, positioni - rangei), min(n - 1, positioni + rangei)] (inclusive).
+    The brightness of a position p is defined as the number of street lamps 
+    that light up the position p. You are given a 0-indexed integer array 
+    requirement of size n where requirement[i] is the minimum brightness of the 
+    ith position on the street. Return the number of positions i on the street 
+    between 0 and n - 1 that have a brightness of at least requirement[i].
+
+    Example 1:
+    Input: n = 5, lights = [[0,1],[2,1],[3,2]], requirement = [0,2,1,4,1]
+    Output: 4
+    Explanation: - The first street lamp lights up the area from 
+                   [max(0, 0 - 1), min(n - 1, 0 + 1)] = [0, 1] (inclusive).
+                 - The second street lamp lights up the area from 
+                   [max(0, 2 - 1), min(n - 1, 2 + 1)] = [1, 3] (inclusive).
+                 - The third street lamp lights up the area from 
+                   [max(0, 3 - 2), min(n - 1, 3 + 2)] = [1, 4] (inclusive).
+                 - Position 0 is covered by the first street lamp. It is 
+                   covered by 1 street lamp which is greater than requirement[0].
+                 - Position 1 is covered by the first, second, and third street 
+                   lamps. It is covered by 3 street lamps which is greater than 
+                   requirement[1].
+                 - Position 2 is covered by the second and third street lamps. 
+                   It is covered by 2 street lamps which is greater than 
+                   requirement[2].
+                 - Position 3 is covered by the second and third street lamps. 
+                   It is covered by 2 street lamps which is less than 
+                   requirement[3].
+                 - Position 4 is covered by the third street lamp. It is 
+                   covered by 1 street lamp which is equal to requirement[4].
+                 Positions 0, 1, 2, and 4 meet the requirement so we return 4.
+    
+    Example 2:
+    Input: n = 1, lights = [[0,1]], requirement = [2]
+    Output: 0
+    Explanation: - The first street lamp lights up the area from 
+                   [max(0, 0 - 1), min(n - 1, 0 + 1)] = [0, 0] (inclusive).
+                 - Position 0 is covered by the first street lamp. It is 
+                   covered by 1 street lamp which is less than requirement[0].
+                 - We return 0 because no position meets their brightness 
+                   requirement.
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * 1 <= lights.length <= 10^5
+    * 0 <= positioni < n
+    * 0 <= rangei <= 10^5
+    * requirement.length == n
+    * 0 <= requirement[i] <= 10^5"""
+
+    def meetRequirement(self, n: int, lights: List[List[int]], requirement: List[int]) -> int:
+        line = [0]*(n+1)
+        for x, d in lights: 
+            line[max(0, x-d)] += 1
+            line[min(n, x+d+1)] -= 1
+        prefix = list(accumulate(line))
+        return sum(p >= r for p, r in zip(prefix, requirement))
 
 
     """2243. Calculate Digit Sum of a String (Easy)
@@ -60066,6 +60764,54 @@ class Trie:
         return fn(0, 0, 1)
 
 
+    """2268. Minimum Number of Keypresses (Medium)
+    You have a keypad with 9 buttons, numbered from 1 to 9, each mapped to 
+    lowercase English letters. You can choose which characters each button is 
+    matched to as long as:
+    * All 26 lowercase English letters are mapped to.
+    * Each character is mapped to by exactly 1 button.
+    * Each button maps to at most 3 characters.
+    To type the first character matched to a button, you press the button once. 
+    To type the second character, you press the button twice, and so on. Given 
+    a string s, return the minimum number of keypresses needed to type s using 
+    your keypad. Note that the characters mapped to by each button, and the 
+    order they are mapped in cannot be changed.
+
+    Example 1:
+    Input: s = "apple"
+    Output: 5
+    Explanation: One optimal way to setup your keypad is shown above.
+                 Type 'a' by pressing button 1 once.
+                 Type 'p' by pressing button 6 once.
+                 Type 'p' by pressing button 6 once.
+                 Type 'l' by pressing button 5 once.
+                 Type 'e' by pressing button 3 once.
+                 A total of 5 button presses are needed, so return 5.
+    
+    Example 2:
+    Input: s = "abcdefghijkl"
+    Output: 15
+    Explanation: One optimal way to setup your keypad is shown above.
+                 The letters 'a' to 'i' can each be typed by pressing a button 
+                 once.
+                 Type 'j' by pressing button 1 twice.
+                 Type 'k' by pressing button 2 twice.
+                 Type 'l' by pressing button 3 twice.
+                 A total of 15 button presses are needed, so return 15.
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s consists of lowercase English letters."""
+
+    def minimumKeypresses(self, s: str) -> int:
+        ans = press = 0 
+        freq = Counter(s)
+        for i, v in enumerate(sorted(freq.values(), reverse=True)): 
+            if i % 9 == 0: press += 1
+            ans += press * v
+        return ans 
+
+
     """2269. Find the K-Beauty of a Number (Easy)
     The k-beauty of an integer num is defined as the number of substrings of 
     num when it is read as a string that meet the following conditions:
@@ -60538,6 +61284,69 @@ class Trie:
         return ans 
 
 
+    """2282. Number of People That Can Be Seen in a Grid (Medium)
+    You are given an m x n 0-indexed 2D array of positive integers heights 
+    where heights[i][j] is the height of the person standing at position (i, j).
+    A person standing at position (row1, col1) can see a person standing at 
+    position (row2, col2) if:
+    * The person at (row2, col2) is to the right or below the person at 
+      (row1, col1). More formally, this means that either row1 == row2 and 
+      col1 < col2 or row1 < row2 and col1 == col2.
+    * Everyone in between them is shorter than both of them.
+    Return an m x n 2D array of integers answer where answer[i][j] is the 
+    number of people that the person at position (i, j) can see.
+
+    Example 1:
+    Input: heights = [[3,1,4,2,5]]
+    Output: [[2,1,2,1,0]]
+    Explanation: - The person at (0, 0) can see the people at (0, 1) and (0, 2).
+                   Note that he cannot see the person at (0, 4) because the 
+                   person at (0, 2) is taller than him.
+                 - The person at (0, 1) can see the person at (0, 2).
+                 - The person at (0, 2) can see the people at (0, 3) and (0, 4).
+                 - The person at (0, 3) can see the person at (0, 4).
+                 - The person at (0, 4) cannot see anybody.
+    
+    Example 2:
+    Input: heights = [[5,1],[3,1],[4,1]]
+    Output: [[3,1],[2,1],[1,0]]
+    Explanation: - The person at (0, 0) can see the people at (0, 1), (1, 0) 
+                   and (2, 0).
+                 - The person at (0, 1) can see the person at (1, 1).
+                 - The person at (1, 0) can see the people at (1, 1) and (2, 0).
+                 - The person at (1, 1) can see the person at (2, 1).
+                 - The person at (2, 0) can see the person at (2, 1).
+                 - The person at (2, 1) cannot see anybody.
+
+    Constraints:
+    * 1 <= heights.length <= 400
+    * 1 <= heights[i].length <= 400
+    * 1 <= heights[i][j] <= 10^5"""
+
+    def seePeople(self, heights: List[List[int]]) -> List[List[int]]:
+        m, n = len(heights), len(heights[0])
+        ans = [[0] * n for _ in range(m)]
+        for i in range(m): 
+            stack = []
+            for j in range(n): 
+                prev = -inf
+                while stack and heights[i][stack[-1]] < heights[i][j]: 
+                    if prev < heights[i][stack[-1]]: ans[i][stack[-1]] += 1
+                    prev = heights[i][stack.pop()]
+                if stack and prev < heights[i][stack[-1]]: ans[i][stack[-1]] += 1
+                stack.append(j)
+        for j in range(n): 
+            stack = []
+            for i in range(m): 
+                prev = -inf 
+                while stack and heights[stack[-1]][j] < heights[i][j]: 
+                    if prev < heights[stack[-1]][j]: ans[stack[-1]][j] += 1
+                    prev = heights[stack.pop()][j]
+                if stack and prev < heights[stack[-1]][j]: ans[stack[-1]][j] += 1
+                stack.append(i)
+        return ans 
+
+
     """2283. Check if Number Has Equal Digit Count and Digit Value (Easy)
     You are given a 0-indexed string num of length n consisting of digits. 
     Return true if for every index i in the range 0 <= i < n, the digit i 
@@ -60838,6 +61647,51 @@ class Trie:
                 if 0 <= ii < m and 0 <= jj < n and x + grid[ii][jj] < dist[ii][jj]: 
                     dist[ii][jj] = x + grid[ii][jj]
                     heappush(pq, (dist[ii][jj], ii, jj))
+
+
+    """2291. Maximum Profit From Trading Stocks (Medium)
+    You are given two 0-indexed integer arrays of the same length present and 
+    future where present[i] is the current price of the ith stock and future[i] 
+    is the price of the ith stock a year in the future. You may buy each stock 
+    at most once. You are also given an integer budget representing the amount 
+    of money you currently have. Return the maximum amount of profit you can 
+    make.
+
+    Example 1:
+    Input: present = [5,4,6,2,3], future = [8,5,4,3,5], budget = 10
+    Output: 6
+    Explanation: One possible way to maximize your profit is to:
+                 Buy the 0th, 3rd, and 4th stocks for a total of 5 + 2 + 3 = 10.
+                 Next year, sell all three stocks for a total of 8 + 3 + 5 = 16.
+                 The profit you made is 16 - 10 = 6. It can be shown that the 
+                 maximum profit you can make is 6.
+    
+    Example 2:
+    Input: present = [2,2,5], future = [3,4,10], budget = 6
+    Output: 5
+    Explanation: The only possible way to maximize your profit is to:
+                 Buy the 2nd stock, and make a profit of 10 - 5 = 5.
+                 It can be shown that the maximum profit you can make is 5.
+    
+    Example 3:
+    Input: present = [3,3,12], future = [0,3,15], budget = 10
+    Output: 0
+    Explanation: One possible way to maximize your profit is to:
+                 Buy the 1st stock, and make a profit of 3 - 3 = 0.
+                 It can be shown that the maximum profit you can make is 0.
+
+    Constraints:
+    * n == present.length == future.length
+    * 1 <= n <= 1000
+    * 0 <= present[i], future[i] <= 100
+    * 0 <= budget <= 1000"""
+
+    def maximumProfit(self, present: List[int], future: List[int], budget: int) -> int:
+        dp = [0] * (budget+1)
+        for p, f in zip(present, future):
+            for i in range(budget, p-1, -1): 
+                dp[i] = max(dp[i], dp[i-p] + f - p)
+        return dp[-1]
 
 
     """2293. Min Max Game (Easy)
@@ -61785,6 +62639,50 @@ class Trie:
         return ans  
 
 
+    """2323. Find Minimum Time to Finish All Jobs II (Medium)
+    You are given two 0-indexed integer arrays jobs and workers of equal length, 
+    where jobs[i] is the amount of time needed to complete the ith job, and 
+    workers[j] is the amount of time the jth worker can work each day. Each job 
+    should be assigned to exactly one worker, such that each worker completes 
+    exactly one job. Return the minimum number of days needed to complete all 
+    the jobs after assignment.
+
+    Example 1:
+    Input: jobs = [5,2,4], workers = [1,7,5]
+    Output: 2
+    Explanation: - Assign the 2nd worker to the 0th job. It takes them 1 day to 
+                   finish the job.
+                 - Assign the 0th worker to the 1st job. It takes them 2 days 
+                   to finish the job.
+                 - Assign the 1st worker to the 2nd job. It takes them 1 day to 
+                   finish the job.
+                 It takes 2 days for all the jobs to be completed, so return 2.
+                 It can be proven that 2 days is the minimum number of days needed.
+    
+    Example 2:
+    Input: jobs = [3,18,15,9], workers = [6,5,1,3]
+    Output: 3
+    Explanation: - Assign the 2nd worker to the 0th job. It takes them 3 days 
+                   to finish the job.
+                 - Assign the 0th worker to the 1st job. It takes them 3 days 
+                   to finish the job.
+                 - Assign the 1st worker to the 2nd job. It takes them 3 days 
+                   to finish the job.
+                 - Assign the 3rd worker to the 3rd job. It takes them 3 days 
+                   to finish the job.
+                 It takes 3 days for all the jobs to be completed, so return 3.
+                 It can be proven that 3 days is the minimum number of days 
+                 needed.
+
+    Constraints:
+    * n == jobs.length == workers.length
+    * 1 <= n <= 10^5
+    * 1 <= jobs[i], workers[i] <= 10^5"""
+
+    def minimumTime(self, jobs: List[int], workers: List[int]) -> int:
+        return max((j+w-1)//w for j, w in zip(sorted(jobs), sorted(workers)))
+
+
     """2325. Decode the Message (Easy)
     You are given the strings key and message, which represent a cipher key and 
     a secret message, respectively. The steps to decode message are as follows:
@@ -61956,6 +62854,43 @@ class Trie:
             return ans % 1_000_000_007
         
         return sum(fn(i, j) for i in range(m) for j in range(n)) % 1_000_000_007
+
+
+    """2330. Valid Palindrome IV (Medium)
+    You are given a 0-indexed string s consisting of only lowercase English 
+    letters. In one operation, you can change any character of s to any other 
+    character. Return true if you can make s a palindrome after performing 
+    exactly one or two operations, or return false otherwise.
+
+    Example 1:
+    Input: s = "abcdba"
+    Output: true
+    Explanation: One way to make s a palindrome using 1 operation is:
+                 - Change s[2] to 'd'. Now, s = "abddba".
+                 One operation could be performed to make s a palindrome so 
+                 return true.
+    
+    Example 2:
+    Input: s = "aa"
+    Output: true
+    Explanation: One way to make s a palindrome using 2 operations is:
+                 - Change s[0] to 'b'. Now, s = "ba".
+                 - Change s[1] to 'b'. Now, s = "bb".
+                 Two operations could be performed to make s a palindrome so 
+                 return true.
+    
+    Example 3:
+    Input: s = "abcdef"
+    Output: false
+    Explanation: It is not possible to make s a palindrome using one or two 
+                 operations so return false.
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s consists only of lowercase English letters."""
+
+    def makePalindrome(self, s: str) -> bool:
+        return sum(s[i] != s[~i] for i in range(len(s)//2)) <= 2
 
 
     """2331. Evaluate Boolean Binary Tree (Easy)
@@ -62325,6 +63260,52 @@ class Trie:
         return ans 
 
 
+    """2340. Minimum Adjacent Swaps to Make a Valid Array (Medium)
+    You are given a 0-indexed integer array nums. Swaps of adjacent elements 
+    are able to be performed on nums. A valid array meets the following 
+    conditions:
+    * The largest element (any of the largest elements if there are multiple) 
+      is at the rightmost position in the array.
+    * The smallest element (any of the smallest elements if there are multiple) 
+      is at the leftmost position in the array.
+    Return the minimum swaps required to make nums a valid array.
+
+    Example 1:
+    Input: nums = [3,4,5,5,3,1]
+    Output: 6
+    Explanation: Perform the following swaps:
+                 - Swap 1: Swap the 3rd and 4th elements, nums is then 
+                   [3,4,5,3,5,1].
+                 - Swap 2: Swap the 4th and 5th elements, nums is then 
+                   [3,4,5,3,1,5].
+                 - Swap 3: Swap the 3rd and 4th elements, nums is then 
+                   [3,4,5,1,3,5].
+                 - Swap 4: Swap the 2nd and 3rd elements, nums is then 
+                   [3,4,1,5,3,5].
+                 - Swap 5: Swap the 1st and 2nd elements, nums is then 
+                   [3,1,4,5,3,5].
+                 - Swap 6: Swap the 0th and 1st elements, nums is then 
+                   [1,3,4,5,3,5].
+                 It can be shown that 6 swaps is the minimum swaps required to 
+                 make a valid array.
+    
+    Example 2:
+    Input: nums = [9]
+    Output: 0
+    Explanation: The array is already valid, so we return 0.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^5"""
+
+    def minimumSwaps(self, nums: List[int]) -> int:
+        imin = imax = 0 
+        for i, x in enumerate(nums): 
+            if x < nums[imin]: imin = i 
+            if x >= nums[imax]: imax = i 
+        return imin + len(nums) - imax - 1 - (imax < imin)
+
+
     """2341. Maximum Number of Pairs in Array (Easy)
     You are given a 0-indexed integer array nums. In one operation, you may do 
     the following:
@@ -62499,6 +63480,51 @@ class Trie:
     def minOperations(self, nums: List[int], numsDivide: List[int]) -> int:
         g = reduce(gcd, numsDivide)
         return next((i for i, x in enumerate(sorted(nums)) if g % x == 0), -1)
+
+
+    """2345. Finding the Number of Visible Mountains (Medium)
+    You are given a 0-indexed 2D integer array peaks where peaks[i] = [xi, yi] 
+    states that mountain i has a peak at coordinates (xi, yi). A mountain can 
+    be described as a right-angled isosceles triangle, with its base along the 
+    x-axis and a right angle at its peak. More formally, the gradients of 
+    ascending and descending the mountain are 1 and -1 respectively. A mountain 
+    is considered visible if its peak does not lie within another mountain 
+    (including the border of other mountains). Return the number of visible 
+    mountains.
+
+    Example 1:
+    Input: peaks = [[2,2],[6,3],[5,4]]
+    Output: 2
+    Explanation: The diagram above shows the mountains.
+                 - Mountain 0 is visible since its peak does not lie within 
+                   another mountain or its sides.
+                 - Mountain 1 is not visible since its peak lies within the 
+                   side of mountain 2.
+                 - Mountain 2 is visible since its peak does not lie within 
+                   another mountain or its sides.
+                 There are 2 mountains that are visible.
+    
+    Example 2:
+    Input: peaks = [[1,3],[1,3]]
+    Output: 0
+    Explanation: The diagram above shows the mountains (they completely overlap).
+                 Both mountains are not visible since their peaks lie within 
+                 each other.
+
+    Constraints:
+    * 1 <= peaks.length <= 10^5
+    * peaks[i].length == 2
+    * 1 <= xi, yi <= 10^5"""
+
+    def visibleMountains(self, peaks: List[List[int]]) -> int:
+        ans = 0
+        right = -inf 
+        peaks.sort(key=lambda x: (x[0]-x[1], -x[0]-x[1]))
+        for i, (p, s) in enumerate(peaks): 
+            hi = p+s
+            if right < hi and (i+1 == len(peaks) or peaks[i] != peaks[i+1]): ans += 1
+            right = max(right, hi)
+        return ans 
 
 
     """2347. Best Poker Hand (Easy)
@@ -62745,6 +63771,59 @@ class Trie:
         return sum(v1*v2 for k1, v1 in freq.items() for k2, v2 in freq.items() if k1+k2 >= k)
 
 
+    """2355. Maximum Number of Books You Can Take (Hard)
+    You are given a 0-indexed integer array books of length n where books[i] 
+    denotes the number of books on the ith shelf of a bookshelf. You are going 
+    to take books from a contiguous section of the bookshelf spanning from l to 
+    r where 0 <= l <= r < n. For each index i in the range l <= i < r, you must 
+    take strictly fewer books from shelf i than shelf i + 1. Return the maximum 
+    number of books you can take from the bookshelf.
+
+    Example 1:
+    Input: books = [8,5,2,7,9]
+    Output: 19
+    Explanation: - Take 1 book from shelf 1.
+                 - Take 2 books from shelf 2.
+                 - Take 7 books from shelf 3.
+                 - Take 9 books from shelf 4.
+                 You have taken 19 books, so return 19. It can be proven that 
+                 19 is the maximum number of books you can take.
+    
+    Example 2:
+    Input: books = [7,0,3,4,5]
+    Output: 12
+    Explanation: - Take 3 books from shelf 2.
+                 - Take 4 books from shelf 3.
+                 - Take 5 books from shelf 4.
+                 You have taken 12 books so return 12. It can be proven that 12 
+                 is the maximum number of books you can take.
+    
+    Example 3:
+    Input: books = [8,2,3,7,3,4,0,1,4,3]
+    Output: 13
+    Explanation: - Take 1 book from shelf 0.
+                 - Take 2 books from shelf 1.
+                 - Take 3 books from shelf 2.
+                 - Take 7 books from shelf 3.
+                 You have taken 13 books so return 13. It can be proven that 13 
+                 is the maximum number of books you can take.
+
+    Constraints:
+    * 1 <= books.length <= 10^5
+    * 0 <= books[i] <= 10^5"""
+
+    def maximumBooks(self, books: List[int]) -> int:
+        dp = [0] * len(books)
+        stack = [(-1, -inf)]
+        for i, x in enumerate(books): 
+            while stack[-1][0]-stack[-1][1] <= i-x: stack.pop()
+            ii = max(i-x, stack[-1][0])
+            dp[i] = (i-ii)*(2*x-i+ii+1)//2
+            if 0 <= ii == stack[-1][0]: dp[i] += dp[ii]
+            stack.append((i, x))
+        return max(dp)
+
+
     """2357. Make Array Zero by Subtracting Equal Amounts (Easy)
     You are given a non-negative integer array nums. In one operation, you must:
     * Choose a positive integer x such that x is less than or equal to the 
@@ -62910,6 +63989,66 @@ class Trie:
         dist = [-1]*len(edges)
         for x in range(len(edges)): dfs(x, 1)
         return ans 
+
+
+    """2361. Minimum Costs Using the Train Line (Hard)
+    A train line going through a city has two routes, the regular route and the 
+    express route. Both routes go through the same n + 1 stops labeled from 0 
+    to n. Initially, you start on the regular route at stop 0. You are given 
+    two 1-indexed integer arrays regular and express, both of length n. 
+    regular[i] describes the cost it takes to go from stop i - 1 to stop i 
+    using the regular route, and express[i] describes the cost it takes to go 
+    from stop i - 1 to stop i using the express route. You are also given an 
+    integer expressCost which represents the cost to transfer from the regular 
+    route to the express route.
+
+    Note that:
+    * There is no cost to transfer from the express route back to the regular 
+      route.
+    * You pay expressCost every time you transfer from the regular route to the 
+      express route.
+    * There is no extra cost to stay on the express route.
+    Return a 1-indexed array costs of length n, where costs[i] is the minimum 
+    cost to reach stop i from stop 0. Note that a stop can be counted as 
+    reached from either route.
+
+    Example 1:
+    Input: regular = [1,6,9,5], express = [5,2,3,10], expressCost = 8
+    Output: [1,7,14,19]
+    Explanation: The diagram above shows how to reach stop 4 from stop 0 with 
+                 minimum cost.
+                 - Take the regular route from stop 0 to stop 1, costing 1.
+                 - Take the express route from stop 1 to stop 2, costing 8 + 2 = 10.
+                 - Take the express route from stop 2 to stop 3, costing 3.
+                 - Take the regular route from stop 3 to stop 4, costing 5.
+                 The total cost is 1 + 10 + 3 + 5 = 19. Note that a different 
+                 route could be taken to reach the other stops with minimum 
+                 cost.
+    
+    Example 2:
+    Input: regular = [11,5,13], express = [7,10,6], expressCost = 3
+    Output: [10,15,24]
+    Explanation: The diagram above shows how to reach stop 3 from stop 0 with 
+                 minimum cost.
+                 - Take the express route from stop 0 to stop 1, costing 3 + 7 = 10.
+                 - Take the regular route from stop 1 to stop 2, costing 5.
+                 - Take the express route from stop 2 to stop 3, costing 3 + 6 = 9.
+                 The total cost is 10 + 5 + 9 = 24. Note that the expressCost 
+                 is paid again to transfer back to the express route.
+
+    Constraints:
+    * n == regular.length == express.length
+    * 1 <= n <= 10^5
+    * 1 <= regular[i], express[i], expressCost <= 10^5"""
+
+    def minimumCosts(self, regular: List[int], express: List[int], expressCost: int) -> List[int]:
+        ans = []
+        cr, ce = 0, expressCost
+        for r, e in zip(regular, express): 
+            cr, ce = min(cr+r, ce+e), min(cr+r+expressCost, ce+e)
+            ans.append(min(cr, ce))
+        return ans
+        
 
 
     """2363. Merge Similar Items (Easy)
@@ -63249,6 +64388,52 @@ class Trie:
         return max(dp)
 
 
+    """2371. Minimize Maximum Value in a Grid (Hard)
+    You are given an m x n integer matrix grid containing distinct positive 
+    integers. You have to replace each integer in the matrix with a positive 
+    integer satisfying the following conditions:
+    * The relative order of every two elements that are in the same row or 
+      column should stay the same after the replacements.
+    * The maximum number in the matrix after the replacements should be as 
+      small as possible.
+    The relative order stays the same if for all pairs of elements in the 
+    original matrix such that grid[r1][c1] > grid[r2][c2] where either r1 == r2 
+    or c1 == c2, then it must be true that grid[r1][c1] > grid[r2][c2] after 
+    the replacements. For example, if grid = [[2, 4, 5], [7, 3, 9]] then a good 
+    replacement could be either grid = [[1, 2, 3], [2, 1, 4]] or 
+    grid = [[1, 2, 3], [3, 1, 4]]. Return the resulting matrix. If there are 
+    multiple answers, return any of them.
+
+    Example 1:
+    Input: grid = [[3,1],[2,5]]
+    Output: [[2,1],[1,2]]
+    Explanation: The above diagram shows a valid replacement. The maximum 
+                 number in the matrix is 2. It can be shown that no smaller 
+                 value can be obtained.
+    
+    Example 2:
+    Input: grid = [[10]]
+    Output: [[1]]
+    Explanation: We replace the only number in the matrix with 1.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 1000
+    * 1 <= m * n <= 10^5
+    * 1 <= grid[i][j] <= 10^9
+    * grid consists of distinct integers."""
+
+    def minScore(self, grid: List[List[int]]) -> List[List[int]]:
+        m, n = len(grid), len(grid[0])
+        ans = [[0] * n for _ in range(m)]
+        row = [0] * m
+        col = [0] * n
+        for _, i, j in sorted((grid[i][j], i, j) for i in range(m) for j in range(n)): 
+            ans[i][j] = row[i] = col[j] = max(row[i], col[j]) + 1
+        return ans 
+
+
     """2373. Largest Local Values in a Matrix (Easy)
     You are given an n x n integer matrix grid. Generate an integer matrix 
     maxLocal of size (n - 2) x (n - 2) such that:
@@ -63412,6 +64597,66 @@ class Trie:
             return ans 
         
         return fn(0, 0, True)-1
+
+
+    """2378. Choose Edges to Maximize Score in a Tree (Medium)
+    You are given a weighted tree consisting of n nodes numbered from 0 to 
+    n - 1. The tree is rooted at node 0 and represented with a 2D array edges 
+    of size n where edges[i] = [pari, weighti] indicates that node pari is the 
+    parent of node i, and the edge between them has a weight equal to weighti. 
+    Since the root does not have a parent, you have edges[0] = [-1, -1]. Choose 
+    some edges from the tree such that no two chosen edges are adjacent and the 
+    sum of the weights of the chosen edges is maximized. Return the maximum sum 
+    of the chosen edges.
+
+    Note:
+    * You are allowed to not choose any edges in the tree, the sum of weights 
+      in this case will be 0.
+    * Two edges Edge1 and Edge2 in the tree are adjacent if they have a common 
+      node.
+      + In other words, they are adjacent if Edge1 connects nodes a and b and 
+        Edge2 connects nodes b and c.
+
+    Example 1:
+    Input: edges = [[-1,-1],[0,5],[0,10],[2,6],[2,4]]
+    Output: 11
+    Explanation: The above diagram shows the edges that we have to choose 
+                 colored in red. The total score is 5 + 6 = 11. It can be shown 
+                 that no better score can be obtained.
+    
+    Example 2:
+    Input: edges = [[-1,-1],[0,5],[0,-6],[0,7]]
+    Output: 7
+    Explanation: We choose the edge with weight 7. Note that we cannot choose 
+                 more than one edge because all edges are adjacent to each 
+                 other.
+
+    Constraints:
+    * n == edges.length
+    * 1 <= n <= 10^5
+    * edges[i].length == 2
+    * par0 == weight0 == -1
+    * 0 <= pari <= n - 1 for all i >= 1.
+    * pari != i
+    * -10^6 <= weighti <= 10^6 for all i >= 1.
+    * edges represents a valid tree."""
+
+    def maxScore(self, edges: List[List[int]]) -> int:
+        n = len(edges)
+        tree = [[] for _ in range(n)]
+        for i, (p, w) in enumerate(edges): 
+            if i: tree[p].append((i, w))
+        
+        def dfs(u): 
+            """Return """
+            sm = delta = 0 
+            for v, w in tree[u]: 
+                ss, dd = dfs(v)
+                sm += ss + dd
+                delta = max(delta, w-dd)
+            return sm, delta
+        
+        return sum(fn(0))
 
 
     """2379. Minimum Recolors to Get K Consecutive Black Blocks (Easy)
@@ -63807,6 +65052,45 @@ class Trie:
         return -x
 
 
+    """2387. Median of a Row Wise Sorted Matrix (Medium)
+    Given an m x n matrix grid containing an odd number of integers where each 
+    row is sorted in non-decreasing order, return the median of the matrix.
+    You must solve the problem in less than O(m * n) time complexity.
+
+    Example 1:
+    Input: grid = [[1,1,2],[2,3,3],[1,3,4]]
+    Output: 2
+    Explanation: The elements of the matrix in sorted order are 
+                 1,1,1,2,2,3,3,3,4. The median is 2.
+    
+    Example 2:
+    Input: grid = [[1,1,3,3,4]]
+    Output: 3
+    Explanation: The elements of the matrix in sorted order are 1,1,3,3,4. The 
+                 median is 3.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 500
+    * m and n are both odd.
+    * 1 <= grid[i][j] <= 10^6
+    * grid[i] is sorted in non-decreasing order."""
+
+    def matrixMedian(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        lo, hi = inf, -inf 
+        for row in grid: 
+            lo = min(lo, row[0])
+            hi = max(hi, row[-1])
+        while lo < hi: 
+            mid = lo + hi >> 1
+            more = sum(n - bisect_right(row, mid) for row in grid)
+            if more > m*n/2: lo = mid + 1
+            else: hi = mid
+        return lo
+
+
     """2389. Longest Subsequence With Limited Sum (Easy)
     You are given an integer array nums of length n, and an integer array 
     queries of length m. Return an array answer of length m where answer[i] is 
@@ -64026,6 +65310,39 @@ class Trie:
         row = {x : i for i, x in enumerate(row)}
         col = {x : j for j, x in enumerate(col)}
         for x in range(1, k+1): ans[row[x]][col[x]] = x
+        return ans 
+
+
+    """2393. Count Strictly Increasing Subarrays (Medium)
+    You are given an array nums consisting of positive integers. Return the 
+    number of subarrays of nums that are in strictly increasing order. A 
+    subarray is a contiguous part of an array.
+
+    Example 1:
+    Input: nums = [1,3,5,4,4,6]
+    Output: 10
+    Explanation: The strictly increasing subarrays are the following:
+                 - Subarrays of length 1: [1], [3], [5], [4], [4], [6].
+                 - Subarrays of length 2: [1,3], [3,5], [4,6].
+                 - Subarrays of length 3: [1,3,5].
+                 The total number of subarrays is 6 + 3 + 1 = 10.
+    
+    Example 2:
+    Input: nums = [1,2,3,4,5]
+    Output: 15
+    Explanation: Every subarray is strictly increasing. There are 15 possible 
+                 subarrays that we can take.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^6"""
+
+    def countSubarrays(self, nums: List[int]) -> int:
+        ans = cnt = 0 
+        for i, x in enumerate(nums): 
+            if i and nums[i-1] >= nums[i]: cnt = 0
+            cnt += 1
+            ans += cnt 
         return ans 
 
 
@@ -64372,6 +65689,73 @@ class Trie:
                 heappush(busy, (t+y-x, room))
             freq[room] += 1
         return freq.index(max(freq))
+
+
+    """2403. Minimum Time to Kill All Monsters (Hard)
+    You are given an integer array power where power[i] is the power of the ith 
+    monster. You start with 0 mana points, and each day you increase your mana 
+    points by gain where gain initially is equal to 1. Each day, after gaining 
+    gain mana, you can defeat a monster if your mana points are greater than or 
+    equal to the power of that monster. When you defeat a monster:
+    * your mana points will be reset to 0, and
+    * the value of gain increases by 1.
+    Return the minimum number of days needed to defeat all the monsters.
+
+    Example 1:
+    Input: power = [3,1,4]
+    Output: 4
+    Explanation: The optimal way to beat all the monsters is to:
+                 - Day 1: Gain 1 mana point to get a total of 1 mana point. 
+                   Spend all mana points to kill the 2nd monster.
+                 - Day 2: Gain 2 mana points to get a total of 2 mana points.
+                 - Day 3: Gain 2 mana points to get a total of 4 mana points. 
+                   Spend all mana points to kill the 3rd monster.
+                 - Day 4: Gain 3 mana points to get a total of 3 mana points. 
+                   Spend all mana points to kill the 1st monster.
+                 It can be proven that 4 is the minimum number of days needed. 
+    
+    Example 2:
+    Input: power = [1,1,4]
+    Output: 4
+    Explanation: The optimal way to beat all the monsters is to:
+                 - Day 1: Gain 1 mana point to get a total of 1 mana point. 
+                   Spend all mana points to kill the 1st monster.
+                 - Day 2: Gain 2 mana points to get a total of 2 mana points. 
+                   Spend all mana points to kill the 2nd monster.
+                 - Day 3: Gain 3 mana points to get a total of 3 mana points.
+                 - Day 4: Gain 3 mana points to get a total of 6 mana points. 
+                   Spend all mana points to kill the 3rd monster.
+                 It can be proven that 4 is the minimum number of days needed. 
+    
+    Example 3:
+    Input: power = [1,2,4,9]
+    Output: 6
+    Explanation: The optimal way to beat all the monsters is to:
+                 - Day 1: Gain 1 mana point to get a total of 1 mana point. 
+                   Spend all mana points to kill the 1st monster.
+                 - Day 2: Gain 2 mana points to get a total of 2 mana points. 
+                   Spend all mana points to kill the 2nd monster.
+                 - Day 3: Gain 3 mana points to get a total of 3 mana points.
+                 - Day 4: Gain 3 mana points to get a total of 6 mana points.
+                 - Day 5: Gain 3 mana points to get a total of 9 mana points. 
+                   Spend all mana points to kill the 4th monster.
+                 - Day 6: Gain 4 mana points to get a total of 4 mana points. 
+                   Spend all mana points to kill the 3rd monster.
+                 It can be proven that 6 is the minimum number of days needed.
+
+    Constraints:
+    * 1 <= power.length <= 17
+    * 1 <= power[i] <= 10^9"""
+
+    def minimumTime(self, power: List[int]) -> int:
+        n = len(power)
+        dp = [inf] * (1<<n)
+        dp[0] = 0 
+        for m in range(1, 1<<n): 
+            gain = 1 + bin((1<<n)-1 ^ m).count('1')
+            for i in range(n): 
+                if m & 1<<i: dp[m] = min(dp[m], (power[i]+gain-1)//gain + dp[m^1<<i])
+        return dp[-1]
 
 
     """2404. Most Frequent Even Element (Easy)
@@ -65070,6 +66454,56 @@ class SegTree:
         return ans+n
 
 
+    """2422. Merge Operations to Turn Array Into a Palindrome (Medium)
+    You are given an array nums consisting of positive integers. You can 
+    perform the following operation on the array any number of times:
+    * Choose any two adjacent elements and replace them with their sum.
+      + For example, if nums = [1,2,3,1], you can apply one operation to make 
+        it [1,5,1].
+    Return the minimum number of operations needed to turn the array into a 
+    palindrome.
+
+    Example 1:
+    Input: nums = [4,3,2,1,2,3,1]
+    Output: 2
+    Explanation: We can turn the array into a palindrome in 2 operations as 
+                 follows:
+                 - Apply the operation on the fourth and fifth element of the 
+                   array, nums becomes equal to [4,3,2,3,3,1].
+                 - Apply the operation on the fifth and sixth element of the 
+                   array, nums becomes equal to [4,3,2,3,4].
+                 The array [4,3,2,3,4] is a palindrome. It can be shown that 2 
+                 is the minimum number of operations needed.
+    
+    Example 2:
+    Input: nums = [1,2,3,4]
+    Output: 3
+    Explanation: We do the operation 3 times in any position, we obtain the 
+                 array [10] at the end which is a palindrome.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^6"""
+
+    def minimumOperations(self, nums: List[int]) -> int:
+        ans = diff = 0 
+        lo, hi = -1, len(nums)
+        while lo < hi: 
+            if diff > 0: 
+                hi -= 1
+                diff -= nums[hi]
+                ans += 1
+            elif diff < 0: 
+                lo += 1
+                diff += nums[lo]
+                ans += 1
+            else: 
+                lo += 1
+                hi -= 1
+                diff = nums[lo] - nums[hi]
+        return ans 
+
+
     """2423. Remove Letter To Equalize Frequency (Easy)
     You are given a 0-indexed string word, consisting of lowercase English 
     letters. You need to select one index and remove the letter at that index 
@@ -65329,6 +66763,66 @@ class SegTree:
         return dp[0]
 
 
+    """2431. Maximize Total Tastiness of Purchased Fruits (Medium)
+    You are given two non-negative integer arrays price and tastiness, both 
+    arrays have the same length n. You are also given two non-negative integers 
+    maxAmount and maxCoupons.
+
+    For every integer i in range [0, n - 1]:
+    * price[i] describes the price of ith fruit.
+    * tastiness[i] describes the tastiness of ith fruit.
+    You want to purchase some fruits such that total tastiness is maximized and 
+    the total price does not exceed maxAmount. Additionally, you can use a 
+    coupon to purchase fruit for half of its price (rounded down to the closest 
+    integer). You can use at most maxCoupons of such coupons. Return the 
+    maximum total tastiness that can be purchased.
+
+    Note that:
+    * You can purchase each fruit at most once.
+    * You can use coupons on some fruit at most once.
+
+    Example 1:
+    Input: price = [10,20,20], tastiness = [5,8,8], maxAmount = 20, maxCoupons = 1
+    Output: 13
+    Explanation: It is possible to make total tastiness 13 in following way:
+                 - Buy first fruit without coupon, so that total price = 0 + 10 
+                   and total tastiness = 0 + 5.
+                 - Buy second fruit with coupon, so that total price = 10 + 10 
+                   and total tastiness = 5 + 8.
+                 - Do not buy third fruit, so that total price = 20 and total 
+                   tastiness = 13.
+                 It can be proven that 13 is the maximum total tastiness that 
+                 can be obtained.
+    
+    Example 2:
+    Input: price = [10,15,7], tastiness = [5,8,20], maxAmount = 10, maxCoupons = 2
+    Output: 28
+    Explanation: It is possible to make total tastiness 20 in following way:
+                 - Do not buy first fruit, so that total price = 0 and total 
+                   tastiness = 0.
+                 - Buy second fruit with coupon, so that total price = 0 + 7 
+                   and total tastiness = 0 + 8.
+                 - Buy third fruit with coupon, so that total price = 7 + 3 and 
+                   total tastiness = 8 + 20.
+                 It can be proven that 28 is the maximum total tastiness that 
+                 can be obtained.
+
+    Constraints:
+    * n == price.length == tastiness.length
+    * 1 <= n <= 100
+    * 0 <= price[i], tastiness[i], maxAmount <= 1000
+    * 0 <= maxCoupons <= 5"""
+
+    def maxTastiness(self, price: List[int], tastiness: List[int], maxAmount: int, maxCoupons: int) -> int:
+        dp = [[0] * (maxCoupons+1) for _ in range(maxAmount+1)]
+        for p, t in zip(price, tastiness): 
+            for i in range(maxAmount, p//2-1, -1): 
+                for j in range(maxCoupons, -1, -1): 
+                    if p <= i: dp[i][j] = max(dp[i][j], t + dp[i-p][j])
+                    if j: dp[i][j] = max(dp[i][j], t + dp[i-p//2][j-1])
+        return dp[-1][-1]
+
+
     """2432. The Employee That Worked on the Longest Task (Easy)
     There are n employees, each with a unique id from 0 to n - 1. You are given 
     a 2D integer array logs where logs[i] = [idi, leaveTimei] where:
@@ -65520,6 +67014,48 @@ class SegTree:
                     if i: dp[i][j][xx] = (dp[i][j][xx] + dp[i-1][j][x]) % mod
                     if j: dp[i][j][xx] = (dp[i][j][xx] + dp[i][j-1][x]) % mod
         return dp[-1][-1][0]
+
+
+    """2436. Minimum Split Into Subarrays With GCD Greater Than One (Medium)
+    You are given an array nums consisting of positive integers. Split the 
+    array into one or more disjoint subarrays such that:
+    * Each element of the array belongs to exactly one subarray, and
+    * The GCD of the elements of each subarray is strictly greater than 1.
+    Return the minimum number of subarrays that can be obtained after the split.
+
+    Note that:
+    * The GCD of a subarray is the largest positive integer that evenly divides 
+      all the elements of the subarray.
+    * A subarray is a contiguous part of the array.
+
+    Example 1:
+    Input: nums = [12,6,3,14,8]
+    Output: 2
+    Explanation: We can split the array into the subarrays: [12,6,3] and [14,8].
+                 - The GCD of 12, 6 and 3 is 3, which is strictly greater than 
+                   1.
+                 - The GCD of 14 and 8 is 2, which is strictly greater than 1.
+                 It can be shown that splitting the array into one subarray 
+                 will make the GCD = 1.
+    
+    Example 2:
+    Input: nums = [4,12,6,14]
+    Output: 1
+    Explanation: We can split the array into only one subarray, which is the 
+                 whole array.
+
+    Constraints:
+    * 1 <= nums.length <= 2000
+    * 2 <= nums[i] <= 10^9"""
+
+    def minimumSplits(self, nums: List[int]) -> int:
+        ans, g = 0, 1
+        for x in nums: 
+            g = gcd(g, x)
+            if g == 1: 
+                ans += 1
+                g = x 
+        return ans
 
 
     """2437. Number of Valid Clock Times (Easy)
@@ -65824,6 +67360,103 @@ class SegTree:
                 ans += max(0, min(imax, imin) - ii)
             else: ii = i
         return ans 
+
+
+    """2445. Number of Nodes With Value One (Medium)
+    There is an undirected connected tree with n nodes labeled from 1 to n and 
+    n - 1 edges. You are given the integer n. The parent node of a node with a 
+    label v is the node with the label floor (v / 2). The root of the tree is 
+    the node with the label 1.
+    * For example, if n = 7, then the node with the label 3 has the node with 
+      the label floor(3 / 2) = 1 as its parent, and the node with the label 7 
+      has the node with the label floor(7 / 2) = 3 as its parent.
+    You are also given an integer array queries. Initially, every node has a 
+    value 0 on it. For each query queries[i], you should flip all values in the 
+    subtree of the node with the label queries[i]. Return the total number of 
+    nodes with the value 1 after processing all the queries.
+
+    Note that:
+    * Flipping the value of a node means that the node with the value 0 becomes 
+      1 and vice versa.
+    * floor(x) is equivalent to rounding x down to the nearest integer.
+
+    Example 1:
+    Input: n = 5 , queries = [1,2,5]
+    Output: 3
+    Explanation: The diagram above shows the tree structure and its status 
+                 after performing the queries. The blue node represents the 
+                 value 0, and the red node represents the value 1. After 
+                 processing the queries, there are three red nodes (nodes with 
+                 value 1): 1, 3, and 5.
+    
+    Example 2:
+    Input: n = 3, queries = [2,3,3]
+    Output: 1
+    Explanation: The diagram above shows the tree structure and its status 
+                 after performing the queries. The blue node represents the 
+                 value 0, and the red node represents the value 1. After 
+                 processing the queries, there are one red node (node with 
+                 value 1): 2.
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * 1 <= queries.length <= 10^5
+    * 1 <= queries[i] <= n"""
+
+    def numberOfNodes(self, n: int, queries: List[int]) -> int:
+        flip = [0] * (1+n)
+        for q in queries: flip[q] ^= 1
+        ans = 0 
+        stack = [(1, flip[1])]
+        while stack: 
+            x, f = stack.pop()
+            if f & 1: ans += 1
+            if 2*x <= n: stack.append((2*x, f^flip[2*x]))
+            if 2*x+1 <= n: stack.append((2*x+1, f^flip[2*x+1]))
+        return ans 
+
+
+    """2450. Number of Distinct Binary Strings After Applying Operations (Medium)
+    You are given a binary string s and a positive integer k. You can apply the 
+    following operation on the string any number of times:
+    * Choose any substring of size k from s and flip all its characters, that 
+      is, turn all 1's into 0's, and all 0's into 1's.
+    Return the number of distinct strings you can obtain. Since the answer may 
+    be too large, return it modulo 10^9 + 7.
+
+    Note that:
+    * A binary string is a string that consists only of the characters 0 and 1.
+    * A substring is a contiguous part of a string.
+
+    Example 1:
+    Input: s = "1001", k = 3
+    Output: 4
+    Explanation: We can obtain the following strings:
+                 - Applying no operation on the string gives s = "1001".
+                 - Applying one operation on the substring starting at index 0 
+                   gives s = "0111".
+                 - Applying one operation on the substring starting at index 1 
+                   gives s = "1110".
+                 - Applying one operation on both the substrings starting at 
+                   indices 0 and 1 gives s = "0000".
+                 It can be shown that we cannot obtain any other string, so the 
+                 answer is 4.
+    
+    Example 2:
+    Input: s = "10110", k = 5
+    Output: 2
+    Explanation: We can obtain the following strings:
+                 - Applying no operation on the string gives s = "10110".
+                 - Applying one operation on the whole string gives s = "01001".
+                 It can be shown that we cannot obtain any other string, so the 
+                 answer is 2.
+
+    Constraints:
+    * 1 <= k <= s.length <= 10^5
+    * s[i] is either 0 or 1."""
+
+    def countDistinctStrings(self, s: str, k: int) -> int:
+        return pow(2, len(s)-k+1, 1_000_000_007)
 
 
 """146. LRU Cache (Medium)
@@ -71129,6 +72762,68 @@ class FoodRatings:
 
     def highestRated(self, cuisine: str) -> str:
         return self.data[cuisine][0][1]
+
+
+"""2408. Design SQL (Medium)
+You are given n tables represented with two arrays names and columns, where 
+names[i] is the name of the ith table and columns[i] is the number of columns 
+of the ith table. You should be able to perform the following operations:
+* Insert a row in a specific table. Each row you insert has an id. The id is 
+  assigned using an auto-increment method where the id of the first inserted 
+  row is 1, and the id of each other row inserted into the same table is the id 
+  of the last inserted row (even if it was deleted) plus one.
+* Delete a row from a specific table. Note that deleting a row does not affect 
+  the id of the next inserted row.
+* Select a specific cell from any table and return its value.
+
+Implement the SQL class:
+* SQL(String[] names, int[] columns) Creates the n tables.
+* void insertRow(String name, String[] row) Adds a row to the table name. It is 
+  guaranteed that the table will exist, and the size of the array row is equal 
+  to the number of columns in the table.
+* void deleteRow(String name, int rowId) Removes the row rowId from the table 
+  name. It is guaranteed that the table and row will exist.
+* String selectCell(String name, int rowId, int columnId) Returns the value of 
+  the cell in the row rowId and the column columnId from the table name.
+
+Example 1:
+Input: ["SQL", "insertRow", "selectCell", "insertRow", "deleteRow", "selectCell"]
+       [[["one", "two", "three"], [2, 3, 1]], ["two", ["first", "second", "third"]], ["two", 1, 3], ["two", ["fourth", "fifth", "sixth"]], ["two", 1], ["two", 2, 2]]
+Output:[null, null, "third", null, null, "fifth"]
+Explanation
+SQL sql = new SQL(["one", "two", "three"], [2, 3, 1]); // creates three tables.
+sql.insertRow("two", ["first", "second", "third"]); // adds a row to the table "two". Its id is 1.
+sql.selectCell("two", 1, 3); // return "third", finds the value of the third column in the row with id 1 of the table "two".
+sql.insertRow("two", ["fourth", "fifth", "sixth"]); // adds another row to the table "two". Its id is 2.
+sql.deleteRow("two", 1); // deletes the first row of the table "two". Note that the second row will still have the id 2.
+sql.selectCell("two", 2, 2); // return "fifth", finds the value of the second column in the row with id 2 of the table "two".
+
+Constraints:
+* n == names.length == columns.length
+* 1 <= n <= 10^4
+* 1 <= names[i].length, row[i].length, name.length <= 20
+* names[i], row[i], and name consist of lowercase English letters.
+* 1 <= columns[i] <= 100
+* All the strings of names are distinct.
+* name exists in the array names.
+* row.length equals the number of columns in the chosen table.
+* rowId and columnId will be valid.
+* At most 250 calls will be made to insertRow and deleteRow.
+* At most 10^4 calls will be made to selectCell."""
+
+class SQL:
+
+    def __init__(self, names: List[str], columns: List[int]):
+        self.data = {s : [] for s in names}
+
+    def insertRow(self, name: str, row: List[str]) -> None:
+        self.data[name].append(row)
+
+    def deleteRow(self, name: str, rowId: int) -> None:
+        pass 
+
+    def selectCell(self, name: str, rowId: int, columnId: int) -> str:
+        return self.data[name][rowId-1][columnId-1]
 
 
 """2424. Longest Uploaded Prefix (Medium)
