@@ -45862,6 +45862,341 @@ public:
     }
 
 
+    /*2437. Number of Valid Clock Times (Easy)
+    You are given a string of length 5 called time, representing the current 
+    time on a digital clock in the format "hh:mm". The earliest possible time 
+    is "00:00" and the latest possible time is "23:59". In the string time, the 
+    digits represented by the ? symbol are unknown, and must be replaced with a 
+    digit from 0 to 9. Return an integer answer, the number of valid clock 
+    times that can be created by replacing every ? with a digit from 0 to 9.
+
+    Example 1:
+    Input: time = "?5:00"
+    Output: 2
+    Explanation: We can replace the ? with either a 0 or 1, producing "05:00" 
+                 or "15:00". Note that we cannot replace it with a 2, since the 
+                 time "25:00" is invalid. In total, we have two choices.
+    
+    Example 2:
+    Input: time = "0?:0?"
+    Output: 100
+    Explanation: Each ? can be replaced by any digit from 0 to 9, so we have 
+                 100 total choices.
+    
+    Example 3:
+    Input: time = "??:??"
+    Output: 1440
+    Explanation: There are 24 possible choices for the hours, and 60 possible 
+                 choices for the minutes. In total, we have 24 * 60 = 1440 
+                 choices.
+
+    Constraints:
+    * time is a valid string of length 5 in the format "hh:mm".
+    * "00" <= hh <= "23"
+    * "00" <= mm <= "59"
+    * Some of the digits might be replaced with '?' and need to be replaced 
+      with digits from 0 to 9.*/
+
+    int countTime(string time) {
+        int ans = 1; 
+        if (time[0] == '?' && time[1] == '?') ans *= 24; 
+        else if (time[0] == '?') ans *= time[1] >= '4' ? 2 : 3; 
+        else if (time[1] == '?') ans *= time[0] == '2' ? 4 : 10; 
+        if (time[3] == '?') ans *= 6; 
+        if (time[4] == '?') ans *= 10; 
+        return ans; 
+    }
+
+
+    /*2438. Range Product Queries of Powers (Medium)
+    Given a positive integer n, there exists a 0-indexed array called powers, 
+    composed of the minimum number of powers of 2 that sum to n. The array is 
+    sorted in non-decreasing order, and there is only one way to form the array.
+    You are also given a 0-indexed 2D integer array queries, where 
+    queries[i] = [lefti, righti]. Each queries[i] represents a query where you 
+    have to find the product of all powers[j] with lefti <= j <= righti. Return 
+    an array answers, equal in length to queries, where answers[i] is the 
+    answer to the ith query. Since the answer to the ith query may be too large, 
+    each answers[i] should be returned modulo 10^9 + 7.
+
+    Example 1:
+    Input: n = 15, queries = [[0,1],[2,2],[0,3]]
+    Output: [2,4,64]
+    Explanation: For n = 15, powers = [1,2,4,8]. It can be shown that powers 
+                 cannot be a smaller size. 
+                 Answer to 1st query: powers[0] * powers[1] = 1 * 2 = 2.
+                 Answer to 2nd query: powers[2] = 4.
+                 Answer to 3rd query: powers[0] * powers[1] * powers[2] * 
+                 powers[3] = 1 * 2 * 4 * 8 = 64.
+                 Each answer modulo 109 + 7 yields the same answer, so [2,4,64] 
+                 is returned.
+    
+    Example 2:
+    Input: n = 2, queries = [[0,0]]
+    Output: [2]
+    Explanation: For n = 2, powers = [2]. The answer to the only query is 
+                 powers[0] = 2. The answer modulo 109 + 7 is the same, so 
+                 [2] is returned.
+
+    Constraints:
+    * 1 <= n <= 109
+    * 1 <= queries.length <= 10^5
+    * 0 <= starti <= endi < powers.length*/
+
+    vector<int> productQueries(int n, vector<vector<int>>& queries) {
+        vector<int> powers; 
+        for (int i = 0; i < 30; ++i)
+            if (n & 1<<i) powers.push_back(1<<i); 
+        vector<int> ans; 
+        for (auto& q : queries) {
+            long val = 1; 
+            for (int i = q[0]; i <= q[1]; ++i) 
+                val = val * powers[i] % 1'000'000'007; 
+            ans.push_back(val); 
+        }
+        return ans; 
+    }
+
+
+    /*2439. Minimize Maximum of Array (Medium)
+    You are given a 0-indexed array nums comprising of n non-negative integers.
+    In one operation, you must:
+    * Choose an integer i such that 1 <= i < n and nums[i] > 0.
+    * Decrease nums[i] by 1.
+    * Increase nums[i - 1] by 1.
+    Return the minimum possible value of the maximum integer of nums after 
+    performing any number of operations.
+
+    Example 1:
+    Input: nums = [3,7,1,6]
+    Output: 5
+    Explanation: One set of optimal operations is as follows:
+                 1. Choose i = 1, and nums becomes [4,6,1,6].
+                 2. Choose i = 3, and nums becomes [4,6,2,5].
+                 3. Choose i = 1, and nums becomes [5,5,2,5].
+                 The maximum integer of nums is 5. It can be shown that the 
+                 maximum number cannot be less than 5. Therefore, we return 5.
+    
+    Example 2:
+    Input: nums = [10,1]
+    Output: 10
+    Explanation: It is optimal to leave nums as is, and since 10 is the maximum 
+                 value, we return 10.
+
+    Constraints:
+    * n == nums.length
+    * 2 <= n <= 10^5
+    * 0 <= nums[i] <= 10^9*/
+
+    int minimizeArrayValue(vector<int>& nums) {
+        long ans = 0, prefix = 0; 
+        for (int i = 0; i < nums.size(); ++i) {
+            prefix += nums[i]; 
+            ans = max(ans, (prefix + i)/(i+1)); 
+        }
+        return ans; 
+    }
+
+
+    /*2440. Create Components With Same Value (Hard)
+    There is an undirected tree with n nodes labeled from 0 to n - 1. You are 
+    given a 0-indexed integer array nums of length n where nums[i] represents 
+    the value of the ith node. You are also given a 2D integer array edges of 
+    length n - 1 where edges[i] = [ai, bi] indicates that there is an edge 
+    between nodes ai and bi in the tree. You are allowed to delete some edges, 
+    splitting the tree into multiple connected components. Let the value of a 
+    component be the sum of all nums[i] for which node i is in the component.
+    Return the maximum number of edges you can delete, such that every 
+    connected component in the tree has the same value.
+
+    Example 1:
+    Input: nums = [6,2,2,2,6], edges = [[0,1],[1,2],[1,3],[3,4]] 
+    Output: 2 
+    Explanation: The above figure shows how we can delete the edges [0,1] and 
+                 [3,4]. The created components are nodes [0], [1,2,3] and [4]. 
+                 The sum of the values in each component equals 6. It can be 
+                 proven that no better deletion exists, so the answer is 2.
+    
+    Example 2:
+    Input: nums = [2], edges = []
+    Output: 0
+    Explanation: There are no edges to be deleted.
+
+    Constraints:
+    * 1 <= n <= 2 * 10^4
+    * nums.length == n
+    * 1 <= nums[i] <= 50
+    * edges.length == n - 1
+    * edges[i].length == 2
+    * 0 <= edges[i][0], edges[i][1] <= n - 1
+    * edges represents a valid tree.*/
+
+    int componentValue(vector<int>& nums, vector<vector<int>>& edges) {
+        int n = nums.size(); 
+        vector<vector<int>> tree(n); 
+        for (auto& e : edges) {
+            tree[e[0]].push_back(e[1]); 
+            tree[e[1]].push_back(e[0]); 
+        }
+        
+        function<int(int, int, int)> fn = [&](int u, int p, int cand) {
+            int ans = nums[u]; 
+            for (auto& v : tree[u])
+                if (v != p) ans += fn(v, u, cand); 
+            return ans == cand ? 0 : ans; 
+        }; 
+        
+        int total = accumulate(nums.begin(), nums.end(), 0); 
+        for (int cand = 1; cand <= total/2; ++cand) 
+            if (total % cand == 0 and fn(0, -1, cand) == 0) return total/cand-1; 
+        return 0; 
+    }
+
+
+    /*2441. Largest Positive Integer That Exists With Its Negative (Easy)
+    Given an integer array nums that does not contain any zeros, find the 
+    largest positive integer k such that -k also exists in the array. Return 
+    the positive integer k. If there is no such integer, return -1.
+
+    Example 1:
+    Input: nums = [-1,2,-3,3]
+    Output: 3
+    Explanation: 3 is the only valid k we can find in the array.
+
+    Example 2:
+    Input: nums = [-1,10,6,7,-7,1]
+    Output: 7
+    Explanation: Both 1 and 7 have their corresponding negative values in the 
+                 array. 7 has a larger value.
+    
+    Example 3:
+    Input: nums = [-10,8,6,7,-2,-3]
+    Output: -1
+    Explanation: There is no a single valid k, we return -1.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * -1000 <= nums[i] <= 1000
+    * nums[i] != 0*/
+
+    int findMaxK(vector<int>& nums) {
+        int ans = -1; 
+        unordered_set<int> seen; 
+        for (auto& x : nums) {
+            if (seen.count(-x)) ans = max(ans, abs(x)); 
+            seen.insert(x); 
+        }
+        return ans; 
+    }
+
+
+    /*2442. Count Number of Distinct Integers After Reverse Operations (Medium)
+    You are given an array nums consisting of positive integers. You have to 
+    take each integer in the array, reverse its digits, and add it to the end 
+    of the array. You should apply this operation to the original integers in 
+    nums. Return the number of distinct integers in the final array.
+
+    Example 1:
+    Input: nums = [1,13,10,12,31]
+    Output: 6
+    Explanation: After including the reverse of each number, the resulting 
+                 array is [1,13,10,12,31,1,31,1,21,13]. The reversed integers 
+                 that were added to the end of the array are underlined. Note 
+                 that for the integer 10, after reversing it, it becomes 01 
+                 which is just 1. The number of distinct integers in this array 
+                 is 6 (The numbers 1, 10, 12, 13, 21, and 31).
+    
+    Example 2:
+    Input: nums = [2,2,2]
+    Output: 1
+    Explanation: After including the reverse of each number, the resulting 
+                 array is [2,2,2,2,2,2]. The number of distinct integers in 
+                 this array is 1 (The number 2).
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^6*/
+
+    int countDistinctIntegers(vector<int>& nums) {
+        unordered_set<int> seen(nums.begin(), nums.end()); 
+        for (auto& x : nums) {
+            int r = 0; 
+            for (; x; r = 10*r + x%10, x /= 10); 
+            seen.insert(r);
+        }
+        return seen.size(); 
+    }
+
+
+    /*2443. Sum of Number and Its Reverse (Medium)
+    Given a non-negative integer num, return true if num can be expressed as 
+    the sum of any non-negative integer and its reverse, or false otherwise.
+
+    Example 1:
+    Input: num = 443
+    Output: true
+    Explanation: 172 + 271 = 443 so we return true.
+
+    Example 2:
+    Input: num = 63
+    Output: false
+    Explanation: 63 cannot be expressed as the sum of a non-negative integer 
+                 and its reverse so we return false.
+    
+    Example 3:
+    Input: num = 181
+    Output: true
+    Explanation: 140 + 041 = 181 so we return true. Note that when a number is 
+                 reversed, there may be leading zeros.
+
+    Constraints: 0 <= num <= 10^5*/
+
+    bool sumOfNumberAndReverse(int num) {
+        for (int x = 0; x <= num; ++x) {
+            int r = 0; 
+            for (int xx = x; xx; r = 10*r + xx % 10, xx /= 10); 
+            if (x + r == num) return true; 
+        }
+        return false; 
+    }
+
+
+    /*2444. Count Subarrays With Fixed Bounds (Hard)
+    You are given an integer array nums and two integers minK and maxK. A 
+    fixed-bound subarray of nums is a subarray that satisfies the following 
+    conditions:
+    * The minimum value in the subarray is equal to minK.
+    * The maximum value in the subarray is equal to maxK.
+    Return the number of fixed-bound subarrays. A subarray is a contiguous 
+    part of an array.
+
+    Example 1:
+    Input: nums = [1,3,5,2,7,5], minK = 1, maxK = 5
+    Output: 2
+    Explanation: The fixed-bound subarrays are [1,3,5] and [1,3,5,2].
+
+    Example 2:
+    Input: nums = [1,1,1,1], minK = 1, maxK = 1
+    Output: 10
+    Explanation: Every subarray of nums is a fixed-bound subarray. There are 10 
+                 possible subarrays.
+
+    Constraints:
+    * 2 <= nums.length <= 10^5
+    * 1 <= nums[i], minK, maxK <= 10^6*/
+
+    long long countSubarrays(vector<int>& nums, int minK, int maxK) {
+        long long ans = 0; 
+        for (int i = 0, ii = -1, imin = -1, imax = -1; i < nums.size(); ++i) 
+            if (minK <= nums[i] && nums[i] <= maxK) {
+                if (minK == nums[i]) imin = i; 
+                if (maxK == nums[i]) imax = i; 
+                ans += max(0, min(imin, imax) - ii); 
+            } else ii = i; 
+        return ans; 
+    }
+
+
     /*2445. Number of Nodes With Value One (Medium)
     There is an undirected connected tree with n nodes labeled from 1 to n and 
     n - 1 edges. You are given the integer n. The parent node of a node with a 
@@ -46446,341 +46781,6 @@ public:
             prev = node; 
         }
         return root; 
-    }
-
-
-    /*2437. Number of Valid Clock Times (Easy)
-    You are given a string of length 5 called time, representing the current 
-    time on a digital clock in the format "hh:mm". The earliest possible time 
-    is "00:00" and the latest possible time is "23:59". In the string time, the 
-    digits represented by the ? symbol are unknown, and must be replaced with a 
-    digit from 0 to 9. Return an integer answer, the number of valid clock 
-    times that can be created by replacing every ? with a digit from 0 to 9.
-
-    Example 1:
-    Input: time = "?5:00"
-    Output: 2
-    Explanation: We can replace the ? with either a 0 or 1, producing "05:00" 
-                 or "15:00". Note that we cannot replace it with a 2, since the 
-                 time "25:00" is invalid. In total, we have two choices.
-    
-    Example 2:
-    Input: time = "0?:0?"
-    Output: 100
-    Explanation: Each ? can be replaced by any digit from 0 to 9, so we have 
-                 100 total choices.
-    
-    Example 3:
-    Input: time = "??:??"
-    Output: 1440
-    Explanation: There are 24 possible choices for the hours, and 60 possible 
-                 choices for the minutes. In total, we have 24 * 60 = 1440 
-                 choices.
-
-    Constraints:
-    * time is a valid string of length 5 in the format "hh:mm".
-    * "00" <= hh <= "23"
-    * "00" <= mm <= "59"
-    * Some of the digits might be replaced with '?' and need to be replaced 
-      with digits from 0 to 9.*/
-
-    int countTime(string time) {
-        int ans = 1; 
-        if (time[0] == '?' && time[1] == '?') ans *= 24; 
-        else if (time[0] == '?') ans *= time[1] >= '4' ? 2 : 3; 
-        else if (time[1] == '?') ans *= time[0] == '2' ? 4 : 10; 
-        if (time[3] == '?') ans *= 6; 
-        if (time[4] == '?') ans *= 10; 
-        return ans; 
-    }
-
-
-    /*2438. Range Product Queries of Powers (Medium)
-    Given a positive integer n, there exists a 0-indexed array called powers, 
-    composed of the minimum number of powers of 2 that sum to n. The array is 
-    sorted in non-decreasing order, and there is only one way to form the array.
-    You are also given a 0-indexed 2D integer array queries, where 
-    queries[i] = [lefti, righti]. Each queries[i] represents a query where you 
-    have to find the product of all powers[j] with lefti <= j <= righti. Return 
-    an array answers, equal in length to queries, where answers[i] is the 
-    answer to the ith query. Since the answer to the ith query may be too large, 
-    each answers[i] should be returned modulo 10^9 + 7.
-
-    Example 1:
-    Input: n = 15, queries = [[0,1],[2,2],[0,3]]
-    Output: [2,4,64]
-    Explanation: For n = 15, powers = [1,2,4,8]. It can be shown that powers 
-                 cannot be a smaller size. 
-                 Answer to 1st query: powers[0] * powers[1] = 1 * 2 = 2.
-                 Answer to 2nd query: powers[2] = 4.
-                 Answer to 3rd query: powers[0] * powers[1] * powers[2] * 
-                 powers[3] = 1 * 2 * 4 * 8 = 64.
-                 Each answer modulo 109 + 7 yields the same answer, so [2,4,64] 
-                 is returned.
-    
-    Example 2:
-    Input: n = 2, queries = [[0,0]]
-    Output: [2]
-    Explanation: For n = 2, powers = [2]. The answer to the only query is 
-                 powers[0] = 2. The answer modulo 109 + 7 is the same, so 
-                 [2] is returned.
-
-    Constraints:
-    * 1 <= n <= 109
-    * 1 <= queries.length <= 10^5
-    * 0 <= starti <= endi < powers.length*/
-
-    vector<int> productQueries(int n, vector<vector<int>>& queries) {
-        vector<int> powers; 
-        for (int i = 0; i < 30; ++i)
-            if (n & 1<<i) powers.push_back(1<<i); 
-        vector<int> ans; 
-        for (auto& q : queries) {
-            long val = 1; 
-            for (int i = q[0]; i <= q[1]; ++i) 
-                val = val * powers[i] % 1'000'000'007; 
-            ans.push_back(val); 
-        }
-        return ans; 
-    }
-
-
-    /*2439. Minimize Maximum of Array (Medium)
-    You are given a 0-indexed array nums comprising of n non-negative integers.
-    In one operation, you must:
-    * Choose an integer i such that 1 <= i < n and nums[i] > 0.
-    * Decrease nums[i] by 1.
-    * Increase nums[i - 1] by 1.
-    Return the minimum possible value of the maximum integer of nums after 
-    performing any number of operations.
-
-    Example 1:
-    Input: nums = [3,7,1,6]
-    Output: 5
-    Explanation: One set of optimal operations is as follows:
-                 1. Choose i = 1, and nums becomes [4,6,1,6].
-                 2. Choose i = 3, and nums becomes [4,6,2,5].
-                 3. Choose i = 1, and nums becomes [5,5,2,5].
-                 The maximum integer of nums is 5. It can be shown that the 
-                 maximum number cannot be less than 5. Therefore, we return 5.
-    
-    Example 2:
-    Input: nums = [10,1]
-    Output: 10
-    Explanation: It is optimal to leave nums as is, and since 10 is the maximum 
-                 value, we return 10.
-
-    Constraints:
-    * n == nums.length
-    * 2 <= n <= 10^5
-    * 0 <= nums[i] <= 10^9*/
-
-    int minimizeArrayValue(vector<int>& nums) {
-        long ans = 0, prefix = 0; 
-        for (int i = 0; i < nums.size(); ++i) {
-            prefix += nums[i]; 
-            ans = max(ans, (prefix + i)/(i+1)); 
-        }
-        return ans; 
-    }
-
-
-    /*2440. Create Components With Same Value (Hard)
-    There is an undirected tree with n nodes labeled from 0 to n - 1. You are 
-    given a 0-indexed integer array nums of length n where nums[i] represents 
-    the value of the ith node. You are also given a 2D integer array edges of 
-    length n - 1 where edges[i] = [ai, bi] indicates that there is an edge 
-    between nodes ai and bi in the tree. You are allowed to delete some edges, 
-    splitting the tree into multiple connected components. Let the value of a 
-    component be the sum of all nums[i] for which node i is in the component.
-    Return the maximum number of edges you can delete, such that every 
-    connected component in the tree has the same value.
-
-    Example 1:
-    Input: nums = [6,2,2,2,6], edges = [[0,1],[1,2],[1,3],[3,4]] 
-    Output: 2 
-    Explanation: The above figure shows how we can delete the edges [0,1] and 
-                 [3,4]. The created components are nodes [0], [1,2,3] and [4]. 
-                 The sum of the values in each component equals 6. It can be 
-                 proven that no better deletion exists, so the answer is 2.
-    
-    Example 2:
-    Input: nums = [2], edges = []
-    Output: 0
-    Explanation: There are no edges to be deleted.
-
-    Constraints:
-    * 1 <= n <= 2 * 10^4
-    * nums.length == n
-    * 1 <= nums[i] <= 50
-    * edges.length == n - 1
-    * edges[i].length == 2
-    * 0 <= edges[i][0], edges[i][1] <= n - 1
-    * edges represents a valid tree.*/
-
-    int componentValue(vector<int>& nums, vector<vector<int>>& edges) {
-        int n = nums.size(); 
-        vector<vector<int>> tree(n); 
-        for (auto& e : edges) {
-            tree[e[0]].push_back(e[1]); 
-            tree[e[1]].push_back(e[0]); 
-        }
-        
-        function<int(int, int, int)> fn = [&](int u, int p, int cand) {
-            int ans = nums[u]; 
-            for (auto& v : tree[u])
-                if (v != p) ans += fn(v, u, cand); 
-            return ans == cand ? 0 : ans; 
-        }; 
-        
-        int total = accumulate(nums.begin(), nums.end(), 0); 
-        for (int cand = 1; cand <= total/2; ++cand) 
-            if (total % cand == 0 and fn(0, -1, cand) == 0) return total/cand-1; 
-        return 0; 
-    }
-
-
-    /*2441. Largest Positive Integer That Exists With Its Negative (Easy)
-    Given an integer array nums that does not contain any zeros, find the 
-    largest positive integer k such that -k also exists in the array. Return 
-    the positive integer k. If there is no such integer, return -1.
-
-    Example 1:
-    Input: nums = [-1,2,-3,3]
-    Output: 3
-    Explanation: 3 is the only valid k we can find in the array.
-
-    Example 2:
-    Input: nums = [-1,10,6,7,-7,1]
-    Output: 7
-    Explanation: Both 1 and 7 have their corresponding negative values in the 
-                 array. 7 has a larger value.
-    
-    Example 3:
-    Input: nums = [-10,8,6,7,-2,-3]
-    Output: -1
-    Explanation: There is no a single valid k, we return -1.
-
-    Constraints:
-    * 1 <= nums.length <= 1000
-    * -1000 <= nums[i] <= 1000
-    * nums[i] != 0*/
-
-    int findMaxK(vector<int>& nums) {
-        int ans = -1; 
-        unordered_set<int> seen; 
-        for (auto& x : nums) {
-            if (seen.count(-x)) ans = max(ans, abs(x)); 
-            seen.insert(x); 
-        }
-        return ans; 
-    }
-
-
-    /*2442. Count Number of Distinct Integers After Reverse Operations (Medium)
-    You are given an array nums consisting of positive integers. You have to 
-    take each integer in the array, reverse its digits, and add it to the end 
-    of the array. You should apply this operation to the original integers in 
-    nums. Return the number of distinct integers in the final array.
-
-    Example 1:
-    Input: nums = [1,13,10,12,31]
-    Output: 6
-    Explanation: After including the reverse of each number, the resulting 
-                 array is [1,13,10,12,31,1,31,1,21,13]. The reversed integers 
-                 that were added to the end of the array are underlined. Note 
-                 that for the integer 10, after reversing it, it becomes 01 
-                 which is just 1. The number of distinct integers in this array 
-                 is 6 (The numbers 1, 10, 12, 13, 21, and 31).
-    
-    Example 2:
-    Input: nums = [2,2,2]
-    Output: 1
-    Explanation: After including the reverse of each number, the resulting 
-                 array is [2,2,2,2,2,2]. The number of distinct integers in 
-                 this array is 1 (The number 2).
-
-    Constraints:
-    * 1 <= nums.length <= 10^5
-    * 1 <= nums[i] <= 10^6*/
-
-    int countDistinctIntegers(vector<int>& nums) {
-        unordered_set<int> seen(nums.begin(), nums.end()); 
-        for (auto& x : nums) {
-            int r = 0; 
-            for (; x; r = 10*r + x%10, x /= 10); 
-            seen.insert(r);
-        }
-        return seen.size(); 
-    }
-
-
-    /*2443. Sum of Number and Its Reverse (Medium)
-    Given a non-negative integer num, return true if num can be expressed as 
-    the sum of any non-negative integer and its reverse, or false otherwise.
-
-    Example 1:
-    Input: num = 443
-    Output: true
-    Explanation: 172 + 271 = 443 so we return true.
-
-    Example 2:
-    Input: num = 63
-    Output: false
-    Explanation: 63 cannot be expressed as the sum of a non-negative integer 
-                 and its reverse so we return false.
-    
-    Example 3:
-    Input: num = 181
-    Output: true
-    Explanation: 140 + 041 = 181 so we return true. Note that when a number is 
-                 reversed, there may be leading zeros.
-
-    Constraints: 0 <= num <= 10^5*/
-
-    bool sumOfNumberAndReverse(int num) {
-        for (int x = 0; x <= num; ++x) {
-            int r = 0; 
-            for (int xx = x; xx; r = 10*r + xx % 10, xx /= 10); 
-            if (x + r == num) return true; 
-        }
-        return false; 
-    }
-
-
-    /*2444. Count Subarrays With Fixed Bounds (Hard)
-    You are given an integer array nums and two integers minK and maxK. A 
-    fixed-bound subarray of nums is a subarray that satisfies the following 
-    conditions:
-    * The minimum value in the subarray is equal to minK.
-    * The maximum value in the subarray is equal to maxK.
-    Return the number of fixed-bound subarrays. A subarray is a contiguous 
-    part of an array.
-
-    Example 1:
-    Input: nums = [1,3,5,2,7,5], minK = 1, maxK = 5
-    Output: 2
-    Explanation: The fixed-bound subarrays are [1,3,5] and [1,3,5,2].
-
-    Example 2:
-    Input: nums = [1,1,1,1], minK = 1, maxK = 1
-    Output: 10
-    Explanation: Every subarray of nums is a fixed-bound subarray. There are 10 
-                 possible subarrays.
-
-    Constraints:
-    * 2 <= nums.length <= 10^5
-    * 1 <= nums[i], minK, maxK <= 10^6*/
-
-    long long countSubarrays(vector<int>& nums, int minK, int maxK) {
-        long long ans = 0; 
-        for (int i = 0, ii = -1, imin = -1, imax = -1; i < nums.size(); ++i) 
-            if (minK <= nums[i] && nums[i] <= maxK) {
-                if (minK == nums[i]) imin = i; 
-                if (maxK == nums[i]) imax = i; 
-                ans += max(0, min(imin, imax) - ii); 
-            } else ii = i; 
-        return ans; 
     }
 };
 
