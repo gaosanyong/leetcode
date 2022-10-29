@@ -67641,13 +67641,12 @@ class SegTree:
 
     def secondGreaterElement(self, nums: List[int]) -> List[int]:
         ans = [-1] * len(nums)
-        s, ss = [], []
+        s0, s1, buff = [], [], []
         for i, x in enumerate(nums): 
-            while ss and nums[ss[-1]] < x: ans[ss.pop()] = x
-            buff = []
-            while s and nums[s[-1]] < x: buff.append(s.pop())
-            while buff: ss.append(buff.pop())
-            s.append(i)
+            while s1 and nums[s1[-1]] < x: ans[s1.pop()] = x
+            while s0 and nums[s0[-1]] < x: buff.append(s0.pop())
+            while buff: s1.append(buff.pop())
+            s0.append(i)
         return ans 
 
 
