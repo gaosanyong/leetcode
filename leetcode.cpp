@@ -46253,6 +46253,179 @@ public:
     }
 
 
+    /*2446. Determine if Two Events Have Conflict (Easy)
+    You are given two arrays of strings that represent two inclusive events 
+    that happened on the same day, event1 and event2, where:
+    * event1 = [startTime1, endTime1] and
+    * event2 = [startTime2, endTime2].
+    Event times are valid 24 hours format in the form of HH:MM. A conflict 
+    happens when two events have some non-empty intersection (i.e., some moment 
+    is common to both events). Return true if there is a conflict between two 
+    events. Otherwise, return false.
+
+    Example 1:
+    Input: event1 = ["01:15","02:00"], event2 = ["02:00","03:00"]
+    Output: true
+    Explanation: The two events intersect at time 2:00.
+
+    Example 2:
+    Input: event1 = ["01:00","02:00"], event2 = ["01:20","03:00"]
+    Output: true
+    Explanation: The two events intersect starting from 01:20 to 02:00.
+
+    Example 3:
+    Input: event1 = ["10:00","11:00"], event2 = ["14:00","15:00"]
+    Output: false
+    Explanation: The two events do not intersect.
+
+    Constraints:
+    * evnet1.length == event2.length == 2.
+    * event1[i].length == event2[i].length == 5
+    * startTime1 <= endTime1
+    * startTime2 <= endTime2
+    * All the event times follow the HH:MM format.*/
+
+    bool haveConflict(vector<string>& event1, vector<string>& event2) {
+        return !(event1[1] < event2[0] || event2[1] < event1[0]); 
+    }
+
+
+    /*2447. Number of Subarrays With GCD Equal to K (Medium)
+    Given an integer array nums and an integer k, return the number of 
+    subarrays of nums where the greatest common divisor of the subarray's 
+    elements is k. A subarray is a contiguous non-empty sequence of elements 
+    within an array. The greatest common divisor of an array is the largest 
+    integer that evenly divides all the array elements.
+
+    Example 1:
+    Input: nums = [9,3,1,2,6,3], k = 3
+    Output: 4
+    Explanation: The subarrays of nums where 3 is the greatest common divisor 
+                 of all the subarray's elements are:
+                 - [9,3,1,2,6,3]
+                 - [9,3,1,2,6,3]
+                 - [9,3,1,2,6,3]
+                 - [9,3,1,2,6,3]
+    
+    Example 2:
+    Input: nums = [4], k = 7
+    Output: 0
+    Explanation: There are no subarrays of nums where 7 is the greatest common 
+                 divisor of all the subarray's elements.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i], k <= 10^9*/
+
+    int subarrayGCD(vector<int>& nums, int k) {
+        int ans = 0; 
+        unordered_map<int, int> freq; 
+        for (auto& x : nums) {
+            unordered_map<int, int> temp = {{x, 1}}; 
+            for (auto& [key, v] : freq) 
+                temp[gcd(key, x)] += v; 
+            freq = temp; 
+            ans += freq[k]; 
+        }
+        return ans; 
+    }
+
+
+    /*2448. Minimum Cost to Make Array Equal (Hard)
+    You are given two 0-indexed arrays nums and cost consisting each of n 
+    positive integers. You can do the following operation any number of times:
+    * Increase or decrease any element of the array nums by 1.
+    The cost of doing one operation on the ith element is cost[i]. Return the 
+    minimum total cost such that all the elements of the array nums become 
+    equal.
+
+    Example 1:
+    Input: nums = [1,3,5,2], cost = [2,3,1,14]
+    Output: 8
+    Explanation: We can make all the elements equal to 2 in the following way:
+                 - Increase the 0th element one time. The cost is 2.
+                 - Decrease the 1st element one time. The cost is 3.
+                 - Decrease the 2nd element three times. The cost is 
+                   1 + 1 + 1 = 3.
+                 The total cost is 2 + 3 + 3 = 8. It can be shown that we 
+                 cannot make the array equal with a smaller cost.
+    
+    Example 2:
+    Input: nums = [2,2,2,2,2], cost = [4,2,8,1,3]
+    Output: 0
+    Explanation: All the elements are already equal, so no operations are 
+                 needed.
+
+    Constraints:
+    * n == nums.length == cost.length
+    * 1 <= n <= 10^5
+    * 1 <= nums[i], cost[i] <= 10^6*/
+
+    long long minCost(vector<int>& nums, vector<int>& cost) {
+        vector<pair<int, int>> aug; 
+        for (int i = 0; i < nums.size(); ++i) aug.emplace_back(nums[i], cost[i]);
+        sort(aug.begin(), aug.end()); 
+        long long ans = 0, median = 0, prefix = 0, total = accumulate(cost.begin(), cost.end(), 0ll); 
+        for (auto& [x, c] : aug) {
+            prefix += c; 
+            if (prefix > total/2) { median = x; break; }
+        }
+        for (auto& [x, c] : aug) ans += c * abs(x - median); 
+        return ans; 
+    }
+
+
+    /*2449. Minimum Number of Operations to Make Arrays Similar (Hard)
+    You are given two positive integer arrays nums and target, of the same 
+    length. In one operation, you can choose any two distinct indices i and j 
+    where 0 <= i, j < nums.length and:
+    * set nums[i] = nums[i] + 2 and
+    * set nums[j] = nums[j] - 2.
+    Two arrays are considered to be similar if the frequency of each element is 
+    the same. Return the minimum number of operations required to make nums 
+    similar to target. The test cases are generated such that nums can always 
+    be similar to target.
+
+    Example 1:
+    Input: nums = [8,12,6], target = [2,14,10]
+    Output: 2
+    Explanation: It is possible to make nums similar to target in two 
+                 operations:
+                 - Choose i = 0 and j = 2, nums = [10,12,4].
+                 - Choose i = 1 and j = 2, nums = [10,14,2].
+                 It can be shown that 2 is the minimum number of operations 
+                 needed.
+    
+    Example 2:
+    Input: nums = [1,2,5], target = [4,1,3]
+    Output: 1
+    Explanation: We can make nums similar to target in one operation:
+                 - Choose i = 1 and j = 2, nums = [1,4,3].
+    
+    Example 3:
+    Input: nums = [1,1,1,1,1], target = [1,1,1,1,1]
+    Output: 0
+    Explanation: The array nums is already similiar to target.
+
+    Constraints:
+    * n == nums.length == target.length
+    * 1 <= n <= 10^5
+    * 1 <= nums[i], target[i] <= 10^6
+    * It is possible to make nums similar to target.*/
+
+    long long makeSimilar(vector<int>& nums, vector<int>& target) {
+        auto cmp = [&](auto& lhs, auto& rhs) {
+            return (lhs & 1) < (rhs & 1) || ((lhs & 1) == (rhs & 1) && lhs < rhs); 
+        };
+        sort(nums.begin(), nums.end(), cmp); 
+        sort(target.begin(), target.end(), cmp); 
+        long long ans = 0; 
+        for (int i = 0; i < nums.size(); ++i)
+            ans += abs(nums[i] - target[i]); 
+        return ans/4; 
+    }
+
+
     /*2450. Number of Distinct Binary Strings After Applying Operations (Medium)
     You are given a binary string s and a positive integer k. You can apply the 
     following operation on the string any number of times:
