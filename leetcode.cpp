@@ -46687,6 +46687,215 @@ public:
         }
         return ans; 
     }
+
+
+    /*2455. Average Value of Even Numbers That Are Divisible by Three (Easy)
+    Given an integer array nums of positive integers, return the average value 
+    of all even integers that are divisible by 3. Note that the average of n 
+    elements is the sum of the n elements divided by n and rounded down to the 
+    nearest integer.
+
+    Example 1:
+    Input: nums = [1,3,6,10,12,15]
+    Output: 9
+    Explanation: 6 and 12 are even numbers that are divisible by 3. 
+                 (6 + 12) / 2 = 9.
+    
+    Example 2:
+    Input: nums = [1,2,4,7,10]
+    Output: 0
+    Explanation: There is no single number that satisfies the requirement, so 
+                 return 0.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i] <= 1000*/
+
+    int averageValue(vector<int>& nums) {
+        int total = 0, count = 0; 
+        for (auto& x : nums) 
+            if (x % 6 == 0) total += x, ++count; 
+        return count ? total/count : 0; 
+    }
+
+
+    /*2456. Most Popular Video Creator (Medium)
+    You are given two string arrays creators and ids, and an integer array 
+    views, all of length n. The ith video on a platform was created by 
+    creator[i], has an id of ids[i], and has views[i] views. The popularity of 
+    a creator is the sum of the number of views on all of the creator's videos. 
+    Find the creator with the highest popularity and the id of their most 
+    viewed video.
+    * If multiple creators have the highest popularity, find all of them.
+    * If multiple videos have the highest view count for a creator, find the 
+      lexicographically smallest id.
+    Return a 2D array of strings answer where answer[i] = [creatori, idi] means 
+    that creatori has the highest popularity and idi is the id of their most 
+    popular video. The answer can be returned in any order.
+
+    Example 1:
+    Input: creators = ["alice","bob","alice","chris"], ids = ["one","two","three","four"], views = [5,10,5,4]
+    Output: [["alice","one"],["bob","two"]]
+    Explanation: The popularity of alice is 5 + 5 = 10. The popularity of bob 
+                 is 10. The popularity of chris is 4. alice and bob are the 
+                 most popular creators. For bob, the video with the highest 
+                 view count is "two". For alice, the videos with the highest 
+                 view count are "one" and "three". Since "one" is 
+                 lexicographically smaller than "three", it is included in the 
+                 answer.
+    
+    Example 2:
+    Input: creators = ["alice","alice","alice"], ids = ["a","b","c"], views = [1,2,2]
+    Output: [["alice","b"]]
+    Explanation: The videos with id "b" and "c" have the highest view count. 
+                 Since "b" is lexicographically smaller than "c", it is 
+                 included in the answer.
+
+    Constraints:
+    * n == creators.length == ids.length == views.length
+    * 1 <= n <= 10^5
+    * 1 <= creators[i].length, ids[i].length <= 5
+    * creators[i] and ids[i] consist only of lowercase English letters.
+    * 0 <= views[i] <= 10^5*/
+
+    vector<vector<string>> mostPopularCreator(vector<string>& creators, vector<string>& ids, vector<int>& views) {
+        unordered_map<string, long> total; 
+        unordered_map<string, vector<pair<string, int>>> mp; 
+        for (int i = 0; i < creators.size(); ++i) {
+            total[creators[i]] += views[i]; 
+            mp[creators[i]].emplace_back(ids[i], views[i]); 
+        }
+        auto [_, most] = *max_element(total.begin(), total.end(), [](auto& lhs, auto& rhs) {return lhs.second < rhs.second;}); 
+        vector<vector<string>> ans; 
+        for (auto& [k, v] : total) 
+            if (v == most) 
+                ans.push_back({k, max_element(mp[k].begin(), mp[k].end(), [](auto& lhs, auto&rhs) {
+                    return lhs.second < rhs.second || (lhs.second == rhs.second && lhs.first > rhs.first); 
+                })->first}); 
+        return ans; 
+    }
+
+
+    /*2457. Minimum Addition to Make Integer Beautiful (Medium)
+    You are given two positive integers n and target. An integer is considered 
+    beautiful if the sum of its digits is less than or equal to target. Return 
+    the minimum non-negative integer x such that n + x is beautiful. The input 
+    will be generated such that it is always possible to make n beautiful.
+
+    Example 1:
+    Input: n = 16, target = 6
+    Output: 4
+    Explanation: Initially n is 16 and its digit sum is 1 + 6 = 7. After adding 
+                 4, n becomes 20 and digit sum becomes 2 + 0 = 2. It can be 
+                 shown that we can not make n beautiful with adding non-
+                 negative integer less than 4.
+    
+    Example 2:
+    Input: n = 467, target = 6
+    Output: 33
+    Explanation: Initially n is 467 and its digit sum is 4 + 6 + 7 = 17. After 
+                 adding 33, n becomes 500 and digit sum becomes 5 + 0 + 0 = 5. 
+                 It can be shown that we can not make n beautiful with adding 
+                 non-negative integer less than 33.
+    
+    Example 3:
+    Input: n = 1, target = 1
+    Output: 0
+    Explanation: Initially n is 1 and its digit sum is 1, which is already 
+                 smaller than or equal to target.
+
+    Constraints:
+    * 1 <= n <= 10^12
+    * 1 <= target <= 150
+    * The input will be generated such that it is always possible to make n 
+      beautiful.*/
+
+    long long makeIntegerBeautiful(long long n, int target) {
+        
+        auto fn = [](long long n) {
+            int ans = 0; 
+            for (; n; ans += n%10, n /= 10); 
+            return ans; 
+        }; 
+        
+        long long diff = 0; 
+        for (int i = 1; fn(n+diff) > target; ++i) 
+            diff = pow(10, i) - n % (long long) pow(10, i); 
+        return diff; 
+    }
+
+
+    /*2458. Height of Binary Tree After Subtree Removal Queries (Hard)
+    You are given the root of a binary tree with n nodes. Each node is assigned 
+    a unique value from 1 to n. You are also given an array queries of size m.
+    You have to perform m independent queries on the tree where in the ith 
+    query you do the following:
+    * Remove the subtree rooted at the node with the value queries[i] from the 
+      tree. It is guaranteed that queries[i] will not be equal to the value of 
+      the root.
+    Return an array answer of size m where answer[i] is the height of the tree 
+    after performing the ith query.
+
+    Note:
+    * The queries are independent, so the tree returns to its initial state 
+      after each query.
+    * The height of a tree is the number of edges in the longest simple path 
+      from the root to some node in the tree.
+
+    Example 1:
+    Input: root = [1,3,4,2,null,6,5,null,null,null,null,null,7], queries = [4]
+    Output: [2]
+    Explanation: The diagram above shows the tree after removing the subtree 
+                 rooted at node with value 4. The height of the tree is 2 (The 
+                 path 1 -> 3 -> 2).
+    
+    Example 2:
+    Input: root = [5,8,9,2,1,3,7,4,6], queries = [3,2,4,8]
+    Output: [3,2,3,2]
+    Explanation: We have the following queries:
+                 - Removing the subtree rooted at node with value 3. The height 
+                   of the tree becomes 3 (The path 5 -> 8 -> 2 -> 4).
+                 - Removing the subtree rooted at node with value 2. The height 
+                   of the tree becomes 2 (The path 5 -> 8 -> 1).
+                 - Removing the subtree rooted at node with value 4. The height 
+                   of the tree becomes 3 (The path 5 -> 8 -> 2 -> 6).
+                 - Removing the subtree rooted at node with value 8. The height 
+                   of the tree becomes 2 (The path 5 -> 9 -> 3).
+
+    Constraints:
+    * The number of nodes in the tree is n.
+    * 2 <= n <= 10^5
+    * 1 <= Node.val <= n
+    * All the values in the tree are unique.
+    * m == queries.length
+    * 1 <= m <= min(n, 10^4)
+    * 1 <= queries[i] <= n
+    * queries[i] != root.val*/
+
+    vector<int> treeQueries(TreeNode* root, vector<int>& queries) {
+        unordered_map<int, int> depth, height; 
+        
+        function<int(TreeNode*, int d)> fn = [&](TreeNode* node, int d) {
+            if (!node) return 0; 
+            depth[node->val] = d; 
+            height[node->val] = 1 + max(fn(node->left, d+1), fn(node->right, d+1)); 
+            return height[node->val]; 
+        }; 
+        int h = fn(root, 0); 
+        vector<vector<int>> level(h, vector<int>(2)); 
+        
+        for (auto& [k, v] : depth) {
+            if (height[k] >= height[level[v][0]]) level[v] = {k, level[v][0]}; 
+            else if (height[k] > height[level[v][1]]) level[v][1] = k; 
+        }
+        vector<int> ans; 
+        for (auto& q : queries) {
+            int d = depth[q]; 
+            if (q == level[d][0]) ans.push_back(h-1-height[q]+height[level[d][1]]); 
+            else ans.push_back(h-1); 
+        }
+        return ans; 
+    }
 };
 
 
