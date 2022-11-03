@@ -48954,7 +48954,7 @@ class TreeAncestor {
 public:
     TreeAncestor(int n, vector<int>& parent) {
         m = 1 + int(log2(n)); 
-        lift = vector<vector<int>>(n, vector<int>(m, -1)); 
+        lift = vector<vector<int>>(n, vector<int>(m, -1)); // binary lifting 
         for (int j = 0; j < m; ++j) 
             for (int i = 0; i < n; ++i) 
                 if (j == 0) lift[i][j] = parent[i]; 

@@ -71627,12 +71627,11 @@ class TreeAncestor:
 
     def __init__(self, n: int, parent: List[int]):
         self.m = m = 1 + int(log2(n))
-        self.lift = [[-1]*m for _ in range(n)]
+        self.lift = [[-1]*m for _ in range(n)] # binary lifting 
         for j in range(m): 
             for i in range(n): 
                 if j == 0: self.lift[i][j] = parent[i]
-                elif self.lift[i][j-1] != -1: 
-                    self.lift[i][j] = self.lift[self.lift[i][j-1]][j-1]
+                elif self.lift[i][j-1] != -1: self.lift[i][j] = self.lift[self.lift[i][j-1]][j-1]
 
     def getKthAncestor(self, node: int, k: int) -> int:
         for i in range(self.m): 
