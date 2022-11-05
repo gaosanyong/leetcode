@@ -61114,6 +61114,90 @@ class Trie:
         return max(sum(bool(x & 1<<i) for x in candidates) for i in range(24))
 
 
+    """2277. Closest Node to Path in Tree (Hard)
+    You are given a positive integer n representing the number of nodes in a 
+    tree, numbered from 0 to n - 1 (inclusive). You are also given a 2D integer 
+    array edges of length n - 1, where edges[i] = [node1i, node2i] denotes that 
+    there is a bidirectional edge connecting node1i and node2i in the tree. You 
+    are given a 0-indexed integer array query of length m where 
+    query[i] = [starti, endi, nodei] means that for the ith query, you are 
+    tasked with finding the node on the path from starti to endi that is 
+    closest to nodei. Return an integer array answer of length m, where 
+    answer[i] is the answer to the ith query.
+
+    Example 1:
+    Input: n = 7, edges = [[0,1],[0,2],[0,3],[1,4],[2,5],[2,6]], query = [[5,3,4],[5,3,6]]
+    Output: [0,2]
+    Explanation: The path from node 5 to node 3 consists of the nodes 5, 2, 0, 
+                 and 3. The distance between node 4 and node 0 is 2. Node 0 is 
+                 the node on the path closest to node 4, so the answer to the 
+                 first query is 0. The distance between node 6 and node 2 is 1.
+                 Node 2 is the node on the path closest to node 6, so the 
+                 answer to the second query is 2.
+    
+    Example 2:
+    Input: n = 3, edges = [[0,1],[1,2]], query = [[0,1,2]]
+    Output: [1]
+    Explanation: The path from node 0 to node 1 consists of the nodes 0, 1. The 
+                 distance between node 2 and node 1 is 1. Node 1 is the node on 
+                 the path closest to node 2, so the answer to the first query 
+                 is 1.
+    
+    Example 3:
+    Input: n = 3, edges = [[0,1],[1,2]], query = [[0,0,0]]
+    Output: [0]
+    Explanation: The path from node 0 to node 0 consists of the node 0. Since 0 
+                 is the only node on the path, the answer to the first query is 
+                 0.
+
+    Constraints:
+    * 1 <= n <= 1000
+    * edges.length == n - 1
+    * edges[i].length == 2
+    * 0 <= node1i, node2i <= n - 1
+    * node1i != node2i
+    * 1 <= query.length <= 1000
+    * query[i].length == 3
+    * 0 <= starti, endi, nodei <= n - 1
+    * The graph is a tree."""
+
+    def closestNode(self, n: int, edges: List[List[int]], query: List[List[int]]) -> List[int]:
+        tree = [[] for _ in range(n)]
+        for u, v in edges: 
+            tree[u].append(v)
+            tree[v].append(u)
+        m = int(log2(n)) + 1
+        lift = [[-1]*m for _ in range(n)] # binary lifting 
+        depth = [-1]*n 
+        stack = [(0, -1, 0)]
+        while stack: 
+            u, p, d = stack.pop()
+            depth[u] = d 
+            for v in tree[u]: 
+                if v != p: 
+                    lift[v][0] = u 
+                    for j in range(1, m): 
+                        if lift[v][j-1] == -1: break 
+                        lift[v][j] = lift[lift[v][j-1]][j-1]
+                    stack.append((v, u, d+1))
+        
+        def lca(u, v): 
+            """Return lowest common ancestor via binary lifting."""
+            if depth[u] > depth[v]: u, v = v, u
+            for i in range(m): 
+                if depth[v]-depth[u] & 1<<i and 0 <= v: v = lift[v][i]
+            if u == v: return u 
+            for i in range(m-1, -1, -1): 
+                if lift[u][i] != lift[v][i]: u, v = lift[u][i], lift[v][i]
+            return lift[u][0]
+        
+        ans = []
+        for u, v, w in query: 
+            val = max(lca(u, v), lca(v, w), lca(w, u), key=depth.__getitem__)
+            ans.append(val)
+        return ans 
+
+
     """2278. Percentage of Letter in String (Easy)
     Given a string s and a character letter, return the percentage of 
     characters in s that equal letter rounded down to the nearest whole percent.
