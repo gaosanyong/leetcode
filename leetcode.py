@@ -68178,6 +68178,270 @@ class SegTree:
         return ans 
 
 
+    """2460. Apply Operations to an Array (Easy)
+    You are given a 0-indexed array nums of size n consisting of non-negative 
+    integers. You need to apply n - 1 operations to this array where, in the 
+    ith operation (0-indexed), you will apply the following on the ith element 
+    of nums:
+    * If nums[i] == nums[i + 1], then multiply nums[i] by 2 and set nums[i + 1] 
+      to 0. Otherwise, you skip this operation.
+    After performing all the operations, shift all the 0's to the end of the 
+    array.
+    * For example, the array [1,0,2,0,0,1] after shifting all its 0's to the 
+      end, is [1,2,1,0,0,0].
+    Return the resulting array. Note that the operations are applied 
+    sequentially, not all at once.
+
+    Example 1:
+    Input: nums = [1,2,2,1,1,0]
+    Output: [1,4,2,0,0,0]
+    Explanation: We do the following operations:
+                 - i = 0: nums[0] and nums[1] are not equal, so we skip this 
+                          operation.
+                 - i = 1: nums[1] and nums[2] are equal, we multiply nums[1] by 
+                          2 and change nums[2] to 0. The array becomes 
+                          [1,4,0,1,1,0].
+                 - i = 2: nums[2] and nums[3] are not equal, so we skip this 
+                          operation.
+                 - i = 3: nums[3] and nums[4] are equal, we multiply nums[3] by 
+                          2 and change nums[4] to 0. The array becomes 
+                          [1,4,0,2,0,0].
+                 - i = 4: nums[4] and nums[5] are equal, we multiply nums[4] by 
+                          2 and change nums[5] to 0. The array becomes 
+                          [1,4,0,2,0,0].
+                 After that, we shift the 0's to the end, which gives the array 
+                 [1,4,2,0,0,0].
+    
+    Example 2:
+    Input: nums = [0,1]
+    Output: [1,0]
+    Explanation: No operation can be applied, we just shift the 0 to the end.
+
+    Constraints:
+    * 2 <= nums.length <= 2000
+    * 0 <= nums[i] <= 1000"""
+
+    def applyOperations(self, nums: List[int]) -> List[int]:
+        ans = []
+        for i, x in enumerate(nums): 
+            if i+1 < len(nums) and nums[i] == nums[i+1]: 
+                nums[i] *= 2
+                nums[i+1] = 0 
+            if nums[i]: ans.append(nums[i])
+        return ans + [0]*(len(nums)-len(ans))
+
+
+    """2461. Maximum Sum of Distinct Subarrays With Length K (Medium)
+    You are given an integer array nums and an integer k. Find the maximum 
+    subarray sum of all the subarrays of nums that meet the following 
+    conditions:
+    * The length of the subarray is k, and
+    * All the elements of the subarray are distinct.
+    Return the maximum subarray sum of all the subarrays that meet the 
+    conditions. If no subarray meets the conditions, return 0. A subarray is a 
+    contiguous non-empty sequence of elements within an array.
+
+    Example 1:
+    Input: nums = [1,5,4,2,9,9,9], k = 3
+    Output: 15
+    Explanation: The subarrays of nums with length 3 are:
+                 - [1,5,4] which meets the requirements and has a sum of 10.
+                 - [5,4,2] which meets the requirements and has a sum of 11.
+                 - [4,2,9] which meets the requirements and has a sum of 15.
+                 - [2,9,9] which does not meet the requirements because the 
+                   element 9 is repeated.
+                 - [9,9,9] which does not meet the requirements because the 
+                   element 9 is repeated.
+                 We return 15 because it is the maximum subarray sum of all the 
+                 subarrays that meet the conditions
+    
+    Example 2:
+    Input: nums = [4,4,4], k = 3
+    Output: 0
+    Explanation: The subarrays of nums with length 3 are:
+                 - [4,4,4] which does not meet the requirements because the 
+                   element 4 is repeated.
+                 We return 0 because no subarrays meet the conditions.
+
+    Constraints:
+    * 1 <= k <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^5"""
+
+    def maximumSubarraySum(self, nums: List[int], k: int) -> int:
+        ans = ii = rsm = 0 
+        seen = set()
+        for i, x in enumerate(nums): 
+            while x in seen or i-ii == k: 
+                seen.remove(nums[ii])
+                rsm -= nums[ii]
+                ii += 1
+            seen.add(x)
+            rsm += x
+            if i-ii == k-1: ans = max(ans, rsm)
+        return ans 
+
+
+    """2462. Total Cost to Hire K Workers (Medium)
+    You are given a 0-indexed integer array costs where costs[i] is the cost of 
+    hiring the ith worker. You are also given two integers k and candidates. We 
+    want to hire exactly k workers according to the following rules:
+    * You will run k sessions and hire exactly one worker in each session.
+    * In each hiring session, choose the worker with the lowest cost from 
+      either the first candidates workers or the last candidates workers. Break 
+      the tie by the smallest index.
+      + For example, if costs = [3,2,7,7,1,2] and candidates = 2, then in the 
+        first hiring session, we will choose the 4th worker because they have 
+        the lowest cost [3,2,7,7,1,2].
+      + In the second hiring session, we will choose 1st worker because they 
+        have the same lowest cost as 4th worker but they have the smallest 
+        index [3,2,7,7,2]. Please note that the indexing may be changed in the 
+        process.
+    * If there are fewer than candidates workers remaining, choose the worker 
+      with the lowest cost among them. Break the tie by the smallest index.
+    * A worker can only be chosen once.
+    Return the total cost to hire exactly k workers.
+
+    Example 1:
+    Input: costs = [17,12,10,2,7,2,11,20,8], k = 3, candidates = 4
+    Output: 11
+    Explanation: We hire 3 workers in total. The total cost is initially 0.
+                 - In the first hiring round we choose the worker from 
+                   [17,12,10,2,7,2,11,20,8]. The lowest cost is 2, and we break 
+                   the tie by the smallest index, which is 3. The total cost = 
+                   0 + 2 = 2.
+                 - In the second hiring round we choose the worker from 
+                   [17,12,10,7,2,11,20,8]. The lowest cost is 2 (index 4). The 
+                   total cost = 2 + 2 = 4.
+                 - In the third hiring round we choose the worker from 
+                   [17,12,10,7,11,20,8]. The lowest cost is 7 (index 3). The 
+                   total cost = 4 + 7 = 11. Notice that the worker with index 3 
+                   was common in the first and last four workers.
+                 The total hiring cost is 11.
+    
+    Example 2:
+    Input: costs = [1,2,4,1], k = 3, candidates = 3
+    Output: 4
+    Explanation: We hire 3 workers in total. The total cost is initially 0.
+                 - In the first hiring round we choose the worker from [1,2,4,1]. 
+                   The lowest cost is 1, and we break the tie by the smallest 
+                   index, which is 0. The total cost = 0 + 1 = 1. Notice that 
+                   workers with index 1 and 2 are common in the first and last 
+                   3 workers.
+                 - In the second hiring round we choose the worker from [2,4,1]. 
+                   The lowest cost is 1 (index 2). The total cost = 1 + 1 = 2.
+                 - In the third hiring round there are less than three 
+                   candidates. We choose the worker from the remaining workers 
+                   [2,4]. The lowest cost is 2 (index 0). The total cost = 
+                   2 + 2 = 4.
+                 The total hiring cost is 4.
+
+    Constraints:
+    * 1 <= costs.length <= 10^5
+    * 1 <= costs[i] <= 10^5
+    * 1 <= k, candidates <= costs.length"""
+
+    def totalCost(self, costs: List[int], k: int, candidates: int) -> int:
+        q = costs[:candidates]
+        qq = costs[max(candidates, len(costs)-candidates):]
+        heapify(q)
+        heapify(qq)
+        ans = 0 
+        i, ii = candidates, len(costs)-candidates-1
+        for _ in range(k): 
+            if not qq or q and q[0] <= qq[0]: 
+                ans += heappop(q)
+                if i <= ii: 
+                    heappush(q, costs[i])
+                    i += 1
+            else: 
+                ans += heappop(qq)
+                if i <= ii: 
+                    heappush(qq, costs[ii])
+                    ii -= 1
+        return ans 
+
+
+    """2463. Minimum Total Distance Traveled (Hard)
+    There are some robots and factories on the X-axis. You are given an integer 
+    array robot where robot[i] is the position of the ith robot. You are also 
+    given a 2D integer array factory where factory[j] = [positionj, limitj] 
+    indicates that positionj is the position of the jth factory and that the 
+    jth factory can repair at most limitj robots. The positions of each robot 
+    are unique. The positions of each factory are also unique. Note that a 
+    robot can be in the same position as a factory initially. All the robots 
+    are initially broken; they keep moving in one direction. The direction 
+    could be the negative or the positive direction of the X-axis. When a robot 
+    reaches a factory that did not reach its limit, the factory repairs the 
+    robot, and it stops moving. At any moment, you can set the initial 
+    direction of moving for some robot. Your target is to minimize the total 
+    distance traveled by all the robots. Return the minimum total distance 
+    traveled by all the robots. The test cases are generated such that all the 
+    robots can be repaired.
+
+    Note that
+    * All robots move at the same speed.
+    * If two robots move in the same direction, they will never collide.
+    * If two robots move in opposite directions and they meet at some point, 
+      they do not collide. They cross each other.
+    * If a robot passes by a factory that reached its limits, it crosses it as 
+      if it does not exist.
+    * If the robot moved from a position x to a position y, the distance it 
+      moved is |y - x|.
+
+    Example 1:
+    Input: robot = [0,4,6], factory = [[2,2],[6,2]]
+    Output: 4
+    Explanation: As shown in the figure:
+                 - The first robot at position 0 moves in the positive 
+                   direction. It will be repaired at the first factory.
+                 - The second robot at position 4 moves in the negative 
+                   direction. It will be repaired at the first factory.
+                 - The third robot at position 6 will be repaired at the second 
+                   factory. It does not need to move.
+                 The limit of the first factory is 2, and it fixed 2 robots.
+                 The limit of the second factory is 2, and it fixed 1 robot.
+                 The total distance is |2 - 0| + |2 - 4| + |6 - 6| = 4. It can 
+                 be shown that we cannot achieve a better total distance than 4.
+    
+    Example 2:
+    Input: robot = [1,-1], factory = [[-2,1],[2,1]]
+    Output: 2
+    Explanation: As shown in the figure:
+                 - The first robot at position 1 moves in the positive 
+                   direction. It will be repaired at the second factory.
+                 - The second robot at position -1 moves in the negative 
+                   direction. It will be repaired at the first factory.
+                 The limit of the first factory is 1, and it fixed 1 robot.
+                 The limit of the second factory is 1, and it fixed 1 robot.
+                 The total distance is |2 - 1| + |(-2) - (-1)| = 2. It can be 
+                 shown that we cannot achieve a better total distance than 2.
+
+    Constraints:
+    * 1 <= robot.length, factory.length <= 100
+    * factory[j].length == 2
+    * -10^9 <= robot[i], positionj <= 10^9
+    * 0 <= limitj <= robot.length
+    * The input will be generated such that it is always possible to repair 
+      every robot."""
+
+    def minimumTotalDistance(self, robot: List[int], factory: List[List[int]]) -> int:
+        robot.sort()
+        factory.sort()
+        m, n = len(robot), len(factory)
+        dp = [[0]*(n+1) for _ in range(m+1)] 
+        for i in range(m): dp[i][-1] = inf 
+        for j in range(n-1, -1, -1): 
+            prefix = 0 
+            qq = deque([(m, 0)])
+            for i in range(m-1, -1, -1): 
+                prefix += abs(robot[i] - factory[j][0])
+                if qq[0][0] > i+factory[j][1]: qq.popleft()
+                while qq and qq[-1][1] >= dp[i][j+1] - prefix: qq.pop()
+                qq.append((i, dp[i][j+1] - prefix))
+                dp[i][j] = qq[0][1] + prefix
+        return dp[0][0]
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
