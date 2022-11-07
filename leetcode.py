@@ -47139,10 +47139,10 @@ class Fenwick:
         N = 100_001
         MOD = 1_000_000_007
         fact, ifact, inv = [1] * N, [1] * N, [1] * N
-        for i in range(1, N): 
-            if i >= 2: inv[i] = MOD - MOD//i * inv[MOD % i] % MOD # modular inverse
-            fact[i] = fact[i-1] * i % MOD 
-            ifact[i] = ifact[i-1] * inv[i] % MOD 
+        for x in range(1, N): 
+            if x >= 2: inv[x] = MOD - MOD//x * inv[MOD % x] % MOD # modular inverse
+            fact[x] = fact[x-1] * x % MOD 
+            ifact[x] = ifact[x-1] * inv[x] % MOD 
         
         def fn(n): 
             """Return number of nodes and ways to build sub-tree."""
