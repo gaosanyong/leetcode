@@ -4190,7 +4190,7 @@ BEGIN
   RETURN (
       SELECT COUNT(DISTINCT user_id) AS user_cnt
       FROM Purchases
-      WHERE startDate <= time_stamp AND time_stamp <= endDate AND amount >= minAmount
+      WHERE time_stamp BETWEEN startDate AND endDate AND amount >= minAmount
   );
 END
 
