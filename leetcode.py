@@ -64900,7 +64900,7 @@ class Trie:
                 delta = max(delta, w-dd)
             return sm, delta
         
-        return sum(fn(0))
+        return sum(dfs(0))
 
 
     """2379. Minimum Recolors to Get K Consecutive Black Blocks (Easy)
