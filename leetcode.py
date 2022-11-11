@@ -40554,7 +40554,7 @@ class Fenwick:
     def waysToFillArray(self, queries: List[List[int]]) -> List[int]:
         spf = list(range(10001)) # spf = smallest prime factor 
         for x in range(4, 10001, 2): spf[x] = 2
-        for x in range(3, isqrt(10000)+1): 
+        for x in range(3, isqrt(10000)+1, 2): 
             if spf[x] == x: 
                 for xx in range(x*x, 10001, x): 
                     spf[xx] = min(spf[xx], x)
