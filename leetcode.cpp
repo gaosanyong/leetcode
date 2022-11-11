@@ -27144,6 +27144,68 @@ public:
     }
 
 
+    /*1735. Count Ways to Make Array With Product (Hard)
+    You are given a 2D integer array, queries. For each queries[i], where 
+    queries[i] = [ni, ki], find the number of different ways you can place 
+    positive integers into an array of size ni such that the product of the 
+    integers is ki. As the number of ways may be too large, the answer to the 
+    ith query is the number of ways modulo 10^9 + 7. Return an integer array 
+    answer where answer.length == queries.length, and answer[i] is the answer 
+    to the ith query.
+
+    Example 1:
+    Input: queries = [[2,6],[5,1],[73,660]]
+    Output: [4,1,50734910]
+    Explanation: Each query is independent. 
+                 [2,6]: There are 4 ways to fill an array of size 2 that 
+                        multiply to 6: [1,6], [2,3], [3,2], [6,1].
+                 [5,1]: There is 1 way to fill an array of size 5 that multiply 
+                        to 1: [1,1,1,1,1].
+                 [73,660]: There are 1050734917 ways to fill an array of size 
+                           73 that multiply to 660. 
+                           1050734917 modulo 10^9 + 7 = 50734910.
+    
+    Example 2:
+    Input: queries = [[1,1],[2,2],[3,3],[4,4],[5,5]]
+    Output: [1,2,3,10,5]
+
+    Constraints:
+    1 <= queries.length <= 10^4
+    1 <= ni, ki <= 10^4*/
+
+    vector<int> waysToFillArray(vector<vector<int>>& queries) {
+        const int MOD = 1'000'000'007; 
+        vector<int> spf(10001); 
+        iota(spf.begin(), spf.end(), 0); 
+        for (int x = 4; x <= 10000; x += 2) spf[x] = 2; 
+        for (int x = 3; x <= sqrt(10000); x += 2) 
+            if (spf[x] == x) 
+                for (int xx = x*x; xx <= 10000; xx += x) 
+                    spf[xx] = min(spf[xx], x); 
+        vector<long> fact(20000), ifact(20000), inv(20000); 
+        inv[1] = 1; 
+        fact[0] = ifact[0] = 1; 
+        for (int x = 1; x < 20000; ++x) {
+            if (x >= 2) inv[x] = MOD - MOD/x * inv[MOD % x] % MOD; 
+            fact[x] = fact[x-1] * x % MOD; 
+            ifact[x] = ifact[x-1] * inv[x] % MOD; 
+        }
+        vector<int> ans; 
+        for (auto& q : queries) {
+            unordered_map<int, int> freq; 
+            for (int k = q[1]; k > 1; k /= spf[k]) ++freq[spf[k]];
+            long val = 1; 
+            for (auto& [_, v] : freq) {
+                val = val * fact[q[0]+v-1] % MOD; 
+                val = val * ifact[q[0]-1] % MOD; 
+                val = val * ifact[v] % MOD; 
+            }
+            ans.push_back(val); 
+        }
+        return ans; 
+    }
+
+
     /*1748. Sum of Unique Elements (Easy)
     You are given an integer array nums. The unique elements of an array are 
     the elements that appear exactly once in the array. Return the sum of all 
