@@ -32866,15 +32866,15 @@ public:
         for (int i = 0; i < size(prevRoom); ++i) 
             if (prevRoom[i] >= 0) tree[prevRoom[i]].push_back(i); 
         
-        const long MOD = 1'000'000'007, N = 100'001; 
+        const int MOD = 1'000'000'007, N = 100'001; 
         long inv[N], fact[N], ifact[N]; 
         inv[1] = 1; 
         fact[0] = ifact[0] = 1; 
         
-        for (int i = 1; i < N; ++i) {
-            if (i >= 2) inv[i] = MOD - MOD/i * inv[MOD % i] % MOD; // modular inverse
-            fact[i] = fact[i-1] * i % MOD; 
-            ifact[i] = ifact[i-1] * inv[i] % MOD; 
+        for (int x = 1; x < N; ++x) {
+            if (x >= 2) inv[x] = MOD - MOD/x * inv[MOD % x] % MOD; // modular inverse
+            fact[x] = fact[x-1] * x % MOD; 
+            ifact[x] = ifact[x-1] * inv[x] % MOD; 
         }
         
         function<pair<int, long>(int)> fn = [&](int x) {
