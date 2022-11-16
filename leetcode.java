@@ -155,13 +155,9 @@ class Solution {
 	* strs[i] consists of only lowercase English letters.*/
 
     public String longestCommonPrefix(String[] strs) {
-        StringBuilder ans = new StringBuilder(); 
-        loop: 
-        for (int j = 0; j < strs[0].length(); ++j) {
-            for (int i = 0; i < strs.length; ++i) 
-                if (strs[i].length() == j || strs[i].charAt(j) != strs[0].charAt(j)) break loop; 
-            ans.append(strs[0].charAt(j)); 
-        }
-        return ans.toString(); 
+        String lo = Collections.min(Arrays.asList(strs)), hi = Collections.max(Arrays.asList(strs)); 
+        int i = 0; 
+        for (; i < lo.length() && i < hi.length() && lo.charAt(i) == hi.charAt(i); ++i); 
+        return lo.substring(0, i); 
     }
 }
