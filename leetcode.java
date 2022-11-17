@@ -284,9 +284,9 @@ class Solution {
 	* nums is sorted in non-decreasing order.*/
 
     public int removeDuplicates(int[] nums) {
-        int i = 0; 
+        int k = 0; 
         for (int x : nums) 
-            if (i == 0 || nums[i-1] < x) nums[i++] = x; 
-        return i; 
+            if (k == 0 || nums[k-1] < x) nums[k++] = x; 
+        return k; 
     }
 }
