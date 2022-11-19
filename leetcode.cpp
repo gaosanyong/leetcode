@@ -48080,6 +48080,234 @@ public:
     }
 
 
+    /*2465. Number of Distinct Averages (Easy)
+    You are given a 0-indexed integer array nums of even length. As long as 
+    nums is not empty, you must repetitively:
+    * Find the minimum number in nums and remove it.
+    * Find the maximum number in nums and remove it.
+    * Calculate the average of the two removed numbers.
+    The average of two numbers a and b is (a + b) / 2. For example, the average 
+    of 2 and 3 is (2 + 3) / 2 = 2.5. Return the number of distinct averages 
+    calculated using the above process. Note that when there is a tie for a 
+    minimum or maximum number, any can be removed.
+
+    Example 1:
+    Input: nums = [4,1,4,0,3,5]
+    Output: 2
+    Explanation: 1. Remove 0 and 5, and the average is (0 + 5) / 2 = 2.5. Now, 
+                    nums = [4,1,4,3].
+                 2. Remove 1 and 4. The average is (1 + 4) / 2 = 2.5, and 
+                    nums = [4,3].
+                 3. Remove 3 and 4, and the average is (3 + 4) / 2 = 3.5.
+                 Since there are 2 distinct numbers among 2.5, 2.5, and 3.5, we 
+                 return 2.
+    
+    Example 2:
+    Input: nums = [1,100]
+    Output: 1
+    Explanation: There is only one average to be calculated after removing 1 
+                 and 100, so we return 1.
+
+    Constraints:
+    * 2 <= nums.length <= 100
+    * nums.length is even.
+    * 0 <= nums[i] <= 100*/
+
+    int distinctAverages(vector<int>& nums) {
+        sort(nums.begin(), nums.end()); 
+        unordered_set<float> seen; 
+        for (int i = 0, n = nums.size(); i < n/2; ++i) 
+            seen.insert((nums[i] + nums[n-1-i])/2.); 
+        return seen.size(); 
+    }
+
+
+    /*2466. Count Ways To Build Good Strings (Medium)
+    Given the integers zero, one, low, and high, we can construct a string by 
+    starting with an empty string, and then at each step perform either of the 
+    following:
+    * Append the character '0' zero times.
+    * Append the character '1' one times.
+    This can be performed any number of times. A good string is a string 
+    constructed by the above process having a length between low and high 
+    (inclusive). Return the number of different good strings that can be 
+    constructed satisfying these properties. Since the answer can be large, 
+    return it modulo 10^9 + 7.
+
+    Example 1:
+    Input: low = 3, high = 3, zero = 1, one = 1
+    Output: 8
+    Explanation: One possible valid good string is "011". It can be constructed 
+                 as follows: "" -> "0" -> "01" -> "011". All binary strings 
+                 from "000" to "111" are good strings in this example.
+    
+    Example 2:
+    Input: low = 2, high = 3, zero = 1, one = 2
+    Output: 5
+    Explanation: The good strings are "00", "11", "000", "110", and "011".
+
+    Constraints:
+    * 1 <= low <= high <= 10^5
+    * 1 <= zero, one <= low*/
+
+    int countGoodStrings(int low, int high, int zero, int one) {
+        int MOD = 1'000'000'007; 
+        vector<long> dp(high+1); 
+        for (int i = high; i >= 0; --i) {
+            if (low <= i) dp[i] = 1; 
+            if (i+zero <= high) dp[i] = (dp[i] + dp[i+zero]) % MOD; 
+            if (i+one <= high) dp[i] = (dp[i] + dp[i+one]) % MOD; 
+        }
+        return dp[0]; 
+    }
+
+
+    /*2467. Most Profitable Path in a Tree (Medium)
+    There is an undirected tree with n nodes labeled from 0 to n - 1, rooted at 
+    node 0. You are given a 2D integer array edges of length n - 1 where 
+    edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi 
+    in the tree. At every node i, there is a gate. You are also given an array 
+    of even integers amount, where amount[i] represents:
+    * the price needed to open the gate at node i, if amount[i] is negative, or,
+    * the cash reward obtained on opening the gate at node i, otherwise.
+    The game goes on as follows:
+    * Initially, Alice is at node 0 and Bob is at node bob.
+    * At every second, Alice and Bob each move to an adjacent node. Alice moves 
+      towards some leaf node, while Bob moves towards node 0.
+    * For every node along their path, Alice and Bob either spend money to open 
+      the gate at that node, or accept the reward. Note that:
+      + If the gate is already open, no price will be required, nor will there 
+        be any cash reward.
+      + If Alice and Bob reach the node simultaneously, they share the 
+        price/reward for opening the gate there. In other words, if the price 
+        to open the gate is c, then both Alice and Bob pay c / 2 each. 
+        Similarly, if the reward at the gate is c, both of them receive c / 2 
+        each.
+    * If Alice reaches a leaf node, she stops moving. Similarly, if Bob reaches 
+      node 0, he stops moving. Note that these events are independent of each 
+      other.
+    Return the maximum net income Alice can have if she travels towards the 
+    optimal leaf node.
+
+    Example 1:
+    Input: edges = [[0,1],[1,2],[1,3],[3,4]], bob = 3, amount = [-2,4,2,-4,6]
+    Output: 6
+    Explanation: The above diagram represents the given tree. The game goes as 
+                 follows:
+                 - Alice is initially on node 0, Bob on node 3. They open the 
+                   gates of their respective nodes. Alice's net income is now 
+                   -2.
+                 - Both Alice and Bob move to node 1. Since they reach here 
+                   simultaneously, they open the gate together and share the 
+                   reward. Alice's net income becomes -2 + (4 / 2) = 0.
+                 - Alice moves on to node 3. Since Bob already opened its gate, 
+                   Alice's income remains unchanged. Bob moves on to node 0, 
+                   and stops moving.
+                 - Alice moves on to node 4 and opens the gate there. Her net 
+                   income becomes 0 + 6 = 6.
+                 Now, neither Alice nor Bob can make any further moves, and the 
+                 game ends. It is not possible for Alice to get a higher net 
+                 income.
+    
+    Example 2:
+    Input: edges = [[0,1]], bob = 1, amount = [-7280,2350]
+    Output: -7280
+    Explanation: Alice follows the path 0->1 whereas Bob follows the path 1->0.
+                 Thus, Alice opens the gate at node 0 only. Hence, her net 
+                 income is -7280. 
+
+    Constraints:
+    * 2 <= n <= 10^5
+    * edges.length == n - 1
+    * edges[i].length == 2
+    * 0 <= ai, bi < n
+    * ai != bi
+    * edges represents a valid tree.
+    * 1 <= bob < n
+    * amount.length == n
+    * amount[i] is an even integer in the range [-10^4, 10^4].*/
+
+    int mostProfitablePath(vector<vector<int>>& edges, int bob, vector<int>& amount) {
+        int n = 1 + edges.size(); 
+        vector<vector<int>> tree(n); 
+        for (auto& e : edges) {
+            tree[e[0]].push_back(e[1]); 
+            tree[e[1]].push_back(e[0]); 
+        }
+        vector<bool> seen(n); 
+        
+        function<pair<int, int>(int, int)> dfs = [&](int u, int d) {
+            seen[u] = true; 
+            int ans = INT_MIN; 
+            int dd = u == bob ? 0 : n; 
+            for (auto& v : tree[u]) 
+                if (!seen[v]) {
+                    auto [x, y] = dfs(v, d+1); 
+                    ans = max(ans, x); 
+                    dd = min(dd, y); 
+                }
+            if (ans == INT_MIN) ans = 0; 
+            if (d == dd) ans += amount[u]/2; 
+            if (d < dd) ans += amount[u]; 
+            return make_pair(ans, dd+1); 
+        };
+        
+        return dfs(0, 0).first; 
+    }
+
+
+    /*2468. Split Message Based on Limit (Hard)
+    You are given a string, message, and a positive integer, limit. You must 
+    split message into one or more parts based on limit. Each resulting part 
+    should have the suffix "<a/b>", where "b" is to be replaced with the total 
+    number of parts and "a" is to be replaced with the index of the part, 
+    starting from 1 and going up to b. Additionally, the length of each 
+    resulting part (including its suffix) should be equal to limit, except for 
+    the last part whose length can be at most limit. The resulting parts should 
+    be formed such that when their suffixes are removed and they are all 
+    concatenated in order, they should be equal to message. Also, the result 
+    should contain as few parts as possible. Return the parts message would be 
+    split into as an array of strings. If it is impossible to split message as 
+    required, return an empty array.
+
+    Example 1:
+    Input: message = "this is really a very awesome message", limit = 9
+    Output: ["thi<1/14>","s i<2/14>","s r<3/14>","eal<4/14>","ly <5/14>","a v<6/14>","ery<7/14>"," aw<8/14>","eso<9/14>","me<10/14>"," m<11/14>","es<12/14>","sa<13/14>","ge<14/14>"]
+    Explanation: The first 9 parts take 3 characters each from the beginning of 
+                 message. The next 5 parts take 2 characters each to finish 
+                 splitting message. In this example, each part, including the 
+                 last, has length 9. It can be shown it is not possible to 
+                 split message into less than 14 parts.
+    
+    Example 2:
+    Input: message = "short message", limit = 15
+    Output: ["short mess<1/2>","age<2/2>"]
+    Explanation: Under the given constraints, the string can be split into two 
+                 parts: 
+                 - The first part comprises of the first 10 characters, and has 
+                   a length 15.
+                 - The next part comprises of the last 3 characters, and has a 
+                   length 8.
+
+    Constraints:
+    * 1 <= message.length <= 10^4
+    * message consists only of lowercase English letters and ' '.
+    * 1 <= limit <= 10^4*/
+
+    vector<string> splitMessage(string message, int limit) {
+        int b = 0, cnt = 0; 
+        for (int prefix = 0; 3 + cnt*2 < limit && message.size() + prefix + (3+cnt)*b > limit * b; prefix += cnt) 
+            cnt = int(log10(++b)) + 1; 
+        vector<string> ans; 
+        if (3 + cnt*2 < limit) 
+            for (int i = 0, a = 1, step = 0; a <= b; ++a, i += step) {
+                step = limit - (int(log10(a)) + int(log10(b)) + 5); 
+                ans.push_back(message.substr(i, step) + "<" + to_string(a) + "/" + to_string(b) + ">"); 
+            }
+        return ans; 
+    }
+
+
     /*2473. Minimum Cost to Buy Apples (Medium)
     You are given a positive integer n representing n cities numbered from 1 to 
     n. You are also given a 2D array roads, where roads[i] = [ai, bi, costi] 
