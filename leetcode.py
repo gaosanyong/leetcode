@@ -69530,6 +69530,234 @@ class SegTree:
         return ans 
 
 
+    """2475. Number of Unequal Triplets in Array (Easy)
+    You are given a 0-indexed array of positive integers nums. Find the number 
+    of triplets (i, j, k) that meet the following conditions:
+    * 0 <= i < j < k < nums.length
+    * nums[i], nums[j], and nums[k] are pairwise distinct.
+      + In other words, nums[i] != nums[j], nums[i] != nums[k], and 
+        nums[j] != nums[k].
+    Return the number of triplets that meet the conditions.
+
+    Example 1:
+    Input: nums = [4,4,2,4,3]
+    Output: 3
+    Explanation: The following triplets meet the conditions:
+                 - (0, 2, 4) because 4 != 2 != 3
+                 - (1, 2, 4) because 4 != 2 != 3
+                 - (2, 3, 4) because 2 != 4 != 3
+                 Since there are 3 triplets, we return 3. Note that (2, 0, 4) 
+                 is not a valid triplet because 2 > 0.
+    
+    Example 2:
+    Input: nums = [1,1,1,1,1]
+    Output: 0
+    Explanation: No triplets meet the conditions so we return 0.
+
+    Constraints:
+    * 3 <= nums.length <= 100
+    * 1 <= nums[i] <= 1000"""
+
+    def unequalTriplets(self, nums: List[int]) -> int:
+        freq = Counter(nums)
+        ans = prefix = 0
+        suffix = len(nums)
+        for k, v in freq.items(): 
+            suffix -= v
+            ans += prefix * v * suffix 
+            prefix += v
+        return ans 
+
+
+    """2476. Closest Nodes Queries in a Binary Search Tree (Medium)
+    You are given the root of a binary search tree and an array queries of size 
+    n consisting of positive integers. Find a 2D array answer of size n where 
+    answer[i] = [mini, maxi]:
+    * mini is the largest value in the tree that is smaller than or equal to 
+      queries[i]. If a such value does not exist, add -1 instead.
+    * maxi is the smallest value in the tree that is greater than or equal to 
+      queries[i]. If a such value does not exist, add -1 instead.
+    Return the array answer.
+
+    Example 1:
+    Input: root = [6,2,13,1,4,9,15,null,null,null,null,null,null,14], queries = [2,5,16]
+    Output: [[2,2],[4,6],[15,-1]]
+    Explanation: We answer the queries in the following way:
+                 - The largest number that is smaller or equal than 2 in the 
+                   tree is 2, and the smallest number that is greater or equal 
+                   than 2 is still 2. So the answer for the first query is 
+                   [2,2].
+                 - The largest number that is smaller or equal than 5 in the 
+                   tree is 4, and the smallest number that is greater or equal 
+                   than 5 is 6. So the answer for the second query is [4,6].
+                 - The largest number that is smaller or equal than 16 in the 
+                   tree is 15, and the smallest number that is greater or equal 
+                   than 16 does not exist. So the answer for the third query is 
+                   [15,-1].
+    
+    Example 2:
+    Input: root = [4,null,9], queries = [3]
+    Output: [[-1,4]]
+    Explanation: The largest number that is smaller or equal to 3 in the tree 
+                 does not exist, and the smallest number that is greater or 
+                 equal to 3 is 4. So the answer for the query is [-1,4].
+
+    Constraints:
+    * The number of nodes in the tree is in the range [2, 10^5].
+    * 1 <= Node.val <= 10^6
+    * n == queries.length
+    * 1 <= n <= 10^5
+    * 1 <= queries[i] <= 10^6"""
+
+    def closestNodes(self, root: Optional[TreeNode], queries: List[int]) -> List[List[int]]:
+        vals = []
+        node = root 
+        stack = []
+        while node or stack: 
+            if node: 
+                stack.append(node)
+                node = node.left
+            else: 
+                node = stack.pop()
+                vals.append(node.val)
+                node = node.right 
+        ans = []
+        for q in queries:  
+            ans.append([-1, -1])
+            lo = bisect_right(vals, q)-1
+            if 0 <= lo: ans[-1][0] = vals[lo]
+            hi = bisect_left(vals, q)
+            if hi < len(vals): ans[-1][1] = vals[hi]
+        return ans 
+
+
+    """2477. Minimum Fuel Cost to Report to the Capital (Medium)
+    There is a tree (i.e., a connected, undirected graph with no cycles) 
+    structure country network consisting of n cities numbered from 0 to n - 1 
+    and exactly n - 1 roads. The capital city is city 0. You are given a 2D 
+    integer array roads where roads[i] = [ai, bi] denotes that there exists a 
+    bidirectional road connecting cities ai and bi. There is a meeting for the 
+    representatives of each city. The meeting is in the capital city. There is 
+    a car in each city. You are given an integer seats that indicates the 
+    number of seats in each car. A representative can use the car in their city 
+    to travel or change the car and ride with another representative. The cost 
+    of traveling between two cities is one liter of fuel. Return the minimum 
+    number of liters of fuel to reach the capital city.
+
+    Example 1:
+    Input: roads = [[0,1],[0,2],[0,3]], seats = 5
+    Output: 3
+    Explanation: - Representative1 goes directly to the capital with 1 liter of 
+                   fuel.
+                 - Representative2 goes directly to the capital with 1 liter of 
+                   fuel.
+                 - Representative3 goes directly to the capital with 1 liter of 
+                   fuel.
+                 It costs 3 liters of fuel at minimum. It can be proven that 3 
+                 is the minimum number of liters of fuel needed.
+    
+    Example 2:
+    Input: roads = [[3,1],[3,2],[1,0],[0,4],[0,5],[4,6]], seats = 2
+    Output: 7
+    Explanation: - Representative2 goes directly to city 3 with 1 liter of fuel.
+                 - Representative2 and representative3 go together to city 1 
+                   with 1 liter of fuel.
+                 - Representative2 and representative3 go together to the 
+                   capital with 1 liter of fuel.
+                 - Representative1 goes directly to the capital with 1 liter of 
+                   fuel.
+                 - Representative5 goes directly to the capital with 1 liter of 
+                   fuel.
+                 - Representative6 goes directly to city 4 with 1 liter of fuel.
+                 - Representative4 and representative6 go together to the 
+                   capital with 1 liter of fuel.
+                 It costs 7 liters of fuel at minimum. It can be proven that 7 
+                 is the minimum number of liters of fuel needed.
+    
+    Example 3:
+    Input: roads = [], seats = 1
+    Output: 0
+    Explanation: No representatives need to travel to the capital city.
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * roads.length == n - 1
+    * roads[i].length == 2
+    * 0 <= ai, bi < n
+    * ai != bi
+    * roads represents a valid tree
+    * 1 <= seats <= 10^5"""
+
+    def minimumFuelCost(self, roads: List[List[int]], seats: int) -> int:
+        graph = [[] for _ in range(len(roads)+1)]
+        for u, v in roads: 
+            graph[u].append(v)
+            graph[v].append(u)
+        
+        ans = 0 
+        def dfs(u, p): 
+            """Return number of people going through city u."""
+            nonlocal ans 
+            ppl = 0 
+            for v in graph[u]: 
+                if v != p: ppl += dfs(v, u)
+            ppl += 1
+            if u: ans += (ppl + seats - 1) // seats
+            return ppl 
+        
+        dfs(0, -1)
+        return ans 
+
+
+    """2478. Number of Beautiful Partitions (Hard)
+    You are given a string s that consists of the digits '1' to '9' and two 
+    integers k and minLength. A partition of s is called beautiful if:
+    * s is partitioned into k non-intersecting substrings.
+    * Each substring has a length of at least minLength.
+    * Each substring starts with a prime digit and ends with a non-prime digit. 
+      Prime digits are '2', '3', '5', and '7', and the rest of the digits are 
+      non-prime.
+    Return the number of beautiful partitions of s. Since the answer may be 
+    very large, return it modulo 10^9 + 7. A substring is a contiguous sequence 
+    of characters within a string.
+
+    Example 1:
+    Input: s = "23542185131", k = 3, minLength = 2
+    Output: 3
+    Explanation: There exists three ways to create a beautiful partition:
+                 "2354 | 218 | 5131"
+                 "2354 | 21851 | 31"
+                 "2354218 | 51 | 31"
+    
+    Example 2:
+    Input: s = "23542185131", k = 3, minLength = 3
+    Output: 1
+    Explanation: There exists one way to create a beautiful partition: 
+                 "2354 | 218 | 5131".
+
+    Example 3:
+    Input: s = "3312958", k = 3, minLength = 1
+    Output: 1
+    Explanation: There exists one way to create a beautiful partition: 
+                 "331 | 29 | 58".
+
+    Constraints:
+    * 1 <= k, minLength <= s.length <= 1000
+    * s consists of the digits '1' to '9'."""
+
+    def beautifulPartitions(self, s: str, k: int, minLength: int) -> int:
+        prime = "2357"
+        dp = [[0]*(len(s)+1) for _ in range(k)]
+        if s[0] in prime and s[-1] not in prime: 
+            for j in range(len(s)+1): dp[0][j] = 1
+            for i in range(1, k): 
+                for j in range(len(s)-1, -1, -1): 
+                    dp[i][j] = dp[i][j+1]
+                    if minLength <= j <= len(s)-minLength and s[j-1] not in prime and s[j] in prime: 
+                        dp[i][j] = (dp[i][j] + dp[i-1][j+minLength]) % 1_000_000_007
+        return dp[-1][0]
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
