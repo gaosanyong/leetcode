@@ -48308,6 +48308,182 @@ public:
     }
 
 
+    /*2469. Convert the Temperature (Easy)
+    You are given a non-negative floating point number rounded to two decimal 
+    places celsius, that denotes the temperature in Celsius. You should convert 
+    Celsius into Kelvin and Fahrenheit and return it as an array 
+    ans = [kelvin, fahrenheit]. Return the array ans. Answers within 10-5 of 
+    the actual answer will be accepted.
+
+    Note that:
+    * Kelvin = Celsius + 273.15
+    * Fahrenheit = Celsius * 1.80 + 32.00
+
+    Example 1:
+    Input: celsius = 36.50
+    Output: [309.65000,97.70000]
+    Explanation: Temperature at 36.50 Celsius converted in Kelvin is 309.65 and 
+                 converted in Fahrenheit is 97.70.
+    
+    Example 2:
+    Input: celsius = 122.11
+    Output: [395.26000,251.79800]
+    Explanation: Temperature at 122.11 Celsius converted in Kelvin is 395.26 
+                 and converted in Fahrenheit is 251.798.
+
+    Constraints: 0 <= celsius <= 1000*/
+
+    vector<double> convertTemperature(double celsius) {
+        return {celsius+273.15, 1.8*celsius+32}; 
+    }
+
+
+    /*2470. Number of Subarrays With LCM Equal to K (Medium)
+    Given an integer array nums and an integer k, return the number of 
+    subarrays of nums where the least common multiple of the subarray's 
+    elements is k. A subarray is a contiguous non-empty sequence of elements 
+    within an array. The least common multiple of an array is the smallest 
+    positive integer that is divisible by all the array elements.
+
+    Example 1:
+    Input: nums = [3,6,2,7,1], k = 6
+    Output: 4
+    Explanation: The subarrays of nums where 6 is the least common multiple of 
+                 all the subarray's elements are:
+                 - [3,6,2,7,1]
+                 - [3,6,2,7,1]
+                 - [3,6,2,7,1]
+                 - [3,6,2,7,1]
+    
+    Example 2:
+    Input: nums = [3], k = 2
+    Output: 0
+    Explanation: There are no subarrays of nums where 2 is the least common 
+                 multiple of all the subarray's elements.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i], k <= 1000*/
+
+    int subarrayLCM(vector<int>& nums, int k) {
+        int ans = 0; 
+        unordered_map<int, int> freq; 
+        for (auto& x : nums) {
+            unordered_map<int, int> temp; 
+            if (k % x == 0) {
+                for (auto& [kk, v] : freq) 
+                    temp[lcm(kk, x)] += v; 
+                ++temp[x]; 
+                ans += temp[k]; 
+            } 
+            freq = temp; 
+        }
+        return ans; 
+    }
+
+
+    /*2471. Minimum Number of Operations to Sort a Binary Tree by Level (Medium)
+    You are given the root of a binary tree with unique values. In one 
+    operation, you can choose any two nodes at the same level and swap their 
+    values. Return the minimum number of operations needed to make the values 
+    at each level sorted in a strictly increasing order. The level of a node is 
+    the number of edges along the path between it and the root node.
+
+    Example 1:
+    Input: root = [1,4,3,7,6,8,5,null,null,null,null,9,null,10]
+    Output: 3
+    Explanation: - Swap 4 and 3. The 2nd level becomes [3,4].
+                 - Swap 7 and 5. The 3rd level becomes [5,6,8,7].
+                 - Swap 8 and 7. The 3rd level becomes [5,6,7,8].
+                 We used 3 operations so return 3. It can be proven that 3 is 
+                 the minimum number of operations needed.
+    
+    Example 2:
+    Input: root = [1,3,2,7,6,5,4]
+    Output: 3
+    Explanation: - Swap 3 and 2. The 2nd level becomes [2,3].
+                 - Swap 7 and 4. The 3rd level becomes [4,6,5,7].
+                 - Swap 6 and 5. The 3rd level becomes [4,5,6,7].
+                 We used 3 operations so return 3. It can be proven that 3 is 
+                 the minimum number of operations needed.
+    
+    Example 3:
+    Input: root = [1,2,3,4,5,6]
+    Output: 0
+    Explanation: Each level is already sorted in increasing order so return 0.
+
+    Constraints:
+    * The number of nodes in the tree is in the range [1, 10^5].
+    * 1 <= Node.val <= 10^5
+    * All the values of the tree are unique.*/
+
+    int minimumOperations(TreeNode* root) {
+        int ans = 0; 
+        queue<TreeNode*> q; q.push(root); 
+        while (q.size()) {
+            vector<int> vals;
+            for (int sz = q.size(); sz; --sz) {
+                TreeNode* node = q.front(); q.pop(); 
+                vals.push_back(node->val); 
+                if (node->left) q.push(node->left); 
+                if (node->right) q.push(node->right); 
+            }
+            vector<int> perm(vals.size()); 
+            iota(perm.begin(), perm.end(), 0); 
+            sort(perm.begin(), perm.end(), [&](auto& lhs, auto& rhs) {return vals[lhs] < vals[rhs];}); 
+            for (int i = 0; i < perm.size(); ++i) 
+                for (; i != perm[i]; ++ans) 
+                    swap(perm[i], perm[perm[i]]); 
+        }
+        return ans; 
+    }
+
+
+    /*2472. Maximum Number of Non-overlapping Palindrome Substrings (Hard)
+    You are given a string s and a positive integer k. Select a set of non-
+    overlapping substrings from the string s that satisfy the following 
+    conditions:
+    * The length of each substring is at least k.
+    * Each substring is a palindrome.
+    Return the maximum number of substrings in an optimal selection. A 
+    substring is a contiguous sequence of characters within a string.
+
+    Example 1:
+    Input: s = "abaccdbbd", k = 3
+    Output: 2
+    Explanation: We can select the substrings underlined in s = "abaccdbbd". 
+                 Both "aba" and "dbbd" are palindromes and have a length of at 
+                 least k = 3. It can be shown that we cannot find a selection 
+                 with more than two valid substrings.
+    
+    Example 2:
+    Input: s = "adbcda", k = 2
+    Output: 0
+    Explanation: There is no palindrome substring of length at least 2 in the 
+                 string.
+
+    Constraints:
+    * 1 <= k <= s.length <= 2000
+    * s consists of lowercase English letters.*/
+
+    int maxPalindromes(string s, int k) {
+        vector<pair<int, int>> intervals; 
+        for (int i = 0, n = s.size(); i < 2*n-1; ++i) 
+            for (int lo = i/2, hi = (i+1)/2; 0 <= lo && hi < n && s[lo] == s[hi]; --lo, ++hi) 
+                if (hi-lo+1 >= k) {
+                    intervals.emplace_back(lo, hi+1); 
+                    break; 
+                }
+        int ans = 0, hi = 0; 
+        for (auto& [x, y] : intervals) 
+            if (x >= hi) {
+                ++ans; 
+                hi = y; 
+            } 
+        return ans; 
+    }
+
+
     /*2473. Minimum Cost to Buy Apples (Medium)
     You are given a positive integer n representing n cities numbered from 1 to 
     n. You are also given a 2D array roads, where roads[i] = [ai, bi, costi] 
