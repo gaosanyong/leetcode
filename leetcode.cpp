@@ -48793,6 +48793,218 @@ public:
         }
         return dp.back()[0]; 
     }
+
+
+    /*2481. Minimum Cuts to Divide a Circle (Easy)
+    A valid cut in a circle can be:
+    * A cut that is represented by a straight line that touches two points on 
+      the edge of the circle and passes through its center, or
+    * A cut that is represented by a straight line that touches one point on 
+      the edge of the circle and its center.
+    Some valid and invalid cuts are shown in the figures below. Given the 
+    integer n, return the minimum number of cuts needed to divide a circle into 
+    n equal slices.
+
+    Example 1:
+    Input: n = 4
+    Output: 2
+    Explanation: The above figure shows how cutting the circle twice through 
+                 the middle divides it into 4 equal slices.
+    
+    Example 2:
+    Input: n = 3
+    Output: 3
+    Explanation: At least 3 cuts are needed to divide the circle into 3 equal 
+                 slices. It can be shown that less than 3 cuts cannot result in 
+                 3 slices of equal size and shape. Also note that the first cut 
+                 will not divide the circle into distinct parts.
+
+    Constraints: 1 <= n <= 100*/
+
+    int numberOfCuts(int n) {
+        if (n == 1) return 0; 
+        return n&1 ? n : n >> 1; 
+    }
+
+
+    /*2482. Difference Between Ones and Zeros in Row and Column (Medium)
+    You are given a 0-indexed m x n binary matrix grid. A 0-indexed m x n 
+    difference matrix diff is created with the following procedure:
+    * Let the number of ones in the ith row be onesRowi.
+    * Let the number of ones in the jth column be onesColj.
+    * Let the number of zeros in the ith row be zerosRowi.
+    * Let the number of zeros in the jth column be zerosColj.
+    * diff[i][j] = onesRowi + onesColj - zerosRowi - zerosColj
+    Return the difference matrix diff.
+
+    Example 1:
+    Input: grid = [[0,1,1],[1,0,1],[0,0,1]]
+    Output: [[0,0,4],[0,0,4],[-2,-2,2]]
+    Explanation: - diff[0][0] = onesRow0 + onesCol0 - zerosRow0 - zerosCol0 
+                   = 2 + 1 - 1 - 2 = 0 
+                 - diff[0][1] = onesRow0 + onesCol1 - zerosRow0 - zerosCol1
+                   = 2 + 1 - 1 - 2 = 0 
+                 - diff[0][2] = onesRow0 + onesCol2 - zerosRow0 - zerosCol2 
+                   = 2 + 3 - 1 - 0 = 4 
+                 - diff[1][0] = onesRow1 + onesCol0 - zerosRow1 - zerosCol0 
+                   = 2 + 1 - 1 - 2 = 0 
+                 - diff[1][1] = onesRow1 + onesCol1 - zerosRow1 - zerosCol1 
+                   = 2 + 1 - 1 - 2 = 0 
+                 - diff[1][2] = onesRow1 + onesCol2 - zerosRow1 - zerosCol2 
+                   = 2 + 3 - 1 - 0 = 4 
+                 - diff[2][0] = onesRow2 + onesCol0 - zerosRow2 - zerosCol0 
+                   = 1 + 1 - 2 - 2 = -2
+                 - diff[2][1] = onesRow2 + onesCol1 - zerosRow2 - zerosCol1 
+                   = 1 + 1 - 2 - 2 = -2
+                 - diff[2][2] = onesRow2 + onesCol2 - zerosRow2 - zerosCol2 
+                   = 1 + 3 - 2 - 0 = 2
+    
+    Example 2:
+    Input: grid = [[1,1,1],[1,1,1]]
+    Output: [[5,5,5],[5,5,5]]
+    Explanation: - diff[0][0] = onesRow0 + onesCol0 - zerosRow0 - zerosCol0 
+                   = 3 + 2 - 0 - 0 = 5
+                 - diff[0][1] = onesRow0 + onesCol1 - zerosRow0 - zerosCol1 
+                   = 3 + 2 - 0 - 0 = 5
+                 - diff[0][2] = onesRow0 + onesCol2 - zerosRow0 - zerosCol2 
+                   = 3 + 2 - 0 - 0 = 5
+                 - diff[1][0] = onesRow1 + onesCol0 - zerosRow1 - zerosCol0 
+                   = 3 + 2 - 0 - 0 = 5
+                 - diff[1][1] = onesRow1 + onesCol1 - zerosRow1 - zerosCol1 
+                   = 3 + 2 - 0 - 0 = 5
+                 - diff[1][2] = onesRow1 + onesCol2 - zerosRow1 - zerosCol2 
+                   = 3 + 2 - 0 - 0 = 5
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 10^5
+    * 1 <= m * n <= 10^5
+    * grid[i][j] is either 0 or 1.*/
+
+    vector<vector<int>> onesMinusZeros(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size(); 
+        vector<int> row(m), col(n); 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                if (grid[i][j]) {
+                    ++row[i]; 
+                    ++col[j]; 
+                }
+        vector<vector<int>> ans(m, vector<int>(n)); 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) 
+                ans[i][j] = 2*row[i] + 2*col[j] - m - n;
+        return ans; 
+    }
+
+
+    /*2483. Minimum Penalty for a Shop (Medium)
+    You are given the customer visit log of a shop represented by a 0-indexed 
+    string customers consisting only of characters 'N' and 'Y':
+    * if the ith character is 'Y', it means that customers come at the ith hour
+    * whereas 'N' indicates that no customers come at the ith hour.
+    If the shop closes at the jth hour (0 <= j <= n), the penalty is calculated 
+    as follows:
+    * For every hour when the shop is open and no customers come, the penalty 
+      increases by 1.
+    * For every hour when the shop is closed and customers come, the penalty 
+      increases by 1.
+    Return the earliest hour at which the shop must be closed to incur a 
+    minimum penalty. Note that if a shop closes at the jth hour, it means the 
+    shop is closed at the hour j.
+
+    Example 1:
+    Input: customers = "YYNY"
+    Output: 2
+    Explanation: - Closing the shop at the 0th hour incurs in 1+1+0+1 = 3 
+                   penalty.
+                 - Closing the shop at the 1st hour incurs in 0+1+0+1 = 2 
+                   penalty.
+                 - Closing the shop at the 2nd hour incurs in 0+0+0+1 = 1 
+                   penalty.
+                 - Closing the shop at the 3rd hour incurs in 0+0+1+1 = 2 
+                   penalty.
+                 - Closing the shop at the 4th hour incurs in 0+0+1+0 = 1 
+                   penalty.
+                 Closing the shop at 2nd or 4th hour gives a minimum penalty. 
+                 Since 2 is earlier, the optimal closing time is 2.
+    
+    Example 2:
+    Input: customers = "NNNNN"
+    Output: 0
+    Explanation: It is best to close the shop at the 0th hour as no customers 
+                 arrive.
+    
+    Example 3:
+    Input: customers = "YYYY"
+    Output: 4
+    Explanation: It is best to close the shop at the 4th hour as customers 
+                 arrive at each hour.
+
+    Constraints:
+    * 1 <= customers.length <= 10^5
+    * customers consists only of characters 'Y' and 'N'.*/
+
+    int bestClosingTime(string customers) {
+        int ans = 0, prefix = count(customers.begin(), customers.end(), 'Y'), least = prefix; 
+        for (int i = 0; i < customers.size(); ++i) {
+            if (customers[i] == 'N') ++prefix; 
+            else --prefix; 
+            if (prefix < least) ans = i+1, least = prefix; 
+        }
+        return ans; 
+    }
+
+
+    /*2484. Count Palindromic Subsequences (Hard)
+    Given a string of digits s, return the number of palindromic subsequences 
+    of s having length 5. Since the answer may be very large, return it modulo 
+    10^9 + 7.
+
+    Note:
+    * A string is palindromic if it reads the same forward and backward.
+    * A subsequence is a string that can be derived from another string by 
+      deleting some or no characters without changing the order of the 
+      remaining characters.
+
+    Example 1:
+    Input: s = "103301"
+    Output: 2
+    Explanation: There are 6 possible subsequences of length 5: "10330","10331",
+                 "10301","10301","13301","03301". Two of them (both equal to 
+                 "10301") are palindromic.
+    
+    Example 2:
+    Input: s = "0000000"
+    Output: 21
+    Explanation: All 21 subsequences are "00000", which is palindromic.
+
+    Example 3:
+    Input: s = "9999900000"
+    Output: 2
+    Explanation: The only two palindromic subsequences are "99999" and "00000".
+
+    Constraints:
+    * 1 <= s.length <= 10^4
+    * s consists of digits.*/
+
+    int countPalindromes(string s) {
+        const int mod = 1'000'000'007; 
+        int n = s.size(); 
+        long ans = 0; 
+        for (int x = 0; x <= 9; ++x) 
+            for (int y = 0; y <= 9; ++y) {
+                vector<int> pattern = {x, y, 0, y, x}; 
+                vector<long> dp(6); 
+                dp[5] = 1; 
+                for (int i = 0; i < n; ++i) 
+                    for (int j = 0; j < 5; ++j) 
+                        if (s[i] == pattern[j] + '0' || j == 2) dp[j] = (dp[j] + dp[j+1]) % mod; 
+                ans = (ans + dp[0]) % mod; 
+            }
+        return ans; 
+    }
 };
 
 

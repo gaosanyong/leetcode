@@ -69758,6 +69758,213 @@ class SegTree:
         return dp[-1][0]
 
 
+    """2481. Minimum Cuts to Divide a Circle (Easy)
+    A valid cut in a circle can be:
+    * A cut that is represented by a straight line that touches two points on 
+      the edge of the circle and passes through its center, or
+    * A cut that is represented by a straight line that touches one point on 
+      the edge of the circle and its center.
+    Some valid and invalid cuts are shown in the figures below. Given the 
+    integer n, return the minimum number of cuts needed to divide a circle into 
+    n equal slices.
+
+    Example 1:
+    Input: n = 4
+    Output: 2
+    Explanation: The above figure shows how cutting the circle twice through 
+                 the middle divides it into 4 equal slices.
+    
+    Example 2:
+    Input: n = 3
+    Output: 3
+    Explanation: At least 3 cuts are needed to divide the circle into 3 equal 
+                 slices. It can be shown that less than 3 cuts cannot result in 
+                 3 slices of equal size and shape. Also note that the first cut 
+                 will not divide the circle into distinct parts.
+
+    Constraints: 1 <= n <= 100"""
+
+    def numberOfCuts(self, n: int) -> int:
+        if n == 1: return 0 
+        return n if n&1 else n>>1
+
+
+    """2482. Difference Between Ones and Zeros in Row and Column (Medium)
+    You are given a 0-indexed m x n binary matrix grid. A 0-indexed m x n 
+    difference matrix diff is created with the following procedure:
+    * Let the number of ones in the ith row be onesRowi.
+    * Let the number of ones in the jth column be onesColj.
+    * Let the number of zeros in the ith row be zerosRowi.
+    * Let the number of zeros in the jth column be zerosColj.
+    * diff[i][j] = onesRowi + onesColj - zerosRowi - zerosColj
+    Return the difference matrix diff.
+
+    Example 1:
+    Input: grid = [[0,1,1],[1,0,1],[0,0,1]]
+    Output: [[0,0,4],[0,0,4],[-2,-2,2]]
+    Explanation: - diff[0][0] = onesRow0 + onesCol0 - zerosRow0 - zerosCol0 
+                   = 2 + 1 - 1 - 2 = 0 
+                 - diff[0][1] = onesRow0 + onesCol1 - zerosRow0 - zerosCol1
+                   = 2 + 1 - 1 - 2 = 0 
+                 - diff[0][2] = onesRow0 + onesCol2 - zerosRow0 - zerosCol2 
+                   = 2 + 3 - 1 - 0 = 4 
+                 - diff[1][0] = onesRow1 + onesCol0 - zerosRow1 - zerosCol0 
+                   = 2 + 1 - 1 - 2 = 0 
+                 - diff[1][1] = onesRow1 + onesCol1 - zerosRow1 - zerosCol1 
+                   = 2 + 1 - 1 - 2 = 0 
+                 - diff[1][2] = onesRow1 + onesCol2 - zerosRow1 - zerosCol2 
+                   = 2 + 3 - 1 - 0 = 4 
+                 - diff[2][0] = onesRow2 + onesCol0 - zerosRow2 - zerosCol0 
+                   = 1 + 1 - 2 - 2 = -2
+                 - diff[2][1] = onesRow2 + onesCol1 - zerosRow2 - zerosCol1 
+                   = 1 + 1 - 2 - 2 = -2
+                 - diff[2][2] = onesRow2 + onesCol2 - zerosRow2 - zerosCol2 
+                   = 1 + 3 - 2 - 0 = 2
+    
+    Example 2:
+    Input: grid = [[1,1,1],[1,1,1]]
+    Output: [[5,5,5],[5,5,5]]
+    Explanation: - diff[0][0] = onesRow0 + onesCol0 - zerosRow0 - zerosCol0 
+                   = 3 + 2 - 0 - 0 = 5
+                 - diff[0][1] = onesRow0 + onesCol1 - zerosRow0 - zerosCol1 
+                   = 3 + 2 - 0 - 0 = 5
+                 - diff[0][2] = onesRow0 + onesCol2 - zerosRow0 - zerosCol2 
+                   = 3 + 2 - 0 - 0 = 5
+                 - diff[1][0] = onesRow1 + onesCol0 - zerosRow1 - zerosCol0 
+                   = 3 + 2 - 0 - 0 = 5
+                 - diff[1][1] = onesRow1 + onesCol1 - zerosRow1 - zerosCol1 
+                   = 3 + 2 - 0 - 0 = 5
+                 - diff[1][2] = onesRow1 + onesCol2 - zerosRow1 - zerosCol2 
+                   = 3 + 2 - 0 - 0 = 5
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 10^5
+    * 1 <= m * n <= 10^5
+    * grid[i][j] is either 0 or 1."""
+
+    def onesMinusZeros(self, grid: List[List[int]]) -> List[List[int]]:
+        m, n = len(grid), len(grid[0])
+        row = [0]*m
+        col = [0]*n
+        for i in range(m): 
+            for j in range(n): 
+                if grid[i][j]: 
+                    row[i] += 1
+                    col[j] += 1
+        ans = [[0]*n for _ in range(m)]
+        for i in range(m): 
+            for j in range(n): 
+                ans[i][j] = 2*row[i] + 2*col[j] - m - n
+        return ans 
+
+
+    """2483. Minimum Penalty for a Shop (Medium)
+    You are given the customer visit log of a shop represented by a 0-indexed 
+    string customers consisting only of characters 'N' and 'Y':
+    * if the ith character is 'Y', it means that customers come at the ith hour
+    * whereas 'N' indicates that no customers come at the ith hour.
+    If the shop closes at the jth hour (0 <= j <= n), the penalty is calculated 
+    as follows:
+    * For every hour when the shop is open and no customers come, the penalty 
+      increases by 1.
+    * For every hour when the shop is closed and customers come, the penalty 
+      increases by 1.
+    Return the earliest hour at which the shop must be closed to incur a 
+    minimum penalty. Note that if a shop closes at the jth hour, it means the 
+    shop is closed at the hour j.
+
+    Example 1:
+    Input: customers = "YYNY"
+    Output: 2
+    Explanation: - Closing the shop at the 0th hour incurs in 1+1+0+1 = 3 
+                   penalty.
+                 - Closing the shop at the 1st hour incurs in 0+1+0+1 = 2 
+                   penalty.
+                 - Closing the shop at the 2nd hour incurs in 0+0+0+1 = 1 
+                   penalty.
+                 - Closing the shop at the 3rd hour incurs in 0+0+1+1 = 2 
+                   penalty.
+                 - Closing the shop at the 4th hour incurs in 0+0+1+0 = 1 
+                   penalty.
+                 Closing the shop at 2nd or 4th hour gives a minimum penalty. 
+                 Since 2 is earlier, the optimal closing time is 2.
+    
+    Example 2:
+    Input: customers = "NNNNN"
+    Output: 0
+    Explanation: It is best to close the shop at the 0th hour as no customers 
+                 arrive.
+    
+    Example 3:
+    Input: customers = "YYYY"
+    Output: 4
+    Explanation: It is best to close the shop at the 4th hour as customers 
+                 arrive at each hour.
+
+    Constraints:
+    * 1 <= customers.length <= 10^5
+    * customers consists only of characters 'Y' and 'N'."""
+
+    def bestClosingTime(self, customers: str) -> int:
+        ans = 0 
+        prefix = least = customers.count('Y')
+        for i, ch in enumerate(customers): 
+            if ch == 'N': prefix += 1
+            else: prefix -= 1; 
+            if prefix < least: 
+                ans = i+1
+                least = prefix 
+        return ans 
+
+
+    """2484. Count Palindromic Subsequences (Hard)
+    Given a string of digits s, return the number of palindromic subsequences 
+    of s having length 5. Since the answer may be very large, return it modulo 
+    10^9 + 7.
+
+    Note:
+    * A string is palindromic if it reads the same forward and backward.
+    * A subsequence is a string that can be derived from another string by 
+      deleting some or no characters without changing the order of the 
+      remaining characters.
+
+    Example 1:
+    Input: s = "103301"
+    Output: 2
+    Explanation: There are 6 possible subsequences of length 5: "10330","10331",
+                 "10301","10301","13301","03301". Two of them (both equal to 
+                 "10301") are palindromic.
+    
+    Example 2:
+    Input: s = "0000000"
+    Output: 21
+    Explanation: All 21 subsequences are "00000", which is palindromic.
+
+    Example 3:
+    Input: s = "9999900000"
+    Output: 2
+    Explanation: The only two palindromic subsequences are "99999" and "00000".
+
+    Constraints:
+    * 1 <= s.length <= 10^4
+    * s consists of digits."""
+
+    def countPalindromes(self, s: str) -> int:
+        ans = 0 
+        for x in range(10): 
+            for y in range(10): 
+                pattern = str(x) + str(y) + "|" + str(y) + str(x) 
+                dp = [0]*6
+                dp[-1] = 1 
+                for i in range(len(s)): 
+                    for j in range(5): 
+                        if s[i] == pattern[j] or j == 2: dp[j] += dp[j+1]
+                ans = (ans + dp[0]) % 1_000_000_007
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
