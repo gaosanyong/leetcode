@@ -69850,9 +69850,8 @@ class SegTree:
         col = [0]*n
         for i in range(m): 
             for j in range(n): 
-                if grid[i][j]: 
-                    row[i] += 1
-                    col[j] += 1
+                row[i] += grid[i][j]
+                col[j] += grid[i][j]
         ans = [[0]*n for _ in range(m)]
         for i in range(m): 
             for j in range(n): 
