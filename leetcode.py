@@ -69964,6 +69964,148 @@ class SegTree:
         return ans  
 
 
+    """2485. Find the Pivot Integer (Easy)
+    Given a positive integer n, find the pivot integer x such that:
+    * The sum of all elements between 1 and x inclusively equals the sum of all 
+      elements between x and n inclusively.
+    Return the pivot integer x. If no such integer exists, return -1. It is 
+    guaranteed that there will be at most one pivot index for the given input.
+
+    Example 1:
+    Input: n = 8
+    Output: 6
+    Explanation: 6 is the pivot integer since: 1 + 2 + 3 + 4 + 5 + 6 = 6 + 7 + 8 = 21.
+
+    Example 2:
+    Input: n = 1
+    Output: 1
+    Explanation: 1 is the pivot integer since: 1 = 1.
+
+    Example 3:
+    Input: n = 4
+    Output: -1
+    Explanation: It can be proved that no such integer exist.
+
+    Constraints: 1 <= n <= 1000"""
+
+    def pivotInteger(self, n: int) -> int:
+        val = n*(n+1)//2
+        return isqrt(val) if isqrt(val)**2 == val else -1 
+
+
+    """2486. Append Characters to String to Make Subsequence (Medium)
+    You are given two strings s and t consisting of only lowercase English 
+    letters. Return the minimum number of characters that need to be appended 
+    to the end of s so that t becomes a subsequence of s. A subsequence is a 
+    string that can be derived from another string by deleting some or no 
+    characters without changing the order of the remaining characters.
+
+    Example 1:
+    Input: s = "coaching", t = "coding"
+    Output: 4
+    Explanation: Append the characters "ding" to the end of s so that 
+                 s = "coachingding". Now, t is a subsequence of s 
+                 ("coachingding"). It can be shown that appending any 3 
+                 characters to the end of s will never make t a subsequence.
+    
+    Example 2:
+    Input: s = "abcde", t = "a"
+    Output: 0
+    Explanation: t is already a subsequence of s ("abcde").
+
+    Example 3:
+    Input: s = "z", t = "abcde"
+    Output: 5
+    Explanation: Append the characters "abcde" to the end of s so that 
+                 s = "zabcde". Now, t is a subsequence of s ("zabcde"). It can 
+                 be shown that appending any 4 characters to the end of s will 
+                 never make t a subsequence.
+
+    Constraints:
+    * 1 <= s.length, t.length <= 10^5
+    * s and t consist only of lowercase English letters."""
+
+    def appendCharacters(self, s: str, t: str) -> int:
+        it = iter(s)
+        return next((len(t)-i for i, ch in enumerate(t) if ch not in it), 0)
+
+
+    """2487. Remove Nodes From Linked List (Medium)
+    You are given the head of a linked list. Remove every node which has a node 
+    with a strictly greater value anywhere to the right side of it. Return the 
+    head of the modified linked list.
+
+    Example 1:
+    Input: head = [5,2,13,3,8]
+    Output: [13,8]
+    Explanation: The nodes that should be removed are 5, 2 and 3.
+                 - Node 13 is to the right of node 5.
+                 - Node 13 is to the right of node 2.
+                 - Node 8 is to the right of node 3.
+    
+    Example 2:
+    Input: head = [1,1,1,1]
+    Output: [1,1,1,1]
+    Explanation: Every node has value 1, so no nodes are removed.
+
+    Constraints:
+    * The number of the nodes in the given list is in the range [1, 10^5].
+    * 1 <= Node.val <= 10^5"""
+
+    def removeNodes(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        dummy = ListNode(inf)
+        stack = [dummy]
+        node = head
+        while node: 
+            while stack[-1].val < node.val: stack.pop()
+            stack[-1].next = node
+            stack.append(node)
+            node = node.next 
+        return dummy.next 
+
+
+    """2488. Count Subarrays With Median K (Hard)
+    You are given an array nums of size n consisting of distinct integers from 
+    1 to n and a positive integer k. Return the number of non-empty subarrays 
+    in nums that have a median equal to k.
+
+    Note:
+    * The median of an array is the middle element after sorting the array in 
+      ascending order. If the array is of even length, the median is the left 
+      middle element.
+      + For example, the median of [2,3,1,4] is 2, and the median of [8,4,3,5,1] 
+        is 4.
+    * A subarray is a contiguous part of an array.
+
+    Example 1:
+    Input: nums = [3,2,1,4,5], k = 4
+    Output: 3
+    Explanation: The subarrays that have a median equal to 4 are: [4], [4,5] 
+                 and [1,4,5].
+    
+    Example 2:
+    Input: nums = [2,3,1], k = 3
+    Output: 1
+    Explanation: [3] is the only subarray that has a median equal to 3.
+
+    Constraints:
+    * n == nums.length
+    * 1 <= n <= 10^5
+    * 1 <= nums[i], k <= n
+    * The integers in nums are distinct."""
+
+    def countSubarrays(self, nums: List[int], k: int) -> int:
+        freq = Counter({0 : 1})
+        ans = diff = found = 0
+        for x in nums: 
+            if x < k: diff -= 1
+            elif x > k: diff += 1
+            else: found = 1
+            if found: ans += freq[diff] + freq[diff-1]
+            else: freq[diff] += 1
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
