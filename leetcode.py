@@ -54122,9 +54122,9 @@ class Trie:
     Input: s = "aaabcbbcc", count = 3
     Output: 3
     Explanation: The substring that starts at index 0 and ends at index 2 is 
-                 "aaa". The letter 'a' in the substring appears exactly 3 times.
-                 The substring that starts at index 3 and ends at index 8 is 
-                 "bcbbcc". The letters 'b' and 'c' in the substring appear 
+                 "aaa". The letter 'a' in the substring appears exactly 3 
+                 times. The substring that starts at index 3 and ends at index 
+                 8 is "bcbbcc". The letters 'b' and 'c' in the substring appear 
                  exactly 3 times. The substring that starts at index 0 and ends 
                  at index 8 is "aaabcbbcc". The letters 'a', 'b', and 'c' in 
                  the substring appear exactly 3 times.
@@ -54149,19 +54149,17 @@ class Trie:
     * s consists only of lowercase English letters."""
 
     def equalCountSubstrings(self, s: str, count: int) -> int:
-        ans = 0
-        for x in range(1, 27): 
-            cnt = 0
+        ans = 0 
+        for k in range(1, 27): 
             freq = Counter()
+            uniq = 0 
             for i, ch in enumerate(s): 
-                if freq[ch] == count: cnt -= 1
                 freq[ch] += 1
-                if freq[ch] == count: cnt += 1
-                if i >= x*count: 
-                    if freq[s[i-x*count]] == count: cnt -= 1
-                    freq[s[i-x*count]] -= 1
-                    if freq[s[i-x*count]] == count: cnt += 1
-                if i >= x*count-1 and cnt == x: ans += 1
+                if freq[ch] == count: uniq += 1
+                if i >= k*count: 
+                    if freq[s[i-k*count]] == count: uniq -= 1
+                    freq[s[i-k*count]] -= 1
+                if uniq == k: ans += 1
         return ans 
 
 

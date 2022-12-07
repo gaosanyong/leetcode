@@ -39734,9 +39734,9 @@ public:
     Input: s = "aaabcbbcc", count = 3
     Output: 3
     Explanation: The substring that starts at index 0 and ends at index 2 is 
-                 "aaa". The letter 'a' in the substring appears exactly 3 times.
-                 The substring that starts at index 3 and ends at index 8 is 
-                 "bcbbcc". The letters 'b' and 'c' in the substring appear 
+                 "aaa". The letter 'a' in the substring appears exactly 3 
+                 times. The substring that starts at index 3 and ends at index 
+                 8 is "bcbbcc". The letters 'b' and 'c' in the substring appear 
                  exactly 3 times. The substring that starts at index 0 and ends 
                  at index 8 is "aaabcbbcc". The letters 'a', 'b', and 'c' in 
                  the substring appear exactly 3 times.
@@ -39762,13 +39762,13 @@ public:
 
     int equalCountSubstrings(string s, int count) {
         int ans = 0; 
-        for (int x = 1; x <= 26; ++x) {
-            unordered_map<char, int> freq; 
-            for (int i = 0, ii = 0; i < s.size(); ++i) {
-                ++freq[s[i]]; 
-                for (; freq.size() > x || freq[s[i]] > count; ++ii) 
-                    if (--freq[s[ii]] == 0) freq.erase(s[ii]); 
-                if (i - ii + 1 == x * count) ++ans; 
+        for (int k = 1; k <= 26; ++k) {
+            vector<int> freq(26); 
+            int uniq = 0; 
+            for (int i = 0; i < s.size(); ++i) {
+                if (++freq[s[i]-'a'] == count) ++uniq; 
+                if (i >= k*count && freq[s[i-k*count]-'a']-- == count) --uniq; 
+                if (uniq == k) ++ans; 
             }
         }
         return ans; 

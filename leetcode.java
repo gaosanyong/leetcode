@@ -658,6 +658,59 @@ class Solution {
     }
 
 
+    /*2067. Number of Equal Count Substrings (Medium)
+    You are given a 0-indexed string s consisting of only lowercase English 
+    letters, and an integer count. A substring of s is said to be an equal 
+    count substring if, for each unique letter in the substring, it appears 
+    exactly count times in the substring. Return the number of equal count 
+    substrings in s. A substring is a contiguous non-empty sequence of 
+    characters within a string.
+
+    Example 1:
+    Input: s = "aaabcbbcc", count = 3
+    Output: 3
+    Explanation: The substring that starts at index 0 and ends at index 2 is 
+                 "aaa". The letter 'a' in the substring appears exactly 3 
+                 times. The substring that starts at index 3 and ends at index 
+                 8 is "bcbbcc". The letters 'b' and 'c' in the substring appear 
+                 exactly 3 times. The substring that starts at index 0 and ends 
+                 at index 8 is "aaabcbbcc". The letters 'a', 'b', and 'c' in 
+                 the substring appear exactly 3 times.
+    
+    Example 2:
+    Input: s = "abcd", count = 2
+    Output: 0
+    Explanation: The number of times each letter appears in s is less than 
+                 count. Therefore, no substrings in s are equal count 
+                 substrings, so return 0.
+    
+    Example 3:
+    Input: s = "a", count = 5
+    Output: 0
+    Explanation: The number of times each letter appears in s is less than 
+                 count. Therefore, no substrings in s are equal count 
+                 substrings, so return 0
+
+    Constraints:
+    * 1 <= s.length <= 3 * 10^4
+    * 1 <= count <= 3 * 10^4
+    * s consists only of lowercase English letters.*/
+
+    public int equalCountSubstrings(String s, int count) {
+        int ans = 0; 
+        for (int k = 1; k <= 26; ++k) {
+            int[] freq = new int[26]; 
+            int uniq = 0; 
+            for (int i = 0; i < s.length(); ++i) {
+                if(++freq[s.charAt(i)-'a'] == count) ++uniq; 
+                if (i >= k*count && freq[s.charAt(i-k*count)-'a']-- == count) --uniq; 
+                if (uniq == k) ++ans; 
+            }
+        }
+        return ans; 
+    }
+
+
     /*2198. Number of Single Divisor Triplets (Medium)
     You are given a 0-indexed array of positive integers nums. A triplet of 
     three distinct indices (i, j, k) is called a single divisor triplet of nums 
