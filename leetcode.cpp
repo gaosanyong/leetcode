@@ -40512,11 +40512,9 @@ public:
     * s consists only of lowercase English letters.*/
 
     long long numberOfSubstrings(string s) {
+        long long ans = 0;
         vector<int> freq(26); 
-        for (auto& ch : s) ++freq[ch - 'a']; 
-        long long ans = 0; 
-        for (auto& v : freq) 
-            ans += (long long) v * (v+1)/2; 
+        for (auto& ch : s) ans += ++freq[ch-'a']; 
         return ans; 
     }
 
