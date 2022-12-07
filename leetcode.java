@@ -670,7 +670,7 @@ class Solution {
     Input: s = "aaabcbbcc", count = 3
     Output: 3
     Explanation: The substring that starts at index 0 and ends at index 2 is 
-                 "aaa". The letter 'a' in the substring appears exactly 3 
+                 "aaa". The letter 'a' in the substring ap`pears exactly 3 
                  times. The substring that starts at index 3 and ends at index 
                  8 is "bcbbcc". The letters 'b' and 'c' in the substring appear 
                  exactly 3 times. The substring that starts at index 0 and ends 
@@ -707,6 +707,54 @@ class Solution {
                 if (uniq == k) ++ans; 
             }
         }
+        return ans; 
+    }
+
+
+    /*2098. Subsequence of Size K With the Largest Even Sum (Medium)
+    You are given an integer array nums and an integer k. Find the largest even 
+    sum of any subsequence of nums that has a length of k. Return this sum, or 
+    -1 if such a sum does not exist. A subsequence is an array that can be 
+    derived from another array by deleting some or no elements without changing 
+    the order of the remaining elements.
+
+    Example 1:
+    Input: nums = [4,1,5,3,1], k = 3
+    Output: 12
+    Explanation: The subsequence with the largest possible even sum is [4,5,3]. 
+                 It has a sum of 4 + 5 + 3 = 12.
+    
+    Example 2:
+    Input: nums = [4,6,2], k = 3
+    Output: 12
+    Explanation: The subsequence with the largest possible even sum is [4,6,2]. 
+                 It has a sum of 4 + 6 + 2 = 12.
+    
+    Example 3:
+    Input: nums = [1,3,5], k = 1
+    Output: -1
+    Explanation: No subsequence of nums with length 1 has an even sum.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] <= 10^5
+    * 1 <= k <= nums.length*/
+
+    public long largestEvenSum(int[] nums, int k) {
+        long ans = -1, prefix = 0; 
+        int[] least = new int[]{Integer.MAX_VALUE, Integer.MAX_VALUE}; 
+        Arrays.sort(nums); 
+        for (int i = 0, n = nums.length; i < n/2; ++i) { 
+            nums[i] ^= nums[n-1-i]; 
+            nums[n-1-i] ^= nums[i]; 
+            nums[i] ^= nums[n-1-i]; 
+        }
+        for (int i = 0; i < nums.length; ++i) 
+            if (i < k) {
+                prefix += nums[i]; 
+                least[nums[i]&1] = Math.min(least[nums[i]&1], nums[i]); 
+                if (i == k-1 && (prefix&1) == 0) return prefix; 
+            } else ans = Math.max(ans, prefix - least[1-(nums[i]&1)] + nums[i]); 
         return ans; 
     }
 
