@@ -15715,6 +15715,53 @@ public:
     }
 
 
+    /*758. Bold Words in String (Medium)
+    Given an array of keywords words and a string s, make all appearances of 
+    all keywords words[i] in s bold. Any letters between <b> and </b> tags 
+    become bold. Return s after adding the bold tags. The returned string 
+    should use the least number of tags possible, and the tags should form a 
+    valid combination.
+
+    Example 1:
+    Input: words = ["ab","bc"], s = "aabcd"
+    Output: "a<b>abc</b>d"
+    Explanation: Note that returning "a<b>a<b>b</b>c</b>d" would use more tags, 
+                 so it is incorrect.
+    
+    Example 2:
+    Input: words = ["ab","cb"], s = "aabcd"
+    Output: "a<b>ab</b>cd"
+
+    Constraints:
+    * 1 <= s.length <= 500
+    * 0 <= words.length <= 50
+    * 1 <= words[i].length <= 10
+    * s and words[i] consist of lowercase English letters.
+
+    Note: This question is the same as 616: 
+          https://leetcode.com/problems/add-bold-tag-in-string/*/
+
+    string boldWords(vector<string>& words, string s) {
+        int n = s.size(); 
+        vector<int> line(n+1); 
+        for (auto& word : words) 
+            for (int k = -1; true; ) {
+                k = s.find(word, ++k); 
+                if (k == string::npos) break; 
+                ++line[k]; 
+                --line[k+word.size()]; 
+            }
+        string ans; 
+        for (int i = 0, prefix = 0; i < s.size(); ++i) {
+            if (!prefix && prefix+line[i]) ans += "<b>"; 
+            ans += s[i]; 
+            prefix += line[i]; 
+            if (prefix && !(prefix+line[i+1])) ans += "</b>"; 
+        }
+        return ans; 
+    }
+
+
     /*762. Prime Number of Set Bits in Binary Representation (Easy)
     Given two integers L and R, find the count of numbers in the range [L, R] 
     (inclusive) having a prime number of set bits in their binary representation.

@@ -18635,21 +18635,22 @@ class Solution:
     * All characters in words[i] and S are lowercase letters.
     * Note: This question is the same as 616: https://leetcode.com/problems/add-bold-tag-in-string/"""
 
-    def boldWords(self, words: List[str], S: str) -> str:
-        mark = [False]*len(S)
-        
+    def boldWords(self, words: List[str], s: str) -> str:
+        line = [0] * (len(s)+1)
         for word in words: 
             k = -1
             while True: 
-                k = S.find(word, k+1)
+                k = s.find(word, k+1)
                 if k == -1: break 
-                mark[k:k+len(word)] = [True]*len(word)
-        
+                line[k] += 1
+                line[k+len(word)] -= 1
         ans = []
-        for i in range(len(S)): 
-            if mark[i] and (i == 0 or not mark[i-1]): ans.append("<b>")
-            ans.append(S[i])
-            if mark[i] and (i+1 == len(S) or not mark[i+1]): ans.append("</b>")
+        prefix = 0 
+        for i in range(len(s)): 
+            if not prefix and prefix + line[i]: ans.append("<b>")
+            ans.append(s[i])
+            prefix += line[i]
+            if prefix and not prefix + line[i+1]: ans.append("</b>")
         return "".join(ans)
 
 
