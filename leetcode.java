@@ -480,6 +480,65 @@ class Solution {
     }
 
 
+    /*616. Add Bold Tag in String (Medium)
+    You are given a string s and an array of strings words. You should add a 
+    closed pair of bold tag <b> and </b> to wrap the substrings in s that exist 
+    in words.
+    * If two such substrings overlap, you should wrap them together with only 
+      one pair of closed bold-tag.
+    * If two substrings wrapped by bold tags are consecutive, you should 
+      combine them.
+    Return s after adding the bold tags.
+
+    Example 1:
+    Input: s = "abcxyz123", words = ["abc","123"]
+    Output: "<b>abc</b>xyz<b>123</b>"
+    Explanation: The two strings of words are substrings of s as following: 
+                 "abcxyz123". We add <b> before each substring and </b> after 
+                 each substring.
+    
+    Example 2:
+    Input: s = "aaabbb", words = ["aa","b"]
+    Output: "<b>aaabbb</b>"
+    Explanation: "aa" appears as a substring two times: "aaabbb" and "aaabbb".
+                 "b" appears as a substring three times: "aaabbb", "aaabbb", 
+                 and "aaabbb". We add <b> before each substring and </b> after 
+                 each substring: "<b>a<b>a</b>a</b><b>b</b><b>b</b><b>b</b>".
+                 Since the first two <b>'s overlap, we merge them: 
+                 "<b>aaa</b><b>b</b><b>b</b><b>b</b>". Since now the four <b>'s 
+                 are consecuutive, we merge them: "<b>aaabbb</b>".
+
+    Constraints:
+    * 1 <= s.length <= 1000
+    * 0 <= words.length <= 100
+    * 1 <= words[i].length <= 1000
+    * s and words[i] consist of English letters and digits.
+    * All the values of words are unique.
+
+    Note: This question is the same as 758: 
+          https://leetcode.com/problems/bold-words-in-string/*/
+
+    public String addBoldTag(String s, String[] words) {
+        int[] line = new int[s.length()+1]; 
+        for (String word : words) {
+            for (int k = -1; true; ) {
+                k = s.indexOf(word, ++k); 
+                if (k == -1) break; 
+                ++line[k]; 
+                --line[k+word.length()]; 
+            }
+        }
+        StringBuilder ans = new StringBuilder(); 
+        for (int i = 0, prefix = 0; i < s.length(); ++i) {
+            if (prefix == 0 && prefix+line[i] > 0) ans.append("<b>"); 
+            ans.append(s.charAt(i)); 
+            prefix += line[i]; 
+            if (prefix > 0 && prefix+line[i+1] == 0) ans.append("</b>"); 
+        }
+        return ans.toString(); 
+    }
+
+
     /*2046. Sort Linked List Already Sorted Using Absolute Values (Medium)
     Given the head of a singly linked list that is sorted in non-decreasing 
     order using the absolute values of its nodes, return the list sorted in 
