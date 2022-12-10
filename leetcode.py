@@ -70621,6 +70621,199 @@ class SegTree:
         return ans 
 
 
+    """2496. Maximum Value of a String in an Array (Easy)
+    The value of an alphanumeric string can be defined as:
+    * The numeric representation of the string in base 10, if it comprises of 
+      digits only.
+    * The length of the string, otherwise.
+    Given an array strs of alphanumeric strings, return the maximum value of 
+    any string in strs.
+
+    Example 1:
+    Input: strs = ["alic3","bob","3","4","00000"]
+    Output: 5
+    Explanation: - "alic3" consists of both letters and digits, so its value is 
+                   its length, i.e. 5.
+                 - "bob" consists only of letters, so its value is also its 
+                   length, i.e. 3.
+                 - "3" consists only of digits, so its value is its numeric 
+                   equivalent, i.e. 3.
+                 - "4" also consists only of digits, so its value is 4.
+                 - "00000" consists only of digits, so its value is 0.
+                 Hence, the maximum value is 5, of "alic3".
+    
+    Example 2:
+    Input: strs = ["1","01","001","0001"]
+    Output: 1
+    Explanation: Each string in the array has value 1. Hence, we return 1.
+
+    Constraints:
+    * 1 <= strs.length <= 100
+    * 1 <= strs[i].length <= 9
+    * strs[i] consists of only lowercase English letters and digits."""
+
+    def maximumValue(self, strs: List[str]) -> int:
+        return max(int(x) if x.isdigit() else len(x) for x in strs)
+
+
+    """2497. Maximum Star Sum of a Graph (Medium)
+    There is an undirected graph consisting of n nodes numbered from 0 to n - 1. 
+    You are given a 0-indexed integer array vals of length n where vals[i] 
+    denotes the value of the ith node. You are also given a 2D integer array 
+    edges where edges[i] = [ai, bi] denotes that there exists an undirected 
+    edge connecting nodes ai and bi. A star graph is a subgraph of the given 
+    graph having a center node containing 0 or more neighbors. In other words, 
+    it is a subset of edges of the given graph such that there exists a common 
+    node for all edges. The image below shows star graphs with 3 and 4 
+    neighbors respectively, centered at the blue node. The star sum is the sum 
+    of the values of all the nodes present in the star graph. Given an integer 
+    k, return the maximum star sum of a star graph containing at most k edges.
+
+    Example 1:
+    Input: vals = [1,2,3,4,10,-10,-20], edges = [[0,1],[1,2],[1,3],[3,4],[3,5],[3,6]], k = 2
+    Output: 16
+    Explanation: The above diagram represents the input graph. The star graph 
+                 with the maximum star sum is denoted by blue. It is centered 
+                 at 3 and includes its neighbors 1 and 4. It can be shown it is 
+                 not possible to get a star graph with a sum greater than 16.
+    
+    Example 2:
+    Input: vals = [-5], edges = [], k = 0
+    Output: -5
+    Explanation: There is only one possible star graph, which is node 0 itself. 
+                 Hence, we return -5.
+
+    Constraints:
+    * n == vals.length
+    * 1 <= n <= 10^5
+    * -104 <= vals[i] <= 10^4
+    * 0 <= edges.length <= min(n * (n - 1) / 2, 10^5)
+    * edges[i].length == 2
+    * 0 <= ai, bi <= n - 1
+    * ai != bi
+    * 0 <= k <= n - 1"""
+
+    def maxStarSum(self, vals: List[int], edges: List[List[int]], k: int) -> int:
+        n = len(vals)
+        graph = [[] for _ in range(n)]
+        for u, v in edges: 
+            graph[u].append(v)
+            graph[v].append(u)
+        ans = -inf 
+        for i, u in enumerate(graph): 
+            u.sort(key=vals.__getitem__, reverse=True)
+            cand = vals[i] + sum(max(0, vals[x]) for x in u[:k])
+            ans = max(ans, cand)
+        return ans 
+
+
+    """2498. Frog Jump II (Medium)
+    You are given a 0-indexed integer array stones sorted in strictly 
+    increasing order representing the positions of stones in a river. A frog, 
+    initially on the first stone, wants to travel to the last stone and then 
+    return to the first stone. However, it can jump to any stone at most once.
+    The length of a jump is the absolute difference between the position of the 
+    stone the frog is currently on and the position of the stone to which the 
+    frog jumps. More formally, if the frog is at stones[i] and is jumping to 
+    stones[j], the length of the jump is |stones[i] - stones[j]|. The cost of a 
+    path is the maximum length of a jump among all jumps in the path. Return 
+    the minimum cost of a path for the frog.
+
+    Example 1:
+    Input: stones = [0,2,5,6,7]
+    Output: 5
+    Explanation: The above figure represents one of the optimal paths the frog 
+                 can take. The cost of this path is 5, which is the maximum 
+                 length of a jump. Since it is not possible to achieve a cost 
+                 of less than 5, we return it.
+    
+    Example 2:
+    Input: stones = [0,3,9]
+    Output: 9
+    Explanation: The frog can jump directly to the last stone and come back to 
+                 the first stone. In this case, the length of each jump will be 
+                 9. The cost for the path will be max(9, 9) = 9. It can be 
+                 shown that this is the minimum achievable cost.
+
+    Constraints:
+    * 2 <= stones.length <= 10^5
+    * 0 <= stones[i] <= 10^9
+    * stones[0] == 0
+    * stones is sorted in a strictly increasing order."""
+
+    def maxJump(self, stones: List[int]) -> int:
+        ans = stones[1]
+        for i in range(2, len(stones)): 
+            ans = max(ans, stones[i] - stones[i-2])
+        return ans 
+
+
+    """2499. Minimum Total Cost to Make Arrays Unequal (Hard)
+    You are given two 0-indexed integer arrays nums1 and nums2, of equal length 
+    n. In one operation, you can swap the values of any two indices of nums1. 
+    The cost of this operation is the sum of the indices. Find the minimum 
+    total cost of performing the given operation any number of times such that 
+    nums1[i] != nums2[i] for all 0 <= i <= n - 1 after performing all the 
+    operations. Return the minimum total cost such that nums1 and nums2 satisfy 
+    the above condition. In case it is not possible, return -1.
+
+    Example 1:
+    Input: nums1 = [1,2,3,4,5], nums2 = [1,2,3,4,5]
+    Output: 10
+    Explanation: One of the ways we can perform the operations is:
+                 - Swap values at indices 0 and 3, incurring cost = 0 + 3 = 3. 
+                   Now, nums1 = [4,2,3,1,5]
+                 - Swap values at indices 1 and 2, incurring cost = 1 + 2 = 3. 
+                   Now, nums1 = [4,3,2,1,5].
+                 - Swap values at indices 0 and 4, incurring cost = 0 + 4 = 4. 
+                   Now, nums1 =[5,3,2,1,4].
+                 We can see that for each index i, nums1[i] != nums2[i]. The 
+                 cost required here is 10. Note that there are other ways to 
+                 swap values, but it can be proven that it is not possible to 
+                 obtain a cost less than 10.
+    
+    Example 2:
+    Input: nums1 = [2,2,2,1,3], nums2 = [1,2,2,3,3]
+    Output: 10
+    Explanation: One of the ways we can perform the operations is:
+                 - Swap values at indices 2 and 3, incurring cost = 2 + 3 = 5. 
+                   Now, nums1 = [2,2,1,2,3].
+                 - Swap values at indices 1 and 4, incurring cost = 1 + 4 = 5. 
+                   Now, nums1 = [2,3,1,2,2].
+                 The total cost needed here is 10, which is the minimum 
+                 possible.
+    
+    Example 3:
+    Input: nums1 = [1,2,2], nums2 = [1,2,2]
+    Output: -1
+    Explanation: It can be shown that it is not possible to satisfy the given 
+                 conditions irrespective of the number of operations we 
+                 perform. Hence, we return -1.
+
+    Constraints:
+    * n == nums1.length == nums2.length
+    * 1 <= n <= 10^5
+    * 1 <= nums1[i], nums2[i] <= n"""
+
+    def minimumTotalCost(self, nums1: List[int], nums2: List[int]) -> int:
+        n = len(nums1)
+        ans = total = 0 
+        freq = Counter()
+        for i, (x, y) in enumerate(zip(nums1, nums2)): 
+            if x == y: 
+                freq[x] += 1 
+                total += 1
+                ans += i 
+        key = max(freq, key=freq.get, default=None)
+        most = freq[key]
+        for i, (x, y) in enumerate(zip(nums1, nums2)): 
+            if 2*most <= total: break 
+            if len({x, y, key}) == 3: 
+                total += 1
+                ans += i 
+        return ans if 2*most <= total else -1 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
