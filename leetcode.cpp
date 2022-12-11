@@ -49951,6 +49951,164 @@ public:
             }
         return 2*most > total ? -1 : ans; 
     }
+
+
+    /*2500. Delete Greatest Value in Each Row (Easy)
+    You are given an m x n matrix grid consisting of positive integers. Perform 
+    the following operation until grid becomes empty:
+    * Delete the element with the greatest value from each row. If multiple 
+      such elements exist, delete any of them.
+    * Add the maximum of deleted elements to the answer.
+    Note that the number of columns decreases by one after each operation. 
+    Return the answer after performing the operations described above.
+
+    Example 1:
+    Input: grid = [[1,2,4],[3,3,1]]
+    Output: 8
+    Explanation: The diagram above shows the removed values in each step.
+                 - In the first operation, we remove 4 from the first row and 3 
+                   from the second row (notice that, there are two cells with 
+                   value 3 and we can remove any of them). We add 4 to the 
+                   answer.
+                 - In the second operation, we remove 2 from the first row and 
+                   3 from the second row. We add 3 to the answer.
+                 - In the third operation, we remove 1 from the first row and 1 
+                   from the second row. We add 1 to the answer.
+                 The final answer = 4 + 3 + 1 = 8.
+    
+    Example 2:
+    Input: grid = [[10]]
+    Output: 10
+    Explanation: The diagram above shows the removed values in each step.
+                 - In the first operation, we remove 10 from the first row. We 
+                   add 10 to the answer.
+                 The final answer = 10.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 50
+    * 1 <= grid[i][j] <= 100*/
+
+    int deleteGreatestValue(vector<vector<int>>& grid) {
+        for (auto& row : grid) 
+            sort(row.begin(), row.end()); 
+        int ans = 0; 
+        for (int j = 0, n = grid[0].size(); j < n; ++j) {
+            int val = 0; 
+            for (int i = 0, m = grid.size(); i < m; ++i) 
+                val = max(val, grid[i][j]); 
+            ans += val; 
+        }
+        return ans; 
+    }
+
+
+    /*2501. Longest Square Streak in an Array (Medium)
+    You are given an integer array nums. A subsequence of nums is called a 
+    square streak if:
+    * The length of the subsequence is at least 2, and
+    * after sorting the subsequence, each element (except the first element) is 
+      the square of the previous number.
+    Return the length of the longest square streak in nums, or return -1 if 
+    there is no square streak. A subsequence is an array that can be derived 
+    from another array by deleting some or no elements without changing the 
+    order of the remaining elements.
+
+    Example 1:
+    Input: nums = [4,3,6,16,8,2]
+    Output: 3
+    Explanation: Choose the subsequence [4,16,2]. After sorting it, it becomes 
+                 [2,4,16].
+                 - 4 = 2 * 2.
+                 - 16 = 4 * 4.
+                 Therefore, [4,16,2] is a square streak. It can be shown that 
+                 every subsequence of length 4 is not a square streak.
+    
+    Example 2:
+    Input: nums = [2,3,5,6,7]
+    Output: -1
+    Explanation: There is no square streak in nums so return -1.
+
+    Constraints:
+    * 2 <= nums.length <= 10^5
+    * 2 <= nums[i] <= 10^5*/
+
+    int longestSquareStreak(vector<int>& nums) {
+        vector<int> dp(100'001); 
+        sort(nums.begin(), nums.end()); 
+        for (auto& x : nums) {
+            dp[x] = max(1, dp[x]); 
+            int v = sqrt(x); 
+            if (v * v == x) dp[x] = 1 + dp[v]; 
+        }
+        int ans = *max_element(dp.begin(), dp.end()); 
+        return ans > 1 ? ans : -1; 
+    }
+
+
+    /*2503. Maximum Number of Points From Grid Queries (Hard)
+    You are given an m x n integer matrix grid and an array queries of size k.
+    Find an array answer of size k such that for each integer queres[i] you 
+    start in the top left cell of the matrix and repeat the following process:
+    * If queries[i] is strictly greater than the value of the current cell that 
+      you are in, then you get one point if it is your first time visiting this 
+      cell, and you can move to any adjacent cell in all 4 directions: up, down, 
+      left, and right.
+    * Otherwise, you do not get any points, and you end this process.
+    After the process, answer[i] is the maximum number of points you can get. 
+    Note that for each query you are allowed to visit the same cell multiple 
+    times. Return the resulting array answer.
+
+    Example 1:
+    Input: grid = [[1,2,3],[2,5,7],[3,5,1]], queries = [5,6,2]
+    Output: [5,8,1]
+    Explanation: The diagrams above show which cells we visit to get points for 
+                 each query.
+
+    Example 2:
+    Input: grid = [[5,2,1],[1,1,2]], queries = [3]
+    Output: [0]
+    Explanation: We can not get any points because the value of the top left 
+                 cell is already greater than or equal to 3.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 2 <= m, n <= 1000
+    * 4 <= m * n <= 10^5
+    * k == queries.length
+    * 1 <= k <= 10^4
+    * 1 <= grid[i][j], queries[i] <= 10^6*/
+
+    vector<int> maxPoints(vector<vector<int>>& grid, vector<int>& queries) {
+        int m = grid.size(), n = grid[0].size(), dir[5] = {-1, 0, 1, 0, -1}, prefix = 0, prev = INT_MIN; 
+        vector<pair<int, int>> point; 
+        priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<>> pq; 
+        pq.emplace(grid[0][0], 0, 0); 
+        grid[0][0] = 0; 
+        while (pq.size()) {
+            auto [v, i, j] = pq.top(); pq.pop(); 
+            if (prev != v) point.emplace_back(prev, prefix); 
+            ++prefix; 
+            prev = v; 
+            for (int k = 0; k < 4; ++k) {
+                int ii = i + dir[k], jj = j + dir[k+1]; 
+                if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj]) {
+                    int vv = max(v, grid[ii][jj]); 
+                    pq.emplace(vv, ii, jj); 
+                    grid[ii][jj] = 0; 
+                }
+            }
+        }
+        point.emplace_back(prev, prefix); 
+        vector<int> ans; 
+        for (auto& q : queries) {
+            auto it = lower_bound(point.begin(), point.end(), make_pair(q, 0)); 
+            ans.push_back((--it)->second); 
+        }
+        return ans; 
+    }
 };
 
 
@@ -53048,6 +53206,79 @@ public:
     }
     
     int longest() {
+        return ans; 
+    }
+};
+
+
+/*2502. Design Memory Allocator (Medium)
+You are given an integer n representing the size of a 0-indexed memory array. 
+All memory units are initially free. You have a memory allocator with the 
+following functionalities:
+* Allocate a block of size consecutive free memory units and assign it the id 
+  mID.
+* Free all memory units with the given id mID.
+Note that:
+* Multiple blocks can be allocated to the same mID.
+* You should free all the memory units with mID, even if they were allocated in 
+  different blocks.
+Implement the Allocator class:
+* Allocator(int n) Initializes an Allocator object with a memory array of size 
+  n.
+* int allocate(int size, int mID) Find the leftmost block of size consecutive 
+  free memory units and allocate it with the id mID. Return the block's first 
+  index. If such a block does not exist, return -1.
+* int free(int mID) Free all memory units with the id mID. Return the number of 
+  memory units you have freed.
+
+Example 1:
+Input: ["Allocator", "allocate", "allocate", "allocate", "free", "allocate", "allocate", "allocate", "free", "allocate", "free"]
+       [[10], [1, 1], [1, 2], [1, 3], [2], [3, 4], [1, 1], [1, 1], [1], [10, 2], [7]]
+Output: [null, 0, 1, 2, 1, 3, 1, 6, 3, -1, 0]
+Explanation: 
+Allocator loc = new Allocator(10); // Initialize a memory array of size 10. All memory units are initially free.
+loc.allocate(1, 1); // The leftmost block's first index is 0. The memory array becomes [1,_,_,_,_,_,_,_,_,_]. We return 0.
+loc.allocate(1, 2); // The leftmost block's first index is 1. The memory array becomes [1,2,_,_,_,_,_,_,_,_]. We return 1.
+loc.allocate(1, 3); // The leftmost block's first index is 2. The memory array becomes [1,2,3,_,_,_,_,_,_,_]. We return 2.
+loc.free(2); // Free all memory units with mID 2. The memory array becomes [1,_, 3,_,_,_,_,_,_,_]. We return 1 since there is only 1 unit with mID 2.
+loc.allocate(3, 4); // The leftmost block's first index is 3. The memory array becomes [1,_,3,4,4,4,_,_,_,_]. We return 3.
+loc.allocate(1, 1); // The leftmost block's first index is 1. The memory array becomes [1,1,3,4,4,4,_,_,_,_]. We return 1.
+loc.allocate(1, 1); // The leftmost block's first index is 6. The memory array becomes [1,1,3,4,4,4,1,_,_,_]. We return 6.
+loc.free(1); // Free all memory units with mID 1. The memory array becomes [_,_,3,4,4,4,_,_,_,_]. We return 3 since there are 3 units with mID 1.
+loc.allocate(10, 2); // We can not find any free block with 10 consecutive free memory units, so we return -1.
+loc.free(7); // Free all memory units with mID 7. The memory array remains the same since there is no memory unit with mID 7. We return 0.
+
+Constraints:
+* 1 <= n, size, mID <= 1000
+* At most 1000 calls will be made to allocate and free.*/
+
+class Allocator {
+    vector<int> memory; 
+public:
+    Allocator(int n) {
+        memory.resize(n); 
+    }
+    
+    int allocate(int size, int mID) {
+        int cnt = 0; 
+        for (int i = 0; i < memory.size(); ++i) 
+            if (memory[i] == 0) {
+                if (++cnt == size) {
+                    for (int ii = i; ii >= i-size+1; --ii)
+                        memory[ii] = mID; 
+                    return i-size+1; 
+                }
+            } else cnt = 0; 
+        return -1; 
+    }
+    
+    int free(int mID) {
+        int ans = 0; 
+        for (int i = 0; i < memory.size(); ++i) 
+            if (memory[i] == mID) {
+                ++ans; 
+                memory[i] = 0; 
+            }
         return ans; 
     }
 };
