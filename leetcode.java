@@ -2224,27 +2224,25 @@ class Solution {
     * There are no repeated edges.*/
 
     public boolean isPossible(int n, List<List<Integer>> edges) {
-        HashSet<Long> seen = new HashSet(); 
-        int[] degree = new int[n]; 
+        HashSet<Integer>[] graph = new HashSet[n]; 
+        for (int i = 0; i < n; ++i) graph[i] = new HashSet(); 
         for (var e : edges) {
-            int u = e.get(0)-1, v = e.get(1)-1; 
-            ++degree[u]; 
-            ++degree[v]; 
-            seen.add((long) u*n+v); 
-            seen.add((long) v*n+u); 
+            graph[e.get(0)-1].add(e.get(1)-1); 
+            graph[e.get(1)-1].add(e.get(0)-1); 
         }
-        List<Long> odd = new ArrayList(); 
+        List<Integer> odd = new ArrayList(); 
         for (int i = 0; i < n; ++i) 
-            if (degree[i] % 2 == 1) odd.add((long) i); 
-        if (odd.size() == 0) return true; 
+            if (graph[i].size() % 2 == 1) odd.add(i); 
         if (odd.size() == 2) {
-            for (long u = 0; u < n; ++u) 
-                if (!seen.contains(u*n+odd.get(0)) && !seen.contains(u*n+odd.get(1))) return true; 
+            for (int i = 0; i < n; ++i) 
+                if (!graph[i].contains(odd.get(0)) && !graph[i].contains(odd.get(1))) return true; 
             return false; 
         }
         if (odd.size() == 4) 
-            return !seen.contains(odd.get(0)*n+odd.get(1)) && !seen.contains(odd.get(2)*n+odd.get(3)) || !seen.contains(odd.get(0)*n+odd.get(2)) && !seen.contains(odd.get(1)*n+odd.get(3)) || !seen.contains(odd.get(0)*n+odd.get(3)) && !seen.contains(odd.get(1)*n+odd.get(2)); 
-        return false; 
+            return !graph[odd.get(0)].contains(odd.get(1)) && !graph[odd.get(2)].contains(odd.get(3)) 
+                || !graph[odd.get(0)].contains(odd.get(2)) && !graph[odd.get(1)].contains(odd.get(3)) 
+                || !graph[odd.get(0)].contains(odd.get(3)) && !graph[odd.get(1)].contains(odd.get(2)); 
+        return odd.size() == 0; 
     }
 
 

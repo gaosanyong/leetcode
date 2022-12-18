@@ -50270,27 +50270,17 @@ public:
     * There are no repeated edges.*/
 
     bool isPossible(int n, vector<vector<int>>& edges) {
-        unordered_set<long> seen; 
-        vector<int> degree(n); 
+        vector<unordered_set<int>> graph(n); 
         for (auto& e : edges) {
-            long u = e[0]-1, v = e[1]-1; 
-            ++degree[u]; 
-            ++degree[v]; 
-            seen.insert(u*n+v); 
-            seen.insert(v*n+u); 
+            graph[e[0]-1].insert(e[1]-1); 
+            graph[e[1]-1].insert(e[0]-1); 
         }
         vector<long> odd; 
         for (int i = 0; i < n; ++i) 
-            if (degree[i] & 1) odd.push_back(i); 
-        if (odd.size() == 0) return true; 
-        if (odd.size() == 2) {
-            for (long u = 0; u < n; ++u) 
-                if (!seen.count(u*n+odd[0]) && !seen.count(u*n+odd[1])) return true; 
-            return false; 
-        }
-        if (odd.size() == 4) 
-            return !seen.count(odd[0]*n+odd[1]) && !seen.count(odd[2]*n+odd[3]) || !seen.count(odd[0]*n+odd[2]) && !seen.count(odd[1]*n+odd[3]) || !seen.count(odd[0]*n+odd[3]) && !seen.count(odd[1]*n+odd[2]); 
-        return false; 
+            if (graph[i].size() & 1) odd.push_back(i); 
+        return odd.size() == 0 
+            || odd.size() == 2 && any_of(graph.begin(), graph.end(), [&](auto& g) { return !g.count(odd[0]) && !g.count(odd[1]); })
+            || odd.size() == 4 && (!graph[odd[0]].count(odd[1]) && !graph[odd[2]].count(odd[3]) || !graph[odd[0]].count(odd[2]) && !graph[odd[1]].count(odd[3]) || !graph[odd[0]].count(odd[3]) && !graph[odd[1]].count(odd[2]));
     }
 
 
