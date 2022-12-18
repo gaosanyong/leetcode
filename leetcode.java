@@ -2305,19 +2305,14 @@ class Solution {
     * ai != bi*/
 
     public int[] cycleLengthQueries(int n, int[][] queries) {
-        int sz = queries.length; 
-        int[] ans = new int[sz]; 
-        for (int i = 0; i < sz; ++i) {
-            HashMap<Integer, Integer> dist = new HashMap(); 
-            for (int u = queries[i][0], d = 0; u > 0; u /= 2) 
-                dist.put(u, ++d); 
-            for (int v = queries[i][1], d = 0; v > 0; v /= 2, ++d) 
-                if (dist.containsKey(v)) {
-                    ans[i] = d + dist.get(v); 
-                    break; 
-                }
+        int[] ans = new int[queries.length];
+        for (int i = 0; i < queries.length; ++i) {
+            int dist = 1; 
+            for (int u = queries[i][0], v = queries[i][1]; u != v; u /= 2, ++dist) 
+                if (u < v) { int tmp = v; v = u; u = tmp; }
+            ans[i] = dist; 
         }
-        return ans; 
+        return ans;  
     }
 }
 

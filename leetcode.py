@@ -71187,16 +71187,12 @@ class SegTree:
     def cycleLengthQueries(self, n: int, queries: List[List[int]]) -> List[int]:
         ans = []
         for u, v in queries: 
-            dist = {}
-            d = 0
-            while u: 
-                dist[u] = (d := d+1)
+            dist = 1
+            while u != v: 
+                if u < v: u, v = v, u 
                 u //= 2
-            d = 0 
-            while v not in dist: 
-                d += 1
-                v //= 2
-            ans.append(d + dist[v])
+                dist += 1
+            ans.append(dist)
         return ans 
 
 

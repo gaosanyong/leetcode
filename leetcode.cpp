@@ -50353,14 +50353,10 @@ public:
     vector<int> cycleLengthQueries(int n, vector<vector<int>>& queries) {
         vector<int> ans; 
         for (auto& q : queries) {
-            unordered_map<int, int> dist; 
-            for (int u = q[0], d = 0; u; u /= 2) 
-                dist[u] = ++d; 
-            for (int v = q[1], d = 0; v; v /= 2, ++d) 
-                if (dist.count(v)) {
-                    ans.push_back(d + dist[v]); 
-                    break; 
-                }
+            int dist = 1; 
+            for (int u = q[0], v = q[1]; u != v; u /= 2, ++dist) 
+                if (u < v) swap(u, v); 
+            ans.push_back(dist); 
         }
         return ans; 
     }
