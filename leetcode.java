@@ -2094,6 +2094,231 @@ class Solution {
         }
         return ans; 
     }
+
+
+    /*2506. Count Pairs Of Similar Strings (Easy)
+    You are given a 0-indexed string array words. Two strings are similar if 
+    they consist of the same characters.
+    * For example, "abca" and "cba" are similar since both consist of 
+      characters 'a', 'b', and 'c'.
+    * However, "abacba" and "bcfd" are not similar since they do not consist of 
+      the same characters.
+    Return the number of pairs (i, j) such that 0 <= i < j <= word.length - 1 
+    and the two strings words[i] and words[j] are similar.
+
+    Example 1:
+    Input: words = ["aba","aabb","abcd","bac","aabc"]
+    Output: 2
+    Explanation: There are 2 pairs that satisfy the conditions:
+                 - i = 0 and j = 1 : both words[0] and words[1] only consist of 
+                   characters 'a' and 'b'. 
+                 - i = 3 and j = 4 : both words[3] and words[4] only consist of 
+                   characters 'a', 'b', and 'c'. 
+    
+    Example 2:
+    Input: words = ["aabb","ab","ba"]
+    Output: 3
+    Explanation: There are 3 pairs that satisfy the conditions:
+                 - i = 0 and j = 1 : both words[0] and words[1] only consist of 
+                   characters 'a' and 'b'. 
+                 - i = 0 and j = 2 : both words[0] and words[2] only consist of 
+                   characters 'a' and 'b'.
+                 - i = 1 and j = 2 : both words[1] and words[2] only consist of 
+                   characters 'a' and 'b'.
+    
+    Example 3:
+    Input: words = ["nba","cba","dba"]
+    Output: 0
+    Explanation: Since there does not exist any pair that satisfies the 
+                 conditions, we return 0.
+
+    Constraints:
+    * 1 <= words.length <= 100
+    * 1 <= words[i].length <= 100
+    * words[i] consist of only lowercase English letters.*/
+
+    public int similarPairs(String[] words) {
+        int ans = 0; 
+        HashMap<Integer, Integer> freq = new HashMap(); 
+        for (var word : words) {
+            int mask = 0; 
+            for (var ch : word.toCharArray()) 
+                mask |= 1<<ch-'a'; 
+            ans += freq.getOrDefault(mask, 0); 
+            freq.merge(mask, 1, Integer::sum); 
+        }
+        return ans; 
+    }
+
+
+    /*2507. Smallest Value After Replacing With Sum of Prime Factors (Medium)
+    You are given a positive integer n. Continuously replace n with the sum of 
+    its prime factors. 
+    * Note that if a prime factor divides n multiple times, it should be 
+      included in the sum as many times as it divides n.
+    Return the smallest value n will take on.
+
+    Example 1:
+    Input: n = 15
+    Output: 5
+    Explanation: Initially, n = 15.
+                 15 = 3 * 5, so replace n with 3 + 5 = 8.
+                 8 = 2 * 2 * 2, so replace n with 2 + 2 + 2 = 6.
+                 6 = 2 * 3, so replace n with 2 + 3 = 5.
+                 5 is the smallest value n will take on.
+    
+    Example 2:
+    Input: n = 3
+    Output: 3
+    Explanation: Initially, n = 3. 3 is the smallest value n will take on.
+
+    Constraints: 2 <= n <= 10^5*/
+
+    public int smallestValue(int n) {
+        while (true) {
+            int s = 0; 
+            for (int f = 2, x = n; f <= x; ++f)
+                for (; x % f == 0; x /= f)
+                    s += f; 
+            if (s == n) break; 
+            n = s; 
+        }
+        return n; 
+    }
+
+
+    /*2508. Add Edges to Make Degrees of All Nodes Even (Hard)
+    There is an undirected graph consisting of n nodes numbered from 1 to n. 
+    You are given the integer n and a 2D array edges where edges[i] = [ai, bi] 
+    indicates that there is an edge between nodes ai and bi. The graph can be 
+    disconnected. You can add at most two additional edges (possibly none) to 
+    this graph so that there are no repeated edges and no self-loops. Return 
+    true if it is possible to make the degree of each node in the graph even, 
+    otherwise return false. The degree of a node is the number of edges 
+    connected to it.
+
+    Example 1:
+    Input: n = 5, edges = [[1,2],[2,3],[3,4],[4,2],[1,4],[2,5]]
+    Output: true
+    Explanation: The above diagram shows a valid way of adding an edge. Every 
+                 node in the resulting graph is connected to an even number of 
+                 edges.
+    
+    Example 2:
+    Input: n = 4, edges = [[1,2],[3,4]]
+    Output: true
+    Explanation: The above diagram shows a valid way of adding two edges.
+
+    Example 3:
+    Input: n = 4, edges = [[1,2],[1,3],[1,4]]
+    Output: false
+    Explanation: It is not possible to obtain a valid graph with adding at most 
+                 2 edges.
+
+    Constraints:
+    * 3 <= n <= 10^5
+    * 2 <= edges.length <= 10^5
+    * edges[i].length == 2
+    * 1 <= ai, bi <= n
+    * ai != bi
+    * There are no repeated edges.*/
+
+    public boolean isPossible(int n, List<List<Integer>> edges) {
+        HashSet<Long> seen = new HashSet(); 
+        int[] degree = new int[n]; 
+        for (var e : edges) {
+            int u = e.get(0)-1, v = e.get(1)-1; 
+            ++degree[u]; 
+            ++degree[v]; 
+            seen.add((long) u*n+v); 
+            seen.add((long) v*n+u); 
+        }
+        List<Long> odd = new ArrayList(); 
+        for (int i = 0; i < n; ++i) 
+            if (degree[i] % 2 == 1) odd.add((long) i); 
+        if (odd.size() == 0) return true; 
+        if (odd.size() == 2) {
+            for (long u = 0; u < n; ++u) 
+                if (!seen.contains(u*n+odd.get(0)) && !seen.contains(u*n+odd.get(1))) return true; 
+            return false; 
+        }
+        if (odd.size() == 4) 
+            return !seen.contains(odd.get(0)*n+odd.get(1)) && !seen.contains(odd.get(2)*n+odd.get(3)) || !seen.contains(odd.get(0)*n+odd.get(2)) && !seen.contains(odd.get(1)*n+odd.get(3)) || !seen.contains(odd.get(0)*n+odd.get(3)) && !seen.contains(odd.get(1)*n+odd.get(2)); 
+        return false; 
+    }
+
+
+    /*2509. Cycle Length Queries in a Tree (Hard)
+    You are given an integer n. There is a complete binary tree with 2n - 1 
+    nodes. The root of that tree is the node with the value 1, and every node 
+    with a value val in the range [1, 2n - 1 - 1] has two children where:
+    * The left node has the value 2 * val, and
+    * The right node has the value 2 * val + 1.
+    You are also given a 2D integer array queries of length m, where 
+    queries[i] = [ai, bi]. For each query, solve the following problem:
+    * Add an edge between the nodes with values ai and bi.
+    * Find the length of the cycle in the graph.
+    * Remove the added edge between nodes with values ai and bi.
+    Note that:
+    * A cycle is a path that starts and ends at the same node, and each edge in 
+      the path is visited only once.
+    * The length of a cycle is the number of edges visited in the cycle.
+    * There could be multiple edges between two nodes in the tree after adding 
+      the edge of the query.
+    Return an array answer of length m where answer[i] is the answer to the ith 
+    query.
+
+    Example 1:
+    Input: n = 3, queries = [[5,3],[4,7],[2,3]]
+    Output: [4,5,3]
+    Explanation: The diagrams above show the tree of 23 - 1 nodes. Nodes 
+                 colored in red describe the nodes in the cycle after adding 
+                 the edge.
+                 - After adding the edge between nodes 3 and 5, the graph 
+                   contains a cycle of nodes [5,2,1,3]. Thus answer to the 
+                   first query is 4. We delete the added edge and process the 
+                   next query.
+                 - After adding the edge between nodes 4 and 7, the graph 
+                   contains a cycle of nodes [4,2,1,3,7]. Thus answer to the 
+                   second query is 5. We delete the added edge and process the 
+                   next query.
+                 - After adding the edge between nodes 2 and 3, the graph 
+                   contains a cycle of nodes [2,1,3]. Thus answer to the third 
+                   query is 3. We delete the added edge.
+    
+    Example 2:
+    Input: n = 2, queries = [[1,2]]
+    Output: [2]
+    Explanation: The diagram above shows the tree of 22 - 1 nodes. Nodes 
+                 colored in red describe the nodes in the cycle after adding 
+                 the edge.
+                 - After adding the edge between nodes 1 and 2, the graph 
+                   contains a cycle of nodes [2,1]. Thus answer for the first 
+                   query is 2. We delete the added edge.
+
+    Constraints:
+    * 2 <= n <= 30
+    * m == queries.length
+    * 1 <= m <= 10^5
+    * queries[i].length == 2
+    * 1 <= ai, bi <= 2n - 1
+    * ai != bi*/
+
+    public int[] cycleLengthQueries(int n, int[][] queries) {
+        int sz = queries.length; 
+        int[] ans = new int[sz]; 
+        for (int i = 0; i < sz; ++i) {
+            HashMap<Integer, Integer> dist = new HashMap(); 
+            for (int u = queries[i][0], d = 0; u > 0; u /= 2) 
+                dist.put(u, ++d); 
+            for (int v = queries[i][1], d = 0; v > 0; v /= 2, ++d) 
+                if (dist.containsKey(v)) {
+                    ans[i] = d + dist.get(v); 
+                    break; 
+                }
+        }
+        return ans; 
+    }
 }
 
 
