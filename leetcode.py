@@ -71062,16 +71062,13 @@ class SegTree:
 
     def smallestValue(self, n: int) -> int: 
         while True: 
-            s = 0
-            f = 2
-            x = n 
-            while f <= x: 
-                while x % f == 0: 
-                    s += f
-                    x /= f 
-                f += 1
-            if s == n: break 
-            n = s 
+            nn, sm = n, 0
+            for f in range(2, nn+1): 
+                while nn % f == 0: 
+                    nn //= f 
+                    sm += f
+            if sm == n: break 
+            n = sm 
         return n
 
 
