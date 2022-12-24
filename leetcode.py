@@ -71235,6 +71235,205 @@ class SegTree:
             return lo[-1][-1] <= 0 <= hi[-1][-1]
 
 
+    """2511. Maximum Enemy Forts That Can Be Captured (Easy)
+    You are given a 0-indexed integer array forts of length n representing the 
+    positions of several forts. forts[i] can be -1, 0, or 1 where:
+    * -1 represents there is no fort at the ith position.
+    * 0 indicates there is an enemy fort at the ith position.
+    * 1 indicates the fort at the ith the position is under your command.
+    Now you have decided to move your army from one of your forts at position i 
+    to an empty position j such that:
+    * 0 <= i, j <= n - 1
+    * The army travels over enemy forts only. Formally, for all k where 
+      min(i,j) < k < max(i,j), forts[k] == 0.
+    While moving the army, all the enemy forts that come in the way are 
+    captured. Return the maximum number of enemy forts that can be captured. In 
+    case it is impossible to move your army, or you do not have any fort under 
+    your command, return 0.
+
+    Example 1:
+    Input: forts = [1,0,0,-1,0,0,0,0,1]
+    Output: 4
+    Explanation: - Moving the army from position 0 to position 3 captures 2 
+                   enemy forts, at 1 and 2.
+                 - Moving the army from position 8 to position 3 captures 4 
+                   enemy forts.
+                 Since 4 is the maximum number of enemy forts that can be 
+                 captured, we return 4.
+    
+    Example 2:
+    Input: forts = [0,0,1,-1]
+    Output: 0
+    Explanation: Since no enemy fort can be captured, 0 is returned.
+
+    Constraints:
+    * 1 <= forts.length <= 1000
+    * -1 <= forts[i] <= 1"""
+
+    def captureForts(self, forts: List[int]) -> int:
+        ans = ii = 0 
+        for i, x in enumerate(forts): 
+            if x: 
+                if forts[ii] == -x: ans = max(ans, i-ii-1)
+                ii = i 
+        return ans 
+
+
+    """2512. Reward Top K Students (Medium)
+    You are given two string arrays positive_feedback and negative_feedback, 
+    containing the words denoting positive and negative feedback, respectively. 
+    Note that no word is both positive and negative. Initially every student 
+    has 0 points. Each positive word in a feedback report increases the points 
+    of a student by 3, whereas each negative word decreases the points by 1. 
+    You are given n feedback reports, represented by a 0-indexed string array 
+    report and a 0-indexed integer array student_id, where student_id[i] 
+    represents the ID of the student who has received the feedback report 
+    report[i]. The ID of each student is unique. Given an integer k, return 
+    the top k students after ranking them in non-increasing order by their 
+    points. In case more than one student has the same points, the one with the 
+    lower ID ranks higher.
+
+    Example 1:
+    Input: positive_feedback = ["smart","brilliant","studious"], 
+           negative_feedback = ["not"], 
+           report = ["this student is studious","the student is smart"], 
+           student_id = [1,2], k = 2
+    Output: [1,2]
+    Explanation: Both the students have 1 positive feedback and 3 points but 
+                 since student 1 has a lower ID he ranks higher.
+    
+    Example 2:
+    Input: positive_feedback = ["smart","brilliant","studious"], 
+           negative_feedback = ["not"], 
+           report = ["this student is not studious","the student is smart"], 
+           student_id = [1,2], k = 2
+    Output: [2,1]
+    Explanation: - The student with ID 1 has 1 positive feedback and 1 negative 
+                   feedback, so he has 3-1=2 points. 
+                 - The student with ID 2 has 1 positive feedback, so he has 3 
+                   points. 
+                 Since student 2 has more points, [2,1] is returned.
+
+    Constraints:
+    * 1 <= positive_feedback.length, negative_feedback.length <= 10^4
+    * 1 <= positive_feedback[i].length, negative_feedback[j].length <= 100
+    * Both positive_feedback[i] and negative_feedback[j] consists of lowercase 
+      English letters.
+    * No word is present in both positive_feedback and negative_feedback.
+    * n == report.length == student_id.length
+    * 1 <= n <= 10^4
+    * report[i] consists of lowercase English letters and spaces ' '.
+    * There is a single space between consecutive words of report[i].
+    * 1 <= report[i].length <= 100
+    * 1 <= student_id[i] <= 10^9
+    * All the values of student_id[i] are unique.
+    * 1 <= k <= n"""
+
+    def topStudents(self, positive_feedback: List[str], negative_feedback: List[str], report: List[str], student_id: List[int], k: int) -> List[int]:
+        positive = set(positive_feedback)
+        negative = set(negative_feedback)
+        mp = {}
+        for sentence, i in zip(report, student_id): 
+            point = 0 
+            for word in sentence.split(): 
+                if word in positive: point += 3
+                elif word in negative: point -= 1
+            mp[i] = point 
+        return sorted(mp, key=lambda x: (-mp[x], x))[:k]
+
+
+    """2513. Minimize the Maximum of Two Arrays (Medium)
+    We have two arrays arr1 and arr2 which are initially empty. You need to add 
+    positive integers to them such that they satisfy all the following 
+    conditions:
+    * arr1 contains uniqueCnt1 distinct positive integers, each of which is not 
+      divisible by divisor1.
+    * arr2 contains uniqueCnt2 distinct positive integers, each of which is not 
+      divisible by divisor2.
+    * No integer is present in both arr1 and arr2.
+    Given divisor1, divisor2, uniqueCnt1, and uniqueCnt2, return the minimum 
+    possible maximum integer that can be present in either array.
+
+    Example 1:
+    Input: divisor1 = 2, divisor2 = 7, uniqueCnt1 = 1, uniqueCnt2 = 3
+    Output: 4
+    Explanation: We can distribute the first 4 natural numbers into arr1 and 
+                 arr2. arr1 = [1] and arr2 = [2,3,4]. We can see that both 
+                 arrays satisfy all the conditions. Since the maximum value is 
+                 4, we return it.
+    
+    Example 2:
+    Input: divisor1 = 3, divisor2 = 5, uniqueCnt1 = 2, uniqueCnt2 = 1
+    Output: 3
+    Explanation: Here arr1 = [1,2], and arr2 = [3] satisfy all conditions. 
+                 Since the maximum value is 3, we return it.
+    
+    Example 3:
+    Input: divisor1 = 2, divisor2 = 4, uniqueCnt1 = 8, uniqueCnt2 = 2
+    Output: 15
+    Explanation: Here, the final possible arrays can be 
+                 arr1 = [1,3,5,7,9,11,13,15], and arr2 = [2,6]. It can be shown 
+                 that it is not possible to obtain a lower maximum satisfying 
+                 all conditions. 
+
+    Constraints:
+    * 2 <= divisor1, divisor2 <= 10^5
+    * 1 <= uniqueCnt1, uniqueCnt2 < 10^9
+    * 2 <= uniqueCnt1 + uniqueCnt2 <= 10^9"""
+
+    def minimizeSet(self, divisor1: int, divisor2: int, uniqueCnt1: int, uniqueCnt2: int) -> int: 
+        lo, hi = 0, 1<<32-1
+        mult = lcm(divisor1, divisor2)
+        while lo < hi: 
+            mid = lo + hi >> 1
+            if uniqueCnt1 <= mid-mid//divisor1 and uniqueCnt2 <= mid-mid//divisor2 and uniqueCnt1+uniqueCnt2 <= mid-mid//mult: hi = mid
+            else: lo = mid+1
+        return lo 
+
+
+    """2514. Count Anagrams (Hard)
+    You are given a string s containing one or more words. Every consecutive 
+    pair of words is separated by a single space ' '. A string t is an anagram 
+    of string s if the ith word of t is a permutation of the ith word of s.
+    * For example, "acb dfe" is an anagram of "abc def", but "def cab" and 
+      "adc bef" are not.
+    Return the number of distinct anagrams of s. Since the answer may be very 
+    large, return it modulo 10^9 + 7.
+
+    Example 1:
+    Input: s = "too hot"
+    Output: 18
+    Explanation: Some of the anagrams of the given string are "too hot", 
+                 "oot hot", "oto toh", "too toh", and "too oht".
+    
+    Example 2:
+    Input: s = "aa"
+    Output: 1
+    Explanation: There is only one anagram possible for the given string.
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s consists of lowercase English letters and spaces ' '.
+    * There is single space between consecutive words."""
+
+    def countAnagrams(self, s: str) -> int:
+        n = len(s)
+        mod = 1_000_000_007
+        inv = [1]*(n+1)
+        fact = [1]*(n+1)
+        ifact = [1]*(n+1)
+        for x in range(1, n+1): 
+            if x >= 2: inv[x] = mod - mod//x * inv[mod % x] % mod 
+            fact[x] = fact[x-1] * x % mod 
+            ifact[x] = ifact[x-1] * inv[x] % mod 
+        ans = 1
+        for word in s.split(): 
+            ans *= fact[len(word)]
+            for x in Counter(word).values(): ans *= ifact[x]
+            ans %= mod 
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
