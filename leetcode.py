@@ -71434,6 +71434,188 @@ class SegTree:
         return ans 
 
 
+    """2515. Shortest Distance to Target String in a Circular Array (Easy)
+    You are given a 0-indexed circular string array words and a string target. 
+    A circular array means that the array's end connects to the array's 
+    beginning.
+    * Formally, the next element of words[i] is words[(i + 1) % n] and the 
+      previous element of words[i] is words[(i - 1 + n) % n], where n is the 
+      length of words.
+    Starting from startIndex, you can move to either the next word or the 
+    previous word with 1 step at a time. Return the shortest distance needed to 
+    reach the string target. If the string target does not exist in words, 
+    return -1.
+
+    Example 1:
+    Input: words = ["hello","i","am","leetcode","hello"], target = "hello", startIndex = 1
+    Output: 1
+    Explanation: We start from index 1 and can reach "hello" by
+                 - moving 3 units to the right to reach index 4.
+                 - moving 2 units to the left to reach index 4.
+                 - moving 4 units to the right to reach index 0.
+                 - moving 1 unit to the left to reach index 0.
+                 The shortest distance to reach "hello" is 1.
+    
+    Example 2:
+    Input: words = ["a","b","leetcode"], target = "leetcode", startIndex = 0
+    Output: 1
+    Explanation: We start from index 0 and can reach "leetcode" by
+                 - moving 2 units to the right to reach index 3.
+                 - moving 1 unit to the left to reach index 3.
+                 The shortest distance to reach "leetcode" is 1.
+    
+    Example 3:
+    Input: words = ["i","eat","leetcode"], target = "ate", startIndex = 0
+    Output: -1
+    Explanation: Since "ate" does not exist in words, we return -1.
+
+    Constraints:
+    * 1 <= words.length <= 100
+    * 1 <= words[i].length <= 100
+    * words[i] and target consist of only lowercase English letters.
+    * 0 <= startIndex < words.length"""
+
+    def closetTarget(self, words: List[str], target: str, startIndex: int) -> int:
+        ans = inf 
+        for i, word in enumerate(words): 
+            if word == target: 
+                dist = abs(i - startIndex)
+                ans = min(ans, dist, len(words) - dist)
+        return ans if ans < inf else -1 
+
+
+    """2516. Take K of Each Character From Left and Right (Medium)
+    You are given a string s consisting of the characters 'a', 'b', and 'c' and 
+    a non-negative integer k. Each minute, you may take either the leftmost 
+    character of s, or the rightmost character of s. Return the minimum number 
+    of minutes needed for you to take at least k of each character, or return 
+    -1 if it is not possible to take k of each character.
+
+    Example 1:
+    Input: s = "aabaaaacaabc", k = 2
+    Output: 8
+    Explanation: Take three characters from the left of s. You now have two 'a' 
+                 characters, and one 'b' character. Take five characters from 
+                 the right of s. You now have four 'a' characters, two 'b' 
+                 characters, and two 'c' characters. A total of 3 + 5 = 8 
+                 minutes is needed. It can be proven that 8 is the minimum 
+                 number of minutes needed.
+    
+    Example 2:
+    Input: s = "a", k = 1
+    Output: -1
+    Explanation: It is not possible to take one 'b' or 'c' so return -1.
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s consists of only the letters 'a', 'b', and 'c'.
+    * 0 <= k <= s.length"""
+
+    def takeCharacters(self, s: str, k: int) -> int:
+        freq = [0] * 3
+        ans = inf 
+        ii = 0 
+        for i, ch in enumerate(s+s): 
+            freq[ord(ch)-97] += 1
+            while min(freq) == k: 
+                if ii <= len(s) and i >= len(s)-1 and i-ii < len(s): ans = min(ans, i-ii+1)
+                freq[ord(s[ii % len(s)])-97] -= 1
+                ii += 1
+        return ans if ans < inf else -1 
+
+
+    """2517. Maximum Tastiness of Candy Basket (Medium)
+    You are given an array of positive integers price where price[i] denotes 
+    the price of the ith candy and a positive integer k. The store sells 
+    baskets of k distinct candies. The tastiness of a candy basket is the 
+    smallest absolute difference of the prices of any two candies in the basket.
+    Return the maximum tastiness of a candy basket.
+
+    Example 1:
+    Input: price = [13,5,1,8,21,2], k = 3
+    Output: 8
+    Explanation: Choose the candies with the prices [13,5,21]. The tastiness of 
+                 the candy basket is: 
+                 min(|13 - 5|, |13 - 21|, |5 - 21|) = min(8, 8, 16) = 8. It can 
+                 be proven that 8 is the maximum tastiness that can be achieved.
+    
+    Example 2:
+    Input: price = [1,3,1], k = 2
+    Output: 2
+    Explanation: Choose the candies with the prices [1,3]. The tastiness of the 
+                 candy basket is: min(|1 - 3|) = min(2) = 2. It can be proven 
+                 that 2 is the maximum tastiness that can be achieved.
+    
+    Example 3:
+    Input: price = [7,7,7,7], k = 2
+    Output: 0
+    Explanation: Choosing any two distinct candies from the candies we have 
+                 will result in a tastiness of 0.
+
+    Constraints:
+    * 1 <= price.length <= 10^5
+    * 1 <= price[i] <= 10^9
+    * 2 <= k <= price.length"""
+
+    def maximumTastiness(self, price: List[int], k: int) -> int:
+        price.sort()
+        lo, hi = 0, price[-1] - price[0]
+        while lo < hi: 
+            mid = lo + hi +1 >> 1
+            val = price[0]
+            cnt = 0 
+            for x in price: 
+                if x >= mid + val: 
+                    cnt += 1
+                    val = x
+            if cnt >= k-1: lo = mid 
+            else: hi = mid - 1
+        return lo 
+
+
+    """2518. Number of Great Partitions (Hard)
+    You are given an array nums consisting of positive integers and an integer 
+    k. Partition the array into two ordered groups such that each element is in 
+    exactly one group. A partition is called great if the sum of elements of 
+    each group is greater than or equal to k. Return the number of distinct 
+    great partitions. Since the answer may be too large, return it modulo 
+    10^9 + 7. Two partitions are considered distinct if some element nums[i] is 
+    in different groups in the two partitions.
+
+    Example 1:
+    Input: nums = [1,2,3,4], k = 4
+    Output: 6
+    Explanation: The great partitions are: ([1,2,3], [4]), ([1,3], [2,4]), 
+                 ([1,4], [2,3]), ([2,3], [1,4]), ([2,4], [1,3]) and 
+                 ([4], [1,2,3]).
+    
+    Example 2:
+    Input: nums = [3,3,3], k = 4
+    Output: 0
+    Explanation: There are no great partitions for this array.
+
+    Example 3:
+    Input: nums = [6,6], k = 2
+    Output: 2
+    Explanation: We can either put nums[0] in the first partition or in the 
+                 second partition. The great partitions will be ([6], [6]) and 
+                 ([6], [6]).
+
+    Constraints:
+    * 1 <= nums.length, k <= 1000
+    * 1 <= nums[i] <= 10^9"""
+
+    def countPartitions(self, nums: List[int], k: int) -> int:
+        mod = 1_000_000_007
+        if sum(nums) < 2*k: return 0 
+        dp = [0]*k
+        dp[0] = 1
+        for x in nums: 
+            for i in range(k-1-x, -1, -1): 
+                dp[i+x] += dp[i]
+        return (pow(2, len(nums), mod) - 2*sum(dp)) % mod
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
