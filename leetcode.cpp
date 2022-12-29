@@ -45401,6 +45401,90 @@ public:
     }
 
 
+    /*2204. Distance to a Cycle in Undirected Graph (Hard)
+    You are given a positive integer n representing the number of nodes in a 
+    connected undirected graph containing exactly one cycle. The nodes are 
+    numbered from 0 to n - 1 (inclusive). You are also given a 2D integer array 
+    edges, where edges[i] = [node1i, node2i] denotes that there is a 
+    bidirectional edge connecting node1i and node2i in the graph. The distance 
+    between two nodes a and b is defined to be the minimum number of edges that 
+    are needed to go from a to b. Return an integer array answer of size n, 
+    where answer[i] is the minimum distance between the ith node and any node 
+    in the cycle.
+
+    Example 1:
+    Input: n = 7, edges = [[1,2],[2,4],[4,3],[3,1],[0,1],[5,2],[6,5]]
+    Output: [1,0,0,0,0,1,2]
+    Explanation: The nodes 1, 2, 3, and 4 form the cycle.
+                 The distance from 0 to 1 is 1.
+                 The distance from 1 to 1 is 0.
+                 The distance from 2 to 2 is 0.
+                 The distance from 3 to 3 is 0.
+                 The distance from 4 to 4 is 0.
+                 The distance from 5 to 2 is 1.
+                 The distance from 6 to 2 is 2.
+    
+    Example 2:
+    Input: n = 9, edges = [[0,1],[1,2],[0,2],[2,6],[6,7],[6,8],[0,3],[3,4],[3,5]]
+    Output: [0,0,0,1,2,2,1,2,2]
+    Explanation: The nodes 0, 1, and 2 form the cycle.
+                 The distance from 0 to 0 is 0.
+                 The distance from 1 to 1 is 0.
+                 The distance from 2 to 2 is 0.
+                 The distance from 3 to 1 is 1.
+                 The distance from 4 to 1 is 2.
+                 The distance from 5 to 1 is 2.
+                 The distance from 6 to 2 is 1.
+                 The distance from 7 to 2 is 2.
+                 The distance from 8 to 2 is 2.
+
+    Constraints:
+    * 3 <= n <= 10^5
+    * edges.length == n
+    * edges[i].length == 2
+    * 0 <= node1i, node2i <= n - 1
+    * node1i != node2i
+    * The graph is connected.
+    * The graph has exactly one cycle.
+    * There is at most one edge between any pair of vertices.*/
+
+    vector<int> distanceToCycle(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> graph(n); 
+        for (auto& e : edges) {
+            graph[e[0]].push_back(e[1]); 
+            graph[e[1]].push_back(e[0]); 
+        }
+        stack<int> stk; 
+        vector<int> degree(n); 
+        for (int u = 0; u < n; ++u) {
+            degree[u] = graph[u].size(); 
+            if (degree[u] == 1) stk.push(u); 
+        }
+        while (stk.size()) {
+            auto u = stk.top(); stk.pop(); 
+            for (auto& v : graph[u]) 
+                if (degree[v] > 1 && --degree[v] == 1) stk.push(v);  
+        }
+        vector<int> ans(n, -1); 
+        queue<int> q; 
+        for (int u = 0; u < n; ++u) 
+            if (degree[u] > 1) {
+                q.push(u); 
+                ans[u] = 0; 
+            }
+        for (int val = 1; q.size(); ++val) 
+            for (int sz = q.size(); sz; --sz) {
+                auto u = q.front(); q.pop(); 
+                for (auto& v : graph[u]) 
+                    if (ans[v] == -1) {
+                        q.push(v); 
+                        ans[v] = val; 
+                    }
+            }
+        return ans; 
+    }
+
+
     /*2214. Minimum Health to Beat Game (Medium)
     You are playing a game that has n levels numbered from 0 to n - 1. You are 
     given a 0-indexed integer array damage where damage[i] is the amount of 
