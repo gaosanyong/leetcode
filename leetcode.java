@@ -3028,6 +3028,170 @@ class Solution {
         }
         return ans; 
     }
+
+
+    /*2520. Count the Digits That Divide a Number (Easy)
+    Given an integer num, return the number of digits in num that divide num. 
+    An integer val divides nums if nums % val == 0.
+
+    Example 1:
+    Input: num = 7
+    Output: 1
+    Explanation: 7 divides itself, hence the answer is 1.
+
+    Example 2:
+    Input: num = 121
+    Output: 2
+    Explanation: 121 is divisible by 1, but not 2. Since 1 occurs twice as a 
+                 digit, we return 2.
+    
+    Example 3:
+    Input: num = 1248
+    Output: 4
+    Explanation: 1248 is divisible by all of its digits, hence the answer is 4.
+
+    Constraints:
+    * 1 <= num <= 10^9
+    * num does not contain 0 as one of its digits.*/
+
+    public int countDigits(int num) {
+        int ans = 0; 
+        for (int n = num; n > 0; n /= 10) 
+            if (num % (n % 10) == 0) ++ans; 
+        return ans; 
+    }
+
+
+    /*2521. Distinct Prime Factors of Product of Array (Medium)
+    Given an array of positive integers nums, return the number of distinct 
+    prime factors in the product of the elements of nums. Note that:
+    * A number greater than 1 is called prime if it is divisible by only 1 and 
+      itself.
+    * An integer val1 is a factor of another integer val2 if val2 / val1 is an 
+      integer.
+
+    Example 1:
+    Input: nums = [2,4,3,7,10,6]
+    Output: 4
+    Explanation: The product of all the elements in nums is: 
+                 2 * 4 * 3 * 7 * 10 * 6 = 10080 = 2^5 * 3^2 * 5 * 7.
+                 There are 4 distinct prime factors so we return 4.
+    
+    Example 2:
+    Input: nums = [2,4,8,16]
+    Output: 1
+    Explanation: The product of all the elements in nums is: 
+                 2 * 4 * 8 * 16 = 1024 = 2^10.
+                 There is 1 distinct prime factor so we return 1.
+
+    Constraints:
+    * 1 <= nums.length <= 10^4
+    * 2 <= nums[i] <= 1000*/
+
+    public int distinctPrimeFactors(int[] nums) {
+        HashSet<Integer> seen = new HashSet(); 
+        for (var x : nums) {
+            for (int f = 2; f <= Math.sqrt(x); ++f) 
+                for (; x % f == 0; x /= f) 
+                    seen.add(f); 
+            if (1 < x) seen.add(x);
+        }
+        return seen.size(); 
+    }
+
+
+    /*2522. Partition String Into Substrings With Values at Most K (Medium)
+    You are given a string s consisting of digits from 1 to 9 and an integer k.
+    A partition of a string s is called good if:
+    * Each digit of s is part of exactly one substring.
+    * The value of each substring is less than or equal to k.
+    Return the minimum number of substrings in a good partition of s. If no 
+    good partition of s exists, return -1. Note that:
+    * The value of a string is its result when interpreted as an integer. For 
+      example, the value of "123" is 123 and the value of "1" is 1.
+    * A substring is a contiguous sequence of characters within a string.
+
+    Example 1:
+    Input: s = "165462", k = 60
+    Output: 4
+    Explanation: We can partition the string into substrings "16", "54", "6", 
+                 and "2". Each substring has a value less than or equal to 
+                 k = 60. It can be shown that we cannot partition the string 
+                 into less than 4 substrings.
+    
+    Example 2:
+    Input: s = "238182", k = 5
+    Output: -1
+    Explanation: There is no good partition for this string.
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s[i] is a digit from '1' to '9'.
+    * 1 <= k <= 10^9*/
+
+    public int minimumPartition(String s, int k) {
+        int ans = 1; 
+        long val = 0; 
+        for (var ch : s.toCharArray()) {
+            if (10*val + (ch - '0') > k) {
+                ++ans; 
+                val = 0; 
+            }
+            val = 10*val + (ch - '0'); 
+            if (val > k) return -1; 
+        }
+        return ans; 
+    }
+
+
+    /*2523. Closest Prime Numbers in Range (Medium)
+    Given two positive integers left and right, find the two integers num1 and 
+    num2 such that:
+    * left <= nums1 < nums2 <= right .
+    * nums1 and nums2 are both prime numbers.
+    * nums2 - nums1 is the minimum amongst all other pairs satisfying the above 
+      conditions.
+    Return the positive integer array ans = [nums1, nums2]. If there are 
+    multiple pairs satisfying these conditions, return the one with the minimum 
+    nums1 value or [-1, -1] if such numbers do not exist. A number greater than 
+    1 is called prime if it is only divisible by 1 and itself.
+
+    Example 1:
+    Input: left = 10, right = 19
+    Output: [11,13]
+    Explanation: The prime numbers between 10 and 19 are 11, 13, 17, and 19. 
+                 The closest gap between any pair is 2, which can be achieved 
+                 by [11,13] or [17,19]. Since 11 is smaller than 17, we return 
+                 the first pair.
+    
+    Example 2:
+    Input: left = 4, right = 6
+    Output: [-1,-1]
+    Explanation: There exists only one prime number in the given range, so the 
+                 conditions cannot be satisfied.
+
+    Constraints: 1 <= left <= right <= 10^6*/
+
+    public int[] closestPrimes(int left, int right) {
+        boolean[] sieve = new boolean[right+1]; 
+        Arrays.fill(sieve, true); 
+        sieve[0] = sieve[1] = false; 
+        for (int x = 2; x <= Math.sqrt(right); ++x) 
+            if (sieve[x]) 
+                for (int xx = x*x; xx <= right; xx +=x) 
+                    sieve[xx] = false; 
+        int[] ans = {-1, -1}; 
+        int prev = 0, least = Integer.MAX_VALUE; 
+        for (int x = left; x <= right; ++x) 
+            if (sieve[x]) {
+                if (prev > 0 && x - prev < least) {
+                    ans = new int[]{prev, x}; 
+                    least = x - prev; 
+                }
+                prev = x; 
+            }
+        return ans; 
+    }
 }
 
 
