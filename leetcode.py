@@ -71596,13 +71596,14 @@ class SegTree:
         freq = [0] * 3
         ans = inf 
         ii = 0 
+        n = len(s)
         for i, ch in enumerate(s+s): 
             freq[ord(ch)-97] += 1
-            while min(freq) == k: 
-                if ii <= len(s) and i >= len(s)-1 and i-ii < len(s): ans = min(ans, i-ii+1)
-                freq[ord(s[ii % len(s)])-97] -= 1
+            while ii < n and i >= n-1 and freq[ord(s[ii])-97] > k and min(freq) >= k:  
+                ans = min(ans, i-ii)
+                freq[ord(s[ii])-97] -= 1
                 ii += 1
-        return ans if ans < inf else -1 
+        return ans if ans <= len(s) else -1 
 
 
     """2517. Maximum Tastiness of Candy Basket (Medium)

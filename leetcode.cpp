@@ -50825,12 +50825,12 @@ public:
         vector<int> freq(3); 
         for (int i = 0, ii = 0, n = s.size(); i < 2*n; ++i) {
             ++freq[s[i%n] - 'a']; 
-            while (*min_element(freq.begin(), freq.end()) == k) {
-                if (ii <= n && i >= n-1 && i-ii < n) ans = min(ans, i-ii+1); 
-                --freq[s[ii++%n] - 'a']; 
+            while (ii < n && i >= n-1 && freq[s[ii]-'a'] > k && *min_element(freq.begin(), freq.end()) >= k) {
+                ans = min(ans, i-ii); 
+                --freq[s[ii++] - 'a']; 
             }
         }
-        return ans < INT_MAX ? ans : -1; 
+        return ans <= s.size() ? ans : -1; 
     }
 
 

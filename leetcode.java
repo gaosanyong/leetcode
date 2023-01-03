@@ -2878,12 +2878,12 @@ class Solution {
         int[] freq= new int[3]; 
         for (int i = 0, ii = 0, n = s.length(); i < 2*n; ++i) {
             ++freq[s.charAt(i % n) - 'a']; 
-            while (freq[0] >= k && freq[1] >= k && freq[2] >= k) {
-                if (ii <= n && i >= n-1 && i-ii < n) ans = Math.min(ans, i-ii+1); 
-                --freq[s.charAt(ii++ % n) - 'a']; 
+            while (ii < n && i >= n-1 && freq[s.charAt(ii)-'a'] > k && freq[0] >= k && freq[1] >= k && freq[2] >= k) {
+                ans = Math.min(ans, i-ii); 
+                --freq[s.charAt(ii++) - 'a']; 
             }
         }
-        return ans < Integer.MAX_VALUE ? ans : -1; 
+        return ans <= s.length() ? ans : -1; 
     }
 
 
