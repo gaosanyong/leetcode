@@ -46109,6 +46109,72 @@ public:
     }
 
 
+    /*2307. Check for Contradictions in Equations (Hard)
+    You are given a 2D array of strings equations and an array of real numbers 
+    values, where equations[i] = [Ai, Bi] and values[i] means that 
+    Ai / Bi = values[i]. Determine if there exists a contradiction in the 
+    equations. Return true if there is a contradiction, or false otherwise.
+
+    Note:
+    * When checking if two numbers are equal, check that their absolute 
+      difference is less than 10-5.
+    * The testcases are generated such that there are no cases targeting 
+      precision, i.e. using double is enough to solve the problem.
+
+    Example 1:
+    Input: equations = [["a","b"],["b","c"],["a","c"]], values = [3,0.5,1.5]
+    Output: false
+    Explanation: The given equations are: a / b = 3, b / c = 0.5, a / c = 1.5 
+                 There are no contradictions in the equations. One possible 
+                 assignment to satisfy all equations is: a = 3, b = 1 and c = 2.
+    
+    Example 2:
+    Input: equations = [["le","et"],["le","code"],["code","et"]], values = [2,5,0.5]
+    Output: true
+    Explanation: The given equations are: le / et = 2, le / code = 5, 
+                 code / et = 0.5 Based on the first two equations, we get 
+                 code / et = 0.4. Since the third equation is 
+                 code / et = 0.5, we get a contradiction.
+
+    Constraints:
+    * 1 <= equations.length <= 100
+    * equations[i].length == 2
+    * 1 <= Ai.length, Bi.length <= 5
+    * Ai, Bi consist of lowercase English letters.
+    * equations.length == values.length
+    * 0.0 < values[i] <= 10.0
+    * values[i] has a maximum of 2 decimal places.*/
+
+    bool checkContradictions(vector<vector<string>>& equations, vector<double>& values) {
+        unordered_set<string> node; 
+        unordered_map<string, vector<pair<string, double>>> graph; 
+        for (int i = 0; i < equations.size(); ++i) {
+            string u = equations[i][0], v = equations[i][1]; 
+            node.insert(u); 
+            node.insert(v); 
+            graph[u].emplace_back(v, values[i]); 
+            graph[v].emplace_back(u, 1/values[i]); 
+        }
+        unordered_map<string, double> vals; 
+        for (auto& u : node) 
+            if (!vals.count(u)) {
+                stack<string> stk; stk.push(u); 
+                vals[u] = 1; 
+                while (stk.size()) {
+                    auto u = stk.top(); stk.pop(); 
+                    for (auto [v, w] : graph[u]) 
+                        if (vals.count(v)) {
+                            if (abs(vals[v] - vals[u]/w) > 1e-5*vals[v]) return true; 
+                        } else {
+                            stk.push(v); 
+                            vals[v] = vals[u]/w; 
+                        }
+                }
+            }
+        return false; 
+    }
+
+
     /*2313. Minimum Flips in Binary Tree to Get Result (Hard)
     You are given the root of a binary tree with the following properties:
     * Leaf nodes have either the value 0 or 1, representing false and true 

@@ -1455,6 +1455,77 @@ class Solution {
     }
 
 
+    /*2307. Check for Contradictions in Equations (Hard)
+    You are given a 2D array of strings equations and an array of real numbers 
+    values, where equations[i] = [Ai, Bi] and values[i] means that 
+    Ai / Bi = values[i]. Determine if there exists a contradiction in the 
+    equations. Return true if there is a contradiction, or false otherwise.
+
+    Note:
+    * When checking if two numbers are equal, check that their absolute 
+      difference is less than 10-5.
+    * The testcases are generated such that there are no cases targeting 
+      precision, i.e. using double is enough to solve the problem.
+
+    Example 1:
+    Input: equations = [["a","b"],["b","c"],["a","c"]], values = [3,0.5,1.5]
+    Output: false
+    Explanation: The given equations are: a / b = 3, b / c = 0.5, a / c = 1.5 
+                 There are no contradictions in the equations. One possible 
+                 assignment to satisfy all equations is: a = 3, b = 1 and c = 2.
+    
+    Example 2:
+    Input: equations = [["le","et"],["le","code"],["code","et"]], values = [2,5,0.5]
+    Output: true
+    Explanation: The given equations are: le / et = 2, le / code = 5, 
+                 code / et = 0.5 Based on the first two equations, we get 
+                 code / et = 0.4. Since the third equation is 
+                 code / et = 0.5, we get a contradiction.
+
+    Constraints:
+    * 1 <= equations.length <= 100
+    * equations[i].length == 2
+    * 1 <= Ai.length, Bi.length <= 5
+    * Ai, Bi consist of lowercase English letters.
+    * equations.length == values.length
+    * 0.0 < values[i] <= 10.0
+    * values[i] has a maximum of 2 decimal places.*/
+
+    public boolean checkContradictions(List<List<String>> equations, double[] values) {
+        Set<String> node = new HashSet(); 
+        Map<String, List<Pair<String, Double>>> graph = new HashMap(); 
+        for (int i = 0; i < equations.size(); ++i) {
+            String u = equations.get(i).get(0), v = equations.get(i).get(1); 
+            node.add(u); 
+            node.add(v); 
+            if (!graph.containsKey(u)) graph.put(u, new ArrayList()); 
+            if (!graph.containsKey(v)) graph.put(v, new ArrayList()); 
+            graph.get(u).add(new Pair(v, values[i])); 
+            graph.get(v).add(new Pair(u, 1/values[i])); 
+        }
+        Map<String, Double> vals = new HashMap(); 
+        for (var u : node) 
+            if (!vals.containsKey(u)) {
+                Stack<String> stk = new Stack(); stk.push(u); 
+                vals.put(u, 1.); 
+                while (!stk.isEmpty()) {
+                    var x = stk.pop(); 
+                    for (var elem : graph.get(x)) {
+                        String v = elem.getKey(); 
+                        Double w = elem.getValue(); 
+                        if (vals.containsKey(v)) {
+                            if (Math.abs(vals.get(v) - vals.get(x)/w) > 1e-5*vals.get(v)) return true; 
+                        } else {
+                            stk.push(v); 
+                            vals.put(v, vals.get(x)/w); 
+                        }
+                    }
+                }
+            }
+        return false; 
+    }
+
+
     /*2481. Minimum Cuts to Divide a Circle (Easy)
     A valid cut in a circle can be:
     * A cut that is represented by a straight line that touches two points on 
