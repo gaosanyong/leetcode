@@ -672,6 +672,43 @@ class Solution {
     }
 
 
+    /*1063. Number of Valid Subarrays (Hard)
+    Given an integer array nums, return the number of non-empty subarrays with 
+    the leftmost element of the subarray not larger than other elements in the 
+    subarray. A subarray is a contiguous part of an array.
+
+    Example 1:
+    Input: nums = [1,4,2,5,3]
+    Output: 11
+    Explanation: There are 11 valid subarrays: [1],[4],[2],[5],[3],[1,4],[2,5],
+                 [1,4,2],[2,5,3],[1,4,2,5],[1,4,2,5,3].
+    
+    Example 2:
+    Input: nums = [3,2,1]
+    Output: 3
+    Explanation: The 3 valid subarrays are: [3],[2],[1].
+
+    Example 3:
+    Input: nums = [2,2,2]
+    Output: 6
+    Explanation: There are 6 valid subarrays: [2],[2],[2],[2,2],[2,2],[2,2,2].
+
+    Constraints:
+    * 1 <= nums.length <= 5 * 10^4
+    * 0 <= nums[i] <= 10^5*/
+
+    public int validSubarrays(int[] nums) {
+        int ans = 0; 
+        Stack<Integer> stk = new Stack(); 
+        for (var x : nums) {
+            while (!stk.isEmpty() && stk.peek() > x) stk.pop(); 
+            stk.push(x); 
+            ans += stk.size(); 
+        }
+        return ans; 
+    }
+
+
     /*1962. Remove Stones to Minimize the Total (Medium)
     You are given a 0-indexed integer array piles, where piles[i] represents 
     the number of stones in the ith pile, and an integer k. You should apply 
