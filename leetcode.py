@@ -72126,6 +72126,155 @@ class SegTree:
         return ans 
 
 
+    """2525. Categorize Box According to Criteria (Easy)
+    Given four integers length, width, height, and mass, representing the 
+    dimensions and mass of a box, respectively, return a string representing 
+    the category of the box. 
+    * The box is "Bulky" if:
+      + Any of the dimensions of the box is greater or equal to 104.
+      + Or, the volume of the box is greater or equal to 109.
+    * If the mass of the box is greater or equal to 100, it is "Heavy".
+    * If the box is both "Bulky" and "Heavy", then its category is "Both".
+    * If the box is neither "Bulky" nor "Heavy", then its category is "Neither".
+    * If the box is "Bulky" but not "Heavy", then its category is "Bulky".
+    * If the box is "Heavy" but not "Bulky", then its category is "Heavy".
+    Note that the volume of the box is the product of its length, width and 
+    height.
+
+    Example 1:
+    Input: length = 1000, width = 35, height = 700, mass = 300
+    Output: "Heavy"
+    Explanation: None of the dimensions of the box is greater or equal to 10^4. 
+                 Its volume = 24500000 <= 109. So it cannot be categorized as 
+                 "Bulky". However mass >= 100, so the box is "Heavy". Since the 
+                 box is not "Bulky" but "Heavy", we return "Heavy". 
+    
+    Example 2:
+    Input: length = 200, width = 50, height = 800, mass = 50
+    Output: "Neither"
+    Explanation: None of the dimensions of the box is greater or equal to 10^4.
+                 Its volume = 8 * 106 <= 109. So it cannot be categorized as 
+                 "Bulky". Its mass is also less than 100, so it cannot be 
+                 categorized as "Heavy" either.  Since its neither of the two 
+                 above categories, we return "Neither".
+
+    Constraints:
+    * 1 <= length, width, height <= 10^5
+    * 1 <= mass <= 10^3"""
+
+    def categorizeBox(self, length: int, width: int, height: int, mass: int) -> str:
+        bulky = max(length, width, height) >= 1e4 or length*width*height >= 1e9
+        heavy = mass >= 100 
+        if bulky and heavy: return "Both"
+        if bulky: return "Bulky"
+        if heavy: return "Heavy"
+        return "Neither"
+
+
+    """2527. Find Xor-Beauty of Array (Medium)
+    You are given a 0-indexed integer array nums. The effective value of three 
+    indices i, j, and k is defined as ((nums[i] | nums[j]) & nums[k]). The xor-
+    beauty of the array is the XORing of the effective values of all the 
+    possible triplets of indices (i, j, k) where 0 <= i, j, k < n. Return the 
+    xor-beauty of nums. Note that:
+    * val1 | val2 is bitwise OR of val1 and val2.
+    * val1 & val2 is bitwise AND of val1 and val2.
+
+    Example 1:
+    Input: nums = [1,4]
+    Output: 5
+    Explanation: The triplets and their corresponding effective values are 
+                 listed below:
+                 - (0,0,0) with effective value ((1 | 1) & 1) = 1
+                 - (0,0,1) with effective value ((1 | 1) & 4) = 0
+                 - (0,1,0) with effective value ((1 | 4) & 1) = 1
+                 - (0,1,1) with effective value ((1 | 4) & 4) = 4
+                 - (1,0,0) with effective value ((4 | 1) & 1) = 1
+                 - (1,0,1) with effective value ((4 | 1) & 4) = 4
+                 - (1,1,0) with effective value ((4 | 4) & 1) = 0
+                 - (1,1,1) with effective value ((4 | 4) & 4) = 4 
+                 Xor-beauty of array will be bitwise XOR of all beauties = 
+                 1 ^ 0 ^ 1 ^ 4 ^ 1 ^ 4 ^ 0 ^ 4 = 5.
+    
+    Example 2:
+    Input: nums = [15,45,20,2,34,35,5,44,32,30]
+    Output: 34
+    Explanation: The xor-beauty of the given array is 34.
+
+    Constraints:
+    1 <= nums.length <= 10^5
+    1 <= nums[i] <= 10^9"""
+
+    def xorBeauty(self, nums: List[int]) -> int:
+        return (lambda x: (x|x)&x)(reduce(xor, nums))
+
+
+    """2528. Maximize the Minimum Powered City (Hard)
+    You are given a 0-indexed integer array stations of length n, where 
+    stations[i] represents the number of power stations in the ith city. Each 
+    power station can provide power to every city in a fixed range. In other 
+    words, if the range is denoted by r, then a power station at city i can 
+    provide power to all cities j such that |i - j| <= r and 0 <= i, j <= n - 1.
+    * Note that |x| denotes absolute value. For example, |7 - 5| = 2 and 
+      |3 - 10| = 7.
+    The power of a city is the total number of power stations it is being 
+    provided power from. The government has sanctioned building k more power 
+    stations, each of which can be built in any city, and have the same range 
+    as the pre-existing ones. Given the two integers r and k, return the 
+    maximum possible minimum power of a city, if the additional power stations 
+    are built optimally. Note that you can build the k power stations in 
+    multiple cities.
+
+    Example 1:
+    Input: stations = [1,2,4,5,0], r = 1, k = 2
+    Output: 5
+    Explanation: One of the optimal ways is to install both the power stations 
+                 at city 1. So stations will become [1,4,4,5,0].
+                 - City 0 is provided by 1 + 4 = 5 power stations.
+                 - City 1 is provided by 1 + 4 + 4 = 9 power stations.
+                 - City 2 is provided by 4 + 4 + 5 = 13 power stations.
+                 - City 3 is provided by 5 + 4 = 9 power stations.
+                 - City 4 is provided by 5 + 0 = 5 power stations.
+                 So the minimum power of a city is 5. Since it is not possible 
+                 to obtain a larger power, we return 5.
+    
+    Example 2:
+    Input: stations = [4,4,4,4], r = 0, k = 3
+    Output: 4
+    Explanation: It can be proved that we cannot make the minimum power of a 
+                 city greater than 4.
+
+    Constraints:
+    * n == stations.length
+    * 1 <= n <= 10^5
+    * 0 <= stations[i] <= 10^5
+    * 0 <= r <= n - 1
+    * 0 <= k <= 10^9"""
+
+    def maxPower(self, stations: List[int], r: int, k: int) -> int:
+        n = len(stations)
+        lo, hi = 0, sum(stations)+k
+        while lo < hi: 
+            mid = lo + hi + 1 >> 1
+            ok = True 
+            kk = k 
+            ss = stations.copy()
+            prefix = 0 
+            for i in range(n+r): 
+                if i < n: prefix += ss[i]
+                if i >= 2*r+1: prefix -= ss[i-2*r-1]
+                if i >= r and prefix < mid: 
+                    if kk < mid - prefix: 
+                        ok = False
+                        break 
+                    kk -= mid - prefix 
+                    if i < n: ss[i] += mid - prefix
+                    prefix = mid
+            if ok: lo = mid
+            else: hi = mid - 1
+        return lo
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -77651,3 +77800,44 @@ class Allocator:
                 ans += 1
                 self.memory[i] = 0 
         return ans 
+
+
+"""2526. Find Consecutive Integers from a Data Stream (Medium)
+For a stream of integers, implement a data structure that checks if the last k 
+integers parsed in the stream are equal to value. Implement the DataStream 
+class:
+* DataStream(int value, int k) Initializes the object with an empty integer 
+  stream and the two integers value and k.
+* boolean consec(int num) Adds num to the stream of integers. Returns true if 
+  the last k integers are equal to value, and false otherwise. If there are 
+  less than k integers, the condition does not hold true, so returns false.
+
+Example 1:
+Input: ["DataStream", "consec", "consec", "consec", "consec"]
+       [[4, 3], [4], [4], [4], [3]]
+Output: [null, false, false, true, false]
+Explanation: 
+DataStream dataStream = new DataStream(4, 3); //value = 4, k = 3 
+dataStream.consec(4); // Only 1 integer is parsed, so returns False. 
+dataStream.consec(4); // Only 2 integers are parsed.
+                      // Since 2 is less than k, returns False. 
+dataStream.consec(4); // The 3 integers parsed are all equal to value, so returns True. 
+dataStream.consec(3); // The last k integers parsed in the stream are [4,4,3].
+                      // Since 3 is not equal to value, it returns False.
+ 
+Constraints:
+* 1 <= value, num <= 10^9
+* 1 <= k <= 10^5
+* At most 10^5 calls will be made to consec."""
+
+class DataStream:
+
+    def __init__(self, value: int, k: int):
+        self.value = value
+        self.k = k 
+        self.cnt = 0
+
+    def consec(self, num: int) -> bool:
+        if num == self.value: self.cnt += 1
+        else: self.cnt = 0 
+        return self.cnt >= self.k 
