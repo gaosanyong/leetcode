@@ -5105,16 +5105,15 @@ class Solution:
             freq = defaultdict(int)
             for ii in range(i+1, len(points)): 
                 xx, yy = points[ii]
-                if x == xx: dx, dy = 0, 1
-                elif y == yy: dx, dy = 1, 0
-                else: 
-                    dx, dy = xx-x, yy-y
-                    g = gcd(dx, dy)
-                    if dx < 0: g *= -1
-                    dx, dy = dx//g, dy//g
+                dx, dy = xx-x, yy-y
+                g = gcd(dx, dy)
+                dx, dy = dx//g, dy//g
+                if dx < 0 or dx == 0 and dy < 0: 
+                    dx *= -1
+                    dy *= -1
                 freq[dx, dy] += 1
-            ans = max(ans, max(freq.values(), default=0))
-        return 1 + ans
+            ans = max(ans, 1 + max(freq.values(), default=0))
+        return ans
 
 
     """150. Evaluate Reverse Polish Notation (Medium)

@@ -511,6 +511,47 @@ class Solution {
     }
 
 
+    /*149. Max Points on a Line (Hard)
+    Given an array of points where points[i] = [xi, yi] represents a point on 
+    the X-Y plane, return the maximum number of points that lie on the same 
+    straight line.
+
+    Example 1:
+    Input: points = [[1,1],[2,2],[3,3]]
+    Output: 3
+
+    Example 2:
+    Input: points = [[1,1],[3,2],[5,3],[4,1],[2,3],[1,4]]
+    Output: 4
+
+    Constraints:
+    * 1 <= points.length <= 300
+    * points[i].length == 2
+    * -10^4 <= xi, yi <= 10^4
+    * All the points are unique.*/
+
+    public int maxPoints(int[][] points) {
+        int ans = 1; 
+        for (int i = 0, n = points.length; i < n; ++i) {
+            int x = points[i][0], y = points[i][1]; 
+            Map<Pair<Integer, Integer>, Integer> freq = new HashMap(); 
+            for (int ii = i+1; ii < n; ++ii) {
+                int dx = points[i][0] - points[ii][0], dy = points[i][1] - points[ii][1], g = dx; 
+                for(int gg = dy; gg != 0; ) {
+                    int tmp = g; g = gg; gg = tmp % gg; 
+                }
+                dx /= g; 
+                dy /= g; 
+                if (dx == 0) dy = Math.abs(dy); 
+                var p = new Pair(dx, dy); 
+                freq.merge(p, 1, Integer::sum); 
+                ans = Math.max(ans, freq.get(p) + 1); 
+            }
+        }
+        return ans; 
+    }
+
+
     /*452. Minimum Number of Arrows to Burst Balloons (Medium)
     There are some spherical balloons taped onto a flat wall that represents 
     the XY-plane. The balloons are represented as a 2D integer array points 

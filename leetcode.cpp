@@ -4566,9 +4566,8 @@ public:
             map<pair<int, int>, int> freq; 
             for (int j = i+1; j < points.size(); ++j) {
                 int dx = points[j][0] - points[i][0], dy = points[j][1] - points[i][1], g = gcd(dx, dy); 
-                if (g) dx /= g, dy /= g; 
-                if (dx < 0) dx *= -1, dy *= -1; 
-                else if (dx == 0) dy = abs(dy); 
+                dx /= g, dy /= g; 
+                if (dx < 0 || dx == 0 && dy < 0) dx *= -1, dy *= -1; 
                 ans = max(ans, ++freq[{dx, dy}] + 1); 
             }
         }
