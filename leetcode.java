@@ -511,6 +511,43 @@ class Solution {
     }
 
 
+    /*144. Binary Tree Preorder Traversal (Easy)
+    Given the root of a binary tree, return the preorder traversal of its nodes' 
+    values.
+
+    Example 1:
+    Input: root = [1,null,2,3]
+    Output: [1,2,3]
+
+    Example 2:
+    Input: root = []
+    Output: []
+
+    Example 3:
+    Input: root = [1]
+    Output: [1]
+
+    Constraints:
+    * The number of nodes in the tree is in the range [0, 100].
+    * -100 <= Node.val <= 100
+
+    Follow up: Recursive solution is trivial, could you do it iteratively?*/
+
+    public List<Integer> preorderTraversal(TreeNode root) {
+        List<Integer> ans = new ArrayList(); 
+        Stack<TreeNode> stk = new Stack(); stk.push(root); 
+        while (!stk.isEmpty()) {
+            var node = stk.pop(); 
+            if (node != null) {
+                ans.add(node.val); 
+                if (node.right != null) stk.push(node.right); 
+                if (node.left != null) stk.push(node.left); 
+            }
+        }
+        return ans;
+    }
+
+
     /*149. Max Points on a Line (Hard)
     Given an array of points where points[i] = [xi, yi] represents a point on 
     the X-Y plane, return the maximum number of points that lie on the same 
