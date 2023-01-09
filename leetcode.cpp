@@ -2535,9 +2535,9 @@ public:
     * -10^9 <= nums1[i], nums2[i] <= 10^9*/
 
     void merge(vector<int>& nums1, int m, vector<int>& nums2, int n) {
-        for (int k = m+n-1, i = m-1, j = n-1; j >= 0; --k) 
-            if (i >= 0 && nums1[i] >= nums2[j]) nums1[k] = nums1[i--]; 
-            else nums1[k] = nums2[j--]; 
+        while (n) 
+            if (m && nums1[m-1] >= nums2[n-1]) nums1[m+n] = nums1[--m]; 
+            else nums1[m+n] = nums2[--n]; 
     }
 
 
