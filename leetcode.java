@@ -3691,6 +3691,264 @@ class Solution {
         }
         return lo; 
     }
+
+
+    /*2529. Maximum Count of Positive Integer and Negative Integer (Easy)
+    Given an array nums sorted in non-decreasing order, return the maximum 
+    between the number of positive integers and the number of negative integers.
+    In other words, if the number of positive integers in nums is pos and the 
+    number of negative integers is neg, then return the maximum of pos and neg.
+    Note that 0 is neither positive nor negative.
+
+    Example 1:
+    Input: nums = [-2,-1,-1,1,2,3]
+    Output: 3
+    Explanation: There are 3 positive integers and 3 negative integers. The 
+                 maximum count among them is 3.
+    
+    Example 2:
+    Input: nums = [-3,-2,-1,0,0,1,2]
+    Output: 3
+    Explanation: There are 2 positive integers and 3 negative integers. The 
+                 maximum count among them is 3.
+    
+    Example 3:
+    Input: nums = [5,20,66,1314]
+    Output: 4
+    Explanation: There are 4 positive integers and 0 negative integers. The 
+                 maximum count among them is 4.
+
+    Constraints:
+    * 1 <= nums.length <= 2000
+    * -2000 <= nums[i] <= 2000
+    * nums is sorted in a non-decreasing order.
+
+    private static int bisect_left(int[] nums, int target) {
+        int lo = 0, hi = nums.length; 
+        while (lo < hi) {
+            int mid = lo + (hi - lo)/2; 
+            if (nums[mid] < target) lo = mid+1; 
+            else hi = mid; 
+        }
+        return lo; 
+    }*/
+    
+    public int maximumCount(int[] nums) {
+        int neg = bisect_left(nums, 0), pos = nums.length - bisect_left(nums, 1); 
+        return Math.max(neg, pos); 
+    }
+
+
+    /*2530. Maximal Score After Applying K Operations (Medium)
+    You are given a 0-indexed integer array nums and an integer k. You have a 
+    starting score of 0. In one operation:
+    * choose an index i such that 0 <= i < nums.length,
+    * increase your score by nums[i], and
+    * replace nums[i] with ceil(nums[i] / 3).
+    Return the maximum possible score you can attain after applying exactly k 
+    operations. The ceiling function ceil(val) is the least integer greater 
+    than or equal to val.
+
+    Example 1:
+    Input: nums = [10,10,10,10,10], k = 5
+    Output: 50
+    Explanation: Apply the operation to each array element exactly once. The 
+                 final score is 10 + 10 + 10 + 10 + 10 = 50.
+    
+    Example 2:
+    Input: nums = [1,10,3,3,3], k = 3
+    Output: 17
+    Explanation: You can do the following operations:
+                 Operation 1: Select i = 1, so nums becomes [1,4,3,3,3]. Your 
+                              score increases by 10.
+                 Operation 2: Select i = 1, so nums becomes [1,2,3,3,3]. Your 
+                              score increases by 4.
+                 Operation 3: Select i = 2, so nums becomes [1,1,1,3,3]. Your 
+                              score increases by 3.
+                 The final score is 10 + 4 + 3 = 17.
+
+    Constraints:
+    * 1 <= nums.length, k <= 10^5
+    * 1 <= nums[i] <= 10^9*/
+
+    public long maxKelements(int[] nums, int k) {
+        long ans = 0; 
+        PriorityQueue<Integer> pq = new PriorityQueue(Collections.reverseOrder()); 
+        for (int x : nums) pq.add(x); 
+        while (k-- > 0) {
+            int val = pq.poll(); 
+            ans += val; 
+            pq.add((val+2)/3); 
+        }
+        return ans; 
+    }
+
+
+    /*2531. Make Number of Distinct Characters Equal (Medium)
+    You are given two 0-indexed strings word1 and word2. A move consists of 
+    choosing two indices i and j such that 0 <= i < word1.length and 
+    0 <= j < word2.length and swapping word1[i] with word2[j]. Return true if 
+    it is possible to get the number of distinct characters in word1 and word2 
+    to be equal with exactly one move. Return false otherwise.
+
+    Example 1:
+    Input: word1 = "ac", word2 = "b"
+    Output: false
+    Explanation: Any pair of swaps would yield two distinct characters in the 
+                 first string, and one in the second string.
+    
+    Example 2:
+    Input: word1 = "abcc", word2 = "aab"
+    Output: true
+    Explanation: We swap index 2 of the first string with index 0 of the second 
+                 string. The resulting strings are word1 = "abac" and 
+                 word2 = "cab", which both have 3 distinct characters.
+    
+    Example 3:
+    Input: word1 = "abcde", word2 = "fghij"
+    Output: true
+    Explanation: Both resulting strings will have 5 distinct characters, 
+                 regardless of which indices we swap.
+
+    Constraints:
+    * 1 <= word1.length, word2.length <= 10^5
+    * word1 and word2 consist of only lowercase English letters.*/
+
+    public boolean isItPossible(String word1, String word2) {
+        HashMap<Character, Integer> freq1 = new HashMap(), freq2 = new HashMap(); 
+        for (var ch : word1.toCharArray()) freq1.merge(ch, 1, Integer::sum); 
+        for (var ch : word2.toCharArray()) freq2.merge(ch, 1, Integer::sum); 
+        int sz1 = freq1.size(), sz2 = freq2.size(); 
+        for (char c1 = 'a'; c1 <= 'z'; ++c1) 
+            for (char c2 = 'a'; c2 <= 'z'; ++c2) 
+                if (freq1.getOrDefault(c1, 0) > 0 && freq2.getOrDefault(c2, 0) > 0) 
+                    if (c1 == c2) {
+                        if (sz1 == sz2) return true; 
+                    } else {
+                        int cnt1 = sz1, cnt2 = sz2; 
+                        if (freq1.getOrDefault(c1, 0) == 1) --cnt1; 
+                        if (freq1.getOrDefault(c2, 0) == 0) ++cnt1; 
+                        if (freq2.getOrDefault(c1, 0) == 0) ++cnt2; 
+                        if (freq2.getOrDefault(c2, 0) == 1) --cnt2; 
+                        if (cnt1 == cnt2) return true; 
+                    }
+        return false; 
+    }
+
+
+    /*2532. Time to Cross a Bridge (Hard)
+    There are k workers who want to move n boxes from an old warehouse to a new 
+    one. You are given the two integers n and k, and a 2D integer array time of 
+    size k x 4 where time[i] = [leftToRighti, pickOldi, rightToLefti, putNewi].
+    The warehouses are separated by a river and connected by a bridge. The old 
+    warehouse is on the right bank of the river, and the new warehouse is on 
+    the left bank of the river. Initially, all k workers are waiting on the 
+    left side of the bridge. To move the boxes, the ith worker (0-indexed) can :
+    * Cross the bridge from the left bank (new warehouse) to the right bank 
+      (old warehouse) in leftToRighti minutes.
+    * Pick a box from the old warehouse and return to the bridge in pickOldi 
+      minutes. Different workers can pick up their boxes simultaneously.
+    * Cross the bridge from the right bank (old warehouse) to the left bank 
+      (new warehouse) in rightToLefti minutes.
+    * Put the box in the new warehouse and return to the bridge in putNewi 
+      minutes. Different workers can put their boxes simultaneously.
+    A worker i is less efficient than a worker j if either condition is met:
+    * leftToRighti + rightToLefti > leftToRightj + rightToLeftj
+    * leftToRighti + rightToLefti == leftToRightj + rightToLeftj and i > j
+    The following rules regulate the movement of the workers through the bridge :
+    * If a worker x reaches the bridge while another worker y is crossing the 
+      bridge, x waits at their side of the bridge.
+    * If the bridge is free, the worker waiting on the right side of the bridge 
+      gets to cross the bridge. If more than one worker is waiting on the right 
+      side, the one with the lowest efficiency crosses first.
+    * If the bridge is free and no worker is waiting on the right side, and at 
+      least one box remains at the old warehouse, the worker on the left side 
+      of the river gets to cross the bridge. If more than one worker is waiting 
+      on the left side, the one with the lowest efficiency crosses first.
+    Return the instance of time at which the last worker reaches the left bank 
+    of the river after all n boxes have been put in the new warehouse.
+
+    Example 1:
+    Input: n = 1, k = 3, time = [[1,1,2,1],[1,1,3,1],[1,1,4,1]]
+    Output: 6
+    Explanation: From 0 to 1: worker 2 crosses the bridge from the left bank to 
+                              the right bank.
+                 From 1 to 2: worker 2 picks up a box from the old warehouse.
+                 From 2 to 6: worker 2 crosses the bridge from the right bank 
+                              to the left bank.
+                 From 6 to 7: worker 2 puts a box at the new warehouse.
+                 The whole process ends after 7 minutes. We return 6 because 
+                 the problem asks for the instance of time at which the last 
+                 worker reaches the left bank.
+    
+    Example 2:
+    Input: n = 3, k = 2, time = [[1,9,1,8],[10,10,10,10]]
+    Output: 50
+    Explanation: From 0  to 10: worker 1 crosses the bridge from the left bank 
+                                to the right bank.
+                 From 10 to 20: worker 1 picks up a box from the old warehouse.
+                 From 10 to 11: worker 0 crosses the bridge from the left bank 
+                                to the right bank.
+                 From 11 to 20: worker 0 picks up a box from the old warehouse.
+                 From 20 to 30: worker 1 crosses the bridge from the right bank 
+                                to the left bank.
+                 From 30 to 40: worker 1 puts a box at the new warehouse.
+                 From 30 to 31: worker 0 crosses the bridge from the right bank 
+                                to the left bank.
+                 From 31 to 39: worker 0 puts a box at the new warehouse.
+                 From 39 to 40: worker 0 crosses the bridge from the left bank 
+                                to the right bank.
+                 From 40 to 49: worker 0 picks up a box from the old warehouse.
+                 From 49 to 50: worker 0 crosses the bridge from the right bank 
+                                to the left bank.
+                 From 50 to 58: worker 0 puts a box at the new warehouse.
+                 The whole process ends after 58 minutes. We return 50 because 
+                 the problem asks for the instance of time at which the last 
+                 worker reaches the left bank.
+
+    Constraints:
+    * 1 <= n, k <= 10^4
+    * time.length == k
+    * time[i].length == 4
+    * 1 <= leftToRighti, pickOldi, rightToLefti, putNewi <= 1000*/
+
+    public int findCrossingTime(int n, int k, int[][] time) {
+        int ans = 0, free = 0; 
+        PriorityQueue<int[]> l = new PriorityQueue<>((a, b)->(a[0]-b[0])); 
+        PriorityQueue<int[]> r = new PriorityQueue<>((a, b)->(a[0]-b[0])); 
+        PriorityQueue<int[]> ll = new PriorityQueue<>((a, b)->(a[0] != b[0] ? b[0]-a[0] : b[1]-a[1]));
+        PriorityQueue<int[]> rr = new PriorityQueue<>((a, b)->(a[0] != b[0] ? b[0]-a[0] : b[1]-a[1])); 
+        for (int i = 0; i < time.length; ++i) 
+            ll.add(new int[]{time[i][0]+time[i][2], i}); 
+        while (n > 0 || r.size() > 0 || rr.size() > 0) {
+            if (rr.isEmpty() && (r.isEmpty() || r.peek()[0] > free) && (n == 0 || ll.isEmpty() && (l.isEmpty() || l.peek()[0] > free))) {
+                int cand = Integer.MAX_VALUE; 
+                if (n > 0 && l.size() > 0) cand = Math.min(cand, l.peek()[0]); 
+                if (r.size() > 0) cand = Math.min(cand, r.peek()[0]); 
+                free = cand; 
+            }
+            while (l.size() > 0 && l.peek()[0] <= free) {
+                int i = l.poll()[1]; 
+                ll.add(new int[] {time[i][0] + time[i][2], i}); 
+            }
+            while (r.size() > 0 && r.peek()[0] <= free) {
+                int i = r.poll()[1]; 
+                rr.add(new int[] {time[i][0] + time[i][2], i}); 
+            }
+            if (rr.size() > 0) {
+                int i = rr.poll()[1]; 
+                free += time[i][2]; 
+                if (n > 0) l.add(new int[] {free+time[i][3], i}); 
+                else ans = Math.max(ans, free); 
+            } else {
+                int i = ll.poll()[1]; 
+                free += time[i][0]; 
+                r.add(new int[] {free+time[i][1], i}); 
+                --n; 
+            }
+        }
+        return ans; 
+    }
 }
 
 
