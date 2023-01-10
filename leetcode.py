@@ -3518,15 +3518,8 @@ class Solution:
        15   7"""
 
     def maxDepth(self, root: Optional[TreeNode]) -> int:
-        ans = 0
-        if root: 
-            stack = [(root, 1)]
-            while stack: 
-                node, d = stack.pop()
-                ans = max(ans, d)
-                if node.right: stack.append((node.right, d+1))
-                if node.left: stack.append((node.left, d+1))
-        return ans 
+        if not root: return 0 
+        return 1 + max(self.maxDepth(root.left), self.maxDepth(root.right))
 
 
     """105. Construct Binary Tree from Preorder and Inorder Traversal (Medium)
