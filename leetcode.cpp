@@ -11441,6 +11441,47 @@ public:
     }
 
 
+    /*548. Split Array with Equal Sum (Hard)
+    Given an integer array nums of length n, return true if there is a triplet 
+    (i, j, k) which satisfies the following conditions:
+    * 0 < i, i + 1 < j, j + 1 < k < n - 1
+    * The sum of subarrays (0, i - 1), (i + 1, j - 1), (j + 1, k - 1) and 
+      (k + 1, n - 1) is equal.
+    A subarray (l, r) represents a slice of the original array starting from 
+    the element indexed l to the element indexed r.
+
+    Example 1:
+    Input: nums = [1,2,1,2,1,2,1]
+    Output: true
+    Explanation: i = 1, j = 3, k = 5. 
+                 sum(0, i - 1) = sum(0, 0) = 1
+                 sum(i + 1, j - 1) = sum(2, 2) = 1
+                 sum(j + 1, k - 1) = sum(4, 4) = 1
+                 sum(k + 1, n - 1) = sum(6, 6) = 1
+    
+    Example 2:
+    Input: nums = [1,2,1,2,1,2,1,2]
+    Output: false
+
+    Constraints:
+    * n == nums.length
+    * 1 <= n <= 2000
+    * -10^6 <= nums[i] <= 10^6*/
+
+    bool splitArray(vector<int>& nums) {
+        vector<int> prefix(1); 
+        for (auto& x : nums) prefix.push_back(prefix.back() + x); 
+        for (int j = 0, n = nums.size(); j < n; ++j) {
+            unordered_set<int> seen; 
+            for (int i = 1; i+1 < j; ++i) 
+                if (prefix[i] == prefix[j] - prefix[i+1]) seen.insert(prefix[i]); 
+            for (int k = j+2; k+1 < n; ++k)
+                if (prefix[k] - prefix[j+1] == prefix.back() - prefix[k+1] && seen.count(prefix[k] - prefix[j+1])) return true; 
+        }
+        return false; 
+    }
+
+
     /*549. Binary Tree Longest Consecutive Sequence II (Medium)
     Given the root of a binary tree, return the length of the longest 
     consecutive path in the tree. A consecutive path is a path where the values 

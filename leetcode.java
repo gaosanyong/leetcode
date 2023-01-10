@@ -816,6 +816,48 @@ class Solution {
     }
 
 
+    /*548. Split Array with Equal Sum (Hard)
+    Given an integer array nums of length n, return true if there is a triplet 
+    (i, j, k) which satisfies the following conditions:
+    * 0 < i, i + 1 < j, j + 1 < k < n - 1
+    * The sum of subarrays (0, i - 1), (i + 1, j - 1), (j + 1, k - 1) and 
+      (k + 1, n - 1) is equal.
+    A subarray (l, r) represents a slice of the original array starting from 
+    the element indexed l to the element indexed r.
+
+    Example 1:
+    Input: nums = [1,2,1,2,1,2,1]
+    Output: true
+    Explanation: i = 1, j = 3, k = 5. 
+                 sum(0, i - 1) = sum(0, 0) = 1
+                 sum(i + 1, j - 1) = sum(2, 2) = 1
+                 sum(j + 1, k - 1) = sum(4, 4) = 1
+                 sum(k + 1, n - 1) = sum(6, 6) = 1
+    
+    Example 2:
+    Input: nums = [1,2,1,2,1,2,1,2]
+    Output: false
+
+    Constraints:
+    * n == nums.length
+    * 1 <= n <= 2000
+    * -10^6 <= nums[i] <= 10^6*/
+
+    public boolean splitArray(int[] nums) {
+        int n = nums.length; 
+        int[] prefix = new int[n+1]; 
+        for (int i = 0; i < n; ++i) prefix[i+1] = prefix[i] + nums[i]; 
+        for (int j = 0; j < n; ++j) {
+            Set<Integer> seen = new HashSet(); 
+            for (int i = 1; i+1 < j; ++i) 
+                if (prefix[i] == prefix[j] - prefix[i+1]) seen.add(prefix[i]); 
+            for (int k = j+2; k+1 < n; ++k) 
+                if (prefix[k] - prefix[j+1] == prefix[n] - prefix[k+1] && seen.contains(prefix[k] - prefix[j+1])) return true; 
+        }
+        return false; 
+    }
+
+
     /*616. Add Bold Tag in String (Medium)
     You are given a string s and an array of strings words. You should add a 
     closed pair of bold tag <b> and </b> to wrap the substrings in s that exist 
