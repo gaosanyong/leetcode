@@ -73448,6 +73448,93 @@ class NumMatrix:
         return self.prefix[row2+1][col2+1] - self.prefix[row1][col2+1] - self.prefix[row2+1][col1] + self.prefix[row1][col1]
 
 
+"""308. Range Sum Query 2D - Mutable (Hard)
+Given a 2D matrix matrix, handle multiple queries of the following types:
+* Update the value of a cell in matrix.
+* Calculate the sum of the elements of matrix inside the rectangle defined by 
+  its upper left corner (row1, col1) and lower right corner (row2, col2).
+Implement the NumMatrix class:
+* NumMatrix(int[][] matrix) Initializes the object with the integer matrix 
+  matrix.
+* void update(int row, int col, int val) Updates the value of matrix[row][col] 
+  to be val.
+* int sumRegion(int row1, int col1, int row2, int col2) Returns the sum of the 
+  elements of matrix inside the rectangle defined by its upper left corner 
+  (row1, col1) and lower right corner (row2, col2).
+
+Example 1:
+Input: ["NumMatrix", "sumRegion", "update", "sumRegion"]
+       [[[[3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5]]], [2, 1, 4, 3], [3, 2, 2], [2, 1, 4, 3]]
+Output: [null, 8, null, 10]
+Explanation: 
+NumMatrix numMatrix = new NumMatrix([[3, 0, 1, 4, 2], [5, 6, 3, 2, 1], [1, 2, 0, 1, 5], [4, 1, 0, 1, 7], [1, 0, 3, 0, 5]]);
+numMatrix.sumRegion(2, 1, 4, 3); // return 8 (i.e. sum of the left red rectangle)
+numMatrix.update(3, 2, 2);       // matrix changes from left image to right image
+numMatrix.sumRegion(2, 1, 4, 3); // return 10 (i.e. sum of the right red rectangle)
+
+Constraints:
+* m == matrix.length
+* n == matrix[i].length
+* 1 <= m, n <= 200
+* -1000 <= matrix[i][j] <= 1000
+* 0 <= row < m
+* 0 <= col < n
+* -1000 <= val <= 1000
+* 0 <= row1 <= row2 < m
+* 0 <= col1 <= col2 < n
+* At most 5000 calls will be made to sumRegion and update."""
+
+class Fenwick2D: 
+    def __init__(self, m: int, n: int): 
+        self.m = m 
+        self.n = n 
+        self.nums = [[0]*(n+1) for _ in range(m+1)]
+        
+    def query(self, i: int, j: int) -> int: 
+        """Return 2d prefix sum nums[:i+1][:j+1]."""
+        ans = 0 
+        i += 1
+        jj = j+1
+        while i: 
+            j = jj 
+            while j: 
+                ans += self.nums[i][j]
+                j -= j & -j
+            i -= i & -i 
+        return ans 
+            
+    def add(self, i: int, j: int, delta: int) -> None: 
+        """Add delta to the element on ith row and jth column."""
+        i += 1
+        jj = j+1
+        while i <= self.m: 
+            j = jj
+            while j <= self.n: 
+                self.nums[i][j] += delta 
+                j += j & -j
+            i += i & -i 
+    
+
+class NumMatrix:
+
+    def __init__(self, matrix: List[List[int]]):
+        self.m = m = len(matrix)
+        self.n = n = len(matrix[0])
+        self.vals = [[0]*n for _ in range(m)]
+        self.tree = Fenwick2D(m, n)
+        for i in range(m): 
+            for j in range(n): 
+                self.update(i, j, matrix[i][j])
+    
+    def update(self, row: int, col: int, val: int) -> None:
+        delta = val - self.vals[row][col]
+        self.vals[row][col] = val 
+        self.tree.add(row, col, delta)
+
+    def sumRegion(self, row1: int, col1: int, row2: int, col2: int) -> int:
+        return self.tree.query(row2, col2) - self.tree.query(row1-1, col2) - self.tree.query(row2, col1-1) + self.tree.query(row1-1, col1-1)
+
+
 """341. Flatten Nested List Iterator (Medium)
 Given a nested list of integers, implement an iterator to flatten it. Each 
 element is either an integer, or a list -- whose elements may also be integers 
