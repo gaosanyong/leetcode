@@ -3629,15 +3629,19 @@ class Solution:
        /   /
      -10  5"""
 
-    def sortedArrayToBST(self, nums: List[int]) -> TreeNode:
-        
-        def fn(lo, hi):
-            """Return BST for nums[lo:hi]"""
-            if lo == hi: return None
-            mid = (lo + hi)//2
-            return TreeNode(nums[mid], fn(lo, mid), fn(mid+1, hi))
-        
-        return fn(0, len(nums))
+    def sortedArrayToBST(self, nums: List[int]) -> Optional[TreeNode]:
+        root = None
+        stack = [(root, 0, len(nums), False)]
+        while stack: 
+            node, lo, hi, tf = stack.pop()
+            if lo < hi: 
+                mid = lo + hi >> 1
+                if not root: node = root = TreeNode(nums[mid])
+                elif tf: node.right = node = TreeNode(nums[mid])
+                else: node.left = node = TreeNode(nums[mid])
+                stack.append((node, lo, mid, False))
+                stack.append((node, mid+1, hi, True))
+        return root 
 
 
     """109. Convert Sorted List to Binary Search Tree (Medium)

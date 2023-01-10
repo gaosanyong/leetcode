@@ -771,6 +771,61 @@ class Solution {
     }
 
 
+
+    /*108. Convert Sorted Array to Binary Search Tree (Easy)
+    Given an integer array nums where the elements are sorted in ascending 
+    order, convert it to a height-balanced binary search tree.
+
+    Example 1:
+    Input: nums = [-10,-3,0,5,9]
+           0
+          / \
+        -3   9
+        /   /
+      -10  5
+    Output: [0,-3,9,-10,null,5]
+           0
+          / \
+        -10  5
+          \   \
+          -3   9
+    Explanation: [0,-10,5,null,-3,null,9] is also accepted:
+
+    Example 2:
+    Input: nums = [1,3]
+    Output: [3,1]
+           3  1
+          /    \
+         1      3
+    Explanation: [1,null,3] and [3,1] are both height-balanced BSTs.
+
+    Constraints:
+    * 1 <= nums.length <= 10^4
+    * -10^4 <= nums[i] <= 10^4
+    * nums is sorted in a strictly increasing order.*/
+
+    public TreeNode sortedArrayToBST(int[] nums) {
+        TreeNode root = null; 
+        Stack<Object[]> stk = new Stack(); 
+        stk.push(new Object[]{null, 0, nums.length, false}); 
+        while (!stk.isEmpty()) {
+            var elem = stk.pop(); 
+            TreeNode node = (TreeNode) elem[0]; 
+            int lo = (int) elem[1], hi = (int) elem[2]; 
+            boolean tf = (boolean) elem[3]; 
+            if (lo < hi) {
+                int mid = lo + (hi - lo)/2; 
+                if (root == null) node = root = new TreeNode(nums[mid]); 
+                else if (tf) node = node.right = new TreeNode(nums[mid]); 
+                else node = node.left = new TreeNode(nums[mid]); 
+                stk.push(new Object[]{node, lo, mid, false}); 
+                stk.push(new Object[]{node, mid+1, hi, true}); 
+            }
+        }
+        return root; 
+    }
+
+
     /*110. Balanced Binary Tree (Easy)
     Given a binary tree, determine if it is height-balanced.
 

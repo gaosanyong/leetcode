@@ -3185,27 +3185,14 @@ public:
     * -10^4 <= nums[i] <= 10^4
     * nums is sorted in a strictly increasing order.*/
 
-    /**
-     * Definition for a binary tree node.
-     * struct TreeNode {
-     *     int val;
-     *     TreeNode *left;
-     *     TreeNode *right;
-     *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
-     *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
-     *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
-     * };
-     */
-
     TreeNode* sortedArrayToBST(vector<int>& nums) {
-        int lo = 0, hi = nums.size(), mid = (lo+hi)/2; 
         TreeNode *root = nullptr; 
         stack<tuple<TreeNode*, int, int, bool>> stk; 
-        stk.emplace(root, 0, hi, false); 
+        stk.emplace(root, 0, nums.size(), false); 
         while (stk.size()) {
             auto [node, lo, hi, tf] = stk.top(); stk.pop(); 
             if (lo < hi) {
-                mid = (lo+hi)/2; 
+                int mid = (lo+hi)/2; 
                 if (!root) node = root = new TreeNode(nums[mid]); 
                 else if (tf) node = node->right = new TreeNode(nums[mid]); 
                 else node = node->left = new TreeNode(nums[mid]); 
