@@ -771,6 +771,64 @@ class Solution {
     }
 
 
+    /*110. Balanced Binary Tree (Easy)
+    Given a binary tree, determine if it is height-balanced.
+
+    Example 1:
+    Input: root = [3,9,20,null,null,15,7] 
+        3
+       / \
+      9  20
+        /  \
+       15   7
+    Output: true
+
+    Example 2:
+    Input: root = [1,2,2,3,3,null,null,4,4]
+           1
+          / \
+         2   2
+        / \ 
+       3   3
+      / \
+     4   4
+    Output: false
+
+    Example 3:
+    Input: root = []
+    Output: true
+
+    Constraints:
+    * The number of nodes in the tree is in the range [0, 5000].
+    * -10^4 <= Node.val <= 10^4*/
+
+    public boolean isBalanced(TreeNode root) {
+        Map<TreeNode, Pair<Boolean, Integer>> mp = new HashMap(); mp.put(null, new Pair(true, 0)); 
+        TreeNode node = root, prev = null; 
+        Stack<TreeNode> stk = new Stack(); 
+        while (node != null || !stk.isEmpty()) {
+            if (node != null) {
+                stk.push(node); 
+                node = node.left; 
+            } else {
+                node = stk.peek(); 
+                if (node.right != null && node.right != prev) node = node.right; 
+                else {
+                    boolean b0 = mp.get(node.left).getKey(), b1 = mp.get(node.right).getKey(); 
+                    int d0 = mp.get(node.left).getValue(), d1 = mp.get(node.right).getValue(); 
+                    boolean b = b0 && b1 && Math.abs(d0-d1) <= 1; 
+                    int d = 1 + Math.max(d0, d1); 
+                    mp.put(node, new Pair(b, d)); 
+                    stk.pop(); 
+                    prev = node; 
+                    node = null; 
+                }
+            }
+        }
+        return mp.get(root).getKey(); 
+    }
+
+
     /*111. Minimum Depth of Binary Tree (Easy)
     Given a binary tree, find its minimum depth. The minimum depth is the 
     number of nodes along the shortest path from the root node down to the 

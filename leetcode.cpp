@@ -3217,6 +3217,61 @@ public:
     }
 
 
+    /*110. Balanced Binary Tree (Easy)
+    Given a binary tree, determine if it is height-balanced.
+
+    Example 1:
+    Input: root = [3,9,20,null,null,15,7] 
+        3
+       / \
+      9  20
+        /  \
+       15   7
+    Output: true
+
+    Example 2:
+    Input: root = [1,2,2,3,3,null,null,4,4]
+           1
+          / \
+         2   2
+        / \ 
+       3   3
+      / \
+     4   4
+    Output: false
+
+    Example 3:
+    Input: root = []
+    Output: true
+
+    Constraints:
+    * The number of nodes in the tree is in the range [0, 5000].
+    * -10^4 <= Node.val <= 10^4*/
+
+    bool isBalanced(TreeNode* root) {
+        unordered_map<TreeNode*, pair<bool, int>> mp = {{nullptr, {true, 0}}}; 
+        TreeNode *node = root, *prev = nullptr; 
+        stack<TreeNode*> stk; 
+        while (node || stk.size()) 
+            if (node) {
+                stk.push(node); 
+                node = node->left; 
+            } else {
+                node = stk.top(); 
+                if (node->right && node->right != prev) node = node->right; 
+                else {
+                    auto [b0, d0] = mp[node->left]; 
+                    auto [b1, d1] = mp[node->right]; 
+                    mp[node] = make_pair(b0 && b1 && abs(d0-d1) <= 1, 1 + max(d0, d1)); 
+                    stk.pop(); 
+                    prev = node; 
+                    node = nullptr; 
+                }
+            }
+        return mp[root].first; 
+    }
+
+
     /*111. Minimum Depth of Binary Tree (Easy)
     Given a binary tree, find its minimum depth. The minimum depth is the 
     number of nodes along the shortest path from the root node down to the 

@@ -3674,42 +3674,55 @@ class Solution:
 
 
     """110. Balanced Binary Tree (Easy)
-    Given a binary tree, determine if it is height-balanced. For this problem, 
-    a height-balanced binary tree is defined as: a binary tree in which the 
-    left and right subtrees of every node differ in height by no more than 1.
+    Given a binary tree, determine if it is height-balanced.
 
     Example 1:
-    Given the following tree [3,9,20,null,null,15,7]:
-
+    Input: root = [3,9,20,null,null,15,7] 
         3
        / \
       9  20
         /  \
        15   7
-    Return true.
+    Output: true
 
     Example 2:
-    Given the following tree [1,2,2,3,3,null,null,4,4]:
-
+    Input: root = [1,2,2,3,3,null,null,4,4]
            1
           / \
          2   2
-        / \
+        / \ 
        3   3
       / \
      4   4
-    Return false."""
+    Output: false
 
-    def isBalanced(self, root: TreeNode) -> bool:
-        
-        def fn(node):
-            """Return flag of balance and height of given node"""
-            if not node: return True, 0
-            tf0, h0 = fn(node.left)
-            tf1, h1 = fn(node.right)
-            return tf0 and tf1 and abs(h0-h1) <= 1, 1 + max(h0, h1)
-        
-        return fn(root)[0]
+    Example 3:
+    Input: root = []
+    Output: true
+
+    Constraints:
+    * The number of nodes in the tree is in the range [0, 5000].
+    * -10^4 <= Node.val <= 10^4"""
+
+    def isBalanced(self, root: Optional[TreeNode]) -> bool:
+        mp = {None : (True, 0)}
+        node, prev = root, None
+        stack = []
+        while node or stack: 
+            if node: 
+                stack.append(node)
+                node = node.left
+            else: 
+                node = stack[-1]
+                if node.right and node.right != prev: node = node.right 
+                else: 
+                    b0, d0 = mp[node.left]
+                    b1, d1 = mp[node.right]
+                    mp[node] = (b0 and b1 and abs(d0 - d1) <= 1, 1 + max(d0, d1))
+                    stack.pop()
+                    prev = node 
+                    node = None 
+        return mp[root][0]
 
 
     """111. Minimum Depth of Binary Tree (Easy)
