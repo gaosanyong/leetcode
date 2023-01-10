@@ -3397,14 +3397,10 @@ class Solution:
 
     Output: false"""
 
-    def isSameTree(self, p: TreeNode, q: TreeNode) -> bool:
-        
-        def fn(p, q): 
-            """Return True if trees rooted at p and q are structurally identical"""
-            if not p or not q: return p is q
-            return fn(p.left, q.left) and p.val == q.val and fn(p.right, q.right)
-        
-        return fn(p, q)
+    def isSameTree(self, p: Optional[TreeNode], q: Optional[TreeNode]) -> bool:
+        if not p and not q: return True 
+        if not p or not q: return False 
+        return p.val == q.val and self.isSameTree(p.left, q.left) and self.isSameTree(p.right, q.right)
 
 
     """101. Symmetric Tree (Easy)
