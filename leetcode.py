@@ -3424,14 +3424,13 @@ class Solution:
 
     Follow up: Solve it both recursively and iteratively."""
 
-    def isSymmetric(self, root: TreeNode) -> bool:
-        if root: 
-            stack = [(root, root)]
-            while stack: 
-                p, q = stack.pop()
-                if not p or not q or p.val != q.val: return False 
-                if p.left: stack.append((p.left, q.right))
-                if p.right: stack.append((p.right, q.left))
+    def isSymmetric(self, root: Optional[TreeNode]) -> bool:
+        stack = [(root, root)]
+        while stack: 
+            p, q = stack.pop()
+            if not q or p.val != q.val: return False 
+            if p.left: stack.append((p.left, q.right))
+            if p.right: stack.append((p.right, q.left))
         return True
 
 
