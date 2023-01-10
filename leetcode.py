@@ -3727,15 +3727,10 @@ class Solution:
        15   7
     return its minimum depth = 2."""
 
-    def minDepth(self, root: TreeNode) -> int:
-        
-        def fn(node):
-            """Return minimum depth of given node"""
-            if not node: return 0
-            if not node.left or not node.right: return 1 + fn(node.left) + fn(node.right)
-            return 1 + min(fn(node.left), fn(node.right))
-        
-        return fn(root)
+    def minDepth(self, root: Optional[TreeNode]) -> int:
+        if not root: return 0 
+        left, right = self.minDepth(root.left), self.minDepth(root.right)
+        return 1 + min(left, right) if left and right else 1 + max(left, right)
 
 
     """112. Path Sum (Easy)

@@ -3235,23 +3235,9 @@ public:
     * -1000 <= Node.val <= 1000*/
 
     int minDepth(TreeNode* root) {
-        if (root != NULL) {
-            int ans = 0; 
-            queue<TreeNode*> q; 
-            q.push(root); 
-
-            while (!q.empty()) {
-                ++ans; 
-                for (int i = 0, n = q.size(); i < n; ++i) {
-                    TreeNode* node = q.front(); 
-                    q.pop(); 
-                    if (node->left == NULL && node->right == NULL) return ans; 
-                    if (node->left != NULL) q.push(node->left); 
-                    if (node->right != NULL) q.push(node->right); 
-                }
-            }
-        }
-        return 0; 
+        if (!root) return 0; 
+        int left = minDepth(root->left), right = minDepth(root->right); 
+        return left && right ? 1 + min(left, right) : 1 + max(left, right); 
     }
 
 
