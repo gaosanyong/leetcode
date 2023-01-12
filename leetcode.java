@@ -1443,14 +1443,6 @@ class Solution {
     * fromi < toi
     * hasApple.length == n*/
 
-    private static int dfs(int u, int p, List<Integer>[] tree, List<Boolean> hasApple) {
-        int ans = 0; 
-        for (var v : tree[u]) 
-            if (v != p) ans += dfs(v, u, tree, hasApple); 
-        if (u > 0 && (ans > 0 || hasApple.get(u))) ++ans; 
-        return ans; 
-    }
-    
     public int minTime(int n, int[][] edges, List<Boolean> hasApple) {
         List<Integer>[] tree = new ArrayList[n]; 
         for (int u = 0; u < n; ++u) tree[u] = new ArrayList(); 
@@ -1458,7 +1450,24 @@ class Solution {
             tree[e[0]].add(e[1]); 
             tree[e[1]].add(e[0]); 
         }
-        return dfs(0, -1, tree, hasApple)*2; 
+        int[] ans = new int[n]; 
+        boolean[] seen = new boolean[n]; 
+        Stack<Pair<Integer, Integer>> stk = new Stack(); stk.push(new Pair(0, -1)); 
+        while (!stk.isEmpty()) {
+            var elem = stk.peek(); 
+            int u = elem.getKey(), p = elem.getValue(); 
+            if (seen[u]) {
+                for (var v : tree[u]) 
+                    if (v != p) ans[u] += ans[v]; 
+                if (u > 0 && (ans[u] > 0 || hasApple.get(u))) ++ans[u]; 
+                stk.pop(); 
+            } else {
+                for (var v : tree[u]) 
+                    if (v != p) stk.push(new Pair(v, u)); 
+                seen[u] = true; 
+            }
+        }
+        return ans[0]*2; 
     }
 
 

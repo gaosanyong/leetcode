@@ -33838,16 +33838,21 @@ class UnionFind:
         for u, v in edges: 
             tree[u].append(v)
             tree[v].append(u)
-        
-        def fn(u, p): 
-            """Return min time to collect apples at node u."""
-            ans = 0 
-            for v in tree[u]: 
-                if v != p: ans += fn(v, u)
-            if u and (ans or hasApple[u]): ans += 1
-            return ans 
-        
-        return fn(0, -1)*2
+        ans = [0]*n
+        seen = [False]*n
+        stack = [(0, -1)]
+        while stack: 
+            u, p = stack[-1]
+            if seen[u]: 
+                for v in tree[u]: 
+                    if v != p: ans[u] += ans[v]
+                if u and (ans[u] or hasApple[u]): ans[u] += 1
+                stack.pop()
+            else: 
+                for v in tree[u]: 
+                    if v != p: stack.append((v, u))
+                seen[u] = True 
+        return ans[0]*2
 
 
     """1444. Number of Ways of Cutting a Pizza (Hard)

@@ -26087,16 +26087,23 @@ public:
             tree[e[0]].push_back(e[1]); 
             tree[e[1]].push_back(e[0]); 
         }
-        
-        function<int(int, int)> dfs = [&](int u, int p) {
-            int ans = 0; 
-            for (auto& v : tree[u]) 
-                if (v != p) ans += dfs(v, u); 
-            if (u && (ans or hasApple[u])) ++ans; 
-            return ans; 
-        }; 
-        
-        return dfs(0, -1)*2; 
+        vector<int> ans(n); 
+        vector<bool> seen(n); 
+        stack<pair<int, int>> stk; stk.emplace(0, -1); 
+        while (stk.size()) {
+            auto [u, p] = stk.top(); 
+            if (seen[u]) {
+                for (auto& v : tree[u]) 
+                    if (v != p) ans[u] += ans[v]; 
+                if (u && (ans[u] || hasApple[u])) ++ans[u]; 
+                stk.pop(); 
+            } else {
+                for (auto& v : tree[u]) 
+                    if (v != p) stk.emplace(v, u); 
+                seen[u] = true; 
+            }
+        }
+        return ans[0]*2; 
     }
 
 
