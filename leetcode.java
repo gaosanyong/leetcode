@@ -1115,6 +1115,43 @@ class Solution {
     }
 
 
+    /*168. Excel Sheet Column Title (Easy)
+    Given an integer columnNumber, return its corresponding column title as it 
+    appears in an Excel sheet. For example:
+        A -> 1
+        B -> 2
+        C -> 3
+        ...
+        Z -> 26
+        AA -> 27
+        AB -> 28 
+        ...
+
+    Example 1:
+    Input: columnNumber = 1
+    Output: "A"
+
+    Example 2:
+    Input: columnNumber = 28
+    Output: "AB"
+
+    Example 3:
+    Input: columnNumber = 701
+    Output: "ZY"
+
+    Constraints: 1 <= columnNumber <= 2^31 - 1*/
+
+    public String convertToTitle(int columnNumber) {
+        StringBuilder ans = new StringBuilder(); 
+        for (; columnNumber > 0; columnNumber /= 26) {
+            int x = --columnNumber % 26; 
+            ans.append((char) (x+'A')); 
+        }
+        ans.reverse(); 
+        return ans.toString(); 
+    }
+
+
     /*452. Minimum Number of Arrows to Burst Balloons (Medium)
     There are some spherical balloons taped onto a flat wall that represents 
     the XY-plane. The balloons are represented as a 2D integer array points 
