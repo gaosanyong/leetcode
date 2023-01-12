@@ -5598,13 +5598,14 @@ class Solution:
     * All the values of nums are unique."""
 
     def findMissingRanges(self, nums: List[int], lower: int, upper: int) -> List[str]:
-        nums = [lower-1] + nums + [upper+1] # augmented nums
         ans = []
-        for i in range(len(nums)-1): 
-            if nums[i] + 2 == nums[i+1]: 
-                ans.append(str(nums[i]+1))
-            elif nums[i] + 2 < nums[i+1]: 
-                ans.append(str(nums[i]+1) + "->" + str(nums[i+1]-1))
+        prev = lower-1
+        nums.append(upper+1)
+        for x in nums: 
+            if prev+1 <= x-1: 
+                if prev+1 == x-1: ans.append(str(prev+1))
+                else: ans.append(f"{prev+1}->{x-1}")
+            prev = x 
         return ans 
 
 
