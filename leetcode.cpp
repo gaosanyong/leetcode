@@ -5460,9 +5460,9 @@ public:
     Follow up: If this function is called many times, how would you optimize it?*/
 
     int hammingWeight(uint32_t n) {
-        // Brian Kernighan’s Algo
+        /* Brian Kernighan’s Algo */
         int ans = 0; 
-        for (; n; n &= n-1, ++ans); 
+        for (; n; ++ans, n &= n-1); 
         return ans; 
     }
 
