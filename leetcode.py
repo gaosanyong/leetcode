@@ -73107,24 +73107,14 @@ Constraints:
 class TwoSum:
 
     def __init__(self):
-        """
-        Initialize your data structure here.
-        """
-        self.freq = {}
+        self.freq = Counter()
 
     def add(self, number: int) -> None:
-        """
-        Add the number to an internal data structure..
-        """
-        self.freq[number] = 1 + self.freq.get(number, 0)
+        self.freq[number] += 1
 
     def find(self, value: int) -> bool:
-        """
-        Find if there exists any pair of numbers which sum is equal to the value.
-        """
-        for x in self.freq: 
-            if value - x != x and value - x in self.freq: return True 
-            elif value - x == x and self.freq[x] > 1: return True 
+        for k in self.freq: 
+            if value-k in self.freq and (k != value-k or self.freq[k] > 1): return True
         return False 
 
 
