@@ -5200,6 +5200,215 @@ class Solution {
         }
         return (int) dp[0]; 
     }
+
+
+    /*2535. Difference Between Element Sum and Digit Sum of an Array (Easy)
+    You are given a positive integer array nums. 
+    * The element sum is the sum of all the elements in nums.
+    * The digit sum is the sum of all the digits (not necessarily distinct) 
+      that appear in nums.
+    Return the absolute difference between the element sum and digit sum of 
+    nums. Note that the absolute difference between two integers x and y is 
+    defined as |x - y|.
+
+    Example 1:
+    Input: nums = [1,15,6,3]
+    Output: 9
+    Explanation: The element sum of nums is 1 + 15 + 6 + 3 = 25. The digit sum 
+                 of nums is 1 + 1 + 5 + 6 + 3 = 16. The absolute difference 
+                 between the element sum and digit sum is |25 - 16| = 9.
+    
+    Example 2:
+    Input: nums = [1,2,3,4]
+    Output: 0
+    Explanation: The element sum of nums is 1 + 2 + 3 + 4 = 10. The digit sum 
+                 of nums is 1 + 2 + 3 + 4 = 10. The absolute difference between 
+                 the element sum and digit sum is |10 - 10| = 0.
+
+    Constraints:
+    * 1 <= nums.length <= 2000
+    * 1 <= nums[i] <= 2000*/
+
+    public int differenceOfSum(int[] nums) {
+        int ans = 0; 
+        for (int x : nums) {
+            ans += x; 
+            for (; x > 0; x /= 10) 
+                ans -= x % 10; 
+        }
+        return ans; 
+    }
+
+
+    /*2536. Increment Submatrices by One (Medium)
+    You are given a positive integer n, indicating that we initially have an 
+    n x n 0-indexed integer matrix mat filled with zeroes. You are also given a 
+    2D integer array query. For each query[i] = [row1i, col1i, row2i, col2i], 
+    you should do the following operation:
+    * Add 1 to every element in the submatrix with the top left corner 
+      (row1i, col1i) and the bottom right corner (row2i, col2i). That is, add 1 
+      to mat[x][y] for for all row1i <= x <= row2i and col1i <= y <= col2i.
+    Return the matrix mat after performing every query.
+
+    Example 1:
+    Input: n = 3, queries = [[1,1,2,2],[0,0,1,1]]
+    Output: [[1,1,0],[1,2,1],[0,1,1]]
+    Explanation: The diagram above shows the initial matrix, the matrix after 
+                 the first query, and the matrix after the second query.
+                 - In the first query, we add 1 to every element in the 
+                   submatrix with the top left corner (1, 1) and bottom right 
+                   corner (2, 2).
+                 - In the second query, we add 1 to every element in the 
+                   submatrix with the top left corner (0, 0) and bottom right 
+                   corner (1, 1).
+    
+    Example 2:
+    Input: n = 2, queries = [[0,0,1,1]]
+    Output: [[1,1],[1,1]]
+    Explanation: The diagram above shows the initial matrix and the matrix 
+                 after the first query.
+                 - In the first query we add 1 to every element in the matrix.
+
+    Constraints:
+    * 1 <= n <= 500
+    * 1 <= queries.length <= 10^4
+    * 0 <= row1i <= row2i < n
+    * 0 <= col1i <= col2i < n*/
+
+    public int[][] rangeAddQueries(int n, int[][] queries) {
+        int[][] ans = new int[n][n]; 
+        for (int[] q : queries) {
+            int i = q[0], j = q[1], ii = q[2], jj = q[3]; 
+            ++ans[i][j]; 
+            if (ii+1 < n) --ans[ii+1][j]; 
+            if (jj+1 < n) --ans[i][jj+1]; 
+            if (ii+1 < n && jj+1 < n) ++ans[ii+1][jj+1]; 
+        }
+        for (int i = 0; i < n; ++i) {
+            int prefix = 0; 
+            for (int j = 0; j < n; ++j) {
+                prefix += ans[i][j]; 
+                ans[i][j] = prefix; 
+                if (i > 0) ans[i][j] += ans[i-1][j]; 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*2537. Count the Number of Good Subarrays (Medium)
+    Given an integer array nums and an integer k, return the number of good 
+    subarrays of nums. A subarray arr is good if it there are at least k pairs 
+    of indices (i, j) such that i < j and arr[i] == arr[j]. A subarray is a 
+    contiguous non-empty sequence of elements within an array.
+
+    Example 1:
+    Input: nums = [1,1,1,1,1], k = 10
+    Output: 1
+    Explanation: The only good subarray is the array nums itself.
+
+    Example 2:
+    Input: nums = [3,1,4,3,2,2,4], k = 2
+    Output: 4
+    Explanation: There are 4 different good subarrays:
+                 - [3,1,4,3,2,2] that has 2 pairs.
+                 - [3,1,4,3,2,2,4] that has 3 pairs.
+                 - [1,4,3,2,2,4] that has 2 pairs.
+                 - [4,3,2,2,4] that has 2 pairs.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i], k <= 10^9*/
+
+    public long countGood(int[] nums, int k) {
+        HashMap<Integer, Integer> freq = new HashMap<>(); 
+        long ans = 0; 
+        for (int i = 0, ii = 0; i < nums.length; ++i) {
+            k -= freq.getOrDefault(nums[i], 0); 
+            freq.put(nums[i], freq.getOrDefault(nums[i], 0)+1); 
+            for (; k <= 0; ++ii) {
+                freq.put(nums[ii], freq.get(nums[ii])-1); 
+                k += freq.get(nums[ii]); 
+            }
+            ans += ii; 
+        }
+        return ans; 
+    }
+
+
+    /*2538. Difference Between Maximum and Minimum Price Sum (Hard)
+    There exists an undirected and initially unrooted tree with n nodes indexed 
+    from 0 to n - 1. You are given the integer n and a 2D integer array edges 
+    of length n - 1, where edges[i] = [ai, bi] indicates that there is an edge 
+    between nodes ai and bi in the tree. Each node has an associated price. You 
+    are given an integer array price, where price[i] is the price of the ith 
+    node. The price sum of a given path is the sum of the prices of all nodes 
+    lying on that path. The tree can be rooted at any node root of your choice. 
+    The incurred cost after choosing root is the difference between the maximum 
+    and minimum price sum amongst all paths starting at root. Return the 
+    maximum possible cost amongst all possible root choices.
+
+    Example 1:
+    Input: n = 6, edges = [[0,1],[1,2],[1,3],[3,4],[3,5]], price = [9,8,7,6,10,5]
+    Output: 24
+    Explanation: The diagram above denotes the tree after rooting it at node 2. 
+                 The first part (colored in red) shows the path with the 
+                 maximum price sum. The second part (colored in blue) shows the 
+                 path with the minimum price sum.
+                 - The first path contains nodes [2,1,3,4]: the prices are 
+                   [7,8,6,10], and the sum of the prices is 31.
+                 - The second path contains the node [2] with the price [7].
+                 The difference between the maximum and minimum price sum is 24. 
+                 It can be proved that 24 is the maximum cost.
+    
+    Example 2:
+    Input: n = 3, edges = [[0,1],[1,2]], price = [1,1,1]
+    Output: 2
+    Explanation: The diagram above denotes the tree after rooting it at node 0. 
+                 The first part (colored in red) shows the path with the 
+                 maximum price sum. The second part (colored in blue) shows the 
+                 path with the minimum price sum.
+                 - The first path contains nodes [0,1,2]: the prices are 
+                   [1,1,1], and the sum of the prices is 3.
+                 - The second path contains node [0] with a price [1].
+                 The difference between the maximum and minimum price sum is 2. 
+                 It can be proved that 2 is the maximum cost.
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * edges.length == n - 1
+    * 0 <= ai, bi <= n - 1
+    * edges represents a valid tree.
+    * price.length == n
+    * 1 <= price[i] <= 10^5*/
+
+    long ans = 0; 
+    
+    private long[] dfs(int u, int p, List<Integer>[] tree, int[] price) {
+        long x = price[u], y = 0; 
+        for (var v : tree[u]) {
+            if (v != p) {
+                var elem = dfs(v, u, tree, price); 
+                long xx = elem[0], yy = elem[1]; 
+                ans = Math.max(ans, x + yy); 
+                ans = Math.max(ans, xx + y); 
+                x = Math.max(x, xx + price[u]); 
+                y = Math.max(y, yy + price[u]); 
+            }
+        }
+        return new long[]{x, y}; 
+    }
+    
+    public long maxOutput(int n, int[][] edges, int[] price) {
+        List<Integer>[] tree = new ArrayList[n]; 
+        for (int u = 0; u < n; ++u) tree[u] = new ArrayList(); 
+        for (var e : edges) {
+            tree[e[0]].add(e[1]); 
+            tree[e[1]].add(e[0]); 
+        }
+        dfs(0, -1, tree, price); 
+        return ans; 
+    }
 }
 
 

@@ -73024,6 +73024,195 @@ class SegTree:
         return dp[0]
 
 
+    """2535. Difference Between Element Sum and Digit Sum of an Array (Easy)
+    You are given a positive integer array nums. 
+    * The element sum is the sum of all the elements in nums.
+    * The digit sum is the sum of all the digits (not necessarily distinct) 
+      that appear in nums.
+    Return the absolute difference between the element sum and digit sum of 
+    nums. Note that the absolute difference between two integers x and y is 
+    defined as |x - y|.
+
+    Example 1:
+    Input: nums = [1,15,6,3]
+    Output: 9
+    Explanation: The element sum of nums is 1 + 15 + 6 + 3 = 25. The digit sum 
+                 of nums is 1 + 1 + 5 + 6 + 3 = 16. The absolute difference 
+                 between the element sum and digit sum is |25 - 16| = 9.
+    
+    Example 2:
+    Input: nums = [1,2,3,4]
+    Output: 0
+    Explanation: The element sum of nums is 1 + 2 + 3 + 4 = 10. The digit sum 
+                 of nums is 1 + 2 + 3 + 4 = 10. The absolute difference between 
+                 the element sum and digit sum is |10 - 10| = 0.
+
+    Constraints:
+    * 1 <= nums.length <= 2000
+    * 1 <= nums[i] <= 2000"""
+
+    def differenceOfSum(self, nums: List[int]) -> int:
+        return sum(x-sum(map(int, str(x))) for x in nums)
+
+
+    """2536. Increment Submatrices by One (Medium)
+    You are given a positive integer n, indicating that we initially have an 
+    n x n 0-indexed integer matrix mat filled with zeroes. You are also given a 
+    2D integer array query. For each query[i] = [row1i, col1i, row2i, col2i], 
+    you should do the following operation:
+    * Add 1 to every element in the submatrix with the top left corner 
+      (row1i, col1i) and the bottom right corner (row2i, col2i). That is, add 1 
+      to mat[x][y] for for all row1i <= x <= row2i and col1i <= y <= col2i.
+    Return the matrix mat after performing every query.
+
+    Example 1:
+    Input: n = 3, queries = [[1,1,2,2],[0,0,1,1]]
+    Output: [[1,1,0],[1,2,1],[0,1,1]]
+    Explanation: The diagram above shows the initial matrix, the matrix after 
+                 the first query, and the matrix after the second query.
+                 - In the first query, we add 1 to every element in the 
+                   submatrix with the top left corner (1, 1) and bottom right 
+                   corner (2, 2).
+                 - In the second query, we add 1 to every element in the 
+                   submatrix with the top left corner (0, 0) and bottom right 
+                   corner (1, 1).
+    
+    Example 2:
+    Input: n = 2, queries = [[0,0,1,1]]
+    Output: [[1,1],[1,1]]
+    Explanation: The diagram above shows the initial matrix and the matrix 
+                 after the first query.
+                 - In the first query we add 1 to every element in the matrix.
+
+    Constraints:
+    * 1 <= n <= 500
+    * 1 <= queries.length <= 10^4
+    * 0 <= row1i <= row2i < n
+    * 0 <= col1i <= col2i < n"""
+
+    def rangeAddQueries(self, n: int, queries: List[List[int]]) -> List[List[int]]:
+        ans = [[0]*n for _ in range(n)]
+        for i, j, ii, jj in queries: 
+            ans[i][j] += 1
+            if ii+1 < n: ans[ii+1][j] -= 1
+            if jj+1 < n: ans[i][jj+1] -= 1
+            if ii+1 < n and jj+1 < n: ans[ii+1][jj+1] += 1
+        for i in range(n): 
+            prefix = 0 
+            for j in range(n): 
+                prefix += ans[i][j]
+                ans[i][j] = prefix 
+                if i: ans[i][j] += ans[i-1][j]
+        return ans 
+
+
+    """2537. Count the Number of Good Subarrays (Medium)
+    Given an integer array nums and an integer k, return the number of good 
+    subarrays of nums. A subarray arr is good if it there are at least k pairs 
+    of indices (i, j) such that i < j and arr[i] == arr[j]. A subarray is a 
+    contiguous non-empty sequence of elements within an array.
+
+    Example 1:
+    Input: nums = [1,1,1,1,1], k = 10
+    Output: 1
+    Explanation: The only good subarray is the array nums itself.
+
+    Example 2:
+    Input: nums = [3,1,4,3,2,2,4], k = 2
+    Output: 4
+    Explanation: There are 4 different good subarrays:
+                 - [3,1,4,3,2,2] that has 2 pairs.
+                 - [3,1,4,3,2,2,4] that has 3 pairs.
+                 - [1,4,3,2,2,4] that has 2 pairs.
+                 - [4,3,2,2,4] that has 2 pairs.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i], k <= 10^9"""
+
+    def countGood(self, nums: List[int], k: int) -> int:
+        freq = Counter()
+        ans = ii = 0 
+        for x in nums: 
+            k -= freq[x]
+            freq[x] += 1
+            while k <= 0: 
+                freq[nums[ii]] -= 1
+                k += freq[nums[ii]]
+                ii += 1
+            ans += ii 
+        return ans 
+
+
+    """2538. Difference Between Maximum and Minimum Price Sum (Hard)
+    There exists an undirected and initially unrooted tree with n nodes indexed 
+    from 0 to n - 1. You are given the integer n and a 2D integer array edges 
+    of length n - 1, where edges[i] = [ai, bi] indicates that there is an edge 
+    between nodes ai and bi in the tree. Each node has an associated price. You 
+    are given an integer array price, where price[i] is the price of the ith 
+    node. The price sum of a given path is the sum of the prices of all nodes 
+    lying on that path. The tree can be rooted at any node root of your choice. 
+    The incurred cost after choosing root is the difference between the maximum 
+    and minimum price sum amongst all paths starting at root. Return the 
+    maximum possible cost amongst all possible root choices.
+
+    Example 1:
+    Input: n = 6, edges = [[0,1],[1,2],[1,3],[3,4],[3,5]], price = [9,8,7,6,10,5]
+    Output: 24
+    Explanation: The diagram above denotes the tree after rooting it at node 2. 
+                 The first part (colored in red) shows the path with the 
+                 maximum price sum. The second part (colored in blue) shows the 
+                 path with the minimum price sum.
+                 - The first path contains nodes [2,1,3,4]: the prices are 
+                   [7,8,6,10], and the sum of the prices is 31.
+                 - The second path contains the node [2] with the price [7].
+                 The difference between the maximum and minimum price sum is 24. 
+                 It can be proved that 24 is the maximum cost.
+    
+    Example 2:
+    Input: n = 3, edges = [[0,1],[1,2]], price = [1,1,1]
+    Output: 2
+    Explanation: The diagram above denotes the tree after rooting it at node 0. 
+                 The first part (colored in red) shows the path with the 
+                 maximum price sum. The second part (colored in blue) shows the 
+                 path with the minimum price sum.
+                 - The first path contains nodes [0,1,2]: the prices are 
+                   [1,1,1], and the sum of the prices is 3.
+                 - The second path contains node [0] with a price [1].
+                 The difference between the maximum and minimum price sum is 2. 
+                 It can be proved that 2 is the maximum cost.
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * edges.length == n - 1
+    * 0 <= ai, bi <= n - 1
+    * edges represents a valid tree.
+    * price.length == n
+    * 1 <= price[i] <= 10^5"""
+
+    def maxOutput(self, n: int, edges: List[List[int]], price: List[int]) -> int:
+        tree = [[] for _ in range(n)]
+        for u, v in edges: 
+            tree[u].append(v)
+            tree[v].append(u)
+        
+        def dfs(u, p): 
+            """Return last path from u to leaf including and excluding leaf value."""
+            nonlocal ans
+            x, y = price[u], 0
+            for v in tree[u]:
+                if v != p: 
+                    xx, yy = dfs(v, u)
+                    ans = max(ans, x + yy, xx+y)
+                    x = max(x, xx + price[u])
+                    y = max(y, yy + price[u])
+            return x, y
+        
+        ans = 0 
+        dfs(0, -1)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
