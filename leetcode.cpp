@@ -7304,6 +7304,81 @@ public:
     }
 
 
+    /*305. Number of Islands II (Hard)
+    You are given an empty 2D binary grid grid of size m x n. The grid 
+    represents a map where 0's represent water and 1's represent land. 
+    Initially, all the cells of grid are water cells (i.e., all the cells are 
+    0's). We may perform an add land operation which turns the water at 
+    position into a land. You are given an array positions where 
+    positions[i] = [ri, ci] is the position (ri, ci) at which we should operate 
+    the ith operation. Return an array of integers answer where answer[i] is 
+    the number of islands after turning the cell (ri, ci) into a land. An 
+    island is surrounded by water and is formed by connecting adjacent lands 
+    horizontally or vertically. You may assume all four edges of the grid are 
+    all surrounded by water.
+
+    Example 1:
+    Input: m = 3, n = 3, positions = [[0,0],[0,1],[1,2],[2,1]]
+    Output: [1,1,2,3]
+    Explanation: Initially, the 2d grid is filled with water.
+                 - Operation #1: addLand(0, 0) turns the water at grid[0][0] 
+                                 into a land. We have 1 island.
+                 - Operation #2: addLand(0, 1) turns the water at grid[0][1] 
+                                 into a land. We still have 1 island.
+                 - Operation #3: addLand(1, 2) turns the water at grid[1][2] 
+                                 into a land. We have 2 islands.
+                 - Operation #4: addLand(2, 1) turns the water at grid[2][1] 
+                                 into a land. We have 3 islands.
+    
+    Example 2:
+    Input: m = 1, n = 1, positions = [[0,0]]
+    Output: [1]
+
+    Constraints:
+    * 1 <= m, n, positions.length <= 10^4
+    * 1 <= m * n <= 10^4
+    * positions[i].length == 2
+    * 0 <= ri < m
+    * 0 <= ci < n
+
+    Follow up: Could you solve it in time complexity O(k log(mn)), where 
+               k == positions.length?*/
+
+    vector<int> numIslands2(int m, int n, vector<vector<int>>& positions) {
+        vector<int> parent(m*n); 
+        iota(parent.begin(), parent.end(), 0); 
+        
+        function<int(int)> find = [&](int p) {
+            if (p != parent[p]) 
+                parent[p] = find(parent[p]); 
+            return parent[p]; 
+        }; 
+        
+        vector<int> ans; 
+        vector<vector<bool>> seen(m, vector<bool>(n)); 
+        int prefix = 0, dir[5] = {1, 0, -1, 0, 1}; 
+        for (auto& position : positions) {
+            int i = position[0], j = position[1]; 
+            if (not seen[i][j]) {
+                ++prefix; 
+                seen[i][j] = true; 
+                for (int k = 0; k < 4; ++k) {
+                    int ii = i + dir[k], jj = j + dir[k+1]; 
+                    if (0 <= ii && ii < m && 0 <= jj && jj < n && seen[ii][jj]) {
+                        int p = find(i*n + j), pp = find(ii*n + jj); 
+                        if (p != pp) {
+                            --prefix; 
+                            parent[p] = pp; 
+                        }
+                    }
+                }
+            }
+            ans.push_back(prefix); 
+        }
+        return ans; 
+    }
+
+
     /*309. Best Time to Buy and Sell Stock with Cooldown (Medium)
     You are given an array prices where prices[i] is the price of a given stock 
     on the ith day. Find the maximum profit you can achieve. You may complete 
