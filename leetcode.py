@@ -10148,6 +10148,47 @@ class Solution:
         return ans 
 
 
+    """358. Rearrange String k Distance Apart (Hard)
+    Given a string s and an integer k, rearrange s such that the same 
+    characters are at least distance k from each other. If it is not possible 
+    to rearrange the string, return an empty string "".
+
+    Example 1:
+    Input: s = "aabbcc", k = 3
+    Output: "abcabc"
+    Explanation: The same letters are at least a distance of 3 from each other.
+
+    Example 2:
+    Input: s = "aaabc", k = 3
+    Output: ""
+    Explanation: It is not possible to rearrange the string.
+
+    Example 3:
+    Input: s = "aaadbbcc", k = 2
+    Output: "abacabcd"
+    Explanation: The same letters are at least a distance of 2 from each other.
+
+    Constraints:
+    * 1 <= s.length <= 3 * 10^5
+    * s consists of only lowercase English letters.
+    * 0 <= k <= s.length"""
+
+    def rearrangeString(self, s: str, k: int) -> str:
+        ans = []
+        freq = [0] * 26
+        for c in s: freq[ord(c)-97] += 1
+        prev = [-k] * 26
+        for i in range(len(s)): 
+            m = -1
+            for c in range(26): 
+                if freq[c] and (m == -1 or freq[c] > freq[m]) and i - prev[c] >= k: m = c
+            if m == -1: return ""
+            ans.append(chr(m + 97))
+            freq[m] -= 1
+            prev[m] = i 
+        return ''.join(ans)
+
+
     """360. Sort Transformed Array (Medium)
     Given a sorted array of integers nums and integer values a, b and c. Apply 
     a quadratic function of the form f(x) = ax2 + bx + c to each element x in 
