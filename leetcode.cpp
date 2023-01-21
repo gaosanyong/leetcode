@@ -53018,6 +53018,173 @@ public:
         }
         return ans; 
     }
+
+
+    /*2540. Minimum Common Value (Easy)
+    Given two integer arrays nums1 and nums2, sorted in non-decreasing order, 
+    return the minimum integer common to both arrays. If there is no common 
+    integer amongst nums1 and nums2, return -1. Note that an integer is said 
+    to be common to nums1 and nums2 if both arrays have at least one 
+    occurrence of that integer.
+
+    Example 1:
+    Input: nums1 = [1,2,3], nums2 = [2,4]
+    Output: 2
+    Explanation: The smallest element common to both arrays is 2, so we return 
+                 2.
+
+    Example 2:
+    Input: nums1 = [1,2,3,6], nums2 = [2,3,4,5]
+    Output: 2
+    Explanation: There are two common elements in the array 2 and 3 out of 
+                 which 2 is the smallest, so 2 is returned.
+
+    Constraints:
+    * 1 <= nums1.length, nums2.length <= 10^5
+    * 1 <= nums1[i], nums2[j] <= 10^9
+    * Both nums1 and nums2 are sorted in non-decreasing order.*/
+
+    int getCommon(vector<int>& nums1, vector<int>& nums2) {
+        for (int i = 0, ii = 0; i < nums1.size() && ii < nums2.size(); ) {
+            if (nums1[i] < nums2[ii]) ++i; 
+            else if (nums1[i] == nums2[ii]) return nums1[i]; 
+            else ++ii; 
+        }
+        return -1; 
+    }
+
+
+    /*2541. Minimum Operations to Make Array Equal II (Medium)
+    You are given two integer arrays nums1 and nums2 of equal length n and an 
+    integer k. You can perform the following operation on nums1:
+    * Choose two indexes i and j and increment nums1[i] by k and decrement 
+      nums1[j] by k. In other words, nums1[i] = nums1[i] + k and 
+      nums1[j] = nums1[j] - k.
+    nums1 is said to be equal to nums2 if for all indices i such that 
+    0 <= i < n, nums1[i] == nums2[i]. Return the minimum number of operations 
+    required to make nums1 equal to nums2. If it is impossible to make them 
+    equal, return -1.
+
+    Example 1:
+    Input: nums1 = [4,3,1,4], nums2 = [1,3,7,1], k = 3
+    Output: 2
+    Explanation: In 2 operations, we can transform nums1 to nums2. 1st 
+                 operation: i = 2, j = 0. After applying the operation, 
+                 nums1 = [1,3,4,4]. 2nd operation: i = 2, j = 3. After applying 
+                 the operation, nums1 = [1,3,7,1]. One can prove that it is 
+                 impossible to make arrays equal in fewer operations.
+    
+    Example 2:
+    Input: nums1 = [3,8,5,2], nums2 = [2,4,1,6], k = 1
+    Output: -1
+    Explanation: It can be proved that it is impossible to make the two arrays 
+                 equal.
+
+    Constraints:
+    * n == nums1.length == nums2.length
+    * 2 <= n <= 10^5
+    * 0 <= nums1[i], nums2[j] <= 10^9
+    * 0 <= k <= 10^5*/
+
+    long long minOperations(vector<int>& nums1, vector<int>& nums2, int k) {
+        long long ans = 0, total = 0; 
+        for (int i = 0; i < nums1.size(); ++i) {
+            int diff = nums1[i] - nums2[i]; 
+            if (k == 0 && diff || k && diff % k) return -1; 
+            if (k) ans += abs(diff) / k; 
+            total += diff; 
+        }
+        return total == 0 ? ans/2 : -1; 
+    }
+
+
+    /*2542. Maximum Subsequence Score (Medium)
+    You are given two 0-indexed integer arrays nums1 and nums2 of equal length 
+    n and a positive integer k. You must choose a subsequence of indices from 
+    nums1 of length k. For chosen indices i0, i1, ..., ik - 1, your score is 
+    defined as:
+    * The sum of the selected elements from nums1 multiplied with the minimum 
+      of the selected elements from nums2.
+    * It can defined simply as: 
+      (nums1[i0] + nums1[i1] +...+ nums1[ik - 1]) * min(nums2[i0] , nums2[i1], ... ,nums2[ik - 1]).
+    Return the maximum possible score. A subsequence of indices of an array is 
+    a set that can be derived from the set {0, 1, ..., n-1} by deleting some or 
+    no elements.
+
+    Example 1:
+    Input: nums1 = [1,3,3,2], nums2 = [2,1,3,4], k = 3
+    Output: 12
+    Explanation: The four possible subsequence scores are:
+                 - We choose the indices 0, 1, and 2 with 
+                   score = (1+3+3) * min(2,1,3) = 7.
+                 - We choose the indices 0, 1, and 3 with 
+                   score = (1+3+2) * min(2,1,4) = 6. 
+                 - We choose the indices 0, 2, and 3 with 
+                   score = (1+3+2) * min(2,3,4) = 12. 
+                 - We choose the indices 1, 2, and 3 with 
+                   score = (3+3+2) * min(1,3,4) = 8.
+                 Therefore, we return the max score, which is 12.
+    
+    Example 2:
+    Input: nums1 = [4,2,3,1,1], nums2 = [7,5,10,9,6], k = 1
+    Output: 30
+    Explanation: Choosing index 2 is optimal: 
+                 nums1[2] * nums2[2] = 3 * 10 = 30 is the maximum possible 
+                 score.
+
+    Constraints:
+    * n == nums1.length == nums2.length
+    * 1 <= n <= 10^5
+    * 0 <= nums1[i], nums2[j] <= 10^5
+    * 1 <= k <= n*/
+
+    long long maxScore(vector<int>& nums1, vector<int>& nums2, int k) {
+        vector<vector<int>> aug; 
+        for (int i = 0; i < nums1.size(); ++i)
+            aug.push_back({nums2[i], nums1[i]}); 
+        sort(aug.begin(), aug.end(), greater<>()); 
+        priority_queue<int, vector<int>, greater<>> pq; 
+        long long ans = 0, total = 0; 
+        for (int i = 0; i < aug.size(); ++i) {
+            total += aug[i][1]; 
+            pq.push(aug[i][1]); 
+            if (i >= k) { total -= pq.top(); pq.pop(); }
+            if (i >= k-1) ans = max(ans, total * aug[i][0]); 
+        }
+        return ans; 
+    }
+
+
+    /*2543. Check if Point Is Reachable (Hard)
+    There exists an infinitely large grid. You are currently at point (1, 1), 
+    and you need to reach the point (targetX, targetY) using a finite number of 
+    steps. In one step, you can move from point (x, y) to any one of the 
+    following points: (x, y - x)
+                      (x - y, y)
+                      (2 * x, y)
+                      (x, 2 * y)
+    Given two integers targetX and targetY representing the X-coordinate and Y-
+    coordinate of your final position, return true if you can reach the point 
+    from (1, 1) using some number of steps, and false otherwise.
+
+    Example 1:
+    Input: targetX = 6, targetY = 9
+    Output: false
+    Explanation: It is impossible to reach (6,9) from (1,1) using any sequence 
+                 of moves, so false is returned.
+    
+    Example 2:
+    Input: targetX = 4, targetY = 7
+    Output: true
+    Explanation: You can follow the path (1,1) -> (1,2) -> (1,4) -> (1,8) -> 
+                 (1,7) -> (2,7) -> (4,7).
+
+    Constraints: 1 <= targetX, targetY <= 10^9*/
+
+    bool isReachable(int targetX, int targetY) {
+        int g = gcd(targetX, targetY); 
+        return (g & (g-1)) == 0; 
+    }
 };
 
 
