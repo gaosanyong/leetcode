@@ -73693,6 +73693,171 @@ class SegTree:
         return g & (g-1) == 0
 
 
+    """2544. Alternating Digit Sum (Easy)
+    You are given a positive integer n. Each digit of n has a sign according to 
+    the following rules:
+    * The most significant digit is assigned a positive sign.
+    * Each other digit has an opposite sign to its adjacent digits.
+    Return the sum of all digits with their corresponding sign.
+
+    Example 1:
+    Input: n = 521
+    Output: 4
+    Explanation: (+5) + (-2) + (+1) = 4.
+
+    Example 2:
+    Input: n = 111
+    Output: 1
+    Explanation: (+1) + (-1) + (+1) = 1.
+
+    Example 3:
+    Input: n = 886996
+    Output: 0
+    Explanation: (+8) + (-8) + (+6) + (-9) + (+9) + (-6) = 0.
+
+    Constraints: 1 <= n <= 10^9"""
+
+    def alternateDigitSum(self, n: int) -> int:
+        return sum(x*(-1)**i for i, x in enumerate(map(int, str(n))))
+
+
+    """2545. Sort the Students by Their Kth Score (Medium)
+    There is a class with m students and n exams. You are given a 0-indexed 
+    m x n integer matrix score, where each row represents one student and 
+    score[i][j] denotes the score the ith student got in the jth exam. The 
+    matrix score contains distinct integers only. You are also given an integer 
+    k. Sort the students (i.e., the rows of the matrix) by their scores in the 
+    kth (0-indexed) exam from the highest to the lowest. Return the matrix 
+    after sorting it.
+
+    Example 1:
+    Input: score = [[10,6,9,1],[7,5,11,2],[4,8,3,15]], k = 2
+    Output: [[7,5,11,2],[10,6,9,1],[4,8,3,15]]
+    Explanation: In the above diagram, S denotes the student, while E denotes 
+                 the exam.
+                 - The student with index 1 scored 11 in exam 2, which is the 
+                   highest score, so they got first place.
+                 - The student with index 0 scored 9 in exam 2, which is the 
+                   second highest score, so they got second place.
+                 - The student with index 2 scored 3 in exam 2, which is the 
+                   lowest score, so they got third place.
+    
+    Example 2:
+    Input: score = [[3,4],[5,6]], k = 0
+    Output: [[5,6],[3,4]]
+    Explanation: In the above diagram, S denotes the student, while E denotes 
+                 the exam.
+                 - The student with index 1 scored 5 in exam 0, which is the 
+                   highest score, so they got first place.
+                 - The student with index 0 scored 3 in exam 0, which is the 
+                   lowest score, so they got second place.
+
+    Constraints:
+    * m == score.length
+    * n == score[i].length
+    * 1 <= m, n <= 250
+    * 1 <= score[i][j] <= 10^5
+    * score consists of distinct integers.
+    * 0 <= k < n"""
+
+    def sortTheStudents(self, score: List[List[int]], k: int) -> List[List[int]]:
+        return sorted(score, key = lambda x: x[k], reverse=True)
+
+
+    """2546. Apply Bitwise Operations to Make Strings Equal (Medium)
+    You are given two 0-indexed binary strings s and target of the same length 
+    n. You can do the following operation on s any number of times:
+    * Choose two different indices i and j where 0 <= i, j < n.
+    * Simultaneously, replace s[i] with (s[i] OR s[j]) and s[j] with (s[i] XOR 
+      s[j]).
+    For example, if s = "0110", you can choose i = 0 and j = 2, then 
+    simultaneously replace s[0] with (s[0] OR s[2] = 0 OR 1 = 1), and s[2] with 
+    (s[0] XOR s[2] = 0 XOR 1 = 1), so we will have s = "1110". Return true if 
+    you can make the string s equal to target, or false otherwise.
+
+    Example 1:
+    Input: s = "1010", target = "0110"
+    Output: true
+    Explanation: We can do the following operations:
+                 - Choose i = 2 and j = 0. We have now s = "0010".
+                 - Choose i = 2 and j = 1. We have now s = "0110".
+                 Since we can make s equal to target, we return true.
+    
+    Example 2:
+    Input: s = "11", target = "00"
+    Output: false
+    Explanation: It is not possible to make s equal to target with any number 
+                 of operations.
+
+    Constraints:
+    * n == s.length == target.length
+    * 2 <= n <= 10^5
+    * s and target consist of only the digits 0 and 1."""
+
+    def makeStringsEqual(self, s: str, target: str) -> bool:
+        return ('1' in s) == ('1' in target)
+
+
+    """2547. Minimum Cost to Split an Array (Hard)
+    You are given an integer array nums and an integer k. Split the array into 
+    some number of non-empty subarrays. The cost of a split is the sum of the 
+    importance value of each subarray in the split. Let trimmed(subarray) be 
+    the version of the subarray where all numbers which appear only once are 
+    removed.
+    * For example, trimmed([3,1,2,4,3,4]) = [3,4,3,4].
+    The importance value of a subarray is k + trimmed(subarray).length.
+    * For example, if a subarray is [1,2,3,3,3,4,4], then 
+      trimmed([1,2,3,3,3,4,4]) = [3,3,3,4,4].The importance value of this 
+      subarray will be k + 5.
+    Return the minimum possible cost of a split of nums. A subarray is a 
+    contiguous non-empty sequence of elements within an array.
+
+    Example 1:
+    Input: nums = [1,2,1,2,1,3,3], k = 2
+    Output: 8
+    Explanation: We split nums to have two subarrays: [1,2], [1,2,1,3,3].
+                 The importance value of [1,2] is 2 + (0) = 2.
+                 The importance value of [1,2,1,3,3] is 2 + (2 + 2) = 6.
+                 The cost of the split is 2 + 6 = 8. It can be shown that this 
+                 is the minimum possible cost among all the possible splits.
+    
+    Example 2:
+    Input: nums = [1,2,1,2,1], k = 2
+    Output: 6
+    Explanation: We split nums to have two subarrays: [1,2], [1,2,1].
+                 The importance value of [1,2] is 2 + (0) = 2.
+                 The importance value of [1,2,1] is 2 + (2) = 4.
+                 The cost of the split is 2 + 4 = 6. It can be shown that this 
+                 is the minimum possible cost among all the possible splits.
+    
+    Example 3:
+    Input: nums = [1,2,1,2,1], k = 5
+    Output: 10
+    Explanation: We split nums to have one subarray: [1,2,1,2,1].
+                 The importance value of [1,2,1,2,1] is 5 + (3 + 2) = 10.
+                 The cost of the split is 10. It can be shown that this is the 
+                 minimum possible cost among all the possible splits.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 0 <= nums[i] < nums.length
+    * 1 <= k <= 10^9"""
+
+    def minCost(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        dp = [inf]*(n+1)
+        dp[-1] = 0 
+        for i in range(n-1, -1, -1): 
+            val = 0 
+            freq = Counter()
+            for ii in range(i, n): 
+                freq[nums[ii]] += 1
+                if freq[nums[ii]] == 2: val += 2
+                elif freq[nums[ii]] > 2: val += 1
+                dp[i] = min(dp[i], k + val + dp[ii+1])
+        return dp[0]
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
