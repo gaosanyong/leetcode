@@ -22809,21 +22809,20 @@ class Solution:
     def snakesAndLadders(self, board: List[List[int]]) -> int:
         n = len(board)
         ans = 0
-        queue = [1]
         seen = {1}
-        while queue: # bfs 
-            newq = []
-            for x in queue: 
+        queue = deque([1])
+        while queue:
+            for _ in range(len(queue)): 
+                x = queue.popleft()
                 if x == n*n: return ans 
                 for xx in range(x+1, x+7): 
                     if xx <= n*n:
                         i, j = divmod(xx-1, n)
                         if board[~i][~j if i&1 else j] != -1: xx = board[~i][~j if i&1 else j]
                         if xx not in seen: 
-                            newq.append(xx)
                             seen.add(xx)
+                            queue.append(xx)
             ans += 1
-            queue = newq 
         return -1 
 
 
