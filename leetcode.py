@@ -66098,11 +66098,13 @@ class Trie:
                 u = edges[u]
             return dist 
         
-        dist1 = bfs(node1)
-        dist2 = bfs(node2)
-        ans, m = -1, inf
-        for i, (x1, x2) in enumerate(zip(dist1, dist2)): 
-            if max(x1, x2) < m: ans, m = i, max(x1, x2)
+        ans = -1
+        small = inf
+        for i, (x1, x2) in enumerate(zip(bfs(node1), bfs(node2))): 
+            cand = max(x1, x2)
+            if cand < small: 
+                ans = i 
+                small = cand
         return ans 
 
 
