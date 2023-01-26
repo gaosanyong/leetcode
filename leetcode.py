@@ -19835,7 +19835,6 @@ class Solution:
     def findCheapestPrice(self, n: int, flights: List[List[int]], src: int, dst: int, k: int) -> int:
         graph = [[] for _ in range(n)]
         for u, v, p in flights: graph[u].append((v, p))
-        
         pq = [(0, src, 0)]
         dist = [(inf, inf)] * n
         dist[src] = (0, 0)

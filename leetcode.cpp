@@ -16852,9 +16852,7 @@ public:
 
     int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int k) {
         vector<vector<pair<int, int>>> graph(n); 
-        for (auto& flight : flights) 
-            graph[flight[0]].emplace_back(flight[1], flight[2]); 
-        
+        for (auto& f : flights) graph[f[0]].emplace_back(f[1], f[2]); 
         priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<>> pq; 
         pq.emplace(0, src, 0); 
         vector<pair<int, int>> dist(n, {INT_MAX, INT_MAX}); 
