@@ -73999,6 +73999,157 @@ class SegTree:
         return ans if not capacity else -1 
 
 
+    """2549. Count Distinct Numbers on Board (Easy)
+    You are given a positive integer n, that is initially placed on a board. 
+    Every day, for 109 days, you perform the following procedure:
+    * For each number x present on the board, find all numbers 1 <= i <= n such 
+      that x % i == 1.
+    * Then, place those numbers on the board.
+    Return the number of distinct integers present on the board after 10^9 days 
+    have elapsed.
+
+    Note:
+    * Once a number is placed on the board, it will remain on it until the end.
+    * % stands for the modulo operation. For example, 14 % 3 is 2.
+
+    Example 1:
+    Input: n = 5
+    Output: 4
+    Explanation: Initially, 5 is present on the board. The next day, 2 and 4 
+                 will be added since 5 % 2 == 1 and 5 % 4 == 1. After that day, 
+                 3 will be added to the board because 4 % 3 == 1. At the end of 
+                 a billion days, the distinct numbers on the board will be 2, 3, 
+                 4, and 5. 
+    
+    Example 2:
+    Input: n = 3
+    Output: 2
+    Explanation: Since 3 % 2 == 1, 2 will be added to the board. After a 
+                 billion days, the only two distinct numbers on the board are 2 
+                 and 3. 
+
+    Constraints: 1 <= n <= 100"""
+
+    def distinctIntegers(self, n: int) -> int:
+        return n-1 if n > 1 else 1
+
+
+    """2550. Count Collisions of Monkeys on a Polygon (Medium)
+    There is a regular convex polygon with n vertices. The vertices are labeled 
+    from 0 to n - 1 in a clockwise direction, and each vertex has exactly one 
+    monkey. The following figure shows a convex polygon of 6 vertices. Each 
+    monkey moves simultaneously to a neighboring vertex. A neighboring vertex 
+    for a vertex i can be:
+    * the vertex (i + 1) % n in the clockwise direction, or
+    * the vertex (i - 1 + n) % n in the counter-clockwise direction.
+    A collision happens if at least two monkeys reside on the same vertex after 
+    the movement. Return the number of ways the monkeys can move so that at 
+    least one collision happens. Since the answer may be very large, return it 
+    modulo 10^9 + 7. Note that each monkey can only move once.
+
+    Example 1:
+    Input: n = 3
+    Output: 6
+    Explanation: There are 8 total possible movements. Two ways such that they 
+                 collide at some point are:
+                 - Monkey 1 moves in a clockwise direction; monkey 2 moves in 
+                   an anticlockwise direction; monkey 3 moves in a clockwise 
+                   direction. Monkeys 1 and 2 collide.
+                 - Monkey 1 moves in an anticlockwise direction; monkey 2 moves 
+                   in an anticlockwise direction; monkey 3 moves in a clockwise 
+                   direction. Monkeys 1 and 3 collide.
+                 It can be shown 6 total movements result in a collision.
+    
+    Example 2:
+    Input: n = 4
+    Output: 14
+    Explanation: It can be shown that there are 14 ways for the monkeys to 
+                 collide.
+
+    Constraints: 3 <= n <= 10^9"""
+
+    def monkeyMove(self, n: int) -> int:
+        mod = 1_000_000_007 
+        return (pow(2, n, mod) - 2) % mod
+
+
+    """2551. Put Marbles in Bags (Hard)
+    You have k bags. You are given a 0-indexed integer array weights where 
+    weights[i] is the weight of the ith marble. You are also given the integer 
+    k. Divide the marbles into the k bags according to the following rules:
+    * No bag is empty.
+    * If the ith marble and jth marble are in a bag, then all marbles with an 
+      index between the ith and jth indices should also be in that same bag.
+    * If a bag consists of all the marbles with an index from i to j 
+      inclusively, then the cost of the bag is weights[i] + weights[j].
+    The score after distributing the marbles is the sum of the costs of all the 
+    k bags. Return the difference between the maximum and minimum scores among 
+    marble distributions.
+
+    Example 1:
+    Input: weights = [1,3,5,1], k = 2
+    Output: 4
+    Explanation: The distribution [1],[3,5,1] results in the minimal score of 
+                 (1+1) + (3+1) = 6. The distribution [1,3],[5,1], results in 
+                 the maximal score of (1+3) + (5+1) = 10. Thus, we return their 
+                 difference 10 - 6 = 4.
+    
+    Example 2:
+    Input: weights = [1, 3], k = 2
+    Output: 0
+    Explanation: The only distribution possible is [1],[3]. Since both the 
+                 maximal and minimal score are the same, we return 0.
+
+    Constraints:
+    * 1 <= k <= weights.length <= 10^5
+    * 1 <= weights[i] <= 10^9"""
+
+    def putMarbles(self, weight: List[int], k: int) -> int:
+        if k == 1: return 0 
+        vals = sorted(weight[i]+weight[i+1] for i in range(len(weight)-1))
+        return sum(vals[-k+1:]) - sum(vals[:k-1])
+
+
+    """2552. Count Increasing Quadruplets (Hard)
+    Given a 0-indexed integer array nums of size n containing all numbers from 
+    1 to n, return the number of increasing quadruplets. A quadruplet 
+    (i, j, k, l) is increasing if:
+    * 0 <= i < j < k < l < n, and
+    * nums[i] < nums[k] < nums[j] < nums[l].
+
+    Example 1:
+    Input: nums = [1,3,2,4,5]
+    Output: 2
+    Explanation: - When i = 0, j = 1, k = 2, and l = 3, 
+                   nums[i] < nums[k] < nums[j] < nums[l].
+                 - When i = 0, j = 1, k = 2, and l = 4, 
+                   nums[i] < nums[k] < nums[j] < nums[l]. 
+                 There are no other quadruplets, so we return 2.
+    
+    Example 2:
+    Input: nums = [1,2,3,4]
+    Output: 0
+    Explanation: There exists only one quadruplet with i = 0, j = 1, k = 2, 
+                 l = 3, but since nums[j] < nums[k], we return 0.
+
+    Constraints:
+    * 4 <= nums.length <= 4000
+    * 1 <= nums[i] <= nums.length
+    * All the integers of nums are unique. nums is a permutation."""
+
+    def countQuadruplets(self, nums: List[int]) -> int:
+        ans = 0
+        dp = [0] * len(nums)
+        for j in range(len(nums)):
+            prev = 0
+            for i in range(j):
+                if nums[i] < nums[j]:
+                    prev += 1
+                    ans += dp[i]
+                elif nums[i] > nums[j]: dp[i] += prev
+        return ans
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
