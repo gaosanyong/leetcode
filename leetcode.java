@@ -2156,6 +2156,39 @@ class Solution {
     }
 
 
+    /*1121. Divide Array Into Increasing Sequences (Hard)
+    Given an integer array nums sorted in non-decreasing order and an integer k, 
+    return true if this array can be divided into one or more disjoint 
+    increasing subsequences of length at least k, or false otherwise.
+
+    Example 1:
+    Input: nums = [1,2,2,3,3,4,4], k = 3
+    Output: true
+    Explanation: The array can be divided into two subsequences [1,2,3,4] and 
+                 [2,3,4] with lengths at least 3 each.
+    
+    Example 2:
+    Input: nums = [5,6,6,7,8], k = 3
+    Output: false
+    Explanation: There is no way to divide the array using the conditions 
+                 required.
+
+    Constraints:
+    * 1 <= k <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^5
+    * nums is sorted in non-decreasing order.*/
+
+    public boolean canDivideIntoSubsequences(int[] nums, int k) {
+        Map<Integer, Integer> freq = new HashMap(); 
+        int m = 0; 
+        for (var x : nums) {
+            freq.merge(x, 1, Integer::sum); 
+            m = Math.max(m, freq.get(x)); 
+        }
+        return m * k <= nums.length; 
+    }
+
+
     /*1137. N-th Tribonacci Number (Easy)
     The Tribonacci sequence Tn is defined as follows: 
     T0 = 0, T1 = 1, T2 = 1, and Tn+3 = Tn + Tn+1 + Tn+2 for n >= 0.
