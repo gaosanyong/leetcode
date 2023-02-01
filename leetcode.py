@@ -18162,16 +18162,12 @@ class Solution:
     * All the pairs (xi, yi) are distinct."""
 
     def areSentencesSimilar(self, sentence1: List[str], sentence2: List[str], similarPairs: List[List[str]]) -> bool:
-        if len(sentence1) != len(sentence2): return False # edge case 
-        
-        mp = {}
+        if len(sentence1) != len(sentence2): return False
+        mp = defaultdict(set)
         for x, y in similarPairs: 
-            mp.setdefault(x, set()).add(y)
-            mp.setdefault(y, set()).add(x)
-        
-        for w1, w2 in zip(sentence1, sentence2): 
-            if w1 != w2 and w1 not in mp.get(w2, set()): return False 
-        return True 
+            mp[x].add(y)
+            mp[y].add(x)
+        return all(w1 == w2 or w1 in mp[w2] for w1, w2, in zip(sentence1, sentence2))
 
 
     """737. Sentence Similarity II (Medium)
