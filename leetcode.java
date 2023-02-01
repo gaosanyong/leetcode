@@ -2156,6 +2156,35 @@ class Solution {
     }
 
 
+    /*1071. Greatest Common Divisor of Strings (Easy)
+    For two strings s and t, we say "t divides s" if and only if s = t + ... + t 
+    (i.e., t is concatenated with itself one or more times). Given two strings 
+    str1 and str2, return the largest string x such that x divides both str1 
+    and str2.
+
+    Example 1:
+    Input: str1 = "ABCABC", str2 = "ABC"
+    Output: "ABC"
+
+    Example 2:
+    Input: str1 = "ABABAB", str2 = "ABAB"
+    Output: "AB"
+
+    Example 3:
+    Input: str1 = "LEET", str2 = "CODE"
+    Output: ""
+
+    Constraints:
+    * 1 <= str1.length, str2.length <= 1000
+    * str1 and str2 consist of English uppercase letters.*/
+
+    public String gcdOfStrings(String str1, String str2) {
+        if (!(str1 + str2).equals(str2 + str1)) return ""; 
+        int g = BigInteger.valueOf(str1.length()).gcd(BigInteger.valueOf(str2.length())).intValue();
+        return str1.substring(0, g); 
+    }
+
+
     /*1121. Divide Array Into Increasing Sequences (Hard)
     Given an integer array nums sorted in non-decreasing order and an integer k, 
     return true if this array can be divided into one or more disjoint 
