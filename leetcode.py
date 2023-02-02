@@ -18064,6 +18064,46 @@ class Solution:
         return "".join(ans)
 
 
+    """727. Minimum Window Subsequence (Hard)
+    Given strings s1 and s2, return the minimum contiguous substring part of s1, 
+    so that s2 is a subsequence of the part. If there is no such window in s1 
+    that covers all characters in s2, return the empty string "". If there are 
+    multiple such minimum-length windows, return the one with the left-most 
+    starting index.
+
+    Example 1:
+    Input: s1 = "abcdebdde", s2 = "bde"
+    Output: "bcde"
+    Explanation: "bcde" is the answer because it occurs before "bdde" which has 
+                 the same length. "deb" is not a smaller window because the 
+                 elements of s2 in the window must occur in order.
+    
+    Example 2:
+    Input: s1 = "jmeqksfrsdcmsiwvaovztaqenprpvnbstl", s2 = "u"
+    Output: ""
+
+    Constraints:
+    * 1 <= s1.length <= 2 * 10^4
+    * 1 <= s2.length <= 100
+    * s1 and s2 consist of lowercase English letters."""
+
+    def minWindow(self, s1: str, s2: str) -> str:
+        m, n = len(s1), len(s2)
+        dp = [[-1]*n for _ in range(m)]
+        if s1[0] == s2[0]: dp[0][0] = 0 
+        for i in range(1, m): 
+            for j in range(n): 
+                if s1[i] == s2[j]: 
+                    if j: dp[i][j] = dp[i-1][j-1]
+                    else: dp[i][j] = i
+                else: dp[i][j] = dp[i-1][j]
+        ans = ""
+        for i in range(m): 
+            k = dp[i][-1]
+            if k != -1 and (not ans or i-k+1 < len(ans)): ans = s1[k:i+1]
+        return ans 
+
+
     """733. Flood Fill (Easy)
     An image is represented by an m x n integer grid image where image[i][j] 
     represents the pixel value of the image. You are also given three integers 
