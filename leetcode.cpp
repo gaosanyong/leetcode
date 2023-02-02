@@ -21272,16 +21272,15 @@ public:
     * All characters in words[i] and order are English lowercase letters.*/
 
     bool isAlienSorted(vector<string>& words, string order) {
-        unordered_map<char, int> mp; 
-        for (int i = 0; i < order.size(); ++i)
-            mp[order[i]] = i; 
-        
-        for (int i = 1; i < words.size(); ++i) {
-            for (int k; k < words[i-1].size(); ++k) {
-                if (k == words[i].size()) return false; 
-                if (mp[words[i-1][k]] < mp[words[i][k]]) break; 
-                if (mp[words[i-1][k]] > mp[words[i][k]]) return false; 
-            }
+        vector<int> mp(26); 
+        for (int i = 0; i < 26; ++i) 
+            mp[order[i] - 'a'] = i; 
+        string prev; 
+        for (auto& word : words) {
+            string curr; 
+            for (auto& ch : word) curr.push_back(mp[ch-'a'] + 'a'); 
+            if (prev > curr) return false; 
+            prev = curr; 
         }
         return true; 
     }
