@@ -50976,6 +50976,95 @@ public:
     }
 
 
+    /*2479. Maximum XOR of Two Non-Overlapping Subtrees (Hard)
+    There is an undirected tree with n nodes labeled from 0 to n - 1. You are 
+    given the integer n and a 2D integer array edges of length n - 1, where 
+    edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi 
+    in the tree. The root of the tree is the node labeled 0. Each node has an 
+    associated value. You are given an array values of length n, where values[i] 
+    is the value of the ith node. Select any two non-overlapping subtrees. Your 
+    score is the bitwise XOR of the sum of the values within those subtrees.
+    Return the maximum possible score you can achieve. If it is impossible to 
+    find two nonoverlapping subtrees, return 0.
+
+    Note that:
+    * The subtree of a node is the tree consisting of that node and all of its 
+      descendants.
+    * Two subtrees are non-overlapping if they do not share any common node.
+
+    Example 1:
+    Input: n = 6, edges = [[0,1],[0,2],[1,3],[1,4],[2,5]], values = [2,8,3,6,2,5]
+    Output: 24
+    Explanation: Node 1's subtree has sum of values 16, while node 2's subtree 
+                 has sum of values 8, so choosing these nodes will yield a 
+                 score of 16 XOR 8 = 24. It can be proved that is the maximum 
+                 possible score we can obtain.
+    
+    Example 2:
+    Input: n = 3, edges = [[0,1],[1,2]], values = [4,6,1]
+    Output: 0
+    Explanation: There is no possible way to select two non-overlapping 
+                 subtrees, so we just return 0.
+
+    Constraints:
+    * 2 <= n <= 5 * 10^4
+    * edges.length == n - 1
+    * 0 <= ai, bi < n
+    * values.length == n
+    * 1 <= values[i] <= 10^9
+    * It is guaranteed that edges represents a valid tree.*/
+
+    long long maxXor(int n, vector<vector<int>>& edges, vector<int>& values) {
+        vector<vector<int>> tree(n); 
+        for (auto& e : edges) {
+            tree[e[0]].push_back(e[1]); 
+            tree[e[1]].push_back(e[0]); 
+        }
+        vector<long> sum(n); 
+        
+        function<long(int, int)> dfs = [&](int u, int p) {
+            sum[u] = values[u]; 
+            for (auto& v : tree[u]) 
+                if (v != p) sum[u] += dfs(v, u); 
+            return sum[u]; 
+        }; 
+        
+        dfs(0, -1); 
+        
+        struct TrieNode {
+            TrieNode* child[2] = {nullptr}; 
+            long val = 0; 
+        };
+        
+        TrieNode* trie = new TrieNode(); 
+        
+        function<long(int, int)> calc = [&](int u, int p) {
+            long ans = 0; 
+            if (trie->child[0] || trie->child[1]) {
+                TrieNode* node = trie; 
+                for (int i = 45; i >= 0; --i) {
+                    int b = (sum[u] >> i) & 1; 
+                    if (node->child[1-b]) node = node->child[1-b]; 
+                    else node = node->child[b]; 
+                }
+                ans = node->val ^ sum[u]; 
+            }
+            for (auto& v : tree[u]) 
+                if (v != p) ans = max(ans, calc(v, u)); 
+            TrieNode* node = trie; 
+            for (int i = 45; i >= 0; --i) {
+                int b = (sum[u] >> i) & 1; 
+                if (!node->child[b]) node->child[b] = new TrieNode(); 
+                node = node->child[b]; 
+            }
+            node->val = sum[u]; 
+            return ans; 
+        }; 
+        
+        return calc(0, -1); 
+    }
+
+
     /*2481. Minimum Cuts to Divide a Circle (Easy)
     A valid cut in a circle can be:
     * A cut that is represented by a straight line that touches two points on 
