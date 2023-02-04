@@ -14961,10 +14961,16 @@ class Solution:
 
     def checkInclusion(self, s1: str, s2: str) -> bool:
         freq = Counter(s1)
-        for i, x in enumerate(s2): 
-            freq[x] -= 1
-            if i >= len(s1): freq[s2[i-len(s1)]] += 1
-            if not any(freq.values()): return True 
+        bal = len(freq)
+        for i, ch in enumerate(s2): 
+            if freq[ch] == 0: bal += 1
+            freq[ch] -= 1
+            if freq[ch] == 0: bal -= 1
+            if i >= len(s1): 
+                if freq[s2[i-len(s1)]] == 0: bal += 1
+                freq[s2[i-len(s1)]] += 1
+                if freq[s2[i-len(s1)]] == 0: bal -= 1
+            if bal == 0: return True 
         return False
 
 
