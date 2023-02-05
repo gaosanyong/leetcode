@@ -54202,6 +54202,173 @@ public:
         }
         return ans; 
     }
+
+
+    /*2553. Separate the Digits in an Array (Easy)
+    Given an array of positive integers nums, return an array answer that 
+    consists of the digits of each integer in nums after separating them in the 
+    same order they appear in nums. To separate the digits of an integer is to 
+    get all the digits it has in the same order. For example, for the integer 
+    10921, the separation of its digits is [1,0,9,2,1].
+
+    Example 1:
+    Input: nums = [13,25,83,77]
+    Output: [1,3,2,5,8,3,7,7]
+    Explanation: - The separation of 13 is [1,3].
+                 - The separation of 25 is [2,5].
+                 - The separation of 83 is [8,3].
+                 - The separation of 77 is [7,7].
+                 answer = [1,3,2,5,8,3,7,7]. Note that answer contains the 
+                 separations in the same order.
+    
+    Example 2:
+    Input: nums = [7,1,3,9]
+    Output: [7,1,3,9]
+    Explanation: The separation of each integer in nums is itself. 
+                 answer = [7,1,3,9].
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i] <= 10^5*/
+
+    vector<int> separateDigits(vector<int>& nums) {
+        vector<int> ans; 
+        for (int i = nums.size()-1; i >= 0; --i) 
+            for (int x = nums[i]; x; x /= 10)
+                ans.push_back(x % 10); 
+        reverse(ans.begin(), ans.end()); 
+        return ans; 
+    }
+
+
+    /*2554. Maximum Number of Integers to Choose From a Range I (Medium)
+    You are given an integer array banned and two integers n and maxSum. You 
+    are choosing some number of integers following the below rules:
+    * The chosen integers have to be in the range [1, n].
+    * Each integer can be chosen at most once.
+    * The chosen integers should not be in the array banned.
+    * The sum of the chosen integers should not exceed maxSum.
+    Return the maximum number of integers you can choose following the 
+    mentioned rules.
+
+    Example 1:
+    Input: banned = [1,6,5], n = 5, maxSum = 6
+    Output: 2
+    Explanation: You can choose the integers 2 and 4. 2 and 4 are from the 
+                 range [1, 5], both did not appear in banned, and their sum is 
+                 6, which did not exceed maxSum.
+    
+    Example 2:
+    Input: banned = [1,2,3,4,5,6,7], n = 8, maxSum = 1
+    Output: 0
+    Explanation: You cannot choose any integer while following the mentioned 
+                 conditions.
+    
+    Example 3:
+    Input: banned = [11], n = 7, maxSum = 50
+    Output: 7
+    Explanation: You can choose the integers 1, 2, 3, 4, 5, 6, and 7. They are 
+                 from the range [1, 7], all did not appear in banned, and their 
+                 sum is 28, which did not exceed maxSum.
+
+    Constraints:
+    * 1 <= banned.length <= 10^4
+    * 1 <= banned[i], n <= 10^4
+    * 1 <= maxSum <= 10^9*/
+
+    int maxCount(vector<int>& banned, int n, int maxSum) {
+        unordered_set<int> tabu(banned.begin(), banned.end()); 
+        int ans = 0; 
+        for (int x = 1; x <= n && x <= maxSum; ++x) 
+            if (!tabu.count(x)) {
+                maxSum -= x; 
+                ++ans; 
+            }
+        return ans; 
+    }
+
+
+    /*2555. Maximize Win From Two Segments (Medium)
+    There are some prizes on the X-axis. You are given an integer array 
+    prizePositions that is sorted in non-decreasing order, where 
+    prizePositions[i] is the position of the ith prize. There could be 
+    different prizes at the same position on the line. You are also given an 
+    integer k. You are allowed to select two segments with integer endpoints. 
+    The length of each segment must be k. You will collect all prizes whose 
+    position falls within at least one of the two selected segments (including 
+    the endpoints of the segments). The two selected segments may intersect.
+    For example if k = 2, you can choose segments [1, 3] and [2, 4], and you 
+    will win any prize i that satisfies 1 <= prizePositions[i] <= 3 or 
+    2 <= prizePositions[i] <= 4. Return the maximum number of prizes you can 
+    win if you choose the two segments optimally.
+
+    Example 1:
+    Input: prizePositions = [1,1,2,2,3,3,5], k = 2
+    Output: 7
+    Explanation: In this example, you can win all 7 prizes by selecting two 
+                 segments [1, 3] and [3, 5].
+    
+    Example 2:
+    Input: prizePositions = [1,2,3,4], k = 0
+    Output: 2
+    Explanation: For this example, one choice for the segments is [3, 3] and 
+                 [4, 4], and you will be able to get 2 prizes. 
+
+    Constraints:
+    * 1 <= prizePositions.length <= 10^5
+    * 1 <= prizePositions[i] <= 10^9
+    * 0 <= k <= 10^9
+    * prizePositions is sorted in non-decreasing order.*/
+
+    int maximizeWin(vector<int>& prizePositions, int k) {
+        int ans = 0; 
+        vector<int> dp(1); 
+        for (int i = 0, ii = 0; i < prizePositions.size(); ++i) {
+            while (prizePositions[i] - prizePositions[ii] > k) ++ii; 
+            ans = max(ans, dp[ii] + i - ii + 1); 
+            dp.push_back(max(dp.back(), i - ii + 1)); 
+        }
+        return ans; 
+    }
+
+
+    /*2556. Disconnect Path in a Binary Matrix by at Most One Flip (Medium)
+    You are given a 0-indexed m x n binary matrix grid. You can move from a 
+    cell (row, col) to any of the cells (row + 1, col) or (row, col + 1) that 
+    has the value 1. The matrix is disconnected if there is no path from 
+    (0, 0) to (m - 1, n - 1). You can flip the value of at most one (possibly 
+    none) cell. You cannot flip the cells (0, 0) and (m - 1, n - 1). Return 
+    true if it is possible to make the matrix disconnect or false otherwise.
+    Note that flipping a cell changes its value from 0 to 1 or from 1 to 0.
+
+    Example 1:
+    Input: grid = [[1,1,1],[1,0,0],[1,1,1]]
+    Output: true
+    Explanation: We can change the cell shown in the diagram above. There is no 
+                 path from (0, 0) to (2, 2) in the resulting grid.
+    
+    Example 2:
+    Input: grid = [[1,1,1],[1,0,1],[1,1,1]]
+    Output: false
+    Explanation: It is not possible to change at most one cell such that there 
+                 is not path from (0, 0) to (2, 2).
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 1000
+    * 1 <= m * n <= 10^5
+    * grid[i][j] is either 0 or 1.
+    * grid[0][0] == grid[m - 1][n - 1] == 1*/
+
+    bool isPossibleToCutPath(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size(); 
+        vector<int> freq(m+n-1); 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j)
+                freq[i+j] += grid[i][j]; 
+        return any_of(freq.begin()+1, freq.end()-1, [&](auto& x) {return x <= 1;}); 
+    }
 };
 
 
