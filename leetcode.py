@@ -74692,6 +74692,186 @@ class SegTree:
         return lo - sum(x <= lo for x in banned)
 
 
+    """2558. Take Gifts From the Richest Pile (Easy)
+    You are given an integer array gifts denoting the number of gifts in 
+    various piles. Every second, you do the following:
+    * Choose the pile with the maximum number of gifts.
+    * If there is more than one pile with the maximum number of gifts, choose 
+      any.
+    * Leave behind the floor of the square root of the number of gifts in the 
+      pile. Take the rest of the gifts.
+    Return the number of gifts remaining after k seconds.
+
+    Example 1:
+    Input: gifts = [25,64,9,4,100], k = 4
+    Output: 29
+    Explanation: The gifts are taken in the following way:
+                 - In the first second, the last pile is chosen and 10 gifts 
+                   are left behind.
+                 - Then the second pile is chosen and 8 gifts are left behind.
+                 - After that the first pile is chosen and 5 gifts are left 
+                   behind.
+                 - Finally, the last pile is chosen again and 3 gifts are left 
+                   behind.
+                 The final remaining gifts are [5,8,9,4,3], so the total number 
+                 of gifts remaining is 29.
+    
+    Example 2:
+    Input: gifts = [1,1,1,1], k = 4
+    Output: 4
+    Explanation: In this case, regardless which pile you choose, you have to 
+                 leave behind 1 gift in each pile. That is, you can't take any 
+                 pile with you. So, the total gifts remaining are 4.
+
+    Constraints:
+    * 1 <= gifts.length <= 10^3
+    * 1 <= gifts[i] <= 10^9
+    * 1 <= k <= 10^3"""
+
+    def pickGifts(self, gifts: List[int], k: int) -> int:
+        pq = [-x for x in gifts]
+        heapify(pq)
+        for _ in range(k): heapreplace(pq, -isqrt(-pq[0]))
+        return -sum(pq)
+
+
+    """2559. Count Vowel Strings in Ranges (Medium)
+    You are given a 0-indexed array of strings words and a 2D array of integers 
+    queries. Each query queries[i] = [li, ri] asks us to find the number of 
+    strings present in the range li to ri (both inclusive) of words that start 
+    and end with a vowel. Return an array ans of size queries.length, where 
+    ans[i] is the answer to the ith query. Note that the vowel letters are 
+    'a', 'e', 'i', 'o', and 'u'.
+
+    Example 1:
+    Input: words = ["aba","bcb","ece","aa","e"], queries = [[0,2],[1,4],[1,1]]
+    Output: [2,3,0]
+    Explanation: The strings starting and ending with a vowel are "aba", "ece", 
+                 "aa" and "e". The answer to the query [0,2] is 2 (strings 
+                 "aba" and "ece"). 
+                 to query [1,4] is 3 (strings "ece", "aa", "e").
+                 to query [1,1] is 0.
+                 We return [2,3,0].
+    
+    Example 2:
+    Input: words = ["a","e","i"], queries = [[0,2],[0,1],[2,2]]
+    Output: [3,2,1]
+    Explanation: Every string satisfies the conditions, so we return [3,2,1].
+
+    Constraints:
+    * 1 <= words.length <= 10^5
+    * 1 <= words[i].length <= 40
+    * words[i] consists only of lowercase English letters.
+    * sum(words[i].length) <= 3 * 10^5
+    * 1 <= queries.length <= 10^5
+    * 0 <= li <= ri < words.length"""
+
+    def vowelStrings(self, words: List[str], queries: List[List[int]]) -> List[int]:
+        prefix = [0]
+        for i, word in enumerate(words): 
+            prefix.append(prefix[-1])
+            if word[0] in "aeiou" and word[-1] in "aeiou": prefix[-1] += 1
+        return [prefix[r+1]-prefix[l] for l, r in queries]
+
+
+    """2560. House Robber IV (Medium)
+    There are several consecutive houses along a street, each of which has some 
+    money inside. There is also a robber, who wants to steal money from the 
+    homes, but he refuses to steal from adjacent homes. The capability of the 
+    robber is the maximum amount of money he steals from one house of all the 
+    houses he robbed. You are given an integer array nums representing how much 
+    money is stashed in each house. More formally, the ith house from the left 
+    has nums[i] dollars. You are also given an integer k, representing the 
+    minimum number of houses the robber will steal from. It is always possible 
+    to steal at least k houses. Return the minimum capability of the robber out 
+    of all the possible ways to steal at least k houses.
+
+    Example 1:
+    Input: nums = [2,3,5,9], k = 2
+    Output: 5
+    Explanation: There are three ways to rob at least 2 houses:
+                 - Rob the houses at indices 0 and 2. Capability is 
+                   max(nums[0], nums[2]) = 5.
+                 - Rob the houses at indices 0 and 3. Capability is 
+                   max(nums[0], nums[3]) = 9.
+                 - Rob the houses at indices 1 and 3. Capability is 
+                   max(nums[1], nums[3]) = 9.
+                 Therefore, we return min(5, 9, 9) = 5.
+    
+    Example 2:
+    Input: nums = [2,7,9,3,1], k = 2
+    Output: 2
+    Explanation: There are 7 ways to rob the houses. The way which leads to 
+                 minimum capability is to rob the house at index 0 and 4. 
+                 Return max(nums[0], nums[4]) = 2.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9
+    * 1 <= k <= (nums.length + 1)/2"""
+
+    def minCapability(self, nums: List[int], k: int) -> int:
+        lo, hi = 0, max(nums)
+        while lo < hi: 
+            mid = lo + hi >> 1
+            cnt = 0 
+            prev = -inf 
+            for i, x in enumerate(nums): 
+                if x <= mid and prev+1 < i: 
+                    cnt += 1
+                    prev = i 
+            if cnt < k: lo = mid + 1
+            else: hi = mid 
+        return lo 
+
+
+    """2561. Rearranging Fruits (Hard)
+    You have two fruit baskets containing n fruits each. You are given two 0-
+    indexed integer arrays basket1 and basket2 representing the cost of fruit 
+    in each basket. You want to make both baskets equal. To do so, you can use 
+    the following operation as many times as you want:
+    * Chose two indices i and j, and swap the ith fruit of basket1 with the jth 
+      fruit of basket2.
+    * The cost of the swap is min(basket1[i],basket2[j]).
+    Two baskets are considered equal if sorting them according to the fruit 
+    cost makes them exactly the same baskets. Return the minimum cost to make 
+    both the baskets equal or -1 if impossible.
+
+    Example 1:
+    Input: basket1 = [4,2,2,2], basket2 = [1,4,1,2]
+    Output: 1
+    Explanation: Swap index 1 of basket1 with index 0 of basket2, which has 
+                 cost 1. Now basket1 = [4,1,2,2] and basket2 = [2,4,1,2]. 
+                 Rearranging both the arrays makes them equal.
+    
+    Example 2:
+    Input: basket1 = [2,3,4,1], basket2 = [3,2,5,1]
+    Output: -1
+    Explanation: It can be shown that it is impossible to make both the baskets 
+                 equal.
+
+    Constraints:
+    * basket1.length == bakste2.length
+    * 1 <= basket1.length <= 10^5
+    * 1 <= basket1[i],basket2[i] <= 10^9"""
+
+    def minCost(self, basket1: List[int], basket2: List[int]) -> int:
+        freq = defaultdict(int)
+        for x in basket1: freq[x] += 1
+        for x in basket2: freq[x] -= 1
+        m = min(freq)
+        ans = total = 0 
+        for k, v in freq.items(): 
+            if v&1: return -1 
+            total += abs(v//2)
+        total //= 2
+        for k, v in sorted(freq.items()): 
+            v = min(abs(v//2), total)
+            ans += v * min(2*m, k)
+            total -= v
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
