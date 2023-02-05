@@ -74636,13 +74636,17 @@ class SegTree:
 
     def isPossibleToCutPath(self, grid: List[List[int]]) -> bool:
         m, n = len(grid), len(grid[0])
+        for i in range(m): 
+            for j in range(n): 
+                if (i, j) != (0, 0) and (i == 0 or grid[i-1][j] == 0) and (j == 0 or grid[i][j-1] == 0): grid[i][j] = 0 
+        for i in range(m-1, -1, -1): 
+            for j in range(n-1, -1, -1): 
+                if (i, j) != (m-1, n-1) and (i == m-1 or grid[i+1][j] == 0) and (j == n-1 or grid[i][j+1] == 0): grid[i][j] = 0 
         freq = [0]*(m+n-1)
         for i in range(m): 
             for j in range(n): 
                 freq[i+j] += grid[i][j]
-        for i in range(1, m+n-2): 
-            if freq[i] <= 1: return True
-        return False 
+        return any(freq[i] <= 1 for i in range(1, m+n-2))
 
 
 """146. LRU Cache (Medium)
