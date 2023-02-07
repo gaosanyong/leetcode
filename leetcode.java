@@ -7515,13 +7515,10 @@ class Solution {
     public int maxCount(int[] banned, int n, long maxSum) {
         int lo = 0, hi = n; 
         while (lo < hi) {
-            int mid = lo + (hi - lo + 1)/2, cnt = mid; 
+            int mid = lo + (hi - lo + 1)/2; 
             long total = (long) mid*(mid+1)/2; 
             for (var x : banned) 
-                if (x <= mid) {
-                    --cnt; 
-                    total -= x; 
-                }
+                if (x <= mid) total -= x; 
             if (total <= maxSum) lo = mid; 
             else hi = mid-1; 
         }

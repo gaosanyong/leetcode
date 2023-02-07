@@ -74766,12 +74766,10 @@ class SegTree:
     def maxCount(self, banned: List[int], n: int, maxSum: int) -> int:
         lo, hi = 0, n
         while lo < hi: 
-            cnt = mid = lo + hi + 1 >> 1
+            mid = lo + hi + 1 >> 1
             total = mid*(mid+1)//2
             for x in banned: 
-                if x <= mid: 
-                    cnt -= 1
-                    total -= x
+                if x <= mid: total -= x
             if total <= maxSum: lo = mid
             else: hi = mid-1
         return lo - sum(x <= lo for x in banned)
