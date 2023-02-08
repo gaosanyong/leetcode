@@ -1350,8 +1350,8 @@ public:
     * 0 <= nums[i] <= 10^5*/
 
     int jump(vector<int>& nums) {
-        int ans = 0, prev = 0, curr = 0; 
-        for (int i = 0; i < nums.size(); ++i) {
+        int ans = 0; 
+        for (int i = 0, prev = 0, curr = 0; i < nums.size(); ++i) {
             if (prev < i) {
                 ++ans; 
                 prev = curr; 
