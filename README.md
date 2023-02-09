@@ -1,5 +1,5 @@
 # Welcome to my LeetCode solutions 
-This repo collects my solutions in Python & C++ to LeetCode problems. 
+This repo collects my solutions to LeetCode problems in C++, Java and Python3. 
 
 As new problems come up in weekly and biweekly contests, I will update this repo once the contests are over. 
 Here, I try my best to make every solution as self-contained as possible. 
