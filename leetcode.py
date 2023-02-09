@@ -57956,6 +57956,60 @@ class Trie:
                 else: return ans 
 
 
+    """2123. Minimum Operations to Remove Adjacent Ones in Matrix (Hard)
+    You are given a 0-indexed binary matrix grid. In one operation, you can 
+    flip any 1 in grid to be 0. A binary matrix is well-isolated if there is no 
+    1 in the matrix that is 4-directionally connected (i.e., horizontal and 
+    vertical) to another 1. Return the minimum number of operations to make 
+    grid well-isolated.
+
+    Example 1:
+    Input: grid = [[1,1,0],[0,1,1],[1,1,1]]
+    Output: 3
+    Explanation: Use 3 operations to change grid[0][1], grid[1][2], and 
+                 grid[2][1] to 0. After, no more 1's are 4-directionally 
+                 connected and grid is well-isolated.
+    
+    Example 2:
+    Input: grid = [[0,0,0],[0,0,0],[0,0,0]]
+    Output: 0
+    Explanation: There are no 1's in grid and it is well-isolated. No 
+                 operations were done so return 0.
+    
+    Example 3:
+    Input: grid = [[0,1],[1,0]]
+    Output: 0
+    Explanation: None of the 1's are 4-directionally connected and grid is 
+                 well-isolated. No operations were done so return 0.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 300
+    * grid[i][j] is either 0 or 1."""
+
+    def minimumOperations(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        match = defaultdict(lambda : None)
+        
+        def dfs(i, j, seen): 
+            """Return True if an augmenting path is found via Hungarian algo."""
+            for ii, jj in (i+1, j), (i-1, j), (i, j+1), (i, j-1): 
+                if 0 <= ii < m and 0 <= jj < n and grid[ii][jj] and (ii, jj) not in seen: 
+                    seen.add((ii, jj))
+                    if not match[ii, jj] or dfs(*match[ii, jj], seen): 
+                        match[i, j] = (ii, jj)
+                        match[ii, jj] = (i, j)
+                        return True 
+            return False 
+        
+        ans = 0 
+        for i in range(m): 
+            for j in range(n): 
+                if grid[i][j] and (i+j)&1 and dfs(i, j, {(i, j)}): ans += 1
+        return ans 
+
+
     """2124. Check if All A's Appears Before All B's (Easy)
     Given a string s consisting of only the characters 'a' and 'b', return true 
     if every 'a' appears before every 'b' in the string. Otherwise, return 

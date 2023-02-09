@@ -3501,6 +3501,72 @@ class Solution {
     }
 
 
+    /*2123. Minimum Operations to Remove Adjacent Ones in Matrix (Hard)
+    You are given a 0-indexed binary matrix grid. In one operation, you can 
+    flip any 1 in grid to be 0. A binary matrix is well-isolated if there is no 
+    1 in the matrix that is 4-directionally connected (i.e., horizontal and 
+    vertical) to another 1. Return the minimum number of operations to make 
+    grid well-isolated.
+
+    Example 1:
+    Input: grid = [[1,1,0],[0,1,1],[1,1,1]]
+    Output: 3
+    Explanation: Use 3 operations to change grid[0][1], grid[1][2], and 
+                 grid[2][1] to 0. After, no more 1's are 4-directionally 
+                 connected and grid is well-isolated.
+    
+    Example 2:
+    Input: grid = [[0,0,0],[0,0,0],[0,0,0]]
+    Output: 0
+    Explanation: There are no 1's in grid and it is well-isolated. No 
+                 operations were done so return 0.
+    
+    Example 3:
+    Input: grid = [[0,1],[1,0]]
+    Output: 0
+    Explanation: None of the 1's are 4-directionally connected and grid is 
+                 well-isolated. No operations were done so return 0.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 300
+    * grid[i][j] is either 0 or 1.*/
+
+    private boolean dfs(int i, int j, int x, int[][] grid, int[][] match, int[][] seen) {
+        /* Return true if an augmenting path is found via Hungarian algo. */
+        int m = grid.length, n = grid[0].length; 
+        int[] dir = new int[]{-1, 0, 1, 0, -1}; 
+        for (int k = 0; k < 4; ++k) {
+            int ii = i + dir[k], jj = j + dir[k+1]; 
+            if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj] == 1 && seen[ii][jj] != x) {
+                seen[ii][jj] = x; 
+                if (match[ii][jj] == -1 || dfs(match[ii][jj]/n, match[ii][jj]%n, x, grid, match, seen)) {
+                    match[ii][jj] = i*n + j; 
+                    match[i][j] = ii*n + jj; 
+                    return true; 
+                }
+            }
+        }
+        return false; 
+    }
+    
+    public int minimumOperations(int[][] grid) {
+        int m = grid.length, n = grid[0].length, ans = 0; 
+        int[][] match = new int[m][n], seen = new int[m][n]; 
+        for (int i = 0; i < m; ++i) {
+            Arrays.fill(match[i], -1); 
+            Arrays.fill(seen[i], -1); 
+        }
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j)
+                if (grid[i][j] == 1 && (i+j)%2 == 1 && match[i][j] == -1 && dfs(i, j, seen[i][j] = i*n+j, grid, match, seen)) 
+                    ++ans; 
+        }
+        return ans; 
+    }
+
+
     /*2143. Choose Numbers From Two Arrays in Range (Hard)
     You are given two 0-indexed integer arrays nums1 and nums2 of length n. A 
     range [l, r] (inclusive) where 0 <= l <= r < n is balanced if:
