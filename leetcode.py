@@ -75088,6 +75088,205 @@ class SegTree:
         return ans 
 
 
+    """2562. Find the Array Concatenation Value (Easy)
+    You are given a 0-indexed integer array nums. The concatenation of two 
+    numbers is the number formed by concatenating their numerals.
+    * For example, the concatenation of 15, 49 is 1549.
+    The concatenation value of nums is initially equal to 0. Perform this 
+    operation until nums becomes empty:
+    * If there exists more than one number in nums, pick the first element and 
+      last element in nums respectively and add the value of their 
+      concatenation to the concatenation value of nums, then delete the first 
+      and last element from nums.
+    * If one element exists, add its value to the concatenation value of nums, 
+      then delete it.
+    Return the concatenation value of the nums.
+
+    Example 1:
+    Input: nums = [7,52,2,4]
+    Output: 596
+    Explanation: Before performing any operation, nums is [7,52,2,4] and 
+                 concatenation value is 0.
+                  - In the first operation:
+                 We pick the first element, 7, and the last element, 4. Their 
+                 concatenation is 74, and we add it to the concatenation value, 
+                 so it becomes equal to 74. Then we delete them from nums, so 
+                 nums becomes equal to [52,2].
+                  - In the second operation:
+                 We pick the first element, 52, and the last element, 2. Their 
+                 concatenation is 522, and we add it to the concatenation value, 
+                 so it becomes equal to 596. Then we delete them from the nums, 
+                 so nums becomes empty. Since the concatenation value is 596 so 
+                 the answer is 596.
+    
+    Example 2:
+    Input: nums = [5,14,13,8,12]
+    Output: 673
+    Explanation: Before performing any operation, nums is [5,14,13,8,12] and 
+                 concatenation value is 0.
+                  - In the first operation:
+                 We pick the first element, 5, and the last element, 12. Their 
+                 concatenation is 512, and we add it to the concatenation value, 
+                 so it becomes equal to 512. Then we delete them from the nums, 
+                 so nums becomes equal to [14,13,8].
+                  - In the second operation:
+                 We pick the first element, 14, and the last element, 8. Their 
+                 concatenation is 148, and we add it to the concatenation value, 
+                 so it becomes equal to 660. Then we delete them from the nums, 
+                 so nums becomes equal to [13].
+                  - In the third operation:
+                 nums has only one element, so we pick 13 and add it to the 
+                 concatenation value, so it becomes equal to 673. Then we 
+                 delete it from nums, so nums become empty. Since the 
+                 concatenation value is 673 so the answer is 673.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i] <= 10^4"""
+
+    def findTheArrayConcVal(self, nums: List[int]) -> int:
+        n = len(nums)
+        ans = 0 
+        for i in range((n+1)//2): 
+            if i == n-1-i: ans += nums[i]
+            else: ans += int(str(nums[i]) + str(nums[n-1-i]))
+        return ans 
+
+
+    """2563. Count the Number of Fair Pairs (Medium)
+    Given a 0-indexed integer array nums of size n and two integers lower and 
+    upper, return the number of fair pairs. A pair (i, j) is fair if:
+    * 0 <= i < j < n, and
+    * lower <= nums[i] + nums[j] <= upper
+
+    Example 1:
+    Input: nums = [0,1,7,4,4,5], lower = 3, upper = 6
+    Output: 6
+    Explanation: There are 6 fair pairs: (0,3), (0,4), (0,5), (1,3), (1,4), and 
+                 (1,5).
+
+    Example 2:
+    Input: nums = [1,7,9,2,5], lower = 11, upper = 11
+    Output: 1
+    Explanation: There is a single fair pair: (2,3).
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * nums.length == n
+    * -10^9 <= nums[i] <= 10^9
+    * -10^9 <= lower <= upper <= 10^9"""
+
+    def countFairPairs(self, nums: List[int], lower: int, upper: int) -> int:
+        nums.sort()
+        ans = 0 
+        lo = hi = len(nums)-1
+        for i, x in enumerate(nums): 
+            while 0 <= hi and x + nums[hi] > upper: hi -= 1
+            while 0 <= lo and x + nums[lo] >= lower: lo -= 1
+            ans += hi - lo 
+            if lo < i <= hi: ans -= 1
+        return ans//2
+
+
+    """2564. Substring XOR Queries (Medium)
+    You are given a binary string s, and a 2D integer array queries where 
+    queries[i] = [firsti, secondi]. For the ith query, find the shortest 
+    substring of s whose decimal value, val, yields secondi when bitwise XORed 
+    with firsti. In other words, val ^ firsti == secondi. The answer to the ith 
+    query is the endpoints (0-indexed) of the substring [lefti, righti] or 
+    [-1, -1] if no such substring exists. If there are multiple answers, choose 
+    the one with the minimum lefti. Return an array ans where 
+    ans[i] = [lefti, righti] is the answer to the ith query. A substring is a 
+    contiguous non-empty sequence of characters within a string.
+
+    Example 1:
+    Input: s = "101101", queries = [[0,5],[1,2]]
+    Output: [[0,2],[2,3]]
+    Explanation: For the first query the substring in range [0,2] is "101" 
+                 which has a decimal value of 5, and 5 ^ 0 = 5, hence the 
+                 answer to the first query is [0,2]. In the second query, the 
+                 substring in range [2,3] is "11", and has a decimal value of 3, 
+                 and 3 ^ 1 = 2. So, [2,3] is returned for the second query. 
+
+    Example 2:
+    Input: s = "0101", queries = [[12,8]]
+    Output: [[-1,-1]]
+    Explanation: In this example there is no substring that answers the query, 
+                 hence [-1,-1] is returned.
+    
+    Example 3:
+    Input: s = "1", queries = [[4,5]]
+    Output: [[0,0]]
+    Explanation: For this example, the substring in range [0,0] has a decimal 
+                 value of 1, and 1 ^ 4 = 5. So, the answer is [0,0].
+
+    Constraints:
+    * 1 <= s.length <= 10^4
+    * s[i] is either '0' or '1'.
+    * 1 <= queries.length <= 10^5
+    * 0 <= firsti, secondi <= 10^9"""
+
+    def substringXorQueries(self, s: str, queries: List[List[int]]) -> List[List[int]]:
+        seen = {}
+        for i, ch in enumerate(s):
+            if ch == '1': 
+                val = 0
+                for j in range(i, min(len(s), i+30)): 
+                    val <<= 1
+                    if s[j] == '1': val += 1
+                    seen.setdefault(val, [i, j])
+            else: seen.setdefault(0, [i, i])
+        return [seen.get(x^y, [-1, -1]) for x, y in queries]
+
+
+    """2565. Subsequence With the Minimum Score (Hard)
+    You are given two strings s and t. You are allowed to remove any number of 
+    characters from the string t. The score string is 0 if no characters are 
+    removed from the string t, otherwise:
+    * Let left be the minimum index among all removed characters.
+    * Let right be the maximum index among all removed characters.
+    Then the score of the string is right - left + 1. Return the minimum 
+    possible score to make t a subsequence of s. A subsequence of a string is a 
+    new string that is formed from the original string by deleting some (can be 
+    none) of the characters without disturbing the relative positions of the 
+    remaining characters. (i.e., "ace" is a subsequence of "abcde" while "aec" 
+    is not).
+
+    Example 1:
+    Input: s = "abacaba", t = "bzaa"
+    Output: 1
+    Explanation: In this example, we remove the character "z" at index 1 
+                 (0-indexed). The string t becomes "baa" which is a subsequence 
+                 of the string "abacaba" and the score is 1 - 1 + 1 = 1. It can 
+                 be proven that 1 is the minimum score that we can achieve.
+    
+    Example 2:
+    Input: s = "cde", t = "xyz"
+    Output: 3
+    Explanation: In this example, we remove characters "x", "y" and "z" at 
+                 indices 0, 1, and 2 (0-indexed). The string t becomes "" which 
+                 is a subsequence of the string "cde" and the score is 
+                 2 - 0 + 1 = 3. It can be proven that 3 is the minimum score 
+                 that we can achieve.
+
+    Constraints:
+    * 1 <= s.length, t.length <= 10^5
+    * s and t consist of only lowercase English letters."""
+
+    def minimumScore(self, s: str, t: str) -> int:
+        prefix = []
+        j = 0 
+        for ch in s: 
+            if j < len(t) and ch == t[j]: j += 1
+            prefix.append(j)
+        ans = len(t)-j
+        j = len(t)
+        for i in reversed(range(len(s))): 
+            ans = min(ans, max(0, j - prefix[i]))
+            if 0 < j and s[i] == t[j-1]: j -= 1
+        return min(ans, j)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
