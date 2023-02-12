@@ -71623,19 +71623,19 @@ class SegTree:
             graph[u].append(v)
             graph[v].append(u)
         
-        ans = 0 
         def dfs(u, p): 
             """Return number of people going through city u."""
-            nonlocal ans 
-            ppl = 0 
+            ans = ppl = 0 
             for v in graph[u]: 
-                if v != p: ppl += dfs(v, u)
+                if v != p: 
+                    x, y = dfs(v, u)
+                    ppl += x
+                    ans += y
             ppl += 1
             if u: ans += (ppl + seats - 1) // seats
-            return ppl 
+            return ppl, ans
         
-        dfs(0, -1)
-        return ans 
+        return dfs(0, -1)[1]
 
 
     """2478. Number of Beautiful Partitions (Hard)

@@ -51244,18 +51244,20 @@ public:
             graph[r[0]].push_back(r[1]); 
             graph[r[1]].push_back(r[0]); 
         }
-        long long ans = 0; 
         
-        function<long long(int, int)> dfs = [&](int u, int p) {
-            long long ppl = 1; 
+        function<pair<long long, long long>(int, int)> dfs = [&](int u, int p) {
+            long long ans = 0, ppl = 1; 
             for (auto& v : graph[u]) 
-                if (v != p) ppl += dfs(v, u); 
-            if (u) ans += (ppl+seats-1)/seats; 
-            return ppl; 
+                if (v != p) {
+                    auto [x, y] = dfs(v, u); 
+                    ppl += x; 
+                    ans += y; 
+                }
+            if (u) ans += (ppl + seats - 1)/seats; 
+            return make_pair(ppl, ans); 
         }; 
         
-        dfs(0, -1); 
-        return ans; 
+        return dfs(0, -1).second; 
     }
 
 
