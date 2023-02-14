@@ -2999,6 +2999,92 @@ class Solution {
     }
 
 
+    /*1956. Minimum Time For K Virus Variants to Spread (Hard)
+    There are n unique virus variants in an infinite 2D grid. You are given a 
+    2D array points, where points[i] = [xi, yi] represents a virus originating 
+    at (xi, yi) on day 0. Note that it is possible for multiple virus variants 
+    to originate at the same point. Every day, each cell infected with a virus 
+    variant will spread the virus to all neighboring points in the four 
+    cardinal directions (i.e. up, down, left, and right). If a cell has 
+    multiple variants, all the variants will spread without interfering with 
+    each other. Given an integer k, return the minimum integer number of days 
+    for any point to contain at least k of the unique virus variants.
+
+    Example 1:
+    Input: points = [[1,1],[6,1]], k = 2
+    Output: 3
+    Explanation: On day 3, points (3,1) and (4,1) will contain both virus 
+                 variants. Note that these are not the only points that will 
+                 contain both virus variants.
+    
+    Example 2:
+    Input: points = [[3,3],[1,2],[9,2]], k = 2
+    Output: 2
+    Explanation: On day 2, points (1,3), (2,3), (2,2), and (3,2) will contain 
+                 the first two viruses. Note that these are not the only points 
+                 that will contain both virus variants.
+    
+    Example 3:
+    Input: points = [[3,3],[1,2],[9,2]], k = 3
+    Output: 4
+    Explanation: On day 4, the point (5,2) will contain all 3 viruses. Note 
+                 that this is not the only point that will contain all 3 virus 
+                 variants.
+
+    Constraints:
+    * n == points.length
+    * 2 <= n <= 50
+    * points[i].length == 2
+    * 1 <= xi, yi <= 100
+    * 2 <= k <= n*/
+
+    private boolean fn(int day, int[][] points, int k) {
+        Map<Integer, Map<Integer, Integer>> lines = new HashMap(); 
+        for (var p : points) {
+            int x = p[0], y = p[1]; 
+            lines.putIfAbsent(x+y-day, new HashMap()); 
+            lines.putIfAbsent(x+y+day, new HashMap()); 
+            lines.putIfAbsent(x+y+day+1, new HashMap()); 
+            lines.get(x+y-day).merge(y-x+day, 0, Integer::sum); 
+            lines.get(x+y+day).merge(y-x-day, 0, Integer::sum); 
+            lines.get(x+y+day).merge(y-x+day, 0, Integer::sum); 
+            lines.get(x+y-day).merge(y-x-day, 1, Integer::sum); 
+            lines.get(x+y-day).merge(y-x+day+1, -1, Integer::sum); 
+            lines.get(x+y+day+1).merge(y-x-day, -1, Integer::sum); 
+            lines.get(x+y+day+1).merge(y-x+day+1, 1, Integer::sum); 
+        }
+        List<Integer> rows = new ArrayList(); 
+        for (var xx : lines.keySet()) rows.add(xx); 
+        Collections.sort(rows); 
+        Map<Integer, Integer> line = new HashMap(); 
+        for (var xx : rows) {
+            for (var elem : lines.get(xx).entrySet()) {
+                int yy = elem.getKey(), vv = elem.getValue(); 
+                line.merge(yy, vv, Integer::sum); 
+            }
+            int prefix = 0; 
+            List<Integer> keys = new ArrayList(); 
+            for (var yy : line.keySet()) keys.add(yy); 
+            Collections.sort(keys); 
+            for (var yy : keys) {
+                prefix += line.get(yy); 
+                if (prefix >= k && ((xx-yy)%2 == 0 || !lines.containsKey(xx+1) || prefix+line.getOrDefault(yy+1, 0) >= k)) return true; 
+            }
+        }
+        return false; 
+    }
+    
+    public int minDayskVariants(int[][] points, int k) {
+        int lo = 0, hi = 1_000_000_000; 
+        while (lo < hi) {
+            int mid = lo + (hi - lo)/2; 
+            if (fn(mid, points, k)) hi = mid; 
+            else lo = mid + 1; 
+        }
+        return lo; 
+    }
+
+
     /*1962. Remove Stones to Minimize the Total (Medium)
     You are given a 0-indexed integer array piles, where piles[i] represents 
     the number of stones in the ith pile, and an integer k. You should apply 
