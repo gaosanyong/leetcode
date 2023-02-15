@@ -22300,9 +22300,9 @@ public:
         reverse(begin(num), end(num)); 
         for (int i = 0; k; ++i) {
             if (i == size(num)) num.push_back(0); 
-            num[i] += k; 
-            k = num[i]/10; 
-            num[i] %= 10; 
+            k += num[i]; 
+            num[i] = k % 10; 
+            k /= 10; 
         }
         reverse(begin(num), end(num)); 
         return num; 
