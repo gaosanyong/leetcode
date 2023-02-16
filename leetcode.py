@@ -45665,6 +45665,48 @@ class Fenwick:
         return ans 
 
 
+    """1842. Next Palindrome Using Same Digits (Hard)
+    You are given a numeric string num, representing a very large palindrome. 
+    Return the smallest palindrome larger than num that can be created by 
+    rearranging its digits. If no such palindrome exists, return an empty 
+    string "". A palindrome is a number that reads the same backward as 
+    forward.
+
+    Example 1:
+    Input: num = "1221"
+    Output: "2112"
+    Explanation: The next palindrome larger than "1221" is "2112".
+
+    Example 2:
+    Input: num = "32123"
+    Output: ""
+    Explanation: No palindromes larger than "32123" can be made by rearranging the digits.
+
+    Example 3:
+    Input: num = "45544554"
+    Output: "54455445"
+    Explanation: The next palindrome larger than "45544554" is "54455445".
+
+    Constraints:
+    * 1 <= num.length <= 10^5
+    * num is a palindrome."""
+
+    def nextPalindrome(self, num: str) -> str:
+        num = list(num)
+        n = len(num)
+        for i in range(n//2-2, -1, -1): 
+            if num[i] < num[i+1]: 
+                ii = i+1
+                for j in range(i+1, n//2): 
+                    if num[i] < num[j]: ii = j 
+                num[i], num[ii] = num[ii], num[i]
+                for j in range(i+1, (i+1+n//2)//2): 
+                    num[j], num[n//2+i-j] = num[n//2+i-j], num[j]
+                for i in range((n+1)//2, n): num[i] = num[n-1-i]
+                return "".join(num)
+        return ""
+
+
     """1844. Replace All Digits with Characters (Easy)
     You are given a 0-indexed string s that has lowercase English letters in 
     its even indices and digits in its odd indices. There is a function 

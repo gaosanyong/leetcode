@@ -3040,6 +3040,54 @@ class Solution {
     }
 
 
+    /*1842. Next Palindrome Using Same Digits (Hard)
+    You are given a numeric string num, representing a very large palindrome. 
+    Return the smallest palindrome larger than num that can be created by 
+    rearranging its digits. If no such palindrome exists, return an empty 
+    string "". A palindrome is a number that reads the same backward as 
+    forward.
+
+    Example 1:
+    Input: num = "1221"
+    Output: "2112"
+    Explanation: The next palindrome larger than "1221" is "2112".
+
+    Example 2:
+    Input: num = "32123"
+    Output: ""
+    Explanation: No palindromes larger than "32123" can be made by rearranging the digits.
+
+    Example 3:
+    Input: num = "45544554"
+    Output: "54455445"
+    Explanation: The next palindrome larger than "45544554" is "54455445".
+
+    Constraints:
+    * 1 <= num.length <= 10^5
+    * num is a palindrome.*/
+
+    public String nextPalindrome(String num) {
+        char[] chars = num.toCharArray(); 
+        for (int n = chars.length, i = n/2-2; i >= 0; --i) 
+            if (chars[i] < chars[i+1]) {
+                int ii = i+1; 
+                for (int j = i+1; j < n/2; ++j)
+                    if (chars[i] < chars[j]) ii = j; 
+                char temp = chars[i]; 
+                chars[i] = chars[ii]; 
+                chars[ii] = temp; 
+                for (int j = i+1; j < (i+1+n/2)/2; ++j) {
+                    temp = chars[j]; 
+                    chars[j] = chars[n/2+i-j]; 
+                    chars[n/2+i-j] = temp; 
+                }
+                for (int j = (n+1)/2; j < n; ++j) chars[j] = chars[n-1-j]; 
+                return String.valueOf(chars); 
+            }
+        return ""; 
+    }
+
+
     /*1956. Minimum Time For K Virus Variants to Spread (Hard)
     There are n unique virus variants in an infinite 2D grid. You are given a 
     2D array points, where points[i] = [xi, yi] represents a virus originating 

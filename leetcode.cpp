@@ -31120,6 +31120,47 @@ public:
     }
 
 
+    /*1842. Next Palindrome Using Same Digits (Hard)
+    You are given a numeric string num, representing a very large palindrome. 
+    Return the smallest palindrome larger than num that can be created by 
+    rearranging its digits. If no such palindrome exists, return an empty 
+    string "". A palindrome is a number that reads the same backward as 
+    forward.
+
+    Example 1:
+    Input: num = "1221"
+    Output: "2112"
+    Explanation: The next palindrome larger than "1221" is "2112".
+
+    Example 2:
+    Input: num = "32123"
+    Output: ""
+    Explanation: No palindromes larger than "32123" can be made by rearranging the digits.
+
+    Example 3:
+    Input: num = "45544554"
+    Output: "54455445"
+    Explanation: The next palindrome larger than "45544554" is "54455445".
+
+    Constraints:
+    * 1 <= num.length <= 10^5
+    * num is a palindrome.*/
+
+    string nextPalindrome(string num) {
+        for (int n = num.size(), i = n/2-2; i >= 0; --i) 
+            if (num[i] < num[i+1]) {
+                int ii = i+1; 
+                for (int j = i+1; j < n/2; ++j) 
+                    if (num[i] < num[j]) ii = j; 
+                swap(num[i], num[ii]); 
+                reverse(num.begin()+i+1, num.begin()+n/2); 
+                for (int i = (n+1)/2; i < n; ++i) num[i] = num[n-1-i]; 
+                return num; 
+            }
+        return ""; 
+    }
+
+
     /*1844. Replace All Digits with Characters (Easy)
     You are given a 0-indexed string s that has lowercase English letters in 
     its even indices and digits in its odd indices. There is a function 
