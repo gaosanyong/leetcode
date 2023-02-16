@@ -21633,7 +21633,7 @@ class Solution:
     Example 2:
     Input: rectangles = [[0,0,1000000000,1000000000]]
     Output: 49
-    Explanation: The answer is 1018 modulo (10^9 + 7), which is (109)2 = (-7)2 = 49.
+    Explanation: The answer is 1018 modulo (10^9 + 7), which is 49.
 
     Constraints:
     * 1 <= rectangles.length <= 200
@@ -62332,7 +62332,7 @@ class Trie:
     You are given an array of non-negative integers nums and an integer k. In 
     one operation, you may choose any element from nums and increment it by 1.
     Return the maximum product of nums after at most k operations. Since the 
-    answer may be very large, return it modulo 109 + 7. Note that you should 
+    answer may be very large, return it modulo 10^9 + 7. Note that you should 
     maximize the product before taking the modulo. 
 
     Example 1:
@@ -69902,18 +69902,18 @@ class SegTree:
                  Answer to 2nd query: powers[2] = 4.
                  Answer to 3rd query: powers[0] * powers[1] * powers[2] * 
                  powers[3] = 1 * 2 * 4 * 8 = 64.
-                 Each answer modulo 109 + 7 yields the same answer, so [2,4,64] 
+                 Each answer modulo 10^9 + 7 yields the same answer, so [2,4,64] 
                  is returned.
     
     Example 2:
     Input: n = 2, queries = [[0,0]]
     Output: [2]
     Explanation: For n = 2, powers = [2]. The answer to the only query is 
-                 powers[0] = 2. The answer modulo 109 + 7 is the same, so 
+                 powers[0] = 2. The answer modulo 10^9 + 7 is the same, so 
                  [2] is returned.
 
     Constraints:
-    * 1 <= n <= 109
+    * 1 <= n <= 10^9
     * 1 <= queries.length <= 10^5
     * 0 <= starti <= endi < powers.length"""
 
@@ -73540,8 +73540,8 @@ class SegTree:
     dimensions and mass of a box, respectively, return a string representing 
     the category of the box. 
     * The box is "Bulky" if:
-      + Any of the dimensions of the box is greater or equal to 104.
-      + Or, the volume of the box is greater or equal to 109.
+      + Any of the dimensions of the box is greater or equal to 10^4.
+      + Or, the volume of the box is greater or equal to 10^9.
     * If the mass of the box is greater or equal to 100, it is "Heavy".
     * If the box is both "Bulky" and "Heavy", then its category is "Both".
     * If the box is neither "Bulky" nor "Heavy", then its category is "Neither".
@@ -73554,7 +73554,7 @@ class SegTree:
     Input: length = 1000, width = 35, height = 700, mass = 300
     Output: "Heavy"
     Explanation: None of the dimensions of the box is greater or equal to 10^4. 
-                 Its volume = 24500000 <= 109. So it cannot be categorized as 
+                 Its volume = 24500000 <= 10^9. So it cannot be categorized as 
                  "Bulky". However mass >= 100, so the box is "Heavy". Since the 
                  box is not "Bulky" but "Heavy", we return "Heavy". 
     
@@ -73562,7 +73562,7 @@ class SegTree:
     Input: length = 200, width = 50, height = 800, mass = 50
     Output: "Neither"
     Explanation: None of the dimensions of the box is greater or equal to 10^4.
-                 Its volume = 8 * 106 <= 109. So it cannot be categorized as 
+                 Its volume = 8 * 10^6 <= 10^9. So it cannot be categorized as 
                  "Bulky". Its mass is also less than 100, so it cannot be 
                  categorized as "Heavy" either.  Since its neither of the two 
                  above categories, we return "Neither".
@@ -74664,7 +74664,7 @@ class SegTree:
 
     """2549. Count Distinct Numbers on Board (Easy)
     You are given a positive integer n, that is initially placed on a board. 
-    Every day, for 109 days, you perform the following procedure:
+    Every day, for 10^9 days, you perform the following procedure:
     * For each number x present on the board, find all numbers 1 <= i <= n such 
       that x % i == 1.
     * Then, place those numbers on the board.

@@ -18586,7 +18586,7 @@ public:
     Example 2:
     Input: rectangles = [[0,0,1000000000,1000000000]]
     Output: 49
-    Explanation: The answer is 1018 modulo (10^9 + 7), which is (109)2 = (-7)2 = 49.
+    Explanation: The answer is 10^18 modulo (10^9 + 7), which is 49.
 
     Constraints:
     * 1 <= rectangles.length <= 200
@@ -42717,7 +42717,7 @@ public:
     * highways[i].length == 3
     * 0 <= city1i, city2i <= n - 1
     * city1i != city2i
-    * 0 <= tolli <= 105
+    * 0 <= tolli <= 10^5
     * 0 <= discounts <= 500
     * There are no duplicate highways.*/
 
@@ -49396,18 +49396,18 @@ public:
                  Answer to 2nd query: powers[2] = 4.
                  Answer to 3rd query: powers[0] * powers[1] * powers[2] * 
                  powers[3] = 1 * 2 * 4 * 8 = 64.
-                 Each answer modulo 109 + 7 yields the same answer, so [2,4,64] 
+                 Each answer modulo 10^9 + 7 yields the same answer, so [2,4,64] 
                  is returned.
     
     Example 2:
     Input: n = 2, queries = [[0,0]]
     Output: [2]
     Explanation: For n = 2, powers = [2]. The answer to the only query is 
-                 powers[0] = 2. The answer modulo 109 + 7 is the same, so 
+                 powers[0] = 2. The answer modulo 10^9 + 7 is the same, so 
                  [2] is returned.
 
     Constraints:
-    * 1 <= n <= 109
+    * 1 <= n <= 10^9
     * 1 <= queries.length <= 10^5
     * 0 <= starti <= endi < powers.length*/
 
@@ -51143,9 +51143,9 @@ public:
     * 1 <= roads.length <= 1000
     * 1 <= ai, bi <= n
     * ai != bi
-    * 1 <= costi <= 105
+    * 1 <= costi <= 10^5
     * appleCost.length == n
-    * 1 <= appleCost[i] <= 105
+    * 1 <= appleCost[i] <= 10^5
     * 1 <= k <= 100
     * There are no repeated edges.*/
 
@@ -52026,7 +52026,7 @@ public:
     Constraints:
     * n == vals.length
     * 1 <= n <= 10^5
-    * -104 <= vals[i] <= 10^4
+    * -10^4 <= vals[i] <= 10^4
     * 0 <= edges.length <= min(n * (n - 1) / 2, 10^5)
     * edges[i].length == 2
     * 0 <= ai, bi <= n - 1
@@ -53280,8 +53280,8 @@ public:
     dimensions and mass of a box, respectively, return a string representing 
     the category of the box. 
     * The box is "Bulky" if:
-      + Any of the dimensions of the box is greater or equal to 104.
-      + Or, the volume of the box is greater or equal to 109.
+      + Any of the dimensions of the box is greater or equal to 10^4.
+      + Or, the volume of the box is greater or equal to 10^9.
     * If the mass of the box is greater or equal to 100, it is "Heavy".
     * If the box is both "Bulky" and "Heavy", then its category is "Both".
     * If the box is neither "Bulky" nor "Heavy", then its category is "Neither".
@@ -53294,7 +53294,7 @@ public:
     Input: length = 1000, width = 35, height = 700, mass = 300
     Output: "Heavy"
     Explanation: None of the dimensions of the box is greater or equal to 10^4. 
-                 Its volume = 24500000 <= 109. So it cannot be categorized as 
+                 Its volume = 24500000 <= 10^9. So it cannot be categorized as 
                  "Bulky". However mass >= 100, so the box is "Heavy". Since the 
                  box is not "Bulky" but "Heavy", we return "Heavy". 
     
@@ -53302,7 +53302,7 @@ public:
     Input: length = 200, width = 50, height = 800, mass = 50
     Output: "Neither"
     Explanation: None of the dimensions of the box is greater or equal to 10^4.
-                 Its volume = 8 * 106 <= 109. So it cannot be categorized as 
+                 Its volume = 8 * 10^6 <= 10^9. So it cannot be categorized as 
                  "Bulky". Its mass is also less than 100, so it cannot be 
                  categorized as "Heavy" either.  Since its neither of the two 
                  above categories, we return "Neither".
@@ -54466,7 +54466,7 @@ public:
 
     /*2549. Count Distinct Numbers on Board (Easy)
     You are given a positive integer n, that is initially placed on a board. 
-    Every day, for 109 days, you perform the following procedure:
+    Every day, for 10^9 days, you perform the following procedure:
     * For each number x present on the board, find all numbers 1 <= i <= n such 
       that x % i == 1.
     * Then, place those numbers on the board.
@@ -55343,7 +55343,7 @@ twoSum.find(7);  // No two integers sum up to 7, return false
 Constraints:
 * -10^5 <= number <= 10^5
 * -2^31 <= value <= 2^31 - 1
-* At most 104 calls will be made to add and find.*/
+* At most 10^4 calls will be made to add and find.*/
 
 class TwoSum {
     unordered_map<int, int> freq; 
@@ -56749,7 +56749,7 @@ rangeModule.queryRange(16, 17); // return True, (The number 16 in [16, 17) is
  
 Constraints:
 * 1 <= left < right <= 10^9
-* At most 104 calls will be made to addRange, queryRange, and removeRange.*/
+* At most 10^4 calls will be made to addRange, queryRange, and removeRange.*/
 
 class RangeModule {
     map<int, int> intervals; 
