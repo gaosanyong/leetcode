@@ -19723,6 +19723,41 @@ class Solution:
         return ans if ans < inf else -1 
 
 
+    """783. Minimum Distance Between BST Nodes (Easy)
+    Given the root of a Binary Search Tree (BST), return the minimum difference 
+    between the values of any two different nodes in the tree.
+
+    Example 1:
+    Input: root = [4,2,6,1,3]
+    Output: 1
+
+    Example 2:
+    Input: root = [1,0,48,null,null,12,49]
+    Output: 1
+
+    Constraints:
+    * The number of nodes in the tree is in the range [2, 100].
+    * 0 <= Node.val <= 10^5
+
+    Note: This question is the same as 530: 
+          https://leetcode.com/problems/minimum-absolute-difference-in-bst/"""
+
+    def minDiffInBST(self, root: Optional[TreeNode]) -> int:
+        ans, prev = inf, -1
+        node = root
+        stack = []
+        while node or stack: 
+            if node: 
+                stack.append(node)
+                node = node.left
+            else: 
+                node = stack.pop()
+                if prev >= 0: ans = min(ans, node.val - prev)
+                prev = node.val 
+                node = node.right 
+        return ans 
+
+
     """784. Letter Case Permutation (Medium)
     Given a string S, we can transform every letter individually to be 
     lowercase or uppercase to create another string. Return a list of all 

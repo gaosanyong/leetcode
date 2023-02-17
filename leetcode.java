@@ -2033,6 +2033,43 @@ class Solution {
     }
 
 
+    /*783. Minimum Distance Between BST Nodes (Easy)
+    Given the root of a Binary Search Tree (BST), return the minimum difference 
+    between the values of any two different nodes in the tree.
+
+    Example 1:
+    Input: root = [4,2,6,1,3]
+    Output: 1
+
+    Example 2:
+    Input: root = [1,0,48,null,null,12,49]
+    Output: 1
+
+    Constraints:
+    * The number of nodes in the tree is in the range [2, 100].
+    * 0 <= Node.val <= 10^5
+
+    Note: This question is the same as 530: 
+          https://leetcode.com/problems/minimum-absolute-difference-in-bst/*/
+
+    public int minDiffInBST(TreeNode root) {
+        int ans = Integer.MAX_VALUE, prev = -1; 
+        TreeNode node = root; 
+        Stack<TreeNode> stk = new Stack(); 
+        while (node != null || !stk.isEmpty()) 
+            if (node != null) {
+                stk.add(node); 
+                node = node.left; 
+            } else {
+                node = stk.pop(); 
+                if (prev >= 0) ans = Math.min(ans, node.val - prev); 
+                prev = node.val; 
+                node = node.right; 
+            }
+        return ans; 
+    }
+
+
     /*787. Cheapest Flights Within K Stops (Medium)
     There are n cities connected by some number of flights. You are given an 
     array flights where flights[i] = [fromi, toi, pricei] indicates that there 
