@@ -1343,6 +1343,42 @@ class Solution {
     }
 
 
+    /*226. Invert Binary Tree (Easy)
+    Given the root of a binary tree, invert the tree, and return its root.
+
+    Example 1:
+    Input: root = [4,2,7,1,3,6,9]
+    Output: [4,7,2,9,6,3,1]
+
+    Example 2:
+    Input: root = [2,1,3]
+    Output: [2,3,1]
+
+    Example 3:
+    Input: root = []
+    Output: []
+
+    Constraints:
+    * The number of nodes in the tree is in the range [0, 100].
+    * -100 <= Node.val <= 100*/
+
+    public TreeNode invertTree(TreeNode root) {
+        if (root != null) {
+            Stack<TreeNode> stk = new Stack(); 
+            stk.push(root); 
+            while (!stk.isEmpty()) {
+                var node = stk.pop(); 
+                TreeNode temp = node.left; 
+                node.left = node.right; 
+                node.right = temp; 
+                if (node.left != null) stk.push(node.left); 
+                if (node.right != null) stk.push(node.right); 
+            }
+        }
+        return root; 
+    }
+
+
     /*280. Wiggle Sort (Medium)
     Given an integer array nums, reorder it such that 
     nums[0] <= nums[1] >= nums[2] <= nums[3].... You may assume the input array 

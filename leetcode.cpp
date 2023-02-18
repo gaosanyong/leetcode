@@ -6159,14 +6159,14 @@ public:
     * -100 <= Node.val <= 100*/
 
     TreeNode* invertTree(TreeNode* root) {
-        stack<TreeNode*> stk; 
-        stk.push(root); 
-        while (stk.size()) {
-            TreeNode* node = stk.top(); stk.pop(); 
-            if (node) {
+        if (root) {
+            stack<TreeNode*> stk; 
+            stk.push(root); 
+            while (stk.size()) {
+                TreeNode* node = stk.top(); stk.pop(); 
                 swap(node->left, node->right); 
-                stk.push(node->right); 
-                stk.push(node->left); 
+                if (node->left) stk.push(node->left); 
+                if (node->right) stk.push(node->right); 
             }
         }
         return root; 
