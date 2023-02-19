@@ -8579,6 +8579,234 @@ class Solution {
         }
         return Math.min(ans, j); 
     }
+
+
+    /*2566. Maximum Difference by Remapping a Digit (Easy)
+    You are given an integer num. You know that Danny Mittal will sneakily 
+    remap one of the 10 possible digits (0 to 9) to another digit. Return the 
+    difference between the maximum and minimum values Danny can make by 
+    remapping exactly one digit in num.
+
+    Notes:
+    * When Danny remaps a digit d1 to another digit d2, Danny replaces all 
+      occurrences of d1 in num with d2.
+    * Danny can remap a digit to itself, in which case num does not change.
+    * Danny can remap different digits for obtaining minimum and maximum values 
+      respectively.
+    * The resulting number after remapping can contain leading zeroes.
+    * We mentioned "Danny Mittal" to congratulate him on being in the top 10 in 
+      Weekly Contest 326.
+
+    Example 1:
+    Input: num = 11891
+    Output: 99009
+    Explanation: To achieve the maximum value, Danny can remap the digit 1 to 
+                 the digit 9 to yield 99899. To achieve the minimum value, 
+                 Danny can remap the digit 1 to the digit 0, yielding 890. The 
+                 difference between these two numbers is 99009.
+    
+    Example 2:
+    Input: num = 90
+    Output: 99
+    Explanation: The maximum value that can be returned by the function is 99 
+                 (if 0 is replaced by 9) and the minimum value that can be 
+                 returned by the function is 0 (if 9 is replaced by 0). Thus, 
+                 we return 99.
+
+    Constraints: 1 <= num <= 10^8*/
+
+    public int findBug(int num) {
+        List<Integer> digits = new ArrayList(); 
+        int v = 9, diff = 0; 
+        for (int x = num; x > 0; x /= 10) {
+            int d = x % 10; 
+            if (d < 9) v = d; 
+            digits.add(d); 
+        }
+        Collections.reverse(digits); 
+        for (var x : digits) {
+            diff = 10*diff; 
+            if (x == digits.get(0)) diff += x; 
+            if (x == v) diff += 9-x; 
+        }
+        return diff; 
+    }
+
+
+    /*2567. Minimum Score by Changing Two Elements (Medium)
+    You are given a 0-indexed integer array nums.
+    * The low score of nums is the minimum value of |nums[i] - nums[j]| over 
+      all 0 <= i < j < nums.length.
+    * The high score of nums is the maximum value of |nums[i] - nums[j]| over 
+      all 0 <= i < j < nums.length.
+    * The score of nums is the sum of the high and low scores of nums.
+    To minimize the score of nums, we can change the value of at most two 
+    elements of nums. Return the minimum possible score after changing the 
+    value of at most two elements of nums. Note that |x| denotes the absolute 
+    value of x.
+
+    Example 1:
+    Input: nums = [1,4,3]
+    Output: 0
+    Explanation: Change value of nums[1] and nums[2] to 1 so that nums becomes 
+                 [1,1,1]. Now, the value of |nums[i] - nums[j]| is always equal 
+                 to 0, so we return 0 + 0 = 0.
+    
+    Example 2:
+    Input: nums = [1,4,7,8,5]
+    Output: 3
+    Explanation: Change nums[0] and nums[1] to be 6. Now nums becomes 
+                 [6,6,7,8,5]. Our low score is achieved when i = 0 and j = 1, 
+                 in which case |nums[i] - nums[j]| = |6 - 6| = 0. Our high 
+                 score is achieved when i = 3 and j = 4, in which case 
+                 |nums[i] - nums[j]| = |8 - 5| = 3. The sum of our high and low 
+                 score is 3, which we can prove to be minimal.
+
+    Constraints:
+    * 3 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9*/
+
+    public int minimizeSum(int[] nums) {
+        Arrays.sort(nums); 
+        int n = nums.length; 
+        return Math.min(nums[n-1]-nums[2], Math.min(nums[n-2]-nums[1], nums[n-3]-nums[0])); 
+    }
+
+
+    /*2568. Minimum Impossible OR (Medium)
+    You are given a 0-indexed integer array nums. We say that an integer x is 
+    expressible from nums if there exist some integers 
+    0 <= index1 < index2 < ... < indexk < nums.length for which 
+    nums[index1] | nums[index2] | ... | nums[indexk] = x. In other words, an 
+    integer is expressible if it can be written as the bitwise OR of some 
+    subsequence of nums. Return the minimum positive non-zero integer that is 
+    not expressible from nums.
+
+    Example 1:
+    Input: nums = [2,1]
+    Output: 4
+    Explanation: 1 and 2 are already present in the array. We know that 3 is 
+                 expressible, since nums[0] | nums[1] = 2 | 1 = 3. Since 4 is 
+                 not expressible, we return 4.
+    
+    Example 2:
+    Input: nums = [5,3,2]
+    Output: 1
+    Explanation: We can show that 1 is the smallest number that is not 
+                 expressible.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9*/
+
+    public int minImpossibleOR(int[] nums) {
+        int mask = 0; 
+        for (var x : nums) 
+            if ((x & x-1) == 0) mask |= x; 
+        for (int i = 0; i < 32; ++i)
+            if ((mask & 1<<i) == 0) return 1<<i; 
+        return -1; 
+    }
+
+
+    /*2569. Handling Sum Queries After Update (Hard)
+    You are given two 0-indexed arrays nums1 and nums2 and a 2D array queries 
+    of queries. There are three types of queries:
+    * For a query of type 1, queries[i] = [1, l, r]. Flip the values from 0 to 
+      1 and from 1 to 0 in nums1 from index l to index r. Both l and r are 0-
+      indexed.
+    * For a query of type 2, queries[i] = [2, p, 0]. For every index 0 <= i < n, 
+      set nums2[i] = nums2[i] + nums1[i] * p.
+    * For a query of type 3, queries[i] = [3, 0, 0]. Find the sum of the 
+      elements in nums2.
+    Return an array containing all the answers to the third type queries.
+
+    Example 1:
+    Input: nums1 = [1,0,1], nums2 = [0,0,0], queries = [[1,1,1],[2,1,0],[3,0,0]]
+    Output: [3]
+    Explanation: After the first query nums1 becomes [1,1,1]. After the second 
+                 query, nums2 becomes [1,1,1], so the answer to the third query 
+                 is 3. Thus, [3] is returned.
+    
+    Example 2:
+    Input: nums1 = [1], nums2 = [5], queries = [[2,0,0],[3,0,0]]
+    Output: [5]
+    Explanation: After the first query, nums2 remains [5], so the answer to the 
+                 second query is 5. Thus, [5] is returned.
+
+    Constraints:
+    * 1 <= nums1.length,nums2.length <= 10^5
+    * nums1.length = nums2.length
+    * 1 <= queries.length <= 10^5
+    * queries[i].length = 3
+    * 0 <= l <= r <= nums1.length - 1
+    * 0 <= p <= 10^6
+    * 0 <= nums1[i] <= 1
+    * 0 <= nums2[i] <= 10^9
+
+class SegTreeLazy {
+    private int n = 0; 
+    private int[] tree, lazy; 
+    
+    private void build(int[] arr, int k, int lo, int hi) {
+        if (lo+1 == hi) tree[k] = arr[lo]; 
+        else {
+            int mid = lo + (hi-lo)/2; 
+            build(arr, 2*k+1, lo, mid); 
+            build(arr, 2*k+2, mid, hi); 
+            tree[k] = tree[2*k+1] + tree[2*k+2]; 
+        }
+    }
+
+    public SegTreeLazy(int[] arr) {
+        n = arr.length; 
+        tree = new int[4*n]; 
+        lazy = new int[4*n]; 
+        build(arr, 0, 0, n); 
+    }
+
+    public void update(int qlo, int qhi, int k, int lo, int hi) {
+        if (hi == 0) hi = n; 
+        if (lazy[k] > 0) {
+            tree[k] = (hi - lo) - tree[k]; 
+            if (lo+1 < hi) {
+                lazy[2*k+1] ^= 1; 
+                lazy[2*k+2] ^= 1;
+            }
+            lazy[k] = 0; 
+        }
+        if (lo < hi && qlo < hi && lo < qhi) 
+            if (qlo <= lo && hi <= qhi) {
+                tree[k] = (hi - lo) - tree[k]; 
+                if (lo+1 < hi) {
+                    lazy[2*k+1] ^= 1; 
+                    lazy[2*k+2] ^= 1; 
+                }
+            } else {
+                int mid = lo + (hi - lo)/2; 
+                update(qlo, qhi, 2*k+1, lo, mid); 
+                update(qlo, qhi, 2*k+2, mid, hi); 
+                tree[k] = tree[2*k+1] + tree[2*k+2]; 
+            }
+    }
+
+    public int query() {
+        return tree[0]; 
+    }
+}*/
+
+    public long[] handleQuery(int[] nums1, int[] nums2, int[][] queries) {
+        SegTreeLazy tree = new SegTreeLazy(nums1); 
+        List<Long> ans = new ArrayList(); 
+        long val = 0;
+        for (var x : nums2) val += x; 
+        for (var q : queries) {
+            if (q[0] == 1) tree.update(q[1], q[2]+1, 0, 0, 0); 
+            else if (q[0] == 2) val += (long) q[1] * tree.query(); 
+            else ans.add(val); 
+        }
+        return ans.stream().mapToLong(i->i).toArray();
+    }
 }
 
 
