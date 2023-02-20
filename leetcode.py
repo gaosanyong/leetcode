@@ -75673,6 +75673,215 @@ class SegTreeLazy:
         return ans 
 
 
+    """2570. Merge Two 2D Arrays by Summing Values (Easy)
+    You are given two 2D integer arrays nums1 and nums2.
+    * nums1[i] = [idi, vali] indicate that the number with the id idi has a 
+      value equal to vali.
+    * nums2[i] = [idi, vali] indicate that the number with the id idi has a 
+      value equal to vali.
+    Each array contains unique ids and is sorted in ascending order by id. 
+    Merge the two arrays into one array that is sorted in ascending order by 
+    id, respecting the following conditions:
+    * Only ids that appear in at least one of the two arrays should be included 
+      in the resulting array.
+    * Each id should be included only once and its value should be the sum of 
+      the values of this id in the two arrays. If the id does not exist in one 
+      of the two arrays then its value in that array is considered to be 0.
+    Return the resulting array. The returned array must be sorted in ascending 
+    order by id.
+
+    Example 1:
+    Input: nums1 = [[1,2],[2,3],[4,5]], nums2 = [[1,4],[3,2],[4,1]]
+    Output: [[1,6],[2,3],[3,2],[4,6]]
+    Explanation: The resulting array contains the following:
+                 - id = 1, the value of this id is 2 + 4 = 6.
+                 - id = 2, the value of this id is 3.
+                 - id = 3, the value of this id is 2.
+                 - id = 4, the value of this id is 5 + 1 = 6.
+    
+    Example 2:
+    Input: nums1 = [[2,4],[3,6],[5,5]], nums2 = [[1,3],[4,3]]
+    Output: [[1,3],[2,4],[3,6],[4,3],[5,5]]
+    Explanation: There are no common ids, so we just include each id with its 
+                 value in the resulting list.
+
+    Constraints:
+    * 1 <= nums1.length, nums2.length <= 200
+    * nums1[i].length == nums2[j].length == 2
+    * 1 <= idi, vali <= 1000
+    * Both arrays contain unique ids.
+    * Both arrays are in strictly ascending order by id."""
+
+    def mergeArrays(self, nums1: List[List[int]], nums2: List[List[int]]) -> List[List[int]]:
+        ans = []
+        i = j = 0 
+        while i < len(nums1) or j < len(nums2): 
+            if j == len(nums2) or i < len(nums1) and nums1[i][0] <= nums2[j][0]: 
+                ans.append(nums1[i])
+                i += 1
+            else: 
+                if ans and ans[-1][0] == nums2[j][0]: ans[-1][1] += nums2[j][1]
+                else: ans.append(nums2[j])
+                j += 1
+        return ans 
+
+
+    """2571. Minimum Operations to Reduce an Integer to 0 (Easy)
+    You are given a positive integer n, you can do the following operation any 
+    number of times:
+    * Add or subtract a power of 2 from n.
+    Return the minimum number of operations to make n equal to 0. A number x is 
+    power of 2 if x == 2i where i >= 0.
+
+    Example 1:
+    Input: n = 39
+    Output: 3
+    Explanation: We can do the following operations:
+                 - Add 20 = 1 to n, so now n = 40.
+                 - Subtract 23 = 8 from n, so now n = 32.
+                 - Subtract 25 = 32 from n, so now n = 0.
+                 It can be shown that 3 is the minimum number of operations we 
+                 need to make n equal to 0.
+    
+    Example 2:
+    Input: n = 54
+    Output: 3
+    Explanation: We can do the following operations:
+                 - Add 21 = 2 to n, so now n = 56.
+                 - Add 23 = 8 to n, so now n = 64.
+                 - Subtract 26 = 64 from n, so now n = 0.
+                 So the minimum number of operations is 3.
+
+    Constraints: 1 <= n <= 10^5"""
+
+    def minOperations(self, n: int) -> int:
+        ans = carry = 0
+        while n: 
+            carry += n & 1
+            if carry == 1: 
+                if n & 2: carry = 1
+                else: carry = 0 
+                ans += 1
+            carry = min(1, carry)
+            n >>= 1
+        return ans + carry
+
+
+
+    """2572. Count the Number of Square-Free Subsets (Medium)
+    You are given a positive integer 0-indexed array nums. A subset of the 
+    array nums is square-free if the product of its elements is a square-free 
+    integer. A square-free integer is an integer that is divisible by no square 
+    number other than 1. Return the number of square-free non-empty subsets of 
+    the array nums. Since the answer may be too large, return it modulo 
+    10^9 + 7. A non-empty subset of nums is an array that can be obtained by 
+    deleting some (possibly none but not all) elements from nums. Two subsets 
+    are different if and only if the chosen indices to delete are different.
+
+    Example 1:
+    Input: nums = [3,4,4,5]
+    Output: 3
+    Explanation: There are 3 square-free subsets in this example:
+                 - The subset consisting of the 0th element [3]. The product of 
+                   its elements is 3, which is a square-free integer.
+                 - The subset consisting of the 3rd element [5]. The product of 
+                   its elements is 5, which is a square-free integer.
+                 - The subset consisting of 0th and 3rd elements [3,5]. The 
+                   product of its elements is 15, which is a square-free 
+                   integer.
+                 It can be proven that there are no more than 3 square-free 
+                 subsets in the given array.
+    
+    Example 2:
+    Input: nums = [1]
+    Output: 1
+    Explanation: There is 1 square-free subset in this example:
+                 - The subset consisting of the 0th element [1]. The product of 
+                   its elements is 1, which is a square-free integer.
+                 It can be proven that there is no more than 1 square-free 
+                 subset in the given array.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i] <= 30"""
+
+    def squareFreeSubsets(self, nums: List[int]) -> int:
+        mod = 1_000_000_007
+        primes = 2, 3, 5, 7, 11, 13, 17, 19, 23, 29
+        freq = Counter(nums)
+        mask = [0]*31 
+        for x in range(2, 31): 
+            m, v = 0, 1
+            for i, p in enumerate(primes): 
+                if x % p == 0: 
+                    v *= p 
+                    m ^= 1 << i
+            if v == x: mask[x] = m 
+        dp = [[0]*32 for _ in range(1<<10)]
+        for j in range(32): dp[0][j] = 1
+        for i in range(1, 1<<10): 
+            for j in range(2, 31): 
+                for jj in range(j, 31): 
+                    if mask[jj] and mask[jj] & i == mask[jj]: 
+                        dp[i][j] += freq[jj] * dp[i ^ mask[jj]][jj+1]
+        ans = 1
+        for i in range(1, 1<<10): ans += dp[i][2]
+        return (ans*pow(2, freq[1], mod)-1) % mod 
+
+
+    """2573. Find the String with LCP (Hard)
+    We define the lcp matrix of any 0-indexed string word of n lowercase 
+    English letters as an n x n grid such that:
+    * lcp[i][j] is equal to the length of the longest common prefix between the 
+      substrings word[i,n-1] and word[j,n-1].
+    Given an n x n matrix lcp, return the alphabetically smallest string word 
+    that corresponds to lcp. If there is no such string, return an empty string.
+    A string a is lexicographically smaller than a string b (of the same length) 
+    if in the first position where a and b differ, string a has a letter that 
+    appears earlier in the alphabet than the corresponding letter in b. For 
+    example, "aabd" is lexicographically smaller than "aaca" because the first 
+    position they differ is at the third letter, and 'b' comes before 'c'.
+
+    Example 1:
+    Input: lcp = [[4,0,2,0],[0,3,0,1],[2,0,2,0],[0,1,0,1]]
+    Output: "abab"
+    Explanation: lcp corresponds to any 4 letter string with two alternating 
+                 letters. The lexicographically smallest of them is "abab".
+    
+    Example 2:
+    Input: lcp = [[4,3,2,1],[3,3,2,1],[2,2,2,1],[1,1,1,1]]
+    Output: "aaaa"
+    Explanation: lcp corresponds to any 4 letter string with a single distinct 
+                 letter. The lexicographically smallest of them is "aaaa". 
+    
+    Example 3:
+    Input: lcp = [[4,3,2,1],[3,3,2,1],[2,2,2,1],[1,1,1,3]]
+    Output: ""
+    Explanation: lcp[3][3] cannot be equal to 3 since word[3,...,3] consists of 
+                 only a single letter; Thus, no answer exists.
+
+    Constraints:
+    * 1 <= n == lcp.length == lcp[i].length <= 1000
+    * 0 <= lcp[i][j] <= n"""
+
+    def findTheString(self, lcp: List[List[int]]) -> str:
+        n = len(lcp)
+        for i in range(n): 
+            if lcp[i][i] != n-i: return ""
+            for j in range(i+1, n): 
+                if lcp[i][j] != lcp[j][i] or lcp[i][j] and lcp[i][j] != 1 + (lcp[i+1][j+1] if i+1 < n and j+1 < n else 0): return ""
+        ans = ['*'] * n 
+        c = 0 
+        for i in range(n): 
+            if ans[i] == '*': 
+                for j in range(i, n): 
+                    if lcp[i][j]: 
+                        if ans[j] != '*' or c == 26: return ""
+                        ans[j] = ascii_lowercase[c]
+                c += 1
+        return ''.join(ans)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
