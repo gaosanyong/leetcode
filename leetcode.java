@@ -9006,14 +9006,12 @@ class SegTreeLazy {
 
     public String findTheString(int[][] lcp) {
         int n = lcp.length; 
-        for (int i = 0; i < n; ++i) {
+        char[] ans = new char[n]; 
+        Arrays.fill(ans, '*'); 
+        for (int i = 0, c = 0; i < n; ++i) {
             if (lcp[i][i] != n-i) return ""; 
             for (int j = i+1; j < n; ++j) 
                 if (lcp[i][j] != lcp[j][i] || lcp[i][j] > 0 && lcp[i][j] != 1 + (i+1 < n && j+1 < n ? lcp[i+1][j+1] : 0)) return ""; 
-        }
-        char[] ans = new char[n]; 
-        Arrays.fill(ans, '*'); 
-        for (int i = 0, c = 0; i < n; ++i) 
             if (ans[i] == '*') {
                 for (int j = i; j < n; ++j) 
                     if (lcp[i][j] > 0) {
@@ -9022,6 +9020,7 @@ class SegTreeLazy {
                     }
                 ++c; 
             }
+        }
         return String.valueOf(ans); 
     }
 }

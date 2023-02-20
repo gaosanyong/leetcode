@@ -75866,13 +75866,12 @@ class SegTreeLazy:
 
     def findTheString(self, lcp: List[List[int]]) -> str:
         n = len(lcp)
+        ans = ['*'] * n 
+        c = 0 
         for i in range(n): 
             if lcp[i][i] != n-i: return ""
             for j in range(i+1, n): 
                 if lcp[i][j] != lcp[j][i] or lcp[i][j] and lcp[i][j] != 1 + (lcp[i+1][j+1] if i+1 < n and j+1 < n else 0): return ""
-        ans = ['*'] * n 
-        c = 0 
-        for i in range(n): 
             if ans[i] == '*': 
                 for j in range(i, n): 
                     if lcp[i][j]: 

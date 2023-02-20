@@ -55766,13 +55766,11 @@ public:
 
     string findTheString(vector<vector<int>>& lcp) {
         int n = lcp.size(); 
-        for (int i = 0; i < n; ++i) {
+        string ans = string(n, '*'); 
+        for (int i = 0, c = 0; i < n; ++i) {
             if (lcp[i][i] != n-i) return ""; 
             for (int j = i+1; j < n; ++j) 
                 if (lcp[i][j] != lcp[j][i] || lcp[i][j] && lcp[i][j] != 1 + (i+1 < n && j+1 < n ? lcp[i+1][j+1] : 0)) return ""; 
-        }
-        string ans = string(n, '*'); 
-        for (int i = 0, c = 0; i < n; ++i) 
             if (ans[i] == '*') {
                 for (int j = i; j < n; ++j) 
                     if (lcp[i][j]) {
@@ -55781,6 +55779,7 @@ public:
                     }
                 ++c; 
             }
+        }
         return ans; 
     }
 };
