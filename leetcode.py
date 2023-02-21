@@ -40548,19 +40548,23 @@ class Fenwick:
     * There may be multiple edges between two nodes."""
 
     def distanceLimitedPathsExist(self, n: int, edgeList: List[List[int]], queries: List[List[int]]) -> List[bool]:
-        queries = sorted((w, p, q, i) for i, (p, q, w) in enumerate(queries))
-        edgeList = sorted((w, u, v) for u, v, w in edgeList)
+        parent = list(range(n))
+
+        def find(p): 
+            if p != parent[p]: 
+                parent[p] = find(parent[p])
+            return parent[p]
         
-        uf = UnionFind(n)
-        
-        ans = [None] * len(queries)
+        ans = [False] * len(queries)
         ii = 0
-        for w, p, q, i in queries: 
-            while ii < len(edgeList) and edgeList[ii][0] < w: 
-                _, u, v = edgeList[ii]
-                uf.union(u, v)
+        edgeList.sort(key = lambda x: x[2])
+        for i, (p, q, w) in sorted(enumerate(queries), key = lambda x: x[1][2]): 
+            while ii < len(edgeList) and edgeList[ii][2] < w: 
+                u, v, _ = edgeList[ii]
+                uu, vv = find(u), find(v)
+                if uu != vv: parent[uu] = vv
                 ii += 1
-            ans[i] = uf.find(p) == uf.find(q)
+            if find(p) == find(q): ans[i] = True
         return ans 
 
 
