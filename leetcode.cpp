@@ -58142,6 +58142,107 @@ public:
 };
 
 
+/*1724. Checking Existence of Edge Length Limited Paths II (Hard)
+An undirected graph of n nodes is defined by edgeList, where 
+edgeList[i] = [ui, vi, disi] denotes an edge between nodes ui and vi with 
+distance disi. Note that there may be multiple edges between two nodes, and 
+the graph may not be connected. Implement the DistanceLimitedPathsExist 
+class:
+* DistanceLimitedPathsExist(int n, int[][] edgeList) Initializes the class 
+  with an undirected graph.
+* boolean query(int p, int q, int limit) Returns true if there exists a 
+  path from p to q such that each edge on the path has a distance strictly 
+  less than limit, and otherwise false.
+
+Example 1:
+Input: ["DistanceLimitedPathsExist", "query", "query", "query", "query"]
+       [[6, [[0, 2, 4], [0, 3, 2], [1, 2, 3], [2, 3, 1], [4, 5, 5]]], [2, 3, 2], [1, 3, 3], [2, 0, 3], [0, 5, 6]]
+Output: [null, true, false, true, false]
+Explanation: 
+DistanceLimitedPathsExist distanceLimitedPathsExist = new DistanceLimitedPathsExist(6, [[0, 2, 4], [0, 3, 2], [1, 2, 3], [2, 3, 1], [4, 5, 5]]);
+distanceLimitedPathsExist.query(2, 3, 2); // return true. There is an edge from 2 to 3 of distance 1, which is less than 2.
+distanceLimitedPathsExist.query(1, 3, 3); // return false. There is no way to go from 1 to 3 with distances strictly less than 3.
+distanceLimitedPathsExist.query(2, 0, 3); // return true. There is a way to go from 2 to 0 with distance < 3: travel from 2 to 3 to 0.
+distanceLimitedPathsExist.query(0, 5, 6); // return false. There are no paths from 0 to 5.
+
+Constraints:
+* 2 <= n <= 10^4
+* 0 <= edgeList.length <= 10^4
+* edgeList[i].length == 3
+* 0 <= ui, vi, p, q <= n-1
+* ui != vi
+* p != q
+* 1 <= disi, limit <= 10^9
+* At most 104 calls will be made to query.*/
+
+class DistanceLimitedPathsExist {
+    vector<int> parent, depth; 
+    vector<vector<int>> lift, weight; 
+    
+    int find(int p) {
+        if (p != parent[p]) 
+            parent[p] = find(parent[p]); 
+        return parent[p]; 
+    }
+public:
+    DistanceLimitedPathsExist(int n, vector<vector<int>>& edgeList) {
+        vector<vector<pair<int, int>>> tree(n); 
+        parent.resize(n); 
+        iota(parent.begin(), parent.end(), 0); 
+        sort(edgeList.begin(), edgeList.end(), [](auto& lhs, auto& rhs) { return lhs[2] < rhs[2]; }); 
+        for (auto& e : edgeList) {
+            int uu = find(e[0]), vv = find(e[1]); 
+            if (uu != vv) {
+                tree[e[0]].emplace_back(e[1], e[2]); 
+                tree[e[1]].emplace_back(e[0], e[2]); 
+                parent[uu] = vv; 
+            }
+        }
+        depth = vector<int>(n, -1); 
+        lift = vector<vector<int>>(n, vector<int>(32, -1)); 
+        weight = vector<vector<int>>(n, vector<int>(32, 0)); 
+        for (int i = 0; i < n; ++i) 
+            if (depth[i] == -1) {
+                stack<tuple<int, int, int>> stk; 
+                stk.emplace(i, -1, 0); 
+                while (stk.size()) {
+                    auto [u, p, d] = stk.top(); stk.pop(); 
+                    depth[u] = d; 
+                    for (auto& [v, w] : tree[u]) 
+                        if (v != p) {
+                            lift[v][0] = u; 
+                            weight[v][0] = w; 
+                            for (int j = 1; j < 32 && lift[v][j-1] != -1; ++j) {
+                                weight[v][j] = max(weight[v][j-1], weight[lift[v][j-1]][j-1]); 
+                                lift[v][j] = lift[lift[v][j-1]][j-1];                                 
+                            }
+                            stk.emplace(v, u, d+1); 
+                        }
+                }
+            }
+    }
+    
+    bool query(int p, int q, int limit) {
+        if (find(p) != find(q)) return false; 
+        if (depth[p] > depth[q]) swap(p, q); 
+        int wt = 0; 
+        for (int i = 0; i < 32; ++i) 
+            if ((depth[q] - depth[p]) & (1<<i)) {
+                wt = max(wt, weight[q][i]);
+                q = lift[q][i]; 
+            }
+        if (p == q) return wt < limit; 
+        for (int i = 31; i >= 0; --i) 
+            if (lift[p][i] != lift[q][i]) {
+                wt = max({wt, weight[p][i], weight[q][i]}); 
+                p = lift[p][i]; 
+                q = lift[q][i]; 
+            }
+        return max({wt, weight[p][0], weight[q][0]}) < limit; 
+    }
+};
+
+
 /*1797. Design Authentication Manager (Medium)
 There is an authentication system that works with authentication tokens. For 
 each session, the user will receive a new authentication token that will expire 

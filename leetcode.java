@@ -9260,6 +9260,117 @@ class NumMatrix {
 }
 
 
+/*1724. Checking Existence of Edge Length Limited Paths II (Hard)
+An undirected graph of n nodes is defined by edgeList, where 
+edgeList[i] = [ui, vi, disi] denotes an edge between nodes ui and vi with 
+distance disi. Note that there may be multiple edges between two nodes, and 
+the graph may not be connected. Implement the DistanceLimitedPathsExist 
+class:
+* DistanceLimitedPathsExist(int n, int[][] edgeList) Initializes the class 
+  with an undirected graph.
+* boolean query(int p, int q, int limit) Returns true if there exists a 
+  path from p to q such that each edge on the path has a distance strictly 
+  less than limit, and otherwise false.
+
+Example 1:
+Input: ["DistanceLimitedPathsExist", "query", "query", "query", "query"]
+       [[6, [[0, 2, 4], [0, 3, 2], [1, 2, 3], [2, 3, 1], [4, 5, 5]]], [2, 3, 2], [1, 3, 3], [2, 0, 3], [0, 5, 6]]
+Output: [null, true, false, true, false]
+Explanation: 
+DistanceLimitedPathsExist distanceLimitedPathsExist = new DistanceLimitedPathsExist(6, [[0, 2, 4], [0, 3, 2], [1, 2, 3], [2, 3, 1], [4, 5, 5]]);
+distanceLimitedPathsExist.query(2, 3, 2); // return true. There is an edge from 2 to 3 of distance 1, which is less than 2.
+distanceLimitedPathsExist.query(1, 3, 3); // return false. There is no way to go from 1 to 3 with distances strictly less than 3.
+distanceLimitedPathsExist.query(2, 0, 3); // return true. There is a way to go from 2 to 0 with distance < 3: travel from 2 to 3 to 0.
+distanceLimitedPathsExist.query(0, 5, 6); // return false. There are no paths from 0 to 5.
+
+Constraints:
+* 2 <= n <= 10^4
+* 0 <= edgeList.length <= 10^4
+* edgeList[i].length == 3
+* 0 <= ui, vi, p, q <= n-1
+* ui != vi
+* p != q
+* 1 <= disi, limit <= 10^9
+* At most 104 calls will be made to query.*/
+
+class DistanceLimitedPathsExist {
+    private int[] depth, parent; 
+    private int[][] lift, weight; 
+    
+    private int find(int p) {
+        if (p != parent[p]) 
+            parent[p] = find(parent[p]); 
+        return parent[p]; 
+    }
+    
+    public DistanceLimitedPathsExist(int n, int[][] edgeList) {
+        List<int[]>[] tree = new ArrayList[n]; 
+        for (int i = 0; i < n; ++i) tree[i] = new ArrayList(); 
+        parent = new int[n]; 
+        for (int i = 0; i < n; ++i) parent[i] = i; 
+        Arrays.sort(edgeList, (a, b) -> Integer.compare(a[2], b[2])); 
+        for (var e : edgeList) {
+            int uu = find(e[0]), vv = find(e[1]); 
+            if (uu != vv) {
+                tree[e[0]].add(new int[] {e[1], e[2]}); 
+                tree[e[1]].add(new int[] {e[0], e[2]}); 
+                parent[uu] = vv; 
+            }
+        }
+        depth = new int[n]; 
+        Arrays.fill(depth, -1); 
+        lift = new int[n][32]; 
+        for (int i = 0; i < n; ++i) Arrays.fill(lift[i], -1); 
+        weight = new int[n][32]; 
+        for (int i = 0; i < n; ++i) 
+            if (depth[i] == -1) {
+                Stack<int[]> stk = new Stack(); 
+                stk.add(new int[] {i, -1, 0}); 
+                while (!stk.isEmpty()) {
+                    var elem = stk.pop(); 
+                    int u = elem[0], p = elem[1], d = elem[2]; 
+                    depth[u] = d; 
+                    for (var uu : tree[u]) {
+                        int v = uu[0], w = uu[1]; 
+                        if (v != p) {
+                            lift[v][0] = u; 
+                            weight[v][0] = w; 
+                            for (int j = 1; j < 32 && lift[v][j-1] != -1; ++j) {
+                                weight[v][j] = Math.max(weight[v][j-1], weight[lift[v][j-1]][j-1]); 
+                                lift[v][j] = lift[lift[v][j-1]][j-1]; 
+                            }
+                            stk.add(new int[] {v, u, d+1}); 
+                        }
+                    }
+                }
+            }
+    }
+    
+    public boolean query(int p, int q, int limit) {
+        if (find(p) != find(q)) return false; 
+        if (depth[p] > depth[q]) {
+            int tmp = p; 
+            p = q; 
+            q = tmp; 
+        }
+        int wt = 0; 
+        for (int i = 0; i < 32; ++i) 
+            if ((depth[q]-depth[p] & 1<<i) > 0) {
+                wt = Math.max(wt, weight[q][i]); 
+                q = lift[q][i]; 
+            }
+        if (p == q) return wt < limit; 
+        for (int i = 31; i >= 0; --i) 
+            if (lift[p][i] != lift[q][i] && 0 <= q) {
+                wt = Math.max(wt, Math.max(weight[p][i], weight[q][i])); 
+                p = lift[p][i]; 
+                q = lift[q][i]; 
+            }
+        return Math.max(wt, Math.max(weight[p][0], weight[q][0])) < limit; 
+    }
+}
+
+
 /*2254. Design Video Sharing Platform (Hard)
 You have a video sharing platform where users can upload and delete videos. 
 Each video is a string of digits, where the ith digit of the string represents 

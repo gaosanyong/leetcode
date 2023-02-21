@@ -79908,6 +79908,90 @@ class FrontMiddleBackQueue:
         return ans 
 
 
+"""1724. Checking Existence of Edge Length Limited Paths II (Hard)
+An undirected graph of n nodes is defined by edgeList, where 
+edgeList[i] = [ui, vi, disi] denotes an edge between nodes ui and vi with 
+distance disi. Note that there may be multiple edges between two nodes, and 
+the graph may not be connected. Implement the DistanceLimitedPathsExist 
+class:
+* DistanceLimitedPathsExist(int n, int[][] edgeList) Initializes the class 
+  with an undirected graph.
+* boolean query(int p, int q, int limit) Returns true if there exists a 
+  path from p to q such that each edge on the path has a distance strictly 
+  less than limit, and otherwise false.
+
+Example 1:
+Input: ["DistanceLimitedPathsExist", "query", "query", "query", "query"]
+       [[6, [[0, 2, 4], [0, 3, 2], [1, 2, 3], [2, 3, 1], [4, 5, 5]]], [2, 3, 2], [1, 3, 3], [2, 0, 3], [0, 5, 6]]
+Output: [null, true, false, true, false]
+Explanation: 
+DistanceLimitedPathsExist distanceLimitedPathsExist = new DistanceLimitedPathsExist(6, [[0, 2, 4], [0, 3, 2], [1, 2, 3], [2, 3, 1], [4, 5, 5]]);
+distanceLimitedPathsExist.query(2, 3, 2); // return true. There is an edge from 2 to 3 of distance 1, which is less than 2.
+distanceLimitedPathsExist.query(1, 3, 3); // return false. There is no way to go from 1 to 3 with distances strictly less than 3.
+distanceLimitedPathsExist.query(2, 0, 3); // return true. There is a way to go from 2 to 0 with distance < 3: travel from 2 to 3 to 0.
+distanceLimitedPathsExist.query(0, 5, 6); // return false. There are no paths from 0 to 5.
+
+Constraints:
+* 2 <= n <= 10^4
+* 0 <= edgeList.length <= 10^4
+* edgeList[i].length == 3
+* 0 <= ui, vi, p, q <= n-1
+* ui != vi
+* p != q
+* 1 <= disi, limit <= 10^9
+* At most 104 calls will be made to query."""
+
+class DistanceLimitedPathsExist:
+
+    def find(self, p): 
+        if p != self.parent[p]: 
+            self.parent[p] = self.find(self.parent[p])
+        return self.parent[p]
+
+    def __init__(self, n: int, edgeList: List[List[int]]):
+        tree = [[] for _ in range(n)] # minimum spanning tree
+        self.parent = list(range(n))
+        for u, v, w in sorted(edgeList, key=lambda x : x[2]): 
+            uu, vv = self.find(u), self.find(v)
+            if uu != vv: 
+                tree[u].append((v, w))
+                tree[v].append((u, w))
+                self.parent[uu] = vv 
+        self.depth = [-1]*n
+        self.lift = [[-1]*32 for _ in range(n)] # binary lifting
+        self.weight = [[0]*32 for _ in range(n)]
+        for u in range(n):
+            if self.depth[u] == -1: 
+                stack = [(u, -1, 0)]
+                while stack: 
+                    u, p, d = stack.pop()
+                    self.depth[u] = d 
+                    for v, w in tree[u]: 
+                        if v != p: 
+                            self.lift[v][0] = u 
+                            self.weight[v][0] = w
+                            for j in range(1, 32): 
+                                if self.lift[v][j-1] == -1: break 
+                                self.weight[v][j] = max(self.weight[v][j-1], self.weight[self.lift[v][j-1]][j-1])
+                                self.lift[v][j] = self.lift[self.lift[v][j-1]][j-1]
+                            stack.append((v, u, d+1))
+            
+    def query(self, p: int, q: int, limit: int) -> bool:
+        if self.find(p) != self.find(q): return False 
+        if self.depth[p] > self.depth[q]: p, q = q, p
+        wt = 0 
+        for i in range(32): 
+            if self.depth[q]-self.depth[p] & 1<<i and 0 <= q: 
+                wt = max(wt, self.weight[q][i])
+                q = self.lift[q][i]
+        if p == q: return wt < limit
+        for i in range(31, -1, -1): 
+            if self.lift[p][i] != self.lift[q][i]: 
+                wt = max(wt, self.weight[p][i], self.weight[q][i])
+                p, q = self.lift[p][i], self.lift[q][i]
+        return max(wt, self.weight[p][0], self.weight[q][0]) < limit
+
+
 """1756. Design Most Recently Used Queue (Medium)
 Design a queue-like data structure that moves the most recently used element to 
 the end of the queue. Implement the MRUQueue class:
