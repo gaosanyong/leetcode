@@ -63759,7 +63759,7 @@ class Trie:
             """Return lowest common ancestor via binary lifting."""
             if depth[u] > depth[v]: u, v = v, u
             for i in range(m): 
-                if depth[v]-depth[u] & 1<<i and 0 <= v: v = lift[v][i]
+                if depth[v]-depth[u] & 1<<i: v = lift[v][i]
             if u == v: return u 
             for i in range(m-1, -1, -1): 
                 if lift[u][i] != lift[v][i]: u, v = lift[u][i], lift[v][i]

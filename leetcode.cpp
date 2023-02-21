@@ -47880,7 +47880,7 @@ public:
             /*Return lowest common ancestor via binary lifting.*/
             if (depth[u] > depth[v]) swap(u, v); 
             for (int i = 0; i < m; ++i) 
-                if (depth[v]-depth[u] & 1<<i && 0 <= v) v = lift[v][i]; 
+                if (depth[v]-depth[u] & 1<<i) v = lift[v][i]; 
             if (u == v) return u; 
             for (int i = m-1; i >= 0; --i) 
                 if (lift[u][i] != lift[v][i]) {

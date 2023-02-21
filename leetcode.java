@@ -4514,6 +4514,102 @@ class Solution {
     }
 
 
+    /*2277. Closest Node to Path in Tree (Hard)
+    You are given a positive integer n representing the number of nodes in a 
+    tree, numbered from 0 to n - 1 (inclusive). You are also given a 2D integer 
+    array edges of length n - 1, where edges[i] = [node1i, node2i] denotes that 
+    there is a bidirectional edge connecting node1i and node2i in the tree. You 
+    are given a 0-indexed integer array query of length m where 
+    query[i] = [starti, endi, nodei] means that for the ith query, you are 
+    tasked with finding the node on the path from starti to endi that is 
+    closest to nodei. Return an integer array answer of length m, where 
+    answer[i] is the answer to the ith query.
+
+    Example 1:
+    Input: n = 7, edges = [[0,1],[0,2],[0,3],[1,4],[2,5],[2,6]], query = [[5,3,4],[5,3,6]]
+    Output: [0,2]
+    Explanation: The path from node 5 to node 3 consists of the nodes 5, 2, 0, 
+                 and 3. The distance between node 4 and node 0 is 2. Node 0 is 
+                 the node on the path closest to node 4, so the answer to the 
+                 first query is 0. The distance between node 6 and node 2 is 1.
+                 Node 2 is the node on the path closest to node 6, so the 
+                 answer to the second query is 2.
+    
+    Example 2:
+    Input: n = 3, edges = [[0,1],[1,2]], query = [[0,1,2]]
+    Output: [1]
+    Explanation: The path from node 0 to node 1 consists of the nodes 0, 1. The 
+                 distance between node 2 and node 1 is 1. Node 1 is the node on 
+                 the path closest to node 2, so the answer to the first query 
+                 is 1.
+    
+    Example 3:
+    Input: n = 3, edges = [[0,1],[1,2]], query = [[0,0,0]]
+    Output: [0]
+    Explanation: The path from node 0 to node 0 consists of the node 0. Since 0 
+                 is the only node on the path, the answer to the first query is 
+                 0.
+
+    Constraints:
+    * 1 <= n <= 1000
+    * edges.length == n - 1
+    * edges[i].length == 2
+    * 0 <= node1i, node2i <= n - 1
+    * node1i != node2i
+    * 1 <= query.length <= 1000
+    * query[i].length == 3
+    * 0 <= starti, endi, nodei <= n - 1
+    * The graph is a tree.*/
+
+    private int lca(int u, int v, int[] depth, int[][] lift) {
+        if (depth[u] > depth[v]) { int tmp = u; u = v; v = tmp; }
+        for (int i = 0; i < 32; ++i) 
+            if ((depth[v] - depth[u] & 1<<i) > 0) v = lift[v][i]; 
+        if (u == v) return u; 
+        for (int i = 31; i >= 0; --i)
+            if (lift[u][i] != lift[v][i]) {
+                u = lift[u][i]; 
+                v = lift[v][i]; 
+            }
+        return lift[u][0]; 
+    }
+    
+    public int[] closestNode(int n, int[][] edges, int[][] query) {
+        List<Integer>[] tree = new ArrayList[n]; 
+        for (int i = 0; i < n; ++i) tree[i] = new ArrayList(); 
+        for (var e : edges) {
+            tree[e[0]].add(e[1]); 
+            tree[e[1]].add(e[0]); 
+        }
+        int[][] lift = new int[n][32]; 
+        for (int i = 0; i < n; ++i) Arrays.fill(lift[i], -1); 
+        int[] depth = new int[n]; 
+        Arrays.fill(depth, -1); 
+        Stack<int[]> stk = new Stack(); 
+        stk.add(new int[] {0, -1, 0}); 
+        while (!stk.isEmpty()) {
+            var elem = stk.pop(); 
+            int u = elem[0], p = elem[1], d = elem[2]; 
+            depth[u] = d; 
+            for (var v : tree[u]) 
+                if (v != p) {
+                    lift[v][0] = u; 
+                    for (int j = 1; j < 32 && lift[v][j-1] != -1; ++j) 
+                        lift[v][j] = lift[lift[v][j-1]][j-1]; 
+                    stk.add(new int[] {v, u, d+1}); 
+                }
+        }
+        int[] ans = new int[query.length]; 
+        for (int i = 0; i < query.length; ++i) {
+            int x = lca(query[i][0], query[i][1], depth, lift), y = lca(query[i][1], query[i][2], depth, lift), z = lca(query[i][2], query[i][0], depth, lift); 
+            if (depth[x] < depth[y]) x = y; 
+            if (depth[x] < depth[z]) x = z; 
+            ans[i] = x; 
+        }
+        return ans; 
+    }
+
+
     /*2279. Maximum Bags With Full Capacity of Rocks (Medium)
     You have n bags numbered from 0 to n - 1. You are given two 0-indexed 
     integer arrays capacity and rocks. The ith bag can hold a maximum of 
