@@ -2844,6 +2844,40 @@ class Solution {
     }
 
 
+    /*1259. Handshakes That Don't Cross (Hard)
+    You are given an even number of people numPeople that stand around a circle 
+    and each person shakes hands with someone else so that there are 
+    numPeople / 2 handshakes total. Return the number of ways these handshakes 
+    could occur such that none of the handshakes cross. Since the answer could 
+    be very large, return it modulo 10^9 + 7.
+
+    Example 1:
+    Input: numPeople = 4
+    Output: 2
+    Explanation: There are two ways to do it, the first way is [(1,2),(3,4)] 
+                 and the second one is [(2,3),(4,1)].
+    
+    Example 2:
+    Input: numPeople = 6
+    Output: 5
+
+    Constraints:
+    * 2 <= numPeople <= 1000
+    * numPeople is even.*/
+
+    public int numberOfWays(int numPeople) {
+        int mod = 1_000_000_007, n = numPeople/2; 
+        long[] fact = new long[2*n+1], ifact = new long[n+2], inv = new long[n+2]; 
+        fact[0] = ifact[0] = inv[0] = inv[1] = 1; 
+        for (int x = 1; x <= 2*n; ++x) {
+            if (2 <= x && x <= n+1) inv[x] = mod - mod/x * inv[mod % x] % mod; 
+            fact[x] = fact[x-1] * x % mod; 
+            if (x <= n+1) ifact[x] = ifact[x-1] * inv[x] % mod; 
+        }
+        return (int) (fact[2*n] * ifact[n] % mod * ifact[n+1] % mod); 
+    }
+
+
     /*1274. Number of Ships in a Rectangle (Hard)
     (This problem is an interactive problem.) Each ship is located at an 
     integer point on the sea represented by a cartesian plane, and each integer 
