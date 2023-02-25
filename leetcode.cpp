@@ -3686,7 +3686,6 @@ public:
     * 0 <= prices[i] <= 10^4*/
 
     int maxProfit(vector<int>& prices) {
-        // buy low & sell high
         int buy = INT_MAX, sell = 0; 
         for (auto& x : prices) {
             buy = min(buy, x); 
