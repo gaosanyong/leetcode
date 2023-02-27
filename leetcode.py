@@ -31770,6 +31770,41 @@ class UnionFind:
         return arr
 
 
+    """1246. Palindrome Removal (Hard)
+    You are given an integer array arr. In one move, you can select a 
+    palindromic subarray arr[i], arr[i + 1], ..., arr[j] where i <= j, and 
+    remove that subarray from the given array. Note that after removing a 
+    subarray, the elements on the left and on the right of that subarray move 
+    to fill the gap left by the removal. Return the minimum number of moves 
+    needed to remove all numbers from the array.
+
+    Example 1:
+    Input: arr = [1,2]
+    Output: 2
+
+    Example 2:
+    Input: arr = [1,3,4,1,5]
+    Output: 3
+    Explanation: Remove [4] then remove [1,3,1] then remove [5].
+
+    Constraints:
+    * 1 <= arr.length <= 100
+    * 1 <= arr[i] <= 20"""
+
+    def minimumMoves(self, arr: List[int]) -> int:
+        n = len(arr)
+        dp = [[inf] * (n+1) for _ in range(n)]
+        for i in range(n-1, -1, -1): 
+            for j in range(n+1): 
+                if i+1 >= j: dp[i][j] = 1 
+                else: 
+                    dp[i][j] = j-i
+                    if arr[i] == arr[j-1]: dp[i][j] = min(dp[i][j], dp[i+1][j-1])
+                    for k in range(i+1, j): 
+                        dp[i][j] = min(dp[i][j], dp[i][k] + dp[k][j])
+        return dp[0][n]
+
+
     """1249. Minimum Remove to Make Valid Parentheses (Medium)
     Given a string s of '(' , ')' and lowercase English characters. Your task 
     is to remove the minimum number of parentheses ( '(' or ')', in any 
