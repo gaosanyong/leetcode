@@ -30884,6 +30884,36 @@ class UnionFind:
         return [x for x in ans if low <= x]
 
 
+    """1216. Valid Palindrome III (Hard)
+    Given a string s and an integer k, return true if s is a k-palindrome. A 
+    string is k-palindrome if it can be transformed into a palindrome by 
+    removing at most k characters from it.
+
+    Example 1:
+    Input: s = "abcdeca", k = 2
+    Output: true
+    Explanation: Remove 'b' and 'e' characters.
+
+    Example 2:
+    Input: s = "abbababa", k = 1
+    Output: true
+
+    Constraints:
+    * 1 <= s.length <= 1000
+    * s consists of only lowercase English letters.
+    * 1 <= k <= s.length"""
+
+    def isValidPalindrome(self, s: str, k: int) -> bool:
+        n = len(s)
+        dp = [[0]*n for _ in range(n+1)]
+        for i in range(n-1, -1, -1): 
+            dp[i][i] = 1
+            for j in range(i+1, n): 
+                if s[i] == s[j]: dp[i][j] = 2 + dp[i+1][j-1]
+                else: dp[i][j] = max(dp[i+1][j], dp[i][j-1])
+        return dp[0][-1] >= n - k 
+
+
     """1217. Minimum Cost to Move Chips to The Same Position (Easy)
     We have n chips, where the position of the ith chip is position[i]. We need 
     to move all the chips to the same position. In one step, we can change the 
