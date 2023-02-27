@@ -56178,6 +56178,204 @@ public:
         }
         return ans; 
     }
+
+
+    /*2574. Left and Right Sum Differences (Easy)
+    Given a 0-indexed integer array nums, find a 0-indexed integer array answer 
+    where:
+    * answer.length == nums.length.
+    * answer[i] = |leftSum[i] - rightSum[i]|.
+    Where:
+    * leftSum[i] is the sum of elements to the left of the index i in the array 
+      nums. If there is no such element, leftSum[i] = 0.
+    * rightSum[i] is the sum of elements to the right of the index i in the 
+      array nums. If there is no such element, rightSum[i] = 0.
+    Return the array answer.
+
+    Example 1:
+    Input: nums = [10,4,8,3]
+    Output: [15,1,11,22]
+    Explanation: The array leftSum is [0,10,14,22] and the array rightSum is 
+                 [15,11,3,0]. The array answer is 
+                 [|0 - 15|,|10 - 11|,|14 - 3|,|22 - 0|] = [15,1,11,22].
+    
+    Example 2:
+    Input: nums = [1]
+    Output: [0]
+    Explanation: The array leftSum is [0] and the array rightSum is [0]. The 
+                 array answer is [|0 - 0|] = [0].
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i] <= 10^5*/
+
+    vector<int> leftRigthDifference(vector<int>& nums) {
+        vector<int> ans; 
+        int diff = accumulate(nums.begin(), nums.end(), 0); 
+        for (auto& x : nums) {
+            ans.push_back(abs(diff - x)); 
+            diff -= 2*x; 
+        }
+        return ans; 
+    }
+
+
+    /*2575. Find the Divisibility Array of a String (Medium)
+    You are given a 0-indexed string word of length n consisting of digits, and 
+    a positive integer m. The divisibility array div of word is an integer 
+    array of length n such that:
+    * div[i] = 1 if the numeric value of word[0,...,i] is divisible by m, or
+    * div[i] = 0 otherwise.
+    Return the divisibility array of word.
+
+    Example 1:
+    Input: word = "998244353", m = 3
+    Output: [1,1,0,0,0,1,1,0,0]
+    Explanation: There are only 4 prefixes that are divisible by 3: "9", "99", 
+                 "998244", and "9982443".
+    
+    Example 2:
+    Input: word = "1010", m = 10
+    Output: [0,1,0,1]
+    Explanation: There are only 2 prefixes that are divisible by 10: "10", and 
+                 "1010".
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * word.length == n
+    * word consists of digits from 0 to 9
+    * 1 <= m <= 10^9*/
+
+    vector<int> divisibilityArray(string word, int m) {
+        vector<int> ans; 
+        long prefix = 0; 
+        for (auto& ch : word) {
+            prefix = 10*prefix + (ch - '0'); 
+            prefix %= m; 
+            if (prefix == 0) ans.push_back(1); 
+            else ans.push_back(0); 
+        }
+        return ans; 
+    }
+
+
+    /*2576. Find the Maximum Number of Marked Indices (Medium)
+    You are given a 0-indexed integer array nums. Initially, all of the indices 
+    are unmarked. You are allowed to make this operation any number of times:
+    * Pick two different unmarked indices i and j such that 
+      2 * nums[i] <= nums[j], then mark i and j.
+    Return the maximum possible number of marked indices in nums using the 
+    above operation any number of times.
+
+    Example 1:
+    Input: nums = [3,5,2,4]
+    Output: 2
+    Explanation: In the first operation: pick i = 2 and j = 1, the operation is 
+                 allowed because 2 * nums[2] <= nums[1]. Then mark index 2 and 
+                 1. It can be shown that there's no other valid operation so 
+                 the answer is 2.
+    
+    Example 2:
+    Input: nums = [9,2,5,4]
+    Output: 4
+    Explanation: In the first operation: pick i = 3 and j = 0, the operation is 
+                 allowed because 2 * nums[3] <= nums[0]. Then mark index 3 and 
+                 0. In the second operation: pick i = 1 and j = 2, the 
+                 operation is allowed because 2 * nums[1] <= nums[2]. Then mark 
+                 index 1 and 2. Since there is no other operation, the answer 
+                 is 4.
+    
+    Example 3:
+    Input: nums = [7,6,8]
+    Output: 0
+    Explanation: There is no valid operation to do, so the answer is 0.
+     
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9*/
+
+    int maxNumOfMarkedIndices(vector<int>& nums) {
+        sort(nums.begin(), nums.end()); 
+        int ans = 0; 
+        for (int n = nums.size(), i = n/2-1, j = n-1; i >= 0; --i) 
+            if (nums[i] * 2 <= nums[j]) {
+                ans += 2; 
+                --j; 
+            }
+        return ans; 
+    }
+
+
+    /*2577. Minimum Time to Visit a Cell In a Grid (Hard)
+    You are given a m x n matrix grid consisting of non-negative integers where 
+    grid[row][col] represents the minimum time required to be able to visit the 
+    cell (row, col), which means you can visit the cell (row, col) only when 
+    the time you visit it is greater than or equal to grid[row][col]. You are 
+    standing in the top-left cell of the matrix in the 0th second, and you must 
+    move to any adjacent cell in the four directions: up, down, left, and right. 
+    Each move you make takes 1 second. Return the minimum time required in 
+    which you can visit the bottom-right cell of the matrix. If you cannot 
+    visit the bottom-right cell, then return -1.
+
+    Example 1:
+    Input: grid = [[0,1,3,2],[5,1,2,5],[4,3,8,6]]
+    Output: 7
+    Explanation: One of the paths that we can take is the following:
+                 - at t = 0, we are on the cell (0,0).
+                 - at t = 1, we move to the cell (0,1). It is possible because 
+                   grid[0][1] <= 1.
+                 - at t = 2, we move to the cell (1,1). It is possible because 
+                   grid[1][1] <= 2.
+                 - at t = 3, we move to the cell (1,2). It is possible because 
+                   grid[1][2] <= 3.
+                 - at t = 4, we move to the cell (1,1). It is possible because 
+                   grid[1][1] <= 4.
+                 - at t = 5, we move to the cell (1,2). It is possible because 
+                   grid[1][2] <= 5.
+                 - at t = 6, we move to the cell (1,3). It is possible because 
+                   grid[1][3] <= 6.
+                 - at t = 7, we move to the cell (2,3). It is possible because 
+                   grid[1][3] <= 7.
+                 The final time is 7. It can be shown that it is the minimum 
+                 time possible.
+    
+    Example 2:
+    Input: grid = [[0,2,4],[3,2,1],[1,0,4]]
+    Output: -1
+    Explanation: There is no path from the top left to the bottom-right cell.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 2 <= m, n <= 1000
+    * 4 <= m * n <= 10^5
+    * 0 <= grid[i][j] <= 10^5
+    * grid[0][0] == 0*/
+
+    int minimumTime(vector<vector<int>>& grid) {
+        if (grid[0][1] <= 1 || grid[1][0] <= 1) {
+            int m = grid.size(), n = grid[0].size(), dir[5] = {-1, 0, 1, 0, -1}; 
+            priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<>> pq; 
+            pq.emplace(0, 0, 0); 
+            vector<vector<int>> dist(m, vector<int>(n, INT_MAX)); 
+            dist[0][0] = 0; 
+            while (pq.size()) {
+                auto [x, i, j] = pq.top(); pq.pop(); 
+                if (i == m-1 && j == n-1) return x; 
+                for (int k = 0; k < 4; ++k) {
+                    int ii = i + dir[k], jj = j + dir[k+1]; 
+                    if (0 <= ii && ii < m && 0 <= jj && jj < n) {
+                        int xx = x + 1 + max(0, (grid[ii][jj]-x)/2*2); 
+                        if (dist[ii][jj] > xx) {
+                            pq.emplace(xx, ii, jj); 
+                            dist[ii][jj] = xx; 
+                        }
+                    }
+                }
+            }
+        }
+        return -1; 
+    }
 };
 
 
