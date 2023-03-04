@@ -5511,6 +5511,43 @@ class Solution {
     }
 
 
+    /*2444. Count Subarrays With Fixed Bounds (Hard)
+    You are given an integer array nums and two integers minK and maxK. A 
+    fixed-bound subarray of nums is a subarray that satisfies the following 
+    conditions:
+    * The minimum value in the subarray is equal to minK.
+    * The maximum value in the subarray is equal to maxK.
+    Return the number of fixed-bound subarrays. A subarray is a contiguous part 
+    of an array.
+
+    Example 1:
+    Input: nums = [1,3,5,2,7,5], minK = 1, maxK = 5
+    Output: 2
+    Explanation: The fixed-bound subarrays are [1,3,5] and [1,3,5,2].
+
+    Example 2:
+    Input: nums = [1,1,1,1], minK = 1, maxK = 1
+    Output: 10
+    Explanation: Every subarray of nums is a fixed-bound subarray. There are 10 
+                 possible subarrays.
+
+    Constraints:
+    * 2 <= nums.length <= 10^5
+    * 1 <= nums[i], minK, maxK <= 10^6*/
+
+    public long countSubarrays(int[] nums, int minK, int maxK) {
+        long ans = 0; 
+        for (int i = 0, ii = -1, imin = -1, imax = -1; i < nums.length; ++i) {
+            if (minK <= nums[i] && nums[i] <= maxK) {
+                if (minK == nums[i]) imin = i; 
+                if (maxK == nums[i]) imax = i; 
+                ans += Math.max(0, Math.min(imax, imin) - ii); 
+            } else ii = i; 
+        }
+        return ans; 
+    }
+
+
     /*2477. Minimum Fuel Cost to Report to the Capital (Medium)
     There is a tree (i.e., a connected, undirected graph with no cycles) 
     structure country network consisting of n cities numbered from 0 to n - 1 
