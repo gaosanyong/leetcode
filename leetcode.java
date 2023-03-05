@@ -10183,6 +10183,213 @@ class SegTreeLazy {
         }
         return -1; 
     }
+
+
+    /*2582. Pass the Pillow (Easy)
+    There are n people standing in a line labeled from 1 to n. The first person 
+    in the line is holding a pillow initially. Every second, the person holding 
+    the pillow passes it to the next person standing in the line. Once the 
+    pillow reaches the end of the line, the direction changes, and people 
+    continue passing the pillow in the opposite direction.
+    * For example, once the pillow reaches the nth person they pass it to the 
+      n - 1th person, then to the n - 2th person and so on.
+    Given the two positive integers n and time, return the index of the person 
+    holding the pillow after time seconds.
+
+    Example 1:
+    Input: n = 4, time = 5
+    Output: 2
+    Explanation: People pass the pillow in the following way: 
+                 1 -> 2 -> 3 -> 4 -> 3 -> 2. Afer five seconds, the pillow is 
+                 given to the 2nd person.
+    
+    Example 2:
+    Input: n = 3, time = 2
+    Output: 3
+    Explanation: People pass the pillow in the following way: 1 -> 2 -> 3. Afer 
+                 two seconds, the pillow is given to the 3rd person.
+
+    Constraints:
+    * 2 <= n <= 1000
+    * 1 <= time <= 1000*/
+
+    public int passThePillow(int n, int time) {
+        time %= 2*(n-1); 
+        if (time > n-1) time = 2*(n-1) - time; 
+        return time+1; 
+    }
+
+
+    /*2583. Kth Largest Sum in a Binary Tree (Medium)
+    You are given the root of a binary tree and a positive integer k. The level 
+    sum in the tree is the sum of the values of the nodes that are on the same 
+    level. Return the kth largest level sum in the tree (not necessarily 
+    distinct). If there are fewer than k levels in the tree, return -1. Note 
+    that two nodes are on the same level if they have the same distance from 
+    the root.
+
+    Example 1:
+    Input: root = [5,8,9,2,1,3,7,4,6], k = 2
+    Output: 13
+    Explanation: The level sums are the following:
+                 - Level 1: 5.
+                 - Level 2: 8 + 9 = 17.
+                 - Level 3: 2 + 1 + 3 + 7 = 13.
+                 - Level 4: 4 + 6 = 10.
+                 The 2nd largest level sum is 13.
+    
+    Example 2:
+    Input: root = [1,2,null,3], k = 1
+    Output: 3
+    Explanation: The largest level sum is 3.
+
+    Constraints:
+    * The number of nodes in the tree is n.
+    * 2 <= n <= 10^5
+    * 1 <= Node.val <= 10^6
+    * 1 <= k <= n*/
+
+    public long kthLargestLevelSum(TreeNode root, int k) {
+        List<Long> vals = new ArrayList(); 
+        Stack<Pair<TreeNode, Integer>> stk = new Stack(); 
+        stk.add(new Pair(root, 0)); 
+        while (!stk.isEmpty()) {
+            var elem = stk.pop(); 
+            TreeNode node = elem.getKey(); 
+            int i = elem.getValue(); 
+            if (i == vals.size()) vals.add(0l); 
+            vals.set(i, vals.get(i)+node.val); 
+            if (node.left != null) stk.add(new Pair(node.left, i+1)); 
+            if (node.right != null) stk.add(new Pair(node.right, i+1)); 
+        }
+        if (vals.size() < k) return -1; 
+        Collections.sort(vals, Collections.reverseOrder()); 
+        return vals.get(k-1); 
+    }
+
+
+    /*2584. Split the Array to Make Coprime Products (Medium)
+    You are given a 0-indexed integer array nums of length n. A split at an 
+    index i where 0 <= i <= n - 2 is called valid if the product of the first 
+    i + 1 elements and the product of the remaining elements are coprime. 
+    * For example, if nums = [2, 3, 3], then a split at the index i = 0 is 
+      valid because 2 and 9 are coprime, while a split at the index i = 1 is 
+      not valid because 6 and 3 are not coprime. A split at the index i = 2 is 
+      not valid because i == n - 1.
+    Return the smallest index i at which the array can be split validly or -1 
+    if there is no such split. Two values val1 and val2 are coprime if 
+    gcd(val1, val2) == 1 where gcd(val1, val2) is the greatest common divisor 
+    of val1 and val2.
+
+    Example 1:
+    Input: nums = [4,7,8,15,3,5]
+    Output: 2
+    Explanation: The table above shows the values of the product of the first 
+                 i + 1 elements, the remaining elements, and their gcd at each 
+                 index i. The only valid split is at index 2.
+    
+    Example 2:
+    Input: nums = [4,7,15,8,3,5]
+    Output: -1
+    Explanation: The table above shows the values of the product of the first 
+                 i + 1 elements, the remaining elements, and their gcd at each 
+                 index i. There is no valid split.
+
+    Constraints:
+    * n == nums.length
+    * 1 <= n <= 10^4
+    * 1 <= nums[i] <= 10^6*/
+
+    public int findValidSplit(int[] nums) {
+        HashMap<Integer, Integer> freq = new HashMap(); 
+        for (var x : nums) {
+            for (int p = 2; p <= Math.sqrt(x); ++p) 
+                for (; x % p == 0; x /= p) 
+                    freq.merge(p, 1, Integer::sum); 
+            if (x > 1) freq.merge(x, 1, Integer::sum); 
+        }
+        HashSet<Integer> ovlp = new HashSet(); 
+        for (int i = 0, x = nums[0]; i < nums.length-1; x = nums[++i]) {
+            for (int p = 2; p <= Math.sqrt(x); ++p) 
+                for (; x % p == 0; x /= p) {
+                    ovlp.add(p); 
+                    freq.merge(p, -1, Integer::sum); 
+                    if (freq.get(p) == 0) ovlp.remove(p); 
+                }
+            if (x > 1) {
+                ovlp.add(x); 
+                freq.merge(x, -1, Integer::sum); 
+                if (freq.get(x) == 0) ovlp.remove(x); 
+            }
+            if (ovlp.isEmpty()) return i; 
+        }
+        return -1; 
+    }
+
+
+    /*2585. Number of Ways to Earn Points (Hard)
+    There is a test that has n types of questions. You are given an integer 
+    target and a 0-indexed 2D integer array types where 
+    types[i] = [counti, marksi] indicates that there are counti questions of 
+    the ith type, and each one of them is worth marksi points. Return the 
+    number of ways you can earn exactly target points in the exam. Since the 
+    answer may be too large, return it modulo 10^9 + 7. Note that questions of 
+    the same type are indistinguishable. For example, if there are 3 questions 
+    of the same type, then solving the 1st and 2nd questions is the same as 
+    solving the 1st and 3rd questions, or the 2nd and 3rd questions.
+
+    Example 1:
+    Input: target = 6, types = [[6,1],[3,2],[2,3]]
+    Output: 7
+    Explanation: You can earn 6 points in one of the seven ways:
+                 - Solve 6 questions of the 0th type: 1 + 1 + 1 + 1 + 1 + 1 = 6
+                 - Solve 4 questions of the 0th type and 1 question of the 1st 
+                   type: 1 + 1 + 1 + 1 + 2 = 6
+                 - Solve 2 questions of the 0th type and 2 questions of the 1st 
+                   type: 1 + 1 + 2 + 2 = 6
+                 - Solve 3 questions of the 0th type and 1 question of the 2nd 
+                   type: 1 + 1 + 1 + 3 = 6
+                 - Solve 1 question of the 0th type, 1 question of the 1st type 
+                   and 1 question of the 2nd type: 1 + 2 + 3 = 6
+                 - Solve 3 questions of the 1st type: 2 + 2 + 2 = 6
+                 - Solve 2 questions of the 2nd type: 3 + 3 = 6
+    
+    Example 2:
+    Input: target = 5, types = [[50,1],[50,2],[50,5]]
+    Output: 4
+    Explanation: You can earn 5 points in one of the four ways:
+                 - Solve 5 questions of the 0th type: 1 + 1 + 1 + 1 + 1 = 5
+                 - Solve 3 questions of the 0th type and 1 question of the 1st 
+                   type: 1 + 1 + 1 + 2 = 5
+                 - Solve 1 questions of the 0th type and 2 questions of the 1st 
+                   type: 1 + 2 + 2 = 5
+                 - Solve 1 question of the 2nd type: 5
+    
+    Example 3:
+    Input: target = 18, types = [[6,1],[3,2],[2,3]]
+    Output: 1
+    Explanation: You can only earn 18 points by answering all questions.
+
+    Constraints:
+    * 1 <= target <= 1000
+    * n == types.length
+    * 1 <= n <= 50
+    * types[i].length == 2
+    * 1 <= counti, marksi <= 50*/
+
+    public int waysToReachTarget(int target, int[][] types) {
+        int n = types.length; 
+        long[][] dp = new long[target+1][n+1]; 
+        for (int j = 0; j <= n; ++j) dp[0][j] = 1; 
+        for (int i = 1; i <= target; ++i) {
+            for (int j = n-1; j >= 0; --j) {
+                int c = types[j][0], m = types[j][1]; 
+                for (int x = 0; x <= c && i-x*m >= 0; ++x) 
+                    dp[i][j] = (dp[i][j] + dp[i-x*m][j+1]) % 1_000_000_007; 
+            }
+        }
+        return (int) dp[target][0]; 
+    }
 }
 
 
