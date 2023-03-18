@@ -76966,6 +76966,180 @@ class SegTreeLazy:
         return sum(line)
 
 
+    """2591. Distribute Money to Maximum Children (Easy)
+    You are given an integer money denoting the amount of money (in dollars) 
+    that you have and another integer children denoting the number of children 
+    that you must distribute the money to. You have to distribute the money 
+    according to the following rules:
+    * All money must be distributed.
+    * Everyone must receive at least 1 dollar.
+    * Nobody receives 4 dollars.
+    Return the maximum number of children who may receive exactly 8 dollars if 
+    you distribute the money according to the aforementioned rules. If there is 
+    no way to distribute the money, return -1.
+
+    Example 1:
+    Input: money = 20, children = 3
+    Output: 1
+    Explanation: The maximum number of children with 8 dollars will be 1. One 
+                 of the ways to distribute the money is:
+                 - 8 dollars to the first child.
+                 - 9 dollars to the second child. 
+                 - 3 dollars to the third child.
+                 It can be proven that no distribution exists such that number 
+                 of children getting 8 dollars is greater than 1.
+    
+    Example 2:
+    Input: money = 16, children = 2
+    Output: 2
+    Explanation: Each child can be given 8 dollars.
+
+    Constraints:
+    * 1 <= money <= 200
+    * 2 <= children <= 30"""
+
+    def distMoney(self, money: int, children: int) -> int:
+        if money < children: return -1
+        if money > 8*children: return children-1
+        q, r = divmod(money-children, 7)
+        if q == children-1 and r == 3: q -= 1
+        return q 
+
+
+    """2592. Maximize Greatness of an Array (Medium)
+    You are given a 0-indexed integer array nums. You are allowed to permute 
+    nums into a new array perm of your choosing. We define the greatness of 
+    nums be the number of indices 0 <= i < nums.length for which 
+    perm[i] > nums[i]. Return the maximum possible greatness you can achieve 
+    after permuting nums.
+
+    Example 1:
+    Input: nums = [1,3,5,2,1,3,1]
+    Output: 4
+    Explanation: One of the optimal rearrangements is perm = [2,5,1,3,3,1,1].
+                 At indices = 0, 1, 3, and 4, perm[i] > nums[i]. Hence, we 
+                 return 4.
+    
+    Example 2:
+    Input: nums = [1,2,3,4]
+    Output: 3
+    Explanation: We can prove the optimal perm is [2,3,4,1]. At indices = 0, 1, 
+                 and 2, perm[i] > nums[i]. Hence, we return 3.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] <= 10^9"""
+
+    def maximizeGreatness(self, nums: List[int]) -> int:
+        nums.sort()
+        k = 0 
+        for x in nums: 
+            if nums[k] < x: k += 1
+        return k
+
+
+    """2593. Find Score of an Array After Marking All Elements (Medium)
+    You are given an array nums consisting of positive integers. Starting with 
+    score = 0, apply the following algorithm:
+    * Choose the smallest integer of the array that is not marked. If there is 
+      a tie, choose the one with the smallest index.
+    * Add the value of the chosen integer to score.
+    * Mark the chosen element and its two adjacent elements if they exist.
+    * Repeat until all the array elements are marked.
+    Return the score you get after applying the above algorithm.
+
+    Example 1:
+    Input: nums = [2,1,3,4,5,2]
+    Output: 7
+    Explanation: We mark the elements as follows:
+                 - 1 is the smallest unmarked element, so we mark it and its 
+                   two adjacent elements: [2,1,3,4,5,2].
+                 - 2 is the smallest unmarked element, so we mark it and its 
+                   left adjacent element: [2,1,3,4,5,2].
+                 - 4 is the only remaining unmarked element, so we mark it: 
+                   [2,1,3,4,5,2].
+                 Our score is 1 + 2 + 4 = 7.
+    
+    Example 2:
+    Input: nums = [2,3,5,1,3,2]
+    Output: 5
+    Explanation: We mark the elements as follows:
+                 - 1 is the smallest unmarked element, so we mark it and its 
+                   two adjacent elements: [2,3,5,1,3,2].
+                 - 2 is the smallest unmarked element, since there are two of 
+                   them, we choose the left-most one, so we mark the one at 
+                   index 0 and its right adjacent element: [2,3,5,1,3,2].
+                 - 2 is the only remaining unmarked element, so we mark it: 
+                   [2,3,5,1,3,2].
+                 Our score is 1 + 2 + 2 = 5.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^6"""
+
+    def findScore(self, nums: List[int]) -> int:
+        ans = 0
+        pq = [(x, i) for i, x in enumerate(nums)]
+        heapify(pq)
+        mark = [False] * len(nums)
+        while pq: 
+            x, i = heappop(pq)
+            if not mark[i]: 
+                ans += x
+                mark[i] = True
+                if i: mark[i-1] = True
+                if i+1 < len(nums): mark[i+1] = True 
+        return ans 
+
+ 
+    """2594. Minimum Time to Repair Cars (Medium)
+    You are given an integer array ranks representing the ranks of some 
+    mechanics. ranksi is the rank of the ith mechanic. A mechanic with a rank r 
+    can repair n cars in r * n2 minutes. You are also given an integer cars 
+    representing the total number of cars waiting in the garage to be repaired.
+    Return the minimum time taken to repair all the cars. Note: All the 
+    mechanics can repair the cars simultaneously.
+
+    Example 1:
+    Input: ranks = [4,2,3,1], cars = 10
+    Output: 16
+    Explanation: - The first mechanic will repair two cars. The time required 
+                   is 4 * 2 * 2 = 16 minutes.
+                 - The second mechanic will repair two cars. The time required 
+                   is 2 * 2 * 2 = 8 minutes.
+                 - The third mechanic will repair two cars. The time required 
+                   is 3 * 2 * 2 = 12 minutes.
+                 - The fourth mechanic will repair four cars. The time required 
+                   is 1 * 4 * 4 = 16 minutes.
+                 It can be proved that the cars cannot be repaired in less than 
+                 16 minutes.
+    
+    Example 2:
+    Input: ranks = [5,1,8], cars = 6
+    Output: 16
+    Explanation: - The first mechanic will repair one car. The time required is 
+                   5 * 1 * 1 = 5 minutes.
+                 - The second mechanic will repair four cars. The time required 
+                   is 1 * 4 * 4 = 16 minutes.
+                 - The third mechanic will repair one car. The time required is 
+                   8 * 1 * 1 = 8 minutes.
+                 It can be proved that the cars cannot be repaired in less than 
+                 16 minutes.
+
+    Constraints:
+    * 1 <= ranks.length <= 10^5
+    * 1 <= ranks[i] <= 100
+    * 1 <= cars <= 10^6"""
+
+    def repairCars(self, ranks: List[int], cars: int) -> int:
+        lo, hi = 0, max(ranks)*cars**2
+        while lo < hi: 
+            mid = lo + hi >> 1
+            if sum(isqrt(mid//x) for x in ranks) < cars: lo = mid+1
+            else: hi = mid 
+        return lo 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
