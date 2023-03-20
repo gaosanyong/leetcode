@@ -77140,6 +77140,170 @@ class SegTreeLazy:
         return lo 
 
 
+    """2595. Number of Even and Odd Bits (Easy)
+    You are given a positive integer n. Let even denote the number of even 
+    indices in the binary representation of n (0-indexed) with value 1. Let odd 
+    denote the number of odd indices in the binary representation of n 
+    (0-indexed) with value 1. Return an integer array answer where 
+    answer = [even, odd].
+
+    Example 1:
+    Input: n = 17
+    Output: [2,0]
+    Explanation: The binary representation of 17 is 10001. It contains 1 on the 
+                 0th and 4th indices. There are 2 even and 0 odd indices.
+    
+    Example 2:
+    Input: n = 2
+    Output: [0,1]
+    Explanation: The binary representation of 2 is 10. It contains 1 on the 1st 
+                 index. There are 0 even and 1 odd indices.
+
+    Constraints: 1 <= n <= 1000"""
+
+    def evenOddBit(self, n: int) -> List[int]:
+        ans = [0, 0]
+        i = 0
+        while n: 
+            if n&1: ans[i] += 1
+            n >>= 1
+            i ^= 1
+        return ans
+
+
+    """2596. Check Knight Tour Configuration (Medium)
+    There is a knight on an n x n chessboard. In a valid configuration, the 
+    knight starts at the top-left cell of the board and visits every cell on 
+    the board exactly once. You are given an n x n integer matrix grid 
+    consisting of distinct integers from the range [0, n * n - 1] where 
+    grid[row][col] indicates that the cell (row, col) is the grid[row][col]th 
+    cell that the knight visited. The moves are 0-indexed. Return true if grid 
+    represents a valid configuration of the knight's movements or false 
+    otherwise. Note that a valid knight move consists of moving two squares 
+    vertically and one square horizontally, or two squares horizontally and one 
+    square vertically. The figure below illustrates all the possible eight 
+    moves of a knight from some cell.
+
+    Example 1:
+    Input: grid = [[0,11,16,5,20],[17,4,19,10,15],[12,1,8,21,6],[3,18,23,14,9],[24,13,2,7,22]]
+    Output: true
+    Explanation: The above diagram represents the grid. It can be shown that it 
+                 is a valid configuration.
+    
+    Example 2:
+    Input: grid = [[0,3,6],[5,8,1],[2,7,4]]
+    Output: false
+    Explanation: The above diagram represents the grid. The 8th move of the 
+                 knight is not valid considering its position after the 7th 
+                 move.
+
+    Constraints:
+    * n == grid.length == grid[i].length
+    * 3 <= n <= 7
+    * 0 <= grid[row][col] < n * n
+    * All integers in grid are unique."""
+
+    def checkValidGrid(self, grid: List[List[int]]) -> bool:
+        n = len(grid)
+        loc = {}
+        for i in range(n): 
+            for j in range(n): 
+                loc[grid[i][j]] = (i, j)
+        ii = jj = 0 
+        for x in range(1, n*n): 
+            i, j = loc[x]
+            diff = (abs(i-ii), abs(j-jj))
+            if diff not in ((1, 2), (2, 1)): return False
+            ii, jj = i, j 
+        return True
+
+
+    """2597. The Number of Beautiful Subsets (Medium)
+    You are given an array nums of positive integers and a positive integer k. 
+    A subset of nums is beautiful if it does not contain two integers with an 
+    absolute difference equal to k. Return the number of non-empty beautiful 
+    subsets of the array nums. A subset of nums is an array that can be 
+    obtained by deleting some (possibly none) elements from nums. Two subsets 
+    are different if and only if the chosen indices to delete are different.
+
+    Example 1:
+    Input: nums = [2,4,6], k = 2
+    Output: 4
+    Explanation: The beautiful subsets of the array nums are: [2], [4], [6], 
+                 [2, 6]. It can be proved that there are only 4 beautiful 
+                 subsets in the array [2,4,6].
+    
+    Example 2:
+    Input: nums = [1], k = 1
+    Output: 1
+    Explanation: The beautiful subset of the array nums is [1]. It can be 
+                 proved that there is only 1 beautiful subset in the array [1].
+
+    Constraints:
+    * 1 <= nums.length <= 20
+    * 1 <= nums[i], k <= 1000"""
+
+    def beautifulSubsets(self, nums: List[int], k: int) -> int:
+        freq = Counter(nums)
+        mp = defaultdict(list)
+        for x in sorted(freq): 
+            mp[x-k].append(x)
+            mp[x] = mp[x-k]
+            mp.pop(x-k)
+        ans = 1
+        for v in mp.values(): 
+            f0 = f1 = 1
+            for x in v: f0, f1 = f1, f0*(2**freq[x]-1) + f1
+            ans *= f1
+        return ans-1
+
+
+    """2598. Smallest Missing Non-negative Integer After Operations (Medium)
+    You are given a 0-indexed integer array nums and an integer value. In one 
+    operation, you can add or subtract value from any element of nums.
+    * For example, if nums = [1,2,3] and value = 2, you can choose to subtract 
+      value from nums[0] to make nums = [-1,2,3].
+    The MEX (minimum excluded) of an array is the smallest missing non-
+    negative integer in it.
+    * For example, the MEX of [-1,2,3] is 0 while the MEX of [1,0,3] is 2.
+    Return the maximum MEX of nums after applying the mentioned operation any 
+    number of times.
+
+    Example 1:
+    Input: nums = [1,-10,7,13,6,8], value = 5
+    Output: 4
+    Explanation: One can achieve this result by applying the following 
+                 operations:
+                 - Add value to nums[1] twice to make nums = [1,0,7,13,6,8]
+                 - Subtract value from nums[2] once to make 
+                   nums = [1,0,2,13,6,8]
+                 - Subtract value from nums[3] twice to make 
+                   nums = [1,0,2,3,6,8]
+                 The MEX of nums is 4. It can be shown that 4 is the maximum 
+                 MEX we can achieve.
+    
+    Example 2:
+    Input: nums = [1,-10,7,13,6,8], value = 7
+    Output: 2
+    Explanation: One can achieve this result by applying the following 
+                 operation:
+                 - subtract value from nums[2] once to make 
+                   nums = [1,-10,0,13,6,8]
+                 The MEX of nums is 2. It can be shown that 2 is the maximum 
+                 MEX we can achieve.
+
+    Constraints:
+    * 1 <= nums.length, value <= 10^5
+    * -10^9 <= nums[i] <= 10^9"""
+
+    def findSmallestInteger(self, nums: List[int], value: int) -> int:
+        freq = Counter(x % value for x in nums)
+        k = 0
+        for x in range(value): 
+            if freq[x] < freq[k]: k = x
+        return k + freq[k]*value 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 

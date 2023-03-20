@@ -10986,6 +10986,184 @@ class SegTreeLazy {
         }
         return lo; 
     }
+
+
+    /*2595. Number of Even and Odd Bits (Easy)
+    You are given a positive integer n. Let even denote the number of even 
+    indices in the binary representation of n (0-indexed) with value 1. Let odd 
+    denote the number of odd indices in the binary representation of n 
+    (0-indexed) with value 1. Return an integer array answer where 
+    answer = [even, odd].
+
+    Example 1:
+    Input: n = 17
+    Output: [2,0]
+    Explanation: The binary representation of 17 is 10001. It contains 1 on the 
+                 0th and 4th indices. There are 2 even and 0 odd indices.
+    
+    Example 2:
+    Input: n = 2
+    Output: [0,1]
+    Explanation: The binary representation of 2 is 10. It contains 1 on the 1st 
+                 index. There are 0 even and 1 odd indices.
+
+    Constraints: 1 <= n <= 1000*/
+
+    public int[] evenOddBit(int n) {
+        int[] ans = new int[2]; 
+        for (int i = 0; n > 0; n >>= 1, i ^= 1) 
+            if (n % 2 == 1) ++ans[i]; 
+        return ans; 
+    }
+
+
+    /*2596. Check Knight Tour Configuration (Medium)
+    There is a knight on an n x n chessboard. In a valid configuration, the 
+    knight starts at the top-left cell of the board and visits every cell on 
+    the board exactly once. You are given an n x n integer matrix grid 
+    consisting of distinct integers from the range [0, n * n - 1] where 
+    grid[row][col] indicates that the cell (row, col) is the grid[row][col]th 
+    cell that the knight visited. The moves are 0-indexed. Return true if grid 
+    represents a valid configuration of the knight's movements or false 
+    otherwise. Note that a valid knight move consists of moving two squares 
+    vertically and one square horizontally, or two squares horizontally and one 
+    square vertically. The figure below illustrates all the possible eight 
+    moves of a knight from some cell.
+
+    Example 1:
+    Input: grid = [[0,11,16,5,20],[17,4,19,10,15],[12,1,8,21,6],[3,18,23,14,9],[24,13,2,7,22]]
+    Output: true
+    Explanation: The above diagram represents the grid. It can be shown that it 
+                 is a valid configuration.
+    
+    Example 2:
+    Input: grid = [[0,3,6],[5,8,1],[2,7,4]]
+    Output: false
+    Explanation: The above diagram represents the grid. The 8th move of the 
+                 knight is not valid considering its position after the 7th 
+                 move.
+
+    Constraints:
+    * n == grid.length == grid[i].length
+    * 3 <= n <= 7
+    * 0 <= grid[row][col] < n * n
+    * All integers in grid are unique.*/
+
+    public boolean checkValidGrid(int[][] grid) {
+        int n = grid.length; 
+        HashMap<Integer, Pair<Integer, Integer>> loc = new HashMap(); 
+        for (int i = 0; i < n; ++i) 
+            for (int j = 0; j < n; ++j) 
+                loc.put(grid[i][j], new Pair(i, j)); 
+        for (int i = 0, j = 0, ii = 0, jj = 0, x = 1; x < n*n; ++x, ii = i, jj = j) {
+            i = loc.get(x).getKey();
+            j = loc.get(x).getValue(); 
+            int di = Math.abs(i-ii), dj = Math.abs(j-jj); 
+            if (!(di == 1 && dj == 2 || di == 2 && dj == 1)) return false; 
+        }
+        return true; 
+    }
+
+
+    /*2597. The Number of Beautiful Subsets (Medium)
+    You are given an array nums of positive integers and a positive integer k. 
+    A subset of nums is beautiful if it does not contain two integers with an 
+    absolute difference equal to k. Return the number of non-empty beautiful 
+    subsets of the array nums. A subset of nums is an array that can be 
+    obtained by deleting some (possibly none) elements from nums. Two subsets 
+    are different if and only if the chosen indices to delete are different.
+
+    Example 1:
+    Input: nums = [2,4,6], k = 2
+    Output: 4
+    Explanation: The beautiful subsets of the array nums are: [2], [4], [6], 
+                 [2, 6]. It can be proved that there are only 4 beautiful 
+                 subsets in the array [2,4,6].
+    
+    Example 2:
+    Input: nums = [1], k = 1
+    Output: 1
+    Explanation: The beautiful subset of the array nums is [1]. It can be 
+                 proved that there is only 1 beautiful subset in the array [1].
+
+    Constraints:
+    * 1 <= nums.length <= 20
+    * 1 <= nums[i], k <= 1000*/
+
+    public int beautifulSubsets(int[] nums, int k) {
+        Map<Integer, Integer> freq = new HashMap(); 
+        for (var x : nums) freq.merge(x, 1, Integer::sum); 
+        Map<Integer, List<Integer>> mp = new HashMap(); 
+        List<Integer> keys = new ArrayList(); 
+        for (var x : freq.keySet()) keys.add(x); 
+        Collections.sort(keys); 
+        for (var x : keys) {
+            mp.putIfAbsent(x-k, new ArrayList()); 
+            mp.get(x-k).add(x); 
+            mp.put(x, mp.get(x-k)); 
+            mp.remove(x-k); 
+        }
+        int ans = 1; 
+        for (var v : mp.values()) {
+            int f0 = 1, f1 = 1; 
+            for (var x : v) {
+                int f2 = f0*((int) Math.pow(2, freq.get(x))-1) + f1; 
+                f0 = f1; 
+                f1 = f2; 
+            }
+            ans *= f1; 
+        }
+        return ans-1; 
+    }
+
+
+    /*2598. Smallest Missing Non-negative Integer After Operations (Medium)
+    You are given a 0-indexed integer array nums and an integer value. In one 
+    operation, you can add or subtract value from any element of nums.
+    * For example, if nums = [1,2,3] and value = 2, you can choose to subtract 
+      value from nums[0] to make nums = [-1,2,3].
+    The MEX (minimum excluded) of an array is the smallest missing non-
+    negative integer in it.
+    * For example, the MEX of [-1,2,3] is 0 while the MEX of [1,0,3] is 2.
+    Return the maximum MEX of nums after applying the mentioned operation any 
+    number of times.
+
+    Example 1:
+    Input: nums = [1,-10,7,13,6,8], value = 5
+    Output: 4
+    Explanation: One can achieve this result by applying the following 
+                 operations:
+                 - Add value to nums[1] twice to make nums = [1,0,7,13,6,8]
+                 - Subtract value from nums[2] once to make 
+                   nums = [1,0,2,13,6,8]
+                 - Subtract value from nums[3] twice to make 
+                   nums = [1,0,2,3,6,8]
+                 The MEX of nums is 4. It can be shown that 4 is the maximum 
+                 MEX we can achieve.
+    
+    Example 2:
+    Input: nums = [1,-10,7,13,6,8], value = 7
+    Output: 2
+    Explanation: One can achieve this result by applying the following 
+                 operation:
+                 - subtract value from nums[2] once to make 
+                   nums = [1,-10,0,13,6,8]
+                 The MEX of nums is 2. It can be shown that 2 is the maximum 
+                 MEX we can achieve.
+
+    Constraints:
+    * 1 <= nums.length, value <= 10^5
+    * -10^9 <= nums[i] <= 10^9*/
+
+    public int findSmallestInteger(int[] nums, int value) {
+        HashMap<Integer, Integer> freq = new HashMap(); 
+        for (var x : nums) freq.merge((x % value + value) % value, 1, Integer::sum); 
+        int k = 0; 
+        for (int x = 1; x < value; ++x) 
+            if (freq.getOrDefault(x, 0) < freq.getOrDefault(k, 0)) 
+                k = x; 
+        return k + freq.getOrDefault(k, 0)*value; 
+    }
 }
 
 
