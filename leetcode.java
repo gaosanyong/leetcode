@@ -11268,6 +11268,233 @@ class SegTreeLazy {
         }
         return ans; 
     }
+
+
+    /*2600. K Items With the Maximum Sum (Easy)
+    There is a bag that consists of items, each item has a number 1, 0, or -1 
+    written on it. You are given four non-negative integers numOnes, numZeros, 
+    numNegOnes, and k. The bag initially contains:
+    * numOnes items with 1s written on them.
+    * numZeroes items with 0s written on them.
+    * numNegOnes items with -1s written on them.
+    We want to pick exactly k items among the available items. Return the 
+    maximum possible sum of numbers written on the items.
+
+    Example 1:
+    Input: numOnes = 3, numZeros = 2, numNegOnes = 0, k = 2
+    Output: 2
+    Explanation: We have a bag of items with numbers written on them 
+                 {1, 1, 1, 0, 0}. We take 2 items with 1 written on them and 
+                 get a sum in a total of 2. It can be proven that 2 is the 
+                 maximum possible sum.
+    
+    Example 2:
+    Input: numOnes = 3, numZeros = 2, numNegOnes = 0, k = 4
+    Output: 3
+    Explanation: We have a bag of items with numbers written on them 
+                 {1, 1, 1, 0, 0}. We take 3 items with 1 written on them, and 1 
+                 item with 0 written on it, and get a sum in a total of 3. It 
+                 can be proven that 3 is the maximum possible sum.
+
+    Constraints:
+    * 0 <= numOnes, numZeros, numNegOnes <= 50
+    * 0 <= k <= numOnes + numZeros + numNegOnes*/
+
+    public int kItemsWithMaximumSum(int numOnes, int numZeros, int numNegOnes, int k) {
+        return Math.min(k, Math.min(numOnes, 2*numOnes+numZeros-k)); 
+    }
+
+
+    /*2601. Prime Subtraction Operation (Medium)
+    You are given a 0-indexed integer array nums of length n. You can perform 
+    the following operation as many times as you want:
+    * Pick an index i that you haven’t picked before, and pick a prime p 
+      strictly less than nums[i], then subtract p from nums[i].
+    Return true if you can make nums a strictly increasing array using the 
+    above operation and false otherwise. A strictly increasing array is an 
+    array whose each element is strictly greater than its preceding element.
+
+    Example 1:
+    Input: nums = [4,9,6,10]
+    Output: true
+    Explanation: In the first operation: Pick i = 0 and p = 3, and then 
+                 subtract 3 from nums[0], so that nums becomes [1,9,6,10]. In 
+                 the second operation: i = 1, p = 7, subtract 7 from nums[1], 
+                 so nums becomes equal to [1,2,6,10]. After the second 
+                 operation, nums is sorted in strictly increasing order, so the 
+                 answer is true.
+    
+    Example 2:
+    Input: nums = [6,8,11,12]
+    Output: true
+    Explanation: Initially nums is sorted in strictly increasing order, so we 
+                 don't need to make any operations.
+    
+    Example 3:
+    Input: nums = [5,8,3]
+    Output: false
+    Explanation: It can be proven that there is no way to perform operations to 
+                 make nums sorted in strictly increasing order, so the answer 
+                 is false.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i] <= 1000
+    * nums.length == n*/
+
+    public boolean primeSubOperation(int[] nums) {
+        boolean[] sieve = new boolean[1001]; 
+        Arrays.fill(sieve, true); 
+        sieve[0] = sieve[1] = false; 
+        for (int x = 2; x*x <= 1000; ++x)
+            if (sieve[x]) 
+                for (int xx = x*x; xx <= 1000; xx += x)
+                    sieve[xx] = false; 
+        int prev = 0; 
+        for (var x : nums) {
+            if (prev >= x) return false; 
+            int p = x-1; 
+            for (; p > 0; --p) 
+                if (sieve[p] && x-p > prev) break; 
+            prev = x-p; 
+        }
+        return true; 
+    }
+
+
+    /*2602. Minimum Operations to Make All Array Elements Equal (Medium)
+    You are given an array nums consisting of positive integers. You are also 
+    given an integer array queries of size m. For the ith query, you want to 
+    make all of the elements of nums equal to queries[i]. You can perform the 
+    following operation on the array any number of times:
+    * Increase or decrease an element of the array by 1.
+    Return an array answer of size m where answer[i] is the minimum number of 
+    operations to make all elements of nums equal to queries[i]. Note that 
+    after each query the array is reset to its original state.
+
+    Example 1:
+    Input: nums = [3,1,6,8], queries = [1,5]
+    Output: [14,10]
+    Explanation: For the first query we can do the following operations:
+                 - Decrease nums[0] 2 times, so that nums = [1,1,6,8].
+                 - Decrease nums[2] 5 times, so that nums = [1,1,1,8].
+                 - Decrease nums[3] 7 times, so that nums = [1,1,1,1].
+                 So the total number of operations for the first query is 
+                 2 + 5 + 7 = 14. For the second query we can do the following 
+                 operations:
+                 - Increase nums[0] 2 times, so that nums = [5,1,6,8].
+                 - Increase nums[1] 4 times, so that nums = [5,5,6,8].
+                 - Decrease nums[2] 1 time, so that nums = [5,5,5,8].
+                 - Decrease nums[3] 3 times, so that nums = [5,5,5,5].
+                 So the total number of operations for the second query is 
+                 2 + 4 + 1 + 3 = 10.
+    
+    Example 2:
+    Input: nums = [2,9,6,3], queries = [10]
+    Output: [20]
+    Explanation: We can increase each value in the array to 10. The total 
+                 number of operations will be 8 + 1 + 4 + 7 = 20.
+
+    Constraints:
+    * n == nums.length
+    * m == queries.length
+    * 1 <= n, m <= 10^5
+    * 1 <= nums[i], queries[i] <= 10^9*/
+
+    public List<Long> minOperations(int[] nums, int[] queries) {
+        Arrays.sort(nums); 
+        int n = nums.length; 
+        long[] prefix = new long[n+1]; 
+        for (int i = 0; i < n; ++i)
+            prefix[i+1] = prefix[i] + nums[i]; 
+        List<Long> ans = new ArrayList(); 
+        for (var q : queries) {
+            int lo = 0, hi = n; 
+            while (lo < hi) {
+                int mid = lo + (hi-lo)/2; 
+                if (nums[mid] < q) lo = mid+1; 
+                else hi = mid; 
+            }
+            long val = prefix[n] - 2*prefix[lo] + (long) q*(2*lo - n); 
+            ans.add(val); 
+        }
+        return ans; 
+    }
+
+
+    /*2603. Collect Coins in a Tree (Hard)
+    There exists an undirected and unrooted tree with n nodes indexed from 0 to 
+    n - 1. You are given an integer n and a 2D integer array edges of length 
+    n - 1, where edges[i] = [ai, bi] indicates that there is an edge between 
+    nodes ai and bi in the tree. You are also given an array coins of size n 
+    where coins[i] can be either 0 or 1, where 1 indicates the presence of a 
+    coin in the vertex i. Initially, you choose to start at any vertex in the 
+    tree. Then, you can perform the following operations any number of times: 
+    * Collect all the coins that are at a distance of at most 2 from the 
+      current vertex, or
+    * Move to any adjacent vertex in the tree.
+    Find the minimum number of edges you need to go through to collect all the 
+    coins and go back to the initial vertex. Note that if you pass an edge 
+    several times, you need to count it into the answer several times.
+
+    Example 1:
+    Input: coins = [1,0,0,0,0,1], edges = [[0,1],[1,2],[2,3],[3,4],[4,5]]
+    Output: 2
+    Explanation: Start at vertex 2, collect the coin at vertex 0, move to 
+                 vertex 3, collect the coin at vertex 5 then move back to 
+                 vertex 2.
+    
+    Example 2:
+    Input: coins = [0,0,0,1,1,0,0,1], edges = [[0,1],[0,2],[1,3],[1,4],[2,5],[5,6],[5,7]]
+    Output: 2
+    Explanation: Start at vertex 0, collect the coins at vertices 4 and 3, move 
+                 to vertex 2,  collect the coin at vertex 7, then move back to 
+                 vertex 0.
+
+    Constraints:
+    * n == coins.length
+    * 1 <= n <= 3 * 10^4
+    * 0 <= coins[i] <= 1
+    * edges.length == n - 1
+    * edges[i].length == 2
+    * 0 <= ai, bi < n
+    * ai != bi
+    * edges represents a valid tree.*/
+
+    public int collectTheCoins(int[] coins, int[][] edges) {
+        int n = coins.length; 
+        Set<Integer>[] tree = new HashSet[n]; 
+        for (int i = 0; i < n; ++i) tree[i] = new HashSet(); 
+        for (var e : edges) {
+            tree[e[0]].add(e[1]); 
+            tree[e[1]].add(e[0]); 
+        }
+        Queue<Integer> leaf = new LinkedList(); 
+        for (int i = 0; i < n; ++i) {
+            int u = i; 
+            while (tree[u].size() == 1 && coins[u] == 0) {
+                int v = tree[u].iterator().next(); 
+                tree[u].remove(v); 
+                tree[v].remove(u); 
+                u = v; 
+            }
+            if (tree[u].size() == 1) leaf.add(u); 
+        }
+        for (int j = 0; j < 2; ++j) {
+            for (int sz = leaf.size(); sz > 0; --sz) {
+                int u = leaf.poll(); 
+                if (tree[u].size() == 1) {
+                    int v = tree[u].iterator().next(); 
+                    tree[u].remove(v); 
+                    tree[v].remove(u); 
+                    if (tree[v].size() == 1) leaf.add(v); 
+                }
+            }
+        }
+        int ans = 0; 
+        for (int i = 0; i < n; ++i) ans += tree[i].size(); 
+        return ans; 
+    }
 }
 
 
