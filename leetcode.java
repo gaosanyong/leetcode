@@ -11546,6 +11546,199 @@ class SegTreeLazy {
         }
         return lo; 
     }
+
+
+    /*2605. Form Smallest Number From Two Digit Arrays (Easy)
+    Given two arrays of unique digits nums1 and nums2, return the smallest 
+    number that contains at least one digit from each array.
+
+    Example 1:
+    Input: nums1 = [4,1,3], nums2 = [5,7]
+    Output: 15
+    Explanation: The number 15 contains the digit 1 from nums1 and the digit 5 
+                 from nums2. It can be proven that 15 is the smallest number we 
+                 can have.
+    
+    Example 2:
+    Input: nums1 = [3,5,2,6], nums2 = [3,1,7]
+    Output: 3
+    Explanation: The number 3 contains the digit 3 which exists in both arrays.
+
+    Constraints:
+    * 1 <= nums1.length, nums2.length <= 9
+    * 1 <= nums1[i], nums2[i] <= 9
+    * All digits in each array are unique.*/
+
+    public int minNumber(int[] nums1, int[] nums2) {
+        int m1 = 0, m2 = 0; 
+        for (var x : nums1) m1 |= 1 << x; 
+        for (var x : nums2) m2 |= 1 << x; 
+        for (int x = 0; x <= 9; ++x) 
+            if ((m1 & 1<<x) > 0 && (m2 & 1<<x) > 0) return x; 
+        int d1 = Arrays.stream(nums1).min().getAsInt(), d2 = Arrays.stream(nums2).min().getAsInt(); 
+        return 10*Math.min(d1, d2) + Math.max(d1, d2); 
+    }
+
+
+    /*2606. Find the Substring With Maximum Cost (Medium)
+    You are given a string s, a string chars of distinct characters and an 
+    integer array vals of the same length as chars. The cost of the substring 
+    is the sum of the values of each character in the substring. The cost of an 
+    empty string is considered 0. The value of the character is defined in the 
+    following way:
+    * If the character is not in the string chars, then its value is its 
+      corresponding position (1-indexed) in the alphabet.
+      + For example, the value of 'a' is 1, the value of 'b' is 2, and so on. 
+        The value of 'z' is 26.
+    * Otherwise, assuming i is the index where the character occurs in the 
+      string chars, then its value is vals[i].
+    Return the maximum cost among all substrings of the string s.
+
+    Example 1:
+    Input: s = "adaa", chars = "d", vals = [-1000]
+    Output: 2
+    Explanation: The value of the characters "a" and "d" is 1 and -1000 
+                 respectively. The substring with the maximum cost is "aa" and 
+                 its cost is 1 + 1 = 2. It can be proven that 2 is the maximum 
+                 cost.
+    
+    Example 2:
+    Input: s = "abc", chars = "abc", vals = [-1,-1,-1]
+    Output: 0
+    Explanation: The value of the characters "a", "b" and "c" is -1, -1, and -1 
+                 respectively. The substring with the maximum cost is the empty 
+                 substring "" and its cost is 0. It can be proven that 0 is the 
+                 maximum cost.
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s consist of lowercase English letters.
+    * 1 <= chars.length <= 26
+    * chars consist of distinct lowercase English letters.
+    * vals.length == chars.length
+    * -1000 <= vals[i] <= 1000*/
+
+    public int maximumCostSubstring(String s, String chars, int[] vals) {
+        HashMap<Character, Integer> mp = new HashMap(); 
+        for (int i = 0; i < chars.length(); ++i) 
+            mp.put(chars.charAt(i), vals[i]); 
+        int ans = 0, val = 0; 
+        for (var ch : s.toCharArray()) {
+            val = Math.max(0, val + mp.getOrDefault(ch, ch - 'a' + 1)); 
+            ans = Math.max(ans, val); 
+        }
+        return ans; 
+    }
+
+
+    /*2607. Make K-Subarray Sums Equal (Medium)
+    You are given a 0-indexed integer array arr and an integer k. The array arr 
+    is circular. In other words, the first element of the array is the next 
+    element of the last element, and the last element of the array is the 
+    previous element of the first element. You can do the following operation 
+    any number of times:
+    * Pick any element from arr and increase or decrease it by 1.
+    Return the minimum number of operations such that the sum of each subarray 
+    of length k is equal. A subarray is a contiguous part of the array.
+
+    Example 1:
+    Input: arr = [1,4,1,3], k = 2
+    Output: 1
+    Explanation: we can do one operation on index 1 to make its value equal to 
+                 3. The array after the operation is [1,3,1,3]
+                 - Subarray starts at index 0 is [1, 3], and its sum is 4 
+                 - Subarray starts at index 1 is [3, 1], and its sum is 4 
+                 - Subarray starts at index 2 is [1, 3], and its sum is 4 
+                 - Subarray starts at index 3 is [3, 1], and its sum is 4 
+    
+    Example 2:
+    Input: arr = [2,5,5,7], k = 3
+    Output: 5
+    Explanation: we can do three operations on index 0 to make its value equal 
+                 to 5 and two operations on index 3 to make its value equal to 
+                 5. The array after the operations is [5,5,5,5]
+                 - Subarray starts at index 0 is [5, 5, 5], and its sum is 15
+                 - Subarray starts at index 1 is [5, 5, 5], and its sum is 15
+                 - Subarray starts at index 2 is [5, 5, 5], and its sum is 15
+                 - Subarray starts at index 3 is [5, 5, 5], and its sum is 15 
+
+    Constraints:
+    * 1 <= k <= arr.length <= 10^5
+    * 1 <= arr[i] <= 10^9*/
+
+    public long makeSubKSumEqual(int[] arr, int k) {
+        long ans = 0; 
+        int n = arr.length, g = n; 
+        for (int v = k; v > 0; ) { 
+            int gg = g; g = v; v = gg % v; 
+        }
+        for (int i = 0; i < g; ++i) {
+            int[] vals = new int[n/g]; 
+            for (int j = 0; j < n/g; ++j, i = (i+k) % n) 
+                vals[j] = arr[i]; 
+            Arrays.sort(vals); 
+            int target = vals[vals.length/2]; 
+            for (var x : vals) ans += Math.abs(x - target); 
+        }
+        return ans; 
+    }
+
+
+    /*2608. Shortest Cycle in a Graph (Hard)
+    There is a bi-directional graph with n vertices, where each vertex is 
+    labeled from 0 to n - 1. The edges in the graph are represented by a given 
+    2D integer array edges, where edges[i] = [ui, vi] denotes an edge between 
+    vertex ui and vertex vi. Every vertex pair is connected by at most one 
+    edge, and no vertex has an edge to itself. Return the length of the 
+    shortest cycle in the graph. If no cycle exists, return -1. A cycle is a 
+    path that starts and ends at the same node, and each edge in the path is 
+    used only once.
+
+    Example 1:
+    Input: n = 7, edges = [[0,1],[1,2],[2,0],[3,4],[4,5],[5,6],[6,3]]
+    Output: 3
+    Explanation: The cycle with the smallest length is : 0 -> 1 -> 2 -> 0 
+
+    Example 2:
+    Input: n = 4, edges = [[0,1],[0,2]]
+    Output: -1
+    Explanation: There are no cycles in this graph.
+
+    Constraints:
+    * 2 <= n <= 1000
+    * 1 <= edges.length <= 1000
+    * edges[i].length == 2
+    * 0 <= ui, vi < n
+    * ui != vi
+    * There are no repeated edges.*/
+
+    public int findShortestCycle(int n, int[][] edges) {
+        List<Integer>[] graph = new ArrayList[n]; 
+        for (int u = 0; u < n; ++u) graph[u] = new ArrayList(); 
+        for (var e : edges) {
+            graph[e[0]].add(e[1]); 
+            graph[e[1]].add(e[0]); 
+        }
+        int ans = Integer.MAX_VALUE; 
+        for (int x = 0; x < n; ++x) {
+            int[] dist = new int[n]; 
+            Arrays.fill(dist, -1); 
+            Queue<int[]> q = new LinkedList(); 
+            q.add(new int[] {x, -1, 0}); 
+            while (!q.isEmpty()) {
+                var elem = q.poll(); 
+                int u = elem[0], p = elem[1], d = elem[2]; 
+                if (dist[u] >= 0) {
+                    ans = Math.min(ans, d + dist[u]); 
+                    break; 
+                } 
+                dist[u] = d; 
+                for (var v : graph[u]) 
+                    if (v != p) q.add(new int[] {v, u, d+1}); 
+            }
+        }
+        return ans < Integer.MAX_VALUE ? ans : -1; 
+    }
 }
 
 
