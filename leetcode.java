@@ -1544,6 +1544,38 @@ class Solution {
     }
 
 
+    /*245. Shortest Word Distance III (Medium)
+    Given an array of strings wordsDict and two strings that already exist in 
+    the array word1 and word2, return the shortest distance between the 
+    occurrence of these two words in the list. Note that word1 and word2 may be 
+    the same. It is guaranteed that they represent two individual words in the 
+    list.
+
+    Example 1:
+    Input: wordsDict = ["practice", "makes", "perfect", "coding", "makes"], word1 = "makes", word2 = "coding"
+    Output: 1
+
+    Example 2:
+    Input: wordsDict = ["practice", "makes", "perfect", "coding", "makes"], word1 = "makes", word2 = "makes"
+    Output: 3
+
+    Constraints:
+    * 1 <= wordsDict.length <= 10^5
+    * 1 <= wordsDict[i].length <= 10
+    * wordsDict[i] consists of lowercase English letters.
+    * word1 and word2 are in wordsDict.*/
+
+    public int shortestWordDistance(String[] wordsDict, String word1, String word2) {
+        int n = wordsDict.length, ans = n, i1 = n, i2 = 2*n; 
+        for (int i = 0; i < n; ++i) {
+            if (wordsDict[i].equals(word1)) i1 = word1.equals(word2) ? i2 : i; 
+            if (wordsDict[i].equals(word2)) i2 = i; 
+            ans = Math.min(ans, Math.abs(i1-i2)); 
+        }
+        return ans; 
+    }
+
+
     /*280. Wiggle Sort (Medium)
     Given an integer array nums, reorder it such that 
     nums[0] <= nums[1] >= nums[2] <= nums[3].... You may assume the input array 
