@@ -57910,6 +57910,213 @@ public:
         }
         return ans < INT_MAX ? ans : -1; 
     }
+
+
+    /*2609. Find the Longest Balanced Substring of a Binary String (Easy)
+    You are given a binary string s consisting only of zeroes and ones. A 
+    substring of s is considered balanced if all zeroes are before ones and the 
+    number of zeroes is equal to the number of ones inside the substring. 
+    Notice that the empty substring is considered a balanced substring. Return 
+    the length of the longest balanced substring of s. A substring is a 
+    contiguous sequence of characters within a string.
+
+    Example 1:
+    Input: s = "01000111"
+    Output: 6
+    Explanation: The longest balanced substring is "000111", which has length 6.
+
+    Example 2:
+    Input: s = "00111"
+    Output: 4
+    Explanation: The longest balanced substring is "0011", which has length 4. 
+    
+    Example 3:
+    Input: s = "111"
+    Output: 0
+    Explanation: There is no balanced substring except the empty substring, so 
+                 the answer is 0.
+
+    Constraints:
+    * 1 <= s.length <= 50
+    * '0' <= s[i] <= '1'*/
+
+    int findTheLongestBalancedSubstring(string s) {
+        int ans = 0, val = 0; 
+        for (int i = 0, ii = 0, n = s.size(); i <= n; ++i) 
+            if (i == n || i && s[i-1] != s[i]) {
+                if (s[i-1] == '0') val = i - ii; 
+                else {
+                    val = min(val, i - ii); 
+                    ans = max(2*val, ans); 
+                }
+                ii = i; 
+            }
+        return ans; 
+    }
+
+
+    /*2610. Convert an Array Into a 2D Array With Conditions (Medium)
+    You are given an integer array nums. You need to create a 2D array from 
+    nums satisfying the following conditions:
+    * The 2D array should contain only the elements of the array nums.
+    * Each row in the 2D array contains distinct integers.
+    * The number of rows in the 2D array should be minimal.
+    Return the resulting array. If there are multiple answers, return any of 
+    them. Note that the 2D array can have a different number of elements on 
+    each row.
+
+    Example 1:
+    Input: nums = [1,3,4,1,2,3,1]
+    Output: [[1,3,4,2],[1,3],[1]]
+    Explanation: We can create a 2D array that contains the following rows:
+                 - 1,3,4,2
+                 - 1,3
+                 - 1
+                 All elements of nums were used, and each row of the 2D array 
+                 contains distinct integers, so it is a valid answer. It can be 
+                 shown that we cannot have less than 3 rows in a valid array.
+    
+    Example 2:
+    Input: nums = [1,2,3,4]
+    Output: [[4,3,2,1]]
+    Explanation: All elements of the array are distinct, so we can keep all of 
+                 them in the first row of the 2D array.
+
+    Constraints:
+    * 1 <= nums.length <= 200
+    * 1 <= nums[i] <= nums.length*/
+
+    vector<vector<int>> findMatrix(vector<int>& nums) {
+        int m = 0; 
+        unordered_map<int, int> freq; 
+        for (auto& x : nums) m = max(m, ++freq[x]); 
+        vector<vector<int>> ans(m); 
+        for (auto& [k, v] : freq) 
+            for (int i = 0; i < v; ++i)
+                ans[i].push_back(k); 
+        return ans; 
+    }
+
+
+    /*2611. Mice and Cheese (Medium)
+    There are two mice and n different types of cheese, each type of cheese 
+    should be eaten by exactly one mouse. A point of the cheese with index i 
+    (0-indexed) is:
+    * reward1[i] if the first mouse eats it.
+    * reward2[i] if the second mouse eats it.
+    You are given a positive integer array reward1, a positive integer array 
+    reward2, and a non-negative integer k. Return the maximum points the mice 
+    can achieve if the first mouse eats exactly k types of cheese.
+
+    Example 1:
+    Input: reward1 = [1,1,3,4], reward2 = [4,4,1,1], k = 2
+    Output: 15
+    Explanation: In this example, the first mouse eats the 2nd (0-indexed) and 
+                 the 3rd types of cheese, and the second mouse eats the 0th and 
+                 the 1st types of cheese. The total points are 
+                 4 + 4 + 3 + 4 = 15. It can be proven that 15 is the maximum 
+                 total points that the mice can achieve.
+    
+    Example 2:
+    Input: reward1 = [1,1], reward2 = [1,1], k = 2
+    Output: 2
+    Explanation: In this example, the first mouse eats the 0th (0-indexed) and 
+                 1st types of cheese, and the second mouse does not eat any 
+                 cheese. The total points are 1 + 1 = 2. It can be proven that 
+                 2 is the maximum total points that the mice can achieve.
+
+    Constraints:
+    * 1 <= n == reward1.length == reward2.length <= 10^5
+    * 1 <= reward1[i], reward2[i] <= 1000
+    * 0 <= k <= n*/
+
+    int miceAndCheese(vector<int>& reward1, vector<int>& reward2, int k) {
+        int ans = 0; 
+        for (int i = 0; i < reward1.size(); ++i) {
+            reward1[i] -= reward2[i]; 
+            ans += reward2[i]; 
+        }
+        nth_element(reward1.begin(), reward1.begin()+k, reward1.end(), greater<>()); 
+        return accumulate(reward1.begin(), reward1.begin()+k, ans); 
+    }
+
+
+    /*2612. Minimum Reverse Operations (Hard)
+    You are given an integer n and an integer p in the range [0, n - 1]. 
+    Representing a 0-indexed array arr of length n where all positions are set 
+    to 0's, except position p which is set to 1. You are also given an integer 
+    array banned containing some positions from the array. For the ith position 
+    in banned, arr[banned[i]] = 0, and banned[i] != p. You can perform multiple 
+    operations on arr. In an operation, you can choose a subarray with size k 
+    and reverse the subarray. However, the 1 in arr should never go to any of 
+    the positions in banned. In other words, after each operation 
+    arr[banned[i]] remains 0. Return an array ans where for each i from 
+    [0, n - 1], ans[i] is the minimum number of reverse operations needed to 
+    bring the 1 to position i in arr, or -1 if it is impossible. 
+    * A subarray is a contiguous non-empty sequence of elements within an array.
+    * The values of ans[i] are independent for all i's.
+    * The reverse of an array is an array containing the values in reverse 
+      order.
+
+    Example 1:
+    Input: n = 4, p = 0, banned = [1,2], k = 4
+    Output: [0,-1,-1,1]
+    Explanation: In this case k = 4 so there is only one possible reverse 
+                 operation we can perform, which is reversing the whole array. 
+                 Initially, 1 is placed at position 0 so the amount of 
+                 operations we need for position 0 is 0. We can never place a 1 
+                 on the banned positions, so the answer for positions 1 and 2 
+                 is -1. Finally, with one reverse operation we can bring the 1 
+                 to index 3, so the answer for position 3 is 1. 
+    
+    Example 2:
+    Input: n = 5, p = 0, banned = [2,4], k = 3
+    Output: [0,-1,-1,-1,-1]
+    Explanation: In this case the 1 is initially at position 0, so the answer 
+                 for that position is 0. We can perform reverse operations of 
+                 size 3. The 1 is currently located at position 0, so we need 
+                 to reverse the subarray [0, 2] for it to leave that position, 
+                 but reversing that subarray makes position 2 have a 1, which 
+                 shouldn't happen. So, we can't move the 1 from position 0, 
+                 making the result for all the other positions -1. 
+    
+    Example 3:
+    Input: n = 4, p = 2, banned = [0,1,3], k = 1
+    Output: [-1,-1,0,-1]
+    Explanation: In this case we can only perform reverse operations of size 1. 
+                 So the 1 never changes its position.
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * 0 <= p <= n - 1
+    * 0 <= banned.length <= n - 1
+    * 0 <= banned[i] <= n - 1
+    * 1 <= k <= n 
+    * banned[i] != p
+    * all values in banned are unique*/
+
+    vector<int> minReverseOperations(int n, int p, vector<int>& banned, int k) {
+        vector<int> ans(n, -1); 
+        vector<bool> ban(n); 
+        for (auto& x : banned) ban[x] = true; 
+        vector<set<int>> avail(2); 
+        for (int i = 0; i < n; ++i) 
+            if (!ban[i]) avail[i&1].insert(i); 
+        queue<int> q; q.push(p); 
+        avail[p&1].erase(p); 
+        for (int val = 0; q.size(); ++val) 
+            for (int sz = q.size(); sz; --sz) {
+                auto v = q.front(); q.pop(); 
+                ans[v] = val; 
+                int lo = abs(v-k+1), hi = n-1-abs(n-v-k); 
+                auto ptr = avail[lo&1].lower_bound(lo); 
+                while (ptr != avail[lo&1].end() && *ptr <= hi) {
+                    q.push(*ptr); 
+                    avail[lo&1].erase(*ptr++); 
+                }
+            }
+        return ans; 
+    }
 };
 
 
