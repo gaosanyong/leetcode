@@ -78017,6 +78017,65 @@ class SegTreeLazy:
         return ans 
 
 
+    """2613. Beautiful Pairs (Hard)
+    You are given two 0-indexed integer arrays nums1 and nums2 of the same 
+    length. A pair of indices (i,j) is called beautiful if
+    |nums1[i] - nums1[j]| + |nums2[i] - nums2[j]| is the smallest amongst all 
+    possible indices pairs where i < j. Return the beautiful pair. In the case 
+    that there are multiple beautiful pairs, return the lexicographically 
+    smallest pair. Note that
+    * |x| denotes the absolute value of x.
+    * A pair of indices (i1, j1) is lexicographically smaller than (i2, j2) if 
+      i1 < i2 or i1 == i2 and j1 < j2.
+
+    Example 1:
+    Input: nums1 = [1,2,3,2,4], nums2 = [2,3,1,2,3]
+    Output: [0,3]
+    Explanation: Consider index 0 and index 3. The value of 
+                 |nums1[i]-nums1[j]| + |nums2[i]-nums2[j]| is 1, which is the 
+                 smallest value we can achieve.
+    
+    Example 2:
+    Input: nums1 = [1,2,4,3,2,5], nums2 = [1,4,2,3,5,1]
+    Output: [1,4]
+    Explanation: Consider index 1 and index 4. The value of 
+                 |nums1[i]-nums1[j]| + |nums2[i]-nums2[j]| is 1, which is the 
+                 smallest value we can achieve.
+
+    Constraints:
+    * 2 <= nums1.length, nums2.length <= 10^5
+    * nums1.length == nums2.length
+    * 0 <= nums1i <= nums1.length
+    * 0 <= nums2i <= nums2.length"""
+
+    def beautifulPair(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        points = sorted(((i, x, y) for i, (x, y) in enumerate(zip(nums1, nums2))), key = lambda x : x[1])
+        
+        def fn(lo, hi): 
+            """Return the minimum distance and the corresponding pair."""
+            if lo+1 == hi: return inf, -1, -1
+            if lo+2 == hi: 
+                delta = abs(points[lo][1]-points[lo+1][1]) + abs(points[lo][2]-points[lo+1][2])
+                i, ii = points[lo][0], points[lo+1][0]
+                if i > ii: i, ii = ii, i 
+            else: 
+                mid = lo + hi >> 1
+                ld, li, lii = fn(lo, mid)
+                rd, ri, rii = fn(mid, hi)
+                if (ld, li, lii) < (rd, ri, rii): delta, i, ii = ld, li, lii
+                else: delta, i, ii = rd, ri, rii 
+                split = points[mid][1]
+                strip = sorted((points[k] for k in range(lo, hi) if split - delta <= points[k][1] <= split + delta), key = lambda x : x[2])
+                for l, (k, x, y) in enumerate(strip): 
+                    for kk, xx, yy in strip[l+1 : l+10]: 
+                        cand = abs(x-xx) + abs(y-yy)
+                        j, jj = min(k, kk), max(k, kk)
+                        if (cand, j, jj) < (delta, i, ii): delta, i, ii = cand, j, jj
+            return delta, i, ii
+        
+        return fn(0, len(nums1))[1:]
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 

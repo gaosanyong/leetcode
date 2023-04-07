@@ -12027,6 +12027,79 @@ class SegTreeLazy {
             }
         return ans; 
     }
+
+
+    /*2613. Beautiful Pairs (Hard)
+    You are given two 0-indexed integer arrays nums1 and nums2 of the same 
+    length. A pair of indices (i,j) is called beautiful if
+    |nums1[i] - nums1[j]| + |nums2[i] - nums2[j]| is the smallest amongst all 
+    possible indices pairs where i < j. Return the beautiful pair. In the case 
+    that there are multiple beautiful pairs, return the lexicographically 
+    smallest pair. Note that
+    * |x| denotes the absolute value of x.
+    * A pair of indices (i1, j1) is lexicographically smaller than (i2, j2) if 
+      i1 < i2 or i1 == i2 and j1 < j2.
+
+    Example 1:
+    Input: nums1 = [1,2,3,2,4], nums2 = [2,3,1,2,3]
+    Output: [0,3]
+    Explanation: Consider index 0 and index 3. The value of 
+                 |nums1[i]-nums1[j]| + |nums2[i]-nums2[j]| is 1, which is the 
+                 smallest value we can achieve.
+    
+    Example 2:
+    Input: nums1 = [1,2,4,3,2,5], nums2 = [1,4,2,3,5,1]
+    Output: [1,4]
+    Explanation: Consider index 1 and index 4. The value of 
+                 |nums1[i]-nums1[j]| + |nums2[i]-nums2[j]| is 1, which is the 
+                 smallest value we can achieve.
+
+    Constraints:
+    * 2 <= nums1.length, nums2.length <= 10^5
+    * nums1.length == nums2.length
+    * 0 <= nums1i <= nums1.length
+    * 0 <= nums2i <= nums2.length*/
+
+    private int[] solve(int lo, int hi, int[][] points) {
+        int delta = Integer.MAX_VALUE, i = -1, ii = -1; 
+        if (lo+2 == hi) {
+            delta = Math.abs(points[lo][1] - points[lo+1][1]) + Math.abs(points[lo][2] - points[lo+1][2]); 
+            i = Math.min(points[lo][0], points[lo+1][0]); 
+            ii = Math.max(points[lo][0], points[lo+1][0]); 
+        } else if (lo+2 < hi) {
+            int mid = (lo + hi)/2; 
+            var left = solve(lo, mid, points); 
+            int ld = left[0], li = left[1], lii = left[2]; 
+            var right = solve(mid, hi, points); 
+            int rd = right[0], ri = right[1], rii = right[2]; 
+            if (ld < rd || ld == rd && li < ri) { delta = ld; i = li; ii = lii; }
+            else { delta = rd; i = ri; ii = rii; }
+            int split = points[mid][1]; 
+            List<int[]> strip = new ArrayList(); 
+            for (int k = lo; k < hi; ++k) 
+                if (split-delta <= points[k][1] && points[k][1] <= split+delta) strip.add(points[k]); 
+            Collections.sort(strip, (a, b)->Integer.compare(a[2], b[2])); 
+            for (int k = 0, n = strip.size(); k < n; ++k) {
+                int x = strip.get(k)[1], y = strip.get(k)[2]; 
+                for (int kk = k+1; kk < n && kk < k+10; ++kk) {
+                    int xx = strip.get(kk)[1], yy = strip.get(kk)[2], cand = Math.abs(x-xx) + Math.abs(y-yy); 
+                    int j = Math.min(strip.get(k)[0], strip.get(kk)[0]), jj = Math.max(strip.get(k)[0], strip.get(kk)[0]); 
+                    if (cand < delta || cand == delta && (j < i || j == i && jj < ii)) { delta = cand; i = j; ii = jj; }
+                }
+            }
+        }
+        return new int[]{delta, i, ii}; 
+    }
+    
+    public int[] beautifulPair(int[] nums1, int[] nums2) {
+        int n = nums1.length; 
+        int[][] points = new int[n][3]; 
+        for (int i = 0; i < n; ++i)
+            points[i] = new int[]{i, nums1[i], nums2[i]}; 
+        Arrays.sort(points, (a, b) -> Integer.compare(a[1], b[1])); 
+        var ans = solve(0, n, points); 
+        return new int[]{ans[1], ans[2]}; 
+    }
 }
 
 

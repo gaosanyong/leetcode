@@ -58149,6 +58149,76 @@ public:
             }
         return ans; 
     }
+
+
+    /*2613. Beautiful Pairs (Hard)
+    You are given two 0-indexed integer arrays nums1 and nums2 of the same 
+    length. A pair of indices (i,j) is called beautiful if
+    |nums1[i] - nums1[j]| + |nums2[i] - nums2[j]| is the smallest amongst all 
+    possible indices pairs where i < j. Return the beautiful pair. In the case 
+    that there are multiple beautiful pairs, return the lexicographically 
+    smallest pair. Note that
+    * |x| denotes the absolute value of x.
+    * A pair of indices (i1, j1) is lexicographically smaller than (i2, j2) if 
+      i1 < i2 or i1 == i2 and j1 < j2.
+
+    Example 1:
+    Input: nums1 = [1,2,3,2,4], nums2 = [2,3,1,2,3]
+    Output: [0,3]
+    Explanation: Consider index 0 and index 3. The value of 
+                 |nums1[i]-nums1[j]| + |nums2[i]-nums2[j]| is 1, which is the 
+                 smallest value we can achieve.
+    
+    Example 2:
+    Input: nums1 = [1,2,4,3,2,5], nums2 = [1,4,2,3,5,1]
+    Output: [1,4]
+    Explanation: Consider index 1 and index 4. The value of 
+                 |nums1[i]-nums1[j]| + |nums2[i]-nums2[j]| is 1, which is the 
+                 smallest value we can achieve.
+
+    Constraints:
+    * 2 <= nums1.length, nums2.length <= 10^5
+    * nums1.length == nums2.length
+    * 0 <= nums1i <= nums1.length
+    * 0 <= nums2i <= nums2.length*/
+
+    vector<int> beautifulPair(vector<int>& nums1, vector<int>& nums2) {
+        vector<vector<int>> points; 
+        for (int i = 0; i < nums1.size(); ++i) 
+            points.push_back({i, nums1[i], nums2[i]}); 
+        sort(points.begin(), points.end(), [&](auto& lhs, auto& rhs) {return lhs[1] < rhs[1] || lhs[1] == rhs[1] && lhs[0] < rhs[0];}); 
+        
+        function<tuple<int, int, int>(int, int)> fn = [&](int lo, int hi) {
+            int delta = INT_MAX, i = -1, ii = -1; 
+            if (lo+2 == hi) {
+                delta = abs(points[lo][1]-points[lo+1][1]) + abs(points[lo][2]-points[lo+1][2]); 
+                i = points[lo][0]; 
+                ii = points[lo+1][0]; 
+                if (i > ii) swap(i, ii); 
+            } else if (lo+2 < hi) {
+                int mid = (lo + hi)/2; 
+                auto [ld, li, lii] = fn(lo, mid); 
+                auto [rd, ri, rii] = fn(mid, hi); 
+                if (ld < rd || ld == rd && li < ri) delta = ld, i = li, ii = lii;
+                else delta = rd, i = ri, ii = rii; 
+                int split = points[mid][1]; 
+                vector<vector<int>> strip; 
+                for (int k = lo; k < hi; ++k) 
+                    if (split - delta <= points[k][1] && points[k][1] <= split + delta) strip.push_back(points[k]); 
+                sort(strip.begin(), strip.end(), [&](auto& lhs, auto& rhs) {return lhs[2] < rhs[2] || lhs[2] == rhs[2] && lhs[0] < rhs[0];}); 
+                for (int k = 0, n = strip.size(); k < n; ++k) 
+                    for (int kk = k+1; kk < n && kk < k+10; ++kk) {
+                        int j = strip[k][0], jj = strip[kk][0], cand = abs(strip[k][1]-strip[kk][1]) + abs(strip[k][2]-strip[kk][2]); 
+                        if (j > jj) swap(j, jj); 
+                        if (cand < delta || cand == delta && (j < i || j == i && jj < ii)) delta = cand, i = j, ii = jj; 
+                    }
+            }
+            return make_tuple(delta, i, ii); 
+        };
+        
+        auto [_, i, ii] = fn(0, points.size()); 
+        return {i, ii}; 
+    }
 };
 
 
