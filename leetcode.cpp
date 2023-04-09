@@ -58219,6 +58219,192 @@ public:
         auto [_, i, ii] = fn(0, points.size()); 
         return {i, ii}; 
     }
+
+
+    /*2614. Prime In Diagonal (Easy)
+    You are given a 0-indexed two-dimensional integer array nums. Return the 
+    largest prime number that lies on at least one of the diagonals of nums. In 
+    case, no prime is present on any of the diagonals, return 0. Note that:
+    * An integer is prime if it is greater than 1 and has no positive integer 
+      divisors other than 1 and itself.
+    * An integer val is on one of thediagonals of nums if there exists an 
+      integer i for which nums[i][i] = val or an i for which 
+      nums[i][nums.length - i - 1]= val.
+    In the above diagram, one diagonal is [1,5,9] and another diagonal is [3,5,7].
+
+    Example 1:
+    Input: nums = [[1,2,3],[5,6,7],[9,10,11]]
+    Output: 11
+    Explanation: The numbers 1, 3, 6, 9, and 11 are the only numbers present on 
+                 at least one of the diagonals. Since 11 is the largest prime, 
+                 we return 11.
+    
+    Example 2:
+    Input: nums = [[1,2,3],[5,17,7],[9,11,10]]
+    Output: 17
+    Explanation: The numbers 1, 3, 9, 10, and 17 are all present on at least 
+                 one of the diagonals. 17 is the largest prime, so we return 17.
+
+    Constraints:
+    * 1 <= nums.length <= 300
+    * nums.length == numsi.length
+    * 1 <= nums[i][j] <= 4*10^6*/
+
+    int diagonalPrime(vector<vector<int>>& nums) {
+        auto fn = [&](int x) {
+            if (x == 1) return false; 
+            for (int p = 2; p <= sqrt(x); ++p) 
+                if (x % p == 0) return false; 
+            return true; 
+        }; 
+        
+        int ans = 0; 
+        for (int i = 0, n = nums.size(); i < n; ++i) {
+            if (fn(nums[i][i])) ans = max(ans, nums[i][i]); 
+            if (fn(nums[i][n-1-i])) ans = max(ans, nums[i][n-1-i]); 
+        }
+        return ans; 
+    }
+
+
+    /*2615. Sum of Distances (Medium)
+    You are given a 0-indexed integer array nums. There exists an array arr of 
+    length nums.length, where arr[i] is the sum of |i - j| over all j such that 
+    nums[j] == nums[i] and j != i. If there is no such j, set arr[i] to be 0.
+    Return the array arr.
+
+    Example 1:
+    Input: nums = [1,3,1,1,2]
+    Output: [5,0,3,4,0]
+    Explanation: - When i = 0, nums[0] == nums[2] and nums[0] == nums[3]. 
+                 Therefore, arr[0] = |0 - 2| + |0 - 3| = 5. 
+                 - When i = 1, arr[1] = 0 because there is no other index with 
+                   value 3.
+                 - When i = 2, nums[2] == nums[0] and nums[2] == nums[3]. 
+                   Therefore, arr[2] = |2 - 0| + |2 - 3| = 3. 
+                 - When i = 3, nums[3] == nums[0] and nums[3] == nums[2]. 
+                   Therefore, arr[3] = |3 - 0| + |3 - 2| = 4. 
+                 - When i = 4, arr[4] = 0 because there is no other index with 
+                   value 2. 
+
+    Example 2:
+    Input: nums = [0,5,3]
+    Output: [0,0,0]
+    Explanation: Since each element in nums is distinct, arr[i] = 0 for all i.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] <= 10^9*/
+
+    vector<long long> distance(vector<int>& nums) {
+        int n = nums.size(); 
+        unordered_map<int, vector<int>> mp; 
+        for (int i = 0; i < n; ++i) mp[nums[i]].push_back(i); 
+        vector<long long> ans(n); 
+        for (auto& [_, idx] : mp) {
+            vector<long long> prefix(1); 
+            for (auto& x : idx) prefix.push_back(prefix.back() + x); 
+            for (int i = 0; i < idx.size(); ++i) 
+                ans[idx[i]] = prefix.back() - 2*prefix[i] + (2*i - idx.size()) * idx[i]; 
+        }
+        return ans; 
+    }
+
+
+    /*2616. Minimize the Maximum Difference of Pairs (Medium)
+    You are given a 0-indexed integer array nums and an integer p. Find p pairs 
+    of indices of nums such that the maximum difference amongst all the pairs 
+    is minimized. Also, ensure no index appears more than once amongst the p 
+    pairs. Note that for a pair of elements at the index i and j, the 
+    difference of this pair is |nums[i] - nums[j]|, where |x| represents the 
+    absolute value of x. Return the minimum maximum difference among all p 
+    pairs.
+
+    Example 1:
+    Input: nums = [10,1,2,7,1,3], p = 2
+    Output: 1
+    Explanation: The first pair is formed from the indices 1 and 4, and the 
+                 second pair is formed from the indices 2 and 5. The maximum 
+                 difference is max(|nums[1] - nums[4]|, |nums[2] - nums[5]|) 
+                 = max(0, 1) = 1. Therefore, we return 1.
+    
+    Example 2:
+    Input: nums = [4,2,1,2], p = 1
+    Output: 0
+    Explanation: Let the indices 1 and 3 form a pair. The difference of that 
+                 pair is |2 - 2| = 0, which is the minimum we can attain.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] <= 10^9
+    * 0 <= p <= (nums.length)/2*/
+
+    int minimizeMax(vector<int>& nums, int p) {
+        sort(nums.begin(), nums.end()); 
+        int lo = 0, hi = 1e9; 
+        while (lo < hi) {
+            int mid = lo + (hi-lo)/2, cnt = 0; 
+            for (int i = 0, n = nums.size(); i < n; ++i) 
+                if (i+1 < n && nums[i+1]-nums[i] <= mid) ++cnt, ++i;  
+            if (cnt < p) lo = mid+1; 
+            else hi = mid; 
+        }
+        return lo; 
+    }
+
+
+    /*2617. Minimum Number of Visited Cells in a Grid (Hard)
+    You are given a 0-indexed m x n integer matrix grid. Your initial position 
+    is at the top-left cell (0, 0). Starting from the cell (i, j), you can move 
+    to one of the following cells:
+    * Cells (i, k) with j < k <= grid[i][j] + j (rightward movement), or
+    * Cells (k, j) with i < k <= grid[i][j] + i (downward movement).
+    Return the minimum number of cells you need to visit to reach the bottom-
+    right cell (m - 1, n - 1). If there is no valid path, return -1.
+
+    Example 1:
+    Input: grid = [[3,4,2,1],[4,2,3,1],[2,1,0,0],[2,4,0,0]]
+    Output: 4
+    Explanation: The image above shows one of the paths that visits exactly 4 cells.
+
+    Example 2:
+    Input: grid = [[3,4,2,1],[4,2,1,1],[2,1,1,0],[3,4,1,0]]
+    Output: 3
+    Explanation: The image above shows one of the paths that visits exactly 3 cells.
+
+    Example 3:
+    Input: grid = [[2,1,0],[1,0,0]]
+    Output: -1
+    Explanation: It can be proven that no path exists.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 105
+    * 1 <= m * n <= 105
+    * 0 <= grid[i][j] < m * n
+    * grid[m - 1][n - 1] == 0*/
+
+    int minimumVisitedCells(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size(); 
+        vector<priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>>> pqs(n); 
+        vector<vector<int>> dist(m, vector<int>(n, INT_MAX)); 
+        dist[0][0] = 1; 
+        for (int i = 0; i < m; ++i) {
+            priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq; 
+            for (int j = 0; j < n; ++j) {
+                while (pq.size() && pq.top().second < j) pq.pop(); 
+                while (pqs[j].size() && pqs[j].top().second < i) pqs[j].pop(); 
+                if (pq.size()) dist[i][j] = min(dist[i][j], pq.top().first + 1); 
+                if (pqs[j].size()) dist[i][j] = min(dist[i][j], pqs[j].top().first + 1); 
+                if (dist[i][j] < INT_MAX) {
+                    pq.emplace(dist[i][j], j + grid[i][j]); 
+                    pqs[j].emplace(dist[i][j], i + grid[i][j]); 
+                }
+            }
+        }
+        return dist[m-1][n-1] < INT_MAX ? dist[m-1][n-1] : -1; 
+    }
 };
 
 
