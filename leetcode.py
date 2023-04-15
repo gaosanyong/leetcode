@@ -78288,6 +78288,141 @@ class SegTreeLazy:
         return reduce(mul, (fib[v+1] for v in size.values()))
 
 
+    """2639. Find the Width of Columns of a Grid (Easy)
+    You are given a 0-indexed m x n integer matrix grid. The width of a column 
+    is the maximum length of its integers.
+    * For example, if grid = [[-10], [3], [12]], the width of the only column 
+      is 3 since -10 is of length 3.
+    Return an integer array ans of size n where ans[i] is the width of the ith 
+    column. The length of an integer x with len digits is equal to len if x is 
+    non-negative, and len + 1 otherwise.
+
+    Example 1:
+    Input: grid = [[1],[22],[333]]
+    Output: [3]
+    Explanation: In the 0th column, 333 is of length 3.
+
+    Example 2:
+    Input: grid = [[-15,1,3],[15,7,12],[5,6,-2]]
+    Output: [3,1,2]
+    Explanation: In the 0th column, only -15 is of length 3.
+                 In the 1st column, all integers are of length 1. 
+                 In the 2nd column, both 12 and -2 are of length 2.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 100
+    * -10^9 <= grid[r][c] <= 10^9"""
+
+    def findColumnWidth(self, grid: List[List[int]]) -> List[int]:
+        return [max(len(str(x)) for x in row) for row in zip(*grid)]
+
+
+    """2640. Find the Score of All Prefixes of an Array (Medium)
+    We define the conversion array conver of an array arr as follows:
+    * conver[i] = arr[i] + max(arr[0..i]) where max(arr[0..i]) is the maximum 
+      value of arr[j] over 0 <= j <= i.
+    We also define the score of an array arr as the sum of the values of the 
+    conversion array of arr. Given a 0-indexed integer array nums of length n, 
+    return an array ans of length n where ans[i] is the score of the prefix 
+    nums[0..i].
+
+    Example 1:
+    Input: nums = [2,3,7,5,10]
+    Output: [4,10,24,36,56]
+    Explanation: - For the prefix [2], the conversion array is [4] hence the 
+                   score is 4
+                 - For the prefix [2, 3], the conversion array is [4, 6] hence 
+                   the score is 10
+                 - For the prefix [2, 3, 7], the conversion array is [4, 6, 14] 
+                   hence the score is 24
+                 - For the prefix [2, 3, 7, 5], the conversion array is 
+                   [4, 6, 14, 12] hence the score is 36
+                 - For the prefix [2, 3, 7, 5, 10], the conversion array is 
+                   [4, 6, 14, 12, 20] hence the score is 56
+    
+    Example 2:
+    Input: nums = [1,1,2,4,8,16]
+    Output: [2,4,8,16,32,64]
+    Explanation: - For the prefix [1], the conversion array is [2] hence the 
+                   score is 2
+                 - For the prefix [1, 1], the conversion array is [2, 2] hence 
+                   the score is 4
+                 - For the prefix [1, 1, 2], the conversion array is [2, 2, 4] 
+                   hence the score is 8
+                 - For the prefix [1, 1, 2, 4], the conversion array is 
+                   [2, 2, 4, 8] hence the score is 16
+                 - For the prefix [1, 1, 2, 4, 8], the conversion array is 
+                   [2, 2, 4, 8, 16] hence the score is 32
+                 - For the prefix [1, 1, 2, 4, 8, 16], the conversion array is 
+                   [2, 2, 4, 8, 16, 32] hence the score is 64
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9"""
+
+    def findPrefixScore(self, nums: List[int]) -> List[int]:
+        most = prefix = 0 
+        ans = []
+        for x in nums: 
+            most = max(most, x)
+            prefix += x + most 
+            ans.append(prefix)
+        return ans 
+
+
+    """2641. Cousins in Binary Tree II (Medium)
+    Given the root of a binary tree, replace the value of each node in the tree 
+    with the sum of all its cousins' values. Two nodes of a binary tree are 
+    cousins if they have the same depth with different parents. Return the root 
+    of the modified tree. Note that the depth of a node is the number of edges 
+    in the path from the root node to it.
+
+    Example 1:
+    Input: root = [5,4,9,1,10,null,7]
+    Output: [0,0,0,7,7,null,11]
+    Explanation: The diagram above shows the initial binary tree and the binary 
+                 tree after changing the value of each node.
+                 - Node with value 5 does not have any cousins so its sum is 0.
+                 - Node with value 4 does not have any cousins so its sum is 0.
+                 - Node with value 9 does not have any cousins so its sum is 0.
+                 - Node with value 1 has a cousin with value 7 so its sum is 7.
+                 - Node with value 10 has a cousin with value 7 so its sum is 7.
+                 - Node with value 7 has cousins with values 1 and 10 so its 
+                   sum is 11.
+    
+    Example 2:
+    Input: root = [3,1,2]
+    Output: [0,0,0]
+    Explanation: The diagram above shows the initial binary tree and the binary 
+                 tree after changing the value of each node.
+                 - Node with value 3 does not have any cousins so its sum is 0.
+                 - Node with value 1 does not have any cousins so its sum is 0.
+                 - Node with value 2 does not have any cousins so its sum is 0.
+
+    Constraints:
+    * The number of nodes in the tree is in the range [1, 10^5].
+    * 1 <= Node.val <= 10^4"""
+
+    def replaceValueInTree(self, root: Optional[TreeNode]) -> Optional[TreeNode]:
+        mp = defaultdict(int)
+        stack = [(root, None, 0)]
+        while stack: 
+            node, p, d = stack.pop()
+            mp[d] += node.val 
+            mp[p] += node.val 
+            if node.left: stack.append((node.left, node, d+1))
+            if node.right: stack.append((node.right, node, d+1))
+        stack = [(root, None, 0)]
+        while stack: 
+            node, p, d = stack.pop()
+            node.val = mp[d] - mp[p]
+            if node.left: stack.append((node.left, node, d+1))
+            if node.right: stack.append((node.right, node, d+1))
+        return root
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
@@ -84135,3 +84270,67 @@ class DataStream:
         if num == self.value: self.cnt += 1
         else: self.cnt = 0 
         return self.cnt >= self.k 
+
+
+"""2642. Design Graph With Shortest Path Calculator (Hard)
+There is a directed weighted graph that consists of n nodes numbered from 0 to 
+n - 1. The edges of the graph are initially represented by the given array 
+edges where edges[i] = [fromi, toi, edgeCosti] meaning that there is an edge 
+from fromi to toi with the cost edgeCosti. Implement the Graph class:
+* Graph(int n, int[][] edges) initializes the object with n nodes and the given 
+  edges.
+* addEdge(int[] edge) adds an edge to the list of edges where 
+  edge = [from, to, edgeCost]. It is guaranteed that there is no edge between 
+  the two nodes before adding this one.
+* int shortestPath(int node1, int node2) returns the minimum cost of a path 
+  from node1 to node2. If no path exists, return -1. The cost of a path is the 
+  sum of the costs of the edges in the path.
+
+Example 1:
+Input: ["Graph", "shortestPath", "shortestPath", "addEdge", "shortestPath"]
+[[4, [[0, 2, 5], [0, 1, 2], [1, 2, 1], [3, 0, 3]]], [3, 2], [0, 3], [[1, 3, 4]], [0, 3]]
+Output: [null, 6, -1, null, 6]
+Explanation: 
+Graph g = new Graph(4, [[0, 2, 5], [0, 1, 2], [1, 2, 1], [3, 0, 3]]);
+g.shortestPath(3, 2); // return 6. The shortest path from 3 to 2 in the first 
+                      // diagram above is 3 -> 0 -> 1 -> 2 with a total cost of 
+                      // 3 + 2 + 1 = 6.
+g.shortestPath(0, 3); // return -1. There is no path from 0 to 3.
+g.addEdge([1, 3, 4]); // We add an edge from node 1 to node 3, and we get the 
+                      // second diagram above.
+g.shortestPath(0, 3); // return 6. The shortest path from 0 to 3 now is 
+                      // 0 -> 1 -> 3 with a total cost of 2 + 4 = 6.
+
+Constraints:
+* 1 <= n <= 100
+* 0 <= edges.length <= n * (n - 1)
+* edges[i].length == edge.length == 3
+* 0 <= fromi, toi, from, to, node1, node2 <= n - 1
+* 1 <= edgeCosti, edgeCost <= 10^6
+* There are no repeated edges and no self-loops in the graph at any point.
+* At most 100 calls will be made for addEdge.
+* At most 100 calls will be made for shortestPath."""
+
+class Graph:
+
+    def __init__(self, n: int, edges: List[List[int]]):
+        self.graph = [[] for _ in range(n)]
+        for u, v, w in edges: 
+            self.graph[u].append((v, w))
+
+    def addEdge(self, edge: List[int]) -> None:
+        u, v, w = edge
+        self.graph[u].append((v, w))
+
+    def shortestPath(self, node1: int, node2: int) -> int:
+        pq = [(0, node1)]
+        dist = [inf]*len(self.graph)
+        dist[node1] = 0 
+        while pq: 
+            cost, u = heappop(pq)
+            if u == node2: return cost
+            for v, w in self.graph[u]: 
+                if cost + w < dist[v]: 
+                    dist[v] = cost + w
+                    heappush(pq, (cost + w, v))
+        return -1 
