@@ -4009,20 +4009,20 @@ class Solution {
 
     public Node expTree(String s) {
         s = "(" + s + ")"; 
-        Map<Character, Integer> priority = new HashMap(); 
-        priority.put('(', 0); 
-        priority.put(')', 1); 
-        priority.put('+', 1); 
-        priority.put('-', 1); 
-        priority.put('*', 2); 
-        priority.put('/', 2); 
+        Map<Character, Integer> precedence = new HashMap(); 
+        precedence.put('(', 0); 
+        precedence.put(')', 1); 
+        precedence.put('+', 1); 
+        precedence.put('-', 1); 
+        precedence.put('*', 2); 
+        precedence.put('/', 2); 
         Stack<Character> ops = new Stack(); 
         List<Character> postfix = new ArrayList(); 
         for (var ch : s.toCharArray()) 
             if ('0' <= ch && ch <= '9') postfix.add(ch); 
             else if (ch == '(') ops.push(ch); 
             else {
-                while (!ops.isEmpty() && priority.get(ops.peek()) >= priority.get(ch)) 
+                while (!ops.isEmpty() && precedence.get(ops.peek()) >= precedence.get(ch)) 
                     postfix.add(ops.pop()); 
                 if (ch == ')') ops.pop(); 
                 else ops.push(ch); 
@@ -4036,7 +4036,7 @@ class Solution {
             }
             stack.push(node); 
         }
-    return stack.pop(); 
+        return stack.pop(); 
     }
 
 

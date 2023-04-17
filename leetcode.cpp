@@ -28449,14 +28449,14 @@ public:
 
     Node* expTree(string s) {
         s = "(" + s + ")"; 
-        unordered_map<char, int> priority = {{'(', 0}, {')', 1}, {'+', 1}, {'-', 1}, {'*', 2}, {'/', 2}}; 
+        unordered_map<char, int> precedence = {{'(', 0}, {')', 1}, {'+', 1}, {'-', 1}, {'*', 2}, {'/', 2}}; 
         stack<char> ops; 
         vector<char> postfix; 
         for (auto& ch : s) 
             if ('0' <= ch && ch <= '9') postfix.push_back(ch); 
             else if (ch == '(') ops.push(ch); 
             else {
-                while (ops.size() && priority[ops.top()] >= priority[ch]) postfix.push_back(ops.top()), ops.pop(); 
+                while (ops.size() && precedence[ops.top()] >= precedence[ch]) postfix.push_back(ops.top()), ops.pop(); 
                 if (ch == ')') ops.pop(); 
                 else ops.push(ch); 
             }

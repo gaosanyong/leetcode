@@ -37592,14 +37592,14 @@ class UnionFind:
 
     def expTree(self, s: str) -> 'Node':
         s = f"({s})"
-        priority = {'(' : 0, ')' : 1, '+' : 1, '-' : 1, '*' : 2, '/' : 2}
+        precedence = {'(' : 0, ')' : 1, '+' : 1, '-' : 1, '*' : 2, '/' : 2}
         ops = []
         postfix = [] # postfix expression 
         for ch in s: 
             if ch.isdigit(): postfix.append(ch)
             elif ch == '(': ops.append(ch)
             else: 
-                while ops and priority[ops[-1]] >= priority[ch]: postfix.append(ops.pop())
+                while ops and precedence[ops[-1]] >= precedence[ch]: postfix.append(ops.pop())
                 if ch == ')': ops.pop()
                 else: ops.append(ch)
         stack = []
