@@ -12532,6 +12532,252 @@ class SegTreeLazy {
         }
         return root; 
     }
+
+
+    /*2643. Row With Maximum Ones (Easy)
+    Given a m x n binary matrix mat, find the 0-indexed position of the row 
+    that contains the maximum count of ones, and the number of ones in that row.
+    In case there are multiple rows that have the maximum count of ones, the 
+    row with the smallest row number should be selected. Return an array 
+    containing the index of the row, and the number of ones in it.
+
+    Example 1:
+    Input: mat = [[0,1],[1,0]]
+    Output: [0,1]
+    Explanation: Both rows have the same number of 1's. So we return the index 
+                 of the smaller row, 0, and the maximum count of ones (1). So, 
+                 the answer is [0,1]. 
+    
+    Example 2:
+    Input: mat = [[0,0,0],[0,1,1]]
+    Output: [1,2]
+    Explanation: The row indexed 1 has the maximum count of ones (2). So we 
+                 return its index, 1, and the count. So, the answer is [1,2].
+    
+    Example 3:
+    Input: mat = [[0,0],[1,1],[0,0]]
+    Output: [1,2]
+    Explanation: The row indexed 1 has the maximum count of ones (2). So the 
+                 answer is [1,2].
+
+    Constraints:
+    * m == mat.length 
+    * n == mat[i].length 
+    * 1 <= m, n <= 100 
+    * mat[i][j] is either 0 or 1.*/
+
+    public int[] rowAndMaximumOnes(int[][] mat) {
+        int idx = 0, cnt = 0; 
+        for (int i = 0; i < mat.length; ++i) {
+            int c = 0; 
+            for (int j = 0; j < mat[i].length; ++j)
+                if (mat[i][j] == 1) ++c; 
+            if (c > cnt) {
+                idx = i; 
+                cnt = c; 
+            }
+        }
+        return new int[]{idx, cnt}; 
+    }
+
+
+    /*2644. Find the Maximum Divisibility Score (Easy)
+    You are given two 0-indexed integer arrays nums and divisors. The 
+    divisibility score of divisors[i] is the number of indices j such that 
+    nums[j] is divisible by divisors[i]. Return the integer divisors[i] with 
+    the maximum divisibility score. If there is more than one integer with the 
+    maximum score, return the minimum of them.
+
+    Example 1:
+    Input: nums = [4,7,9,3,9], divisors = [5,2,3]
+    Output: 3
+    Explanation: The divisibility score for every element in divisors is:
+                 - The divisibility score of divisors[0] is 0 since no number 
+                   in nums is divisible by 5.
+                 - The divisibility score of divisors[1] is 1 since nums[0] is 
+                   divisible by 2.
+                 - The divisibility score of divisors[2] is 3 since nums[2], 
+                   nums[3], and nums[4] are divisible by 3.
+                 - Since divisors[2] has the maximum divisibility score, we 
+                   return it.
+    
+    Example 2:
+    Input: nums = [20,14,21,10], divisors = [5,7,5]
+    Output: 5
+    Explanation: The divisibility score for every element in divisors is:
+                 - The divisibility score of divisors[0] is 2 since nums[0] and 
+                   nums[3] are divisible by 5.
+                 - The divisibility score of divisors[1] is 2 since nums[1] and 
+                   nums[2] are divisible by 7.
+                 - The divisibility score of divisors[2] is 2 since nums[0] and 
+                   nums[3] are divisible by 5.
+                 Since divisors[0], divisors[1], and divisors[2] all have the 
+                 maximum divisibility score, we return the minimum of them 
+                 (i.e., divisors[2]).
+    
+    Example 3:
+    Input: nums = [12], divisors = [10,16]
+    Output: 10
+    Explanation: The divisibility score for every element in divisors is:
+                 - The divisibility score of divisors[0] is 0 since no number 
+                   in nums is divisible by 10.
+                 - The divisibility score of divisors[1] is 0 since no number 
+                   in nums is divisible by 16.
+                 Since divisors[0] and divisors[1] both have the maximum 
+                 divisibility score, we return the minimum of them (i.e., 
+                 divisors[0]).
+
+    Constraints:
+    * 1 <= nums.length, divisors.length <= 1000
+    * 1 <= nums[i], divisors[i] <= 10^9*/
+
+    public int maxDivScore(int[] nums, int[] divisors) {
+        int ans = 0, most = -1; 
+        for (var d : divisors) {
+            int cnt = 0; 
+            for (var n : nums) 
+                if (n % d == 0) ++cnt; 
+            if (cnt > most || cnt == most && d < ans) {
+                ans = d; 
+                most = cnt; 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*2645. Minimum Additions to Make Valid String (Medium)
+    Given a string word to which you can insert letters "a", "b" or "c" 
+    anywhere and any number of times, return the minimum number of letters that 
+    must be inserted so that word becomes valid. A string is called valid if it 
+    can be formed by concatenating the string "abc" several times.
+
+    Example 1:
+    Input: word = "b"
+    Output: 2
+    Explanation: Insert the letter "a" right before "b", and the letter "c" 
+                 right next to "a" to obtain the valid string "abc".
+    
+    Example 2:
+    Input: word = "aaa"
+    Output: 6
+    Explanation: Insert letters "b" and "c" next to each "a" to obtain the 
+                 valid string "abcabcabc".
+    
+    Example 3:
+    Input: word = "abc"
+    Output: 0
+    Explanation: word is already valid. No modifications are needed. 
+
+    Constraints:
+    * 1 <= word.length <= 50
+    * word consists of letters "a", "b" and "c" only.*/
+
+    public int addMinimum(String word) {
+        int ans = 0, cnt = 3; 
+        for (int i = 0; i < word.length(); ++i, --cnt) {
+            if (i > 0 && word.charAt(i-1) >= word.charAt(i)) {
+                ans += cnt; 
+                cnt = 3; 
+            }
+        }
+        return ans + cnt; 
+    }
+
+
+    /*2646. Minimize the Total Price of the Trips (Hard)
+    There exists an undirected and unrooted tree with n nodes indexed from 0 to 
+    n - 1. You are given the integer n and a 2D integer array edges of length 
+    n - 1, where edges[i] = [ai, bi] indicates that there is an edge between 
+    nodes ai and bi in the tree. Each node has an associated price. You are 
+    given an integer array price, where price[i] is the price of the ith node.
+    The price sum of a given path is the sum of the prices of all nodes lying 
+    on that path. Additionally, you are given a 2D integer array trips, where 
+    trips[i] = [starti, endi] indicates that you start the ith trip from the 
+    node starti and travel to the node endi by any path you like. Before 
+    performing your first trip, you can choose some non-adjacent nodes and 
+    halve the prices. Return the minimum total price sum to perform all the 
+    given trips.
+
+    Example 1:
+    Input: n = 4, edges = [[0,1],[1,2],[1,3]], price = [2,2,10,6], trips = [[0,3],[2,1],[2,3]]
+    Output: 23
+    Explanation: The diagram above denotes the tree after rooting it at node 2. 
+                 The first part shows the initial tree and the second part 
+                 shows the tree after choosing nodes 0, 2, and 3, and making 
+                 their price half.
+                 - For the 1st trip, we choose path [0,1,3]. The price sum of 
+                   that path is 1 + 2 + 3 = 6.
+                 - For the 2nd trip, we choose path [2,1]. The price sum of 
+                   that path is 2 + 5 = 7.
+                 - For the 3rd trip, we choose path [2,1,3]. The price sum of 
+                   that path is 5 + 2 + 3 = 10.
+                 The total price sum of all trips is 6 + 7 + 10 = 23. It can be 
+                 proven, that 23 is the minimum answer that we can achieve.
+    
+    Example 2:
+    Input: n = 2, edges = [[0,1]], price = [2,2], trips = [[0,0]]
+    Output: 1
+    Explanation: The diagram above denotes the tree after rooting it at node 0. 
+                 The first part shows the initial tree and the second part 
+                 shows the tree after choosing node 0, and making its price 
+                 half.
+                 - For the 1st trip, we choose path [0]. The price sum of that 
+                   path is 1.
+                 The total price sum of all trips is 1. It can be proven, that 
+                 1 is the minimum answer that we can achieve.
+
+    Constraints:
+    * 1 <= n <= 50
+    * edges.length == n - 1
+    * 0 <= ai, bi <= n - 1
+    * edges represents a valid tree.
+    * price.length == n
+    * price[i] is an even integer.
+    * 1 <= price[i] <= 1000
+    * 1 <= trips.length <= 100
+    * 0 <= starti, endi <= n - 1*/
+
+    private int[] dfs(int u, int p, List<Integer>[] tree, int[] price, int[] freq) {
+        int full = 0, half = 0; 
+        for (var v : tree[u]) 
+            if (v != p) {
+                int[] ans = dfs(v, u, tree, price, freq); 
+                full += ans[0]; 
+                half += Math.min(ans[0], ans[1]); 
+            }
+        return new int[]{price[u]*freq[u] + half, price[u]*freq[u]/2 + full}; 
+    }
+    
+    public int minimumTotalPrice(int n, int[][] edges, int[] price, int[][] trips) {
+        List<Integer>[] tree = new ArrayList[n]; 
+        for (int u = 0; u < n; ++u) tree[u] = new ArrayList(); 
+        for (var e : edges) {
+            tree[e[0]].add(e[1]);
+            tree[e[1]].add(e[0]); 
+        }
+        int[] freq = new int[n]; 
+        for (var t : trips) {
+            Queue<int[]> q = new LinkedList(); 
+            q.add(new int[]{t[0], -1}); 
+            Map<Integer, Integer> parent = new HashMap(); 
+            parent.put(t[0], -1); 
+            while (!q.isEmpty()) {
+                var elem = q.poll(); 
+                int u = elem[0], p = elem[1]; 
+                if (u == t[1]) break; 
+                for (var v : tree[u]) 
+                    if (v != p) {
+                        q.add(new int[]{v, u}); 
+                        parent.put(v, u); 
+                    }
+            }
+            for (int u = t[1]; u >= 0; ++freq[u], u = parent.get(u)); 
+        }
+        
+        int[] ans = dfs(0, -1, tree, price, freq); 
+        return Math.min(ans[0], ans[1]); 
+    }
 }
 
 
