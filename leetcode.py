@@ -19402,6 +19402,61 @@ class Solution:
         return ans 
 
 
+    """772. Basic Calculator III (Hard)
+    Implement a basic calculator to evaluate a simple expression string. The 
+    expression string contains only non-negative integers, '+', '-', '*', '/' 
+    operators, and open '(' and closing parentheses ')'. The integer division 
+    should truncate toward zero. You may assume that the given expression is 
+    always valid. All intermediate results will be in the range of 
+    [-2^31, 2^31 - 1]. Note: You are not allowed to use any built-in function 
+    which evaluates strings as mathematical expressions, such as eval().
+
+    Example 1:
+    Input: s = "1+1"
+    Output: 2
+
+    Example 2:
+    Input: s = "6-4/2"
+    Output: 4
+
+    Example 3:
+    Input: s = "2*(5+5*2)/3+(6/2+8)"
+    Output: 21
+
+    Constraints:
+    * 1 <= s <= 10^4
+    * s consists of digits, '+', '-', '*', '/', '(', and ')'.
+    * s is a valid expression."""
+
+    def calculate(self, s: str) -> int:
+        s = f"({s})"
+        precedence = {'(' : 0, ')' : 1, '+' : 1, '-' : 1, '*' : 2, '/' : 2}
+        ops = []
+        postfix = []
+        for i, ch in enumerate(s): 
+            if ch.isdigit(): v = 10*v + int(ch)
+            else: 
+                if i and s[i-1].isdigit(): postfix.append(v)
+                v = 0 
+                if ch == '(': ops.append(ch)
+                else: 
+                    while ops and precedence[ops[-1]] >= precedence[ch]: postfix.append(ops.pop())
+                    if ch == ')': ops.pop()
+                    else: ops.append(ch)
+        stack = []
+        for v in postfix: 
+            if isinstance(v, str): 
+                y = stack.pop()
+                x = stack.pop()
+                if v == '+': x += y 
+                elif v == '-': x -= y 
+                elif v == '*': x *= y 
+                else: x = int(x/y)
+                stack.append(x)
+            else: stack.append(v)
+        return stack.pop()
+
+
     """773. Sliding Puzzle (Hard)
     On a 2x3 board, there are 5 tiles represented by the integers 1 through 5, 
     and an empty square represented by 0. A move consists of choosing 0 and a 

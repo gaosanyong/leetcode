@@ -16740,6 +16740,68 @@ public:
     }
 
 
+    /*772. Basic Calculator III (Hard)
+    Implement a basic calculator to evaluate a simple expression string. The 
+    expression string contains only non-negative integers, '+', '-', '*', '/' 
+    operators, and open '(' and closing parentheses ')'. The integer division 
+    should truncate toward zero. You may assume that the given expression is 
+    always valid. All intermediate results will be in the range of 
+    [-2^31, 2^31 - 1]. Note: You are not allowed to use any built-in function 
+    which evaluates strings as mathematical expressions, such as eval().
+
+    Example 1:
+    Input: s = "1+1"
+    Output: 2
+
+    Example 2:
+    Input: s = "6-4/2"
+    Output: 4
+
+    Example 3:
+    Input: s = "2*(5+5*2)/3+(6/2+8)"
+    Output: 21
+
+    Constraints:
+    * 1 <= s <= 10^4
+    * s consists of digits, '+', '-', '*', '/', '(', and ')'.
+    * s is a valid expression.*/
+
+    int calculate(string s) {
+        s = "(" + s + ")"; 
+        unordered_map<char, int> precedence = {{'(', 0}, {')', 1}, {'+', 1}, {'-', 1}, {'*', 2}, {'/', 2}}; 
+        stack<char> ops; 
+        vector<string> postfix; 
+        for (int i = 0, v = 0; i < s.size(); ++i) {
+            if ('0' <= s[i] && s[i] <= '9') v = 10*v + s[i] - '0'; 
+            else {
+                if (i && '0' <= s[i-1] && s[i-1] <= '9') postfix.push_back(to_string(v)); 
+                v = 0; 
+                if (s[i] == '(') ops.push(s[i]); 
+                else {
+                    while (ops.size() && precedence[ops.top()] >= precedence[s[i]]) {
+                        postfix.push_back(string(1, ops.top())); ops.pop(); 
+                    }
+                    if (s[i] == ')') ops.pop(); 
+                    else ops.push(s[i]); 
+                }
+            }
+        }
+        stack<int> stk; 
+        for (auto& v : postfix) {
+            if (v == "+" || v == "-" || v == "*" || v == "/") {
+                int y = stk.top(); stk.pop(); 
+                int x = stk.top(); stk.pop(); 
+                if (v == "+") x += y; 
+                else if (v == "-") x -= y; 
+                else if (v == "*") x *= y; 
+                else x /= y; 
+                stk.push(x); 
+            } else stk.push(stoi(v)); 
+        }
+        return stk.top(); 
+    }
+
+
     /*774. Minimize Max Distance to Gas Station (Hard)
     You are given an integer array stations that represents the positions of 
     the gas stations on the x-axis. You are also given an integer k. You should 
