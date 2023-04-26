@@ -79017,7 +79017,7 @@ class SegTreeLazy:
             elif p == 2: 
                 for j in range(2*i-1, 2, -2): ans.append([i, j])
             else: ans.append([i, 1])
-        if not ans or ans[-1] != [1, 1]: ans.append([1, 1])
+        if 1 <= p <= 2: ans.append([1, 1])
         return ans[::-1]
 
 
