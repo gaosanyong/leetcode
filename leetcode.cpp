@@ -59305,6 +59305,203 @@ public:
         if (prev <= n-1) ans.push_back({prev, n-1}); 
         return ans; 
     }
+
+
+    /*2656. Maximum Sum With Exactly K Elements (Easy)
+    You are given a 0-indexed integer array nums and an integer k. Your task is 
+    to perform the following operation exactly k times in order to maximize 
+    your score:
+    * Select an element m from nums.
+    * Remove the selected element m from the array.
+    * Add a new element with a value of m + 1 to the array.
+    * Increase your score by m.
+    Return the maximum score you can achieve after performing the operation 
+    exactly k times.
+
+    Example 1:
+    Input: nums = [1,2,3,4,5], k = 3
+    Output: 18
+    Explanation: We need to choose exactly 3 elements from nums to maximize the 
+                 sum.
+                 - For the first iteration, we choose 5. Then sum is 5 and 
+                   nums = [1,2,3,4,6]
+                 - For the second iteration, we choose 6. Then sum is 5 + 6 and 
+                   nums = [1,2,3,4,7]
+                 - For the third iteration, we choose 7. Then sum is 
+                   5 + 6 + 7 = 18 and nums = [1,2,3,4,8]
+                 So, we will return 18. It can be proven, that 18 is the 
+                 maximum answer that we can achieve.
+    
+    Example 2:
+    Input: nums = [5,5,5], k = 2
+    Output: 11
+    Explanation: We need to choose exactly 2 elements from nums to maximize the 
+                 sum.
+                 - For the first iteration, we choose 5. Then sum is 5 and 
+                   nums = [5,5,6]
+                 - For the second iteration, we choose 6. Then sum is 
+                   5 + 6 = 11 and nums = [5,5,7]
+                 So, we will return 11. It can be proven, that 11 is the 
+                 maximum answer that we can achieve.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * 1 <= nums[i] <= 100
+    * 1 <= k <= 100*/
+
+    int maximizeSum(vector<int>& nums, int k) {
+        int m = *max_element(nums.begin(), nums.end()); 
+        return k*(2*m+k-1)/2; 
+    }
+
+
+    /*2657. Find the Prefix Common Array of Two Arrays (Medium)
+    You are given two 0-indexed integer permutations A and B of length n. A 
+    prefix common array of A and B is an array C such that C[i] is equal to the 
+    count of numbers that are present at or before the index i in both A and B.
+    Return the prefix common array of A and B. A sequence of n integers is 
+    called a permutation if it contains all integers from 1 to n exactly once.
+
+    Example 1:
+    Input: A = [1,3,2,4], B = [3,1,2,4]
+    Output: [0,2,3,4]
+    Explanation: At i = 0: no number is common, so C[0] = 0.
+                 At i = 1: 1 and 3 are common in A and B, so C[1] = 2.
+                 At i = 2: 1, 2, and 3 are common in A and B, so C[2] = 3.
+                 At i = 3: 1, 2, 3, and 4 are common in A and B, so C[3] = 4.
+    
+    Example 2:
+    Input: A = [2,3,1], B = [3,1,2]
+    Output: [0,1,3]
+    Explanation: At i = 0: no number is common, so C[0] = 0.
+                 At i = 1: only 3 is common in A and B, so C[1] = 1.
+                 At i = 2: 1, 2, and 3 are common in A and B, so C[2] = 3.
+
+    Constraints:
+    * 1 <= A.length == B.length == n <= 50
+    * 1 <= A[i], B[i] <= n
+    * It is guaranteed that A and B are both a permutation of n integers.*/
+
+    vector<int> findThePrefixCommonArray(vector<int>& A, vector<int>& B) {
+        int n = A.size(); 
+        vector<int> ans, seen(n+1); 
+        for (int i = 0, prefix = 0; i < n; ++i) {
+            if (++seen[A[i]] == 0) ++prefix; 
+            if (--seen[B[i]] == 0) ++prefix; 
+            ans.push_back(prefix); 
+        }
+        return ans; 
+    }
+
+
+    /*2658. Maximum Number of Fish in a Grid (Hard)
+    You are given a 0-indexed 2D matrix grid of size m x n, where (r, c) 
+    represents:
+    * A land cell if grid[r][c] = 0, or
+    * A water cell containing grid[r][c] fish, if grid[r][c] > 0.
+    A fisher can start at any water cell (r, c) and can do the following 
+    operations any number of times:
+    * Catch all the fish at cell (r, c), or
+    * Move to any adjacent water cell.
+    Return the maximum number of fish the fisher can catch if he chooses his 
+    starting cell optimally, or 0 if no water cell exists. An adjacent cell of 
+    the cell (r, c), is one of the cells (r, c + 1), (r, c - 1), (r + 1, c) or 
+    (r - 1, c) if it exists.
+
+    Example 1:
+    Input: grid = [[0,2,1,0],[4,0,0,3],[1,0,0,4],[0,3,2,0]]
+    Output: 7
+    Explanation: The fisher can start at cell (1,3) and collect 3 fish, then 
+                 move to cell (2,3) and collect 4 fish.
+    
+    Example 2:
+    Input: grid = [[1,0,0,0],[0,0,0,0],[0,0,0,0],[0,0,0,1]]
+    Output: 1
+    Explanation: The fisher can start at cells (0,0) or (3,3) and collect a 
+                 single fish. 
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 10
+    * 0 <= grid[i][j] <= 10*/
+
+    int findMaxFish(vector<vector<int>>& grid) {
+        int ans = 0, m = grid.size(), n = grid[0].size(), dir[5] = {-1, 0, 1, 0, -1}; 
+        for (int r = 0; r < m; ++r) 
+            for (int c = 0; c < n; ++c) 
+                if (grid[r][c]) {
+                    int cand = grid[r][c]; 
+                    grid[r][c] = 0; 
+                    stack<pair<int, int>> stk; stk.emplace(r, c); 
+                    while (stk.size()) {
+                        auto [i, j] = stk.top(); stk.pop(); 
+                        for (int k = 0; k < 4; ++k) {
+                            int ii = i + dir[k], jj = j + dir[k+1]; 
+                            if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj]) {
+                                cand += grid[ii][jj]; 
+                                grid[ii][jj] = 0; 
+                                stk.emplace(ii, jj); 
+                            }
+                        }
+                    }
+                    ans = max(ans, cand); 
+                }
+        return ans;
+    }
+
+
+    /*2659. Make Array Empty (Hard)
+    You are given an integer array nums containing distinct numbers, and you 
+    can perform the following operations until the array is empty:
+    * If the first element has the smallest value, remove it
+    * Otherwise, put the first element at the end of the array.
+    Return an integer denoting the number of operations it takes to make nums 
+    empty.
+
+    Example 1:
+    Input: nums = [3,4,-1]
+    Output: 5
+    Operation   Array
+            1   [4, -1, 3]
+            2   [-1, 3, 4]
+            3   [3, 4]
+            4   [4]
+            5   []
+    
+    Example 2:
+    Input: nums = [1,2,4,3]
+    Output: 5
+    Operation   Array
+            1   [2, 4, 3]
+            2   [4, 3]
+            3   [3, 4]
+            4   [4]
+            5   []
+    
+    Example 3:
+    Input: nums = [1,2,3]
+    Output: 3
+    Operation   Array
+            1   [2, 3]
+            2   [3]
+            3   []
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * -10^9 <= nums[i] <= 10^9
+    * All values in nums are distinct.*/
+
+    long long countOperationsToEmptyArray(vector<int>& nums) {
+        int n = nums.size(); 
+        long long ans = n; 
+        unordered_map<int, int> loc; 
+        for (int i = 0; i < n; ++i) loc[nums[i]] = i; 
+        sort(nums.begin(), nums.end()); 
+        for (int i = 1; i < n; ++i) 
+            if (loc[nums[i-1]] > loc[nums[i]]) ans += n-i; 
+        return ans; 
+    }
 };
 
 
