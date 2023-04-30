@@ -13491,6 +13491,243 @@ class SegTreeLazy {
             if (loc.get(nums[i-1]) > loc.get(nums[i])) ans += n-i; 
         return ans; 
     }
+
+
+    /*2660. Determine the Winner of a Bowling Game (Easy)
+    You are given two 0-indexed integer arrays player1 and player2, that 
+    represent the number of pins that player 1 and player 2 hit in a bowling 
+    game, respectively. The bowling game consists of n turns, and the number of 
+    pins in each turn is exactly 10. Assume a player hit xi pins in the ith 
+    turn. The value of the ith turn for the player is:
+    * 2xi if the player hit 10 pins in any of the previous two turns.
+    * Otherwise, It is xi.
+    The score of the player is the sum of the values of their n turns. Return
+    * 1 if the score of player 1 is more than the score of player 2,
+    * 2 if the score of player 2 is more than the score of player 1, and
+    * 0 in case of a draw.
+
+    Example 1:
+    Input: player1 = [4,10,7,9], player2 = [6,5,2,3]
+    Output: 1
+    Explanation: The score of player1 is 4 + 10 + 2*7 + 2*9 = 46.
+                 The score of player2 is 6 + 5 + 2 + 3 = 16.
+                 Score of player1 is more than the score of player2, so, 
+                 player1 is the winner, and the answer is 1.
+    
+    Example 2:
+    Input: player1 = [3,5,7,6], player2 = [8,10,10,2]
+    Output: 2
+    Explanation: The score of player1 is 3 + 5 + 7 + 6 = 21.
+                 The score of player2 is 8 + 10 + 2*10 + 2*2 = 42.
+                 Score of player2 is more than the score of player1, so, 
+                 player2 is the winner, and the answer is 2.
+    
+    Example 3:
+    Input: player1 = [2,3], player2 = [4,1]
+    Output: 0
+    Explanation: The score of player1 is 2 + 3 = 5
+                 The score of player2 is 4 + 1 = 5
+                 The score of player1 equals to the score of player2, so, 
+                 there is a draw, and the answer is 0.
+
+    Constraints:
+    * n == player1.length == player2.length
+    * 1 <= n <= 1000
+    * 0 <= player1[i], player2[i] <= 10*/
+
+    private static int calc(int[] player) {
+        int ans = 0; 
+        for (int i = 0; i < player.length; ++i) {
+            ans += player[i]; 
+            if (i >= 1 && player[i-1] == 10 || i >= 2 && player[i-2] == 10) ans += player[i]; 
+        }
+        return ans; 
+    }
+    
+    public int isWinner(int[] player1, int[] player2) {
+        int diff = calc(player1) - calc(player2); 
+        return diff > 0 ? 1 : diff < 0 ? 2 : 0;
+    }
+
+
+    /*2661. First Completely Painted Row or Column (Medium)
+    You are given a 0-indexed integer array arr, and an m x n integer matrix 
+    mat. arr and mat both contain all the integers in the range [1, m * n].
+    Go through each index i in arr starting from index 0 and paint the cell in 
+    mat containing the integer arr[i]. Return the smallest index i at which 
+    either a row or a column will be completely painted in mat.
+
+    Example 1:
+    image explanation for example 1
+    Input: arr = [1,3,4,2], mat = [[1,4],[2,3]]
+    Output: 2
+    Explanation: The moves are shown in order, and both the first row and 
+                 second column of the matrix become fully painted at arr[2].
+    
+    Example 2:
+    image explanation for example 2
+    Input: arr = [2,8,7,4,1,3,5,6,9], mat = [[3,2,5],[1,4,6],[8,7,9]]
+    Output: 3
+    Explanation: The second column becomes fully painted at arr[3].
+
+    Constraints:
+    * m == mat.length
+    * n = mat[i].length
+    * arr.length == m * n
+    * 1 <= m, n <= 10^5
+    * 1 <= m * n <= 10^5
+    * 1 <= arr[i], mat[r][c] <= m * n
+    * All the integers of arr are unique.
+    * All the integers of mat are unique.*/
+
+    public int firstCompleteIndex(int[] arr, int[][] mat) {
+        int m = mat.length, n = mat[0].length; 
+        int[][] loc = new int[m*n][2]; 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) {
+                loc[mat[i][j]-1][0] = i; 
+                loc[mat[i][j]-1][1] = j; 
+            }
+        int[] rows = new int[m], cols = new int[n]; 
+        for (int k = 0; k < arr.length; ++k) {
+            int i = loc[arr[k]-1][0], j = loc[arr[k]-1][1]; 
+            if (++rows[i] == n || ++cols[j] == m) return k; 
+        }
+        return -1; 
+    }
+
+
+    /*2662. Minimum Cost of a Path With Special Roads (Medium)
+    You are given an array start where start = [startX, startY] represents your 
+    initial position (startX, startY) in a 2D space. You are also given the 
+    array target where target = [targetX, targetY] represents your target 
+    position (targetX, targetY). The cost of going from a position (x1, y1) to 
+    any other position in the space (x2, y2) is |x2 - x1| + |y2 - y1|. There 
+    are also some special roads. You are given a 2D array specialRoads where 
+    specialRoads[i] = [x1i, y1i, x2i, y2i, costi] indicates that the ith 
+    special road can take you from (x1i, y1i) to (x2i, y2i) with a cost equal 
+    to costi. You can use each special road any number of times. Return the 
+    minimum cost required to go from (startX, startY) to (targetX, targetY).
+
+    Example 1:
+    Input: start = [1,1], target = [4,5], specialRoads = [[1,2,3,3,2],[3,4,4,5,1]]
+    Output: 5
+    Explanation: The optimal path from (1,1) to (4,5) is the following:
+                 - (1,1) -> (1,2). This move has a cost of |1 - 1| + |2 - 1| = 1.
+                 - (1,2) -> (3,3). This move uses the first special edge, the 
+                   cost is 2.
+                 - (3,3) -> (3,4). This move has a cost of |3 - 3| + |4 - 3| = 1.
+                 - (3,4) -> (4,5). This move uses the second special edge, the 
+                   cost is 1.
+                 So the total cost is 1 + 2 + 1 + 1 = 5. It can be shown that 
+                 we cannot achieve a smaller total cost than 5.
+    
+    Example 2:
+    Input: start = [3,2], target = [5,7], specialRoads = [[3,2,3,4,4],[3,3,5,5,5],[3,4,5,6,6]]
+    Output: 7
+    Explanation: It is optimal to not use any special edges and go directly 
+                 from the starting to the ending position with a cost 
+                 |5 - 3| + |7 - 2| = 7.
+
+    Constraints:
+    * start.length == target.length == 2
+    * 1 <= startX <= targetX <= 10^5
+    * 1 <= startY <= targetY <= 10^5
+    * 1 <= specialRoads.length <= 200
+    * specialRoads[i].length == 5
+    * startX <= x1i, x2i <= targetX
+    * startY <= y1i, y2i <= targetY
+    * 1 <= costi <= 10^5*/
+
+    public int minimumCost(int[] start, int[] target, int[][] specialRoads) {
+        long m = 100001; 
+        Map<Long, List<long[]>> mp = new HashMap(); 
+        mp.put(target[0]*m + target[1], new ArrayList()); 
+        mp.get(target[0]*m + target[1]).add(new long[]{0, 0}); 
+        for (var x : specialRoads) {
+            if (!mp.containsKey(x[0]*m + x[1])) mp.put(x[0]*m + x[1], new ArrayList()); 
+            mp.get(x[0]*m + x[1]).add(new long[]{x[2]*m + x[3], x[4]}); 
+        }
+        Map<Long, Long> dist = new HashMap(); 
+        dist.put(start[0]*m + start[1], 0l); 
+        Queue<long[]> pq = new PriorityQueue<>((a, b)->Long.compare(a[0], b[0])); 
+        pq.add(new long[]{0, start[0]*m + start[1]}); 
+        while (!pq.isEmpty()) {
+            var elem = pq.poll(); 
+            long d = elem[0], x = elem[1]; 
+            if (x == target[0]*m + target[1]) return (int) d; 
+            if (mp.containsKey(x)) 
+                for (var p : mp.get(x)) {
+                    long xx = p[0], dd = d + p[1]; 
+                    if (!dist.containsKey(xx) || dd < dist.get(xx)) {
+                        dist.put(xx, dd); 
+                        pq.add(new long[]{dd, xx}); 
+                    }
+                }
+            for (var xx : mp.keySet()) {
+                long dd = d + Math.abs(xx%m - x%m) + Math.abs(xx/m - x/m); 
+                if (!dist.containsKey(xx) || dd < dist.get(xx)) {
+                    dist.put(xx, dd); 
+                    pq.add(new long[] {dd, xx}); 
+                }
+            }
+        }
+        return -1; 
+    }
+
+
+    /*2663. Lexicographically Smallest Beautiful String (Hard)
+    A string is beautiful if:
+    * It consists of the first k letters of the English lowercase alphabet.
+    * It does not contain any substring of length 2 or more which is a 
+      palindrome.
+    You are given a beautiful string s of length n and a positive integer k.
+    Return the lexicographically smallest string of length n, which is larger 
+    than s and is beautiful. If there is no such string, return an empty string.
+    A string a is lexicographically larger than a string b (of the same length) 
+    if in the first position where a and b differ, a has a character strictly 
+    larger than the corresponding character in b. 
+    * For example, "abcd" is lexicographically larger than "abcc" because the 
+      first position they differ is at the fourth character, and d is greater 
+      than c.
+
+    Example 1:
+    Input: s = "abcz", k = 26
+    Output: "abda"
+    Explanation: The string "abda" is beautiful and lexicographically larger 
+                 than the string "abcz". It can be proven that there is no 
+                 string that is lexicographically larger than the string 
+                 "abcz", beautiful, and lexicographically smaller than the 
+                 string "abda".
+    
+    Example 2:
+    Input: s = "dc", k = 4
+    Output: ""
+    Explanation: It can be proven that there is no string that is 
+                 lexicographically larger than the string "dc" and is 
+                 beautiful.
+
+    Constraints:
+    * 1 <= n == s.length <= 10^5
+    * 4 <= k <= 26
+    * s is a beautiful string.*/
+
+    public String smallestBeautifulString(String s, int k) {
+        StringBuilder sb = new StringBuilder(s); 
+        for (int n = sb.length(), i = n-1; i >= 0; --i) 
+            for (char c = (char) (sb.charAt(i)+1); c < 'a'+k; ++c) 
+                if ((i == 0 || s.charAt(i-1) != c) && (i <= 1 || sb.charAt(i-2) != c)) {
+                    sb.setCharAt(i, c); 
+                    for (int ii = i+1; ii < n; ++ii) 
+                        for (char cc = 'a'; cc < 'a'+k; ++cc) 
+                            if (cc != sb.charAt(ii-1) && (ii == 1 || cc != sb.charAt(ii-2))) {
+                                sb.setCharAt(ii, cc); 
+                                break; 
+                            }
+                    return sb.toString(); 
+                }
+        return ""; 
+    }
 }
 
 

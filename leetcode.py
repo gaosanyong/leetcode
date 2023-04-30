@@ -79271,6 +79271,218 @@ class SegTreeLazy:
         return ans 
 
 
+    """2660. Determine the Winner of a Bowling Game (Easy)
+    You are given two 0-indexed integer arrays player1 and player2, that 
+    represent the number of pins that player 1 and player 2 hit in a bowling 
+    game, respectively. The bowling game consists of n turns, and the number of 
+    pins in each turn is exactly 10. Assume a player hit xi pins in the ith 
+    turn. The value of the ith turn for the player is:
+    * 2xi if the player hit 10 pins in any of the previous two turns.
+    * Otherwise, It is xi.
+    The score of the player is the sum of the values of their n turns. Return
+    * 1 if the score of player 1 is more than the score of player 2,
+    * 2 if the score of player 2 is more than the score of player 1, and
+    * 0 in case of a draw.
+
+    Example 1:
+    Input: player1 = [4,10,7,9], player2 = [6,5,2,3]
+    Output: 1
+    Explanation: The score of player1 is 4 + 10 + 2*7 + 2*9 = 46.
+                 The score of player2 is 6 + 5 + 2 + 3 = 16.
+                 Score of player1 is more than the score of player2, so, 
+                 player1 is the winner, and the answer is 1.
+    
+    Example 2:
+    Input: player1 = [3,5,7,6], player2 = [8,10,10,2]
+    Output: 2
+    Explanation: The score of player1 is 3 + 5 + 7 + 6 = 21.
+                 The score of player2 is 8 + 10 + 2*10 + 2*2 = 42.
+                 Score of player2 is more than the score of player1, so, 
+                 player2 is the winner, and the answer is 2.
+    
+    Example 3:
+    Input: player1 = [2,3], player2 = [4,1]
+    Output: 0
+    Explanation: The score of player1 is 2 + 3 = 5
+                 The score of player2 is 4 + 1 = 5
+                 The score of player1 equals to the score of player2, so, 
+                 there is a draw, and the answer is 0.
+
+    Constraints:
+    * n == player1.length == player2.length
+    * 1 <= n <= 1000
+    * 0 <= player1[i], player2[i] <= 10"""
+
+    def isWinner(self, player1: List[int], player2: List[int]) -> int:
+        
+        def fn(player): 
+            """Return the score of given player."""
+            ans = 0
+            for i, x in enumerate(player): 
+                ans += x
+                if i and player[i-1] == 10 or i >= 2 and player[i-2] == 10: ans += x
+            return ans
+        
+        diff = fn(player1) - fn(player2)
+        return 1 if diff > 0 else 2 if diff < 0 else 0
+
+
+    """2661. First Completely Painted Row or Column (Medium)
+    You are given a 0-indexed integer array arr, and an m x n integer matrix 
+    mat. arr and mat both contain all the integers in the range [1, m * n].
+    Go through each index i in arr starting from index 0 and paint the cell in 
+    mat containing the integer arr[i]. Return the smallest index i at which 
+    either a row or a column will be completely painted in mat.
+
+    Example 1:
+    image explanation for example 1
+    Input: arr = [1,3,4,2], mat = [[1,4],[2,3]]
+    Output: 2
+    Explanation: The moves are shown in order, and both the first row and 
+                 second column of the matrix become fully painted at arr[2].
+    
+    Example 2:
+    image explanation for example 2
+    Input: arr = [2,8,7,4,1,3,5,6,9], mat = [[3,2,5],[1,4,6],[8,7,9]]
+    Output: 3
+    Explanation: The second column becomes fully painted at arr[3].
+
+    Constraints:
+    * m == mat.length
+    * n = mat[i].length
+    * arr.length == m * n
+    * 1 <= m, n <= 10^5
+    * 1 <= m * n <= 10^5
+    * 1 <= arr[i], mat[r][c] <= m * n
+    * All the integers of arr are unique.
+    * All the integers of mat are unique."""
+
+    def firstCompleteIndex(self, arr: List[int], mat: List[List[int]]) -> int:
+        m, n = len(mat), len(mat[0])
+        loc = {x : (i, j) for i, row in enumerate(mat) for j, x in enumerate(row)}
+        rows = [0]*m
+        cols = [0]*n
+        for k, x in enumerate(arr): 
+            i, j = loc[x]
+            rows[i] += 1
+            cols[j] += 1
+            if rows[i] == n or cols[j] == m: return k 
+
+
+    """2662. Minimum Cost of a Path With Special Roads (Medium)
+    You are given an array start where start = [startX, startY] represents your 
+    initial position (startX, startY) in a 2D space. You are also given the 
+    array target where target = [targetX, targetY] represents your target 
+    position (targetX, targetY). The cost of going from a position (x1, y1) to 
+    any other position in the space (x2, y2) is |x2 - x1| + |y2 - y1|. There 
+    are also some special roads. You are given a 2D array specialRoads where 
+    specialRoads[i] = [x1i, y1i, x2i, y2i, costi] indicates that the ith 
+    special road can take you from (x1i, y1i) to (x2i, y2i) with a cost equal 
+    to costi. You can use each special road any number of times. Return the 
+    minimum cost required to go from (startX, startY) to (targetX, targetY).
+
+    Example 1:
+    Input: start = [1,1], target = [4,5], specialRoads = [[1,2,3,3,2],[3,4,4,5,1]]
+    Output: 5
+    Explanation: The optimal path from (1,1) to (4,5) is the following:
+                 - (1,1) -> (1,2). This move has a cost of |1 - 1| + |2 - 1| = 1.
+                 - (1,2) -> (3,3). This move uses the first special edge, the 
+                   cost is 2.
+                 - (3,3) -> (3,4). This move has a cost of |3 - 3| + |4 - 3| = 1.
+                 - (3,4) -> (4,5). This move uses the second special edge, the 
+                   cost is 1.
+                 So the total cost is 1 + 2 + 1 + 1 = 5. It can be shown that 
+                 we cannot achieve a smaller total cost than 5.
+    
+    Example 2:
+    Input: start = [3,2], target = [5,7], specialRoads = [[3,2,3,4,4],[3,3,5,5,5],[3,4,5,6,6]]
+    Output: 7
+    Explanation: It is optimal to not use any special edges and go directly 
+                 from the starting to the ending position with a cost 
+                 |5 - 3| + |7 - 2| = 7.
+
+    Constraints:
+    * start.length == target.length == 2
+    * 1 <= startX <= targetX <= 10^5
+    * 1 <= startY <= targetY <= 10^5
+    * 1 <= specialRoads.length <= 200
+    * specialRoads[i].length == 5
+    * startX <= x1i, x2i <= targetX
+    * startY <= y1i, y2i <= targetY
+    * 1 <= costi <= 10^5"""
+
+    def minimumCost(self, start: List[int], target: List[int], specialRoads: List[List[int]]) -> int:
+        mp = defaultdict(list, {tuple(target) : [(0, 0, 0)]})
+        for x, y, xx, yy, cost in specialRoads: 
+            mp[x, y].append((xx, yy, cost))
+        dist = defaultdict(lambda : inf)
+        dist[tuple(start)] = 0 
+        pq = [(0, *start)]
+        while pq: 
+            d, x, y = heappop(pq)
+            if [x, y] == target: return d 
+            for xx, yy, cost in mp[x, y]: 
+                if d+cost < dist[xx, yy]: 
+                    dist[xx, yy] = d+cost
+                    heappush(pq, (d+cost, xx, yy))
+            for x1, y1 in mp: 
+                dd = d + abs(x1-x) + abs(y1-y)
+                if dd < dist[x1, y1]: 
+                    dist[x1, y1] = dd
+                    heappush(pq, (dd, x1, y1))
+
+
+    """2663. Lexicographically Smallest Beautiful String (Hard)
+    A string is beautiful if:
+    * It consists of the first k letters of the English lowercase alphabet.
+    * It does not contain any substring of length 2 or more which is a 
+      palindrome.
+    You are given a beautiful string s of length n and a positive integer k.
+    Return the lexicographically smallest string of length n, which is larger 
+    than s and is beautiful. If there is no such string, return an empty string.
+    A string a is lexicographically larger than a string b (of the same length) 
+    if in the first position where a and b differ, a has a character strictly 
+    larger than the corresponding character in b. 
+    * For example, "abcd" is lexicographically larger than "abcc" because the 
+      first position they differ is at the fourth character, and d is greater 
+      than c.
+
+    Example 1:
+    Input: s = "abcz", k = 26
+    Output: "abda"
+    Explanation: The string "abda" is beautiful and lexicographically larger 
+                 than the string "abcz". It can be proven that there is no 
+                 string that is lexicographically larger than the string 
+                 "abcz", beautiful, and lexicographically smaller than the 
+                 string "abda".
+    
+    Example 2:
+    Input: s = "dc", k = 4
+    Output: ""
+    Explanation: It can be proven that there is no string that is 
+                 lexicographically larger than the string "dc" and is 
+                 beautiful.
+
+    Constraints:
+    * 1 <= n == s.length <= 10^5
+    * 4 <= k <= 26
+    * s is a beautiful string."""
+
+    def smallestBeautifulString(self, s: str, k: int) -> str:
+        s = list(s)
+        for i in reversed(range(len(s))): 
+            for cc in ascii_lowercase[:k]: 
+                if s[i] < cc and cc not in s[max(0, i-2) : i]: 
+                    s[i] = cc
+                    for ii in range(i+1, len(s)): 
+                        for cc in ascii_lowercase[:k]: 
+                            if cc not in s[max(0, ii-2) : ii]: 
+                                s[ii] = cc 
+                                break 
+                    return ''.join(s)
+        return ""
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
