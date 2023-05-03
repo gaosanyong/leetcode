@@ -15079,6 +15079,83 @@ public:
     }
 
 
+    /*711. Number of Distinct Islands II (Hard)
+    You are given an m x n binary matrix grid. An island is a group of 1's 
+    (representing land) connected 4-directionally (horizontal or vertical.) You 
+    may assume all four edges of the grid are surrounded by water. An island is 
+    considered to be the same as another if they have the same shape, or have 
+    the same shape after rotation (90, 180, or 270 degrees only) or reflection 
+    (left/right direction or up/down direction). Return the number of distinct 
+    islands.
+
+    Example 1:
+    Input: grid = [[1,1,0,0,0],[1,0,0,0,0],[0,0,0,0,1],[0,0,0,1,1]]
+    Output: 1
+    Explanation: The two islands are considered the same because if we make a 
+                 180 degrees clockwise rotation on the first island, then two 
+                 islands will have the same shapes.
+    
+    Example 2:
+    Input: grid = [[1,1,0,0,0],[1,1,0,0,0],[0,0,0,1,1],[0,0,0,1,1]]
+    Output: 1
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 50
+    * grid[i][j] is either 0 or 1.*/
+
+    int numDistinctIslands2(vector<vector<int>>& grid) {
+        int ans = 0, m = grid.size(), n = grid[0].size(), dir[] = {-1, 0, 1, 0, -1}; 
+        set<vector<pair<int, int>>> seen; 
+        for (int r = 0; r < m; ++r) {
+            for (int c = 0; c < n; ++c) {
+                if (grid[r][c]) {
+                    vector<vector<pair<int, int>>> vals(8); 
+                    grid[r][c] = 0; 
+                    stack<pair<int, int>> stk; stk.emplace(r, c); 
+                    while (stk.size()) {
+                        auto [i, j] = stk.top(); stk.pop(); 
+                        int k = 0; 
+                        for (auto& [x, y] : vector<pair<int, int>>{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}}) {
+                            vals[k++].emplace_back(i*x, j*y); 
+                            vals[k++].emplace_back(j*x, i*y); 
+                        }
+                        for (int k = 0; k < 4; ++k) {
+                            int ii = i + dir[k], jj = j + dir[k+1]; 
+                            if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj]) {
+                                grid[ii][jj] = 0; 
+                                stk.emplace(ii, jj); 
+                            }
+                        }
+                    }
+                    bool found = false; 
+                    set<vector<pair<int, int>>> temp; 
+                    for (int k = 0; k < 8; ++k) {
+                        int mx = min_element(vals[k].begin(), vals[k].end())->first; 
+                        int my = min_element(vals[k].begin(), vals[k].end(), [&](auto& lhs, auto& rhs) {return lhs.second < rhs.second;})->second; 
+                        for (auto& [x, y] : vals[k]) {
+                            x -= mx; 
+                            y -= my; 
+                        }
+                        sort(vals[k].begin(), vals[k].end()); 
+                        if (seen.count(vals[k])) {
+                            found = true; 
+                            break; 
+                        }
+                        temp.insert(vals[k]); 
+                    }
+                    if (!found) {
+                        ++ans; 
+                        for (auto& v : temp) seen.insert(v); 
+                    }
+                }
+            }
+        }
+        return ans; 
+    }
+
+
     /*713. Subarray Product Less Than K (Medium)
     Given an array of integers nums and an integer k, return the number of 
     contiguous subarrays where the product of all the elements in the subarray 

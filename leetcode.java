@@ -2381,6 +2381,92 @@ class Solution {
     }
 
 
+    /*711. Number of Distinct Islands II (Hard)
+    You are given an m x n binary matrix grid. An island is a group of 1's 
+    (representing land) connected 4-directionally (horizontal or vertical.) You 
+    may assume all four edges of the grid are surrounded by water. An island is 
+    considered to be the same as another if they have the same shape, or have 
+    the same shape after rotation (90, 180, or 270 degrees only) or reflection 
+    (left/right direction or up/down direction). Return the number of distinct 
+    islands.
+
+    Example 1:
+    Input: grid = [[1,1,0,0,0],[1,0,0,0,0],[0,0,0,0,1],[0,0,0,1,1]]
+    Output: 1
+    Explanation: The two islands are considered the same because if we make a 
+                 180 degrees clockwise rotation on the first island, then two 
+                 islands will have the same shapes.
+    
+    Example 2:
+    Input: grid = [[1,1,0,0,0],[1,1,0,0,0],[0,0,0,1,1],[0,0,0,1,1]]
+    Output: 1
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 50
+    * grid[i][j] is either 0 or 1.*/
+
+    public int numDistinctIslands2(int[][] grid) {
+        int ans = 0, m = grid.length, n = grid[0].length; 
+        int[] dir = new int[]{-1, 0, 1, 0, -1}; 
+        Set<String> seen = new HashSet(); 
+        for (int r = 0; r < m; ++r) 
+            for (int c = 0; c < n; ++c) 
+                if (grid[r][c] == 1) {
+                    List<int[]>[] vals = new ArrayList[8]; 
+                    for (int k = 0; k < 8; ++k) vals[k] = new ArrayList(); 
+                    grid[r][c] = 0; 
+                    Stack<int[]> stk = new Stack(); 
+                    stk.add(new int[]{r, c}); 
+                    while (!stk.isEmpty()) {
+                        var elem = stk.pop(); 
+                        int i = elem[0], j = elem[1]; 
+                        int[][] d = new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}}; 
+                        for (int k = 0; k < 4; ++k) {
+                            vals[k].add(new int[]{i*d[k][0], j*d[k][1]}); 
+                            vals[k+4].add(new int[]{j*d[k][0], i*d[k][1]}); 
+                        }
+                        for (int k = 0; k < 4; ++k) {
+                            int ii = i + dir[k], jj = j + dir[k+1]; 
+                            if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj] == 1) {
+                                grid[ii][jj] = 0; 
+                                stk.add(new int[]{ii, jj}); 
+                            }
+                        }
+                    }
+                    boolean found = false; 
+                    Set<String> temp = new HashSet(); 
+                    for (int k = 0; k < 8; ++k) {
+                        int mx = Integer.MAX_VALUE, my = Integer.MAX_VALUE; 
+                        for (var elem : vals[k]) {
+                            mx = Math.min(mx, elem[0]); 
+                            my = Math.min(my, elem[1]); 
+                        }
+                        for (int i = 0; i < vals[k].size(); ++i) {
+                            vals[k].get(i)[0] -= mx; 
+                            vals[k].get(i)[1] -= my; 
+                        }
+                        Collections.sort(vals[k], (a, b) -> (a[0] != b[0] ? Integer.compare(a[0], b[0]) : Integer.compare(a[1], b[1]))); 
+                        StringBuilder sb = new StringBuilder(); 
+                        for (var elem : vals[k]) 
+                            sb.append(elem[0] + "," + elem[1] + ";"); 
+                        String key = sb.toString(); 
+                        if (seen.contains(key)) {
+                            found = true; 
+                            break; 
+                        }
+                        temp.add(key); 
+                    }
+                    if (!found) {
+                        ++ans; 
+                        for (var v : temp) seen.add(v); 
+                    }
+                }
+        return ans; 
+    }
+
+
     /*727. Minimum Window Subsequence (Hard)
     Given strings s1 and s2, return the minimum contiguous substring part of s1, 
     so that s2 is a subsequence of the part. If there is no such window in s1 

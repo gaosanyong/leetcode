@@ -17708,6 +17708,65 @@ class Solution:
         return "".join(s)
 
 
+    """711. Number of Distinct Islands II (Hard)
+    You are given an m x n binary matrix grid. An island is a group of 1's 
+    (representing land) connected 4-directionally (horizontal or vertical.) You 
+    may assume all four edges of the grid are surrounded by water. An island is 
+    considered to be the same as another if they have the same shape, or have 
+    the same shape after rotation (90, 180, or 270 degrees only) or reflection 
+    (left/right direction or up/down direction). Return the number of distinct 
+    islands.
+
+    Example 1:
+    Input: grid = [[1,1,0,0,0],[1,0,0,0,0],[0,0,0,0,1],[0,0,0,1,1]]
+    Output: 1
+    Explanation: The two islands are considered the same because if we make a 
+                 180 degrees clockwise rotation on the first island, then two 
+                 islands will have the same shapes.
+    
+    Example 2:
+    Input: grid = [[1,1,0,0,0],[1,1,0,0,0],[0,0,0,1,1],[0,0,0,1,1]]
+    Output: 1
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 50
+    * grid[i][j] is either 0 or 1."""
+
+    def numDistinctIslands2(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        ans = 0 
+        seen = set()
+        for r in range(m): 
+            for c in range(n): 
+                if grid[r][c]: 
+                    vals = [[] for _ in range(8)]
+                    grid[r][c] = 0 
+                    stack = [(r, c)]
+                    while stack: 
+                        i, j = stack.pop()
+                        for k, (x, y) in enumerate(((1, 1), (1, -1), (-1, 1), (-1, -1)), 0): 
+                            vals[k].append([i*x, j*y])
+                            vals[k+4].append([j*x, i*y])
+                        for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                            if 0 <= ii < m and 0 <= jj < n and grid[ii][jj]: 
+                                grid[ii][jj] = 0 
+                                stack.append((ii, jj))
+                    temp = set()
+                    for k in range(8): 
+                        mx = min(x for x, _ in vals[k])
+                        my = min(y for _, y in vals[k])
+                        vals[k] = [[x-mx, y-my] for x, y in vals[k]]
+                        key = tuple(tuple(v) for v in sorted(vals[k]))
+                        if key in seen: break 
+                        temp.add(key)
+                    else: 
+                        ans += 1
+                        seen |= temp 
+        return ans 
+
+
     """713. Subarray Product Less Than K (Medium)
     Given an array of integers nums and an integer k, return the number of 
     contiguous subarrays where the product of all the elements in the subarray 
