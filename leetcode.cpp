@@ -59861,6 +59861,174 @@ public:
         fn(r, c, 1); 
         return board; 
     }
+
+
+    /*2670. Find the Distinct Difference Array (Easy)
+    You are given a 0-indexed array nums of length n. The distinct difference 
+    array of nums is an array diff of length n such that diff[i] is equal to 
+    the number of distinct elements in the suffix nums[i + 1, ..., n - 1] 
+    subtracted from the number of distinct elements in the prefix 
+    nums[0, ..., i]. Return the distinct difference array of nums. Note that 
+    nums[i, ..., j] denotes the subarray of nums starting at index i and 
+    ending at index j inclusive. Particularly, if i > j then nums[i, ..., j] 
+    denotes an empty subarray.
+
+    Example 1:
+    Input: nums = [1,2,3,4,5]
+    Output: [-3,-1,1,3,5]
+    Explanation: - For index i = 0, there is 1 element in the prefix and 4 
+                   distinct elements in the suffix. Thus, diff[0] = 1 - 4 = -3.
+                 - For index i = 1, there are 2 distinct elements in the prefix 
+                   and 3 distinct elements in the suffix. Thus, 
+                   diff[1] = 2 - 3 = -1.
+                 - For index i = 2, there are 3 distinct elements in the prefix 
+                   and 2 distinct elements in the suffix. Thus, 
+                   diff[2] = 3 - 2 = 1.
+                 - For index i = 3, there are 4 distinct elements in the prefix 
+                   and 1 distinct element in the suffix. Thus, 
+                   diff[3] = 4 - 1 = 3.
+                 - For index i = 4, there are 5 distinct elements in the prefix 
+                   and no elements in the suffix. Thus, diff[4] = 5 - 0 = 5.
+    
+    Example 2:
+    Input: nums = [3,2,3,4,2]
+    Output: [-2,-1,0,2,3]
+    Explanation: - For index i = 0, there is 1 element in the prefix and 3 
+                   distinct elements in the suffix. Thus, diff[0] = 1 - 3 = -2.
+                 - For index i = 1, there are 2 distinct elements in the prefix 
+                   and 3 distinct elements in the suffix. Thus, 
+                   diff[1] = 2 - 3 = -1.
+                 - For index i = 2, there are 2 distinct elements in the prefix 
+                   and 2 distinct elements in the suffix. Thus, 
+                   diff[2] = 2 - 2 = 0.
+                 - For index i = 3, there are 3 distinct elements in the prefix 
+                   and 1 distinct element in the suffix. Thus, 
+                   diff[3] = 3 - 1 = 2.
+                 - For index i = 4, there are 3 distinct elements in the prefix 
+                   and no elements in the suffix. Thus, diff[4] = 3 - 0 = 3.
+
+    Constraints:
+    * 1 <= n == nums.length <= 50
+    * 1 <= nums[i] <= 50*/
+
+    vector<int> distinctDifferenceArray(vector<int>& nums) {
+        vector<int> ans; 
+        unordered_set<int> prefix; 
+        unordered_map<int, int> suffix; 
+        for (auto& x : nums) ++suffix[x]; 
+        for (auto& x : nums) {
+            prefix.insert(x); 
+            if (--suffix[x] == 0) suffix.erase(x); 
+            ans.push_back(prefix.size() - suffix.size()); 
+        }
+        return ans; 
+    }
+
+
+    /*2672. Number of Adjacent Elements With the Same Color (Medium)
+    There is a 0-indexed array nums of length n. Initially, all elements are 
+    uncolored (has a value of 0). You are given a 2D integer array queries 
+    where queries[i] = [indexi, colori]. For each query, you color the index 
+    indexi with the color colori in the array nums. Return an array answer of 
+    the same length as queries where answer[i] is the number of adjacent 
+    elements with the same color after the ith query. More formally, answer[i] 
+    is the number of indices j, such that 0 <= j < n - 1 and 
+    nums[j] == nums[j + 1] and nums[j] != 0 after the ith query.
+
+    Example 1:
+    Input: n = 4, queries = [[0,2],[1,2],[3,1],[1,1],[2,1]]
+    Output: [0,1,1,0,2]
+    Explanation: Initially array nums = [0,0,0,0], where 0 denotes uncolored 
+                 elements of the array.
+                 - After the 1st query nums = [2,0,0,0]. The count of adjacent 
+                   elements with the same color is 0.
+                 - After the 2nd query nums = [2,2,0,0]. The count of adjacent 
+                   elements with the same color is 1.
+                 - After the 3rd query nums = [2,2,0,1]. The count of adjacent 
+                   elements with the same color is 1.
+                 - After the 4th query nums = [2,1,0,1]. The count of adjacent 
+                   elements with the same color is 0.
+                 - After the 5th query nums = [2,1,1,1]. The count of adjacent 
+                   elements with the same color is 2.
+    
+    Example 2:
+    Input: n = 1, queries = [[0,100000]]
+    Output: [0]
+    Explanation: Initially array nums = [0], where 0 denotes uncolored elements 
+                 of the array.
+                 - After the 1st query nums = [100000]. The count of adjacent 
+                   elements with the same color is 0.
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * 1 <= queries.length <= 10^5
+    * queries[i].length == 2
+    * 0 <= indexi <= n - 1
+    * 1 <=  colori <= 10^5*/
+
+    vector<int> colorTheArray(int n, vector<vector<int>>& queries) {
+        vector<int> ans, nums(n); 
+        int cnt = 0;
+        for (auto& q : queries) {
+            int i = q[0], x = q[1]; 
+            if (i && nums[i] && nums[i-1] == nums[i]) --cnt; 
+            if (i+1 < n && nums[i] && nums[i] == nums[i+1]) --cnt; 
+            nums[i] = x; 
+            if (i && nums[i] && nums[i-1] == nums[i]) ++cnt; 
+            if (i+1 < n && nums[i] == nums[i+1]) ++cnt; 
+            ans.push_back(cnt); 
+        }
+        return ans; 
+    }
+
+
+    /*2673. Make Costs of Paths Equal in a Binary Tree (Medium)
+    You are given an integer n representing the number of nodes in a perfect 
+    binary tree consisting of nodes numbered from 1 to n. The root of the tree 
+    is node 1 and each node i in the tree has two children where the left child 
+    is the node 2 * i and the right child is 2 * i + 1. Each node in the tree 
+    also has a cost represented by a given 0-indexed integer array cost of size 
+    n where cost[i] is the cost of node i + 1. You are allowed to increment the 
+    cost of any node by 1 any number of times. Return the minimum number of 
+    increments you need to make the cost of paths from the root to each leaf 
+    node equal.
+
+    Note:
+    * A perfect binary tree is a tree where each node, except the leaf nodes, 
+      has exactly 2 children.
+    * The cost of a path is the sum of costs of nodes in the path.
+
+    Example 1:
+    Input: n = 7, cost = [1,5,2,2,3,3,1]
+    Output: 6
+    Explanation: We can do the following increments:
+                 - Increase the cost of node 4 one time.
+                 - Increase the cost of node 3 three times.
+                 - Increase the cost of node 7 two times.
+                 Each path from the root to a leaf will have a total cost of 9.
+                 The total increments we did is 1 + 3 + 2 = 6. It can be shown 
+                 that this is the minimum answer we can achieve.
+    
+    Example 2:
+    Input: n = 3, cost = [5,3,3]
+    Output: 0
+    Explanation: The two paths already have equal total costs, so no increments 
+                 are needed.
+
+    Constraints:
+    * 3 <= n <= 10^5
+    * n + 1 is a power of 2
+    * cost.length == n
+    * 1 <= cost[i] <= 10^4*/
+
+    int minIncrements(int n, vector<int>& cost) {
+        int ans = 0; 
+        for (int i = n/2-1; i >= 0; --i) {
+            ans += abs(cost[2*i+1] - cost[2*i+2]); 
+            cost[i] += max(cost[2*i+1], cost[2*i+2]); 
+        }
+        return ans; 
+    }
 };
 
 
@@ -63508,5 +63676,77 @@ public:
                 }
         }
         return -1; 
+    }
+};
+
+
+/*2671. Frequency Tracker (Medium)
+Design a data structure that keeps track of the values in it and answers some 
+queries regarding their frequencies. Implement the FrequencyTracker class.
+* FrequencyTracker(): Initializes the FrequencyTracker object with an empty 
+  array initially.
+* void add(int number): Adds number to the data structure.
+* void deleteOne(int number): Deletes one occurence of number from the data 
+  structure. The data structure may not contain number, and in this case 
+  nothing is deleted.
+* bool hasFrequency(int frequency): Returns true if there is a number in the 
+  data structure that occurs frequency number of times, otherwise, it returns 
+  false.
+
+Example 1:
+Input: ["FrequencyTracker", "add", "add", "hasFrequency"]
+       [[], [3], [3], [2]]
+Output: [null, null, null, true]
+Explanation
+FrequencyTracker frequencyTracker = new FrequencyTracker();
+frequencyTracker.add(3); // The data structure now contains [3]
+frequencyTracker.add(3); // The data structure now contains [3, 3]
+frequencyTracker.hasFrequency(2); // Returns true, because 3 occurs twice
+
+Example 2:
+Input: ["FrequencyTracker", "add", "deleteOne", "hasFrequency"]
+       [[], [1], [1], [1]]
+Output: [null, null, null, false]
+Explanation
+FrequencyTracker frequencyTracker = new FrequencyTracker();
+frequencyTracker.add(1); // The data structure now contains [1]
+frequencyTracker.deleteOne(1); // The data structure becomes empty []
+frequencyTracker.hasFrequency(1); // Returns false, because the data structure is empty
+
+Example 3:
+Input: ["FrequencyTracker", "hasFrequency", "add", "hasFrequency"]
+       [[], [2], [3], [1]]
+Output: [null, false, null, true]
+Explanation
+FrequencyTracker frequencyTracker = new FrequencyTracker();
+frequencyTracker.hasFrequency(2); // Returns false, because the data structure is empty
+frequencyTracker.add(3); // The data structure now contains [3]
+frequencyTracker.hasFrequency(1); // Returns true, because 3 occurs once
+
+Constraints:
+* 1 <= number <= 10^5
+* 1 <= frequency <= 10^5
+* At most, 2 * 10^5 calls will be made to add, deleteOne, and hasFrequency in total.*/
+
+class FrequencyTracker {
+    unordered_map<int, int> freq; 
+    unordered_map<int, unordered_set<int>> group; 
+public:
+    FrequencyTracker() {}
+    
+    void add(int number) {
+        if (freq[number]) group[freq[number]].erase(number); 
+        group[++freq[number]].insert(number); 
+    }
+    
+    void deleteOne(int number) {
+        if (freq[number]) {
+            group[freq[number]].erase(number); 
+            if (--freq[number]) group[freq[number]].insert(number); 
+        }
+    }
+    
+    bool hasFrequency(int frequency) {
+        return group[frequency].size(); 
     }
 };
