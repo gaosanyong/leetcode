@@ -79753,6 +79753,187 @@ class SegTreeLazy:
         return ans 
 
 
+    """2778. Sum of Squares of Special Elements (Easy)
+    You are given a 1-indexed integer array nums of length n. An element nums[i] 
+    of nums is called special if i divides n, i.e. n % i == 0. Return the sum 
+    of the squares of all special elements of nums.
+
+    Example 1:
+    Input: nums = [1,2,3,4]
+    Output: 21
+    Explanation: There are exactly 3 special elements in nums: nums[1] since 1 
+                 divides 4, nums[2] since 2 divides 4, and nums[4] since 4 
+                 divides 4. Hence, the sum of the squares of all special 
+                 elements of nums is 
+                 nums[1] * nums[1] + nums[2] * nums[2] + nums[4] * nums[4] = 
+                 1 * 1 + 2 * 2 + 4 * 4 = 21.  
+    
+    Example 2:
+    Input: nums = [2,7,1,19,18,3]
+    Output: 63
+    Explanation: There are exactly 4 special elements in nums: nums[1] since 1 
+                 divides 6, nums[2] since 2 divides 6, nums[3] since 3 divides 
+                 6, and nums[6] since 6 divides 6. Hence, the sum of the 
+                 squares of all special elements of nums is 
+                 nums[1] * nums[1] + nums[2] * nums[2] + nums[3] * nums[3] + 
+                 nums[6] * nums[6] = 2 * 2 + 7 * 7 + 1 * 1 + 3 * 3 = 63. 
+
+    Constraints:
+    * 1 <= nums.length == n <= 50
+    * 1 <= nums[i] <= 50"""
+
+    def sumOfSquares(self, nums: List[int]) -> int:
+        ans = 0 
+        for i, x in enumerate(nums, 1): 
+            if len(nums) % i == 0: ans += x*x
+        return ans 
+
+
+    """2779. Maximum Beauty of an Array After Applying Operation (Medium)
+    You are given a 0-indexed array nums and a non-negative integer k. In one 
+    operation, you can do the following:
+    * Choose an index i that hasn't been chosen before from the range 
+      [0, nums.length - 1].
+    * Replace nums[i] with any integer from the range 
+      [nums[i] - k, nums[i] + k].
+    The beauty of the array is the length of the longest subsequence consisting 
+    of equal elements. Return the maximum possible beauty of the array nums 
+    after applying the operation any number of times. Note that you can apply 
+    the operation to each index only once. A subsequence of an array is a new 
+    array generated from the original array by deleting some elements (possibly 
+    none) without changing the order of the remaining elements.
+
+    Example 1:
+    Input: nums = [4,6,1,2], k = 2
+    Output: 3
+    Explanation: In this example, we apply the following operations:
+                 - Choose index 1, replace it with 4 (from range [4,8]), 
+                   nums = [4,4,1,2].
+                 - Choose index 3, replace it with 4 (from range [0,4]), 
+                   nums = [4,4,1,4].
+                 After the applied operations, the beauty of the array nums is 
+                 3 (subsequence consisting of indices 0, 1, and 3). It can be 
+                 proven that 3 is the maximum possible length we can achieve.
+    
+    Example 2:
+    Input: nums = [1,1,1,1], k = 10
+    Output: 4
+    Explanation: In this example we don't have to apply any operations. The 
+                 beauty of the array nums is 4 (whole array).
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i], k <= 10^5"""
+
+    def maximumBeauty(self, nums: List[int], k: int) -> int:
+        nums.sort()
+        ii = 0 
+        for i, x in enumerate(nums): 
+            if x - nums[ii] > 2*k: ii += 1
+        return i - ii + 1
+
+
+    """2780. Minimum Index of a Valid Split (Medium)
+    An element x of an integer array arr of length m is dominant if 
+    freq(x) * 2 > m, where freq(x) is the number of occurrences of x in arr. 
+    Note that this definition implies that arr can have at most one dominant 
+    element. You are given a 0-indexed integer array nums of length n with one 
+    dominant element. You can split nums at an index i into two arrays 
+    nums[0, ..., i] and nums[i + 1, ..., n - 1], but the split is only valid if:
+    * 0 <= i < n - 1
+    * nums[0, ..., i], and nums[i + 1, ..., n - 1] have the same dominant 
+      element.
+    Here, nums[i, ..., j] denotes the subarray of nums starting at index i and 
+    ending at index j, both ends being inclusive. Particularly, if j < i then 
+    nums[i, ..., j] denotes an empty subarray. Return the minimum index of a 
+    valid split. If no valid split exists, return -1.
+
+    Example 1:
+    Input: nums = [1,2,2,2]
+    Output: 2
+    Explanation: We can split the array at index 2 to obtain arrays [1,2,2] and 
+                 [2]. In array [1,2,2], element 2 is dominant since it occurs 
+                 twice in the array and 2 * 2 > 3. In array [2], element 2 is 
+                 dominant since it occurs once in the array and 1 * 2 > 1. Both 
+                 [1,2,2] and [2] have the same dominant element as nums, so 
+                 this is a valid split. It can be shown that index 2 is the 
+                 minimum index of a valid split. 
+    
+    Example 2:
+    Input: nums = [2,1,3,1,1,1,7,1,2,1]
+    Output: 4
+    Explanation: We can split the array at index 4 to obtain arrays [2,1,3,1,1] 
+                 and [1,7,1,2,1]. In array [2,1,3,1,1], element 1 is dominant 
+                 since it occurs thrice in the array and 3 * 2 > 5. In array 
+                 [1,7,1,2,1], element 1 is dominant since it occurs thrice in 
+                 the array and 3 * 2 > 5. Both [2,1,3,1,1] and [1,7,1,2,1] have 
+                 the same dominant element as nums, so this is a valid split. 
+                 It can be shown that index 4 is the minimum index of a valid 
+                 split.
+    
+    Example 3:
+    Input: nums = [3,3,3,3,7,2,2]
+    Output: -1
+    Explanation: It can be shown that there is no valid split.
+     
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9
+    * nums has exactly one dominant element."""
+
+    def minimumIndex(self, nums: List[int]) -> int:
+        freq = Counter(nums)
+        k, v = max(freq.items(), key=lambda x: x[1])
+        prefix = 0 
+        for i, x in enumerate(nums): 
+            if x == k: prefix += 1
+            if i < len(nums)-1 and prefix*2 > i+1 and (v-prefix)*2 > len(nums)-i-1: return i 
+        return -1 
+
+
+    """2781. Length of the Longest Valid Substring (Hard)
+    You are given a string word and an array of strings forbidden. A string is 
+    called valid if none of its substrings are present in forbidden. Return the 
+    length of the longest valid substring of the string word. A substring is a 
+    contiguous sequence of characters in a string, possibly empty.
+
+    Example 1:
+    Input: word = "cbaaaabc", forbidden = ["aaa","cb"]
+    Output: 4
+    Explanation: There are 9 valid substrings in word: "c", "b", "a", "ba", 
+                 "aa", "bc", "baa", "aab", and "aabc". The length of the 
+                 longest valid substring is 4. It can be shown that all other 
+                 substrings contain either "aaa" or "cb" as a substring. 
+    
+    Example 2:
+    Input: word = "leetcode", forbidden = ["de","le","e"]
+    Output: 4
+    Explanation: There are 11 valid substrings in word: "l", "t", "c", "o", 
+                 "d", "tc", "co", "od", "tco", "cod", and "tcod". The length of 
+                 the longest valid substring is 4. It can be shown that all 
+                 other substrings contain either "de", "le", or "e" as a 
+                 substring. 
+
+    Constraints:
+    * 1 <= word.length <= 10^5
+    * word consists only of lowercase English letters.
+    * 1 <= forbidden.length <= 10^5
+    * 1 <= forbidden[i].length <= 10
+    * forbidden[i] consists only of lowercase English letters."""
+
+    def longestValidSubstring(self, word: str, forbidden: List[str]) -> int:
+        forbidden = set(forbidden)
+        ans = val = 0
+        for i in range(len(word)-1, -1, -1): 
+            val += 1
+            for k in range(min(10, val)): 
+                if word[i:i+k+1] in forbidden: 
+                    val = k
+                    break 
+            ans = max(ans, val)
+        return ans
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
