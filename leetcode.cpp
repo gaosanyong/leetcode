@@ -60031,6 +60031,200 @@ public:
     }
 
 
+    /*2769. Find the Maximum Achievable Number (Easy)
+    You are given two integers, num and t. An integer x is called achievable if 
+    it can become equal to num after applying the following operation no more 
+    than t times:
+    * Increase or decrease x by 1, and simultaneously increase or decrease num 
+      by 1.
+    Return the maximum possible achievable number. It can be proven that there 
+    exists at least one achievable number.
+
+    Example 1:
+    Input: num = 4, t = 1
+    Output: 6
+    Explanation: The maximum achievable number is x = 6; it can become equal to 
+                 num after performing this operation:
+                 * 1- Decrease x by 1, and increase num by 1. Now, x = 5 and 
+                 num = 5. 
+                 It can be proven that there is no achievable number larger 
+                 than 6.
+
+    Example 2:
+    Input: num = 3, t = 2
+    Output: 7
+    Explanation: The maximum achievable number is x = 7; after performing these 
+                 operations, x will equal num: 
+                 * 1- Decrease x by 1, and increase num by 1. Now, x = 6 and 
+                   num = 4.
+                 * 2- Decrease x by 1, and increase num by 1. Now, x = 5 and 
+                   num = 5.
+                 It can be proven that there is no achievable number larger 
+                 than 7.
+
+    Constraints: 1 <= num, t <= 50*/
+
+    int theMaximumAchievableX(int num, int t) {
+        return num + 2*t; 
+    }
+
+
+    /*2770. Maximum Number of Jumps to Reach the Last Index (Medium)
+    You are given a 0-indexed array nums of n integers and an integer target. 
+    You are initially positioned at index 0. In one step, you can jump from 
+    index i to any index j such that:
+    * 0 <= i < j < n
+    * -target <= nums[j] - nums[i] <= target
+    Return the maximum number of jumps you can make to reach index n - 1. If 
+    there is no way to reach index n - 1, return -1.
+
+    Example 1:
+    Input: nums = [1,3,6,4,1,2], target = 2
+    Output: 3
+    Explanation: To go from index 0 to index n - 1 with the maximum number of 
+                 jumps, you can perform the following jumping sequence:
+                 - Jump from index 0 to index 1. 
+                 - Jump from index 1 to index 3.
+                 - Jump from index 3 to index 5.
+                 It can be proven that there is no other jumping sequence that 
+                 goes from 0 to n - 1 with more than 3 jumps. Hence, the answer 
+                 is 3. 
+    
+    Example 2:
+    Input: nums = [1,3,6,4,1,2], target = 3
+    Output: 5
+    Explanation: To go from index 0 to index n - 1 with the maximum number of 
+                 jumps, you can perform the following jumping sequence:
+                 - Jump from index 0 to index 1.
+                 - Jump from index 1 to index 2.
+                 - Jump from index 2 to index 3.
+                 - Jump from index 3 to index 4.
+                 - Jump from index 4 to index 5.
+                 It can be proven that there is no other jumping sequence that 
+                 goes from 0 to n - 1 with more than 5 jumps. Hence, the answer 
+                 is 5. 
+    
+    Example 3:
+    Input: nums = [1,3,6,4,1,2], target = 0
+    Output: -1
+    Explanation: It can be proven that there is no jumping sequence that goes 
+                 from 0 to n - 1. Hence, the answer is -1. 
+
+    Constraints:
+    * 2 <= nums.length == n <= 1000
+    * -10^9 <= nums[i] <= 10^9
+    * 0 <= target <= 2 * 10^9*/
+
+    int maximumJumps(vector<int>& nums, int target) {
+        int n = nums.size(); 
+        vector<int> dp(n, -1); 
+        dp[n-1] = 0; 
+        for (int i = n-2; i >= 0; --i) {
+            for (int j = i+1; j < n; ++j) {
+                if (dp[j] != -1 && abs(nums[i] - nums[j]) <= target) 
+                    dp[i] = max(dp[i], 1 + dp[j]); 
+            }
+        }
+        return dp[0];
+    }
+
+
+    /*2771. Longest Non-decreasing Subarray From Two Arrays (Medium)
+    You are given two 0-indexed integer arrays nums1 and nums2 of length n. 
+    Let's define another 0-indexed integer array, nums3, of length n. For each 
+    index i in the range [0, n - 1], you can assign either nums1[i] or nums2[i] 
+    to nums3[i]. Your task is to maximize the length of the longest non-
+    decreasing subarray in nums3 by choosing its values optimally. Return an 
+    integer representing the length of the longest non-decreasing subarray in 
+    nums3. Note: A subarray is a contiguous non-empty sequence of elements 
+    within an array.
+
+    Example 1:
+    Input: nums1 = [2,3,1], nums2 = [1,2,1]
+    Output: 2
+    Explanation: One way to construct nums3 is: 
+                 nums3 = [nums1[0], nums2[1], nums2[2]] => [2,2,1]. 
+                 The subarray starting from index 0 and ending at index 1, 
+                 [2,2], forms a non-decreasing subarray of length 2. We can 
+                 show that 2 is the maximum achievable length.
+    
+    Example 2:
+    Input: nums1 = [1,3,2,1], nums2 = [2,2,3,4]
+    Output: 4
+    Explanation: One way to construct nums3 is: 
+                 nums3 = [nums1[0], nums2[1], nums2[2], nums2[3]] => [1,2,3,4]. 
+                 The entire array forms a non-decreasing subarray of length 4, 
+                 making it the maximum achievable length.
+    
+    Example 3:
+    Input: nums1 = [1,1], nums2 = [2,2]
+    Output: 2
+    Explanation: One way to construct nums3 is: 
+                 nums3 = [nums1[0], nums1[1]] => [1,1]. 
+                 The entire array forms a non-decreasing subarray of length 2, 
+                 making it the maximum achievable length.
+
+    Constraints:
+    * 1 <= nums1.length == nums2.length == n <= 10^5
+    * 1 <= nums1[i], nums2[i] <= 10^9*/
+
+    int maxNonDecreasingLength(vector<int>& nums1, vector<int>& nums2) {
+        int ans = 0, dp1 = 1, dp2 = 1; 
+        for (int i = 0; i < nums1.size(); ++i) {
+            int dp11 = 1, dp12 = 1, dp21 = 1, dp22 = 1; 
+            if (i && nums1[i-1] <= nums1[i]) dp11 += dp1; 
+            if (i && nums2[i-1] <= nums1[i]) dp21 += dp2; 
+            if (i && nums1[i-1] <= nums2[i]) dp12 += dp1; 
+            if (i && nums2[i-1] <= nums2[i]) dp22 += dp2; 
+            dp1 = max(dp11, dp21); 
+            dp2 = max(dp12, dp22); 
+            ans = max({ans, dp1, dp2}); 
+        }
+        return ans; 
+    }
+
+
+    /*2772. Apply Operations to Make All Array Elements Equal to Zero (Medium)
+    You are given a 0-indexed integer array nums and a positive integer k. You 
+    can apply the following operation on the array any number of times:
+    * Choose any subarray of size k from the array and decrease all its 
+      elements by 1.
+    Return true if you can make all the array elements equal to 0, or false 
+    otherwise. A subarray is a contiguous non-empty part of an array.
+
+    Example 1:
+    Input: nums = [2,2,3,1,1,0], k = 3
+    Output: true
+    Explanation: We can do the following operations:
+                 - Choose the subarray [2,2,3]. The resulting array will be 
+                   nums = [1,1,2,1,1,0].
+                 - Choose the subarray [2,1,1]. The resulting array will be 
+                   nums = [1,1,1,0,0,0].
+                 - Choose the subarray [1,1,1]. The resulting array will be 
+                   nums = [0,0,0,0,0,0].
+    
+    Example 2:
+    Input: nums = [1,3,1,1], k = 2
+    Output: false
+    Explanation: It is not possible to make all the array elements equal to 0.
+
+    Constraints:
+    * 1 <= k <= nums.length <= 10^5
+    * 0 <= nums[i] <= 10^6*/
+
+    bool checkArray(vector<int>& nums, int k) {
+        int prefix = 0; 
+        for (int i = 0; i < nums.size(); ++i) {
+            if (prefix > nums[i]) return false; 
+            int temp = nums[i]; 
+            nums[i] -= prefix; 
+            prefix = temp; 
+            if (i >= k-1) prefix -= nums[i-k+1]; 
+        }
+        return prefix == 0; 
+    }
+
+
     /*2778. Sum of Squares of Special Elements (Easy)
     You are given a 1-indexed integer array nums of length n. An element nums[i] 
     of nums is called special if i divides n, i.e. n % i == 0. Return the sum 
