@@ -60412,6 +60412,193 @@ public:
         }
         return ans; 
     }
+
+
+    /*2784. Check if Array is Good (Easy)
+    You are given an integer array nums. We consider an array good if it is a 
+    permutation of an array base[n]. base[n] = [1, 2, ..., n - 1, n, n] (in 
+    other words, it is an array of length n + 1 which contains 1 to n - 1 
+    exactly once, plus two occurrences of n). For example, base[1] = [1, 1] and 
+    base[3] = [1, 2, 3, 3]. Return true if the given array is good, otherwise 
+    return false. Note: A permutation of integers represents an arrangement of 
+    these numbers.
+
+    Example 1:
+    Input: nums = [2, 1, 3]
+    Output: false
+    Explanation: Since the maximum element of the array is 3, the only 
+                 candidate n for which this array could be a permutation of 
+                 base[n], is n = 3. However, base[3] has four elements but 
+                 array nums has three. Therefore, it can not be a permutation 
+                 of base[3] = [1, 2, 3, 3]. So the answer is false.
+    
+    Example 2:
+    Input: nums = [1, 3, 3, 2]
+    Output: true
+    Explanation: Since the maximum element of the array is 3, the only 
+                 candidate n for which this array could be a permutation of 
+                 base[n], is n = 3. It can be seen that nums is a permutation 
+                 of base[3] = [1, 2, 3, 3] (by swapping the second and fourth 
+                 elements in nums, we reach base[3]). Therefore, the answer is 
+                 true.
+    
+    Example 3:
+    Input: nums = [1, 1]
+    Output: true
+    Explanation: Since the maximum element of the array is 1, the only 
+                 candidate n for which this array could be a permutation of 
+                 base[n], is n = 1. It can be seen that nums is a permutation 
+                 of base[1] = [1, 1]. Therefore, the answer is true.
+    
+    Example 4:
+    Input: nums = [3, 4, 4, 1, 2, 1]
+    Output: false
+    Explanation: Since the maximum element of the array is 4, the only 
+                 candidate n for which this array could be a permutation of 
+                 base[n], is n = 4. However, base[4] has five elements but 
+                 array nums has six. Therefore, it can not be a permutation of 
+                 base[4] = [1, 2, 3, 4, 4]. So the answer is false.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * 1 <= num[i] <= 200*/
+
+    bool isGood(vector<int>& nums) {
+        int n = nums.size()-1, cnt = 0; 
+        for (int i = 0; i <= n && cnt <= n; ) 
+            if (nums[i] == i+1 || i == n && nums[n] == n) ++i; 
+            else {
+                if (nums[i] < 0 || nums[i] > n) return false; 
+                int ii = nums[i]-1; 
+                if (nums[i] == n && nums[n] != n) ii = n; 
+                swap(nums[i], nums[ii]); 
+                ++cnt; 
+            }
+        return n && cnt <= n; 
+    }
+
+
+    /*2785. Sort Vowels in a String (Medium)
+    Given a 0-indexed string s, permute s to get a new string t such that:
+    * All consonants remain in their original places. More formally, if there 
+      is an index i with 0 <= i < s.length such that s[i] is a consonant, then 
+      t[i] = s[i].
+    * The vowels must be sorted in the nondecreasing order of their ASCII 
+      values. More formally, for pairs of indices i, j with 
+      0 <= i < j < s.length such that s[i] and s[j] are vowels, then t[i] must 
+      not have a higher ASCII value than t[j].
+    Return the resulting string. The vowels are 'a', 'e', 'i', 'o', and 'u', 
+    and they can appear in lowercase or uppercase. Consonants comprise all 
+    letters that are not vowels.
+
+    Example 1:
+    Input: s = "lEetcOde"
+    Output: "lEOtcede"
+    Explanation: 'E', 'O', and 'e' are the vowels in s; 'l', 't', 'c', and 'd' 
+                 are all consonants. The vowels are sorted according to their 
+                 ASCII values, and the consonants remain in the same places.
+    
+    Example 2:
+    Input: s = "lYmpH"
+    Output: "lYmpH"
+    Explanation: There are no vowels in s (all characters in s are consonants), 
+                 so we return "lYmpH".
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s consists only of letters of the English alphabet in uppercase and 
+      lowercase.*/
+
+    string sortVowels(string s) {
+        string vowels; 
+        copy_if(begin(s), end(s), back_inserter(vowels), [&](auto& ch) {
+            return string("aeiouAEIOU").find(ch) != string::npos; 
+        }); 
+        sort(begin(vowels), end(vowels)); 
+        int i = 0; 
+        string ans; 
+        for (auto& ch : s) 
+            if (string("aeiouAEIOU").find(ch) != string::npos) ans.push_back(vowels[i++]); 
+            else ans.push_back(ch); 
+        return ans; 
+    }
+
+
+    /*2786. Visit Array Positions to Maximize Score (Medium)
+    You are given a 0-indexed integer array nums and a positive integer x. You 
+    are initially at position 0 in the array and you can visit other positions 
+    according to the following rules:
+    * If you are currently in position i, then you can move to any position j 
+      such that i < j.
+    * For each position i that you visit, you get a score of nums[i].
+    * If you move from a position i to a position j and the parities of nums[i] 
+      and nums[j] differ, then you lose a score of x.
+    Return the maximum total score you can get. Note that initially you have 
+    nums[0] points.
+
+    Example 1:
+    Input: nums = [2,3,6,1,9,2], x = 5
+    Output: 13
+    Explanation: We can visit the following positions in the array: 0 -> 2 -> 
+                 3 -> 4. The corresponding values are 2, 6, 1 and 9. Since the 
+                 integers 6 and 1 have different parities, the move 2 -> 3 will 
+                 make you lose a score of x = 5. The total score will be: 
+                 2 + 6 + 1 + 9 - 5 = 13.
+    
+    Example 2:
+    Input: nums = [2,4,6,8], x = 3
+    Output: 20
+    Explanation: All the integers in the array have the same parities, so we 
+                 can visit all of them without losing any score. The total 
+                 score is: 2 + 4 + 6 + 8 = 20.
+
+    Constraints:
+    * 2 <= nums.length <= 10^5
+    * 1 <= nums[i], x <= 10^6*/
+
+    long long maxScore(vector<int>& nums, int x) {
+        vector<long long> dp(2, -x); 
+        for (int i = 0; i < nums.size(); ++i) 
+            if (i) dp[nums[i]&1] = nums[i] + max(dp[nums[i]&1], dp[nums[i]&1 ^ 1]-x); 
+            else dp[nums[i]&1] = nums[i]; 
+        return *max_element(dp.begin(), dp.end()); 
+    }
+
+
+    /*2787. Ways to Express an Integer as Sum of Powers (Medium)
+    Given two positive integers n and x. Return the number of ways n can be 
+    expressed as the sum of the xth power of unique positive integers, in other 
+    words, the number of sets of unique integers [n1, n2, ..., nk] where 
+    n = n1^x + n2^x + ... + nk^x. Since the result can be very large, return it 
+    modulo 10^9 + 7. For example, if n = 160 and x = 3, one way to express n is 
+    n = 2^3 + 3^3 + 5^3.
+
+    Example 1:
+    Input: n = 10, x = 2
+    Output: 1
+    Explanation: We can express n as the following: n = 32 + 12 = 10. It can be 
+                 shown that it is the only way to express 10 as the sum of the 
+                 2nd power of unique integers.
+    
+    Example 2:
+    Input: n = 4, x = 1
+    Output: 2
+    Explanation: We can express n in the following ways:
+                 - n = 4^1 = 4.
+                 - n = 3^1 + 1^1 = 4.
+
+    Constraints:
+    * 1 <= n <= 300
+    * 1 <= x <= 5*/
+
+    int numberOfWays(int n, int x) {
+        vector<long> dp(n+1); 
+        dp[0] = 1; 
+        for (int k = 1, v = 1; v <= n; v = pow(++k, x)) 
+            for (int i = n; i >= v; --i)
+                dp[i] = (dp[i-v] + dp[i]) % 1'000'000'007; 
+        return dp[n]; 
+    }
 };
 
 
