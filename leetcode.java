@@ -14616,6 +14616,195 @@ class SegTreeLazy {
                 dp[i] = (dp[i-v] + dp[i]) % 1_000_000_007; 
         return (int) dp[n]; 
     }
+
+
+    /*2806. Account Balance After Rounded Purchase (Easy)
+    Initially, you have a bank account balance of 100 dollars. You are given an 
+    integer purchaseAmount representing the amount you will spend on a purchase 
+    in dollars. At the store where you will make the purchase, the purchase 
+    amount is rounded to the nearest multiple of 10. In other words, you pay a 
+    non-negative amount, roundedAmount, such that roundedAmount is a multiple 
+    of 10 and abs(roundedAmount - purchaseAmount) is minimized. If there is 
+    more than one nearest multiple of 10, the largest multiple is chosen. 
+    Return an integer denoting your account balance after making a purchase 
+    worth purchaseAmount dollars from the store. Note: 0 is considered to be a 
+    multiple of 10 in this problem.
+
+    Example 1:
+    Input: purchaseAmount = 9
+    Output: 90
+    Explanation: In this example, the nearest multiple of 10 to 9 is 10. Hence, 
+                 your account balance becomes 100 - 10 = 90.
+    
+    Example 2:
+    Input: purchaseAmount = 15
+    Output: 80
+    Explanation: In this example, there are two nearest multiples of 10 to 15: 
+                 10 and 20. So, the larger multiple, 20, is chosen. Hence, 
+                 your account balance becomes 100 - 20 = 80.
+
+    Constraints: 0 <= purchaseAmount <= 100*/
+
+    public int accountBalanceAfterPurchase(int purchaseAmount) {
+        return 100 - (purchaseAmount+5)/10*10; 
+    }
+
+
+    /*2807. Insert Greatest Common Divisors in Linked List (Medium)
+    Given the head of a linked list head, in which each node contains an 
+    integer value. Between every pair of adjacent nodes, insert a new node with 
+    a value equal to the greatest common divisor of them. Return the linked 
+    list after insertion. The greatest common divisor of two numbers is the 
+    largest positive integer that evenly divides both numbers.
+
+    Example 1:
+    Input: head = [18,6,10,3]
+    Output: [18,6,6,2,10,1,3]
+    Explanation: The 1st diagram denotes the initial linked list and the 2nd 
+                 diagram denotes the linked list after inserting the new nodes 
+                 (nodes in blue are the inserted nodes).
+                 - We insert the greatest common divisor of 18 and 6 = 6 
+                   between the 1st and the 2nd nodes.
+                 - We insert the greatest common divisor of 6 and 10 = 2 
+                   between the 2nd and the 3rd nodes.
+                 - We insert the greatest common divisor of 10 and 3 = 1 
+                   between the 3rd and the 4th nodes.
+                 There are no more adjacent nodes, so we return the linked list.
+    
+    Example 2:
+    Input: head = [7]
+    Output: [7]
+    Explanation: The 1st diagram denotes the initial linked list and the 2nd 
+                 diagram denotes the linked list after inserting the new nodes.
+                 There are no pairs of adjacent nodes, so we return the initial 
+                 linked list.
+
+    Constraints:
+    * The number of nodes in the list is in the range [1, 5000].
+    * 1 <= Node.val <= 1000*/
+
+    public ListNode insertGreatestCommonDivisors(ListNode head) {
+        ListNode node = head; 
+        while (node != null && node.next != null) {
+            ListNode temp = new ListNode(BigInteger.valueOf(node.val).gcd(BigInteger.valueOf(node.next.val)).intValue(), node.next); 
+            node.next = temp; 
+            node = node.next.next; 
+        }
+        return head; 
+    }
+
+
+    /*2808. Minimum Seconds to Equalize a Circular Array (Medium)
+    You are given a 0-indexed array nums containing n integers. At each second, 
+    you perform the following operation on the array:
+    * For every index i in the range [0, n - 1], replace nums[i] with either 
+      nums[i], nums[(i - 1 + n) % n], or nums[(i + 1) % n].
+    Note that all the elements get replaced simultaneously. Return the minimum 
+    number of seconds needed to make all elements in the array nums equal.
+
+    Example 1:
+    Input: nums = [1,2,1,2]
+    Output: 1
+    Explanation: We can equalize the array in 1 second in the following way:
+                 - At 1st second, replace values at each index with 
+                   [nums[3],nums[1],nums[3],nums[3]]. After replacement, 
+                   nums = [2,2,2,2].
+                 It can be proven that 1 second is the minimum amount of 
+                 seconds needed for equalizing the array.
+    
+    Example 2:
+    Input: nums = [2,1,3,3,2]
+    Output: 2
+    Explanation: We can equalize the array in 2 seconds in the following way:
+                 - At 1st second, replace values at each index with 
+                   [nums[0],nums[2],nums[2],nums[2],nums[3]]. After replacement, 
+                   nums = [2,3,3,3,3].
+                 - At 2nd second, replace values at each index with 
+                   [nums[1],nums[1],nums[2],nums[3],nums[4]]. After replacement, 
+                   nums = [3,3,3,3,3].
+                 It can be proven that 2 seconds is the minimum amount of 
+                 seconds needed for equalizing the array.
+    
+    Example 3:
+    Input: nums = [5,5,5,5]
+    Output: 0
+    Explanation: We don't need to perform any operations as all elements in the 
+                 initial array are the same.
+
+    Constraints:
+    * 1 <= n == nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9*/
+
+    public int minimumSeconds(List<Integer> nums) {
+        int ans = Integer.MAX_VALUE, n = nums.size(); 
+        Map<Integer, List<Integer>> pos = new HashMap(); 
+        for (int i = 0; i < n; ++i) {
+            pos.putIfAbsent(nums.get(i), new ArrayList()); 
+            pos.get(nums.get(i)).add(i); 
+        }
+        for (var elem : pos.entrySet()) {
+            int k = elem.getKey(), cand = 0, prev = -1; 
+            List<Integer> v = elem.getValue(); 
+            for (var x : v) {
+                if (prev >= 0) cand = Math.max(cand, x - prev); 
+                prev = x; 
+            }
+            cand = Math.max(cand, v.get(0) + n - v.get(v.size()-1)); 
+            ans = Math.min(ans, cand); 
+        }
+        return ans/2; 
+    }
+
+
+    /*2809. Minimum Time to Make Array Sum At Most x (Hard)
+    You are given two 0-indexed integer arrays nums1 and nums2 of equal length. 
+    Every second, for all indices 0 <= i < nums1.length, value of nums1[i] is 
+    incremented by nums2[i]. After this is done, you can do the following 
+    operation:
+    * Choose an index 0 <= i < nums1.length and make nums1[i] = 0.
+    You are also given an integer x. Return the minimum time in which you can 
+    make the sum of all elements of nums1 to be less than or equal to x, or -1 
+    if this is not possible.
+
+    Example 1:
+    Input: nums1 = [1,2,3], nums2 = [1,2,3], x = 4
+    Output: 3
+    Explanation: For the 1st second, we apply the operation on i = 0. Therefore 
+                 nums1 = [0,2+2,3+3] = [0,4,6]. 
+                 For the 2nd second, we apply the operation on i = 1. Therefore 
+                 nums1 = [0+1,0,6+3] = [1,0,9]. 
+                 For the 3rd second, we apply the operation on i = 2. Therefore 
+                 nums1 = [1+1,0+2,0] = [2,2,0]. 
+                 Now sum of nums1 = 4. It can be shown that these operations 
+                 are optimal, so we return 3.
+
+    Example 2:
+    Input: nums1 = [1,2,3], nums2 = [3,3,3], x = 4
+    Output: -1
+    Explanation: It can be shown that the sum of nums1 will always be greater 
+                 than x, no matter which operations are performed.
+
+    Constraints:
+    * 1 <= nums1.length <= 10^3
+    * 1 <= nums1[i] <= 10^3
+    * 0 <= nums2[i] <= 10^3
+    * nums1.length == nums2.length
+    * 0 <= x <= 10^6*/
+
+    public int minimumTime(List<Integer> nums1, List<Integer> nums2, int x) {
+        int n = nums1.size(), s1 = nums1.stream().mapToInt(i -> i).sum(), s2 = nums2.stream().mapToInt(i -> i).sum(); 
+        List<int[]> aug = new ArrayList(); 
+        for (int i = 0; i < n; ++i)
+            aug.add(new int[]{nums1.get(i), nums2.get(i)}); 
+        Collections.sort(aug, (a, b) -> Integer.compare(a[1], b[1])); 
+        int[][] dp = new int[n+1][n+1]; 
+        for (int i = 1; i <= n; ++i)
+            for (int j = 1; j <= i; ++j)
+                dp[i][j] = Math.max(dp[i-1][j], dp[i-1][j-1] + aug.get(i-1)[1]*j + aug.get(i-1)[0]); 
+        for (int t = 0; t <= n; ++t)
+            if (s1 + s2*t - dp[n][t] <= x) return t; 
+        return -1; 
+    }
 }
 
 
