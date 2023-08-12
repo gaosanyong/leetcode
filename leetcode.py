@@ -80472,6 +80472,261 @@ class SegTreeLazy:
         return -1 
 
 
+    """2810. Faulty Keyboard (Easy)
+    Your laptop keyboard is faulty, and whenever you type a character 'i' on it, 
+    it reverses the string that you have written. Typing other characters works 
+    as expected. You are given a 0-indexed string s, and you type each 
+    character of s using your faulty keyboard. Return the final string that 
+    will be present on your laptop screen.
+
+    Example 1:
+    Input: s = "string"
+    Output: "rtsng"
+    Explanation: - After typing first character, the text on the screen is "s".
+                 - After the second character, the text is "st". 
+                 - After the third character, the text is "str".
+                 - Since the fourth character is an 'i', the text gets reversed 
+                 - and becomes "rts".
+                 - After the fifth character, the text is "rtsn". 
+                 - After the sixth character, the text is "rtsng". 
+                 - Therefore, we return "rtsng".
+    
+    Example 2:
+    Input: s = "poiinter"
+    Output: "ponter"
+    Explanation: - After the first character, the text on the screen is "p".
+                 - After the second character, the text is "po". 
+                 - Since the third character you type is an 'i', the text gets 
+                   reversed and becomes "op". 
+                 - Since the fourth character you type is an 'i', the text gets 
+                   reversed and becomes "po".
+                 - After the fifth character, the text is "pon".
+                 - After the sixth character, the text is "pont". 
+                 - After the seventh character, the text is "ponte". 
+                 - After the eighth character, the text is "ponter". 
+                 - Therefore, we return "ponter".
+
+    Constraints:
+    * 1 <= s.length <= 100
+    * s consists of lowercase English letters.
+    * s[0] != 'i'"""
+
+    def finalString(self, s: str) -> str:
+        ans = deque()
+        flip = False 
+        for ch in s:
+            if ch == 'i': flip = not flip 
+            elif not flip: ans.append(ch)
+            else: ans.appendleft(ch)
+        if flip: ans.reverse()
+        return ''.join(ans)
+
+
+    """2811. Check if it is Possible to Split Array (Medium)
+    You are given an array nums of length n and an integer m. You need to 
+    determine if it is possible to split the array into n non-empty arrays by 
+    performing a series of steps. In each step, you can select an existing 
+    array (which may be the result of previous steps) with a length of at least 
+    two and split it into two subarrays, if, for each resulting subarray, at 
+    least one of the following holds:
+    * The length of the subarray is one, or
+    * The sum of elements of the subarray is greater than or equal to m.
+    Return true if you can split the given array into n arrays, otherwise 
+    return false. Note: A subarray is a contiguous non-empty sequence of 
+    elements within an array.
+
+    Example 1:
+    Input: nums = [2, 2, 1], m = 4
+    Output: true
+    Explanation: We can split the array into [2, 2] and [1] in the first step. 
+                 Then, in the second step, we can split [2, 2] into [2] and [2]. 
+                 As a result, the answer is true.
+    
+    Example 2:
+    Input: nums = [2, 1, 3], m = 5 
+    Output: false
+    Explanation: We can try splitting the array in two different ways: the 
+                 first way is to have [2, 1] and [3], and the second way is to 
+                 have [2] and [1, 3]. However, both of these ways are not valid. 
+                 So, the answer is false.
+    
+    Example 3:
+    Input: nums = [2, 3, 3, 2, 3], m = 6
+    Output: true
+    Explanation: We can split the array into [2, 3, 3, 2] and [3] in the first 
+                 step. Then, in the second step, we can split [2, 3, 3, 2] into 
+                 [2, 3, 3] and [2]. Then, in the third step, we can split 
+                 [2, 3, 3] into [2] and [3, 3]. And in the last step we can 
+                 split [3, 3] into [3] and [3]. As a result, the answer is true.
+
+    Constraints:
+    * 1 <= n == nums.length <= 100
+    * 1 <= nums[i] <= 100
+    * 1 <= m <= 200"""
+
+    def canSplitArray(self, nums: List[int], m: int) -> bool:
+        return len(nums) <= 2 or any(nums[i] + nums[i+1] >= m for i in range(len(nums)-1))
+
+
+    """2812. Find the Safest Path in a Grid (Medium)
+    You are given a 0-indexed 2D matrix grid of size n x n, where (r, c) 
+    represents:
+    * A cell containing a thief if grid[r][c] = 1
+    * An empty cell if grid[r][c] = 0
+    You are initially positioned at cell (0, 0). In one move, you can move to 
+    any adjacent cell in the grid, including cells containing thieves. The 
+    safeness factor of a path on the grid is defined as the minimum manhattan 
+    distance from any cell in the path to any thief in the grid. Return the 
+    maximum safeness factor of all paths leading to cell (n - 1, n - 1). An 
+    adjacent cell of cell (r, c), is one of the cells (r, c + 1), (r, c - 1), 
+    (r + 1, c) and (r - 1, c) if it exists. The Manhattan distance between two 
+    cells (a, b) and (x, y) is equal to |a - x| + |b - y|, where |val| denotes 
+    the absolute value of val.
+
+    Example 1:
+    Input: grid = [[1,0,0],[0,0,0],[0,0,1]]
+    Output: 0
+    Explanation: All paths from (0, 0) to (n - 1, n - 1) go through the thieves 
+                 in cells (0, 0) and (n - 1, n - 1).
+    
+    Example 2:
+    Input: grid = [[0,0,1],[0,0,0],[0,0,0]]
+    Output: 2
+    Explanation: The path depicted in the picture above has a safeness factor 
+                 of 2 since:
+                 - The closest cell of the path to the thief at cell (0, 2) is 
+                   cell (0, 0). The distance between them is 
+                   | 0 - 0 | + | 0 - 2 | = 2.
+                 It can be shown that there are no other paths with a higher 
+                 safeness factor.
+    
+    Example 3:
+    Input: grid = [[0,0,0,1],[0,0,0,0],[0,0,0,0],[1,0,0,0]]
+    Output: 2
+    Explanation: The path depicted in the picture above has a safeness factor 
+                 of 2 since:
+                 - The closest cell of the path to the thief at cell (0, 3) is 
+                   cell (1, 2). The distance between them is 
+                   | 0 - 1 | + | 3 - 2 | = 2.
+                 - The closest cell of the path to the thief at cell (3, 0) is 
+                   cell (3, 2). The distance between them is 
+                   | 3 - 3 | + | 0 - 2 | = 2.
+                 It can be shown that there are no other paths with a higher 
+                 safeness factor.
+
+    Constraints:
+    * 1 <= grid.length == n <= 400
+    * grid[i].length == n
+    * grid[i][j] is either 0 or 1.
+    * There is at least one thief in the grid."""
+
+    def maximumSafenessFactor(self, grid: List[List[int]]) -> int:
+        n = len(grid)
+        dist = [[-1]*n for _ in range(n)]
+        queue = deque()
+        for i in range(n): 
+            for j in range(n): 
+                if grid[i][j]: 
+                    dist[i][j] = 0 
+                    queue.append((i, j))
+        v = 1 
+        while queue:
+            for _ in range(len(queue)): 
+                i, j = queue.popleft() 
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                    if 0 <= ii < n and 0 <= jj < n and dist[ii][jj] == -1: 
+                        dist[ii][jj] = v
+                        queue.append((ii, jj))
+            v += 1
+            
+        def check(mid):
+            """Return """
+            if dist[0][0] >= mid: 
+                seen = {(0, 0)}
+                stack = [(0, 0)]
+                while stack: 
+                    i, j = stack.pop()
+                    if i == j == n-1: return True 
+                    for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j): 
+                        if 0 <= ii < n and 0 <= jj < n and (ii, jj) not in seen and dist[ii][jj] >= mid: 
+                            seen.add((ii, jj))
+                            stack.append((ii, jj))
+            return False 
+                
+        lo, hi = 0, n
+        while lo < hi: 
+            mid = lo + hi + 1 >> 1
+            if check(mid): lo = mid 
+            else: hi = mid - 1
+        return lo 
+
+
+    """2813. Maximum Elegance of a K-Length Subsequence (Hard)
+    You are given a 0-indexed 2D integer array items of length n and an integer 
+    k. items[i] = [profiti, categoryi], where profiti and categoryi denote the 
+    profit and category of the ith item respectively. Let's define the elegance 
+    of a subsequence of items as total_profit + distinct_categories2, where 
+    total_profit is the sum of all profits in the subsequence, and 
+    distinct_categories is the number of distinct categories from all the 
+    categories in the selected subsequence. Your task is to find the maximum 
+    elegance from all subsequences of size k in items. Return an integer 
+    denoting the maximum elegance of a subsequence of items with size exactly k.
+    Note: A subsequence of an array is a new array generated from the original 
+    array by deleting some elements (possibly none) without changing the 
+    remaining elements' relative order.
+
+    Example 1:
+    Input: items = [[3,2],[5,1],[10,1]], k = 2
+    Output: 17
+    Explanation: In this example, we have to select a subsequence of size 2. We 
+                 can select items[0] = [3,2] and items[2] = [10,1]. The total 
+                 profit in this subsequence is 3 + 10 = 13, and the subsequence 
+                 contains 2 distinct categories [2,1]. Hence, the elegance is 
+                 13 + 22 = 17, and we can show that it is the maximum 
+                 achievable elegance. 
+    
+    Example 2:
+    Input: items = [[3,1],[3,1],[2,2],[5,3]], k = 3
+    Output: 19
+    Explanation: In this example, we have to select a subsequence of size 3. We 
+                 can select items[0] = [3,1], items[2] = [2,2], and 
+                 items[3] = [5,3]. The total profit in this subsequence is 
+                 3 + 2 + 5 = 10, and the subsequence contains 3 distinct 
+                 categories [1,2,3]. Hence, the elegance is 10 + 32 = 19, and 
+                 we can show that it is the maximum achievable elegance.
+    
+    Example 3:
+    Input: items = [[1,1],[2,1],[3,1]], k = 3
+    Output: 7
+    Explanation: In this example, we have to select a subsequence of size 3. We 
+                 should select all the items. The total profit will be 
+                 1 + 2 + 3 = 6, and the subsequence contains 1 distinct 
+                 category [1]. Hence, the maximum elegance is 6 + 12 = 7.  
+
+    Constraints:
+    * 1 <= items.length == n <= 10^5
+    * items[i].length == 2
+    * items[i][0] == profiti
+    * items[i][1] == categoryi
+    * 1 <= profiti <= 10^9
+    * 1 <= categoryi <= n
+    * 1 <= k <= n"""
+
+    def findMaximumElegance(self, items: List[List[int]], k: int) -> int:
+        items.sort(reverse=True)
+        ans = cand = 0
+        seen = set()
+        stack = []
+        for i, (p, c) in enumerate(items): 
+            if i <= k-1 or c not in seen and stack: 
+                cand += p 
+                if i >= k: cand -= stack.pop()
+                if c in seen: stack.append(p)
+                seen.add(c)
+            ans = max(ans, cand + len(seen)**2)
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
