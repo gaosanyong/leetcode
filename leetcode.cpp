@@ -61058,6 +61058,221 @@ public:
         }
         return ans; 
     }
+
+
+    /*2815. Max Pair Sum in an Array (Easy)
+    You are given a 0-indexed integer array nums. You have to find the maximum 
+    sum of a pair of numbers from nums such that the maximum digit in both 
+    numbers are equal. Return the maximum sum or -1 if no such pair exists.
+
+    Example 1:
+    Input: nums = [51,71,17,24,42]
+    Output: 88
+    Explanation: For i = 1 and j = 2, nums[i] and nums[j] have equal maximum 
+                 digits with a pair sum of 71 + 17 = 88. For i = 3 and j = 4, 
+                 nums[i] and nums[j] have equal maximum digits with a pair sum 
+                 of 24 + 42 = 66. It can be shown that there are no other pairs 
+                 with equal maximum digits, so the answer is 88.
+    
+    Example 2:
+    Input: nums = [1,2,3,4]
+    Output: -1
+    Explanation: No pair exists in nums with equal maximum digits.
+
+    Constraints:
+    * 2 <= nums.length <= 100
+    * 1 <= nums[i] <= 10^4*/
+
+    int maxSum(vector<int>& nums) {
+        int ans = -1; 
+        vector<int> seen(10); 
+        for (auto& v : nums) {
+            int d = 0; 
+            for (int x = v; x; d = max(d, x % 10), x /= 10); 
+            if (seen[d]) ans = max(ans, seen[d] + v); 
+            seen[d] = max(seen[d], v); 
+        }
+        return ans; 
+    }
+
+
+    /*2816. Double a Number Represented as a Linked List (Medium)
+    You are given the head of a non-empty linked list representing a non-
+    negative integer without leading zeroes. Return the head of the linked list 
+    after doubling it.
+
+    Example 1:
+    Input: head = [1,8,9]
+    Output: [3,7,8]
+    Explanation: The figure above corresponds to the given linked list which 
+                 represents the number 189. Hence, the returned linked list 
+                 represents the number 189 * 2 = 378.
+    
+    Example 2:
+    Input: head = [9,9,9]
+    Output: [1,9,9,8]
+    Explanation: The figure above corresponds to the given linked list which 
+                 represents the number 999. Hence, the returned linked list 
+                 reprersents the number 999 * 2 = 1998. 
+
+    Constraints:
+    * The number of nodes in the list is in the range [1, 10^4]
+    * 0 <= Node.val <= 9
+    * The input is generated such that the list represents a number that does 
+      not have leading zeros, except the number 0 itself.*/
+
+    ListNode* doubleIt(ListNode* head) {
+        if (head->val >= 5) head = new ListNode(0, head); 
+        for (ListNode* node = head; node; node = node->next) {
+            node->val = 2*node->val % 10; 
+            if (node->next && node->next->val >= 5) ++node->val; 
+        }
+        return head; 
+    }
+
+
+    /*2817. Minimum Absolute Difference Between Elements With Constraint (Medium)
+    You are given a 0-indexed integer array nums and an integer x. Find the 
+    minimum absolute difference between two elements in the array that are at 
+    least x indices apart. In other words, find two indices i and j such that 
+    abs(i - j) >= x and abs(nums[i] - nums[j]) is minimized. Return an integer 
+    denoting the minimum absolute difference between two elements that are at 
+    least x indices apart.
+
+    Example 1:
+    Input: nums = [4,3,2,4], x = 2
+    Output: 0
+    Explanation: We can select nums[0] = 4 and nums[3] = 4. They are at least 2 
+                 indices apart, and their absolute difference is the minimum, 0. 
+                 It can be shown that 0 is the optimal answer.
+    
+    Example 2:
+    Input: nums = [5,3,2,10,15], x = 1
+    Output: 1
+    Explanation: We can select nums[1] = 3 and nums[2] = 2. They are at least 1 
+                 index apart, and their absolute difference is the minimum, 1.
+                 It can be shown that 1 is the optimal answer.
+    
+    Example 3:
+    Input: nums = [1,2,3,4], x = 3
+    Output: 3
+    Explanation: We can select nums[0] = 1 and nums[3] = 4. They are at least 3 
+                 indices apart, and their absolute difference is the minimum, 3.
+                 It can be shown that 3 is the optimal answer.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9
+    * 0 <= x < nums.length*/
+
+    int minAbsoluteDifference(vector<int>& nums, int x) {
+        set<int> vals; 
+        int ans = INT_MAX; 
+        for (int i = 0; i < nums.size(); ++i) {
+            if (i >= x) {
+                vals.insert(nums[i-x]); 
+                auto it = vals.lower_bound(nums[i]); 
+                if (it != vals.begin()) ans = min(ans, nums[i] - *prev(it)); 
+                if (it != vals.end()) ans = min(ans, *it - nums[i]); 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*2818. Apply Operations to Maximize Score (Hard)
+    You are given an array nums of n positive integers and an integer k. 
+    Initially, you start with a score of 1. You have to maximize your score by 
+    applying the following operation at most k times:
+    * Choose any non-empty subarray nums[l, ..., r] that you haven't chosen 
+      previously.
+    * Choose an element x of nums[l, ..., r] with the highest prime score. If 
+      multiple such elements exist, choose the one with the smallest index.
+    * Multiply your score by x.
+    Here, nums[l, ..., r] denotes the subarray of nums starting at index l and 
+    ending at the index r, both ends being inclusive. The prime score of an 
+    integer x is equal to the number of distinct prime factors of x. For 
+    example, the prime score of 300 is 3 since 300 = 2 * 2 * 3 * 5 * 5. Return 
+    the maximum possible score after applying at most k operations. Since the 
+    answer may be large, return it modulo 10^9 + 7.
+
+    Example 1:
+    Input: nums = [8,3,9,3,8], k = 2
+    Output: 81
+    Explanation: To get a score of 81, we can apply the following operations:
+                 - Choose subarray nums[2, ..., 2]. nums[2] is the only element 
+                   in this subarray. Hence, we multiply the score by nums[2]. 
+                   The score becomes 1 * 9 = 9.
+                 - Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] 
+                   have a prime score of 1, but nums[2] has the smaller index. 
+                   Hence, we multiply the score by nums[2]. The score becomes 
+                   9 * 9 = 81.
+                 It can be proven that 81 is the highest score one can obtain.
+    
+    Example 2:
+    Input: nums = [19,12,14,6,10,18], k = 3
+    Output: 4788
+    Explanation: To get a score of 4788, we can apply the following operations: 
+                 - Choose subarray nums[0, ..., 0]. nums[0] is the only element 
+                   in this subarray. Hence, we multiply the score by nums[0]. 
+                   The score becomes 1 * 19 = 19.
+                 - Choose subarray nums[5, ..., 5]. nums[5] is the only element 
+                   in this subarray. Hence, we multiply the score by nums[5]. 
+                   The score becomes 19 * 18 = 342.
+                 - Choose subarray nums[2, ..., 3]. Both nums[2] and nums[3] 
+                   have a prime score of 2, but nums[2] has the smaller index. 
+                   Hence, we multipy the score by nums[2]. The score becomes 
+                   342 * 14 = 4788.
+                 It can be proven that 4788 is the highest score one can obtain.
+
+    Constraints:
+    * 1 <= nums.length == n <= 10^5
+    * 1 <= nums[i] <= 10^5
+    * 1 <= k <= min(n * (n + 1) / 2, 10^9)*/
+
+    int maximumScore(vector<int>& nums, int k) {
+        const int MOD = 1'000'000'007; 
+        vector<pair<int, int>> vals; 
+        for (int i = 0; i < nums.size(); ++i) {
+            int x = nums[i], s = 0; 
+            for (int p = 2, sx = sqrt(x); p <= sx; ++p) {
+                if (x % p == 0) ++s; 
+                for (; x % p == 0; x /= p); 
+            }
+            if (x > 1) ++s; 
+            vals.emplace_back(i, s); 
+        }
+        sort(vals.begin(), vals.end(), [&](auto& lhs, auto& rhs) { return lhs.second != rhs.second ? lhs.second > rhs.second : lhs.first < rhs.first; }); 
+        set<int> indices({-1, (int) nums.size()}); 
+        unordered_map<int, int> freq; 
+        for (auto& [i, _] : vals) {
+            auto pt = indices.lower_bound(i); 
+            int left = i - *prev(pt), right = *pt - i; 
+            freq[nums[i]] += left * right; 
+            indices.insert(i); 
+        }
+        
+        auto powmod = [&](long x, int p, int m) {
+            long ans = 1; 
+            for (; p; p >>= 1) {
+                if (p & 1) ans = ans * x % m; 
+                x = x * x % m; 
+            }
+            return ans; 
+        }; 
+        
+        long ans = 1; 
+        int prefix = 0; 
+        vector<pair<int, int>> aug; 
+        for (auto& [x, v] : freq) aug.emplace_back(x, v); 
+        sort(aug.begin(), aug.end(), [&](auto& lhs, auto& rhs) { return lhs.first > rhs.first; }); 
+        for (auto& [x, v] : aug) 
+            if (prefix < k) {
+                ans = ans * powmod(x, min(k - prefix, v), MOD) % MOD; 
+                prefix += v; 
+            }
+        return ans; 
+    }
 };
 
 
