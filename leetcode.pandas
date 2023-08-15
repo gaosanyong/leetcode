@@ -1,0 +1,191 @@
+import pandas as pd
+
+"""183. Customers Who Never Order (Easy)
+Table: Customers
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| name        | varchar |
++-------------+---------+
+id is the primary key (column with unique values) for this table. Each row of 
+this table indicates the ID and name of a customer.
+
+Table: Orders
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| id          | int  |
+| customerId  | int  |
++-------------+------+
+* id is the primary key (column with unique values) for this table.
+* customerId is a foreign key (reference columns) of the ID from the Customers 
+  table.
+Each row of this table indicates the ID of an order and the ID of the customer 
+who ordered it. Write a solution to find all customers who never order anything. 
+Return the result table in any order. The result format is in the following 
+example.
+
+Example 1:
+Input: 
+Customers table:
++----+-------+
+| id | name  |
++----+-------+
+| 1  | Joe   |
+| 2  | Henry |
+| 3  | Sam   |
+| 4  | Max   |
++----+-------+
+Orders table:
++----+------------+
+| id | customerId |
++----+------------+
+| 1  | 3          |
+| 2  | 1          |
++----+------------+
+Output: 
++-----------+
+| Customers |
++-----------+
+| Henry     |
+| Max       |
++-----------+"""
+
+def find_customers(customers: pd.DataFrame, orders: pd.DataFrame) -> pd.DataFrame:
+    customers = customers.merge(orders, how='left', left_on='id', right_on='customerId')
+    return customers[customers["customerId"].isnull()][["name"]].rename(columns = {"name" : "Customers"})
+
+
+"""595. Big Countries (Easy)
+Table: World
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| name        | varchar |
+| continent   | varchar |
+| area        | int     |
+| population  | int     |
+| gdp         | bigint  |
++-------------+---------+
+name is the primary key (column with unique values) for this table. Each row of 
+this table gives information about the name of a country, the continent to 
+which it belongs, its area, the population, and its GDP value.
+
+A country is big if:
+* it has an area of at least three million (i.e., 3000000 km2), or
+* it has a population of at least twenty-five million (i.e., 25000000).
+Write a solution to find the name, population, and area of the big countries. 
+Return the result table in any order. The result format is in the following 
+example.
+
+Example 1:
+Input: 
+World table:
++-------------+-----------+---------+------------+--------------+
+| name        | continent | area    | population | gdp          |
++-------------+-----------+---------+------------+--------------+
+| Afghanistan | Asia      | 652230  | 25500100   | 20343000000  |
+| Albania     | Europe    | 28748   | 2831741    | 12960000000  |
+| Algeria     | Africa    | 2381741 | 37100000   | 188681000000 |
+| Andorra     | Europe    | 468     | 78115      | 3712000000   |
+| Angola      | Africa    | 1246700 | 20609294   | 100990000000 |
++-------------+-----------+---------+------------+--------------+
+Output: 
++-------------+------------+---------+
+| name        | population | area    |
++-------------+------------+---------+
+| Afghanistan | 25500100   | 652230  |
+| Algeria     | 37100000   | 2381741 |
++-------------+------------+---------+"""
+
+def big_countries(world: pd.DataFrame) -> pd.DataFrame:
+    return world.query('area >= 3000000 | population >= 25000000')[["name", "population", "area"]]
+
+
+"""1148. Article Views I (Easy)
+Table: Views
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| article_id    | int     |
+| author_id     | int     |
+| viewer_id     | int     |
+| view_date     | date    |
++---------------+---------+
+There is no primary key (column with unique values) for this table, the table 
+may have duplicate rows. Each row of this table indicates that some viewer 
+viewed an article (written by some author) on some date. Note that equal 
+author_id and viewer_id indicate the same person. Write a solution to find all 
+the authors that viewed at least one of their own articles. Return the result 
+table sorted by id in ascending order. The result format is in the following 
+example.
+
+Example 1:
+Input: 
+Views table:
++------------+-----------+-----------+------------+
+| article_id | author_id | viewer_id | view_date  |
++------------+-----------+-----------+------------+
+| 1          | 3         | 5         | 2019-08-01 |
+| 1          | 3         | 6         | 2019-08-02 |
+| 2          | 7         | 7         | 2019-08-01 |
+| 2          | 7         | 6         | 2019-08-02 |
+| 4          | 7         | 1         | 2019-07-22 |
+| 3          | 4         | 4         | 2019-07-21 |
+| 3          | 4         | 4         | 2019-07-21 |
++------------+-----------+-----------+------------+
+Output: 
++------+
+| id   |
++------+
+| 4    |
+| 7    |
++------+"""
+
+def article_views(views: pd.DataFrame) -> pd.DataFrame:
+    return views.query('author_id == viewer_id')[["author_id"]].rename(columns = {"author_id" : "id"}).sort_values(by = "id").drop_duplicates()
+
+
+"""1757. Recyclable and Low Fat Products (Easy)
+Table: Products
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| product_id  | int     |
+| low_fats    | enum    |
+| recyclable  | enum    |
++-------------+---------+
+* product_id is the primary key (column with unique values) for this table. 
+* low_fats is an ENUM (category) of type ('Y', 'N') where 'Y' means this 
+  product is low fat and 'N' means it is not.
+* recyclable is an ENUM (category) of types ('Y', 'N') where 'Y' means this 
+  product is recyclable and 'N' means it is not.
+
+Write a solution to find the ids of products that are both low fat and 
+recyclable. Return the result table in any order. The result format is in the 
+following example.
+
+Example 1:
+Input: 
+Products table:
++-------------+----------+------------+
+| product_id  | low_fats | recyclable |
++-------------+----------+------------+
+| 0           | Y        | N          |
+| 1           | Y        | Y          |
+| 2           | N        | Y          |
+| 3           | Y        | Y          |
+| 4           | N        | N          |
++-------------+----------+------------+
+Output: 
++-------------+
+| product_id  |
++-------------+
+| 1           |
+| 3           |
++-------------+
+Explanation: Only products 1 and 3 are both low fat and recyclable."""
+
+def find_products(products: pd.DataFrame) -> pd.DataFrame:
+    return products.query('low_fats == "Y" & recyclable == "Y"')[["product_id"]]
