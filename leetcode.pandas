@@ -57,6 +57,49 @@ def find_customers(customers: pd.DataFrame, orders: pd.DataFrame) -> pd.DataFram
     return customers[customers["customerId"].isnull()][["name"]].rename(columns = {"name" : "Customers"})
 
 
+"""196. Delete Duplicate Emails (Easy)
+Table: Person
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| email       | varchar |
++-------------+---------+
+id is the primary key (column with unique values) for this table. Each row of 
+this table contains an email. The emails will not contain uppercase letters.
+Write a solution to delete all duplicate emails, keeping only one unique email 
+with the smallest id. For SQL users, please note that you are supposed to write 
+a DELETE statement and not a SELECT one. For Pandas users, please note that you 
+are supposed to modify Person in place. After running your script, the answer 
+shown is the Person table. The driver will first compile and run your piece of 
+code and then show the Person table. The final order of the Person table does 
+not matter. The result format is in the following example.
+
+Example 1:
+Input: 
+Person table:
++----+------------------+
+| id | email            |
++----+------------------+
+| 1  | john@example.com |
+| 2  | bob@example.com  |
+| 3  | john@example.com |
++----+------------------+
+Output: 
++----+------------------+
+| id | email            |
++----+------------------+
+| 1  | john@example.com |
+| 2  | bob@example.com  |
++----+------------------+
+Explanation: john@example.com is repeated two times. We keep the row with the 
+             smallest Id = 1."""
+
+def delete_duplicate_emails(person: pd.DataFrame) -> None:
+    person.sort_values(by = "id", inplace = True)
+    person.drop_duplicates(subset = "email", inplace = True)
+
+
 """595. Big Countries (Easy)
 Table: World
 +-------------+---------+
@@ -147,6 +190,43 @@ def article_views(views: pd.DataFrame) -> pd.DataFrame:
     return views.query('author_id == viewer_id')[["author_id"]].rename(columns = {"author_id" : "id"}).sort_values(by = "id").drop_duplicates()
 
 
+"""1683. Invalid Tweets (Easy)
+Table: Tweets
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| tweet_id       | int     |
+| content        | varchar |
++----------------+---------+
+tweet_id is the primary key (column with unique values) for this table. This 
+table contains all the tweets in a social media app. Write a solution to find 
+the IDs of the invalid tweets. The tweet is invalid if the number of characters 
+used in the content of the tweet is strictly greater than 15. Return the result 
+table in any order. The result format is in the following example.
+
+Example 1:
+Input: 
+Tweets table:
++----------+----------------------------------+
+| tweet_id | content                          |
++----------+----------------------------------+
+| 1        | Vote for Biden                   |
+| 2        | Let us make America great again! |
++----------+----------------------------------+
+Output: 
++----------+
+| tweet_id |
++----------+
+| 2        |
++----------+
+Explanation: 
+* Tweet 1 has length = 14. It is a valid tweet.
+* Tweet 2 has length = 32. It is an invalid tweet."""
+
+def invalid_tweets(tweets: pd.DataFrame) -> pd.DataFrame:
+    return tweets.query('content.str.len() > 15')[["tweet_id"]]
+
+
 """1757. Recyclable and Low Fat Products (Easy)
 Table: Products
 +-------------+---------+
@@ -189,3 +269,50 @@ Explanation: Only products 1 and 3 are both low fat and recyclable."""
 
 def find_products(products: pd.DataFrame) -> pd.DataFrame:
     return products.query('low_fats == "Y" & recyclable == "Y"')[["product_id"]]
+
+
+"""1795. Rearrange Products Table (Easy)
+Table: Products
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| product_id  | int     |
+| store1      | int     |
+| store2      | int     |
+| store3      | int     |
++-------------+---------+
+product_id is the primary key (column with unique values) for this table. Each 
+row in this table indicates the product's price in 3 different stores: store1, 
+store2, and store3. If the product is not available in a store, the price will 
+be null in that store's column. Write a solution to rearrange the Products 
+table so that each row has (product_id, store, price). If a product is not 
+available in a store, do not include a row with that product_id and store 
+combination in the result table. Return the result table in any order. The 
+result format is in the following example.
+
+Example 1:
+Input: 
+Products table:
++------------+--------+--------+--------+
+| product_id | store1 | store2 | store3 |
++------------+--------+--------+--------+
+| 0          | 95     | 100    | 105    |
+| 1          | 70     | null   | 80     |
++------------+--------+--------+--------+
+Output: 
++------------+--------+-------+
+| product_id | store  | price |
++------------+--------+-------+
+| 0          | store1 | 95    |
+| 0          | store2 | 100   |
+| 0          | store3 | 105   |
+| 1          | store1 | 70    |
+| 1          | store3 | 80    |
++------------+--------+-------+
+Explanation: - Product 0 is available in all three stores with prices 95, 100, 
+               and 105 respectively.
+             - Product 1 is available in store1 with price 70 and store3 with 
+               price 80. The product is not available in store2."""
+
+def rearrange_products_table(products: pd.DataFrame) -> pd.DataFrame:
+    return products.melt(id_vars='product_id', var_name='store', value_name='price').dropna()
