@@ -15312,6 +15312,234 @@ class SegTreeLazy {
         }
         return (int) ans; 
     }
+
+
+    /*2833. Furthest Point From Origin (Easy)
+    You are given a string moves of length n consisting only of characters 'L', 
+    'R', and '_'. The string represents your movement on a number line starting 
+    from the origin 0. In the ith move, you can choose one of the following 
+    directions:
+    * move to the left if moves[i] = 'L' or moves[i] = '_'
+    * move to the right if moves[i] = 'R' or moves[i] = '_'
+    Return the distance from the origin of the furthest point you can get to 
+    after n moves.
+
+    Example 1:
+    Input: moves = "L_RL__R"
+    Output: 3
+    Explanation: The furthest point we can reach from the origin 0 is point -3 
+                 through the following sequence of moves "LLRLLLR".
+    
+    Example 2:
+    Input: moves = "_R__LL_"
+    Output: 5
+    Explanation: The furthest point we can reach from the origin 0 is point -5 
+                 through the following sequence of moves "LRLLLLL".
+    
+    Example 3:
+    Input: moves = "_______"
+    Output: 7
+    Explanation: The furthest point we can reach from the origin 0 is point 7 
+                 through the following sequence of moves "RRRRRRR".
+
+    Constraints:
+    * 1 <= moves.length == n <= 50
+    * moves consists only of characters 'L', 'R' and '_'.*/
+
+    public int furthestDistanceFromOrigin(String moves) {
+        int L = 0, R = 0; 
+        for (var ch : moves.toCharArray()) 
+            if (ch == 'L') ++L; 
+            else if (ch == 'R') ++R;
+        return moves.length() - L - R + Math.abs(L - R); 
+    }
+
+
+    /*2834. Find the Minimum Possible Sum of a Beautiful Array (Medium)
+    You are given positive integers n and target. An array nums is beautiful if 
+    it meets the following conditions:
+    * nums.length == n.
+    * nums consists of pairwise distinct positive integers.
+    * There doesn't exist two distinct indices, i and j, in the range 
+      [0, n - 1], such that nums[i] + nums[j] == target.
+    Return the minimum possible sum that a beautiful array could have.
+
+    Example 1:
+    Input: n = 2, target = 3
+    Output: 4
+    Explanation: We can see that nums = [1,3] is beautiful.
+                 - The array nums has length n = 2.
+                 - The array nums consists of pairwise distinct positive integers.
+                 - There doesn't exist two distinct indices, i and j, with 
+                   nums[i] + nums[j] == 3.
+                 It can be proven that 4 is the minimum possible sum that a 
+                 beautiful array could have.
+    
+    Example 2:
+    Input: n = 3, target = 3
+    Output: 8
+    Explanation: We can see that nums = [1,3,4] is beautiful.
+                 - The array nums has length n = 3.
+                 - The array nums consists of pairwise distinct positive integers.
+                 - There doesn't exist two distinct indices, i and j, with 
+                   nums[i] + nums[j] == 3.
+                 It can be proven that 8 is the minimum possible sum that a 
+                 beautiful array could have.
+    
+    Example 3:
+    Input: n = 1, target = 1
+    Output: 1
+    Explanation: We can see, that nums = [1] is beautiful.
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * 1 <= target <= 10^5*/
+
+    public long minimumPossibleSum(int n, int target) {
+        long m = target/2; 
+        return n <= m ? (long) n*(n+1)/2 : m*(m+1)/2 + target*(n-m) + (n-m-1)*(n-m)/2; 
+    }
+
+
+    /*2835. Minimum Operations to Form Subsequence With Target Sum (Hard)
+    You are given a 0-indexed array nums consisting of non-negative powers of 2, 
+    and an integer target. In one operation, you must apply the following 
+    changes to the array:
+    * Choose any element of the array nums[i] such that nums[i] > 1.
+    * Remove nums[i] from the array.
+    * Add two occurrences of nums[i] / 2 to the end of nums.
+    Return the minimum number of operations you need to perform so that nums 
+    contains a subsequence whose elements sum to target. If it is impossible to 
+    obtain such a subsequence, return -1. A subsequence is an array that can be 
+    derived from another array by deleting some or no elements without changing 
+    the order of the remaining elements.
+
+    Example 1:
+    Input: nums = [1,2,8], target = 7
+    Output: 1
+    Explanation: In the first operation, we choose element nums[2]. The array 
+                 becomes equal to nums = [1,2,4,4]. At this stage, nums 
+                 contains the subsequence [1,2,4] which sums up to 7. It can be 
+                 shown that there is no shorter sequence of operations that 
+                 results in a subsequnce that sums up to 7.
+    
+    Example 2:
+    Input: nums = [1,32,1,2], target = 12
+    Output: 2
+    Explanation: In the first operation, we choose element nums[1]. The array 
+                 becomes equal to nums = [1,1,2,16,16]. In the second operation, 
+                 we choose element nums[3]. The array becomes equal to 
+                 nums = [1,1,2,16,8,8]. At this stage, nums contains the 
+                 subsequence [1,1,2,8] which sums up to 12. It can be shown 
+                 that there is no shorter sequence of operations that results 
+                 in a subsequence that sums up to 12.
+    
+    Example 3:
+    Input: nums = [1,32,1], target = 35
+    Output: -1
+    Explanation: It can be shown that no sequence of operations results in a 
+                 subsequence that sums up to 35.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i] <= 2^30
+    * nums consists only of non-negative powers of two.
+    * 1 <= target < 2^31*/
+
+    public int minOperations(List<Integer> nums, int target) {
+        int ans = 0, ii = -1; 
+        Map<Integer, Integer> freq = new HashMap(); 
+        for (var x : nums) freq.merge(x, 1, Integer::sum); 
+        for (int i = 0, cnt = 0; i <= 30; ++i) {
+            cnt /= 2; 
+            cnt += freq.getOrDefault(1<<i, 0); 
+            if ((target & 1<<i) > 0) 
+                if (cnt > 0) --cnt; 
+                else if (ii == -1) ii = i; 
+            if (cnt > 0 && ii >= 0) {
+                ans += i - ii; 
+                --cnt; 
+                ii = -1; 
+            }
+        }
+        return ii == -1 ? ans : -1; 
+    }
+
+
+    /*2836. Maximize Value of Function in a Ball Passing Game (Hard)
+    You are given a 0-indexed integer array receiver of length n and an integer 
+    k. There are n players having a unique id in the range [0, n - 1] who will 
+    play a ball passing game, and receiver[i] is the id of the player who 
+    receives passes from the player with id i. Players can pass to themselves, 
+    i.e. receiver[i] may be equal to i. You must choose one of the n players as 
+    the starting player for the game, and the ball will be passed exactly k 
+    times starting from the chosen player. For a chosen starting player having 
+    id x, we define a function f(x) that denotes the sum of x and the ids of 
+    all players who receive the ball during the k passes, including repetitions. 
+    In other words, 
+    f(x) = x + receiver[x] + receiver[receiver[x]] + ... + receiver(k)[x].
+    Your task is to choose a starting player having id x that maximizes the 
+    value of f(x). Return an integer denoting the maximum value of the function.
+    Note: receiver may contain duplicates.
+
+    Example 1:
+    Pass Number Sender ID   Receiver ID x + Receiver IDs
+                2
+    1   2   1   3
+    2   1   0   3
+    3   0   2   5
+    4   2   1   6
+    Input: receiver = [2,0,1], k = 4
+    Output: 6
+    Explanation: The table above shows a simulation of the game starting with 
+                 the player having id x = 2. From the table, f(2) is equal to 6. 
+                 It can be shown that 6 is the maximum achievable value of the 
+                 function. Hence, the output is 6. 
+    
+    Example 2:
+    Pass Number Sender ID   Receiver ID x + Receiver IDs
+                4
+    1   4   3   7
+    2   3   2   9
+    3   2   1   10
+    Input: receiver = [1,1,1,2,3], k = 3
+    Output: 10
+    Explanation: The table above shows a simulation of the game starting with 
+                 the player having id x = 4. From the table, f(4) is equal to 
+                 10. It can be shown that 10 is the maximum achievable value of 
+                 the function. Hence, the output is 10. 
+
+    Constraints:
+    * 1 <= receiver.length == n <= 10^5
+    * 0 <= receiver[i] <= n - 1
+    * 1 <= k <= 10^10*/
+
+    public long getMaxFunctionValue(List<Integer> receiver, long k) {
+        int n = receiver.size(), m = (int) (Math.log(k)/Math.log(2))+2; 
+        int[][] lift = new int[n][m]; 
+        for (int x = 0; x < n; ++x) Arrays.fill(lift[x], -1); 
+        long[][] score = new long[n][m]; 
+        for (int i = 0; i < m; ++i)
+            for (int x = 0; x < n; ++x)
+                if (i == 0) {
+                    lift[x][0] = receiver.get(x); 
+                    score[x][0] = x; 
+                } else if (lift[x][i-1] != -1) {
+                    lift[x][i] = lift[lift[x][i-1]][i-1]; 
+                    score[x][i] = score[x][i-1] + score[lift[x][i-1]][i-1]; 
+                }
+        long ans = 0; 
+        for (int v = 0; v < n; ++v) {
+            long cand = 0; 
+            for (int i = 0, x = v; i < m; ++i) 
+                if ((k+1 & 1l<<i) > 0) {
+                    cand += score[x][i]; 
+                    x = lift[x][i]; 
+                }
+            ans = Math.max(ans, cand); 
+        }
+        return ans; 
+    }
 }
 
 
