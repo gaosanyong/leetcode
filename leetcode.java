@@ -15540,6 +15540,283 @@ class SegTreeLazy {
         }
         return ans; 
     }
+
+
+    /*2843. Count Symmetric Integers (Easy)
+    You are given two positive integers low and high. An integer x consisting 
+    of 2 * n digits is symmetric if the sum of the first n digits of x is equal 
+    to the sum of the last n digits of x. Numbers with an odd number of digits 
+    are never symmetric. Return the number of symmetric integers in the range 
+    [low, high].
+
+    Example 1:
+    Input: low = 1, high = 100
+    Output: 9
+    Explanation: There are 9 symmetric integers between 1 and 100: 11, 22, 33, 
+                 44, 55, 66, 77, 88, and 99.
+    
+    Example 2:
+    Input: low = 1200, high = 1230
+    Output: 4
+    Explanation: There are 4 symmetric integers between 1200 and 1230: 1203, 
+                 1212, 1221, and 1230.
+
+    Constraints: 1 <= low <= high <= 10^4*/
+
+    public int countSymmetricIntegers(int low, int high) {
+        int ans = 0; 
+        for (int x = low; x <= high; ++x) {
+            String s = String.valueOf(x); 
+            if (s.length() % 2 == 0) {
+                int bal = 0; 
+                for (int i = 0, n = s.length(); i < n; ++i)
+                    if (i < n/2) bal += s.charAt(i)-'a';
+                    else bal -= s.charAt(i)-'a';
+                if (bal == 0) ++ans; 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*2844. Minimum Operations to Make a Special Number (Medium)
+    You are given a 0-indexed string num representing a non-negative integer. 
+    In one operation, you can pick any digit of num and delete it. Note that if 
+    you delete all the digits of num, num becomes 0. Return the minimum number 
+    of operations required to make num special. An integer x is considered 
+    special if it is divisible by 25.
+
+    Example 1:
+    Input: num = "2245047"
+    Output: 2
+    Explanation: Delete digits num[5] and num[6]. The resulting number is 
+                 "22450" which is special since it is divisible by 25. It can 
+                 be shown that 2 is the minimum number of operations required 
+                 to get a special number.
+    
+    Example 2:
+    Input: num = "2908305"
+    Output: 3
+    Explanation: Delete digits num[3], num[4], and num[6]. The resulting number 
+                 is "2900" which is special since it is divisible by 25. It can 
+                 be shown that 3 is the minimum number of operations required 
+                 to get a special number.
+    
+    Example 3:
+    Input: num = "10"
+    Output: 1
+    Explanation: Delete digit num[0]. The resulting number is "0" which is 
+                 special since it is divisible by 25. It can be shown that 1 is 
+                 the minimum number of operations required to get a special 
+                 number.
+
+    Constraints:
+    * 1 <= num.length <= 100
+    * num only consists of digits '0' through '9'.
+    * num does not contain any leading zeros.*/
+
+    public int minimumOperations(String num) {
+        int ans = Integer.MAX_VALUE; 
+        for (var p : new String[]{"00", "25", "50", "75"}) 
+            for (int i = num.length()-1, k = 1, cand = 0; i >= 0; --i) {
+                if (p.charAt(k) == num.charAt(i)) --k; 
+                else ++cand; 
+                if (k == -1) {
+                    ans = Math.min(ans, cand); 
+                    break; 
+                }
+            }
+        return ans < Integer.MAX_VALUE ? ans : num.contains("0") ? num.length()-1 : num.length(); 
+    }
+
+
+    /*2845. Count of Interesting Subarrays (Medium)
+    You are given a 0-indexed integer array nums, an integer modulo, and an 
+    integer k. Your task is to find the count of subarrays that are interesting.
+    A subarray nums[l..r] is interesting if the following condition holds:
+    * Let cnt be the number of indices i in the range [l, r] such that 
+      nums[i] % modulo == k. Then, cnt % modulo == k.
+    Return an integer denoting the count of interesting subarrays. Note: A 
+    subarray is a contiguous non-empty sequence of elements within an array.
+
+    Example 1:
+    Input: nums = [3,2,4], modulo = 2, k = 1
+    Output: 3
+    Explanation: In this example the interesting subarrays are: 
+                 The subarray nums[0..0] which is [3]. 
+                 - There is only one index, i = 0, in the range [0, 0] that 
+                   satisfies nums[i] % modulo == k. 
+                 - Hence, cnt = 1 and cnt % modulo == k.  
+                 The subarray nums[0..1] which is [3,2].
+                 - There is only one index, i = 0, in the range [0, 1] that 
+                   satisfies nums[i] % modulo == k.  
+                 - Hence, cnt = 1 and cnt % modulo == k.
+                 The subarray nums[0..2] which is [3,2,4]. 
+                 - There is only one index, i = 0, in the range [0, 2] that 
+                   satisfies nums[i] % modulo == k. 
+                 - Hence, cnt = 1 and cnt % modulo == k. 
+                 It can be shown that there are no other interesting subarrays. 
+                 So, the answer is 3.
+    
+    Example 2:
+    Input: nums = [3,1,9,6], modulo = 3, k = 0
+    Output: 2
+    Explanation: In this example the interesting subarrays are: 
+                 The subarray nums[0..3] which is [3,1,9,6]. 
+                 - There are three indices, i = 0, 2, 3, in the range [0, 3] 
+                   that satisfy nums[i] % modulo == k. 
+                 - Hence, cnt = 3 and cnt % modulo == k. 
+                 The subarray nums[1..1] which is [1]. 
+                 - There is no index, i, in the range [1, 1] that satisfies 
+                   nums[i] % modulo == k. 
+                 - Hence, cnt = 0 and cnt % modulo == k. 
+                 It can be shown that there are no other interesting subarrays. 
+                 So, the answer is 2.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9
+    * 1 <= modulo <= 10^9
+    * 0 <= k < modulo*/
+
+    public long countInterestingSubarrays(List<Integer> nums, int modulo, int k) {
+        long ans = 0; 
+        Map<Integer, Integer> freq = new HashMap(); 
+        freq.put(0, 1); 
+        int prefix = 0; 
+        for (var x : nums) {
+            if (x % modulo == k) ++prefix; 
+            prefix %= modulo; 
+            ans += freq.getOrDefault((prefix-k+modulo) % modulo, 0); 
+            freq.merge(prefix, 1, Integer::sum); 
+        }
+        return ans; 
+    }
+
+
+    /*2846. Minimum Edge Weight Equilibrium Queries in a Tree (Hard)
+    There is an undirected tree with n nodes labeled from 0 to n - 1. You are 
+    given the integer n and a 2D integer array edges of length n - 1, where 
+    edges[i] = [ui, vi, wi] indicates that there is an edge between nodes ui 
+    and vi with weight wi in the tree. You are also given a 2D integer array 
+    queries of length m, where queries[i] = [ai, bi]. For each query, find the 
+    minimum number of operations required to make the weight of every edge on 
+    the path from ai to bi equal. In one operation, you can choose any edge of 
+    the tree and change its weight to any value.
+
+    Note that:
+    * Queries are independent of each other, meaning that the tree returns to 
+      its initial state on each new query.
+    * The path from ai to bi is a sequence of distinct nodes starting with node 
+      ai and ending with node bi such that every two adjacent nodes in the 
+      sequence share an edge in the tree.
+    Return an array answer of length m where answer[i] is the answer to the ith 
+    query.
+
+    Example 1:
+    Input: n = 7, edges = [[0,1,1],[1,2,1],[2,3,1],[3,4,2],[4,5,2],[5,6,2]], queries = [[0,3],[3,6],[2,6],[0,6]]
+    Output: [0,0,1,3]
+    Explanation: In the first query, all the edges in the path from 0 to 3 have 
+                 a weight of 1. Hence, the answer is 0. In the second query, 
+                 all the edges in the path from 3 to 6 have a weight of 2. 
+                 Hence, the answer is 0. In the third query, we change the 
+                 weight of edge [2,3] to 2. After this operation, all the edges 
+                 in the path from 2 to 6 have a weight of 2. Hence, the answer 
+                 is 1. In the fourth query, we change the weights of edges 
+                 [0,1], [1,2] and [2,3] to 2. After these operations, all the 
+                 edges in the path from 0 to 6 have a weight of 2. Hence, the 
+                 answer is 3. For each queries[i], it can be shown that 
+                 answer[i] is the minimum number of operations needed to 
+                 equalize all the edge weights in the path from ai to bi.
+    
+    Example 2:
+    Input: n = 8, edges = [[1,2,6],[1,3,4],[2,4,6],[2,5,3],[3,6,6],[3,0,8],[7,0,2]], queries = [[4,6],[0,4],[6,5],[7,4]]
+    Output: [1,2,2,3]
+    Explanation: In the first query, we change the weight of edge [1,3] to 6. 
+                 After this operation, all the edges in the path from 4 to 6 
+                 have a weight of 6. Hence, the answer is 1. In the second 
+                 query, we change the weight of edges [0,3] and [3,1] to 6. 
+                 After these operations, all the edges in the path from 0 to 4 
+                 have a weight of 6. Hence, the answer is 2. In the third 
+                 query, we change the weight of edges [1,3] and [5,2] to 6. 
+                 After these operations, all the edges in the path from 6 to 5 
+                 have a weight of 6. Hence, the answer is 2. In the fourth 
+                 query, we change the weights of edges [0,7], [0,3] and [1,3] 
+                 to 6. After these operations, all the edges in the path from 7 
+                 to 4 have a weight of 6. Hence, the answer is 3. For each 
+                 queries[i], it can be shown that answer[i] is the minimum 
+                 number of operations needed to equalize all the edge weights 
+                 in the path from ai to bi.
+
+    Constraints:
+    * 1 <= n <= 10^4
+    * edges.length == n - 1
+    * edges[i].length == 3
+    * 0 <= ui, vi < n
+    * 1 <= wi <= 26
+    * The input is generated such that edges represents a valid tree.
+    * 1 <= queries.length == m <= 2 * 10^4
+    * queries[i].length == 2
+    * 0 <= ai, bi < n*/
+
+    public int[] minOperationsQueries(int n, int[][] edges, int[][] queries) {
+        List<int[]>[] tree = new ArrayList[n]; 
+        for (int i = 0; i < n; ++i) tree[i] = new ArrayList(); 
+        for (var edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2]; 
+            tree[u].add(new int[]{v, w}); 
+            tree[v].add(new int[]{u, w}); 
+        }
+        int m = (int) (Math.log(n)/Math.log(2)) + 1; 
+        int[][] lift = new int[n][m], freq = new int[n][27]; 
+        for (int i = 0; i < n; ++i) Arrays.fill(lift[i], -1); 
+        int[] depth = new int[n]; 
+        Arrays.fill(depth, -1); 
+        Stack<int[]> stk = new Stack(); stk.add(new int[]{0, -1, 0}); 
+        while (!stk.isEmpty()) {
+            var elem = stk.pop(); 
+            int u = elem[0], p = elem[1], d = elem[2]; 
+            depth[u] = d; 
+            for (var vw : tree[u]) {
+                int v = vw[0], w = vw[1]; 
+                if (v != p) {
+                    lift[v][0] = u; 
+                    for (int x = 1; x < 27; ++x) freq[v][x] = freq[u][x]; 
+                    ++freq[v][w]; 
+                    for (int j = 1; j < m; ++j) {
+                        if (lift[v][j-1] == -1) break; 
+                        lift[v][j] = lift[lift[v][j-1]][j-1]; 
+                    }
+                    stk.add(new int[]{v, u, d+1}); 
+                }
+            }
+        }
+        List<Integer> ans = new ArrayList(); 
+        for (var q : queries) {
+            int u = q[0], v = q[1], uu = u, vv = v, k = 0, sm = 0, mx = 0; 
+            if (depth[u] > depth[v]) {
+                int temp = u; u = v; v = temp; 
+            }
+            for (int i = 0; i < m; ++i) 
+                if ((depth[v]-depth[u] & 1<<i) > 0) v = lift[v][i]; 
+            if (u == v) k = u; 
+            else {
+                for (int i = m-1; i >= 0; --i)
+                    if (lift[u][i] != lift[v][i]) {
+                        u = lift[u][i]; 
+                        v = lift[v][i]; 
+                    }
+                k = lift[u][0]; 
+            }
+            for (int w = 1; w < 27; ++w) {
+                int val = freq[uu][w] + freq[vv][w] - 2*freq[k][w]; 
+                sm += val; 
+                mx = Math.max(mx, val); 
+            }
+            ans.add(sm-mx); 
+        }
+        return ans.stream().mapToInt(i->i).toArray(); 
+    }
 }
 
 

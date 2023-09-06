@@ -61500,6 +61500,279 @@ public:
         }
         return ans; 
     }
+
+
+    /*2843. Count Symmetric Integers (Easy)
+    You are given two positive integers low and high. An integer x consisting 
+    of 2 * n digits is symmetric if the sum of the first n digits of x is equal 
+    to the sum of the last n digits of x. Numbers with an odd number of digits 
+    are never symmetric. Return the number of symmetric integers in the range 
+    [low, high].
+
+    Example 1:
+    Input: low = 1, high = 100
+    Output: 9
+    Explanation: There are 9 symmetric integers between 1 and 100: 11, 22, 33, 
+                 44, 55, 66, 77, 88, and 99.
+    
+    Example 2:
+    Input: low = 1200, high = 1230
+    Output: 4
+    Explanation: There are 4 symmetric integers between 1200 and 1230: 1203, 
+                 1212, 1221, and 1230.
+
+    Constraints: 1 <= low <= high <= 10^4*/
+
+    int countSymmetricIntegers(int low, int high) {
+        int ans = 0; 
+        for (int x = low; x <= high; ++x) {
+            string s = to_string(x); 
+            if (!(s.size() & 1)) { 
+                int bal = 0; 
+                for (int i = 0, n = s.size(); i < n; ++i) 
+                    if (i < n/2) bal += s[i] - '0'; 
+                    else bal -= s[i] - '0'; 
+                if (bal == 0) ++ans; 
+            }
+        }
+        return ans; 
+    }
+
+
+    /*2844. Minimum Operations to Make a Special Number (Medium)
+    You are given a 0-indexed string num representing a non-negative integer. 
+    In one operation, you can pick any digit of num and delete it. Note that if 
+    you delete all the digits of num, num becomes 0. Return the minimum number 
+    of operations required to make num special. An integer x is considered 
+    special if it is divisible by 25.
+
+    Example 1:
+    Input: num = "2245047"
+    Output: 2
+    Explanation: Delete digits num[5] and num[6]. The resulting number is 
+                 "22450" which is special since it is divisible by 25. It can 
+                 be shown that 2 is the minimum number of operations required 
+                 to get a special number.
+    
+    Example 2:
+    Input: num = "2908305"
+    Output: 3
+    Explanation: Delete digits num[3], num[4], and num[6]. The resulting number 
+                 is "2900" which is special since it is divisible by 25. It can 
+                 be shown that 3 is the minimum number of operations required 
+                 to get a special number.
+    
+    Example 3:
+    Input: num = "10"
+    Output: 1
+    Explanation: Delete digit num[0]. The resulting number is "0" which is 
+                 special since it is divisible by 25. It can be shown that 1 is 
+                 the minimum number of operations required to get a special 
+                 number.
+
+    Constraints:
+    * 1 <= num.length <= 100
+    * num only consists of digits '0' through '9'.
+    * num does not contain any leading zeros.*/
+
+    int minimumOperations(string num) {
+        int ans = INT_MAX; 
+        for (auto& p : {"00", "25", "50", "75"}) {
+            int cand = 0, k = 1; 
+            for (auto pt = num.rbegin(); pt != num.rend(); ++pt) {
+                if (p[k] == *pt) --k; 
+                else ++cand; 
+                if (k == -1) {
+                    ans = min(ans, cand); 
+                    break; 
+                }
+            }
+        }
+        return ans < INT_MAX ? ans : num.size() - int(num.find('0') != string::npos); 
+    }
+
+
+    /*2845. Count of Interesting Subarrays (Medium)
+    You are given a 0-indexed integer array nums, an integer modulo, and an 
+    integer k. Your task is to find the count of subarrays that are interesting.
+    A subarray nums[l..r] is interesting if the following condition holds:
+    * Let cnt be the number of indices i in the range [l, r] such that 
+      nums[i] % modulo == k. Then, cnt % modulo == k.
+    Return an integer denoting the count of interesting subarrays. Note: A 
+    subarray is a contiguous non-empty sequence of elements within an array.
+
+    Example 1:
+    Input: nums = [3,2,4], modulo = 2, k = 1
+    Output: 3
+    Explanation: In this example the interesting subarrays are: 
+                 The subarray nums[0..0] which is [3]. 
+                 - There is only one index, i = 0, in the range [0, 0] that 
+                   satisfies nums[i] % modulo == k. 
+                 - Hence, cnt = 1 and cnt % modulo == k.  
+                 The subarray nums[0..1] which is [3,2].
+                 - There is only one index, i = 0, in the range [0, 1] that 
+                   satisfies nums[i] % modulo == k.  
+                 - Hence, cnt = 1 and cnt % modulo == k.
+                 The subarray nums[0..2] which is [3,2,4]. 
+                 - There is only one index, i = 0, in the range [0, 2] that 
+                   satisfies nums[i] % modulo == k. 
+                 - Hence, cnt = 1 and cnt % modulo == k. 
+                 It can be shown that there are no other interesting subarrays. 
+                 So, the answer is 3.
+    
+    Example 2:
+    Input: nums = [3,1,9,6], modulo = 3, k = 0
+    Output: 2
+    Explanation: In this example the interesting subarrays are: 
+                 The subarray nums[0..3] which is [3,1,9,6]. 
+                 - There are three indices, i = 0, 2, 3, in the range [0, 3] 
+                   that satisfy nums[i] % modulo == k. 
+                 - Hence, cnt = 3 and cnt % modulo == k. 
+                 The subarray nums[1..1] which is [1]. 
+                 - There is no index, i, in the range [1, 1] that satisfies 
+                   nums[i] % modulo == k. 
+                 - Hence, cnt = 0 and cnt % modulo == k. 
+                 It can be shown that there are no other interesting subarrays. 
+                 So, the answer is 2.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9
+    * 1 <= modulo <= 10^9
+    * 0 <= k < modulo*/
+
+    long long countInterestingSubarrays(vector<int>& nums, int modulo, int k) {
+        long long ans = 0; 
+        unordered_map<int, int> freq; 
+        freq[0] = 1; 
+        int prefix = 0; 
+        for (auto& x : nums) {
+            if (x % modulo == k) ++prefix; 
+            prefix %= modulo; 
+            ans += freq[(prefix-k+modulo) % modulo]; 
+            ++freq[prefix]; 
+        }
+        return ans; 
+    }
+
+
+    /*2846. Minimum Edge Weight Equilibrium Queries in a Tree (Hard)
+    There is an undirected tree with n nodes labeled from 0 to n - 1. You are 
+    given the integer n and a 2D integer array edges of length n - 1, where 
+    edges[i] = [ui, vi, wi] indicates that there is an edge between nodes ui 
+    and vi with weight wi in the tree. You are also given a 2D integer array 
+    queries of length m, where queries[i] = [ai, bi]. For each query, find the 
+    minimum number of operations required to make the weight of every edge on 
+    the path from ai to bi equal. In one operation, you can choose any edge of 
+    the tree and change its weight to any value.
+
+    Note that:
+    * Queries are independent of each other, meaning that the tree returns to 
+      its initial state on each new query.
+    * The path from ai to bi is a sequence of distinct nodes starting with node 
+      ai and ending with node bi such that every two adjacent nodes in the 
+      sequence share an edge in the tree.
+    Return an array answer of length m where answer[i] is the answer to the ith 
+    query.
+
+    Example 1:
+    Input: n = 7, edges = [[0,1,1],[1,2,1],[2,3,1],[3,4,2],[4,5,2],[5,6,2]], queries = [[0,3],[3,6],[2,6],[0,6]]
+    Output: [0,0,1,3]
+    Explanation: In the first query, all the edges in the path from 0 to 3 have 
+                 a weight of 1. Hence, the answer is 0. In the second query, 
+                 all the edges in the path from 3 to 6 have a weight of 2. 
+                 Hence, the answer is 0. In the third query, we change the 
+                 weight of edge [2,3] to 2. After this operation, all the edges 
+                 in the path from 2 to 6 have a weight of 2. Hence, the answer 
+                 is 1. In the fourth query, we change the weights of edges 
+                 [0,1], [1,2] and [2,3] to 2. After these operations, all the 
+                 edges in the path from 0 to 6 have a weight of 2. Hence, the 
+                 answer is 3. For each queries[i], it can be shown that 
+                 answer[i] is the minimum number of operations needed to 
+                 equalize all the edge weights in the path from ai to bi.
+    
+    Example 2:
+    Input: n = 8, edges = [[1,2,6],[1,3,4],[2,4,6],[2,5,3],[3,6,6],[3,0,8],[7,0,2]], queries = [[4,6],[0,4],[6,5],[7,4]]
+    Output: [1,2,2,3]
+    Explanation: In the first query, we change the weight of edge [1,3] to 6. 
+                 After this operation, all the edges in the path from 4 to 6 
+                 have a weight of 6. Hence, the answer is 1. In the second 
+                 query, we change the weight of edges [0,3] and [3,1] to 6. 
+                 After these operations, all the edges in the path from 0 to 4 
+                 have a weight of 6. Hence, the answer is 2. In the third 
+                 query, we change the weight of edges [1,3] and [5,2] to 6. 
+                 After these operations, all the edges in the path from 6 to 5 
+                 have a weight of 6. Hence, the answer is 2. In the fourth 
+                 query, we change the weights of edges [0,7], [0,3] and [1,3] 
+                 to 6. After these operations, all the edges in the path from 7 
+                 to 4 have a weight of 6. Hence, the answer is 3. For each 
+                 queries[i], it can be shown that answer[i] is the minimum 
+                 number of operations needed to equalize all the edge weights 
+                 in the path from ai to bi.
+
+    Constraints:
+    * 1 <= n <= 10^4
+    * edges.length == n - 1
+    * edges[i].length == 3
+    * 0 <= ui, vi < n
+    * 1 <= wi <= 26
+    * The input is generated such that edges represents a valid tree.
+    * 1 <= queries.length == m <= 2 * 10^4
+    * queries[i].length == 2
+    * 0 <= ai, bi < n*/
+
+    vector<int> minOperationsQueries(int n, vector<vector<int>>& edges, vector<vector<int>>& queries) {
+        vector<vector<pair<int, int>>> tree(n); 
+        for (auto& edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2]; 
+            tree[u].emplace_back(v, w); 
+            tree[v].emplace_back(u, w); 
+        }
+        int m = int(log2(n)) + 1; 
+        vector<vector<int>> lift(n, vector<int>(m, -1)), freq(n, vector<int>(27)); 
+        vector<int> depth(n, -1); 
+        stack<tuple<int, int, int>> stk; stk.emplace(0, -1, 0); 
+        while (stk.size()) {
+            auto [u, p, d] = stk.top(); stk.pop(); 
+            depth[u] = d; 
+            for (auto& [v, w] : tree[u]) {
+                if (v != p) {
+                    lift[v][0] = u; 
+                    for (int x = 1; x < 27; ++x) freq[v][x] = freq[u][x]; 
+                    ++freq[v][w]; 
+                    for (int j = 1; j < m; ++j) {
+                        if (lift[v][j-1] == -1) break; 
+                        lift[v][j] = lift[lift[v][j-1]][j-1]; 
+                    }
+                    stk.emplace(v, u, d+1); 
+                }
+            }
+        }
+        vector<int> ans; 
+        for (auto& q : queries) {
+            int u = q[0], v = q[1], uu = u, vv = v, k = 0, sm = 0, mx = 0; 
+            
+            if (depth[u] > depth[v]) swap(u, v); 
+            for (int i = 0; i < m; ++i) 
+                if (depth[v]-depth[u] & 1<<i) v = lift[v][i]; 
+            if (u == v) k = u; 
+            else {
+                for (int i = m-1; i >= 0; --i)
+                    if (lift[u][i] != lift[v][i]) {
+                        u = lift[u][i]; 
+                        v = lift[v][i]; 
+                    }
+                k = lift[u][0];                 
+            }
+            for (int w = 1; w < 27; ++w) {
+                int cand = freq[uu][w] + freq[vv][w] - 2*freq[k][w];
+                sm += cand; 
+                mx = max(mx, cand); 
+            }
+            ans.push_back(sm-mx); 
+        }
+        return ans; 
+    }
 };
 
 
