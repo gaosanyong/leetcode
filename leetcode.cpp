@@ -61502,6 +61502,204 @@ public:
     }
 
 
+    /*2839. Check if Strings Can be Made Equal With Operations I (Easy)
+    You are given two strings s1 and s2, both of length 4, consisting of 
+    lowercase English letters. You can apply the following operation on any of 
+    the two strings any number of times:
+    * Choose any two indices i and j such that j - i = 2, then swap the two 
+      characters at those indices in the string.
+    Return true if you can make the strings s1 and s2 equal, and false 
+    otherwise.
+
+    Example 1:
+    Input: s1 = "abcd", s2 = "cdab"
+    Output: true
+    Explanation: We can do the following operations on s1:
+                 - Choose the indices i = 0, j = 2. The resulting string is 
+                   s1 = "cbad".
+                 - Choose the indices i = 1, j = 3. The resulting string is 
+                   s1 = "cdab" = s2.
+    
+    Example 2:
+    Input: s1 = "abcd", s2 = "dacb"
+    Output: false
+    Explanation: It is not possible to make the two strings equal.
+
+    Constraints:
+    * s1.length == s2.length == 4
+    * s1 and s2 consist only of lowercase English letters.*/
+
+    bool canBeEqual(string s1, string s2) {
+        if (s1[0] != s2[0]) swap(s1[0], s1[2]); 
+        if (s1[1] != s2[1]) swap(s1[1], s1[3]); 
+        return s1 == s2; 
+    }
+
+
+    /*2840. Check if Strings Can be Made Equal With Operations II (Medium)
+    You are given two strings s1 and s2, both of length n, consisting of 
+    lowercase English letters. You can apply the following operation on any of 
+    the two strings any number of times:
+    * Choose any two indices i and j such that i < j and the difference j - i 
+      is even, then swap the two characters at those indices in the string.
+    Return true if you can make the strings s1 and s2 equal, and false 
+    otherwise.
+
+    Example 1:
+    Input: s1 = "abcdba", s2 = "cabdab"
+    Output: true
+    Explanation: We can apply the following operations on s1:
+                 - Choose the indices i = 0, j = 2. The resulting string is 
+                   s1 = "cbadba".
+                 - Choose the indices i = 2, j = 4. The resulting string is 
+                   s1 = "cbbdaa".
+                 - Choose the indices i = 1, j = 5. The resulting string is 
+                   s1 = "cabdab" = s2.
+    
+    Example 2:
+    Input: s1 = "abe", s2 = "bea"
+    Output: false
+    Explanation: It is not possible to make the two strings equal.
+
+    Constraints:
+    * n == s1.length == s2.length
+    * 1 <= n <= 10^5
+    * s1 and s2 consist only of lowercase English letters.*/
+
+    bool checkStrings(string s1, string s2) {
+        vector<int> freq(52); 
+        for (int i = 0; i < s1.size(); ++i) {
+            ++freq[s1[i]-'a' + 26*(i&1)]; 
+            --freq[s2[i]-'a' + 26*(i&1)]; 
+        }
+        return all_of(freq.begin(), freq.end(), [&](auto& x){ return x == 0; }); 
+    }
+
+
+    /*2841. Maximum Sum of Almost Unique Subarray (Medium)
+    You are given an integer array nums and two positive integers m and k. 
+    Return the maximum sum out of all almost unique subarrays of length k of 
+    nums. If no such subarray exists, return 0. A subarray of nums is almost 
+    unique if it contains at least m distinct elements. A subarray is a 
+    contiguous non-empty sequence of elements within an array.
+
+    Example 1:
+    Input: nums = [2,6,7,3,1,7], m = 3, k = 4
+    Output: 18
+    Explanation: There are 3 almost unique subarrays of size k = 4. These 
+                 subarrays are [2, 6, 7, 3], [6, 7, 3, 1], and [7, 3, 1, 7]. 
+                 Among these subarrays, the one with the maximum sum is 
+                 [2, 6, 7, 3] which has a sum of 18.
+    
+    Example 2:
+    Input: nums = [5,9,9,2,4,5,4], m = 1, k = 3
+    Output: 23
+    Explanation: There are 5 almost unique subarrays of size k. These subarrays 
+                 are [5, 9, 9], [9, 9, 2], [9, 2, 4], [2, 4, 5], and [4, 5, 4]. 
+                 Among these subarrays, the one with the maximum sum is 
+                 [5, 9, 9] which has a sum of 23.
+    
+    Example 3:
+    Input: nums = [1,2,1,2,1,2,1], m = 3, k = 3
+    Output: 0
+    Explanation: There are no subarrays of size k = 3 that contain at least 
+                 m = 3 distinct elements in the given array [1,2,1,2,1,2,1]. 
+                 Therefore, no almost unique subarrays exist, and the maximum 
+                 sum is 0.
+
+    Constraints:
+    * 1 <= nums.length <= 2 * 10^4
+    * 1 <= m <= k <= nums.length
+    * 1 <= nums[i] <= 10^9*/
+
+    long long maxSum(vector<int>& nums, int m, int k) {
+        long long ans = 0, prefix = 0; 
+        unordered_map<int, int> freq; 
+        for (int i = 0; i < nums.size(); ++i) {
+            prefix += nums[i]; 
+            ++freq[nums[i]]; 
+            if (i >= k) {
+                prefix -= nums[i-k]; 
+                if (--freq[nums[i-k]] == 0) freq.erase(nums[i-k]); 
+            }
+            if (i >= k-1 && freq.size() >= m) ans = max(ans, prefix); 
+        }
+        return ans; 
+    }
+
+
+    /*2842. Count K-Subsequences of a String With Maximum Beauty (Hard)
+    You are given a string s and an integer k. A k-subsequence is a subsequence 
+    of s, having length k, and all its characters are unique, i.e., every 
+    character occurs once. Let f(c) denote the number of times the character c 
+    occurs in s. The beauty of a k-subsequence is the sum of f(c) for every 
+    character c in the k-subsequence. For example, consider s = "abbbdd" and 
+    k = 2:
+    * f('a') = 1, f('b') = 3, f('d') = 2
+    * Some k-subsequences of s are:
+      + "abbbdd" -> "ab" having a beauty of f('a') + f('b') = 4
+      + "abbbdd" -> "ad" having a beauty of f('a') + f('d') = 3
+      + "abbbdd" -> "bd" having a beauty of f('b') + f('d') = 5
+    Return an integer denoting the number of k-subsequences whose beauty is the 
+    maximum among all k-subsequences. Since the answer may be too large, return 
+    it modulo 10^9 + 7. A subsequence of a string is a new string formed from 
+    the original string by deleting some (possibly none) of the characters 
+    without disturbing the relative positions of the remaining characters.
+
+    Notes
+    * f(c) is the number of times a character c occurs in s, not a k-subsequence.
+    * Two k-subsequences are considered different if one is formed by an index 
+      that is not present in the other. So, two k-subsequences may form the 
+      same string.
+
+    Example 1:
+    Input: s = "bcca", k = 2
+    Output: 4
+    Explanation: From s we have f('a') = 1, f('b') = 1, and f('c') = 2.
+                 The k-subsequences of s are: 
+                 bcca having a beauty of f('b') + f('c') = 3 
+                 bcca having a beauty of f('b') + f('c') = 3 
+                 bcca having a beauty of f('b') + f('a') = 2 
+                 bcca having a beauty of f('c') + f('a') = 3
+                 bcca having a beauty of f('c') + f('a') = 3 
+                 There are 4 k-subsequences that have the maximum beauty, 3. 
+                 Hence, the answer is 4. 
+    
+    Example 2:
+    Input: s = "abbcd", k = 4
+    Output: 2
+    Explanation: From s we have f('a') = 1, f('b') = 2, f('c') = 1, and f('d') = 1. 
+                 The k-subsequences of s are: 
+                 abbcd having a beauty of f('a') + f('b') + f('c') + f('d') = 5
+                 abbcd having a beauty of f('a') + f('b') + f('c') + f('d') = 5 
+                 There are 2 k-subsequences that have the maximum beauty, 5. 
+                 Hence, the answer is 2. 
+
+    Constraints:
+    * 1 <= s.length <= 2 * 10^5
+    * 1 <= k <= s.length
+    * s consists only of lowercase English letters.*/
+
+    int countKSubsequencesWithMaxBeauty(string s, int k) {
+        vector<int> freq(26);
+        for (char& ch : s) freq[ch - 'a']++;
+        nth_element(freq.begin(), freq.end() - k, freq.end());
+        if (k > 26 || freq[26 - k] == 0) return 0;
+        long long ans = 1, comb = 1; 
+        int bep = freq[26 - k], mod = 1e9 + 7, n = 0;
+        for (int& x : freq) 
+            if (x > bep) {
+                --k;
+                ans = ans * x % mod;
+            } else if (x == bep) ++n;
+        for (int i = 0; i < k; ++i) {
+            comb = comb * (n - i) / (i + 1);
+            ans = ans * bep % mod;
+        }
+        return ans * comb % mod;
+    }
+
+
     /*2843. Count Symmetric Integers (Easy)
     You are given two positive integers low and high. An integer x consisting 
     of 2 * n digits is symmetric if the sum of the first n digits of x is equal 
