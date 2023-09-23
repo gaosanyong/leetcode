@@ -61971,6 +61971,233 @@ public:
         }
         return ans; 
     }
+
+
+    /*2859. Sum of Values at Indices With K Set Bits (Easy)
+    You are given a 0-indexed integer array nums and an integer k. Return an 
+    integer that denotes the sum of elements in nums whose corresponding 
+    indices have exactly k set bits in their binary representation. The set 
+    bits in an integer are the 1's present when it is written in binary. For 
+    example, the binary representation of 21 is 10101, which has 3 set bits.
+
+    Example 1:
+    Input: nums = [5,10,1,5,2], k = 1
+    Output: 13
+    Explanation: The binary representation of the indices are: 
+                 0 = 0002
+                 1 = 0012
+                 2 = 0102
+                 3 = 0112
+                 4 = 1002 
+                 Indices 1, 2, and 4 have k = 1 set bits in their binary 
+                 representation. Hence, the answer is 
+                 nums[1] + nums[2] + nums[4] = 13.
+    
+    Example 2:
+    Input: nums = [4,3,2,1], k = 2
+    Output: 1
+    Explanation: The binary representation of the indices are:
+                 0 = 002
+                 1 = 012
+                 2 = 102
+                 3 = 112
+                 Only index 3 has k = 2 set bits in its binary representation.
+                 Hence, the answer is nums[3] = 1.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i] <= 10^5
+    * 0 <= k <= 10*/
+
+    int sumIndicesWithKSetBits(vector<int>& nums, int k) {
+        int ans = 0; 
+        for (int i = 0; i < nums.size(); ++i) 
+            if (__builtin_popcount(i) == k) ans += nums[i]; 
+        return ans; 
+    }
+
+
+    /*2860. Happy Students (Medium)
+    You are given a 0-indexed integer array nums of length n where n is the 
+    total number of students in the class. The class teacher tries to select a 
+    group of students so that all the students remain happy. The ith student 
+    will become happy if one of these two conditions is met:
+    * The student is selected and the total number of selected students is 
+      strictly greater than nums[i].
+    * The student is not selected and the total number of selected students is 
+      strictly less than nums[i].
+    Return the number of ways to select a group of students so that everyone 
+    remains happy.
+
+    Example 1:
+    Input: nums = [1,1]
+    Output: 2
+    Explanation: The two possible ways are:
+                 1. The class teacher selects no student.
+                 2. The class teacher selects both students to form the group. 
+                 If the class teacher selects just one student to form a group 
+                 then the both students will not be happy. Therefore, there are 
+                 only two possible ways.
+    
+    Example 2:
+    Input: nums = [6,0,3,3,6,7,2,7]
+    Output: 3
+    Explanation: The three possible ways are:
+                 1. The class teacher selects the student with index = 1 to 
+                    form the group.
+                 2. The class teacher selects the students with 
+                    index = 1, 2, 3, 6 to form the group.
+                 The class teacher selects all the students to form the group.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] < nums.length*/
+
+    int countWays(vector<int>& nums) {
+        int ans = 0; 
+        sort(nums.begin(), nums.end()); 
+        for (int i = 0, n = nums.size(); i < n; ++i) {
+            if (i == 0 && nums[i]) ++ans; 
+            if (nums[i] < i+1 && (i+1 == n || i+1 < nums[i+1])) ++ans; 
+        }
+        return ans; 
+    }
+
+
+    /*2861. Maximum Number of Alloys (Medium)
+    You are the owner of a company that creates alloys using various types of 
+    metals. There are n different types of metals available, and you have 
+    access to k machines that can be used to create alloys. Each machine 
+    requires a specific amount of each metal type to create an alloy. For the 
+    ith machine to create an alloy, it needs composition[i][j] units of metal 
+    of type j. Initially, you have stock[i] units of metal type i, and 
+    purchasing one unit of metal type i costs cost[i] coins. Given integers 
+    n, k, budget, a 1-indexed 2D array composition, and 1-indexed arrays stock 
+    and cost, your goal is to maximize the number of alloys the company can 
+    create while staying within the budget of budget coins. All alloys must be 
+    created with the same machine. Return the maximum number of alloys that the 
+    company can create.
+
+    Example 1:
+    Input: n = 3, k = 2, budget = 15, composition = [[1,1,1],[1,1,10]], stock = [0,0,0], cost = [1,2,3]
+    Output: 2
+    Explanation: It is optimal to use the 1st machine to create alloys.
+                 To create 2 alloys we need to buy the:
+                 - 2 units of metal of the 1st type.
+                 - 2 units of metal of the 2nd type.
+                 - 2 units of metal of the 3rd type.
+                 In total, we need 2 * 1 + 2 * 2 + 2 * 3 = 12 coins, which is 
+                 smaller than or equal to budget = 15. Notice that we have 0 
+                 units of metal of each type and we have to buy all the 
+                 required units of metal. It can be proven that we can create 
+                 at most 2 alloys.
+    
+    Example 2:
+    Input: n = 3, k = 2, budget = 15, composition = [[1,1,1],[1,1,10]], stock = [0,0,100], cost = [1,2,3]
+    Output: 5
+    Explanation: It is optimal to use the 2nd machine to create alloys.
+                 To create 5 alloys we need to buy:
+                 - 5 units of metal of the 1st type.
+                 - 5 units of metal of the 2nd type.
+                 - 0 units of metal of the 3rd type.
+                 In total, we need 5 * 1 + 5 * 2 + 0 * 3 = 15 coins, which is 
+                 smaller than or equal to budget = 15. It can be proven that we 
+                 can create at most 5 alloys.
+    
+    Example 3:
+    Input: n = 2, k = 3, budget = 10, composition = [[2,1],[1,2],[1,1]], stock = [1,1], cost = [5,5]
+    Output: 2
+    Explanation: It is optimal to use the 3rd machine to create alloys.
+                 To create 2 alloys we need to buy the:
+                 - 1 unit of metal of the 1st type.
+                 - 1 unit of metal of the 2nd type.
+                 In total, we need 1 * 5 + 1 * 5 = 10 coins, which is smaller 
+                 than or equal to budget = 10. It can be proven that we can 
+                 create at most 2 alloys.
+
+    Constraints:
+    * 1 <= n, k <= 100
+    * 0 <= budget <= 10^8
+    * composition.length == k
+    * composition[i].length == n
+    * 1 <= composition[i][j] <= 100
+    * stock.length == cost.length == n
+    * 0 <= stock[i] <= 10^8
+    * 1 <= cost[i] <= 100*/
+
+    int maxNumberOfAlloys(int n, int k, int budget, vector<vector<int>>& composition, vector<int>& stock, vector<int>& cost) {
+        int ans = 0; 
+        for (auto& comp : composition) {
+            int lo = 0, hi = 2e8; 
+            while (lo < hi) {
+                long mid = lo + (hi-lo+1)/2, spend = 0; 
+                for (int i = 0; i < n; ++i) 
+                    spend += cost[i]*max(0l, mid*comp[i] - stock[i]); 
+                if (spend <= budget) lo = mid; 
+                else hi = mid-1; 
+            }
+            ans = max(ans, lo); 
+        }
+        return ans; 
+    }
+
+
+    /*2862. Maximum Element-Sum of a Complete Subset of Indices (Hard)
+    You are given a 1-indexed array nums of n integers. A set of numbers is 
+    complete if the product of every pair of its elements is a perfect square.
+    For a subset of the indices set {1, 2, ..., n} represented as 
+    {i1, i2, ..., ik}, we define its element-sum as: 
+    nums[i1] + nums[i2] + ... + nums[ik]. Return the maximum element-sum of a 
+    complete subset of the indices set {1, 2, ..., n}. A perfect square is a 
+    number that can be expressed as the product of an integer by itself.
+
+    Example 1:
+    Input: nums = [8,7,3,5,7,2,4,9]
+    Output: 16
+    Explanation: Apart from the subsets consisting of a single index, there are 
+                 two other complete subsets of indices: {1,4} and {2,8}. 
+                 - The sum of the elements corresponding to indices 1 and 4 is 
+                   equal to nums[1] + nums[4] = 8 + 5 = 13. 
+                 - The sum of the elements corresponding to indices 2 and 8 is 
+                   equal to nums[2] + nums[8] = 7 + 9 = 16. 
+                 Hence, the maximum element-sum of a complete subset of indices 
+                 is 16.
+    
+    Example 2:
+    Input: nums = [5,10,3,10,1,13,7,9,4]
+    Output: 19
+    Explanation: Apart from the subsets consisting of a single index, there are 
+                 four other complete subsets of indices: 
+                 {1,4}, {1,9}, {2,8}, {4,9}, and {1,4,9}. 
+                 - The sum of the elements corresponding to indices 1 and 4 is 
+                   equal to nums[1] + nums[4] = 5 + 10 = 15.
+                 - The sum of the elements corresponding to indices 1 and 9 is 
+                   equal to nums[1] + nums[9] = 5 + 4 = 9.
+                 - The sum of the elements corresponding to indices 2 and 8 is 
+                   equal to nums[2] + nums[8] = 10 + 9 = 19.
+                 - The sum of the elements corresponding to indices 4 and 9 is 
+                   equal to nums[4] + nums[9] = 10 + 4 = 14.
+                 - The sum of the elements corresponding to indices 1, 4, and 9 
+                   is equal to nums[1] + nums[4] + nums[9] = 5 + 10 + 4 = 19.
+                 Hence, the maximum element-sum of a complete subset of indices 
+                 is 19.
+
+    Constraints:
+    * 1 <= n == nums.length <= 10^4
+    * 1 <= nums[i] <= 10^9*/
+
+    long long maximumSum(vector<int>& nums) {
+        long long ans = 0; 
+        unordered_map<int, long long> mp; 
+        for (int i = 0; i < nums.size(); ++i) {
+            int k = i+1; 
+            for (int v = 2; v*v <= k; ++v) 
+                while (k % (v*v) == 0) k /= v*v; 
+            mp[k] += nums[i]; 
+            ans = max(ans, mp[k]); 
+        }
+        return ans; 
+    }
 };
 
 
