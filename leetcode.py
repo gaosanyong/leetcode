@@ -81781,6 +81781,259 @@ class SegTreeLazy:
         return max(mp.values())
 
 
+    """2864. Maximum Odd Binary Number (Easy)
+    You are given a binary string s that contains at least one '1'. You have to 
+    rearrange the bits in such a way that the resulting binary number is the 
+    maximum odd binary number that can be created from this combination. Return 
+    a string representing the maximum odd binary number that can be created 
+    from the given combination. Note that the resulting string can have leading 
+    zeros.
+    
+    Example 1:    
+    Input: s = "010"
+    Output: "001"
+    Explanation: Because there is just one '1', it must be in the last position. 
+                 So the answer is "001".
+    
+    Example 2:
+    Input: s = "0101"
+    Output: "1001"
+    Explanation: One of the '1's must be in the last position. The maximum 
+                 number that can be made with the remaining digits is "100". So 
+                 the answer is "1001".
+    
+    Constraints:
+    * 1 <= s.length <= 100
+    * s consists only of '0' and '1'.
+    * s contains at least one '1'."""
+
+    def maximumOddBinaryNumber(self, s: str) -> str:
+        ones = s.count('1')
+        return '1'*(ones-1) + '0'*(len(s)-ones) + '1'
+
+
+    """2865. Beautiful Towers I (Medium)
+    You are given a 0-indexed array maxHeights of n integers. You are tasked 
+    with building n towers in the coordinate line. The ith tower is built at 
+    coordinate i and has a height of heights[i]. A configuration of towers is 
+    beautiful if the following conditions hold:
+    * 1 <= heights[i] <= maxHeights[i]
+    * heights is a mountain array.
+    Array heights is a mountain if there exists an index i such that:
+    * For all 0 < j <= i, heights[j - 1] <= heights[j]
+    * For all i <= k < n - 1, heights[k + 1] <= heights[k]
+    Return the maximum possible sum of heights of a beautiful configuration of 
+    towers.
+    
+    Example 1:
+    Input: maxHeights = [5,3,4,1,1]
+    Output: 13
+    Explanation: One beautiful configuration with a maximum sum is 
+                 heights = [5,3,3,1,1]. This configuration is beautiful since:
+                 - 1 <= heights[i] <= maxHeights[i]  
+                 - heights is a mountain of peak i = 0.
+                 It can be shown that there exists no other beautiful 
+                 configuration with a sum of heights greater than 13.
+    
+    Example 2:
+    Input: maxHeights = [6,5,3,9,2,7]
+    Output: 22
+    Explanation: One beautiful configuration with a maximum sum is 
+                 heights = [3,3,3,9,2,2]. This configuration is beautiful since:
+                 - 1 <= heights[i] <= maxHeights[i]
+                 - heights is a mountain of peak i = 3.
+                 It can be shown that there exists no other beautiful 
+                 configuration with a sum of heights greater than 22.
+    
+    Example 3:
+    Input: maxHeights = [3,2,5,5,2,3]
+    Output: 18
+    Explanation: One beautiful configuration with a maximum sum is 
+                 heights = [2,2,5,5,2,2]. This configuration is beautiful since:
+                 - 1 <= heights[i] <= maxHeights[i]
+                 - heights is a mountain of peak i = 2. 
+                 Note that, for this configuration, i = 3 can also be 
+                 considered a peak. It can be shown that there exists no other 
+                 beautiful configuration with a sum of heights greater than 18.
+    
+    Constraints:
+    * 1 <= n == maxHeights <= 10^3
+    * 1 <= maxHeights[i] <= 10^9"""
+
+    def maximumSumOfHeights(self, maxHeights: List[int]) -> int:
+        prefix = []
+        stack = [-1]
+        val = 0
+        for i, x in enumerate(maxHeights): 
+            while len(stack) > 1 and maxHeights[stack[-1]] >= x: 
+                ii = stack.pop()
+                val -= (ii - stack[-1])*maxHeights[ii]
+            val += (i - stack[-1])*x
+            prefix.append(val)
+            stack.append(i)
+        ans = val = 0 
+        stack = [len(maxHeights)]
+        for i, x in reversed(list(enumerate(maxHeights))): 
+            while len(stack) > 1 and maxHeights[stack[-1]] >= x: 
+                ii = stack.pop()
+                val -= (stack[-1] - ii)*maxHeights[ii]
+            val += (stack[-1] - i) * x
+            stack.append(i)
+            ans = max(ans, prefix[i] + val - maxHeights[i])
+        return ans 
+
+
+    """2866. Beautiful Towers II (Medium)
+    You are given a 0-indexed array maxHeights of n integers. You are tasked 
+    with building n towers in the coordinate line. The ith tower is built at 
+    coordinate i and has a height of heights[i]. A configuration of towers is 
+    beautiful if the following conditions hold:
+    * 1 <= heights[i] <= maxHeights[i]
+    * heights is a mountain array.
+    Array heights is a mountain if there exists an index i such that:
+    * For all 0 < j <= i, heights[j - 1] <= heights[j]
+    * For all i <= k < n - 1, heights[k + 1] <= heights[k]
+    Return the maximum possible sum of heights of a beautiful configuration of 
+    towers.
+
+    Example 1:
+    Input: maxHeights = [5,3,4,1,1]
+    Output: 13
+    Explanation: One beautiful configuration with a maximum sum is 
+                 heights = [5,3,3,1,1]. This configuration is beautiful since:
+                 - 1 <= heights[i] <= maxHeights[i]  
+                 - heights is a mountain of peak i = 0.
+                 It can be shown that there exists no other beautiful 
+                 configuration with a sum of heights greater than 13.
+    
+    Example 2:
+    Input: maxHeights = [6,5,3,9,2,7]
+    Output: 22
+    Explanation: One beautiful configuration with a maximum sum is 
+                 heights = [3,3,3,9,2,2]. This configuration is beautiful since:
+                 - 1 <= heights[i] <= maxHeights[i]
+                 - heights is a mountain of peak i = 3.
+                 It can be shown that there exists no other beautiful 
+                 configuration with a sum of heights greater than 22.
+    
+    Example 3:
+    Input: maxHeights = [3,2,5,5,2,3]
+    Output: 18
+    Explanation: One beautiful configuration with a maximum sum is 
+                 heights = [2,2,5,5,2,2]. This configuration is beautiful since:
+                 - 1 <= heights[i] <= maxHeights[i]
+                 - heights is a mountain of peak i = 2. 
+                 Note that, for this configuration, i = 3 can also be 
+                 considered a peak. It can be shown that there exists no other 
+                 beautiful configuration with a sum of heights greater than 18.
+
+    Constraints:
+    * 1 <= n == maxHeights <= 10^5
+    * 1 <= maxHeights[i] <= 10^9"""
+
+    def maximumSumOfHeights(self, maxHeights: List[int]) -> int:
+        prefix = []
+        stack = [-1]
+        val = 0
+        for i, x in enumerate(maxHeights): 
+            while len(stack) > 1 and maxHeights[stack[-1]] >= x: 
+                ii = stack.pop()
+                val -= (ii - stack[-1])*maxHeights[ii]
+            val += (i - stack[-1])*x
+            prefix.append(val)
+            stack.append(i)
+        ans = val = 0 
+        stack = [len(maxHeights)]
+        for i, x in reversed(list(enumerate(maxHeights))): 
+            while len(stack) > 1 and maxHeights[stack[-1]] >= x: 
+                ii = stack.pop()
+                val -= (stack[-1] - ii)*maxHeights[ii]
+            val += (stack[-1] - i) * x
+            stack.append(i)
+            ans = max(ans, prefix[i] + val - maxHeights[i])
+        return ans 
+
+
+    """2867. Count Valid Paths in a Tree (Hard) 
+    There is an undirected tree with n nodes labeled from 1 to n. You are given 
+    the integer n and a 2D integer array edges of length n - 1, where 
+    edges[i] = [ui, vi] indicates that there is an edge between nodes ui and vi 
+    in the tree. Return the number of valid paths in the tree. A path (a, b) is 
+    valid if there exists exactly one prime number among the node labels in the 
+    path from a to b.
+
+    Note that:
+    * The path (a, b) is a sequence of distinct nodes starting with node a and 
+      ending with node b such that every two adjacent nodes in the sequence 
+      share an edge in the tree.
+    * Path (a, b) and path (b, a) are considered the same and counted only once.
+
+    Example 1:
+    Input: n = 5, edges = [[1,2],[1,3],[2,4],[2,5]]
+    Output: 4
+    Explanation: The pairs with exactly one prime number on the path between 
+                 them are: 
+                 - (1, 2) since the path from 1 to 2 contains prime number 2. 
+                 - (1, 3) since the path from 1 to 3 contains prime number 3.
+                 - (1, 4) since the path from 1 to 4 contains prime number 2.
+                 - (2, 4) since the path from 2 to 4 contains prime number 2.
+                 It can be shown that there are only 4 valid paths.
+    
+    Example 2:
+    Input: n = 6, edges = [[1,2],[1,3],[2,4],[3,5],[3,6]]
+    Output: 6
+    Explanation: The pairs with exactly one prime number on the path between 
+                 them are: 
+                 - (1, 2) since the path from 1 to 2 contains prime number 2.
+                 - (1, 3) since the path from 1 to 3 contains prime number 3.
+                 - (1, 4) since the path from 1 to 4 contains prime number 2.
+                 - (1, 6) since the path from 1 to 6 contains prime number 3.
+                 - (2, 4) since the path from 2 to 4 contains prime number 2.
+                 - (3, 6) since the path from 3 to 6 contains prime number 3.
+                 It can be shown that there are only 6 valid paths.
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * edges.length == n - 1
+    * edges[i].length == 2
+    * 1 <= ui, vi <= n
+    * The input is generated such that edges represent a valid tree."""
+
+    def countPaths(self, n: int, edges: List[List[int]]) -> int:        
+        prime = [True]*(n+1)
+        prime[0] = prime[1] = False 
+        for x in range(2, isqrt(n)+1): 
+            if prime[x]: 
+                for xx in range(x*x, n+1, x): 
+                    prime[xx] = False 
+        tree = [[] for _ in range(n+1)]
+        for u, v in edges: 
+            tree[u].append(v)
+            tree[v].append(u)
+        mp = list(range(n+1))
+        for x in range(1, n+1): 
+            if not prime[x] and mp[x] == x: 
+                stack = [(x, -1)]
+                while stack: 
+                    u, p = stack.pop()
+                    for v in tree[u]: 
+                        if v != p and not prime[v]: 
+                            mp[v] = x 
+                            stack.append((v, u))
+        freq = Counter(mp)
+        ans = 0 
+        for u in range(2, n+1): 
+            if prime[u]: 
+                cand = 0 
+                prefix = 1
+                for v in tree[u]: 
+                    if not prime[v]: 
+                        cand += prefix * freq[mp[v]]
+                        prefix += freq[mp[v]]
+                ans += cand
+        return ans 
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It 
 should support the following operations: get and put. 
