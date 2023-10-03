@@ -16527,6 +16527,209 @@ class SegTreeLazy {
     }
 
 
+    /*2869. Minimum Operations to Collect Elements (Easy)
+    You are given an array nums of positive integers and an integer k. In one 
+    operation, you can remove the last element of the array and add it to your 
+    collection. Return the minimum number of operations needed to collect 
+    elements 1, 2, ..., k.
+
+    Example 1:
+    Input: nums = [3,1,5,4,2], k = 2
+    Output: 4
+    Explanation: After 4 operations, we collect elements 2, 4, 5, and 1, in 
+                 this order. Our collection contains elements 1 and 2. Hence, 
+                 the answer is 4.
+    
+    Example 2:
+    Input: nums = [3,1,5,4,2], k = 5
+    Output: 5
+    Explanation: After 5 operations, we collect elements 2, 4, 5, 1, and 3, in 
+                 this order. Our collection contains elements 1 through 5. 
+                 Hence, the answer is 5.
+    
+    Example 3:
+    Input: nums = [3,2,5,3,1], k = 3
+    Output: 4
+    Explanation: After 4 operations, we collect elements 1, 3, 5, and 2, in 
+                 this order. Our collection contains elements 1 through 3. 
+                 Hence, the answer is 4.
+
+    Constraints:
+    * 1 <= nums.length <= 50
+    * 1 <= nums[i] <= nums.length
+    * 1 <= k <= nums.length
+    * The input is generated such that you can collect elements 1, 2, ..., k.*/
+
+    public int minOperations(List<Integer> nums, int k) {
+        Set<Integer> seen = new HashSet(); 
+        for (int n = nums.size(), i = n-1; i >= 0; --i) {
+            if (nums.get(i) <= k) seen.add(nums.get(i)-1); 
+            if (seen.size() == k) return n-i; 
+        }
+        return -1; 
+    }
+
+
+    /*2870. Minimum Number of Operations to Make Array Empty (Medium)
+    You are given a 0-indexed array nums consisting of positive integers. There 
+    are two types of operations that you can apply on the array any number of 
+    times:
+    * Choose two elements with equal values and delete them from the array.
+    * Choose three elements with equal values and delete them from the array.
+    Return the minimum number of operations required to make the array empty, 
+    or -1 if it is not possible.
+
+    Example 1:
+    Input: nums = [2,3,3,2,2,4,2,3,4]
+    Output: 4
+    Explanation: We can apply the following operations to make the array empty:
+                 - Apply the first operation on the elements at indices 0 and 3. 
+                   The resulting array is nums = [3,3,2,4,2,3,4].
+                 - Apply the first operation on the elements at indices 2 and 4. 
+                   The resulting array is nums = [3,3,4,3,4].
+                 - Apply the second operation on the elements at indices 0, 1, 
+                   and 3. The resulting array is nums = [4,4].
+                 - Apply the first operation on the elements at indices 0 and 1. 
+                   The resulting array is nums = [].
+                 It can be shown that we cannot make the array empty in less 
+                 than 4 operations.
+    
+    Example 2:
+    Input: nums = [2,1,2,2,3,3]
+    Output: -1
+    Explanation: It is impossible to empty the array.
+
+    Constraints:
+    * 2 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^6*/
+
+    public int minOperations(int[] nums) {
+        Map<Integer, Integer> freq = new HashMap(); 
+        for (var x : nums) freq.merge(x, 1, Integer::sum); 
+        int ans = 0; 
+        for (var v : freq.values()) {
+            if (v == 1) return -1; 
+            ans += v / 3; 
+            if (v % 3 > 0) ++ans; 
+        }
+        return ans; 
+    }
+
+
+    /*2871. Split Array Into Maximum Number of Subarrays (Medium)
+    You are given an array nums consisting of non-negative integers. We define 
+    the score of subarray nums[l..r] such that l <= r as 
+    nums[l] AND nums[l + 1] AND ... AND nums[r] where AND is the bitwise AND 
+    operation. Consider splitting the array into one or more subarrays such 
+    that the following conditions are satisfied:
+    * Each element of the array belongs to exactly one subarray.
+    * The sum of scores of the subarrays is the minimum possible.
+    Return the maximum number of subarrays in a split that satisfies the 
+    conditions above. A subarray is a contiguous part of an array.
+
+    Example 1:
+    Input: nums = [1,0,2,0,1,2]
+    Output: 3
+    Explanation: We can split the array into the following subarrays:
+                 - [1,0]. The score of this subarray is 1 AND 0 = 0.
+                 - [2,0]. The score of this subarray is 2 AND 0 = 0.
+                 - [1,2]. The score of this subarray is 1 AND 2 = 0.
+                 The sum of scores is 0 + 0 + 0 = 0, which is the minimum 
+                 possible score that we can obtain. It can be shown that we 
+                 cannot split the array into more than 3 subarrays with a total 
+                 score of 0. So we return 3.
+    
+    Example 2:
+    Input: nums = [5,7,1,3]
+    Output: 1
+    Explanation: We can split the array into one subarray: [5,7,1,3] with a 
+                 score of 1, which is the minimum possible score that we can 
+                 obtain. It can be shown that we cannot split the array into 
+                 more than 1 subarray with a total score of 1. So we return 1.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] <= 10^6*/
+
+    public int maxSubarrays(int[] nums) {
+        int ans = 0, prefix = (1<<20)-1; 
+        for (var x : nums) {
+            prefix &= x; 
+            if (prefix == 0) {
+                ++ans; 
+                prefix = (1<<20)-1; 
+            }
+        }
+        return Math.max(1, ans); 
+    }
+
+
+    /*2872. Maximum Number of K-Divisible Components (Hard)
+    There is an undirected tree with n nodes labeled from 0 to n - 1. You are 
+    given the integer n and a 2D integer array edges of length n - 1, where 
+    edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi 
+    in the tree. You are also given a 0-indexed integer array values of length 
+    n, where values[i] is the value associated with the ith node, and an 
+    integer k. A valid split of the tree is obtained by removing any set of 
+    edges, possibly empty, from the tree such that the resulting components all 
+    have values that are divisible by k, where the value of a connected 
+    component is the sum of the values of its nodes. Return the maximum number 
+    of components in any valid split.
+
+    Example 1:
+    Input: n = 5, edges = [[0,2],[1,2],[1,3],[2,4]], values = [1,8,1,4,4], k = 6
+    Output: 2
+    Explanation: We remove the edge connecting node 1 with 2. The resulting 
+                 split is valid because:
+                 - The value of the component containing nodes 1 and 3 is 
+                   values[1] + values[3] = 12.
+                 - The value of the component containing nodes 0, 2, and 4 is 
+                   values[0] + values[2] + values[4] = 6.
+                 It can be shown that no other valid split has more than 2 
+                 connected components.
+    
+    Example 2:
+    Input: n = 7, edges = [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]], values = [3,0,6,1,5,2,1], k = 3
+    Output: 3
+    Explanation: We remove the edge connecting node 0 with 2, and the edge 
+                 connecting node 0 with 1. The resulting split is valid because:
+                 - The value of the component containing node 0 is values[0] = 3.
+                 - The value of the component containing nodes 2, 5, and 6 is 
+                   values[2] + values[5] + values[6] = 9.
+                 - The value of the component containing nodes 1, 3, and 4 is 
+                   values[1] + values[3] + values[4] = 6.
+                 It can be shown that no other valid split has more than 3 
+                 connected components.
+
+    Constraints:
+    * 1 <= n <= 3 * 10^4
+    * edges.length == n - 1
+    * edges[i].length == 2
+    * 0 <= ai, bi < n
+    * values.length == n
+    * 0 <= values[i] <= 10^9
+    * 1 <= k <= 10^9
+    * Sum of values is divisible by k.
+    * The input is generated such that edges represents a valid tree.*/
+
+    private long fn(int u, int p, List<Integer>[] tree, int[] values, int k) {
+        for (var v : tree[u]) 
+            if (v != p) values[u] = (int) ((values[u] + fn(v, u, tree, values, k)) % k); 
+        return values[u]; 
+    }
+    
+    public int maxKDivisibleComponents(int n, int[][] edges, int[] values, int k) {
+        List<Integer>[] tree = new ArrayList[n]; 
+        Arrays.setAll(tree, x -> new ArrayList()); 
+        for (var e : edges) {
+            tree[e[0]].add(e[1]); 
+            tree[e[1]].add(e[0]); 
+        }
+        fn(0, -1, tree, values, k); 
+        return (int) IntStream.of(values).filter(x -> x % k == 0).count(); 
+    }
+
+
     /*2873. Maximum Value of an Ordered Triplet I (Easy)
     You are given a 0-indexed integer array nums. Return the maximum value over 
     all triplets of indices (i, j, k) such that i < j < k. If all such triplets 
