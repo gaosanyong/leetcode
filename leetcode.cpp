@@ -62556,8 +62556,7 @@ public:
         int ans = 0; 
         for (auto& [_, v] : freq) {
             if (v == 1) return -1; 
-            ans += v/3; 
-            if (v % 3) ++ans; 
+            ans += (v + 2)/3; 
         }
         return ans;         
     }

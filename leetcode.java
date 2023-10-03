@@ -16609,8 +16609,7 @@ class SegTreeLazy {
         int ans = 0; 
         for (var v : freq.values()) {
             if (v == 1) return -1; 
-            ans += v / 3; 
-            if (v % 3 > 0) ++ans; 
+            ans += (v + 2)/3; 
         }
         return ans; 
     }

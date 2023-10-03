@@ -82111,8 +82111,7 @@ class SegTreeLazy:
         ans = 0 
         for v in Counter(nums).values(): 
             if v == 1: return -1 
-            ans += v // 3
-            if v % 3: ans += 1
+            ans += (v + 2)//3
         return ans 
 
 
