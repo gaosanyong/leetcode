@@ -62598,12 +62598,12 @@ public:
     * 0 <= nums[i] <= 10^6*/
 
     int maxSubarrays(vector<int>& nums) {
-        int ans = 0, prefix = (1<<20)-1; 
+        int ans = 0, prefix = -1; 
         for (auto& x : nums) {
             prefix &= x; 
             if (prefix == 0) {
                 ++ans; 
-                prefix = (1<<20)-1; 
+                prefix = -1; 
             }
         }
         return max(1, ans); 

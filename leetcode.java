@@ -16651,12 +16651,12 @@ class SegTreeLazy {
     * 0 <= nums[i] <= 10^6*/
 
     public int maxSubarrays(int[] nums) {
-        int ans = 0, prefix = (1<<20)-1; 
+        int ans = 0, prefix = -1; 
         for (var x : nums) {
             prefix &= x; 
             if (prefix == 0) {
                 ++ans; 
-                prefix = (1<<20)-1; 
+                prefix = -1; 
             }
         }
         return Math.max(1, ans); 
