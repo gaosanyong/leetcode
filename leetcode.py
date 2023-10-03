@@ -82068,10 +82068,10 @@ class SegTreeLazy:
     * The input is generated such that you can collect elements 1, 2, ..., k."""
 
     def minOperations(self, nums: List[int], k: int) -> int:
-        left = set(range(k))
+        left = (1<<k)-1
         for i, x in enumerate(reversed(nums)): 
-            if x <= k: left.discard(x-1)
-            if not left: return i+1
+            if x <= k and left & 1<<x-1: left ^= 1<<x-1
+            if left == 0: return i+1
 
 
     """2870. Minimum Number of Operations to Make Array Empty (Medium)

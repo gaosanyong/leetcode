@@ -16561,10 +16561,10 @@ class SegTreeLazy {
     * The input is generated such that you can collect elements 1, 2, ..., k.*/
 
     public int minOperations(List<Integer> nums, int k) {
-        Set<Integer> seen = new HashSet(); 
+        Long left = (1l<<k) - 1; 
         for (int n = nums.size(), i = n-1; i >= 0; --i) {
-            if (nums.get(i) <= k) seen.add(nums.get(i)-1); 
-            if (seen.size() == k) return n-i; 
+            if (nums.get(i) <= k && (left & 1l<<nums.get(i)-1) > 0) left ^= 1l<<nums.get(i)-1; 
+            if (left == 0) return n-i; 
         }
         return -1; 
     }

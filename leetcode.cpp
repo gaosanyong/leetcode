@@ -62508,10 +62508,10 @@ public:
     * The input is generated such that you can collect elements 1, 2, ..., k.*/
 
     int minOperations(vector<int>& nums, int k) {
-        unordered_set<int> seen; 
+        long left = (1l<<k) - 1; 
         for (int n = nums.size(), i = n-1; i >= 0; --i) {
-            if (nums[i] <= k) seen.insert(nums[i]); 
-            if (seen.size() == k) return n-i; 
+            if (nums[i] <= k && left & 1l<<nums[i]-1) left ^= 1l<<nums[i]-1; 
+            if (left == 0) return n-i; 
         }
         return -1; 
     }
