@@ -16926,6 +16926,212 @@ class SegTreeLazy {
             }
         return ans; 
     }
+
+
+    /*2894. Divisible and Non-divisible Sums Difference (Easy)
+    You are given positive integers n and m. Define two integers, num1 and num2, 
+    as follows:
+    * num1: The sum of all integers in the range [1, n] that are not divisible 
+      by m.
+    * num2: The sum of all integers in the range [1, n] that are divisible by m.
+    Return the integer num1 - num2.
+
+    Example 1:
+    Input: n = 10, m = 3
+    Output: 19
+    Explanation: In the given example:
+                 - Integers in the range [1, 10] that are not divisible by 3 
+                   are [1,2,4,5,7,8,10], num1 is the sum of those integers = 37.
+                 - Integers in the range [1, 10] that are divisible by 3 are 
+                   [3,6,9], num2 is the sum of those integers = 18.
+                 We return 37 - 18 = 19 as the answer.
+    
+    Example 2:
+    Input: n = 5, m = 6
+    Output: 15
+    Explanation: In the given example:
+                 - Integers in the range [1, 5] that are not divisible by 6 are 
+                   [1,2,3,4,5], num1 is the sum of those integers = 15.
+                 - Integers in the range [1, 5] that are divisible by 6 are [], 
+                   num2 is the sum of those integers = 0.
+                 We return 15 - 0 = 15 as the answer.
+    
+    Example 3:
+    Input: n = 5, m = 1
+    Output: -15
+    Explanation: In the given example:
+                 - Integers in the range [1, 5] that are not divisible by 1 are 
+                   [], num1 is the sum of those integers = 0.
+                 - Integers in the range [1, 5] that are divisible by 1 are 
+                   [1,2,3,4,5], num2 is the sum of those integers = 15.
+                 We return 0 - 15 = -15 as the answer.
+
+    Constraints: 1 <= n, m <= 1000*/
+
+    public int differenceOfSums(int n, int m) {
+        return n*(n+1)/2 - (n/m)*(n/m+1)*m; 
+    }
+
+
+    /*2895. Minimum Processing Time (Medium)
+    You have n processors each having 4 cores and n * 4 tasks that need to be 
+    executed such that each core should perform only one task. Given a 
+    0-indexed integer array processorTime representing the time at which each 
+    processor becomes available for the first time and a 0-indexed integer 
+    array tasks representing the time it takes to execute each task, return the 
+    minimum time when all of the tasks have been executed by the processors.
+    Note: Each core executes the task independently of the others.
+
+    Example 1:
+    Input: processorTime = [8,10], tasks = [2,2,3,1,8,7,4,5]
+    Output: 16
+    Explanation: It's optimal to assign the tasks at indexes 4, 5, 6, 7 to the 
+                 first processor which becomes available at time = 8, and the 
+                 tasks at indexes 0, 1, 2, 3 to the second processor which 
+                 becomes available at time = 10. Time taken by the first 
+                 processor to finish execution of all tasks = 
+                 max(8 + 8, 8 + 7, 8 + 4, 8 + 5) = 16. Time taken by the second 
+                 processor to finish execution of all tasks = 
+                 max(10 + 2, 10 + 2, 10 + 3, 10 + 1) = 13. Hence, it can be 
+                 shown that the minimum time taken to execute all the tasks is 
+                 16.
+    
+    Example 2:
+    Input: processorTime = [10,20], tasks = [2,3,1,2,5,8,4,3]
+    Output: 23
+    Explanation: It's optimal to assign the tasks at indexes 1, 4, 5, 6 to the 
+                 first processor which becomes available at time = 10, and the 
+                 tasks at indexes 0, 2, 3, 7 to the second processor which 
+                 becomes available at time = 20. Time taken by the first 
+                 processor to finish execution of all tasks = 
+                 max(10 + 3, 10 + 5, 10 + 8, 10 + 4) = 18. Time taken by the 
+                 second processor to finish execution of all tasks = 
+                 max(20 + 2, 20 + 1, 20 + 2, 20 + 3) = 23. Hence, it can be 
+                 shown that the minimum time taken to execute all the tasks is 
+                 23.
+
+    Constraints:
+    * 1 <= n == processorTime.length <= 25000
+    * 1 <= tasks.length <= 10^5
+    * 0 <= processorTime[i] <= 10^9
+    * 1 <= tasks[i] <= 10^9
+    * tasks.length == 4 * n*/
+
+    public int minProcessingTime(List<Integer> processorTime, List<Integer> tasks) {
+        Collections.sort(processorTime); 
+        Collections.sort(tasks, (a, b) -> Integer.compare(b, a)); 
+        int ans = 0; 
+        for (int i = 0; i < tasks.size(); ++i) 
+            ans = Math.max(ans, processorTime.get(i/4) + tasks.get(i)); 
+        return ans; 
+    }
+
+
+    /*2896. Apply Operations to Make Two Strings Equal (Medium)
+    You are given two 0-indexed binary strings s1 and s2, both of length n, and 
+    a positive integer x. You can perform any of the following operations on 
+    the string s1 any number of times:
+    * Choose two indices i and j, and flip both s1[i] and s1[j]. The cost of 
+      this operation is x.
+    * Choose an index i such that i < n - 1 and flip both s1[i] and s1[i + 1]. 
+      The cost of this operation is 1.
+    Return the minimum cost needed to make the strings s1 and s2 equal, or 
+    return -1 if it is impossible. Note that flipping a character means 
+    changing it from 0 to 1 or vice-versa.
+
+    Example 1:
+    Input: s1 = "1100011000", s2 = "0101001010", x = 2
+    Output: 4
+    Explanation: We can do the following operations:
+                 - Choose i = 3 and apply the second operation. The resulting 
+                   string is s1 = "1101111000".
+                 - Choose i = 4 and apply the second operation. The resulting 
+                   string is s1 = "1101001000".
+                 - Choose i = 0 and j = 8 and apply the first operation. The 
+                   resulting string is s1 = "0101001010" = s2.
+                 The total cost is 1 + 1 + 2 = 4. It can be shown that it is 
+                 the minimum cost possible.
+    
+    Example 2:
+    Input: s1 = "10110", s2 = "00011", x = 4
+    Output: -1
+    Explanation: It is not possible to make the two strings equal.
+
+    Constraints:
+    * n == s1.length == s2.length
+    * 1 <= n, x <= 500
+    * s1 and s2 consist only of the characters '0' and '1'.*/
+
+    public int minOperations(String s1, String s2, int x) {
+        List<Integer> diff = new ArrayList(); 
+        for (int i = 0; i < s1.length(); ++i)
+            if (s1.charAt(i) != s2.charAt(i)) diff.add(i); 
+        int n = diff.size(); 
+        if (n%2 == 1) return -1; 
+        double f0 = 0, f1 = 0; 
+        for (int i = 0; i < n; ++i) {
+            double f2 = f1 + x/2.0; 
+            if (i > 0) f2 = Math.min(f2, f0 + diff.get(i) - diff.get(i-1)); 
+            f0 = f1; 
+            f1 = f2; 
+        }
+        return (int) f1; 
+    }
+
+
+    /*2897. Apply Operations on Array to Maximize Sum of Squares (Hard)
+    You are given a 0-indexed integer array nums and a positive integer k. You 
+    can do the following operation on the array any number of times:
+    * Choose any two distinct indices i and j and simultaneously update the 
+      values of nums[i] to (nums[i] AND nums[j]) and nums[j] to 
+      (nums[i] OR nums[j]). Here, OR denotes the bitwise OR operation, and AND 
+      denotes the bitwise AND operation.
+    You have to choose k elements from the final array and calculate the sum of 
+    their squares. Return the maximum sum of squares you can achieve. Since the 
+    answer can be very large, return it modulo 10^9 + 7.
+
+    Example 1:
+    Input: nums = [2,6,5,8], k = 2
+    Output: 261
+    Explanation: We can do the following operations on the array:
+                 - Choose i = 0 and j = 3, then change nums[0] to (2 AND 8) = 0 
+                   and nums[3] to (2 OR 8) = 10. The resulting array is 
+                   nums = [0,6,5,10].
+                 - Choose i = 2 and j = 3, then change nums[2] to (5 AND 10) = 0 
+                   and nums[3] to (5 OR 10) = 15. The resulting array is 
+                   nums = [0,6,0,15].
+                 We can choose the elements 15 and 6 from the final array. The 
+                 sum of squares is 152 + 62 = 261. It can be shown that this is 
+                 the maximum value we can get.
+    
+    Example 2:
+    Input: nums = [4,5,4,7], k = 3
+    Output: 90
+    Explanation: We do not need to apply any operations. We can choose the 
+                 elements 7, 5, and 4 with a sum of squares: 72 + 52 + 42 = 90.
+                 It can be shown that this is the maximum value we can get.
+
+    Constraints:
+    * 1 <= k <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9*/
+
+    public int maxSum(List<Integer> nums, int k) {
+        int[] freq = new int[32]; 
+        for (var x : nums) 
+            for (int i = 0; i < 32; ++i)
+                if ((x & 1<<i) > 0) ++freq[i]; 
+        long ans = 0; 
+        while (k-- > 0) {
+            long val = 0; 
+            for (int i = 31; i >= 0; --i)
+                if (freq[i] > 0) {
+                    --freq[i]; 
+                    val ^= 1<<i; 
+                }
+            ans = (ans + val*val) % 1_000_000_007; 
+        }
+        return (int) ans; 
+    }
 }
 
 
