@@ -17134,6 +17134,194 @@ class SegTreeLazy {
     }
 
 
+    /*2928. Distribute Candies Among Children I (Easy)
+    You are given two positive integers n and limit. Return the total number of 
+    ways to distribute n candies among 3 children such that no child gets more 
+    than limit candies.
+
+    Example 1:
+    Input: n = 5, limit = 2
+    Output: 3
+    Explanation: There are 3 ways to distribute 5 candies such that no child 
+                 gets more than 2 candies: (1, 2, 2), (2, 1, 2) and (2, 2, 1).
+    
+    Example 2:
+    Input: n = 3, limit = 3
+    Output: 10
+    Explanation: There are 10 ways to distribute 3 candies such that no child 
+                 gets more than 3 candies: (0, 0, 3), (0, 1, 2), (0, 2, 1), 
+                 (0, 3, 0), (1, 0, 2), (1, 1, 1), (1, 2, 0), (2, 0, 1), 
+                 (2, 1, 0) and (3, 0, 0).
+
+    Constraints:
+    * 1 <= n <= 50
+    * 1 <= limit <= 50*/
+
+    public int distributeCandies(int n, int limit) {
+        int ans = 0; 
+        for (int x = 0; x <= limit; ++x)
+            for (int y = 0; y <= limit; ++y)
+                if (0 <= n-x-y && n-x-y <= limit) ++ans; 
+        return ans; 
+    }
+
+
+    /*2929. Distribute Candies Among Children II (Medium)
+    You are given two positive integers n and limit. Return the total number of 
+    ways to distribute n candies among 3 children such that no child gets more 
+    than limit candies.
+
+    Example 1:
+    Input: n = 5, limit = 2
+    Output: 3
+    Explanation: There are 3 ways to distribute 5 candies such that no child 
+                 gets more than 2 candies: (1, 2, 2), (2, 1, 2) and (2, 2, 1).
+    Example 2:
+    Input: n = 3, limit = 3
+    Output: 10
+    Explanation: There are 10 ways to distribute 3 candies such that no child 
+                 gets more than 3 candies: (0, 0, 3), (0, 1, 2), (0, 2, 1), 
+                 (0, 3, 0), (1, 0, 2), (1, 1, 1), (1, 2, 0), (2, 0, 1), 
+                 (2, 1, 0) and (3, 0, 0).
+
+    Constraints:
+    * 1 <= n <= 10^6
+    * 1 <= limit <= 10^6*/
+
+    public long distributeCandies(int n, int limit) {
+        long ans = 0; 
+        for (int x = 0; x <= limit; ++x)
+            ans += Math.max(0, Math.min(n-x, 2*limit-n+x)+1); 
+        return ans; 
+    }
+
+
+    /*2930. Number of Strings Which Can Be Rearranged to Contain Substring (Medium)
+    You are given an integer n. A string s is called good if it contains only 
+    lowercase English characters and it is possible to rearrange the characters 
+    of s such that the new string contains "leet" as a substring.
+
+    For example:
+    * The string "lteer" is good because we can rearrange it to form "leetr" .
+    * "letl" is not good because we cannot rearrange it to contain "leet" as a 
+      substring.
+    Return the total number of good strings of length n. Since the answer may 
+    be large, return it modulo 10^9 + 7. A substring is a contiguous sequence 
+    of characters within a string.
+     
+    Example 1:
+    Input: n = 4
+    Output: 12
+    Explanation: The 12 strings which can be rearranged to have "leet" as a 
+                 substring are: "eelt", "eetl", "elet", "elte", "etel", "etle", 
+                 "leet", "lete", "ltee", "teel", "tele", and "tlee".
+    
+    Example 2:
+    Input: n = 10
+    Output: 83943898
+    Explanation: The number of strings with length 10 which can be rearranged 
+                 to have "leet" as a substring is 526083947580. Hence the 
+                 answer is 526083947580 % (10^9 + 7) = 83943898.
+
+    Constraints: 1 <= n <= 10^5*/
+
+    private long pow(long x, int p, int m) {
+        long ans = 1; 
+        for (; p > 0; p >>= 1) {
+            if (p % 2 == 1) ans = ans * x % m; 
+            x = x * x % m; 
+        }
+        return ans; 
+    }
+    
+    public int stringCount(int n) {
+        final int mod = 1_000_000_007; 
+        return (int) (((pow(26, n, mod) - (75+n)*pow(25, n-1, mod) + (72+2*n)*pow(24, n-1, mod) - (23+n)*pow(23, n-1, mod)) % mod + mod) % mod); 
+    }
+
+
+    /*2931. Maximum Spending After Buying Items (Hard)
+    You are given a 0-indexed m * n integer matrix values, representing the 
+    values of m * n different items in m different shops. Each shop has n items 
+    where the jth item in the ith shop has a value of values[i][j]. 
+    Additionally, the items in the ith shop are sorted in non-increasing order 
+    of value. That is, values[i][j] >= values[i][j + 1] for all 0 <= j < n - 1.
+    On each day, you would like to buy a single item from one of the shops. 
+    Specifically, On the dth day you can:
+    * Pick any shop i.
+    * Buy the rightmost available item j for the price of values[i][j] * d. 
+      That is, find the greatest index j such that item j was never bought 
+      before, and buy it for the price of values[i][j] * d.
+    Note that all items are pairwise different. For example, if you have bought 
+    item 0 from shop 1, you can still buy item 0 from any other shop. Return 
+    the maximum amount of money that can be spent on buying all m * n products.
+
+    Example 1:
+    Input: values = [[8,5,2],[6,4,1],[9,7,3]]
+    Output: 285
+    Explanation: - On the first day, we buy product 2 from shop 1 for a price 
+                   of values[1][2] * 1 = 1.
+                 - On the second day, we buy product 2 from shop 0 for a price 
+                   of values[0][2] * 2 = 4.
+                 - On the third day, we buy product 2 from shop 2 for a price 
+                   of values[2][2] * 3 = 9.
+                 - On the fourth day, we buy product 1 from shop 1 for a price 
+                   of values[1][1] * 4 = 16.
+                 - On the fifth day, we buy product 1 from shop 0 for a price 
+                   of values[0][1] * 5 = 25.
+                 - On the sixth day, we buy product 0 from shop 1 for a price 
+                   of values[1][0] * 6 = 36.
+                 - On the seventh day, we buy product 1 from shop 2 for a price 
+                   of values[2][1] * 7 = 49.
+                 - On the eighth day, we buy product 0 from shop 0 for a price 
+                   of values[0][0] * 8 = 64.
+                 - On the ninth day, we buy product 0 from shop 2 for a price 
+                   of values[2][0] * 9 = 81.
+                 Hence, our total spending is equal to 285. It can be shown 
+                 that 285 is the maximum amount of money that can be spent 
+                 buying all m * n products. 
+    
+    Example 2:
+    Input: values = [[10,8,6,4,2],[9,7,5,3,2]]
+    Output: 386
+    Explanation: - On the first day, we buy product 4 from shop 0 for a price 
+                   of values[0][4] * 1 = 2.
+                 - On the second day, we buy product 4 from shop 1 for a price 
+                   of values[1][4] * 2 = 4.
+                 - On the third day, we buy product 3 from shop 1 for a price of values[1][3] * 3 = 9.
+                 - On the fourth day, we buy product 3 from shop 0 for a price of values[0][3] * 4 = 16.
+                 - On the fifth day, we buy product 2 from shop 1 for a price of values[1][2] * 5 = 25.
+                 - On the sixth day, we buy product 2 from shop 0 for a price of values[0][2] * 6 = 36.
+                 - On the seventh day, we buy product 1 from shop 1 for a price of values[1][1] * 7 = 49.
+                 - On the eighth day, we buy product 1 from shop 0 for a price of values[0][1] * 8 = 64
+                 - On the ninth day, we buy product 0 from shop 1 for a price of values[1][0] * 9 = 81.
+                 - On the tenth day, we buy product 0 from shop 0 for a price of values[0][0] * 10 = 100.
+                 Hence, our total spending is equal to 386. It can be shown 
+                 that 386 is the maximum amount of money that can be spent 
+                 buying all m * n products.
+
+    Constraints:
+    * 1 <= m == values.length <= 10
+    * 1 <= n == values[i].length <= 10^4
+    * 1 <= values[i][j] <= 10^6
+    * values[i] are sorted in non-increasing order.*/
+
+    public long maxSpending(int[][] values) {
+        int m = values.length, n = values[0].length; 
+        PriorityQueue<int[]> pq = new PriorityQueue<>((x, y) -> Integer.compare(x[0], y[0])); 
+        for (int i = 0; i < m; ++i)
+            pq.add(new int[]{values[i][n-1], i, n-1}); 
+        long ans = 0; 
+        for (int k = 0; k < m*n; ++k) {
+            var elem = pq.poll(); 
+            int v = elem[0], i = elem[1], j = elem[2]; 
+            ans += (long) v * (k+1); 
+            if (j > 0) pq.add(new int[]{values[i][j-1], i, j-1}); 
+        }
+        return ans; 
+    }
+    
+
     /*2937. Make Three Strings Equal (Easy)
     You are given three strings s1, s2, and s3. You have to perform the 
     following operation on these three strings as many times as you want. In 
