@@ -82605,6 +82605,188 @@ class SegTreeLazy:
         return ans % 1_000_000_007
 
 
+    """2937. Make Three Strings Equal (Easy)
+    You are given three strings s1, s2, and s3. You have to perform the 
+    following operation on these three strings as many times as you want. In 
+    one operation you can choose one of these three strings such that its 
+    length is at least 2 and delete the rightmost character of it. Return the 
+    minimum number of operations you need to perform to make the three strings 
+    equal if there is a way to make them equal, otherwise, return -1.
+
+    Example 1:
+    Input: s1 = "abc", s2 = "abb", s3 = "ab"
+    Output: 2
+    Explanation: Performing operations on s1 and s2 once will lead to three 
+                 equal strings. It can be shown that there is no way to make 
+                 them equal with less than two operations.
+    
+    Example 2:
+    Input: s1 = "dac", s2 = "bac", s3 = "cac"
+    Output: -1
+    Explanation: Because the leftmost letters of s1 and s2 are not equal, they 
+                 could not be equal after any number of operations. So the 
+                 answer is -1.
+
+    Constraints:
+    * 1 <= s1.length, s2.length, s3.length <= 100
+    * s1, s2 and s3 consist only of lowercase English letters."""
+
+    def findMinimumOperations(self, s1: str, s2: str, s3: str) -> int:
+        for i, (c1, c2, c3) in enumerate(zip(s1, s2, s3)): 
+            if not c1 == c2 == c3: break 
+        else: i += 1
+        return len(s1) + len(s2) + len(s3) - 3*i if i else -1
+
+
+    """2938. Separate Black and White Balls (Medium)
+    There are n balls on a table, each ball has a color black or white. You are 
+    given a 0-indexed binary string s of length n, where 1 and 0 represent 
+    black and white balls, respectively. In each step, you can choose two 
+    adjacent balls and swap them. Return the minimum number of steps to group 
+    all the black balls to the right and all the white balls to the left.
+
+    Example 1:
+    Input: s = "101"
+    Output: 1
+    Explanation: We can group all the black balls to the right in the following 
+                 way:
+                 - Swap s[0] and s[1], s = "011".
+                 Initially, 1s are not grouped together, requiring at least 1 
+                 step to group them to the right.
+    
+    Example 2:
+    Input: s = "100"
+    Output: 2
+    Explanation: We can group all the black balls to the right in the following 
+                 way:
+                 - Swap s[0] and s[1], s = "010".
+                 - Swap s[1] and s[2], s = "001".
+                 It can be proven that the minimum number of steps needed is 2.
+    
+    Example 3:
+    Input: s = "0111"
+    Output: 0
+    Explanation: All the black balls are already grouped to the right.
+
+    Constraints:
+    * 1 <= n == s.length <= 10^5
+    * s[i] is either '0' or '1'."""
+
+    def minimumSteps(self, s: str) -> int:
+        ans = prefix = 0
+        for ch in s: 
+            if ch == "1": prefix += 1
+            else: ans += prefix
+        return ans 
+
+
+    """2939. Maximum Xor Product (Medium)
+    Given three integers a, b, and n, return the maximum value of 
+    (a XOR x) * (b XOR x) where 0 <= x < 2n. Since the answer may be too large, 
+    return it modulo 10^9 + 7. Note that XOR is the bitwise XOR operation.
+
+    Example 1:
+    Input: a = 12, b = 5, n = 4
+    Output: 98
+    Explanation: For x = 2, (a XOR x) = 14 and (b XOR x) = 7. Hence, 
+                 (a XOR x) * (b XOR x) = 98. It can be shown that 98 is the 
+                 maximum value of (a XOR x) * (b XOR x) for all 0 <= x < 2n.
+    
+    Example 2:
+    Input: a = 6, b = 7 , n = 5
+    Output: 930
+    Explanation: For x = 25, (a XOR x) = 31 and (b XOR x) = 30. Hence, 
+                 (a XOR x) * (b XOR x) = 930. It can be shown that 930 is the 
+                 maximum value of (a XOR x) * (b XOR x) for all 0 <= x < 2n.
+    
+    Example 3:
+    Input: a = 1, b = 6, n = 3
+    Output: 12
+    Explanation: For x = 5, (a XOR x) = 4 and (b XOR x) = 3. Hence, 
+                 (a XOR x) * (b XOR x) = 12. It can be shown that 12 is the 
+                 maximum value of (a XOR x) * (b XOR x) for all 0 <= x < 2n.
+
+    Constraints:
+    * 0 <= a, b < 2^50
+    * 0 <= n <= 50"""
+
+    def maximumXorProduct(self, a: int, b: int, n: int) -> int:
+        for i in range(n-1, -1, -1): 
+            if not min(a, b) & 1<<i: 
+                a ^= 1<<i
+                b ^= 1<<i
+        return a*b % 1_000_000_007
+
+
+    """2940. Find Building Where Alice and Bob Can Meet (Hard)
+    You are given a 0-indexed array heights of positive integers, where 
+    heights[i] represents the height of the ith building. If a person is in 
+    building i, they can move to any other building j if and only if i < j and 
+    heights[i] < heights[j]. You are also given another array queries where 
+    queries[i] = [ai, bi]. On the ith query, Alice is in building ai while Bob 
+    is in building bi. Return an array ans where ans[i] is the index of the 
+    leftmost building where Alice and Bob can meet on the ith query. If Alice 
+    and Bob cannot move to a common building on query i, set ans[i] to -1.
+
+    Example 1:
+    Input: heights = [6,4,8,5,2,7], queries = [[0,1],[0,3],[2,4],[3,4],[2,2]]
+    Output: [2,5,-1,5,2]
+    Explanation: - In the first query, Alice and Bob can move to building 2 
+                   since heights[0] < heights[2] and heights[1] < heights[2]. 
+                 - In the second query, Alice and Bob can move to building 5 
+                   since heights[0] < heights[5] and heights[3] < heights[5]. 
+                 - In the third query, Alice cannot meet Bob since Alice cannot 
+                   move to any other building.
+                 - In the fourth query, Alice and Bob can move to building 5 
+                   since heights[3] < heights[5] and heights[4] < heights[5].
+                 - In the fifth query, Alice and Bob are already in the same 
+                   building.  
+                 For ans[i] != -1, It can be shown that ans[i] is the leftmost 
+                 building where Alice and Bob can meet. For ans[i] == -1, It 
+                 can be shown that there is no building where Alice and Bob can 
+                 meet.
+    
+    Example 2:
+    Input: heights = [5,3,8,2,6,1,4,6], queries = [[0,7],[3,5],[5,2],[3,0],[1,6]]
+    Output: [7,6,-1,4,6]
+    Explanation: - In the first query, Alice can directly move to Bob's 
+                   building since heights[0] < heights[7].
+                 - In the second query, Alice and Bob can move to building 6 
+                   since heights[3] < heights[6] and heights[5] < heights[6].
+                 - In the third query, Alice cannot meet Bob since Bob cannot 
+                   move to any other building.
+                 - In the fourth query, Alice and Bob can move to building 4 
+                   since heights[3] < heights[4] and heights[0] < heights[4].
+                 - In the fifth query, Alice can directly move to Bob's 
+                   building since heights[1] < heights[6].
+                 For ans[i] != -1, It can be shown that ans[i] is the leftmost 
+                 building where Alice and Bob can meet. For ans[i] == -1, It 
+                 can be shown that there is no building where Alice and Bob can 
+                 meet.
+
+    Constraints:
+    * 1 <= heights.length <= 5 * 10^4
+    * 1 <= heights[i] <= 10^9
+    * 1 <= queries.length <= 5 * 10^4
+    * queries[i] = [ai, bi]
+    * 0 <= ai, bi <= heights.length - 1"""
+
+    def leftmostBuildingQueries(self, heights: List[int], queries: List[List[int]]) -> List[int]:
+        qs = [[] for _ in heights]
+        ans = [-1] * len(queries)
+        for i, (a, b) in enumerate(queries):
+            if a > b: a, b = b, a 
+            if a == b or heights[a] < heights[b]: ans[i] = b 
+            else: qs[b].append((heights[a], i))
+        pq = []
+        for k, x in enumerate(heights): 
+            while pq and pq[0][0] < x: 
+                _, i = heappop(pq)
+                ans[i] = k 
+            for elem in qs[k]: heappush(pq, elem)
+        return ans
+
+
     """2946. Matrix Similarity After Cyclic Shifts (Easy)
     You are given a 0-indexed m x n integer matrix mat and an integer k. You 
     have to cyclically right shift odd indexed rows k times and cyclically left 

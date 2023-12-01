@@ -17134,6 +17134,199 @@ class SegTreeLazy {
     }
 
 
+    /*2937. Make Three Strings Equal (Easy)
+    You are given three strings s1, s2, and s3. You have to perform the 
+    following operation on these three strings as many times as you want. In 
+    one operation you can choose one of these three strings such that its 
+    length is at least 2 and delete the rightmost character of it. Return the 
+    minimum number of operations you need to perform to make the three strings 
+    equal if there is a way to make them equal, otherwise, return -1.
+
+    Example 1:
+    Input: s1 = "abc", s2 = "abb", s3 = "ab"
+    Output: 2
+    Explanation: Performing operations on s1 and s2 once will lead to three 
+                 equal strings. It can be shown that there is no way to make 
+                 them equal with less than two operations.
+    
+    Example 2:
+    Input: s1 = "dac", s2 = "bac", s3 = "cac"
+    Output: -1
+    Explanation: Because the leftmost letters of s1 and s2 are not equal, they 
+                 could not be equal after any number of operations. So the 
+                 answer is -1.
+
+    Constraints:
+    * 1 <= s1.length, s2.length, s3.length <= 100
+    * s1, s2 and s3 consist only of lowercase English letters.*/
+
+    public int findMinimumOperations(String s1, String s2, String s3) {
+        int i = 0; 
+        for (int m = Math.min(s1.length(), Math.min(s2.length(), s3.length())); i < m && s1.charAt(i) == s2.charAt(i) && s2.charAt(i) == s3.charAt(i); ++i); 
+        return i > 0 ? s1.length() + s2.length() + s3.length() - 3*i : -1; 
+    }
+
+
+    /*2938. Separate Black and White Balls (Medium)
+    There are n balls on a table, each ball has a color black or white. You are 
+    given a 0-indexed binary string s of length n, where 1 and 0 represent 
+    black and white balls, respectively. In each step, you can choose two 
+    adjacent balls and swap them. Return the minimum number of steps to group 
+    all the black balls to the right and all the white balls to the left.
+
+    Example 1:
+    Input: s = "101"
+    Output: 1
+    Explanation: We can group all the black balls to the right in the following 
+                 way:
+                 - Swap s[0] and s[1], s = "011".
+                 Initially, 1s are not grouped together, requiring at least 1 
+                 step to group them to the right.
+    
+    Example 2:
+    Input: s = "100"
+    Output: 2
+    Explanation: We can group all the black balls to the right in the following 
+                 way:
+                 - Swap s[0] and s[1], s = "010".
+                 - Swap s[1] and s[2], s = "001".
+                 It can be proven that the minimum number of steps needed is 2.
+    
+    Example 3:
+    Input: s = "0111"
+    Output: 0
+    Explanation: All the black balls are already grouped to the right.
+
+    Constraints:
+    * 1 <= n == s.length <= 10^5
+    * s[i] is either '0' or '1'.*/
+
+    public long minimumSteps(String s) {
+        long ans = 0; 
+        int prefix = 0; 
+        for (var ch : s.toCharArray()) 
+            if (ch == '1') ++prefix; 
+            else ans += prefix; 
+        return ans; 
+    }
+
+
+    /*2939. Maximum Xor Product (Medium)
+    Given three integers a, b, and n, return the maximum value of 
+    (a XOR x) * (b XOR x) where 0 <= x < 2n. Since the answer may be too large, 
+    return it modulo 10^9 + 7. Note that XOR is the bitwise XOR operation.
+
+    Example 1:
+    Input: a = 12, b = 5, n = 4
+    Output: 98
+    Explanation: For x = 2, (a XOR x) = 14 and (b XOR x) = 7. Hence, 
+                 (a XOR x) * (b XOR x) = 98. It can be shown that 98 is the 
+                 maximum value of (a XOR x) * (b XOR x) for all 0 <= x < 2n.
+    
+    Example 2:
+    Input: a = 6, b = 7 , n = 5
+    Output: 930
+    Explanation: For x = 25, (a XOR x) = 31 and (b XOR x) = 30. Hence, 
+                 (a XOR x) * (b XOR x) = 930. It can be shown that 930 is the 
+                 maximum value of (a XOR x) * (b XOR x) for all 0 <= x < 2n.
+    
+    Example 3:
+    Input: a = 1, b = 6, n = 3
+    Output: 12
+    Explanation: For x = 5, (a XOR x) = 4 and (b XOR x) = 3. Hence, 
+                 (a XOR x) * (b XOR x) = 12. It can be shown that 12 is the 
+                 maximum value of (a XOR x) * (b XOR x) for all 0 <= x < 2n.
+
+    Constraints:
+    * 0 <= a, b < 2^50
+    * 0 <= n <= 50*/
+
+    public int maximumXorProduct(long a, long b, int n) {
+        final int mod = 1_000_000_007; 
+        for (int i = n-1; i >= 0; --i)
+            if ((Math.min(a, b) & 1l<<i) == 0) {
+                a ^= 1l<<i; 
+                b ^= 1l<<i; 
+            }
+        return (int) (a % mod * (b % mod) % mod); 
+    }
+
+
+    /*2940. Find Building Where Alice and Bob Can Meet (Hard)
+    You are given a 0-indexed array heights of positive integers, where 
+    heights[i] represents the height of the ith building. If a person is in 
+    building i, they can move to any other building j if and only if i < j and 
+    heights[i] < heights[j]. You are also given another array queries where 
+    queries[i] = [ai, bi]. On the ith query, Alice is in building ai while Bob 
+    is in building bi. Return an array ans where ans[i] is the index of the 
+    leftmost building where Alice and Bob can meet on the ith query. If Alice 
+    and Bob cannot move to a common building on query i, set ans[i] to -1.
+
+    Example 1:
+    Input: heights = [6,4,8,5,2,7], queries = [[0,1],[0,3],[2,4],[3,4],[2,2]]
+    Output: [2,5,-1,5,2]
+    Explanation: - In the first query, Alice and Bob can move to building 2 
+                   since heights[0] < heights[2] and heights[1] < heights[2]. 
+                 - In the second query, Alice and Bob can move to building 5 
+                   since heights[0] < heights[5] and heights[3] < heights[5]. 
+                 - In the third query, Alice cannot meet Bob since Alice cannot 
+                   move to any other building.
+                 - In the fourth query, Alice and Bob can move to building 5 
+                   since heights[3] < heights[5] and heights[4] < heights[5].
+                 - In the fifth query, Alice and Bob are already in the same 
+                   building.  
+                 For ans[i] != -1, It can be shown that ans[i] is the leftmost 
+                 building where Alice and Bob can meet. For ans[i] == -1, It 
+                 can be shown that there is no building where Alice and Bob can 
+                 meet.
+    
+    Example 2:
+    Input: heights = [5,3,8,2,6,1,4,6], queries = [[0,7],[3,5],[5,2],[3,0],[1,6]]
+    Output: [7,6,-1,4,6]
+    Explanation: - In the first query, Alice can directly move to Bob's 
+                   building since heights[0] < heights[7].
+                 - In the second query, Alice and Bob can move to building 6 
+                   since heights[3] < heights[6] and heights[5] < heights[6].
+                 - In the third query, Alice cannot meet Bob since Bob cannot 
+                   move to any other building.
+                 - In the fourth query, Alice and Bob can move to building 4 
+                   since heights[3] < heights[4] and heights[0] < heights[4].
+                 - In the fifth query, Alice can directly move to Bob's 
+                   building since heights[1] < heights[6].
+                 For ans[i] != -1, It can be shown that ans[i] is the leftmost 
+                 building where Alice and Bob can meet. For ans[i] == -1, It 
+                 can be shown that there is no building where Alice and Bob can 
+                 meet.
+
+    Constraints:
+    * 1 <= heights.length <= 5 * 10^4
+    * 1 <= heights[i] <= 10^9
+    * 1 <= queries.length <= 5 * 10^4
+    * queries[i] = [ai, bi]
+    * 0 <= ai, bi <= heights.length - 1*/
+
+    public int[] leftmostBuildingQueries(int[] heights, int[][] queries) {
+        int m = heights.length, n = queries.length; 
+        List<int[]>[] qs = new ArrayList[m]; 
+        int[] ans = new int[n]; 
+        Arrays.fill(ans, -1); 
+        for (int i = 0; i < m; ++i) qs[i] = new ArrayList<>(); 
+        for (int i = 0; i < n; ++i) {
+            int a = queries[i][0], b = queries[i][1]; 
+            if (a > b) { var temp = a; a = b; b = temp; }
+            if (a == b || heights[a] < heights[b]) ans[i] = b; 
+            else qs[b].add(new int[]{heights[a], i}); 
+        }
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> Integer.compare(a[0], b[0])); 
+        for (int k = 0; k < m; ++k) {
+            while (!pq.isEmpty() && pq.peek()[0] < heights[k]) 
+                ans[pq.poll()[1]] = k; 
+            for (var elem : qs[k]) pq.add(elem); 
+        }
+        return ans; 
+    }
+
+
     /*2946. Matrix Similarity After Cyclic Shifts (Easy)
     You are given a 0-indexed m x n integer matrix mat and an integer k. You 
     have to cyclically right shift odd indexed rows k times and cyclically left 
