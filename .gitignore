@@ -1,1 +1,3 @@
 *-internal.*
+*.sublime-project
+*.sublime-workspace
