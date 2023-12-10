@@ -818,17 +818,13 @@ Constraints:
 * 1 <= nums[i] <= 10^9*/
 
 var numberOfGoodPartitions = function(nums) {
-    let last = new Map();
-    for (let i = 0; i < nums.length; ++i) last.set(nums[i], i);
-    let p = -1;
-    for (let i = 0, ii = -1; i < nums.length; ++i) {
-        if (ii < i) ++p;
-        ii = Math.max(ii, last.get(nums[i]));
+    const mod = 1_000_000_007n; 
+    const last = new Map(); 
+    for (let i = 0; i < nums.length; ++i) last.set(nums[i], i); 
+    let ans = 1n; 
+    for (let i = 0, ii = 0; i < nums.length; ++i) {
+        if (ii < i) ans = ans * 2n % mod; 
+        ii = Math.max(ii, last.get(nums[i])); 
     }
-    let ans = 1n, x = 2n, mod = 1_000_000_007n;
-    for (; p; p >>= 1) {
-        if (p & 1) ans = ans * x % mod;
-        x = x * x % mod;
-    }
-    return ans;
+    return ans; 
 };

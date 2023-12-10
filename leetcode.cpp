@@ -63867,20 +63867,15 @@ public:
     * 1 <= nums[i] <= 10^9*/
 
     int numberOfGoodPartitions(vector<int>& nums) {
-        unordered_map<int, int> last;
-        for (int i = 0; i < nums.size(); ++i) last[nums[i]] = i;
-        int p = -1;
-        for (int i = 0, ii = -1; i < nums.size(); ++i) {
-            if (ii < i) ++p;
-            ii = max(ii, last[nums[i]]);
+        const int mod = 1'000'000'007; 
+        unordered_map<int, int> last; 
+        for (int i = 0; i < nums.size(); ++i) last[nums[i]] = i; 
+        long ans = 1; 
+        for (int i = 0, ii = 0; i < nums.size(); ++i) {
+            if (ii < i) ans = ans * 2 % mod; 
+            ii = max(ii, last[nums[i]]); 
         }
-        long ans = 1, x = 2;
-        int mod = 1'000'000'007;
-        for (; p; p >>= 1) {
-            if (p & 1) ans = ans * x % mod;
-            x = x * x % mod;
-        }
-        return ans;
+        return ans; 
     }
 };
 

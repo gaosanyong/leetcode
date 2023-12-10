@@ -17924,21 +17924,16 @@ class SegTreeLazy {
     * 1 <= nums[i] <= 10^9*/
 
     public int numberOfGoodPartitions(int[] nums) {
-        Map<Integer, Integer> last = new HashMap();
-        for (int i = 0; i < nums.length; ++i) last.put(nums[i], i);
-        int p = -1;
-        for (int i = 0, ii = -1; i < nums.length; ++i) {
-            if (ii < i) ++p;
-            ii = Math.max(ii, last.get(nums[i]));
+        final int mod = 1_000_000_007; 
+        Map<Integer, Integer> last = new HashMap(); 
+        for (int i = 0; i < nums.length; ++i) last.put(nums[i], i); 
+        long ans = 1; 
+        for (int i = 0, ii = 0; i < nums.length; ++i) {
+            if (ii < i) ans = ans * 2 % mod;  
+            ii = Math.max(ii, last.get(nums[i])); 
         }
-        long ans = 1, x = 2;
-        int mod = 1_000_000_007;
-        for (; p > 0; p >>= 1) {
-            if ((p & 1) > 0) ans = ans * x % mod;
-            x = x * x % mod;
-        }
-        return (int) ans;
-    }    
+        return (int) ans; 
+    }
 }
 
 
