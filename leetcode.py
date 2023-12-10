@@ -83298,15 +83298,14 @@ class SegTreeLazy:
 
     def countSubarrays(self, nums: List[int], k: int) -> int:
         m = max(nums)
-        freq = Counter()
-        ans = ii = 0
-        for x in nums:
-            freq[x] += 1
-            while freq[m] >= k:
-                freq[nums[ii]] -= 1
+        ans = ii = freq = 0
+        for x in nums: 
+            if x == m: freq += 1
+            while freq == k: 
+                if nums[ii] == m: freq -= 1
                 ii += 1
             ans += ii
-        return ans
+        return ans 
 
 
     """2963. Count the Number of Good Partitions (Hard)

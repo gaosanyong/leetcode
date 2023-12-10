@@ -17880,16 +17880,15 @@ class SegTreeLazy {
     * 1 <= k <= 10^5*/
 
     public long countSubarrays(int[] nums, int k) {
-        long ans = 0;
-        Map<Integer, Integer> freq = new HashMap();
-        int m = Arrays.stream(nums).max().getAsInt(), ii = 0;
+        long ans = 0; 
+        int m = Arrays.stream(nums).max().getAsInt(), ii = 0, freq = 0;
         for (var x : nums) {
-            freq.merge(x, 1, Integer::sum);
-            while (freq.getOrDefault(m, 0) >= k)
-                freq.merge(nums[ii++], -1, Integer::sum);
-            ans += ii;
+            if (x == m) ++freq; 
+            while (freq == k) 
+                if (nums[ii++] == m) --freq; 
+            ans += ii; 
         }
-        return ans;
+        return ans; 
     }
 
 

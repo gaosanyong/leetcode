@@ -63824,15 +63824,15 @@ public:
     * 1 <= k <= 10^5*/
 
     long long countSubarrays(vector<int>& nums, int k) {
-        long long ans = 0;
-        unordered_map<int, int> freq;
-        int m = *max_element(nums.begin(), nums.end()), ii = 0;
+        long long ans = 0; 
+        int m = *max_element(nums.begin(), nums.end()), ii = 0, freq = 0; 
         for (auto& x : nums) {
-            ++freq[x];
-            while (freq[m] >= k) --freq[nums[ii++]];
-            ans += ii;
+            if (x == m) ++freq; 
+            while (freq == k) 
+                if (nums[ii++] == m) --freq; 
+            ans += ii; 
         }
-        return ans;
+        return ans; 
     }
 
 

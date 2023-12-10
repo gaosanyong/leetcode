@@ -773,17 +773,15 @@ Constraints:
 * 1 <= k <= 10^5*/
 
 var countSubarrays = function(nums, k) {
-    let m = Math.max(...nums), freq = new Map();
-    let ans = 0, ii = 0;
+    let m = Math.max(...nums); 
+    let ans = 0, ii = 0, freq = 0; 
     for (let x of nums) {
-        freq.set(x, (freq.get(x) ?? 0) + 1);
-        while ((freq.get(m) ?? 0) >= k) {
-            freq.set(nums[ii], freq.get(nums[ii])-1);
-            ++ii;
-        }
-        ans += ii;
+        if (x == m) ++freq; 
+        while (freq == k) 
+            if (nums[ii++] == m) --freq; 
+        ans += ii; 
     }
-    return ans;
+    return ans; 
 };
 
 
