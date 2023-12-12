@@ -63692,6 +63692,229 @@ public:
     }
 
 
+    /*2956. Find Common Elements Between Two Arrays (Easy)
+    You are given two 0-indexed integer arrays nums1 and nums2 of sizes n and m, 
+    respectively. Consider calculating the following values:
+    * The number of indices i such that 0 <= i < n and nums1[i] occurs at least 
+      once in nums2.
+    * The number of indices i such that 0 <= i < m and nums2[i] occurs at least 
+      once in nums1.
+    Return an integer array answer of size 2 containing the two values in the 
+    above order.
+
+    Example 1:
+    Input: nums1 = [4,3,2,3,1], nums2 = [2,2,5,2,3,6]
+    Output: [3,4]
+    Explanation: We calculate the values as follows:
+                 - The elements at indices 1, 2, and 3 in nums1 occur at least 
+                   once in nums2. So the first value is 3.
+                 - The elements at indices 0, 1, 3, and 4 in nums2 occur at 
+                   least once in nums1. So the second value is 4.
+    
+    Example 2:
+    Input: nums1 = [3,4,2,3], nums2 = [1,5]
+    Output: [0,0]
+    Explanation: There are no common elements between the two arrays, so the two 
+                 values will be 0.
+
+    Constraints:
+    * n == nums1.length
+    * m == nums2.length
+    * 1 <= n, m <= 100
+    * 1 <= nums1[i], nums2[i] <= 100*/
+
+    vector<int> findIntersectionValues(vector<int>& nums1, vector<int>& nums2) {
+        vector<int> ans = {0, 0}; 
+        for (auto& x : nums1) 
+            if (find(nums2.begin(), nums2.end(), x) != nums2.end()) ++ans[0]; 
+        for (auto& x : nums2)
+            if (find(nums1.begin(), nums1.end(), x) != nums1.end()) ++ans[1]; 
+        return ans; 
+    }
+
+
+    /*2957. Remove Adjacent Almost-Equal Characters (Medium)
+    You are given a 0-indexed string word. In one operation, you can pick any 
+    index i of word and change word[i] to any lowercase English letter. Return 
+    the minimum number of operations needed to remove all adjacent almost-equal 
+    characters from word. Two characters a and b are almost-equal if a == b or 
+    a and b are adjacent in the alphabet.
+
+    Example 1:
+    Input: word = "aaaaa"
+    Output: 2
+    Explanation: We can change word into "acaca" which does not have any 
+                 adjacent almost-equal characters. It can be shown that the 
+                 minimum number of operations needed to remove all adjacent 
+                 almost-equal characters from word is 2.
+    
+    Example 2:
+    Input: word = "abddez"
+    Output: 2
+    Explanation: We can change word into "ybdoez" which does not have any 
+                 adjacent almost-equal characters. It can be shown that the 
+                 minimum number of operations needed to remove all adjacent 
+                 almost-equal characters from word is 2.
+    
+    Example 3:
+    Input: word = "zyxyxyz"
+    Output: 3
+    Explanation: We can change word into "zaxaxaz" which does not have any 
+                 adjacent almost-equal characters. It can be shown that the 
+                 minimum number of operations needed to remove all adjacent 
+                 almost-equal characters from word is 3.
+
+    Constraints:
+    * 1 <= word.length <= 100
+    * word consists only of lowercase English letters.*/
+
+    int removeAlmostEqualCharacters(string word) {
+        int ans = 0; 
+        for (int i = 0; i < word.size(); ++i)
+            if (i && abs(word[i]-word[i-1]) <= 1) ++ans, ++i; 
+        return ans; 
+    }
+
+
+    /*2958. Length of Longest Subarray With at Most K Frequency (Medium)
+    You are given an integer array nums and an integer k. The frequency of an 
+    element x is the number of times it occurs in an array. An array is called 
+    good if the frequency of each element in this array is less than or equal to 
+    k. Return the length of the longest good subarray of nums. A subarray is a 
+    contiguous non-empty sequence of elements within an array.
+
+    Example 1:
+    Input: nums = [1,2,3,1,2,3,1,2], k = 2
+    Output: 6
+    Explanation: The longest possible good subarray is [1,2,3,1,2,3] since the 
+                 values 1, 2, and 3 occur at most twice in this subarray. Note 
+                 that the subarrays [2,3,1,2,3,1] and [3,1,2,3,1,2] are also 
+                 good. It can be shown that there are no good subarrays with 
+                 length more than 6.
+    
+    Example 2:
+    Input: nums = [1,2,1,2,1,2,1,2], k = 1
+    Output: 2
+    Explanation: The longest possible good subarray is [1,2] since the values 1 
+                 and 2 occur at most once in this subarray. Note that the 
+                 subarray [2,1] is also good. It can be shown that there are no 
+                 good subarrays with length more than 2.
+    
+    Example 3:
+    Input: nums = [5,5,5,5,5,5,5], k = 4
+    Output: 4
+    Explanation: The longest possible good subarray is [5,5,5,5] since the value 
+                 5 occurs 4 times in this subarray. It can be shown that there 
+                 are no good subarrays with length more than 4.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9
+    * 1 <= k <= nums.length*/
+
+    int maxSubarrayLength(vector<int>& nums, int k) {
+        unordered_map<int, int> freq; 
+        int ans = 0; 
+        for (int i = 0, ii = 0; i < nums.size(); ++i) {
+            ++freq[nums[i]]; 
+            while (freq[nums[i]] > k) --freq[nums[ii++]]; 
+            ans = max(ans, i-ii+1); 
+        }
+        return ans;
+    }
+
+
+    /*2959. Number of Possible Sets of Closing Branches (Hard)
+    There is a company with n branches across the country, some of which are 
+    connected by roads. Initially, all branches are reachable from each other by 
+    traveling some roads. The company has realized that they are spending an 
+    excessive amount of time traveling between their branches. As a result, they 
+    have decided to close down some of these branches (possibly none). However, 
+    they want to ensure that the remaining branches have a distance of at most 
+    maxDistance from each other. The distance between two branches is the 
+    minimum total traveled length needed to reach one branch from another. You 
+    are given integers n, maxDistance, and a 0-indexed 2D array roads, where 
+    roads[i] = [ui, vi, wi] represents the undirected road between branches ui 
+    and vi with length wi. Return the number of possible sets of closing 
+    branches, so that any branch has a distance of at most maxDistance from any 
+    other. Note that, after closing a branch, the company will no longer have 
+    access to any roads connected to it. Note that, multiple roads are allowed.
+
+    Example 1:
+    Input: n = 3, maxDistance = 5, roads = [[0,1,2],[1,2,10],[0,2,10]]
+    Output: 5
+    Explanation: The possible sets of closing branches are:
+                 - The set [2], after closing, active branches are [0,1] and 
+                   they are reachable to each other within distance 2.
+                 - The set [0,1], after closing, the active branch is [2].
+                 - The set [1,2], after closing, the active branch is [0].
+                 - The set [0,2], after closing, the active branch is [1].
+                 - The set [0,1,2], after closing, there are no active branches.
+                 It can be proven, that there are only 5 possible sets of 
+                 closing branches.
+    
+    Example 2:
+    Input: n = 3, maxDistance = 5, roads = [[0,1,20],[0,1,10],[1,2,2],[0,2,2]]
+    Output: 7
+    Explanation: The possible sets of closing branches are:
+                 - The set [], after closing, active branches are [0,1,2] and 
+                   they are reachable to each other within distance 4.
+                 - The set [0], after closing, active branches are [1,2] and 
+                   they are reachable to each other within distance 2.
+                 - The set [1], after closing, active branches are [0,2] and 
+                   they are reachable to each other within distance 2.
+                 - The set [0,1], after closing, the active branch is [2].
+                 - The set [1,2], after closing, the active branch is [0].
+                 - The set [0,2], after closing, the active branch is [1].
+                 - The set [0,1,2], after closing, there are no active branches.
+                 It can be proven, that there are only 7 possible sets of 
+                 closing branches.
+    
+    Example 3:
+    Input: n = 1, maxDistance = 10, roads = []
+    Output: 2
+    Explanation: The possible sets of closing branches are:
+                 - The set [], after closing, the active branch is [0].
+                 - The set [0], after closing, there are no active branches.
+                 It can be proven, that there are only 2 possible sets of 
+                 closing branches.
+
+    Constraints:
+    * 1 <= n <= 10
+    * 1 <= maxDistance <= 10^5
+    * 0 <= roads.length <= 1000
+    * roads[i].length == 3
+    * 0 <= ui, vi <= n - 1
+    * ui != vi
+    * 1 <= wi <= 1000
+    * All branches are reachable from each other by traveling some roads.*/
+
+    int numberOfSets(int n, int maxDistance, vector<vector<int>>& roads) {
+        int ans = 0; 
+        for (int m = 0; m < 1<<n; ++m) {
+            vector<vector<int>> dist(n, vector<int>(n, 1e6));
+            for (int u = 0; u < n; ++u)
+                if (m & 1<<u) dist[u][u] = 0; 
+            for (auto& road : roads) {
+                int u = road[0], v = road[1], w = road[2]; 
+                if (m & 1<<u && m & 1<<v)
+                    dist[u][v] = dist[v][u] = min(dist[u][v], w); 
+            }
+            for (int k = 0; k < n; ++k)
+                for (int u = 0; u < n; ++u)
+                    for (int v = 0; v < n; ++v)
+                        dist[u][v] = min(dist[u][v], dist[u][k] + dist[k][v]); 
+            bool found = false; 
+            for (int u = 0; u < n; ++u) 
+                if (m & 1<<u)
+                    for (int v = 0; v < n; ++v) 
+                        if (m & 1<<v && dist[u][v] > maxDistance) found = true; 
+            if (!found) ++ans; 
+        }
+        return ans; 
+    }
+
+
     /*2960. Count Tested Devices After Test Operations (Easy)
     You are given a 0-indexed integer array batteryPercentages having length n,
     denoting the battery percentages of n 0-indexed devices. Your task is to
