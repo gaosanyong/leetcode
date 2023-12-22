@@ -18621,6 +18621,217 @@ class SegTreeLazy {
         }
         return (int) ans; 
     }
+
+
+    /*2965. Find Missing and Repeated Values (Easy)
+    You are given a 0-indexed 2D integer matrix grid of size n * n with values
+    in the range [1, n2]. Each integer appears exactly once except a which
+    appears twice and b which is missing. The task is to find the repeating and
+    missing numbers a and b. Return a 0-indexed integer array ans of size 2
+    where ans[0] equals to a and ans[1] equals to b.
+
+    Example 1:
+    Input: grid = [[1,3],[2,2]]
+    Output: [2,4]
+    Explanation: Number 2 is repeated and number 4 is missing so the answer is
+                 [2,4].
+
+    Example 2:
+    Input: grid = [[9,1,7],[8,9,2],[3,4,6]]
+    Output: [9,5]
+    Explanation: Number 9 is repeated and number 5 is missing so the answer is
+                 [9,5].
+
+    Constraints:
+    * 2 <= n == grid.length == grid[i].length <= 50
+    * 1 <= grid[i][j] <= n * n
+    * For all x that 1 <= x <= n * n there is exactly one x that is not equal to
+      any of the grid members.
+    * For all x that 1 <= x <= n * n there is exactly one x that is equal to
+      exactly two of the grid members.
+    * For all x that 1 <= x <= n * n except two of them there is exatly one pair
+      of i, j that 0 <= i, j <= n - 1 and grid[i][j] == x.*/
+
+    public int[] findMissingAndRepeatedValues(int[][] grid) {
+        long s = 0, s2 = 0, n = grid.length * grid.length;
+        for (var row : grid)
+            for (var x : row) {
+                s += x;
+                s2 += x*x;
+            }
+        int diff = (int) (s - n*(n+1)/2), total = (int) ((s2 - n*(n+1)*(2*n+1)/6) / diff);
+        return new int[]{ (total+diff)/2, (total-diff)/2 };
+    }
+
+
+    /*2966. Divide Array Into Arrays With Max Difference (Medium)
+    You are given an integer array nums of size n and a positive integer k.
+    Divide the array into one or more arrays of size 3 satisfying the following
+    conditions:
+    * Each element of nums should be in exactly one array.
+    * The difference between any two elements in one array is less than or equal
+      to k.
+    Return a 2D array containing all the arrays. If it is impossible to satisfy
+    the conditions, return an empty array. And if there are multiple answers,
+    return any of them.
+
+    Example 1:
+    Input: nums = [1,3,4,8,7,9,3,5,1], k = 2
+    Output: [[1,1,3],[3,4,5],[7,8,9]]
+    Explanation: We can divide the array into the following arrays: [1,1,3],
+                 [3,4,5] and [7,8,9]. The difference between any two elements in
+                 each array is less than or equal to 2. Note that the order of
+                 elements is not important.
+
+    Example 2:
+    Input: nums = [1,3,3,2,7,3], k = 3
+    Output: []
+    Explanation: It is not possible to divide the array satisfying all the
+                 conditions.
+
+    Constraints:
+    * n == nums.length
+    * 1 <= n <= 10^5
+    * n is a multiple of 3.
+    * 1 <= nums[i] <= 10^5
+    * 1 <= k <= 10^5*/
+
+    public int[][] divideArray(int[] nums, int k) {
+        Arrays.sort(nums);
+        int n = nums.length;
+        int[][] ans = new int[n/3][3];
+        for (int i = 2; i < n; i += 3) {
+            if (nums[i] - nums[i-2] > k) return new int[0][];
+            ans[i/3] = new int[]{ nums[i-2], nums[i-1], nums[i] };
+        }
+        return ans;
+    }
+
+
+    /*2967. Minimum Cost to Make Array Equalindromic (Medium)
+    You are given a 0-indexed integer array nums having length n. You are
+    allowed to perform a special move any number of times (including zero) on
+    nums. In one special move you perform the following steps in order:
+    * Choose an index i in the range [0, n - 1], and a positive integer x.
+    * Add |nums[i] - x| to the total cost.
+    * Change the value of nums[i] to x.
+    A palindromic number is a positive integer that remains the same when its
+    digits are reversed. For example, 121, 2552 and 65756 are palindromic
+    numbers whereas 24, 46, 235 are not palindromic numbers. An array is
+    considered equalindromic if all the elements in the array are equal to an
+    integer y, where y is a palindromic number less than 10^9. Return an integer
+    denoting the minimum possible total cost to make nums equalindromic by
+    performing any number of special moves.
+
+    Example 1:
+    Input: nums = [1,2,3,4,5]
+    Output: 6
+    Explanation: We can make the array equalindromic by changing all elements to
+                 3 which is a palindromic number. The cost of changing the array
+                 to [3,3,3,3,3] using 4 special moves is given by
+                 |1 - 3| + |2 - 3| + |4 - 3| + |5 - 3| = 6. It can be shown that
+                 changing all elements to any palindromic number other than 3
+                 cannot be achieved at a lower cost.
+
+    Example 2:
+    Input: nums = [10,12,13,14,15]
+    Output: 11
+    Explanation: We can make the array equalindromic by changing all elements to
+                 11 which is a palindromic number. The cost of changing the
+                 array to [11,11,11,11,11] using 5 special moves is given by
+                 |10 - 11| + |12 - 11| + |13 - 11| + |14 - 11| + |15 - 11| = 11.
+                 It can be shown that changing all elements to any palindromic
+                 number other than 11 cannot be achieved at a lower cost.
+
+    Example 3:
+    Input: nums = [22,33,22,33,22]
+    Output: 22
+    Explanation: We can make the array equalindromic by changing all elements to
+                 22 which is a palindromic number. The cost of changing the
+                 array to [22,22,22,22,22] using 2 special moves is given by
+                 |33 - 22| + |33 - 22| = 22. It can be shown that changing all
+                 elements to any palindromic number other than 22 cannot be
+                 achieved at a lower cost.
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * 1 <= nums[i] <= 10^9*/
+
+    public long minimumCost(int[] nums) {
+        Arrays.sort(nums);
+        int median = nums[nums.length/2];
+        String digits = String.valueOf(median);
+        int n = digits.length();
+        String h = digits.substring(0, (n+1)/2), hh = new StringBuilder(h).reverse().toString();
+        int val = Integer.parseInt(h + hh.substring(n&1)), cand = 0;
+        List<Integer> vals = new ArrayList();
+        vals.add(val);
+        if (val < median) {
+            String t = String.valueOf(Integer.parseInt(h) + 1), tt = new StringBuilder(t).reverse().toString();
+            if (t.length() > (n+1)/2) cand = val + 2;
+            else cand = Integer.parseInt(t + tt.substring(n&1));
+            vals.add(cand);
+        } else if (val > median) {
+            String t = String.valueOf(Integer.parseInt(h) - 1), tt = new StringBuilder(t).reverse().toString();
+            if (t.length() < (n+1)/2 || t.equals("0") && val > 10) cand = val - 2;
+            else cand = Integer.parseInt(t + tt.substring(n&1));
+            vals.add(cand);
+        }
+        long ans = Long.MAX_VALUE;
+        for (var v : vals) {
+            long prefix = 0;
+            for (var x : nums)
+                prefix += Math.abs(x - v);
+            ans = Math.min(ans, prefix);
+        }
+        return ans;
+    }
+
+
+    /*2968. Apply Operations to Maximize Frequency Score (Hard)
+    You are given a 0-indexed integer array nums and an integer k. You can
+    perform the following operation on the array at most k times:
+    * Choose any index i from the array and increase or decrease nums[i] by 1.
+    The score of the final array is the frequency of the most frequent element
+    in the array. Return the maximum score you can achieve. The frequency of an
+    element is the number of occurences of that element in the array.
+
+    Example 1:
+    Input: nums = [1,2,6,4], k = 3
+    Output: 3
+    Explanation: We can do the following operations on the array:
+                 - Choose i = 0, and increase the value of nums[0] by 1. The
+                   resulting array is [2,2,6,4].
+                 - Choose i = 3, and decrease the value of nums[3] by 1. The
+                   resulting array is [2,2,6,3].
+                 - Choose i = 3, and decrease the value of nums[3] by 1. The
+                   resulting array is [2,2,6,2].
+                 The element 2 is the most frequent in the final array so our
+                 score is 3. It can be shown that we cannot achieve a better
+                 score.
+
+    Example 2:
+    Input: nums = [1,4,4,2,4], k = 0
+    Output: 3
+    Explanation: We cannot apply any operations so our score will be the
+                 frequency of the most frequent element in the original array,
+                 which is 3.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9
+    * 0 <= k <= 10^14*/
+
+    public int maxFrequencyScore(int[] nums, long k) {
+        Arrays.sort(nums);
+        int ii = 0;
+        for (int i = 0; i < nums.length; ++i) {
+            k -= nums[i] - nums[(ii+i) / 2];
+            if (k < 0)
+                k += nums[(ii+i+1)/2] - nums[ii++];
+        }
+        return nums.length - ii;
+    }
 }
 
 
