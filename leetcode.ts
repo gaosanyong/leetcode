@@ -663,3 +663,195 @@ function maxFrequencyScore(nums: number[], k: number): number {
     }
     return nums.length - ii;
 };
+
+
+/*2996. Smallest Missing Integer Greater Than Sequential Prefix Sum (Easy)
+You are given a 0-indexed array of integers nums. A prefix nums[0..i] is
+sequential if, for all 1 <= j <= i, nums[j] = nums[j - 1] + 1. In
+particular, the prefix consisting only of nums[0] is sequential. Return the
+smallest integer x missing from nums such that x is greater than or equal to
+the sum of the longest sequential prefix.
+
+Example 1:
+Input: nums = [1,2,3,2,5]
+Output: 6
+Explanation: The longest sequential prefix of nums is [1,2,3] with a sum of
+             6. 6 is not in the array, therefore 6 is the smallest missing
+             integer greater than or equal to the sum of the longest
+             sequential prefix.
+
+Example 2:
+Input: nums = [3,4,5,1,12,14,13]
+Output: 15
+Explanation: The longest sequential prefix of nums is [3,4,5] with a sum of
+             12. 12, 13, and 14 belong to the array while 15 does not.
+             Therefore 15 is the smallest missing integer greater than or
+             equal to the sum of the longest sequential prefix.
+
+Constraints:
+* 1 <= nums.length <= 50
+* 1 <= nums[i] <= 50*/
+
+function missingInteger(nums: number[]): number {
+    let prefix = 0;
+    for (let i = 0; i < nums.length && (i == 0 || nums[i] == 1 + nums[i-1]); prefix += nums[i++]);
+    const seen = new Set(nums);
+    while (seen.has(prefix)) ++prefix;
+    return prefix;
+};
+
+
+/*2997. Minimum Number of Operations to Make Array XOR Equal to K (Medium)
+You are given a 0-indexed integer array nums and a positive integer k. You
+can apply the following operation on the array any number of times:
+* Choose any element of the array and flip a bit in its binary
+  representation. Flipping a bit means changing a 0 to 1 or vice versa.
+Return the minimum number of operations required to make the bitwise XOR of
+all elements of the final array equal to k. Note that you can flip leading
+zero bits in the binary representation of elements. For example, for the
+number (101)2 you can flip the fourth bit and obtain (1101)2.
+
+Example 1:
+Input: nums = [2,1,3,4], k = 1
+Output: 2
+Explanation: We can do the following operations:
+             - Choose element 2 which is 3 == (011)2, we flip the first bit
+               and we obtain (010)2 == 2. nums becomes [2,1,2,4].
+             - Choose element 0 which is 2 == (010)2, we flip the third bit
+               and we obtain (110)2 = 6. nums becomes [6,1,2,4].
+             The XOR of elements of the final array is
+             (6 XOR 1 XOR 2 XOR 4) == 1 == k. It can be shown that we cannot
+             make the XOR equal to k in less than 2 operations.
+
+Example 2:
+Input: nums = [2,0,2,0], k = 0
+Output: 0
+Explanation: The XOR of elements of the array is
+             (2 XOR 0 XOR 2 XOR 0) == 0 == k. So no operation is needed.
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 0 <= nums[i] <= 10^6
+* 0 <= k <= 10^6*/
+
+function minOperations(nums: number[], k: number): number {
+    let ans = 0;
+    for (let x = nums.reduce((x, y) => x ^ y, k); x; x &= x-1) ++ans;
+    return ans;
+};
+
+
+/*2998. Minimum Number of Operations to Make X and Y Equal (Medium)
+You are given two positive integers x and y. In one operation, you can do
+one of the four following operations:
+* Divide x by 11 if x is a multiple of 11.
+* Divide x by 5 if x is a multiple of 5.
+* Decrement x by 1.
+* Increment x by 1.
+Return the minimum number of operations required to make x and y equal.
+
+Example 1:
+Input: x = 26, y = 1
+Output: 3
+Explanation: We can make 26 equal to 1 by applying the following operations:
+             1. Decrement x by 1
+             2. Divide x by 5
+             3. Divide x by 5
+             It can be shown that 3 is the minimum number of operations
+             required to make 26 equal to 1.
+
+Example 2:
+Input: x = 54, y = 2
+Output: 4
+Explanation: We can make 54 equal to 2 by applying the following operations:
+             1. Increment x by 1
+             2. Divide x by 11
+             3. Divide x by 5
+             4. Increment x by 1
+             It can be shown that 4 is the minimum number of operations
+             required to make 54 equal to 2.
+
+Example 3:
+Input: x = 25, y = 30
+Output: 5
+Explanation: We can make 25 equal to 30 by applying the following operations:
+             1. Increment x by 1
+             2. Increment x by 1
+             3. Increment x by 1
+             4. Increment x by 1
+             5. Increment x by 1
+             It can be shown that 5 is the minimum number of operations
+             required to make 25 equal to 30.
+
+Constraints: 1 <= x, y <= 10^4*/
+
+function minimumOperationsToMakeEqual(x: number, y: number): number {
+    if (x <= y) return y - x;
+    let ans = x - y;
+    for (const v of [5, 11]) {
+        ans = Math.min(ans, minimumOperationsToMakeEqual(Math.floor(x/v), y) + 1 + x % v);
+        ans = Math.min(ans, minimumOperationsToMakeEqual(Math.floor(x/v)+1, y) + 1 + v - x % v);
+    }
+    return ans;
+};
+
+
+/*2999. Count the Number of Powerful Integers (Hard)
+You are given three integers start, finish, and limit. You are also given a
+0-indexed string s representing a positive integer. A positive integer x is
+called powerful if it ends with s (in other words, s is a suffix of x) and
+each digit in x is at most limit. Return the total number of powerful
+integers in the range [start..finish]. A string x is a suffix of a string y
+if and only if x is a substring of y that starts from some index (including
+0) in y and extends to the index y.length - 1. For example, 25 is a suffix
+of 5125 whereas 512 is not.
+
+Example 1:
+Input: start = 1, finish = 6000, limit = 4, s = "124"
+Output: 5
+Explanation: The powerful integers in the range [1..6000] are 124, 1124,
+             2124, 3124, and, 4124. All these integers have each digit <= 4,
+             and "124" as a suffix. Note that 5124 is not a powerful integer
+             because the first digit is 5 which is greater than 4. It can be
+             shown that there are only 5 powerful integers in this range.
+
+Example 2:
+Input: start = 15, finish = 215, limit = 6, s = "10"
+Output: 2
+Explanation: The powerful integers in the range [15..215] are 110 and 210.
+             All these integers have each digit <= 6, and "10" as a suffix.
+             It can be shown that there are only 2 powerful integers in this
+             range.
+
+Example 3:
+Input: start = 1000, finish = 2000, limit = 4, s = "3000"
+Output: 0
+Explanation: All integers in the range [1000..2000] are smaller than 3000,
+             hence "3000" cannot be a suffix of any integer in this range.
+
+Constraints:
+* 1 <= start <= finish <= 10^15
+* 1 <= limit <= 9
+* 1 <= s.length <= floor(log10(finish)) + 1
+* s only consists of numeric digits which are at most limit.
+* s does not have leading zeros.*/
+
+function numberOfPowerfulInt(start: number, finish: number, limit: number, s: string): number {
+
+    function fn(val) {
+        const n = val.length - s.length;
+        if (n < 0) return 0;
+        const dp = Array(n+1).fill(0).map(() => Array(2).fill(0));
+        dp[n][0] = 1;
+        if (val.substring(n) >= s) dp[n][1] = 1;
+        for (let i = n-1; i >= 0; --i) {
+            dp[i][0] = (1+limit) * dp[i+1][0];
+            if (Number(val.charAt(i)) <= limit) dp[i][1] = Number(val.charAt(i))*dp[i+1][0] + dp[i+1][1];
+            else dp[i][1] = (1+limit) * dp[i+1][0];
+            console.log(dp[i][0], dp[i][1]);
+        }
+        return dp[0][1];
+    };
+
+    return fn(finish.toString()) - fn((start-1).toString());
+};
