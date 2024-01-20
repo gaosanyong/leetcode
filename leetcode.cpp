@@ -64963,6 +64963,227 @@ public:
 
         return fn(to_string(finish)) - fn(to_string(start-1));
     }
+
+
+    /*3005. Count Elements With Maximum Frequency (Easy)
+    You are given an array nums consisting of positive integers. Return the
+    total frequencies of elements in nums such that those elements all have the
+    maximum frequency. The frequency of an element is the number of occurrences
+    of that element in the array.
+
+    Example 1:
+    Input: nums = [1,2,2,3,1,4]
+    Output: 4
+    Explanation: The elements 1 and 2 have a frequency of 2 which is the maximum
+                 frequency in the array. So the number of elements in the array
+                 with maximum frequency is 4.
+
+    Example 2:
+    Input: nums = [1,2,3,4,5]
+    Output: 5
+    Explanation: All elements of the array have a frequency of 1 which is the
+                 maximum. So the number of elements in the array with maximum
+                 frequency is 5.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * 1 <= nums[i] <= 100*/
+
+    int maxFrequencyElements(vector<int>& nums) {
+        unordered_map<int, int> freq;
+        for (auto& x : nums) ++freq[x];
+        int ans = 0, m = INT_MIN;
+        for (auto& [_, v] : freq)
+            if (v > m) ans = m = v;
+            else if (v == m) ans += v;
+        return ans;
+    }
+
+
+    /*3006. Find Beautiful Indices in the Given Array I (Medium)
+    You are given a 0-indexed string s, a string a, a string b, and an integer
+    k. An index i is beautiful if:
+    * 0 <= i <= s.length - a.length
+    * s[i..(i + a.length - 1)] == a
+    * There exists an index j such that:
+      - 0 <= j <= s.length - b.length
+      - s[j..(j + b.length - 1)] == b
+      - |j - i| <= k
+    Return the array that contains beautiful indices in sorted order from
+    smallest to largest.
+
+    Example 1:
+    Input: s = "isawsquirrelnearmysquirrelhouseohmy", a = "my", b = "squirrel", k = 15
+    Output: [16,33]
+    Explanation: There are 2 beautiful indices: [16,33].
+                 - The index 16 is beautiful as s[16..17] == "my" and there
+                   exists an index 4 with s[4..11] == "squirrel" and
+                   |16 - 4| <= 15.
+                 - The index 33 is beautiful as s[33..34] == "my" and there
+                   exists an index 18 with s[18..25] == "squirrel" and
+                   |33 - 18| <= 15.
+                 Thus we return [16,33] as the result.
+
+    Example 2:
+    Input: s = "abcd", a = "a", b = "a", k = 4
+    Output: [0]
+    Explanation: There is 1 beautiful index: [0].
+                 - The index 0 is beautiful as s[0..0] == "a" and there exists
+                   an index 0 with s[0..0] == "a" and |0 - 0| <= 4.
+                 Thus we return [0] as the result.
+
+    Constraints:
+    * 1 <= k <= s.length <= 10^5
+    * 1 <= a.length, b.length <= 10
+    * s, a, and b contain only lowercase English letters.*/
+
+    vector<int> beautifulIndices(string s, string a, string b, int k) {
+        vector<int> ans;
+        for (int i = 0, j = 0, n = s.size(); i < n; ++i)
+            if (s.substr(i, a.size()) == a) {
+                bool found = false;
+                for (; j < n && j <= i+k; ++j)
+                    if (s.substr(j, b.size()) == b && abs(i-j) <= k) {
+                        found = true;
+                        break;
+                    }
+                if (found) ans.push_back(i);
+            }
+        return ans;
+    }
+
+
+    /*3007. Maximum Number That Sum of the Prices Is Less Than or Equal to K (Medium)
+    You are given an integer k and an integer x. Consider s is the 1-indexed
+    binary representation of an integer num. The price of a number num is the
+    number of i's such that i % x == 0 and s[i] is a set bit. Return the
+    greatest integer num such that the sum of prices of all numbers from 1 to
+    num is less than or equal to k.
+
+    Note:
+    * In the binary representation of a number set bit is a bit of value 1.
+    * The binary representation of a number will be indexed from right to left.
+      For example, if s == 11100, s[4] == 1 and s[2] == 0.
+
+    Example 1:
+    Input: k = 9, x = 1
+    Output: 6
+    Explanation: The numbers 1, 2, 3, 4, 5, and 6 can be written in binary
+                 representation as "1", "10", "11", "100", "101", and "110"
+                 respectively. Since x is equal to 1, the price of each number
+                 is the number of its set bits. The number of set bits in these
+                 numbers is 9. So the sum of the prices of the first 6 numbers
+                 is 9. So the answer is 6.
+
+    Example 2:
+    Input: k = 7, x = 2
+    Output: 9
+    Explanation: Since x is equal to 2, we should just check eventh bits. The
+                 second bit of binary representation of numbers 2 and 3 is a set
+                 bit. So the sum of their prices is 2. The second bit of binary
+                 representation of numbers 6 and 7 is a set bit. So the sum of
+                 their prices is 2. The fourth bit of binary representation of
+                 numbers 8 and 9 is a set bit but their second bit is not. So
+                 the sum of their prices is 2. Numbers 1, 4, and 5 don't have
+                 set bits in their eventh bits in their binary representation.
+                 So the sum of their prices is 0. The second and the fourth bit
+                 of the binary representation of the number 10 are a set bit. So
+                 its price is 2. The sum of the prices of the first 9 numbers is
+                 6. Because the sum of the prices of the first 10 numbers is 8,
+                 the answer is 9.
+
+    Constraints:
+    * 1 <= k <= 10^15
+    * 1 <= x <= 8*/
+
+    long long findMaximumNumber(long long k, int x) {
+
+        function<long long(long long)> fn = [&](long long mid) {
+            if (mid == 0) return 0ll;
+            int n = 0;
+            for (long long m = mid; m >>= 1; ++n);
+            mid ^= 1ll << n;
+            return n/x*(long long) pow(2, n-1) + fn(mid) + ((n+1) % x == 0 ? mid+1 : 0ll);
+        };
+
+        long long lo = 1, hi = 1e15;
+        while (lo < hi) {
+            long long mid = lo + (hi - lo + 1)/2;
+            if (fn(mid) <= k) lo = mid;
+            else hi = mid-1;
+        }
+        return lo;
+    }
+
+
+    /*3008. Find Beautiful Indices in the Given Array II (Hard)
+    You are given a 0-indexed string s, a string a, a string b, and an integer
+    k. An index i is beautiful if:
+    * 0 <= i <= s.length - a.length
+    * s[i..(i + a.length - 1)] == a
+    * There exists an index j such that:
+      - 0 <= j <= s.length - b.length
+      - s[j..(j + b.length - 1)] == b
+      - |j - i| <= k
+    Return the array that contains beautiful indices in sorted order from
+    smallest to largest.
+
+    Example 1:
+    Input: s = "isawsquirrelnearmysquirrelhouseohmy", a = "my", b = "squirrel", k = 15
+    Output: [16,33]
+    Explanation: There are 2 beautiful indices: [16,33].
+                 - The index 16 is beautiful as s[16..17] == "my" and there
+                   exists an index 4 with s[4..11] == "squirrel" and
+                   |16 - 4| <= 15.
+                 - The index 33 is beautiful as s[33..34] == "my" and there
+                   exists an index 18 with s[18..25] == "squirrel" and
+                   |33 - 18| <= 15.
+                 Thus we return [16,33] as the result.
+
+    Example 2:
+    Input: s = "abcd", a = "a", b = "a", k = 4
+    Output: [0]
+    Explanation: There is 1 beautiful index: [0].
+                 - The index 0 is beautiful as s[0..0] == "a" and there exists
+                   an index 0 with s[0..0] == "a" and |0 - 0| <= 4.
+                 Thus we return [0] as the result.
+
+    Constraints:
+    * 1 <= k <= s.length <= 5 * 10^5
+    * 1 <= a.length, b.length <= 5 * 10^5
+    * s, a, and b contain only lowercase English letters.*/
+
+    vector<int> beautifulIndices(string s, string a, string b, int k) {
+
+        auto kmp = [&](string pattern, string text) {
+            vector<int> lps(1);
+            for (int i = 1, k = 0, n = pattern.size(); i < n; ++i) {
+                while (k && pattern[k] != pattern[i]) k = lps[k-1];
+                if (pattern[k] == pattern[i]) ++k;
+                lps.push_back(k);
+            }
+            vector<int> ans;
+            for (int i = 0, k = 0, n = pattern.size(); i < text.size(); ++i) {
+                while (k && (k == n || pattern[k] != text[i])) k = lps[k-1];
+                if (pattern[k] == text[i]) ++k;
+                if (k == n) ans.push_back(i - n + 1);
+            }
+            return ans;
+        };
+
+        vector<int> ans, vals = kmp(b, s);
+        int j = 0;
+        for (auto& i : kmp(a, s)) {
+            bool found = false;
+            for (; j < vals.size() && vals[j] <= i+k; ++j)
+                if (abs(i-vals[j]) <= k) {
+                    found = true;
+                    break;
+                }
+            if (found) ans.push_back(i);
+        }
+        return ans;
+    }
 };
 
 

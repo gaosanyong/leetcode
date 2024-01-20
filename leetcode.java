@@ -19025,6 +19025,229 @@ class SegTreeLazy {
         Sol sol = new Sol();
         return sol.fn(Long.toString(finish)) - sol.fn(Long.toString(start-1));
     }
+
+
+    /*3005. Count Elements With Maximum Frequency (Easy)
+    You are given an array nums consisting of positive integers. Return the
+    total frequencies of elements in nums such that those elements all have the
+    maximum frequency. The frequency of an element is the number of occurrences
+    of that element in the array.
+
+    Example 1:
+    Input: nums = [1,2,2,3,1,4]
+    Output: 4
+    Explanation: The elements 1 and 2 have a frequency of 2 which is the maximum
+                 frequency in the array. So the number of elements in the array
+                 with maximum frequency is 4.
+
+    Example 2:
+    Input: nums = [1,2,3,4,5]
+    Output: 5
+    Explanation: All elements of the array have a frequency of 1 which is the
+                 maximum. So the number of elements in the array with maximum
+                 frequency is 5.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * 1 <= nums[i] <= 100*/
+
+    public int maxFrequencyElements(int[] nums) {
+        Map<Integer, Integer> freq = new HashMap();
+        for (var x : nums) freq.merge(x, 1, Integer::sum);
+        int ans = 0, m = Integer.MIN_VALUE;
+        for (var v : freq.values())
+            if (v > m) ans = m = v;
+            else if (v == m) ans += v;
+        return ans;
+    }
+
+
+    /*3006. Find Beautiful Indices in the Given Array I (Medium)
+    You are given a 0-indexed string s, a string a, a string b, and an integer
+    k. An index i is beautiful if:
+    * 0 <= i <= s.length - a.length
+    * s[i..(i + a.length - 1)] == a
+    * There exists an index j such that:
+      - 0 <= j <= s.length - b.length
+      - s[j..(j + b.length - 1)] == b
+      - |j - i| <= k
+    Return the array that contains beautiful indices in sorted order from
+    smallest to largest.
+
+    Example 1:
+    Input: s = "isawsquirrelnearmysquirrelhouseohmy", a = "my", b = "squirrel", k = 15
+    Output: [16,33]
+    Explanation: There are 2 beautiful indices: [16,33].
+                 - The index 16 is beautiful as s[16..17] == "my" and there
+                   exists an index 4 with s[4..11] == "squirrel" and
+                   |16 - 4| <= 15.
+                 - The index 33 is beautiful as s[33..34] == "my" and there
+                   exists an index 18 with s[18..25] == "squirrel" and
+                   |33 - 18| <= 15.
+                 Thus we return [16,33] as the result.
+
+    Example 2:
+    Input: s = "abcd", a = "a", b = "a", k = 4
+    Output: [0]
+    Explanation: There is 1 beautiful index: [0].
+                 - The index 0 is beautiful as s[0..0] == "a" and there exists
+                   an index 0 with s[0..0] == "a" and |0 - 0| <= 4.
+                 Thus we return [0] as the result.
+
+    Constraints:
+    * 1 <= k <= s.length <= 10^5
+    * 1 <= a.length, b.length <= 10
+    * s, a, and b contain only lowercase English letters.*/
+
+    public List<Integer> beautifulIndices(String s, String a, String b, int k) {
+        List<Integer> ans = new ArrayList();
+        for (int i = 0, j = 0, n = s.length(); i+a.length() <= n; ++i) {
+            if (s.substring(i, i+a.length()).equals(a)) {
+                boolean found = false;
+                for (; j+b.length() <= n && j <= i+k; ++j) {
+                    if (s.substring(j, j+b.length()).equals(b) && Math.abs(i-j) <= k) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) ans.add(i);
+            }
+        }
+        return ans;
+    }
+
+
+    /*3007. Maximum Number That Sum of the Prices Is Less Than or Equal to K (Medium)
+    You are given an integer k and an integer x. Consider s is the 1-indexed
+    binary representation of an integer num. The price of a number num is the
+    number of i's such that i % x == 0 and s[i] is a set bit. Return the
+    greatest integer num such that the sum of prices of all numbers from 1 to
+    num is less than or equal to k.
+
+    Note:
+    * In the binary representation of a number set bit is a bit of value 1.
+    * The binary representation of a number will be indexed from right to left.
+      For example, if s == 11100, s[4] == 1 and s[2] == 0.
+
+    Example 1:
+    Input: k = 9, x = 1
+    Output: 6
+    Explanation: The numbers 1, 2, 3, 4, 5, and 6 can be written in binary
+                 representation as "1", "10", "11", "100", "101", and "110"
+                 respectively. Since x is equal to 1, the price of each number
+                 is the number of its set bits. The number of set bits in these
+                 numbers is 9. So the sum of the prices of the first 6 numbers
+                 is 9. So the answer is 6.
+
+    Example 2:
+    Input: k = 7, x = 2
+    Output: 9
+    Explanation: Since x is equal to 2, we should just check eventh bits. The
+                 second bit of binary representation of numbers 2 and 3 is a set
+                 bit. So the sum of their prices is 2. The second bit of binary
+                 representation of numbers 6 and 7 is a set bit. So the sum of
+                 their prices is 2. The fourth bit of binary representation of
+                 numbers 8 and 9 is a set bit but their second bit is not. So
+                 the sum of their prices is 2. Numbers 1, 4, and 5 don't have
+                 set bits in their eventh bits in their binary representation.
+                 So the sum of their prices is 0. The second and the fourth bit
+                 of the binary representation of the number 10 are a set bit. So
+                 its price is 2. The sum of the prices of the first 9 numbers is
+                 6. Because the sum of the prices of the first 10 numbers is 8,
+                 the answer is 9.
+
+    Constraints:
+    * 1 <= k <= 10^15
+    * 1 <= x <= 8*/
+
+    private long fn(long mid, int x) {
+        if (mid == 0) return 0l;
+        int n = 0;
+        for (long m = mid; (m >>= 1) > 0; ++n);
+        mid ^= 1l << n;
+        return n/x*(long) Math.pow(2, n-1) + fn(mid, x) + ((n+1) % x == 0 ? mid+1 : 0);
+    }
+
+    public long findMaximumNumber(long k, int x) {
+        long lo = 1, hi = (long) 1e15;
+        while (lo < hi) {
+            long mid = lo + (hi - lo + 1)/2;
+            if (fn(mid, x) <= k) lo = mid;
+            else hi = mid-1;
+        }
+        return lo;
+    }
+
+
+    /*3008. Find Beautiful Indices in the Given Array II (Hard)
+    You are given a 0-indexed string s, a string a, a string b, and an integer
+    k. An index i is beautiful if:
+    * 0 <= i <= s.length - a.length
+    * s[i..(i + a.length - 1)] == a
+    * There exists an index j such that:
+      - 0 <= j <= s.length - b.length
+      - s[j..(j + b.length - 1)] == b
+      - |j - i| <= k
+    Return the array that contains beautiful indices in sorted order from
+    smallest to largest.
+
+    Example 1:
+    Input: s = "isawsquirrelnearmysquirrelhouseohmy", a = "my", b = "squirrel", k = 15
+    Output: [16,33]
+    Explanation: There are 2 beautiful indices: [16,33].
+                 - The index 16 is beautiful as s[16..17] == "my" and there
+                   exists an index 4 with s[4..11] == "squirrel" and
+                   |16 - 4| <= 15.
+                 - The index 33 is beautiful as s[33..34] == "my" and there
+                   exists an index 18 with s[18..25] == "squirrel" and
+                   |33 - 18| <= 15.
+                 Thus we return [16,33] as the result.
+
+    Example 2:
+    Input: s = "abcd", a = "a", b = "a", k = 4
+    Output: [0]
+    Explanation: There is 1 beautiful index: [0].
+                 - The index 0 is beautiful as s[0..0] == "a" and there exists
+                   an index 0 with s[0..0] == "a" and |0 - 0| <= 4.
+                 Thus we return [0] as the result.
+
+    Constraints:
+    * 1 <= k <= s.length <= 5 * 10^5
+    * 1 <= a.length, b.length <= 5 * 10^5
+    * s, a, and b contain only lowercase English letters.*/
+
+    private List<Integer> kmp(String pattern, String text) {
+        List<Integer> lps = new ArrayList();
+        lps.add(0);
+        for (int i = 1, k = 0, n = pattern.length(); i < n; ++i) {
+            while (k > 0 && pattern.charAt(k) != pattern.charAt(i)) k = lps.get(k-1);
+            if (pattern.charAt(k) == pattern.charAt(i))++k;
+            lps.add(k);
+        }
+        List<Integer> ans = new ArrayList();
+        for (int i = 0, k = 0, n = pattern.length(); i < text.length(); ++i) {
+            while (k > 0 && (k == n || pattern.charAt(k) != text.charAt(i))) k = lps.get(k-1);
+            if (pattern.charAt(k) == text.charAt(i)) ++k;
+            if (k == n) ans.add(i-n+1);
+        }
+        return ans;
+    }
+
+    public List<Integer> beautifulIndices(String s, String a, String b, int k) {
+        List<Integer> ans = new ArrayList(), vals = kmp(b, s);
+        System.out.println(vals.size());
+        int j = 0;
+        for (var i : kmp(a, s)) {
+            boolean found = false;
+            for (; j < vals.size() && vals.get(j) <= i+k; ++j)
+                if (Math.abs(i-vals.get(j)) <= k) {
+                    found = true;
+                    break;
+                }
+            if (found) ans.add(i);
+        }
+        return ans;
+    }
 }
 
 
