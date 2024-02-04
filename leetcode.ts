@@ -1267,3 +1267,250 @@ function minOrAfterOperations(nums: number[], k: number): number {
     }
     return ans;
 };
+
+
+/*3024. Type of Triangle II (Easy)
+You are given a 0-indexed integer array nums of size 3 which can form the
+sides of a triangle.
+* A triangle is called equilateral if it has all sides of equal length.
+* A triangle is called isosceles if it has exactly two sides of equal length.
+* A triangle is called scalene if all its sides are of different lengths.
+Return a string representing the type of triangle that can be formed or
+"none" if it cannot form a triangle.
+
+Example 1:
+Input: nums = [3,3,3]
+Output: "equilateral"
+Explanation: Since all the sides are of equal length, therefore, it will
+             form an equilateral triangle.
+
+Example 2:
+Input: nums = [3,4,5]
+Output: "scalene"
+Explanation: nums[0] + nums[1] = 3 + 4 = 7, which is greater than nums[2] = 5.
+             nums[0] + nums[2] = 3 + 5 = 8, which is greater than nums[1] = 4.
+             nums[1] + nums[2] = 4 + 5 = 9, which is greater than nums[0] = 3.
+             Since the sum of the two sides is greater than the third side
+             for all three cases, therefore, it can form a triangle. As all
+             the sides are of different lengths, it will form a scalene
+             triangle.
+
+Constraints:
+* nums.length == 3
+* 1 <= nums[i] <= 100*/
+
+function triangleType(nums: number[]): string {
+    nums.sort((a, b) => a-b);
+    const [x, y, z] = nums;
+    if (x + y <= z) return "none";
+    if (x == z) return "equilateral";
+    if (x == y || y == z) return "isosceles";
+    return "scalene";
+};
+
+
+/*3025. Find the Number of Ways to Place People I (Medium)
+You are given a 2D array points of size n x 2 representing integer
+coordinates of some points on a 2D-plane, where points[i] = [xi, yi]. We
+define the right direction as positive x-axis (increasing x-coordinate) and
+the left direction as negative x-axis (decreasing x-coordinate). Similarly,
+we define the up direction as positive y-axis (increasing y-coordinate) and
+the down direction as negative y-axis (decreasing y-coordinate). You have to
+place n people, including Chisato and Takina, at these points such that
+there is exactly one person at every point. Chisato wants to be alone with
+Takina, so Chisato will build a rectangular fence with Chisato's position as
+the upper left corner and Takina's position as the lower right corner of the
+fence (Note that the fence might not enclose any area, i.e. it can be a
+line). If any person other than Chisato and Takina is either inside the
+fence or on the fence, Chisato will be sad. Return the number of pairs of
+points where you can place Chisato and Takina, such that Chisato does not
+become sad on building the fence. Note that Chisato can only build a fence
+with Chisato's position as the upper left corner, and Takina's position as
+the lower right corner. For example, Chisato cannot build either of the
+fences in the picture below with four corners (1, 1), (1, 3), (3, 1), and
+(3, 3), because:
+* With Chisato at (3, 3) and Takina at (1, 1), Chisato's position is not the
+  upper left corner and Takina's position is not the lower right corner of
+  the fence.
+* With Chisato at (1, 3) and Takina at (1, 1), Takina's position is not the
+  lower right corner of the fence.
+
+Example 1:
+Input: points = [[1,1],[2,2],[3,3]]
+Output: 0
+Explanation: There is no way to place Chisato and Takina such that Chisato
+             can build a fence with Chisato's position as the upper left
+             corner and Takina's position as the lower right corner. Hence
+             we return 0.
+
+Example 2:
+Input: points = [[6,2],[4,4],[2,6]]
+Output: 2
+Explanation: There are two ways to place Chisato and Takina such that
+             Chisato will not be sad:
+             - Place Chisato at (4, 4) and Takina at (6, 2).
+             - Place Chisato at (2, 6) and Takina at (4, 4).
+             You cannot place Chisato at (2, 6) and Takina at (6, 2) because
+             the person at (4, 4) will be inside the fence.
+
+Example 3:
+Input: points = [[3,1],[1,3],[1,1]]
+Output: 2
+Explanation: There are two ways to place Chisato and Takina such that
+             Chisato will not be sad:
+             - Place Chisato at (1, 1) and Takina at (3, 1).
+             - Place Chisato at (1, 3) and Takina at (1, 1).
+             You cannot place Chisato at (1, 3) and Takina at (3, 1) because
+             the person at (1, 1) will be on the fence. Note that it does
+             not matter if the fence encloses any area, the first and second
+             fences in the image are valid.
+
+Constraints:
+* 2 <= n <= 50
+* points[i].length == 2
+* 0 <= points[i][0], points[i][1] <= 50
+* All points[i] are distinct.*/
+
+function numberOfPairs(points: number[][]): number {
+    let ans = 0;
+    points.sort((a, b) => (a[0] == b[0] ? b[1] - a[1] : a[0] - b[0]));
+    for (const [i, [x, y]] of points.entries()) {
+        let val = -2e9
+        for (let ii = i+1; ii < points.length; ++ii) {
+            const [xx, yy] = points[ii];
+            if (y >= yy && yy > val) {
+                ++ans;
+                val = yy;
+            }
+        }
+    }
+    return ans;
+};
+
+
+/*3026. Maximum Good Subarray Sum (Medium)
+You are given an array nums of length n and a positive integer k. A subarray
+of nums is called good if the absolute difference between its first and last
+element is exactly k, in other words, the subarray nums[i..j] is good if
+|nums[i] - nums[j]| == k. Return the maximum sum of a good subarray of nums.
+If there are no good subarrays, return 0.
+
+Example 1:
+Input: nums = [1,2,3,4,5,6], k = 1
+Output: 11
+Explanation: The absolute difference between the first and last element must
+             be 1 for a good subarray. All the good subarrays are:
+             [1,2], [2,3], [3,4], [4,5], and [5,6]. The maximum subarray sum
+             is 11 for the subarray [5,6].
+
+Example 2:
+Input: nums = [-1,3,2,4,5], k = 3
+Output: 11
+Explanation: The absolute difference between the first and last element must
+             be 3 for a good subarray. All the good subarrays are: [-1,3,2],
+             and [2,4,5]. The maximum subarray sum is 11 for the subarray
+             [2,4,5].
+
+Example 3:
+Input: nums = [-1,-2,-3,-4], k = 2
+Output: -6
+Explanation: The absolute difference between the first and last element must
+             be 2 for a good subarray. All the good subarrays are:
+             [-1,-2,-3], and [-2,-3,-4]. The maximum subarray sum is -6 for
+             the subarray [-1,-2,-3].
+
+Constraints:
+* 2 <= nums.length <= 10^5
+* -10^9 <= nums[i] <= 10^9
+* 1 <= k <= 10^9*/
+
+function maximumSubarraySum(nums: number[], k: number): number {
+    let ans = -1e15, prefix = 0, seen = new Map();
+    for (const x of nums) {
+        prefix += x;
+        if (seen.has(x-k)) ans = Math.max(ans, prefix - seen.get(x-k));
+        if (seen.has(x+k)) ans = Math.max(ans, prefix - seen.get(x+k));
+        if (seen.has(x)) seen.set(x, Math.min(seen.get(x), prefix-x));
+        else seen.set(x, prefix-x);
+    }
+    return ans > -1e15 ? ans : 0;
+};
+
+
+/*3027. Find the Number of Ways to Place People II (Hard)
+You are given a 2D array points of size n x 2 representing integer
+coordinates of some points on a 2D-plane, where points[i] = [xi, yi]. We
+define the right direction as positive x-axis (increasing x-coordinate) and
+the left direction as negative x-axis (decreasing x-coordinate). Similarly,
+we define the up direction as positive y-axis (increasing y-coordinate) and
+the down direction as negative y-axis (decreasing y-coordinate). You have to
+place n people, including Chisato and Takina, at these points such that
+there is exactly one person at every point. Chisato wants to be alone with
+Takina, so Chisato will build a rectangular fence with Chisato's position as
+the upper left corner and Takina's position as the lower right corner of the
+fence (Note that the fence might not enclose any area, i.e. it can be a
+line). If any person other than Chisato and Takina is either inside the
+fence or on the fence, Chisato will be sad. Return the number of pairs of
+points where you can place Chisato and Takina, such that Chisato does not
+become sad on building the fence. Note that Chisato can only build a fence
+with Chisato's position as the upper left corner, and Takina's position as
+the lower right corner. For example, Chisato cannot build either of the
+fences in the picture below with four corners (1, 1), (1, 3), (3, 1), and
+(3, 3), because:
+* With Chisato at (3, 3) and Takina at (1, 1), Chisato's position is not the
+  upper left corner and Takina's position is not the lower right corner of
+  the fence.
+* With Chisato at (1, 3) and Takina at (1, 1), Takina's position is not the
+  lower right corner of the fence.
+
+Example 1:
+Input: points = [[1,1],[2,2],[3,3]]
+Output: 0
+Explanation: There is no way to place Chisato and Takina such that Chisato
+             can build a fence with Chisato's position as the upper left
+             corner and Takina's position as the lower right corner. Hence
+             we return 0.
+
+Example 2:
+Input: points = [[6,2],[4,4],[2,6]]
+Output: 2
+Explanation: There are two ways to place Chisato and Takina such that
+             Chisato will not be sad:
+             - Place Chisato at (4, 4) and Takina at (6, 2).
+             - Place Chisato at (2, 6) and Takina at (4, 4).
+             You cannot place Chisato at (2, 6) and Takina at (6, 2) because
+             the person at (4, 4) will be inside the fence.
+
+Example 3:
+Input: points = [[3,1],[1,3],[1,1]]
+Output: 2
+Explanation: There are two ways to place Chisato and Takina such that
+             Chisato will not be sad:
+             - Place Chisato at (1, 1) and Takina at (3, 1).
+             - Place Chisato at (1, 3) and Takina at (1, 1).
+             You cannot place Chisato at (1, 3) and Takina at (3, 1) because
+             the person at (1, 1) will be on the fence. Note that it does
+             not matter if the fence encloses any area, the first and second
+             fences in the image are valid.
+
+Constraints:
+* 2 <= n <= 1000
+* points[i].length == 2
+* -10^9 <= points[i][0], points[i][1] <= 10^9
+* All points[i] are distinct.*/
+
+function numberOfPairs(points: number[][]): number {
+    let ans = 0;
+    points.sort((a, b) => (a[0] == b[0] ? b[1] - a[1] : a[0] - b[0]));
+    for (const [i, [x, y]] of points.entries()) {
+        let val = -2e9
+        for (let ii = i+1; ii < points.length; ++ii) {
+            const [xx, yy] = points[ii];
+            if (y >= yy && yy > val) {
+                ++ans;
+                val = yy;
+            }
+        }
+    }
+    return ans;
+};
