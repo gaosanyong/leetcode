@@ -1462,14 +1462,12 @@ public:
 
     vector<vector<string>> groupAnagrams(vector<string>& strs) {
         unordered_map<string, vector<string>> mp;
-        for (auto& word : strs) {
-            string key = word;
-            sort(key.begin(), key.end());
-            mp[key].push_back(word);
+        for (auto& s : strs) {
+            string k = s;
+            sort(k.begin(), k.end());
+            mp[k].push_back(s);
         }
-        vector<vector<string>> ans;
-        for (auto& [k, v] : mp) ans.push_back(v);
-        return ans;
+        review views::values(mp);
     }
 
 
