@@ -8323,7 +8323,7 @@ class Solution:
         for i in range(1, int(sqrt(n))+1):
             if int(sqrt(n - i*i))**2 == n - i*i: return 2
         while n % 4 == 0: n //= 4
-        return 4 if n%8 == 7 else 3 #Lagrange four-square theorem & Lagendre three-square theorem
+        return 3 if n%8 != 7 else 4 #Lagrange four-square theorem & Lagendre three-square theorem
 
 
     """280. Wiggle Sort (Medium)

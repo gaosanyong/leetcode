@@ -7080,7 +7080,7 @@ public:
         for (int i = 1; i < sqrt(n); ++i)
             if (pow(int(sqrt(n-i*i)), 2) == n-i*i) return 2;
         for (; n % 4 == 0; n /= 4);
-        return n % 8 == 7 ? 4 : 3;
+        return n % 8 != 7 ? 3 : 4;
     }
 
 
