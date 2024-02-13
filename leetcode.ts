@@ -32,6 +32,38 @@ function groupAnagrams(strs: string[]): string[][] {
 };
 
 
+/*169. Majority Element (Easy)
+Given an array nums of size n, return the majority element. The majority
+element is the element that appears more than ⌊n / 2⌋ times. You may assume
+that the majority element always exists in the array.
+
+Example 1:
+Input: nums = [3,2,3]
+Output: 3
+
+Example 2:
+Input: nums = [2,2,1,1,1,2,2]
+Output: 2
+
+Constraints:
+* n == nums.length
+* 1 <= n <= 5 * 10^4
+* -2^31 <= nums[i] <= 2^31 - 1
+
+Follow-up: Could you solve the problem in linear time and in O(1) space?*/
+
+function majorityElement(nums: number[]): number {
+    let ans = 0, cnt = 0;
+    for (const x of nums)
+        if (cnt && ans != x) --cnt;
+        else {
+            if (cnt == 0) ans = x;
+            ++cnt;
+        }
+    return ans;
+};
+
+
 /*279. Perfect Squares (Medium)
 Given an integer n, return the least number of perfect square numbers that
 sum to n. A perfect square is an integer that is the square of an integer;
