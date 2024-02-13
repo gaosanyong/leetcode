@@ -85120,6 +85120,42 @@ class SegTreeLazy:
         return ans
 
 
+    """3032. Count Numbers With Unique Digits II (Easy)
+    Given two positive integers a and b, return the count of numbers having
+    unique digits in the range [a, b] (inclusive).
+
+    Example 1:
+    Input: a = 1, b = 20
+    Output: 19
+    Explanation: All the numbers in the range [1, 20] have unique digits except
+                 11. Hence, the answer is 19.
+
+    Example 2:
+    Input: a = 9, b = 19
+    Output: 10
+    Explanation: All the numbers in the range [9, 19] have unique digits except
+                 11. Hence, the answer is 10.
+
+    Example 3:
+    Input: a = 80, b = 120
+    Output: 27
+    Explanation: There are 41 numbers in the range [80, 120], 27 of which have
+                 unique digits.
+
+    Constraints: 1 <= a <= b <= 1000"""
+
+    def numberCount(self, a: int, b: int) -> int:
+        ans = 0
+        for x in range(a, b+1):
+            mask = 0
+            while x:
+                x, d = divmod(x, 10)
+                if mask & 1<<d: break
+                mask ^= 1<<d
+            else: ans += 1
+        return ans
+
+
     """3033. Modify the Matrix （Easy）
     Given a 0-indexed m x n integer matrix matrix, create a new 0-indexed matrix
     called answer. Make answer equal to matrix, then replace each element with
