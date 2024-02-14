@@ -46609,14 +46609,16 @@ public:
     * nums consists of equal number of positive and negative integers.*/
 
     vector<int> rearrangeArray(vector<int>& nums) {
-        vector<int> ans, pos, neg;
+        vector<int> ans(nums.size());
+        int p = 0, n = 1;
         for (auto& x : nums)
-            if (x > 0) pos.push_back(x);
-            else neg.push_back(x);
-        for (int i = 0; i < pos.size(); ++i) {
-            ans.push_back(pos[i]);
-            ans.push_back(neg[i]);
-        }
+            if (x > 0) {
+                ans[p] = x;
+                p += 2;
+            } else {
+                ans[n] = x;
+                n += 2;
+            }
         return ans;
     }
 

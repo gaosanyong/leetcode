@@ -60190,12 +60190,15 @@ class Trie:
     * nums consists of equal number of positive and negative integers."""
 
     def rearrangeArray(self, nums: List[int]) -> List[int]:
-        pos, neg = [], []
+        ans = [0]*len(nums)
+        p, n = 0, 1
         for x in nums:
-            if x > 0: pos.append(x)
-            else: neg.append(x)
-        ans = []
-        for p, n in zip(pos, neg): ans.extend([p, n])
+            if x > 0:
+                ans[p] = x
+                p += 2
+            else:
+                ans[n] = x
+                n += 2
         return ans
 
 
