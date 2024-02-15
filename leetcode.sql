@@ -9396,8 +9396,14 @@ Explanation:
 - The Engineering and Marketing departments have the highest salaries of 102,000
   and 53,000, respectively. Resulting in an absolute difference of 49,000.*/
 
-SELECT
-    ABS((SELECT MAX(salary) FROM Salaries WHERE department = "Marketing")
-        -
-        (SELECT MAX(salary) FROM Salaries WHERE department = "Engineering"))
-AS salary_difference
+  SELECT ABS(
+      (SELECT MAX(salary)
+       FROM Salaries
+       WHERE department = "Marketing"
+      )
+      -
+      (SELECT MAX(salary)
+       FROM Salaries
+       WHERE department = "Engineering"
+      )
+  ) AS salary_difference
