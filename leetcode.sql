@@ -9452,3 +9452,121 @@ The calculation is as follows:
      2
  ) AS average_items_per_order
  FROM Orders
+
+
+/*2987. Find Expensive Cities (Easy)
+SQL Schema
+Table: Listings
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| listing_id  | int     |
+| city        | varchar |
+| price       | int     |
++-------------+---------+
+listing_id is column of unique values for this table. This table contains
+listing_id, city, and price. Write a solution to find cities where the average
+home prices exceed the national average home price. Return the result table
+sorted by city in ascending order. The result format is in the following
+example.
+
+Example 1:
+Input:
+Listings table:
++------------+--------------+---------+
+| listing_id | city         | price   |
++------------+--------------+---------+
+| 113        | LosAngeles   | 7560386 |
+| 136        | SanFrancisco | 2380268 |
+| 92         | Chicago      | 9833209 |
+| 60         | Chicago      | 5147582 |
+| 8          | Chicago      | 5274441 |
+| 79         | SanFrancisco | 8372065 |
+| 37         | Chicago      | 7939595 |
+| 53         | LosAngeles   | 4965123 |
+| 178        | SanFrancisco | 999207  |
+| 51         | NewYork      | 5951718 |
+| 121        | NewYork      | 2893760 |
++------------+--------------+---------+
+Output
++------------+
+| city       |
++------------+
+| Chicago    |
+| LosAngeles |
++------------+
+Explanation
+The national average home price is $6,122,059.45. Among the cities listed:
+- Chicago has an average price of $7,043,706.75
+- Los Angeles has an average price of $6,277,754.5
+- San Francisco has an average price of $3,900,513.33
+- New York has an average price of $4,422,739
+Only Chicago and Los Angeles have average home prices exceeding the national
+average. Therefore, these two cities are included in the output table. The
+output table is sorted in ascending order based on the city names.*/
+
+SELECT
+    city
+FROM
+    Listings
+GROUP BY 1
+HAVING AVG(price) > (SELECT AVG(price) FROM Listings)
+ORDER BY 1
+
+
+/*2990. Loan Types (Easy)
+SQL Schema
+Table: Loans
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| loan_id     | int     |
+| user_id     | int     |
+| loan_type   | varchar |
++-------------+---------+
+loan_id is column of unique values for this table. This table contains loan_id,
+user_id, and loan_type. Write a solution to find all distinct user_id's that
+have at least one Refinance loan type and at least one Mortgage loan type.
+Return the result table ordered by user_id in ascending order. The result format
+is in the following example.
+
+Example 1:
+Input:
+Loans table:
++---------+---------+-----------+
+| loan_id | user_id | loan_type |
++---------+---------+-----------+
+| 683     | 101     | Mortgage  |
+| 218     | 101     | AutoLoan  |
+| 802     | 101     | Inschool  |
+| 593     | 102     | Mortgage  |
+| 138     | 102     | Refinance |
+| 294     | 102     | Inschool  |
+| 308     | 103     | Refinance |
+| 389     | 104     | Mortgage  |
++---------+---------+-----------+
+Output
++---------+
+| user_id |
++---------+
+| 102     |
++---------+
+Explanation
+- User_id 101 has three loan types, one of which is a Mortgage. However, this
+  user does not have any loan type categorized as Refinance, so user_id 101
+  won't be considered.
+- User_id 102 possesses three loan types: one for Mortgage and one for
+  Refinance. Hence, user_id 102 will be included in the result.
+- User_id 103 has a loan type of Refinance but lacks a Mortgage loan type, so
+  user_id 103 won't be considered.
+- User_id 104 has a Mortgage loan type but doesn't have a Refinance loan type,
+  thus, user_id 104 won't be considered.
+Output table is ordered by user_id in ascending order.*/
+
+SELECT DISTINCT user_id
+FROM
+    Loans a
+    JOIN
+    Loans b USING (user_id)
+WHERE a.loan_type = "Mortgage" AND b.loan_type = "Refinance"
+ORDER BY 1
