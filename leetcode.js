@@ -1322,7 +1322,7 @@ Explanation: Since k == 1, the 1-or of the array is equal to the bitwise OR
 
 Constraints:
 * 1 <= nums.length <= 50
-* 0 <= nums[i] < 231
+* 0 <= nums[i] < 2^31
 * 1 <= k <= nums.length*/
 
 var findKOr = function(nums, k) {

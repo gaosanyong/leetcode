@@ -214,7 +214,7 @@ class Solution:
 
     Note:
     Assume we are dealing with an environment which could only store integers
-    within the 32-bit signed integer range: [−231,  231 − 1]. For the purpose
+    within the 32-bit signed integer range: [−2^31,  2^31 − 1]. For the purpose
     of this problem, assume that your function returns 0 when the reversed
     integer overflows."""
 
@@ -241,8 +241,8 @@ class Solution:
     Only the space character ' ' is considered as whitespace character.
     Assume we are dealing with an environment which could only store integers
     within the 32-bit signed integer range: [−2^31,  2^31 − 1]. If the numerical
-    value is out of the range of representable values, INT_MAX (231 − 1) or
-    INT_MIN (−231) is returned.
+    value is out of the range of representable values, INT_MAX (2^31 − 1) or
+    INT_MIN (−2^31) is returned.
 
     Example 1:
     Input: "42"
@@ -269,7 +269,7 @@ class Solution:
     Input: "-91283472332"
     Output: -2147483648
     Explanation: The number "-91283472332" is out of the range of a 32-bit signed integer.
-    Thefore INT_MIN (−231) is returned."""
+    Thefore INT_MIN (−2^31) is returned."""
 
     def myAtoi(self, s: str) -> int:
         ii = -1
@@ -8089,7 +8089,7 @@ class Solution:
 
     """273. Integer to English Words (Hard)
     Convert a non-negative integer to its english words representation. Given
-    input is guaranteed to be less than 231 - 1.
+    input is guaranteed to be less than 2^31 - 1.
 
     Example 1:
     Input: 123
@@ -8414,7 +8414,7 @@ class Solution:
     values.
     * -1 A wall or an obstacle.
     * 0 A gate.
-    * INF Infinity means an empty room. We use the value 231 - 1 = 2147483647
+    * INF Infinity means an empty room. We use the value 2^31 - 1 = 2147483647
       to represent INF as you may assume that the distance to a gate is less
       than 2147483647.
     Fill each empty room with the distance to its nearest gate. If it is
@@ -8443,7 +8443,7 @@ class Solution:
     * m == rooms.length
     * n == rooms[i].length
     * 1 <= m, n <= 250
-    * rooms[i][j] is -1, 0, or 231 - 1."""
+    * rooms[i][j] is -1, 0, or 2^31 - 1."""
 
     def wallsAndGates(self, rooms: List[List[int]]) -> None:
         m, n = len(rooms), len(rooms[0]) # dimensions
@@ -12477,7 +12477,7 @@ class Solution:
     Constraints:
     * 1 <= points.length <= 10^5
     * points[i].length == 2
-    * -231 <= xstart < xend <= 2^31 - 1"""
+    * -2^31 <= xstart < xend <= 2^31 - 1"""
 
     def findMinArrowShots(self, points: List[List[int]]) -> int:
         ans = 0
@@ -13612,7 +13612,7 @@ class Solution:
 
     Constraints:
     * The number of nodes in the tree will be in the range [0, 10^4].
-    * -231 <= Node.val <= 231 - 1"""
+    * -2^31 <= Node.val <= 2^31 - 1"""
 
     def largestValues(self, root: TreeNode) -> List[int]:
         if not root: return [] # edge case
@@ -83224,7 +83224,7 @@ class SegTreeLazy:
 
     Constraints:
     * 1 <= nums.length <= 50
-    * 0 <= nums[i] < 231
+    * 0 <= nums[i] < 2^31
     * 1 <= k <= nums.length"""
 
     def findKOr(self, nums: List[int], k: int) -> int:

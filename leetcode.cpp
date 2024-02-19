@@ -260,7 +260,7 @@ public:
                  Step 3: "42" ("42" is read in)
                             ^
                  The parsed integer is 42.
-                 Since 42 is in the range [-231, 231 - 1], the final result is 42.
+                 Since 42 is in the range [-2^31, 2^31 - 1], the final result is 42.
 
     Example 2:
     Input: s = "   -42"
@@ -272,7 +272,7 @@ public:
                  Step 3: "   -42" ("42" is read in)
                                 ^
                  The parsed integer is -42.
-                 Since -42 is in the range [-231, 231 - 1], the final result is -42.
+                 Since -42 is in the range [-2^31, 2^31 - 1], the final result is -42.
 
     Example 3:
     Input: s = "4193 with words"
@@ -284,7 +284,7 @@ public:
                  Step 3: "4193 with words" ("4193" is read in; reading stops because the next character is a non-digit)
                               ^
                  The parsed integer is 4193.
-                 Since 4193 is in the range [-231, 231 - 1], the final result is 4193.
+                 Since 4193 is in the range [-2^31, 2^31 - 1], the final result is 4193.
 
     Constraints:
     * 0 <= s.length <= 200
@@ -9914,7 +9914,7 @@ public:
     Constraints:
     * 1 <= points.length <= 10^5
     * points[i].length == 2
-    * -231 <= xstart < xend <= 2^31 - 1*/
+    * -2^31 <= xstart < xend <= 2^31 - 1*/
 
     int findMinArrowShots(vector<vector<int>>& points) {
         int ans = 0;
@@ -63725,7 +63725,7 @@ public:
 
     Constraints:
     * 1 <= nums.length <= 50
-    * 0 <= nums[i] < 231
+    * 0 <= nums[i] < 2^31
     * 1 <= k <= nums.length*/
 
     int findKOr(vector<int>& nums, int k) {
