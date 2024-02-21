@@ -80522,6 +80522,49 @@ class SegTreeLazy:
         return ans
 
 
+    """    /*2782. Number of Unique Categories (Medium)
+    You are given an integer n and an object categoryHandler of class
+    CategoryHandler. There are n elements, numbered from 0 to n - 1. Each
+    element has a category, and your task is to find the number of unique
+    categories. The class CategoryHandler contains the following function, which
+    may help you:
+    * boolean haveSameCategory(integer a, integer b): Returns true if a and b
+      are in the same category and false otherwise. Also, if either a or b is
+      not a valid number (i.e. it's greater than or equal to nor less than 0),
+      it returns false.
+    Return the number of unique categories.
+
+    Example 1:
+    Input: n = 6, categoryHandler = [1,1,2,2,3,3]
+    Output: 3
+    Explanation: There are 6 elements in this example. The first two elements
+                 belong to category 1, the second two belong to category 2, and
+                 the last two elements belong to category 3. So there are 3
+                 unique categories.
+
+    Example 2:
+    Input: n = 5, categoryHandler = [1,2,3,4,5]
+    Output: 5
+    Explanation: There are 5 elements in this example. Each element belongs to a
+                 unique category. So there are 5 unique categories.
+
+    Example 3:
+    Input: n = 3, categoryHandler = [1,1,1]
+    Output: 1
+    Explanation: There are 3 elements in this example. All of them belong to one
+                 category. So there is only 1 unique category.
+
+    Constraints: 1 <= n <= 100*/"""
+
+    def numberOfCategories(self, n: int, categoryHandler: Optional['CategoryHandler']) -> int:
+        ans = 0
+        for j in range(n):
+            for i in range(j):
+                if categoryHandler.haveSameCategory(i, j): break
+            else: ans += 1
+        return ans
+
+
     """2784. Check if Array is Good (Easy)
     You are given an integer array nums. We consider an array good if it is a
     permutation of an array base[n]. base[n] = [1, 2, ..., n - 1, n, n] (in
