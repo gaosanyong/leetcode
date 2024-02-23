@@ -148,6 +148,62 @@ function firstUniqChar(s: string): number {
 };
 
 
+/*787. Cheapest Flights Within K Stops (Medium)
+There are n cities connected by some number of flights. You are given an
+array flights where flights[i] = [fromi, toi, pricei] indicates that there
+is a flight from city fromi to city toi with cost pricei. You are also
+given three integers src, dst, and k, return the cheapest price from src to
+dst with at most k stops. If there is no such route, return -1.
+
+Example 1:
+Input: n = 3, flights = [[0,1,100],[1,2,100],[0,2,500]], src = 0, dst = 2, k = 1
+Output: 200
+Explanation: The graph is shown. The cheapest price from city 0 to city 2
+             with at most 1 stop costs 200, as marked red in the picture.
+
+Example 2:
+Input: n = 3, flights = [[0,1,100],[1,2,100],[0,2,500]], src = 0, dst = 2, k = 0
+Output: 500
+Explanation: The graph is shown. The cheapest price from city 0 to city 2
+             with at most 0 stop costs 500, as marked blue in the picture.
+
+Constraints:
+* 1 <= n <= 100
+* 0 <= flights.length <= (n * (n - 1) / 2)
+* flights[i].length == 3
+* 0 <= fromi, toi < n
+* fromi != toi
+* 1 <= pricei <= 10^4
+* There will not be any multiple flights between two cities.
+* 0 <= src, dst, k < n
+* src != dst*/
+
+function findCheapestPrice(n: number, flights: number[][], src: number, dst: number, k: number): number {
+    const graph = Array(n).fill(null).map(() => []);
+    for (const [u, v, w] of flights)
+        graph[u].push([v, w]);
+    const pq = new PriorityQueue({compare : (x, y) => x[0] - y[0]});
+    pq.enqueue([0, 0, src]);
+    const dist = Array(n).fill(null).map(() => Array(2).fill(1e7));
+    dist[src] = [0, 0];
+    while (pq.size()) {
+        const [p, s, u] = pq.dequeue();
+        if (u == dst) return p;
+        if (s <= k) {
+            for (const [v, w] of graph[u]) {
+                const pp = p + w;
+                if (pp < dist[v][0] || s < dist[v][1]) {
+                    pq.enqueue([pp, s+1, v]);
+                    if (pp < dist[v][0]) dist[v] = [pp, s+1];
+                    else if (pp == dist[v][0]) dist[v][1] = Math.min(dist[v][1], s+1);
+                }
+            }
+        }
+    }
+    return -1;
+};
+
+
 /*2108. Find First Palindromic String in the Array (Easy)
 Given an array of strings words, return the first palindromic string in the
 array. If there is no such string, return an empty string "". A string is
