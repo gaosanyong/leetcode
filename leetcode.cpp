@@ -2930,8 +2930,7 @@ public:
     * -10^4 <= Node.val <= 10^4*/
 
     bool isSameTree(TreeNode* p, TreeNode* q) {
-        if (p == NULL && q == NULL) return true;
-        if (p == NULL || q == NULL) return false;
+        if (p == nullptr || q == nullptr) return p == q;
         return p->val == q->val && isSameTree(p->left, q->left) && isSameTree(p->right, q->right);
     }
 
