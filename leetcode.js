@@ -175,6 +175,48 @@ var firstUniqChar = function(s) {
 };
 
 
+/*513. Find Bottom Left Tree Value (Medium)
+Given the root of a binary tree, return the leftmost value in the last row
+of the tree.
+
+Example 1:
+Input: root = [2,1,3]
+
+      2
+     / \
+    1   3
+
+Output: 1
+
+Example 2:
+Input: root = [1,2,3,4,null,5,6,null,null,7]
+
+        1
+       / \
+      2   3
+     /   / \
+    4   5   6
+       /
+      7
+
+Output: 7
+
+Constraints:
+* The number of nodes in the tree is in the range [1, 10^4].
+* -2^31 <= Node.val <= 2^31 - 1*/
+
+var findBottomLeftValue = function(root) {
+    const queue = [root];
+    while (queue.length)
+        for (let sz = queue.length; sz; --sz) {
+            var node = queue.shift();
+            if (node.right) queue.push(node.right);
+            if (node.left) queue.push(node.left);
+        }
+    return node.val;
+};
+
+
 /*787. Cheapest Flights Within K Stops (Medium)
 There are n cities connected by some number of flights. You are given an
 array flights where flights[i] = [fromi, toi, pricei] indicates that there

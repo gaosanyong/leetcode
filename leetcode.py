@@ -13490,19 +13490,20 @@ class Solution:
 
 
     """513. Find Bottom Left Tree Value (Medium)
-    Given a binary tree, find the leftmost value in the last row of the tree.
+    Given the root of a binary tree, return the leftmost value in the last row
+    of the tree.
 
     Example 1:
-    Input:
+    Input: root = [2,1,3]
 
-        2
-       / \
-      1   3
+          2
+         / \
+        1   3
 
     Output: 1
 
     Example 2:
-    Input:
+    Input: root = [1,2,3,4,null,5,6,null,null,7]
 
             1
            / \
@@ -13513,19 +13514,19 @@ class Solution:
           7
 
     Output: 7
-    Note: You may assume the tree (i.e., the given root node) is not NULL."""
 
-    def findBottomLeftValue(self, root: TreeNode) -> int:
-        stack = [(root, 0)]
-        ii = -1
-        while stack:
-            node, i = stack.pop()
-            if i > ii:
-                ii = i
-                ans = node.val
-            if node.right: stack.append((node.right, i+1))
-            if node.left: stack.append((node.left, i+1))
-        return ans
+    Constraints:
+    * The number of nodes in the tree is in the range [1, 10^4].
+    * -2^31 <= Node.val <= 2^31 - 1"""
+
+    def findBottomLeftValue(self, root: Optional[TreeNode]) -> int:
+        queue = deque([root])
+        while queue:
+            for _ in range(len(queue)):
+                node = queue.popleft()
+                if node.right: queue.append(node.right)
+                if node.left: queue.append(node.left)
+        return node.val
 
 
     """514. Freedom Trail (Hard)
