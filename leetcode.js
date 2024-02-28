@@ -3551,6 +3551,71 @@ var largestPerimeter = function(nums) {
 };
 
 
+/*2992. Number of Self-Divisible Permutations (Medium)
+Given an integer n, return the number of permutations of the 1-indexed array
+nums = [1, 2, ..., n], such that it's self-divisible. A 1-indexed array a of
+length n is self-divisible if for every 1 <= i <= n, gcd(a[i], i) == 1. A
+permutation of an array is a rearrangement of the elements of that array,
+for example here are all of the permutations of the array [1, 2, 3]:
+* [1, 2, 3]
+* [1, 3, 2]
+* [2, 1, 3]
+* [2, 3, 1]
+* [3, 1, 2]
+* [3, 2, 1]
+
+Example 1:
+Input: n = 1
+Output: 1
+Explanation: The array [1] has only 1 permutation which is self-divisible.
+
+Example 2:
+Input: n = 2
+Output: 1
+Explanation: The array [1,2] has 2 permutations and only one of them is
+             self-divisible:
+             * nums = [1,2]: This is not self-divisible since
+               gcd(nums[2], 2) != 1.
+             * nums = [2,1]: This is self-divisible since
+               gcd(nums[1], 1) == 1 and gcd(nums[2], 2) == 1.
+
+Example 3:
+Input: n = 3
+Output: 3
+Explanation: The array [1,2,3] has 3 self-divisble permutations: [1,3,2],
+             [3,1,2], [2,3,1]. It can be shown that the other 3 permutations
+             are not self-divisible. Hence the answer is 3.
+
+Constraints: 1 <= n <= 12*/
+
+var selfDivisiblePermutationCount = function(n) {
+    const memo = Array(n+1).fill(null).map(() => Array(1<<n).fill(-1));
+
+    function gcd(x, y) {
+        while (y) {
+            const temp = x;
+            x = y;
+            y = temp % y;
+        }
+        return Math.abs(x);
+    }
+
+    function fn(i, m) {
+        if (memo[i][m] == -1)
+            if (i == n) memo[i][m] = 1;
+            else {
+                memo[i][m] = 0;
+                for (let x = 0; x < n; ++x)
+                    if ((m & 1<<x) == 0 && gcd(x+1, i+1) == 1)
+                        memo[i][m] += fn(i+1, m ^ 1<<x);
+            }
+        return memo[i][m];
+    }
+
+    return fn(0, 0);
+};
+
+
 /*2996. Smallest Missing Integer Greater Than Sequential Prefix Sum (Easy)
 You are given a 0-indexed array of integers nums. A prefix nums[0..i] is
 sequential if, for all 1 <= j <= i, nums[j] = nums[j - 1] + 1. In
