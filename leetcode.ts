@@ -3076,6 +3076,57 @@ function minOrAfterOperations(nums: number[], k: number): number {
 };
 
 
+/*3023. Find Pattern in Infinite Stream I (Medium)
+You are given a binary array pattern and an object stream of class
+InfiniteStream representing a 0-indexed infinite stream of bits. The class
+InfiniteStream contains the following function:
+* int next(): Reads a single bit (which is either 0 or 1) from the stream
+  and returns it.
+Return the first starting index where the pattern matches the bits read from
+the stream. For example, if the pattern is [1, 0], the first match is the
+highlighted part in the stream [0, 1, 0, 1, ...].
+
+Example 1:
+Input: stream = [1,1,1,0,1,1,1,...], pattern = [0,1]
+Output: 3
+Explanation: The first occurrence of the pattern [0,1] is highlighted in the
+             stream [1,1,1,0,1,...], which starts at index 3.
+
+Example 2:
+Input: stream = [0,0,0,0,...], pattern = [0]
+Output: 0
+Explanation: The first occurrence of the pattern [0] is highlighted in the
+             stream [0,...], which starts at index 0.
+
+Example 3:
+Input: stream = [1,0,1,1,0,1,1,0,1,...], pattern = [1,1,0,1]
+Output: 2
+Explanation: The first occurrence of the pattern [1,1,0,1] is highlighted in
+             the stream [1,0,1,1,0,1,...], which starts at index 2.
+
+Constraints:
+* 1 <= pattern.length <= 100
+* pattern consists only of 0 and 1.
+* stream consists only of 0 and 1.
+* The input is generated such that the pattern's start index exists in the
+  first 10^5 bits of the stream.*/
+
+function findPattern(stream: InfiniteStream, pattern: number[]): number {
+    const lps = [0], n = pattern.length;
+    for (let i = 1, k = 0; i < n; ++i) {
+        while (k && pattern[k] != pattern[i]) k = lps[k-1];
+        if (pattern[k] == pattern[i]) ++k;
+        lps.push(k);
+    }
+    for (let i = 0, k = 0; true; ++i) {
+        let ch = stream.next();
+        while (k && pattern[k] != ch) k = lps[k-1];
+        if (pattern[k] == ch) ++k;
+        if (k == n) return i-n+1;
+    }
+};
+
+
 /*3024. Type of Triangle II (Easy)
 You are given a 0-indexed integer array nums of size 3 which can form the
 sides of a triangle.
