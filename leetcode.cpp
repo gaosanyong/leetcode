@@ -67209,6 +67209,48 @@ public:
     }
 
 
+    /*3063. Linked List Frequency (Medium)
+    Given the head of a linked list containing k distinct elements, return the
+    head to a linked list of length k containing the frequency of each distinct
+    element in the given linked list in any order.
+
+    Example 1:
+    Input: head = [1,1,1,2,2,3]
+    Output: [3,2,1]
+    Explanation: There are 3 distinct elements in the list. The frequency of 1
+                 is 3, the frequency of 2 is 2 and the frequency of 3 is 1.
+                 Hence, we return 3 -> 2 -> 1. Note that 1 -> 2 -> 3,
+                 1 -> 3 -> 2, 2 -> 1 -> 3, 2 -> 3 -> 1, and 3 -> 1 -> 2 are also
+                 valid answers.
+
+    Example 2:
+    Input: head = [1,1,2,2,2]
+    Output: [2,3]
+    Explanation: There are 2 distinct elements in the list. The frequency of 1
+                 is 2 and the frequency of 2 is 3. Hence, we return 2 -> 3.
+
+    Example 3:
+    Input: head = [6,5,4,3,2,1]
+    Output: [1,1,1,1,1,1]
+    Explanation: There are 6 distinct elements in the list. The frequency of
+                 each of them is 1. Hence, we return 1 -> 1 -> 1 -> 1 -> 1 -> 1.
+
+    Constraints:
+    * The number of nodes in the list is in the range [1, 10^5].
+    * 1 <= Node.val <= 10^5*/
+
+    ListNode* frequenciesOfElements(ListNode* head) {
+        ListNode *node = new ListNode(), *dummy = node;
+        for (int prev = 0; head; head = head->next) {
+            if (prev != head->val)
+                node = node->next = new ListNode();
+            ++node->val;
+            prev = head->val;
+        }
+        return dummy->next;
+    }
+
+
     /*3064. Guess the Number Using Bitwise Questions I (Medium)
     There is a number n that you have to find. There is also a pre-defined API
     int commonSetBits(int num), which returns the number of bits where both n
