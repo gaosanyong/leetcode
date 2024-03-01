@@ -28962,15 +28962,15 @@ public:
     * 1 <= Node.val <= 10^6*/
 
     bool isEvenOddTree(TreeNode* root) {
-        deque<TreeNode*> q; q.push_back(root);
-        for (int even = 1; q.size(); even ^= 1) {
-            int prev = even ? INT_MIN : INT_MAX;
+        queue<TreeNode*> q; q.push(root);
+        for (int level = 0; q.size(); level ^= 1) {
+            int prev = level ? INT_MAX : INT_MIN;
             for (int sz = q.size(); sz; --sz) {
-                TreeNode* node = q.front(); q.pop_front();
-                if ((even && ((node->val&1) == 0 || prev >= node->val)) || (!even && (node->val&1 || prev <= node->val))) return false;
+                TreeNode* node = q.front(); q.pop();
+                if ((node->val & 1) == level || !level && prev >= node->val || level && prev <= node->val) return false;
                 prev = node->val;
-                if (node->left) q.push_back(node->left);
-                if (node->right) q.push_back(node->right);
+                if (node->left) q.push(node->left);
+                if (node->right) q.push(node->right);
             }
         }
         return true;
