@@ -24344,20 +24344,21 @@ class Solution:
     * 0 <= tokens.length <= 1000
     * 0 <= tokens[i], P < 10^4"""
 
-    def bagOfTokensScore(self, tokens: List[int], P: int) -> int:
+    def bagOfTokensScore(self, tokens: List[int], power: int) -> int:
         tokens.sort()
-        score, lo, hi = 0, 0, len(tokens)-1
+        ans = 0
+        lo, hi = 0, len(tokens)-1
         while lo <= hi:
-            if tokens[lo] <= P: # exchange power for score
-                P -= tokens[lo]
+            if tokens[lo] <= power:
+                ans += 1
+                power -= tokens[lo]
                 lo += 1
-                score += 1
-            elif score and lo < hi: # exchange score for power
-                P += tokens[hi]
+            elif ans and lo < hi:
+                ans -= 1
+                power += tokens[hi]
                 hi -= 1
-                score -= 1
             else: break
-        return score
+        return ans
 
 
     """949. Largest Time for Given Digits (Medium)
