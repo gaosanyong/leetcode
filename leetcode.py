@@ -86524,6 +86524,223 @@ class SegTreeLazy:
         return reduce(xor, (1<<i if commonSetBits(1<<i) else 0 for i in range(30)))
 
 
+    """3065. Minimum Operations to Exceed Threshold Value I (Easy)
+    You are given a 0-indexed integer array nums, and an integer k. In one
+    operation, you can remove one occurrence of the smallest element of nums.
+    Return the minimum number of operations needed so that all elements of the
+    array are greater than or equal to k.
+
+    Example 1:
+    Input: nums = [2,11,10,1,3], k = 10
+    Output: 3
+    Explanation: After one operation, nums becomes equal to [2, 11, 10, 3].
+                 After two operations, nums becomes equal to [11, 10, 3].
+                 After three operations, nums becomes equal to [11, 10].
+                 At this stage, all the elements of nums are greater than or
+                 equal to 10 so we can stop. It can be shown that 3 is the
+                 minimum number of operations needed so that all elements of the
+                 array are greater than or equal to 10.
+
+    Example 2:
+    Input: nums = [1,1,2,4,9], k = 1
+    Output: 0
+    Explanation: All elements of the array are greater than or equal to 1 so we
+                 do not need to apply any operations on nums.
+
+    Example 3:
+    Input: nums = [1,1,2,4,9], k = 9
+    Output: 4
+    Explanation: only a single element of nums is greater than or equal to 9 so
+                 we need to apply the operations 4 times on nums.
+
+    Constraints:
+    * 1 <= nums.length <= 50
+    * 1 <= nums[i] <= 10^9
+    * 1 <= k <= 10^9
+    * The input is generated such that there is at least one index i such that
+      nums[i] >= k."""
+
+    def minOperations(self, nums: List[int], k: int) -> int:
+        return sum(1 for x in nums if x < k)
+
+
+    """3066. Minimum Operations to Exceed Threshold Value II (Medium)
+    You are given a 0-indexed integer array nums, and an integer k. In one
+    operation, you will:
+    * Take the two smallest integers x and y in nums.
+    * Remove x and y from nums.
+    * Add min(x, y) * 2 + max(x, y) anywhere in the array.
+    Note that you can only apply the described operation if nums contains at
+    least two elements. Return the minimum number of operations needed so that
+    all elements of the array are greater than or equal to k.
+
+    Example 1:
+    Input: nums = [2,11,10,1,3], k = 10
+    Output: 2
+    Explanation: In the first operation, we remove elements 1 and 2, then add
+                 1 * 2 + 2 to nums. nums becomes equal to [4, 11, 10, 3]. In the
+                 second operation, we remove elements 3 and 4, then add
+                 3 * 2 + 4 to nums. nums becomes equal to [10, 11, 10]. At this
+                 stage, all the elements of nums are greater than or equal to 10
+                 so we can stop. It can be shown that 2 is the minimum number of
+                 operations needed so that all elements of the array are greater
+                 than or equal to 10.
+
+    Example 2:
+    Input: nums = [1,1,2,4,9], k = 20
+    Output: 4
+    Explanation: After one operation, nums becomes equal to [2, 4, 9, 3].
+                 After two operations, nums becomes equal to [7, 4, 9].
+                 After three operations, nums becomes equal to [15, 9].
+                 After four operations, nums becomes equal to [33].
+                 At this stage, all the elements of nums are greater than 20 so
+                 we can stop. It can be shown that 4 is the minimum number of
+                 operations needed so that all elements of the array are greater
+                 than or equal to 20.
+
+    Constraints:
+    * 2 <= nums.length <= 2 * 10^5
+    * 1 <= nums[i] <= 10^9
+    * 1 <= k <= 10^9
+    * The input is generated such that an answer always exists. That is, there
+      exists some sequence of operations after which all elements of the array
+      are greater than or equal to k."""
+
+    def minOperations(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        heapify(nums)
+        while nums[0] < k:
+            heappush(nums, 2*heappop(nums) + heappop(nums))
+        return n - len(nums)
+
+
+    """3067. Count Pairs of Connectable Servers in a Weighted Tree Network (Medium)
+    You are given an unrooted weighted tree with n vertices representing servers
+    numbered from 0 to n - 1, an array edges where edges[i] = [ai, bi, weighti]
+    represents a bidirectional edge between vertices ai and bi of weight
+    weighti. You are also given an integer signalSpeed. Two servers a and b are
+    connectable through a server c if:
+    * a < b, a != c and b != c.
+    * The distance from c to a is divisible by signalSpeed.
+    * The distance from c to b is divisible by signalSpeed.
+    * The path from c to b and the path from c to a do not share any edges.
+    Return an integer array count of length n where count[i] is the number of
+    server pairs that are connectable through the server i.
+
+    Example 1:
+    Input: edges = [[0,1,1],[1,2,5],[2,3,13],[3,4,9],[4,5,2]], signalSpeed = 1
+    Output: [0,4,6,6,4,0]
+    Explanation: Since signalSpeed is 1, count[c] is equal to the number of
+                 pairs of paths that start at c and do not share any edges. In
+                 the case of the given path graph, count[c] is equal to the
+                 number of servers to the left of c multiplied by the servers to
+                 the right of c.
+
+    Example 2:
+    Input: edges = [[0,6,3],[6,5,3],[0,3,1],[3,2,7],[3,1,6],[3,4,2]], signalSpeed = 3
+    Output: [2,0,0,0,0,0,2]
+    Explanation: Through server 0, there are 2 pairs of connectable servers:
+                 (4, 5) and (4, 6). Through server 6, there are 2 pairs of
+                 connectable servers: (4, 5) and (0, 5). It can be shown that no
+                 two servers are connectable through servers other than 0 and 6.
+
+    Constraints:
+    * 2 <= n <= 1000
+    * edges.length == n - 1
+    * edges[i].length == 3
+    * 0 <= ai, bi < n
+    * edges[i] = [ai, bi, weighti]
+    * 1 <= weighti <= 10^6
+    * 1 <= signalSpeed <= 106^
+    * The input is generated such that edges represents a valid tree."""
+
+    def countPairsOfConnectableServers(self, edges: List[List[int]], signalSpeed: int) -> List[int]:
+        n = len(edges)+1
+        tree = [[] for _ in range(n)]
+        for u, v, w in edges:
+            tree[u].append((v, w))
+            tree[v].append((u, w))
+        ans = [0]*n
+        for x in range(n):
+            prefix = 0
+            for v, w in tree[x]:
+                cnt = 0
+                stack = [(x, v, w)]
+                while stack:
+                    p, u, w = stack.pop()
+                    if w % signalSpeed == 0: cnt += 1
+                    for v, wt in tree[u]:
+                        if v != p:
+                            stack.append((u, v, w+wt))
+                ans[x] += prefix*cnt
+                prefix += cnt
+        return ans
+
+
+    """3068. Find the Maximum Sum of Node Values (Hard)
+    There exists an undirected tree with n nodes numbered 0 to n - 1. You are
+    given a 0-indexed 2D integer array edges of length n - 1, where
+    edges[i] = [ui, vi] indicates that there is an edge between nodes ui and vi
+    in the tree. You are also given a positive integer k, and a 0-indexed array
+    of non-negative integers nums of length n, where nums[i] represents the
+    value of the node numbered i. Bogdan wants the sum of values of tree nodes
+    to be maximum, for which Bogdan can perform the following operation any
+    number of times (including zero) on the tree:
+    * Choose any edge [u, v] connecting the nodes u and v, and update their
+      values as follows:
+      + nums[u] = nums[u] XOR k
+      + nums[v] = nums[v] XOR k
+    Return the maximum possible sum of the values Bogdan can achieve by
+    performing the operation any number of times.
+
+    Example 1:
+    Input: nums = [1,2,1], k = 3, edges = [[0,1],[0,2]]
+    Output: 6
+    Explanation: Bogdan can achieve the maximum sum of 6 using a single
+                 operation:
+                 - Choose the edge [0,2]. nums[0] and nums[2] become:
+                   1 XOR 3 = 2, and the array nums becomes: [1,2,1] -> [2,2,2].
+                 The total sum of values is 2 + 2 + 2 = 6. It can be shown that
+                 6 is the maximum achievable sum of values.
+
+    Example 2:
+    Input: nums = [2,3], k = 7, edges = [[0,1]]
+    Output: 9
+    Explanation: Bogdan can achieve the maximum sum of 9 using a single
+                 operation:
+                 - Choose the edge [0,1]. nums[0] becomes: 2 XOR 7 = 5 and
+                   nums[1] become: 3 XOR 7 = 4, and the array nums becomes:
+                   [2,3] -> [5,4].
+                 The total sum of values is 5 + 4 = 9. It can be shown that 9 is
+                 the maximum achievable sum of values.
+
+    Example 3:
+    Input: nums = [7,7,7,7,7,7], k = 3, edges = [[0,1],[0,2],[0,3],[0,4],[0,5]]
+    Output: 42
+    Explanation: The maximum achievable sum is 42 which can be achieved by
+                 Bogdan performing no operations.
+
+    Constraints:
+    * 2 <= n == nums.length <= 2 * 10^4
+    * 1 <= k <= 10^9
+    * 0 <= nums[i] <= 10^9
+    * edges.length == n - 1
+    * edges[i].length == 2
+    * 0 <= edges[i][0], edges[i][1] <= n - 1
+    * The input is generated such that edges represent a valid tree."""
+
+    def maximumValueSum(self, nums: List[int], k: int, edges: List[List[int]]) -> int:
+        ans = cnt = 0
+        diff = inf
+        for x in nums:
+            xx = x ^ k
+            if x < xx: cnt ^= 1
+            ans += max(x, xx)
+            diff = min(diff, abs(xx-x))
+        if cnt: ans -= diff
+        return ans
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.
