@@ -86454,6 +86454,56 @@ class SegTreeLazy:
         return ans
 
 
+    """3037. Find Pattern in Infinite Stream II (Hard)
+    You are given a binary array pattern and an object stream of class
+    InfiniteStream representing a 0-indexed infinite stream of bits. The class
+    InfiniteStream contains the following function:
+    * int next(): Reads a single bit (which is either 0 or 1) from the stream
+      and returns it.
+    Return the first starting index where the pattern matches the bits read from
+    the stream. For example, if the pattern is [1, 0], the first match is the
+    highlighted part in the stream [0, 1, 0, 1, ...].
+
+    Example 1:
+    Input: stream = [1,1,1,0,1,1,1,...], pattern = [0,1]
+    Output: 3
+    Explanation: The first occurrence of the pattern [0,1] is highlighted in the
+                 stream [1,1,1,0,1,...], which starts at index 3.
+
+    Example 2:
+    Input: stream = [0,0,0,0,...], pattern = [0]
+    Output: 0
+    Explanation: The first occurrence of the pattern [0] is highlighted in the
+                 stream [0,...], which starts at index 0.
+
+    Example 3:
+    Input: stream = [1,0,1,1,0,1,1,0,1,...], pattern = [1,1,0,1]
+    Output: 2
+    Explanation: The first occurrence of the pattern [1,1,0,1] is highlighted in
+                 the stream [1,0,1,1,0,1,...], which starts at index 2.
+
+    Constraints:
+    * 1 <= pattern.length <= 10^4
+    * pattern consists only of 0 and 1.
+    * stream consists only of 0 and 1.
+    * The input is generated such that the pattern's start index exists in the
+      first 10^5 bits of the stream."""
+
+    def findPattern(self, stream: Optional['InfiniteStream'], pattern: List[int]) -> int:
+        lps = [0]
+        k = 0
+        for i in range(1, len(pattern)):
+            while k and pattern[k] != pattern[i]: k = lps[k-1]
+            if pattern[k] == pattern[i]: k += 1
+            lps.append(k)
+        k = 0
+        for i in count(0):
+            ch = stream.next()
+            while k and pattern[k] != ch: k = lps[k-1]
+            if pattern[k] == ch: k += 1
+            if k == len(pattern): return i-k+1
+
+
     """3063. Linked List Frequency (Medium)
     Given the head of a linked list containing k distinct elements, return the
     head to a linked list of length k containing the frequency of each distinct
