@@ -2906,3 +2906,59 @@ def snap_analysis(activities: pd.DataFrame, age: pd.DataFrame) -> pd.DataFrame:
         send_perc = lambda x: round(100*x['send_time'] / (x['open_time'] + x['send_time']), 2),
         open_perc = lambda x: round(100*x['open_time'] / (x['open_time'] + x['send_time']), 2)
     )[['age_bucket', 'send_perc', 'open_perc']]
+
+
+"""3059. Find All Unique Email Domains (Easy)
+SQL Schema
+Table: Emails
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| email       | varchar |
++-------------+---------+
+id is the primary key (column with unique values) for this table. Each row of
+this table contains an email. The emails will not contain uppercase letters.
+Write a solution to find all unique email domains and count the number of
+individuals associated with each domain. Consider only those domains that end
+with .com. Return the result table orderd by email domains in ascending order.
+The result format is in the following example.
+
+Example 1:
+Input:
+Emails table:
++-----+-----------------------+
+| id  | email                 |
++-----+-----------------------+
+| 336 | hwkiy@test.edu        |
+| 489 | adcmaf@outlook.com    |
+| 449 | vrzmwyum@yahoo.com    |
+| 95  | tof@test.edu          |
+| 320 | jxhbagkpm@example.org |
+| 411 | zxcf@outlook.com      |
++----+------------------------+
+Output:
++--------------+-------+
+| email_domain | count |
++--------------+-------+
+| outlook.com  | 2     |
+| yahoo.com    | 1     |
++--------------+-------+
+Explanation:
+- The valid domains ending with ".com" are only "outlook.com" and "yahoo.com",
+  with respective counts of 2 and 1.
+Output table is ordered by email_domains in ascending order."""
+
+def find_unique_email_domains(emails: pd.DataFrame) -> pd.DataFrame:
+    return emails.query(
+        expr = 'email.str.endswith(".com")'
+    ).assign(
+        email_domain = lambda x: x['email'].str.split('@').str[1]
+    ).groupby(
+        by = 'email_domain',
+        as_index = False
+    ).agg(
+        count = ('email_domain', 'count')
+    ).sort_values(
+        by = 'email_domain'
+    )
