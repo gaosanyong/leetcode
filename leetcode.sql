@@ -9724,6 +9724,60 @@ GROUP BY 1
 ORDER BY 1
 
 
+/*2978. Symmetric Coordinates (Medium)
+SQL Schema
+Table: Coordinates
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| X           | int  |
+| Y           | int  |
++-------------+------+
+Each row includes X and Y, where both are integers. Table may contain duplicate
+values. Two coordindates (X1, Y1) and (X2, Y2) are said to be symmetric
+coordintes if X1 == Y2 and X2 == Y1. Write a solution that outputs, among all
+these symmetric coordintes, only those unique coordinates that satisfy the
+condition X1 <= Y1. Return the result table ordered by X and Y (respectively) in
+ascending order. The result format is in the following example.
+
+Example 1:
+Input:
+Coordinates table:
++----+----+
+| X  | Y  |
++----+----+
+| 20 | 20 |
+| 20 | 20 |
+| 20 | 21 |
+| 23 | 22 |
+| 22 | 23 |
+| 21 | 20 |
++----+----+
+Output:
++----+----+
+| x  | y  |
++----+----+
+| 20 | 20 |
+| 20 | 21 |
+| 22 | 23 |
++----+----+
+Explanation:
+- (20, 20) and (20, 20) are symmetric coordinates because, X1 == Y2 and
+  X2 == Y1. This results in displaying (20, 20) as a distinctive coordinates.
+- (20, 21) and (21, 20) are symmetric coordinates because, X1 == Y2 and
+  X2 == Y1. However, only (20, 21) will be displayed because X1 <= Y1.
+- (23, 22) and (22, 23) are symmetric coordinates because, X1 == Y2 and
+  X2 == Y1. However, only (22, 23) will be displayed because X1 <= Y1.
+The output table is sorted by X and Y in ascending order.*/
+
+SELECT DISTINCT a.X AS x, a.Y AS y
+FROM
+    (SELECT *, ROW_NUMBER() OVER () AS nu FROM Coordinates) a,
+    (SELECT *, ROW_NUMBER() OVER () AS nu FROM Coordinates) b
+WHERE a.X <= a.Y AND a.X = b.Y AND a.Y = b.X AND a.nu <> b.nu
+ORDER BY 1, 2
+
+
 /*2984. Find Peak Calling Hours for Each City (Medium)
 SQL Schema
 Table: Calls
