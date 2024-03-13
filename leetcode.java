@@ -7214,8 +7214,8 @@ class Solution {
     Constraints: 1 <= n <= 1000*/
 
     public int pivotInteger(int n) {
-        int sm = n*(n+1)/2, val = (int) Math.sqrt(sm); 
-        return val*val == sm ? val : -1; 
+        int total = n*(n+1)/2, val = (int) Math.sqrt(total);
+        return Math.pow(val, 2) == total ? val : -1;
     }
 
 

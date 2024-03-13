@@ -73085,8 +73085,9 @@ class SegTree:
     Constraints: 1 <= n <= 1000"""
 
     def pivotInteger(self, n: int) -> int:
-        val = n*(n+1)//2
-        return isqrt(val) if isqrt(val)**2 == val else -1
+        total = n*(n+1)//2
+        val = isqrt(total)
+        return val if pow(val, 2) == total else -1
 
 
     """2486. Append Characters to String to Make Subsequence (Medium)
