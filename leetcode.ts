@@ -4623,3 +4623,207 @@ function maximumValueSum(nums: number[], k: number, edges: number[][]): number {
     }
     return cnt ? ans - diff : ans;
 };
+
+
+/*3074. Apple Redistribution into Boxes (Easy)
+You are given an array apple of size n and an array capacity of size m.
+There are n packs where the ith pack contains apple[i] apples. There are m
+boxes as well, and the ith box has a capacity of capacity[i] apples. Return
+the minimum number of boxes you need to select to redistribute these n packs
+of apples into boxes. Note that, apples from the same pack can be
+distributed into different boxes.
+
+Example 1:
+Input: apple = [1,3,2], capacity = [4,3,1,5,2]
+Output: 2
+Explanation: We will use boxes with capacities 4 and 5. It is possible to
+             distribute the apples as the total capacity is greater than or
+             equal to the total number of apples.
+
+Example 2:
+Input: apple = [5,5,5], capacity = [2,4,2,7]
+Output: 4
+Explanation: We will need to use all the boxes.
+
+Constraints:
+* 1 <= n == apple.length <= 50
+* 1 <= m == capacity.length <= 50
+* 1 <= apple[i], capacity[i] <= 50
+* The input is generated such that it's possible to redistribute packs of
+  apples into boxes.*/
+
+function minimumBoxes(apple: number[], capacity: number[]): number {
+    let total = apple.reduce((x, y) => x+y);
+    capacity.sort((x, y) => y-x);
+    for (let i = 0; i < capacity.length; ++i) {
+        total -= capacity[i];
+        if (total <= 0) return i+1;
+    }
+};
+
+
+/*3075. Maximize Happiness of Selected Children (Medium)
+You are given an array happiness of length n, and a positive integer k.
+There are n children standing in a queue, where the ith child has happiness
+value happiness[i]. You want to select k children from these n children in k
+turns. In each turn, when you select a child, the happiness value of all the
+children that have not been selected till now decreases by 1. Note that the
+happiness value cannot become negative and gets decremented only if it is
+positive. Return the maximum sum of the happiness values of the selected
+children you can achieve by selecting k children.
+
+Example 1:
+Input: happiness = [1,2,3], k = 2
+Output: 4
+Explanation: We can pick 2 children in the following way:
+             - Pick the child with the happiness value == 3. The happiness
+               value of the remaining children becomes [0,1].
+             - Pick the child with the happiness value == 1. The happiness
+               value of the remaining child becomes [0]. Note that the
+               happiness value cannot become less than 0.
+             The sum of the happiness values of the selected children is
+             3 + 1 = 4.
+
+Example 2:
+Input: happiness = [1,1,1,1], k = 2
+Output: 1
+Explanation: We can pick 2 children in the following way:
+             - Pick any child with the happiness value == 1. The happiness
+               value of the remaining children becomes [0,0,0].
+             - Pick the child with the happiness value == 0. The happiness
+               value of the remaining child becomes [0,0].
+             The sum of the happiness values of the selected children is
+             1 + 0 = 1.
+Example 3:
+Input: happiness = [2,3,4,5], k = 1
+Output: 5
+Explanation: We can pick 1 child in the following way:
+             - Pick the child with the happiness value == 5. The happiness
+               value of the remaining children becomes [1,2,3].
+             The sum of the happiness values of the selected children is 5.
+
+Constraints:
+* 1 <= n == happiness.length <= 2 * 10^5
+* 1 <= happiness[i] <= 10^8
+* 1 <= k <= n*/
+
+function maximumHappinessSum(happiness: number[], k: number): number {
+    happiness.sort((x, y) => y-x);
+    let ans = 0;
+    for (let i = 0; i < k; ++i)
+        ans += Math.max(0, happiness[i]-i);
+    return ans;
+};
+
+
+/*3076. Shortest Uncommon Substring in an Array (Medium)
+You are given an array arr of size n consisting of non-empty strings. Find a
+string array answer of size n such that:
+* answer[i] is the shortest substring of arr[i] that does not occur as a
+  substring in any other string in arr. If multiple such substrings exist,
+  answer[i] should be the lexicographically smallest. And if no such
+  substring exists, answer[i] should be an empty string.
+Return the array answer.
+
+Example 1:
+Input: arr = ["cab","ad","bad","c"]
+Output: ["ab","","ba",""]
+Explanation: We have the following:
+             - For the string "cab", the shortest substring that does not
+               occur in any other string is either "ca" or "ab", we choose
+               the lexicographically smaller substring, which is "ab".
+             - For the string "ad", there is no substring that does not
+               occur in any other string.
+             - For the string "bad", the shortest substring that does not
+               occur in any other string is "ba".
+             - For the string "c", there is no substring that does not occur
+               in any other string.
+
+Example 2:
+Input: arr = ["abc","bcd","abcd"]
+Output: ["","","abcd"]
+Explanation: We have the following:
+             - For the string "abc", there is no substring that does not
+               occur in any other string.
+             - For the string "bcd", there is no substring that does not
+               occur in any other string.
+             - For the string "abcd", the shortest substring that does not
+               occur in any other string is "abcd".
+
+Constraints:
+* n == arr.length
+* 2 <= n <= 100
+* 1 <= arr[i].length <= 20
+* arr[i] consists only of lowercase English letters.*/
+
+function shortestSubstrings(arr: string[]): string[] {
+    const seen = new Map();
+    for (const [i, word] of arr.entries()) {
+        for (let j = 0, n = word.length; j < n; ++j)
+            for (let k = j; k < n; ++k) {
+                const key = word.substring(j, k+1);
+                if (!seen.has(key)) seen.set(key, []);
+                if (seen.get(key).length === 0 || seen.get(key)[seen.get(key).length-1] !== i) seen.get(key).push(i);
+            }
+    }
+    const ans = Array(arr.length).fill("");
+    for (const [k, v] of seen.entries())
+        if (v.length === 1) {
+            const i = v.pop();
+            if (ans[i] === "" || k.length < ans[i].length || k.length === ans[i].length && k < ans[i]) ans[i] = k;
+        }
+    return ans;
+};
+
+
+/*3077. Maximum Strength of K Disjoint Subarrays (Hard)
+You are given a 0-indexed array of integers nums of length n, and a positive
+odd integer k. The strength of x subarrays is defined as
+strength = sum[1] * x - sum[2] * (x - 1) + sum[3] * (x - 2) - sum[4] * (x - 3) + ... + sum[x] * 1
+where sum[i] is the sum of the elements in the ith subarray. Formally,
+strength is sum of (-1)i+1 * sum[i] * (x - i + 1) over all i's such that
+1 <= i <= x. You need to select k disjoint subarrays from nums, such that
+their strength is maximum. Return the maximum possible strength that can be
+obtained. Note that the selected subarrays don't need to cover the entire
+array.
+
+Example 1:
+Input: nums = [1,2,3,-1,2], k = 3
+Output: 22
+Explanation: The best possible way to select 3 subarrays is: nums[0..2],
+             nums[3..3], and nums[4..4]. The strength is
+             (1 + 2 + 3) * 3 - (-1) * 2 + 2 * 1 = 22.
+
+Example 2:
+Input: nums = [12,-2,-2,-2,-2], k = 5
+Output: 64
+Explanation: The only possible way to select 5 disjoint subarrays is:
+             nums[0..0], nums[1..1], nums[2..2], nums[3..3], and nums[4..4].
+             The strength is
+             12 * 5 - (-2) * 4 + (-2) * 3 - (-2) * 2 + (-2) * 1 = 64.
+
+Example 3:
+Input: nums = [-1,-2,-3], k = 1
+Output: -1
+Explanation: The best possible way to select 1 subarray is: nums[0..0]. The
+             strength is -1.
+
+Constraints:
+* 1 <= n <= 10^4
+* -10^9 <= nums[i] <= 10^9
+* 1 <= k <= n
+* 1 <= n * k <= 10^6
+* k is odd.*/
+
+function maximumStrength(nums: number[], k: number): number {
+    const n = nums.length;
+    const dp = Array(k+1).fill(0).map(() => Array(2).fill(-Infinity));
+    dp[0][0] = dp[0][1] = 0;
+    for (let i = n-1; i >= 0; --i)
+        for (let j = k; j > 0; --j) {
+            const cand = Math.pow(-1, k-j)*nums[i]*j + Math.max(dp[j][1], dp[j-1][0]);
+            dp[j][0] = Math.max(cand, dp[j][0]);
+            dp[j][1] = Math.max(cand, dp[j-1][0]);
+        }
+    return dp[k][0];
+};
