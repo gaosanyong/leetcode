@@ -5056,3 +5056,211 @@ function sumOfPower(nums: number[], k: number): number {
         ans = (ans + BigInt(dp[i][k] * p2[n-i])) % mod;
     return Number(ans);
 };
+
+
+/*3090. Maximum Length Substring With Two Occurrences (Easy)
+Given a string s, return the maximum length of a substring such that it
+contains at most two occurrences of each character.
+
+Example 1:
+Input: s = "bcbbbcba"
+Output: 4
+Explanation: The following substring has a length of 4 and contains at most
+             two occurrences of each character: "bcbbbcba".
+
+Example 2:
+Input: s = "aaaa"
+Output: 2
+Explanation: The following substring has a length of 2 and contains at most
+             two occurrences of each character: "aaaa".
+
+Constraints:
+* 2 <= s.length <= 100
+* s consists only of lowercase English letters.*/
+
+function maximumLengthSubstring(s: string): number {
+    let ans = 0, ii = 0;
+    const freq = new Map();
+    for (const [i, ch] of s.split('').entries()) {
+        freq.set(ch, 1 + (freq.get(ch) ?? 0));
+        while (freq.get(ch) == 3) {
+            freq.set(s[ii], freq.get(s[ii])-1);
+            ++ii;
+        }
+        ans = Math.max(ans, i-ii+1);
+    }
+    return ans;
+};
+
+
+/*3091. Apply Operations to Make Sum of Array Greater Than or Equal to k (Medium)
+You are given a positive integer k. Initially, you have an array nums = [1].
+You can perform any of the following operations on the array any number of
+times (possibly zero):
+* Choose any element in the array and increase its value by 1.
+* Duplicate any element in the array and add it to the end of the array.
+Return the minimum number of operations required to make the sum of elements
+of the final array greater than or equal to k.
+
+Example 1:
+Input: k = 11
+Output: 5
+Explanation: We can do the following operations on the array nums = [1]:
+             * Increase the element by 1 three times. The resulting array is
+               nums = [4].
+             * Duplicate the element two times. The resulting array is
+               nums = [4,4,4].
+             The sum of the final array is 4 + 4 + 4 = 12 which is greater
+             than or equal to k = 11. The total number of operations
+             performed is 3 + 2 = 5.
+
+Example 2:
+Input: k = 1
+Output: 0
+Explanation: The sum of the original array is already greater than or equal
+             to 1, so no operations are needed.
+
+Constraints: 1 <= k <= 10^5*/
+
+function minOperations(k: number): number {
+    const p = Math.floor(Math.sqrt(k)), q = Math.ceil(k/p);
+    return p + q - 2;
+};
+
+
+/*3092. Most Frequent IDs (Medium)
+The problem involves tracking the frequency of IDs in a collection that
+changes over time. You have two integer arrays, nums and freq, of equal
+length n. Each element in nums represents an ID, and the corresponding
+element in freq indicates how many times that ID should be added to or
+removed from the collection at each step.
+* Addition of IDs: If freq[i] is positive, it means freq[i] IDs with the
+  value nums[i] are added to the collection at step i.
+* Removal of IDs: If freq[i] is negative, it means -freq[i] IDs with the
+  value nums[i] are removed from the collection at step i.
+Return an array ans of length n, where ans[i] represents the count of the
+most frequent ID in the collection after the ith step. If the collection is
+empty at any step, ans[i] should be 0 for that step.
+
+Example 1:
+Input: nums = [2,3,2,1], freq = [3,2,-3,1]
+Output: [3,3,2,2]
+Explanation: * After step 0, we have 3 IDs with the value of 2. So
+               ans[0] = 3.
+             * After step 1, we have 3 IDs with the value of 2 and 2 IDs
+               with the value of 3. So ans[1] = 3.
+             * After step 2, we have 2 IDs with the value of 3. So
+               ans[2] = 2.
+             * After step 3, we have 2 IDs with the value of 3 and 1 ID with
+               the value of 1. So ans[3] = 2.
+
+Example 2:
+Input: nums = [5,5,3], freq = [2,-2,1]
+Output: [2,0,1]
+Explanation: * After step 0, we have 2 IDs with the value of 5. So
+               ans[0] = 2.
+             * After step 1, there are no IDs. So ans[1] = 0.
+             * After step 2, we have 1 ID with the value of 3. So ans[2] = 1.
+
+Constraints:
+* 1 <= nums.length == freq.length <= 10^5
+* 1 <= nums[i] <= 10^5
+* -10^5 <= freq[i] <= 10^5
+* freq[i] != 0
+* The input is generated such that the occurrences of an ID will not be
+  negative in any step.*/
+
+function mostFrequentIDs(nums: number[], freq: number[]): number[] {
+    const cnt = new Map();
+    const pq = new PriorityQueue({ compare : (x, y) => y[0]-x[0] });
+    const ans = [];
+    for (const [i, x] of nums.entries()) {
+        const f = freq[i];
+        cnt.set(x, f + (cnt.get(x) ?? 0));
+        while (pq.size() && cnt.get(pq.front()[1]) != pq.front()[0]) pq.dequeue();
+        pq.enqueue([cnt.get(x), x]);
+        ans.push(pq.front()[0]);
+    }
+    return ans;
+};
+
+
+/*3093. Longest Common Suffix Queries (Hard)
+You are given two arrays of strings wordsContainer and wordsQuery. For each
+wordsQuery[i], you need to find a string from wordsContainer that has the
+longest common suffix with wordsQuery[i]. If there are two or more strings
+in wordsContainer that share the longest common suffix, find the string that
+is the smallest in length. If there are two or more such strings that have
+the same smallest length, find the one that occurred earlier in
+wordsContainer. Return an array of integers ans, where ans[i] is the index
+of the string in wordsContainer that has the longest common suffix with
+wordsQuery[i].
+
+Example 1:
+Input: wordsContainer = ["abcd","bcd","xbcd"], wordsQuery = ["cd","bcd","xyz"]
+Output: [1,1,1]
+Explanation: Let's look at each wordsQuery[i] separately:
+             - For wordsQuery[0] = "cd", strings from wordsContainer that
+               share the longest common suffix "cd" are at indices 0, 1, and
+               2. Among these, the answer is the string at index 1 because
+               it has the shortest length of 3.
+             - For wordsQuery[1] = "bcd", strings from wordsContainer that
+               share the longest common suffix "bcd" are at indices 0, 1,
+               and 2. Among these, the answer is the string at index 1
+               because it has the shortest length of 3.
+             - For wordsQuery[2] = "xyz", there is no string from
+               wordsContainer that shares a common suffix. Hence the longest
+               common suffix is "", that is shared with strings at index 0,
+               1, and 2. Among these, the answer is the string at index 1
+               because it has the shortest length of 3.
+
+Example 2:
+Input: wordsContainer = ["abcdefgh","poiuygh","ghghgh"], wordsQuery = ["gh","acbfgh","acbfegh"]
+Output: [2,0,2]
+Explanation: Let's look at each wordsQuery[i] separately:
+             - For wordsQuery[0] = "gh", strings from wordsContainer that
+               share the longest common suffix "gh" are at indices 0, 1, and
+               2. Among these, the answer is the string at index 2 because
+               it has the shortest length of 6.
+             - For wordsQuery[1] = "acbfgh", only the string at index 0
+               shares the longest common suffix "fgh". Hence it is the
+               answer, even though the string at index 2 is shorter.
+             - For wordsQuery[2] = "acbfegh", strings from wordsContainer
+               that share the longest common suffix "gh" are at indices 0,
+               1, and 2. Among these, the answer is the string at index 2
+               because it has the shortest length of 6.
+
+Constraints:
+* 1 <= wordsContainer.length, wordsQuery.length <= 10^4
+* 1 <= wordsContainer[i].length <= 5 * 10^3
+* 1 <= wordsQuery[i].length <= 5 * 10^3
+* wordsContainer[i] consists only of lowercase English letters.
+* wordsQuery[i] consists only of lowercase English letters.
+* Sum of wordsContainer[i].length is at most 5 * 10^5.
+* Sum of wordsQuery[i].length is at most 5 * 10^5.*/
+
+function stringIndices(wordsContainer: string[], wordsQuery: string[]): number[] {
+    const trie = {};
+    for (let [i, w] of wordsContainer.entries()) {
+        let node = trie;
+        w = w.split('').reverse().join('');
+        if (!("val" in node) || w.length < node["val"][1])
+            node["val"] = [i, w.length];
+        for (const ch of w) {
+            node = node[ch] ??= {};
+            if (!("val" in node) || w.length < node["val"][1])
+                node["val"] = [i, w.length];
+        }
+    }
+    const ans = [];
+    for (let [i, w] of wordsQuery.entries()) {
+        let node = trie;
+        w = w.split('').reverse().join('');
+        for (const ch of w) {
+            if (!(ch in node)) break;
+            node = node[ch];
+        }
+        ans.push(node['val'][0]);
+    }
+    return ans;
+};
