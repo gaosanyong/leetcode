@@ -1400,13 +1400,11 @@ class Solution:
     Your algorithm should run in O(n) time and uses constant extra space."""
 
     def firstMissingPositive(self, nums: List[int]) -> int:
-
-        for i in range(len(nums)):
-            k = nums[i]
-            while k and 0 < k <= len(nums):
-                nums[k-1], k = None, nums[k-1]
-
-        return next((i+1 for i in range(len(nums)) if nums[i] is not None), len(nums)+1)
+        n = len(nums)
+        for x in nums:
+            while 0 < x <= n and nums[x-1] != x:
+                nums[x-1], x = x, nums[x-1]
+        return next((i+1 for i, x in enumerate(nums) if i+1 != x), n+1)
 
 
     """42. Trapping Rain Water (Hard)
