@@ -3558,10 +3558,10 @@ Constraints:
 * 1 <= k <= nums.length*/
 
 var maxSubarrayLength = function(nums, k) {
-    let ans = 0, freq = new Map(); 
-    for (let i = 0, ii = 0; i < nums.length; ++i) {
-        freq.set(nums[i], (freq.get(nums[i]) ?? 0) + 1); 
-        while (freq.get(nums[i]) > k) {
+    let ans = 0, freq = new Map(), ii = 0;
+    for (const [i, x] of nums.entries()) {
+        freq.set(x, (freq.get(x) ?? 0) + 1);
+        while (freq.get(x) > k) {
             freq.set(nums[ii], freq.get(nums[ii])-1); 
             ++ii
         }
