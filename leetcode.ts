@@ -5245,6 +5245,207 @@ function sumOfPower(nums: number[], k: number): number {
 };
 
 
+/*3083. Existence of a Substring in a String and Its Reverse (Easy)
+Given a string s, find any substring of length 2 which is also present in
+the reverse of s. Return true if such a substring exists, and false
+otherwise.
+
+Example 1:
+Input: s = "leetcode"
+Output: true
+Explanation: Substring "ee" is of length 2 which is also present in
+             reverse(s) == "edocteel".
+
+Example 2:
+Input: s = "abcba"
+Output: true
+Explanation: All of the substrings of length 2 "ab", "bc", "cb", "ba" are
+             also present in reverse(s) == "abcba".
+
+Example 3:
+Input: s = "abcd"
+Output: false
+Explanation: There is no substring of length 2 in s, which is also present
+             in the reverse of s.
+
+Constraints:
+* 1 <= s.length <= 100
+* s consists only of lowercase English letters.*/
+
+function isSubstringPresent(s: string): boolean {
+    const seen = new Set();
+    for (let i = 0; i < s.length-1; ++i)
+        seen.add(s.substring(i, i+2));
+    s = s.split('').reverse().join('');
+    for (let i = 0; i < s.length-1; ++i)
+        if (seen.has(s.substring(i, i+2))) return true;
+    return false;
+};
+
+
+/*3084. Count Substrings Starting and Ending with Given Character (Medium)
+You are given a string s and a character c. Return the total number of
+substrings of s that start and end with c.
+
+Example 1:
+Input: s = "abada", c = "a"
+Output: 6
+Explanation: Substrings starting and ending with "a" are: "abada", "abada",
+             "abada", "abada", "abada", "abada".
+
+Example 2:
+Input: s = "zzz", c = "z"
+Output: 6
+Explanation: There are a total of 6 substrings in s and all start and end
+             with "z".
+
+Constraints:
+* 1 <= s.length <= 10^5
+* s and c consist only of lowercase English letters.*/
+
+function countSubstrings(s: string, c: string): number {
+    const n = s.split('').filter(ch => ch == c).length;
+    return n*(n+1)/2;
+};
+
+
+/*3085. Minimum Deletions to Make String K-Special (Medium)
+You are given a string word and an integer k. We consider word to be
+k-special if |freq(word[i]) - freq(word[j])| <= k for all indices i and j in
+the string. Here, freq(x) denotes the frequency of the character x in word,
+and |y| denotes the absolute value of y. Return the minimum number of
+characters you need to delete to make word k-special.
+
+Example 1:
+Input: word = "aabcaba", k = 0
+Output: 3
+Explanation: We can make word 0-special by deleting 2 occurrences of "a" and
+             1 occurrence of "c". Therefore, word becomes equal to "baba"
+             where freq('a') == freq('b') == 2.
+
+Example 2:
+Input: word = "dabdcbdcdcd", k = 2
+Output: 2
+Explanation: We can make word 2-special by deleting 1 occurrence of "a" and
+             1 occurrence of "d". Therefore, word becomes equal to
+             "bdcbdcdcd" where freq('b') == 2, freq('c') == 3, and
+             freq('d') == 4.
+
+Example 3:
+Input: word = "aaabaaa", k = 2
+Output: 1
+Explanation: We can make word 2-special by deleting 1 occurrence of "b".
+             Therefore, word becomes equal to "aaaaaa" where each letter's
+             frequency is now uniformly 6.
+
+Constraints:
+* 1 <= word.length <= 10^5
+* 0 <= k <= 10^5
+* word consists only of lowercase English letters.*/
+
+function minimumDeletions(word: string, k: number): number {
+    let mp = {}
+    for (const ch of word)
+        mp[ch] = -~mp[ch];
+    const freq: number[] = Object.values(mp);
+    freq.sort((x, y) => x-y);
+    const n = freq.length, prefix = Array(n+1).fill(0);
+    for (let i = 0; i < n; ++i)
+        prefix[i+1] = prefix[i] + freq[i];
+    let ans = Infinity, j = 0;
+    for (const [i, x] of freq.entries()) {
+        for (; j < n && freq[j] - freq[i] <= k; ++j);
+        const cand = prefix[i] + prefix[n] - prefix[j] - (n-j)*(freq[i]+k);
+        ans = Math.min(ans, cand);
+    }
+    return ans;
+};
+
+
+/*3086. Minimum Moves to Pick K Ones (Hard)
+You are given a binary array nums of length n, a positive integer k and a
+non-negative integer maxChanges. Alice plays a game, where the goal is for
+Alice to pick up k ones from nums using the minimum number of moves. When
+the game starts, Alice picks up any index aliceIndex in the range [0, n - 1]
+and stands there. If nums[aliceIndex] == 1 , Alice picks up the one and
+nums[aliceIndex] becomes 0(this does not count as a move). After this, Alice
+can make any number of moves (including zero) where in each move Alice must
+perform exactly one of the following actions:
+* Select any index j != aliceIndex such that nums[j] == 0 and set
+  nums[j] = 1. This action can be performed at most maxChanges times.
+* Select any two adjacent indices x and y (|x - y| == 1) such that
+  nums[x] == 1, nums[y] == 0, then swap their values (set nums[y] = 1 and
+  nums[x] = 0). If y == aliceIndex, Alice picks up the one after this move
+  and nums[y] becomes 0.
+Return the minimum number of moves required by Alice to pick exactly k ones.
+
+Example 1:
+Input: nums = [1,1,0,0,0,1,1,0,0,1], k = 3, maxChanges = 1
+Output: 3
+Explanation: Alice can pick up 3 ones in 3 moves, if Alice performs the
+             following actions in each move when standing at
+             aliceIndex == 1:
+             * At the start of the game Alice picks up the one and nums[1]
+               becomes 0. nums becomes [1,1,1,0,0,1,1,0,0,1].
+             * Select j == 2 and perform an action of the first type. nums
+               becomes [1,0,1,0,0,1,1,0,0,1]
+             * Select x == 2 and y == 1, and perform an action of the second
+               type. nums becomes [1,1,0,0,0,1,1,0,0,1]. As y == aliceIndex,
+               Alice picks up the one and nums becomes [1,0,0,0,0,1,1,0,0,1].
+             * Select x == 0 and y == 1, and perform an action of the second
+               type. nums becomes [0,1,0,0,0,1,1,0,0,1]. As y == aliceIndex,
+               Alice picks up the one and nums becomes [0,0,0,0,0,1,1,0,0,1].
+             Note that it may be possible for Alice to pick up 3 ones using
+             some other sequence of 3 moves.
+
+Example 2:
+Input: nums = [0,0,0,0], k = 2, maxChanges = 3
+Output: 4
+Explanation: Alice can pick up 2 ones in 4 moves, if Alice performs the
+             following actions in each move when standing at
+             aliceIndex == 0:
+             * Select j == 1 and perform an action of the first type. nums
+               becomes [0,1,0,0].
+             * Select x == 1 and y == 0, and perform an action of the second
+               type. nums becomes [1,0,0,0]. As y == aliceIndex, Alice picks
+               up the one and nums becomes [0,0,0,0].
+             * Select j == 1 again and perform an action of the first type.
+               nums becomes [0,1,0,0].
+             * Select x == 1 and y == 0 again, and perform an action of the
+               second type. nums becomes [1,0,0,0]. As y == aliceIndex,
+               Alice picks up the one and nums becomes [0,0,0,0].
+
+Constraints:
+* 2 <= n <= 10^5
+* 0 <= nums[i] <= 1
+* 1 <= k <= 10^5
+* 0 <= maxChanges <= 10^5
+* maxChanges + sum(nums) >= k*/
+
+function minimumMoves(nums: number[], k: number, maxChanges: number): number {
+    let cnt = 0, seq = 0;
+    const ones = [];
+    for (const [i, x] of nums.entries()) {
+        if (x) {
+            ones.push(i);
+            ++cnt;
+        } else cnt = 0;
+        seq = Math.max(seq, cnt);
+    }
+    seq = Math.min(3, k, seq);
+    if (seq + maxChanges >= k) return Math.max(0, seq-1) + 2*(k-seq);
+    let ans = Infinity;
+    const n = k - maxChanges, prefix = [0];
+    for (const x of ones)
+        prefix.push(prefix[prefix.length-1] + x);
+    for (let i = 0; i < prefix.length-n; ++i) {
+        const cand = (prefix[i+n] - prefix[i+Math.floor((n+1)/2)]) - (prefix[i+Math.floor(n/2)] - prefix[i]);
+        ans = Math.min(ans, cand + 2*maxChanges);
+    }
+    return ans;
+};
+
+
 /*3090. Maximum Length Substring With Two Occurrences (Easy)
 Given a string s, return the maximum length of a substring such that it
 contains at most two occurrences of each character.
