@@ -1920,22 +1920,34 @@ class Solution:
                 return ans + intervals[i:]
         return ans + [newInterval]
 
+
     """58. Length of Last Word (Easy)
-    Given a string s consists of upper/lower-case alphabets and empty space
-    characters ' ', return the length of last word (last word means the last
-    appearing word if we loop from left to right) in the string. If the last
-    word does not exist, return 0.
+    Given a string s consisting of words and spaces, return the length of the
+    last word in the string. A word is a maximal substring consisting of non-
+    space characters only.
 
-    Note: A word is defined as a maximal substring consisting of non-space
-    characters only.
+    Example 1:
+    Input: s = "Hello World"
+    Output: 5
+    Explanation: The last word is "World" with length 5.
 
-    Example:
-    Input: "Hello World"
-    Output: 5"""
+    Example 2:
+    Input: s = "   fly me   to   the moon  "
+    Output: 4
+    Explanation: The last word is "moon" with length 4.
+
+    Example 3:
+    Input: s = "luffy is still joyboy"
+    Output: 6
+    Explanation: The last word is "joyboy" with length 6.
+
+    Constraints:
+    * 1 <= s.length <= 10^4
+    * s consists of only English letters and spaces ' '.
+    * There will be at least one word in s."""
 
     def lengthOfLastWord(self, s: str) -> int:
-        words = s.split()
-        return len(words[-1]) if words else 0
+        return len(s.split()[-1])
 
 
     """59. Spiral Matrix II (Medium)
