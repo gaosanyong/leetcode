@@ -87618,6 +87618,173 @@ class SegTreeLazy:
         return ans
 
 
+    """3099. Harshad Number (Easy)
+    An integer divisible by the sum of its digits is said to be a Harshad
+    number. You are given an integer x. Return the sum of the digits of x if x
+    is a Harshad number, otherwise, return -1.
+
+    Example 1:
+    Input: x = 18
+    Output: 9
+    Explanation: The sum of digits of x is 9. 18 is divisible by 9. So 18 is a
+                 Harshad number and the answer is 9.
+
+    Example 2:
+    Input: x = 23
+    Output: -1
+    Explanation: The sum of digits of x is 5. 23 is not divisible by 5. So 23 is
+                 not a Harshad number and the answer is -1.
+
+    Constraints: 1 <= x <= 100"""
+
+    def sumOfTheDigitsOfHarshadNumber(self, x: int) -> int:
+        val = sum(map(int, str(x)))
+        return val if x % val == 0 else -1
+
+
+    """3100. Water Bottles II (Medium)
+    You are given two integers numBottles and numExchange. numBottles represents
+    the number of full water bottles that you initially have. In one operation,
+    you can perform one of the following operations:
+    * Drink any number of full water bottles turning them into empty bottles.
+    * Exchange numExchange empty bottles with one full water bottle. Then,
+      increase numExchange by one.
+    Note that you cannot exchange multiple batches of empty bottles for the same
+    value of numExchange. For example, if numBottles == 3 and numExchange == 1,
+    you cannot exchange 3 empty water bottles for 3 full bottles. Return the
+    maximum number of water bottles you can drink.
+
+    Example 1:
+    Input: numBottles = 13, numExchange = 6
+    Output: 15
+    Explanation: The table above shows the number of full water bottles, empty
+                 water bottles, the value of numExchange, and the number of
+                 bottles drunk.
+
+    Example 2:
+    Input: numBottles = 10, numExchange = 3
+    Output: 13
+    Explanation: The table above shows the number of full water bottles, empty
+                 water bottles, the value of numExchange, and the number of
+                 bottles drunk.
+
+    Constraints:
+    * 1 <= numBottles <= 100
+    * 1 <= numExchange <= 100"""
+
+    def maxBottlesDrunk(self, numBottles: int, numExchange: int) -> int:
+        ans = empty = 0
+        while numBottles:
+            ans += numBottles
+            empty += numBottles
+            numBottles = 0
+            while empty>= numExchange:
+                empty -= numExchange
+                numBottles += 1
+                numExchange += 1
+        return ans
+
+
+    """3101. Count Alternating Subarrays (Medium)
+    You are given a binary array nums. We call a subarray alternating if no two
+    adjacent elements in the subarray have the same value. Return the number of
+    alternating subarrays in nums.
+
+    Example 1:
+    Input: nums = [0,1,1,1]
+    Output: 5
+    Explanation: The following subarrays are alternating: [0], [1], [1], [1],
+                 and [0,1].
+
+    Example 2:
+    Input: nums = [1,0,1,0]
+    Output: 10
+    Explanation: Every subarray of the array is alternating. There are 10
+                 possible subarrays that we can choose.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * nums[i] is either 0 or 1."""
+
+    def countAlternatingSubarrays(self, nums: List[int]) -> int:
+        ans = cnt = 0
+        for i in range(len(nums)):
+            if i and nums[i-1] == nums[i]: cnt = 0
+            cnt += 1
+            ans += cnt
+        return ans
+
+
+    """3102. Minimize Manhattan Distances (Hard)
+    You are given a 0-indexed array points representing integer coordinates of
+    some points on a 2D plane, where points[i] = [xi, yi]. The distance between
+    two points is defined as their Manhattan distance. Return the minimum
+    possible value for maximum distance between any two points by removing
+    exactly one point.
+
+    Example 1:
+    Input: points = [[3,10],[5,15],[10,2],[4,4]]
+    Output: 12
+    Explanation: The maximum distance after removing each point is the following:
+                 - After removing the 0th point the maximum distance is between
+                   points (5, 15) and (10, 2), which is |5 - 10| + |15 - 2| = 18.
+                 - After removing the 1st point the maximum distance is between
+                   points (3, 10) and (10, 2), which is |3 - 10| + |10 - 2| = 15.
+                 - After removing the 2nd point the maximum distance is between
+                   points (5, 15) and (4, 4), which is |5 - 4| + |15 - 4| = 12.
+                 - After removing the 3rd point the maximum distance is between
+                   points (5, 15) and (10, 2), which is |5 - 10| + |15 - 2| = 18.
+                 It can be seen that 12 is the minimum possible maximum distance
+                 between any two points after removing exactly one point.
+
+    Example 2:
+    Input: points = [[1,1],[1,1],[1,1]]
+    Output: 0
+    Explanation: It can be seen that removing any of the points results in the
+                 maximum distance between any two points of 0.
+
+    Constraints:
+    * 3 <= points.length <= 10^5
+    * points[i].length == 2=
+    * 1 <= points[i][0], points[i][1] <= 10^8"""
+
+    def minimumDistance(self, points: List[List[int]]) -> int:
+        diff = [[inf, -1], [inf, -1], [-inf, -1], [-inf, -1]]
+        summ = [[inf, -1], [inf, -1], [-inf, -1], [-inf, -1]]
+        for i, (x, y) in enumerate(points):
+            if x-y <= diff[0][0]:
+                diff[1] = diff[0]
+                diff[0] = [x-y, i]
+            elif x-y < diff[1][0]: diff[1] = [x-y, i]
+            if x-y >= diff[3][0]:
+                diff[2] = diff[3]
+                diff[3] = [x-y, i]
+            elif x-y > diff[2][0]: diff[2] = [x-y, i]
+            if x+y <= summ[0][0]:
+                summ[1] = summ[0]
+                summ[0] = [x+y, i]
+            elif x+y < summ[1][0]: summ[1] = [x+y, i]
+            if x+y >= summ[3][0]:
+                summ[2] = summ[3]
+                summ[3] = [x+y, i]
+            elif x+y > summ[2][0]: summ[2] = [x+y, i]
+        cand = diff[0][1], diff[-1][1]
+        if diff[-1][0] - diff[0][0] < summ[-1][0] - summ[0][0]:
+            cand = summ[0][1], summ[-1][1]
+        print(cand, diff, summ)
+        ans = inf
+        for x in cand:
+            val = 0
+            if diff[0][1] == x: val = max(val, diff[-1][0] - diff[1][0])
+            elif diff[-1][1] == x: val = max(val, diff[-2][0] - diff[0][0])
+            else: val = max(val, diff[-1][0] - diff[0][0])
+            if summ[0][1] == x: val = max(val, summ[-1][0] - summ[1][0])
+            elif summ[-1][1] == x: val = max(val, summ[-2][0] - summ[0][0])
+            else: val = max(val, summ[-1][0] - summ[0][0])
+            ans = min(ans, val)
+        return ans
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.
