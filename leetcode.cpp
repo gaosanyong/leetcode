@@ -2319,25 +2319,22 @@ public:
                larger board?*/
 
     bool exist(vector<vector<char>>& board, string word) {
-        int m = board.size(), n = board[0].size(), dir[5] = {-1, 0, 1, 0, -1};
+        int m = board.size(), n = board[0].size();
 
         function<bool(int, int, int)> fn = [&](int i, int j, int k) {
-            if (board[i][j] == word[k]) {
-                if (k == word.size()-1) return true;
-                char temp = board[i][j];
-                board[i][j] = '#';
-                for (int x = 0; x < 4; ++x) {
-                    int ii = i + dir[x], jj = j + dir[x+1];
-                    if (0 <= ii && ii < m && 0 <= jj && jj < n && fn(ii, jj, k+1)) return true;
-                }
-                board[i][j] = temp;
-            }
+            if (k+1 == word.size()) return true;
+            board[i][j] ^= 128;
+            for (auto&& [ii, jj] : vector<pair<int, int>>{{i-1, j}, {i, j-1}, {i, j+1}, {i+1, j}})
+                if (0 <= ii && ii < m && 0 <= jj && jj < n && board[ii][jj] == word[k+1] && fn(ii, jj, k+1))
+                    return true;
+            board[i][j] ^= 128;
             return false;
         };
 
         for (int i = 0; i < m; ++i)
             for (int j = 0; j < n; ++j)
-                if (fn(i, j, 0)) return true;
+                if (board[i][j] == word[0] && fn(i, j, 0))
+                    return true;
         return false;
     }
 

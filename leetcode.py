@@ -2713,17 +2713,19 @@ class Solution:
 
         def fn(i, j, k):
             """Return True if a match is found."""
-            if k == len(word)-1: return True
-            temp = board[i][j]
+            if k+1 == len(word): return True
+            ch = board[i][j]
             board[i][j] = '#'
             for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
-                if 0 <= ii < m and 0 <= jj < n and board[ii][jj] == word[k+1] and fn(ii, jj, k+1): return True
-            board[i][j] = temp
+                if 0 <= ii < m and 0 <= jj < n and board[ii][jj] == word[k+1] and fn(ii, jj, k+1):
+                    return True
+            board[i][j] = ch
             return False
 
         for i in range(m):
             for j in range(n):
-                if board[i][j] == word[0] and fn(i, j, 0): return True
+                if board[i][j] == word[0] and fn(i, j, 0):
+                    return True
         return False
 
 
