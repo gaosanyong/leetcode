@@ -655,6 +655,49 @@ function bagOfTokensScore(tokens: number[], power: number): number {
 };
 
 
+/*1544. Make The String Great (Easy)
+Given a string s of lower and upper case English letters. A good string is a
+string which doesn't have two adjacent characters s[i] and s[i + 1] where:
+* 0 <= i <= s.length - 2
+* s[i] is a lower-case letter and s[i + 1] is the same letter but in
+  upper-case or vice-versa.
+To make the string good, you can choose two adjacent characters that make
+the string bad and remove them. You can keep doing this until the string
+becomes good. Return the string after making it good. The answer is
+guaranteed to be unique under the given constraints. Notice that an empty
+string is also good.
+
+Example 1:
+Input: s = "leEeetcode"
+Output: "leetcode"
+Explanation: In the first step, either you choose i = 1 or i = 2, both will
+             result "leEeetcode" to be reduced to "leetcode".
+
+Example 2:
+Input: s = "abBAcC"
+Output: ""
+Explanation: We have many possible scenarios, and all lead to the same
+             answer. For example:
+             "abBAcC" --> "aAcC" --> "cC" --> ""
+             "abBAcC" --> "abBA" --> "aA" --> ""
+
+Example 3:
+Input: s = "s"
+Output: "s"
+
+Constraints:
+* 1 <= s.length <= 100
+* s contains only lower and upper case English letters.*/
+
+function makeGood(s: string): string {
+    const ans = [];
+    for (const ch of s)
+        if (ans.length && (ans[ans.length-1].charCodeAt(0) ^ 32) == ch.charCodeAt(0)) ans.pop();
+        else ans.push(ch);
+    return ans.join('');
+};
+
+
 /*1609. Even Odd Tree (Medium)
 A binary tree is named Even-Odd if it meets the following conditions:
 * The root of the binary tree is at level index 0, its children are at level
