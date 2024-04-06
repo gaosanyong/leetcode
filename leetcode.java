@@ -4370,6 +4370,49 @@ class Solution {
     }
 
 
+    /*1249. Minimum Remove to Make Valid Parentheses (Medium)
+    Given a string s of '(' , ')' and lowercase English characters. Your task is
+    to remove the minimum number of parentheses ( '(' or ')', in any positions )
+    so that the resulting parentheses string is valid and return any valid
+    string. Formally, a parentheses string is valid if and only if:
+    * It is the empty string, contains only lowercase characters, or
+    * It can be written as AB (A concatenated with B), where A and B are valid
+      strings, or
+    * It can be written as (A), where A is a valid string.
+
+    Example 1:
+    Input: s = "lee(t(c)o)de)"
+    Output: "lee(t(c)o)de"
+    Explanation: "lee(t(co)de)" , "lee(t(c)ode)" would also be accepted.
+
+    Example 2:
+    Input: s = "a)b(c)d"
+    Output: "ab(c)d"
+
+    Example 3:
+    Input: s = "))(("
+    Output: ""
+    Explanation: An empty string is also valid.
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s[i] is either'(' , ')', or lowercase English letter.*/
+
+    public String minRemoveToMakeValid(String s) {
+        Stack<Integer> stk = new Stack();
+        StringBuilder sb = new StringBuilder(s);
+        for (int i = 0; i < s.length(); ++i)
+            if (s.charAt(i) == '(') stk.push(i);
+            else if (s.charAt(i) == ')') {
+                if (!stk.isEmpty()) stk.pop();
+                else sb.setCharAt(i, '\0');
+            }
+        while (!stk.isEmpty())
+            sb.setCharAt(stk.pop(), '\0');
+        return sb.toString().replaceAll("\0", "");
+    }
+
+
     /*1259. Handshakes That Don't Cross (Hard)
     You are given an even number of people numPeople that stand around a circle 
     and each person shakes hands with someone else so that there are 

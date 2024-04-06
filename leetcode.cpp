@@ -26654,23 +26654,19 @@ public:
     * s[i] is either'(' , ')', or lowercase English letter.*/
 
     string minRemoveToMakeValid(string s) {
-        int close = 0, diff = 0;
-        for (auto& ch : s)
-            if (ch == ')') ++close;
-
-        string ans;
-        for (auto& ch : s) {
-            if (ch == '(') {
-                if (diff < close) ++diff;
-                else continue;
-            } else if (ch == ')') {
-                --close;
-                if (diff > 0) --diff;
-                else continue;
+        stack<int> stk;
+        for (int i = 0; i < s.size(); ++i)
+            if (s[i] == '(') stk.push(i);
+            else if (s[i] == ')') {
+                if (stk.size()) stk.pop();
+                else s[i] = '\0';
             }
-            ans.push_back(ch);
+        while (stk.size()) {
+            s[stk.top()] = '\0';
+            stk.pop();
         }
-        return ans;
+        s.erase(remove(s.begin(), s.end(), '\0'), s.end());
+        return s;
     }
 
 

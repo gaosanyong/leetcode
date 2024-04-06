@@ -32254,12 +32254,12 @@ class UnionFind:
     def minRemoveToMakeValid(self, s: str) -> str:
         s = list(s)
         stack = []
-        for i, c in enumerate(s):
-            if c == "(": stack.append(i)
-            elif c == ")":
-                if stack: stack.pop() # matching
-                else: s[i] = "" # extra
-        while stack: s[stack.pop()] = ""
+        for i, x in enumerate(s):
+            if x == '(': stack.append(i)
+            elif x == ')':
+                if stack: stack.pop()
+                else: s[i] = ''
+        while stack: s[stack.pop()] = ''
         return "".join(s)
 
 
