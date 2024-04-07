@@ -16850,13 +16850,13 @@ class Solution:
 
     Note: The string size will be in the range [1, 100]."""
 
-    def checkValidString(self, s: str) -> bool:
-        op = cl = 0
-        for i in range(len(s)):
-            op += 1 if s[ i] in "(*" else -1
-            cl += 1 if s[~i] in ")*" else -1
-            if op < 0 or cl < 0: return False
-        return True
+    def checkValidString(self, s):
+        lower = upper = 0
+        for ch in s:
+            lower += 1 if ch == '(' else -min(1, lower)
+            upper += 1 if ch in "(*" else -1
+            if upper < 0: return False
+        return lower == 0
 
 
     """679. 24 Game (Hard)
