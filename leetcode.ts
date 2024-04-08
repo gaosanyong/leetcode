@@ -6132,3 +6132,202 @@ function minimumDistance(points: number[][]): number {
     }
     return ans;
 };
+
+
+/*3105. Longest Strictly Increasing or Strictly Decreasing Subarray (Easy)
+You are given an array of integers nums. Return the length of the longest
+subarray of nums which is either strictly increasing or strictly decreasing.
+
+Example 1:
+Input: nums = [1,4,3,3,2]
+Output: 2
+Explanation: The strictly increasing subarrays of nums are [1], [2], [3],
+             [3], [4], and [1,4]. The strictly decreasing subarrays of nums
+             are [1], [2], [3], [3], [4], [3,2], and [4,3]. Hence, we return
+             2.
+
+Example 2:
+Input: nums = [3,3,3,3]
+Output: 1
+Explanation: The strictly increasing subarrays of nums are [3], [3], [3],
+             and [3]. The strictly decreasing subarrays of nums are [3],
+             [3], [3], and [3]. Hence, we return 1.
+
+Example 3:
+Input: nums = [3,2,1]
+Output: 3
+Explanation: The strictly increasing subarrays of nums are [3], [2], and
+             [1]. The strictly decreasing subarrays of nums are [3], [2],
+             [1], [3,2], [2,1], and [3,2,1]. Hence, we return 3.
+
+Constraints:
+* 1 <= nums.length <= 50
+* 1 <= nums[i] <= 50*/
+
+function longestMonotonicSubarray(nums: number[]): number {
+    let ans = 0;
+    for (let i = 0, val = 0; i < nums.length; ++i) {
+        if (i && nums[i-1] == nums[i]) val = 0;
+        else if (i >= 2 && (nums[i-2]-nums[i-1])*(nums[i-1]-nums[i]) <= 0) val = 1;
+        ans = Math.max(ans, ++val);
+    }
+    return ans;
+};
+
+
+/*3106. Lexicographically Smallest String After Operations With Constraint (Medium)
+You are given a string s and an integer k. Define a function
+distance(s1, s2) between two strings s1 and s2 of the same length n as:
+* The sum of the minimum distance between s1[i] and s2[i] when the
+  characters from 'a' to 'z' are placed in a cyclic order, for all i in the
+  range [0, n - 1].
+For example, distance("ab", "cd") == 4, and distance("a", "z") == 1. You can
+change any letter of s to any other lowercase English letter, any number of
+times. Return a string denoting the lexicographically smallest string t you
+can get after some changes, such that distance(s, t) <= k.
+
+Example 1:
+Input: s = "zbbz", k = 3
+Output: "aaaz"
+Explanation: Change s to "aaaz". The distance between "zbbz" and "aaaz" is
+             equal to k = 3.
+
+Example 2:
+Input: s = "xaxcd", k = 4
+Output: "aawcd"
+Explanation: The distance between "xaxcd" and "aawcd" is equal to k = 4.
+
+Example 3:
+Input: s = "lol", k = 0
+Output: "lol"
+Explanation: It's impossible to change any character as k = 0.
+
+Constraints:
+* 1 <= s.length <= 100
+* 0 <= k <= 2000
+* s consists only of lowercase English letters.*/
+
+function getSmallestString(s: string, k: number): string {
+    const ans = s.split('');
+    for (let i = 0; i < s.length; ++i) {
+        const dist = Math.min(s[i].charCodeAt(0) - 97, 123 - s[i].charCodeAt(0));
+        if (dist <= k) ans[i] = 'a';
+        else ans[i] = String.fromCharCode(s[i].charCodeAt(0) - k);
+        k -= Math.min(k, dist);
+    }
+    return ans.join('');
+};
+
+
+/*3107. Minimum Operations to Make Median of Array Equal to K (Medium)
+You are given an integer array nums and a non-negative integer k. In one
+operation, you can increase or decrease any element by 1. Return the minimum
+number of operations needed to make the median of nums equal to k. The
+median of an array is defined as the middle element of the array when it is
+sorted in non-decreasing order. If there are two choices for a median, the
+larger of the two values is taken.
+
+Example 1:
+Input: nums = [2,5,6,8,5], k = 4
+Output: 2
+Explanation: We can subtract one from nums[1] and nums[4] to obtain
+             [2, 4, 6, 8, 4]. The median of the resulting array is equal to
+             k.
+
+Example 2:
+Input: nums = [2,5,6,8,5], k = 7
+Output: 3
+Explanation: We can add one to nums[1] twice and add one to nums[2] once to
+             obtain [2, 7, 7, 8, 5].
+
+Example 3:
+Input: nums = [1,2,3,4,5,6], k = 4
+Output: 0
+Explanation: The median of the array is already equal to k.
+
+Constraints:
+* 1 <= nums.length <= 2 * 10^5
+* 1 <= nums[i] <= 10^9
+* 1 <= k <= 10^9*/
+
+function minOperationsToMakeMedianK(nums: number[], k: number): number {
+    nums.sort((x, y) => x-y);
+    let ans = 0, m = Math.floor(nums.length/2);
+    for (const [i, x] of nums.entries())
+        if (i < m) ans += Math.max(0, x-k);
+        else if (i == m) ans += Math.abs(x-k);
+        else ans += Math.max(0, k-x);
+    return ans;
+};
+
+
+/*3108. Minimum Cost Walk in Weighted Graph (Hard)
+There is an undirected weighted graph with n vertices labeled from 0 to
+n - 1. You are given the integer n and an array edges, where
+edges[i] = [ui, vi, wi] indicates that there is an edge between vertices ui
+and vi with a weight of wi. A walk on a graph is a sequence of vertices and
+edges. The walk starts and ends with a vertex, and each edge connects the
+vertex that comes before it and the vertex that comes after it. It's
+important to note that a walk may visit the same edge or vertex more than
+once. The cost of a walk starting at node u and ending at node v is defined
+as the bitwise AND of the weights of the edges traversed during the walk. In
+other words, if the sequence of edge weights encountered during the walk is
+w0, w1, w2, ..., wk, then the cost is calculated as w0 & w1 & w2 & ... & wk,
+where & denotes the bitwise AND operator. You are also given a 2D array
+query, where query[i] = [si, ti]. For each query, you need to find the
+minimum cost of the walk starting at vertex si and ending at vertex ti. If
+there exists no such walk, the answer is -1. Return the array answer, where
+answer[i] denotes the minimum cost of a walk for query i.
+
+Example 1:
+Input: n = 5, edges = [[0,1,7],[1,3,7],[1,2,1]], query = [[0,3],[3,4]]
+Output: [1,-1]
+Explanation: To achieve the cost of 1 in the first query, we need to move on
+             the following edges: 0->1 (weight 7), 1->2 (weight 1),
+             2->1 (weight 1), 1->3 (weight 7). In the second query, there is
+             no walk between nodes 3 and 4, so the answer is -1.
+
+Example 2:
+Input: n = 3, edges = [[0,2,7],[0,1,15],[1,2,6],[1,2,1]], query = [[1,2]]
+Output: [0]
+Explanation: To achieve the cost of 0 in the first query, we need to move on
+             the following edges: 1->2 (weight 1), 2->1 (weight 6),
+             1->2 (weight 1).
+
+Constraints:
+* 1 <= n <= 10^5
+* 0 <= edges.length <= 10^5
+* edges[i].length == 3
+* 0 <= ui, vi <= n - 1
+* ui != vi
+* 0 <= wi <= 10^5
+* 1 <= query.length <= 10^5
+* query[i].length == 2
+* 0 <= si, ti <= n - 1*/
+
+function minimumCost(n: number, edges: number[][], query: number[][]): number[] {
+
+    function find(p) {
+        if (parent[p] != p)
+            parent[p] = find(parent[p]);
+        return parent[p];
+    };
+
+    const parent = [...Array(n).keys()], weight = Array(n).fill((1<<20)-1);
+    for (const [u, v, w] of edges) {
+        const uu = find(u), vv = find(v);
+        if (uu != vv) parent[uu] = vv;
+        weight[vv] &= weight[uu] & w;
+    }
+
+    const ans = [];
+    for (const [u, v] of query) {
+        if (u == v) ans.push(0);
+        else {
+            const uu = find(u), vv = find(v);
+            if (uu == vv) ans.push(weight[uu]);
+            else ans.push(-1);
+        }
+    }
+    return ans;
+};
