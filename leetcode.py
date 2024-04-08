@@ -41604,10 +41604,10 @@ class Fenwick:
     * students[i] is 0 or 1."""
 
     def countStudents(self, students: List[int], sandwiches: List[int]) -> int:
-        ss = sum(students)
+        prefix = sum(students)
         for i, x in enumerate(sandwiches):
-            if (x and not ss) or (not x and ss == len(sandwiches) - i): return len(sandwiches)-i
-            ss -= x
+            if x and not prefix or not x and prefix == len(sandwiches)-i: return len(sandwiches)-i
+            prefix -= x
         return 0
 
 
