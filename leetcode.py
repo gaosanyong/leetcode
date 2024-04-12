@@ -1418,8 +1418,8 @@ class Solution:
     Output: 6"""
 
     def trap(self, height: List[int]) -> int:
-        lo, hi = 0, len(height)-1
         ans = val = 0
+        lo, hi = 0, len(height)-1
         while lo < hi:
             if height[lo] <= height[hi]:
                 val = max(val, height[lo])

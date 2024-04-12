@@ -31,6 +31,40 @@ function firstMissingPositive(nums: number[]): number {
 };
 
 
+/*42. Trapping Rain Water (Hard)
+Given n non-negative integers representing an elevation map where the width
+of each bar is 1, compute how much water it can trap after raining.
+
+Example 1:
+Input: height = [0,1,0,2,1,0,1,3,2,1,2,1]
+Output: 6
+Explanation: The above elevation map (black section) is represented by array
+             [0,1,0,2,1,0,1,3,2,1,2,1]. In this case, 6 units of rain water
+             (blue section) are being trapped.
+
+Example 2:
+Input: height = [4,2,0,3,2,5]
+Output: 9
+
+Constraints:
+* n == height.length
+* 1 <= n <= 2 * 10^4
+* 0 <= height[i] <= 10^5*/
+
+function trap(height: number[]): number {
+    let ans = 0;
+    for (let lo = 0, hi = height.length-1, val = 0; lo < hi; )
+        if (height[lo] <= height[hi]) {
+            val = Math.max(val, height[lo]);
+            ans += val - height[lo++];
+        } else {
+            val = Math.max(val, height[hi]);
+            ans += val - height[hi--];
+        }
+    return ans;
+};
+
+
 /*49. Group Anagrams (Medium)
 Given an array of strings strs, group the anagrams together. You can return
 the answer in any order. An Anagram is a word or phrase formed by

@@ -1316,15 +1316,14 @@ public:
 
     int trap(vector<int>& height) {
         int ans = 0;
-        for (val = 0, lo = 0, hi = height.size()-1; lo < hi; ) {
-            if (height[lo] < height[hi]) {
+        for (int lo = 0, hi = height.size()-1, val = 0; lo < hi; )
+            if (height[lo] <= height[hi]) {
                 val = max(val, height[lo]);
                 ans += val - height[lo++];
             } else {
                 val = max(val, height[hi]);
                 ans += val - height[hi--];
             }
-        }
         return ans;
     }
 
