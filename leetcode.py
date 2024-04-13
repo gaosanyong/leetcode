@@ -88085,6 +88085,232 @@ class SegTreeLazy:
         return ans
 
 
+    """3110. Score of a String (Easy)
+    You are given a string s. The score of a string is defined as the sum of the
+    absolute difference between the ASCII values of adjacent characters. Return
+    the score of s.
+
+    Example 1:
+    Input: s = "hello"
+    Output: 13
+    Explanation: The ASCII values of the characters in s are: 'h' = 104,
+                 'e' = 101, 'l' = 108, 'o' = 111. So, the score of s would be
+                 |104 - 101| + |101 - 108| + |108 - 108| + |108 - 111|
+                 = 3 + 7 + 0 + 3 = 13.
+
+    Example 2:
+    Input: s = "zaz"
+    Output: 50
+    Explanation: The ASCII values of the characters in s are: 'z' = 122,
+                 'a' = 97. So, the score of s would be
+                 |122 - 97| + |97 - 122| = 25 + 25 = 50.
+
+    Constraints:
+    * 2 <= s.length <= 100
+    * s consists only of lowercase English letters."""
+
+    def scoreOfString(self, s: str) -> int:
+        return sum(abs(ord(x)-ord(y)) for x, y in pairwise(s))
+
+
+    """3111. Minimum Rectangles to Cover Points (Medium)
+    You are given a 2D integer array points, where points[i] = [xi, yi]. You are
+    also given an integer w. Your task is to cover all the given points with
+    rectangles. Each rectangle has its lower end at some point (x1, 0) and its
+    upper end at some point (x2, y2), where x1 <= x2, y2 >= 0, and the condition
+    x2 - x1 <= w must be satisfied for each rectangle. A point is considered
+    covered by a rectangle if it lies within or on the boundary of the
+    rectangle. Return an integer denoting the minimum number of rectangles
+    needed so that each point is covered by at least one rectangle. Note: A
+    point may be covered by more than one rectangle.
+
+    Example 1:
+    Input: points = [[2,1],[1,0],[1,4],[1,8],[3,5],[4,6]], w = 1
+    Output: 2
+    Explanation: The image above shows one possible placement of rectangles to
+                 cover the points:
+                 - A rectangle with a lower end at (1, 0) and its upper end at
+                   (2, 8)
+                 - A rectangle with a lower end at (3, 0) and its upper end at
+                   (4, 8)
+
+    Example 2:
+    Input: points = [[0,0],[1,1],[2,2],[3,3],[4,4],[5,5],[6,6]], w = 2
+    Output: 3
+    Explanation: The image above shows one possible placement of rectangles to
+                 cover the points:
+                 - A rectangle with a lower end at (0, 0) and its upper end at
+                   (2, 2)
+                 - A rectangle with a lower end at (3, 0) and its upper end at
+                   (5, 5)
+                 - A rectangle with a lower end at (6, 0) and its upper end at
+                   (6, 6)
+
+    Example 3:
+    Input: points = [[2,3],[1,2]], w = 0
+    Output: 2
+    Explanation: The image above shows one possible placement of rectangles to
+                 cover the points:
+                 - A rectangle with a lower end at (1, 0) and its upper end at
+                   (1, 2)
+                 - A rectangle with a lower end at (2, 0) and its upper end at
+                   (2, 3)
+
+    Constraints:
+    * 1 <= points.length <= 10^5
+    * points[i].length == 2
+    * 0 <= xi == points[i][0] <= 10^9
+    * 0 <= yi == points[i][1] <= 10^9
+    * 0 <= w <= 10^9
+    * All pairs (xi, yi) are distinct."""
+
+    def minRectanglesToCoverPoints(self, points: List[List[int]], w: int) -> int:
+        ans = 0
+        prev = -inf
+        for x, _ in sorted(points):
+            if prev + w < x:
+                ans += 1
+                prev = x
+        return ans
+
+
+    """3112. Minimum Time to Visit Disappearing Nodes (Medium)
+    There is an undirected graph of n nodes. You are given a 2D array edges,
+    where edges[i] = [ui, vi, lengthi] describes an edge between node ui and
+    node vi with a traversal time of lengthi units. Additionally, you are given
+    an array disappear, where disappear[i] denotes the time when the node i
+    disappears from the graph and you won't be able to visit it. Notice that the
+    graph might be disconnected and might contain multiple edges. Return the
+    array answer, with answer[i] denoting the minimum units of time required to
+    reach node i from node 0. If node i is unreachable from node 0 then
+    answer[i] is -1.
+
+    Example 1:
+    Input:  n = 3, edges = [[0,1,2],[1,2,1],[0,2,4]], disappear = [1,1,5]
+    Output:  [0,-1,4]
+    Explanation: We are starting our journey from node 0, and our goal is to
+                 find the minimum time required to reach each node before it
+                 disappears.
+                 - For node 0, we don't need any time as it is our starting
+                   point.
+                 - For node 1, we need at least 2 units of time to traverse
+                   edges[0]. Unfortunately, it disappears at that moment, so we
+                   won't be able to visit it.
+                 - For node 2, we need at least 4 units of time to traverse
+                   edges[2].
+
+    Example 2:
+    Input:  n = 3, edges = [[0,1,2],[1,2,1],[0,2,4]], disappear = [1,3,5]
+    Output:  [0,2,3]
+    Explanation: We are starting our journey from node 0, and our goal is to
+                 find the minimum time required to reach each node before it
+                 disappears.
+                 - For node 0, we don't need any time as it is the starting
+                   point.
+                 - For node 1, we need at least 2 units of time to traverse
+                   edges[0].
+                 - For node 2, we need at least 3 units of time to traverse
+                   edges[0] and edges[1].
+
+    Example 3:
+    Input: n = 2, edges = [[0,1,1]], disappear = [1,1]
+    Output: [0,-1]
+    Explanation: Exactly when we reach node 1, it disappears.
+
+    Constraints:
+    * 1 <= n <= 5 * 10^4
+    * 0 <= edges.length <= 10^5
+    * edges[i] == [ui, vi, lengthi]
+    * 0 <= ui, vi <= n - 1
+    * 1 <= lengthi <= 10^5
+    * disappear.length == n
+    * 1 <= disappear[i] <= 10^5"""
+
+    def minimumTime(self, n: int, edges: List[List[int]], disappear: List[int]) -> List[int]:
+        graph = [[] for _ in range(n)]
+        for u, v, w in edges:
+            graph[u].append((v, w))
+            graph[v].append((u, w))
+        pq = [(0, 0)]
+        ans = [inf]*n
+        ans[0] = 0
+        while pq:
+            x, u = heappop(pq)
+            if x == ans[u]:
+                for v, w in graph[u]:
+                    if x+w < disappear[v] and x+w < ans[v]:
+                        ans[v] = x+w
+                        heappush(pq, (x+w, v))
+        return [x if x < inf else -1 for x in ans]
+
+
+    """3113. Find the Number of Subarrays Where Boundary Elements Are Maximum (Hard)
+    You are given an array of positive integers nums. Return the number of
+    subarrays of nums, where the first and the last elements of the subarray are
+    equal to the largest element in the subarray.
+
+    Example 1:
+    Input: nums = [1,4,3,3,2]
+    Output: 6
+    Explanation: There are 6 subarrays which have the first and the last
+                 elements equal to the largest element of the subarray:
+                 - subarray [1,4,3,3,2], with its largest element 1. The first
+                   element is 1 and the last element is also 1.
+                 - subarray [1,4,3,3,2], with its largest element 4. The first
+                   element is 4 and the last element is also 4.
+                 - subarray [1,4,3,3,2], with its largest element 3. The first
+                   element is 3 and the last element is also 3.
+                 - subarray [1,4,3,3,2], with its largest element 3. The first
+                   element is 3 and the last element is also 3.
+                 - subarray [1,4,3,3,2], with its largest element 2. The first
+                   element is 2 and the last element is also 2.
+                 - subarray [1,4,3,3,2], with its largest element 3. The first
+                   element is 3 and the last element is also 3.
+                 Hence, we return 6.
+
+    Example 2:
+    Input: nums = [3,3,3]
+    Output: 6
+    Explanation: There are 6 subarrays which have the first and the last
+                 elements equal to the largest element of the subarray:
+                 - subarray [3,3,3], with its largest element 3. The first
+                   element is 3 and the last element is also 3.
+                 - subarray [3,3,3], with its largest element 3. The first
+                   element is 3 and the last element is also 3.
+                 - subarray [3,3,3], with its largest element 3. The first
+                   element is 3 and the last element is also 3.
+                 - subarray [3,3,3], with its largest element 3. The first
+                   element is 3 and the last element is also 3.
+                 - subarray [3,3,3], with its largest element 3. The first
+                   element is 3 and the last element is also 3.
+                 - subarray [3,3,3], with its largest element 3. The first
+                   element is 3 and the last element is also 3.
+                 Hence, we return 6.
+
+    Example 3:
+    Input: nums = [1]
+    Output: 1
+    Explanation: There is a single subarray of nums which is [1], with its
+                 largest element 1. The first element is 1 and the last element
+                 is also 1. Hence, we return 1.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9"""
+
+    def numberOfSubarrays(self, nums: List[int]) -> int:
+        dp = [1]*len(nums)
+        stack = []
+        for i, x in enumerate(nums):
+            while stack and stack[-1][1] <= x:
+                ii, xx = stack.pop()
+                if xx == x:
+                    dp[i] = dp[ii]+1
+                    break
+            stack.append((i, x))
+        return sum(dp)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.
