@@ -7505,7 +7505,7 @@ var minimumCost = function(n, edges, query) {
         return parent[p];
     };
 
-    const parent = [...Array(n).keys()], weight = Array(n).fill((1<<20)-1);
+    const parent = [...Array(n).keys()], weight = Array(n).fill(-1);
     for (const [u, v, w] of edges) {
         const uu = find(u), vv = find(v);
         if (uu != vv) parent[uu] = vv;

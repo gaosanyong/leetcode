@@ -88070,7 +88070,7 @@ class SegTreeLazy:
             return parent[p]
 
         parent = list(range(n))
-        weight = [(1<<20)-1]*n
+        weight = [-1]*n
         for u, v, w in edges:
             uu, vv = find(u), find(v)
             if uu != vv: parent[vv] = uu

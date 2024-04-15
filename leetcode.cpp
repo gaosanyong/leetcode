@@ -69235,7 +69235,7 @@ public:
     * 0 <= si, ti <= n - 1*/
 
     vector<int> minimumCost(int n, vector<vector<int>>& edges, vector<vector<int>>& query) {
-        vector<int> parent(n), weight(n, (1<<20)-1);
+        vector<int> parent(n), weight(n, -1);
         iota(parent.begin(), parent.end(), 0);
 
         function<int(int)> find = [&](int p) {

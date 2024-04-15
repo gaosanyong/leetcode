@@ -23914,7 +23914,7 @@ class SegTreeLazy {
     public int[] minimumCost(int n, int[][] edges, int[][] query) {
         int[] parent = new int[n], weight = new int[n];
         for (int i = 0; i < n; ++i) parent[i] = i;
-        Arrays.fill(weight, (1<<20)-1);
+        Arrays.fill(weight, -1);
         for (var e : edges) {
             int u = find(e[0], parent), v = find(e[1], parent), w = e[2];
             if (u != v) parent[u] = v;
