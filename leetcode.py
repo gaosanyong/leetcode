@@ -25420,6 +25420,43 @@ class Solution:
         return ans
 
 
+    """988. Smallest String Starting From Leaf (Medium)
+    You are given the root of a binary tree where each node has a value in the
+    range [0, 25] representing the letters 'a' to 'z'. Return the
+    lexicographically smallest string that starts at a leaf of this tree and
+    ends at the root. As a reminder, any shorter prefix of a string is
+    lexicographically smaller. For example, "ab" is lexicographically smaller
+    than "aba". A leaf of a node is a node that has no children.
+
+    Example 1:
+    Input: root = [0,1,2,3,4,3,4]
+    Output: "dba"
+
+    Example 2:
+    Input: root = [25,1,3,1,3,0,2]
+    Output: "adz"
+
+    Example 3:
+    Input: root = [2,2,1,null,1,0,null,0]
+    Output: "abc"
+
+    Constraints:
+    * The number of nodes in the tree is in the range [1, 8500].
+    * 0 <= Node.val <= 25"""
+
+    def smallestFromLeaf(self, root: TreeNode) -> str:
+        ans = "~"
+        stack = [(root, "")]
+        while stack:
+            node, val = stack.pop()
+            val = chr(node.val + 97) + val
+            if node.left is node.right: ans = min(ans, val)
+            else:
+                if node.left: stack.append((node.left, val))
+                if node.right: stack.append((node.right, val))
+        return ans
+
+
     """989. Add to Array-Form of Integer (Easy)
     The array-form of an integer num is an array representing its digits in
     left to right order. For example, for num = 1321, the array form is
