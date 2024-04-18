@@ -10160,9 +10160,9 @@ public:
     * There is exactly one island in grid.*/
 
     int islandPerimeter(vector<vector<int>>& grid) {
-        int m = grid.size(), n = grid[0].size(), ans = 0;
-        for (int i = 0; i < m; ++i)
-            for (int j = 0; j < n; ++j)
+        int ans = 0;
+        for (int i = 0; i < grid.size(); ++i)
+            for (int j = 0; j < grid[i].size(); ++j)
                 if (grid[i][j]) {
                     ans += 4;
                     if (i && grid[i-1][j]) ans -= 2;

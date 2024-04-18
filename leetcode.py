@@ -12668,8 +12668,8 @@ class Solution:
     * There is exactly one island in grid."""
 
     def islandPerimeter(self, grid: List[List[int]]) -> int:
-        m, n = len(grid), len(grid[0])
         ans = 0
+        m, n = len(grid), len(grid[0])
         for i in range(m):
             for j in range(n):
                 if grid[i][j]:
