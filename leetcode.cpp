@@ -5631,12 +5631,12 @@ public:
 
     int numIslands(vector<vector<char>>& grid) {
         int ans = 0, m = grid.size(), n = grid[0].size(), dir[5] = {-1, 0, 1, 0, -1};
+        stack<pair<int, int>> stk;
         for (int i = 0; i < m; ++i)
             for (int j = 0; j < n; ++j)
                 if (grid[i][j] == '1') {
                     grid[i][j] = '0'; // mark "visited"
                     ++ans;
-                    stack<pair<int, int>> stk;
                     stk.emplace(i, j);
                     while (stk.size()) {
                         auto [i, j] = stk.top(); stk.pop();
