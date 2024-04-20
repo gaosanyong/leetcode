@@ -52954,21 +52954,19 @@ class Trie:
         m, n = len(land), len(land[0])
         ans = []
         for i in range(m):
-            for j in range(n):
-                if land[i][j]: # found farmland
-                    mini, minj = i, j
-                    maxi, maxj = i, j
-                    stack = [(i, j)]
-                    land[i][j] = 0 # mark as visited
-                    while stack:
-                        i, j = stack.pop()
-                        for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
-                            if 0 <= ii < m and 0 <= jj < n and land[ii][jj]:
-                                stack.append((ii, jj))
-                                land[ii][jj] = 0
-                                maxi = max(maxi, ii)
-                                maxj = max(maxj, jj)
-                    ans.append([mini, minj, maxi, maxj])
+            j = 0
+            while j < n:
+                if land[i][j] == 1:
+                    jj = j
+                    while jj < n and land[i][jj]: jj += 1
+                    for ii in range(i, m):
+                        if land[ii][j] == 1: land[ii][j] = -jj
+                        else:
+                            ii -= 1
+                            break
+                    ans.append([i, j, ii, jj-1])
+                if land[i][j] < 0: j = -land[i][j]
+                else: j += 1
         return ans
 
 

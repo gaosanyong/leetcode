@@ -39497,30 +39497,20 @@ public:
     * Groups of farmland are rectangular in shape.*/
 
     vector<vector<int>> findFarmland(vector<vector<int>>& land) {
-        int m = land.size(), n = land[0].size(), dir[5] = {-1, 0, 1, 0, -1};
+        int m = land.size(), n = land[0].size();
         vector<vector<int>> ans;
         for (int i = 0; i < m; ++i)
-            for (int j = 0; j < n; ++j)
-                if (land[i][j]) {
-                    land[i][j] = 0; // mark as visited
-                    int mini = i, minj = j, maxi = i, maxj = j;
-                    stack<int> stk;
-                    stk.push(i*n + j);
-                    while (stk.size()) {
-                        auto x = stk.top(); stk.pop();
-                        int i = x/n, j = x%n;
-                        for (int k = 0; k < 4; ++k) {
-                            int ii = i + dir[k], jj = j + dir[k+1];
-                            if (0 <= ii && ii < m && 0 <= jj && jj < n && land[ii][jj]) {
-                                land[ii][jj] = 0;
-                                stk.push(ii*n + jj);
-                                maxi = max(maxi, ii);
-                                maxj = max(maxj, jj);
-                            }
-                        }
+            for (int j = 0; j < n; ++j) {
+                if (land[i][j] == 1) {
+                    int ii = i, jj = j;
+                    for (; jj < n && land[i][jj]; ++jj);
+                    for (; ii < m && land[ii][j]; ++ii) {
+                        land[ii][j] = -jj;
                     }
-                    ans.push_back({mini, minj, maxi, maxj});
+                    ans.push_back({i, j, ii-1, jj-1});
                 }
+                if (land[i][j] < 0) j = -land[i][j]-1;
+            }
         return ans;
     }
 
