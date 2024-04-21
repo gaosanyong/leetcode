@@ -52095,22 +52095,23 @@ class Trie:
     * There are no duplicate edges.
     * There are no self edges."""
 
-    def validPath(self, n: int, edges: List[List[int]], start: int, end: int) -> bool:
-        graph = {}
-        for u, v in edges:
-            graph.setdefault(u, []).append(v)
-            graph.setdefault(v, []).append(u)
-
-        seen = {start}
-        stack = [start]
-        while stack:
-            n = stack.pop()
-            if n == end: return True
-            for nn in graph.get(n, []):
-                if nn not in seen:
-                    seen.add(nn)
-                    stack.append(nn)
-        return False
+    class Solution:
+        def validPath(self, n: int, edges: List[List[int]], source: int, destination: int) -> bool:
+            graph = [[] for _ in range(n)]
+            for u, v in edges:
+                graph[u].append(v)
+                graph[v].append(u)
+            seen = [False]*n
+            seen[source] = True
+            stack = [source]
+            while stack:
+                u = stack.pop()
+                if u == destination: return True
+                for v in graph[u]:
+                    if not seen[v]:
+                        seen[v] = True
+                        stack.append(v)
+            return False
 
 
     """1973. Count Nodes Equal to Sum of Descendants (Medium)

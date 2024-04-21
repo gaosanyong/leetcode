@@ -38605,22 +38605,23 @@ public:
     * There are no duplicate edges.
     * There are no self edges.*/
 
-    bool validPath(int n, vector<vector<int>>& edges, int start, int end) {
-        unordered_map<int, vector<int>> graph;
-        for (auto& edge : edges) {
-            graph[edge[0]].push_back(edge[1]);
-            graph[edge[1]].push_back(edge[0]);
+    bool validPath(int n, vector<vector<int>>& edges, int source, int destination) {
+        vector<vector<int>> graph(n);
+        for (auto& e : edges) {
+            int u = e[0], v = e[1];
+            graph[u].push_back(v);
+            graph[v].push_back(u);
         }
-        stack<int> stk;
-        stk.push(start);
-        unordered_set<int> seen = {start};
+        vector<bool> seen(n, false);
+        seen[source] = true;
+        stack<int> stk; stk.push(source);
         while (stk.size()) {
-            int n = stk.top(); stk.pop();
-            if (n == end) return true;
-            for (auto& nn : graph[n])
-                if (!seen.count(nn)) {
-                    seen.insert(nn);
-                    stk.push(nn);
+            int u = stk.top(); stk.pop();
+            if (u == destination) return true;
+            for (auto& v : graph[u])
+                if (!seen[v]) {
+                    seen[v] = true;
+                    stk.push(v);
                 }
         }
         return false;
