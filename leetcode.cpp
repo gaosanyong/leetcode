@@ -69799,6 +69799,205 @@ public:
         int ans = fn(0, 0, -1);
         return ans < inf ? ans : -1;
     }
+
+
+    /*3120. Count the Number of Special Characters I (Easy)
+    You are given a string word. A letter is called special if it appears both
+    in lowercase and uppercase in word. Return the number of special letters in
+    word.
+
+    Example 1:
+    Input: word = "aaAbcBC"
+    Output: 3
+    Explanation: The special characters in word are 'a', 'b', and 'c'.
+
+    Example 2:
+    Input: word = "abc"
+    Output: 0
+    Explanation: No character in word appears in uppercase.
+
+    Example 3:
+    Input: word = "abBCab"
+    Output: 1
+    Explanation: The only special character in word is 'b'.
+
+    Constraints:
+    * 1 <= word.length <= 50
+    * word consists of only lowercase and uppercase English letters.*/
+
+    int numberOfSpecialChars(string word) {
+        int lower = 0, upper = 0;
+        for (auto& ch : word)
+            if (islower(ch)) lower |= 1 << (ch-'a');
+            else upper |= 1 << (ch-'A');
+        return __popcount(lower&upper);
+    }
+
+
+    /*3121. Count the Number of Special Characters II (Medium)
+    You are given a string word. A letter c is called special if it appears both
+    in lowercase and uppercase in word, and every lowercase occurrence of c
+    appears before the first uppercase occurrence of c. Return the number of
+    special letters in word.
+
+    Example 1:
+    Input: word = "aaAbcBC"
+    Output: 3
+    Explanation: The special characters are 'a', 'b', and 'c'.
+
+    Example 2:
+    Input: word = "abc"
+    Output: 0
+    Explanation: There are no special characters in word.
+
+    Example 3:
+    Input: word = "AbBCab"
+    Output: 0
+    Explanation: There are no special characters in word.
+
+    Constraints:
+    * 1 <= word.length <= 2 * 10^5
+    * word consists of only lowercase and uppercase English letters.*/
+
+    int numberOfSpecialChars(string word) {
+        int lower = 0, upper = 0;
+        for (auto& ch : word)
+            if (islower(ch)) {
+                lower &= ~(1 << ch-'a');
+                lower |= ~upper & 1 << ch-'a';
+            } else
+                upper |= 1 << ch - 'A';
+        return __popcount(lower & upper);
+    }
+
+
+    /*3122. Minimum Number of Operations to Satisfy Conditions (Medium)
+    You are given a 2D matrix grid of size m x n. In one operation, you can
+    change the value of any cell to any non-negative number. You need to perform
+    some operations such that each cell grid[i][j] is:
+    * Equal to the cell below it, i.e. grid[i][j] == grid[i + 1][j] (if it
+      exists).
+    * Different from the cell to its right, i.e. grid[i][j] != grid[i][j + 1]
+      (if it exists).
+    Return the minimum number of operations needed.
+
+    Example 1:
+    Input: grid = [[1,0,2],[1,0,2]]
+    Output: 0
+    Explanation: All the cells in the matrix already satisfy the properties.
+
+    Example 2:
+    Input: grid = [[1,1,1],[0,0,0]]
+    Output: 3
+    Explanation: The matrix becomes [[1,0,1],[1,0,1]] which satisfies the
+                 properties, by doing these 3 operations:
+                 - Change grid[1][0] to 1.
+                 - Change grid[0][1] to 0.
+                 - Change grid[1][2] to 1.
+
+    Example 3:
+    Input: grid = [[1],[2],[3]]
+    Output: 2
+    Explanation: There is a single column. We can change the value to 1 in each
+                 cell using 2 operations.
+
+    Constraints:
+    * 1 <= n, m <= 1000
+    * 0 <= grid[i][j] <= 9*/
+
+    int minimumOperations(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> dp(10, vector<int>(n+1));
+        vector<int> vals(10);
+        iota(vals.begin(), vals.end(), 0);
+        for (int j = n-1; j >= 0; --j) {
+            vector<int> freq(10);
+            for (int i = 0; i < m; ++i)
+                ++freq[grid[i][j]];
+            sort(vals.begin(), vals.end(), [&](auto& lhs, auto& rhs) { return dp[lhs][j+1] < dp[rhs][j+1]; });
+            for (int x = 0; x < 10; ++x) {
+                dp[x][j] = m - freq[x];
+                if (x != vals[0]) dp[x][j] += dp[vals[0]][j+1];
+                else dp[x][j] += dp[vals[1]][j+1];
+            }
+        }
+        return (*min_element(dp.begin(), dp.end(), [&](auto& lhs, auto& rhs) { return lhs[0] < rhs[0]; }))[0];
+    }
+
+
+    /*3123. Find Edges in Shortest Paths (Hard)
+    You are given an undirected weighted graph of n nodes numbered from 0 to
+    n - 1. The graph consists of m edges represented by a 2D array edges, where
+    edges[i] = [ai, bi, wi] indicates that there is an edge between nodes ai and
+    bi with weight wi. Consider all the shortest paths from node 0 to node n - 1
+    in the graph. You need to find a boolean array answer where answer[i] is
+    true if the edge edges[i] is part of at least one shortest path. Otherwise,
+    answer[i] is false. Return the array answer. Note that the graph may not be
+    connected.
+
+    Example 1:
+    Input: n = 6, edges = [[0,1,4],[0,2,1],[1,3,2],[1,4,3],[1,5,1],[2,3,1],[3,5,3],[4,5,2]]
+    Output: [true,true,true,false,true,true,true,false]
+    Explanation: The following are all the shortest paths between nodes 0 and 5:
+                 - The path 0 -> 1 -> 5: The sum of weights is 4 + 1 = 5.
+                 - The path 0 -> 2 -> 3 -> 5: The sum of weights is
+                   1 + 1 + 3 = 5.
+                 - The path 0 -> 2 -> 3 -> 1 -> 5: The sum of weights is
+                   1 + 1 + 2 + 1 = 5.
+
+    Example 2:
+    Input: n = 4, edges = [[2,0,1],[0,1,1],[0,3,4],[3,2,2]]
+    Output: [true,false,false,true]
+    Explanation: There is one shortest path between nodes 0 and 3, which is the
+                 path 0 -> 2 -> 3 with the sum of weights 1 + 2 = 3.
+
+    Constraints:
+    * 2 <= n <= 5 * 10^4
+    * m == edges.length
+    * 1 <= m <= min(5 * 10^4, n * (n - 1) / 2)
+    * 0 <= ai, bi < n
+    * ai != bi
+    * 1 <= wi <= 10^5
+    * There are no repeated edges.*/
+
+    vector<bool> findAnswer(int n, vector<vector<int>>& edges) {
+        vector<pair<int, int>> graph[n];
+        for (auto& e : edges) {
+            int u = e[0], v = e[1], w = e[2];
+            graph[u].emplace_back(v, w);
+            graph[v].emplace_back(u, w);
+        }
+
+        auto fn = [&](int source) {
+            vector<int> dist(n, -1);
+            dist[source] = 0;
+            priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+            pq.emplace(0, source);
+            while (pq.size()) {
+                auto [x, u] = pq.top(); pq.pop();
+                if (dist[u] == x) {
+                    for (auto& [v, w] : graph[u]) {
+                        if (dist[v] == -1 || x+w < dist[v]) {
+                            dist[v] = x+w;
+                            pq.emplace(x+w, v);
+                        }
+                    }
+                }
+            }
+            return dist;
+        };
+
+        vector<int> dist0 = fn(0), dist1 = fn(n-1);
+        if (dist0[n-1] == -1) return vector<bool>(edges.size(), false);
+        vector<bool> ans;
+        for (auto& e : edges) {
+            int u = e[0], v = e[1], w = e[2];
+            if (dist0[u] != -1 && dist1[v] != -1 && dist0[u]+w+dist1[v] == dist0[n-1] || dist1[u] != -1 && dist0[v] != -1 && dist1[u]+w+dist0[v] == dist0[n-1])
+                ans.push_back(true);
+            else ans.push_back(false);
+        }
+        return ans;
+    }
 }
 
 
