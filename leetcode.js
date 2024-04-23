@@ -1505,7 +1505,7 @@ var findFarmland = function(land) {
                     land[ii][j] = -jj;
                 ans.push([i, j, ii-1, jj-1]);
             }
-            if (land[i][j] < 0) j = -land[i][j]-1;
+            if (land[i][j] < 0) j = -land[i][j];
         }
     return ans;
 };

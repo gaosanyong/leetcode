@@ -6168,7 +6168,7 @@ class Solution {
                         land[ii][j] = -jj;
                     ans.add(new int[]{i, j, ii-1, jj-1});
                 }
-                if (land[i][j] < 0) j = -land[i][j]-1;
+                if (land[i][j] < 0) j = -land[i][j];
             }
         return ans.toArray(new int[ans.size()][]);
     }
