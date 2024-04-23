@@ -9053,32 +9053,19 @@ class Solution:
     * The given input is guaranteed to be a tree and there will be no repeated edges."""
 
     def findMinHeightTrees(self, n: int, edges: List[List[int]]) -> List[int]:
-        graph = [[] for _ in range(n)]
+        graph = [set() for _ in range(n)]
         for u, v in edges:
-            graph[u].append(v)
-            graph[v].append(u)
-
-        def fn(x):
-            """Return most distant node and trace."""
-            queue = deque([x])
-            trace = [-1] * n
-            trace[x] = -2
-            while queue:
+            graph[u].add(v)
+            graph[v].add(u)
+        queue = deque([u for u in range(n) if len(graph[u]) <= 1])
+        while n > 2:
+            n -= len(queue)
+            for _ in range(len(queue)):
                 u = queue.popleft()
-                for v in graph[u]:
-                    if trace[v] == -1:
-                        queue.append(v)
-                        trace[v] = u
-            return u, trace
-
-        x, _ = fn(0)
-        x, trace = fn(x)
-        vals = []
-        while x >= 0:
-            vals.append(x)
-            x = trace[x]
-        k = len(vals)
-        return vals[(k-1)//2 : k//2+1]
+                v = graph[u].pop()
+                graph[v].remove(u)
+                if len(graph[v]) == 1: queue.append(v)
+        return queue
 
 
     """311. Sparse Matrix Multiplication (Medium)

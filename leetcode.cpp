@@ -7571,42 +7571,32 @@ public:
     * 0 <= ai, bi < n
     * ai != bi
     * All the pairs (ai, bi) are distinct.
-    * The given input is guaranteed to be a tree and there will be no repeated edges.*/
+    * The given input is guaranteed to be a tree and there will be no repeated
+      edges.*/
 
     vector<int> findMinHeightTrees(int n, vector<vector<int>>& edges) {
-        vector<vector<int>> graph(n);
-        for (auto& edge : edges) {
-            graph[edge[0]].push_back(edge[1]);
-            graph[edge[1]].push_back(edge[0]);
+        unordered_set<int> graph[n];
+        for (auto& e : edges) {
+            int u = e[0], v = e[1];
+            graph[u].insert(v);
+            graph[v].insert(u);
         }
-
-        auto fn = [&](int x) {
-            queue<int> q; q.push(x);
-            vector<int> trace(n, -1);
-            trace[x] = -2;
-            while (q.size()) {
-                x = q.front(); q.pop();
-                for (auto& xx : graph[x])
-                    if (trace[xx] == -1) {
-                        q.push(xx);
-                        trace[xx] = x;
-                    }
+        queue<int> q;
+        for (int u = 0; u < n; ++u)
+            if (graph[u].size() <= 1) q.push(u);
+        while (n > 2) {
+            n -= q.size();
+            for (int sz = q.size(); sz; --sz) {
+                int u = q.front(); q.pop();
+                int v = *graph[u].begin();
+                graph[v].erase(u);
+                if (graph[v].size() == 1) q.push(v);
             }
-            return make_pair(x, trace);
-        };
-
-        auto [x, trace] = fn(0);
-        tie(x, trace) = fn(x);
-
-        vector<int> vals;
-        while (x >= 0) {
-            vals.push_back(x);
-            x = trace[x];
         }
-
-        int k = vals.size();
-        auto it = vals.cbegin();
-        return vector<int>(it+(k-1)/2, it+k/2+1);
+        vector<int> ans;
+        for (; q.size(); q.pop())
+            ans.push_back(q.front());
+        return ans;
     }
 
 
