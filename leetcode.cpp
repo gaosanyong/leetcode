@@ -25732,9 +25732,9 @@ public:
       answer <= 2^31 - 1.*/
 
     int tribonacci(int n) {
-        long dp[3] = {0, 1, 1};
-        for (int i = 0; i < n; ++i)
-            dp[i%3] = dp[0] + dp[1] + dp[2];
+        vector<int> dp{0, 1, 1};
+        for (int i = 3; i <= n; ++i)
+            dp[i%3] = accumulate(dp.begin(), dp.end(), 0);
         return dp[n%3];
     }
 

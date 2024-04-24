@@ -29397,10 +29397,10 @@ class UnionFind:
       answer <= 2^31 - 1."""
 
     def tribonacci(self, n: int) -> int:
-        t0, t1, t2 = 0, 1, 1
-        for i in range(n):
-            t0, t1, t2 = t1, t2, t0+t1+t2
-        return t0
+        dp = [0, 1, 1]
+        for i in range(3, n+1):
+            dp[i%3] = sum(dp)
+        return dp[n%3]
 
 
     """1138. Alphabet Board Path (Medium)
