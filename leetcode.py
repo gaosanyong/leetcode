@@ -68290,8 +68290,8 @@ class Trie:
     def longestIdealString(self, s: str, k: int) -> int:
         dp = [0]*26
         for ch in s:
-            i = ord(ch)-97
-            dp[i] = 1 + max(dp[max(0, i-k) : i+k+1], default=0)
+            x = ord(ch)-97
+            dp[x] = 1 + max(dp[max(0, x-k) : x+k+1])
         return max(dp)
 
 

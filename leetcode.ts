@@ -1623,6 +1623,48 @@ function rearrangeArray(nums: number[]): number[] {
 };
 
 
+/*2370. Longest Ideal Subsequence (Medium)
+You are given a string s consisting of lowercase letters and an integer k.
+We call a string t ideal if the following conditions are satisfied:
+* t is a subsequence of the string s.
+* The absolute difference in the alphabet order of every two adjacent
+  letters in t is less than or equal to k.
+Return the length of the longest ideal string. A subsequence is a string
+that can be derived from another string by deleting some or no characters
+without changing the order of the remaining characters. Note that the
+alphabet order is not cyclic. For example, the absolute difference in the
+alphabet order of 'a' and 'z' is 25, not 1.
+
+Example 1:
+Input: s = "acfgbd", k = 2
+Output: 4
+Explanation: The longest ideal string is "acbd". The length of this string
+             is 4, so 4 is returned. Note that "acfgbd" is not ideal because
+             'c' and 'f' have a difference of 3 in alphabet order.
+
+Example 2:
+Input: s = "abcd", k = 3
+Output: 4
+Explanation: The longest ideal string is "abcd". The length of this string
+             is 4, so 4 is returned.
+
+Constraints:
+* 1 <= s.length <= 10^5
+* 0 <= k <= 25
+* s consists of lowercase English letters.*/
+
+function longestIdealString(s: string, k: number): number {
+    const dp = Array(26).fill(0);
+    for (const ch of s) {
+        let most = 0, x = ch.charCodeAt(0) - 97;
+        for (let i = Math.max(0, x-k); i < 26 && i <= x+k; ++i)
+            most = Math.max(most, dp[i]);
+        dp[x] = 1 + most;
+    }
+    return Math.max(...dp);
+};
+
+
 /*2485. Find the Pivot Integer (Easy)
 Given a positive integer n, find the pivot integer x such that:
 * The sum of all elements between 1 and x inclusively equals the sum of all
