@@ -88190,38 +88190,24 @@ class SegTreeLazy:
     * 1 <= points[i][0], points[i][1] <= 10^8"""
 
     def minimumDistance(self, points: List[List[int]]) -> int:
-        diff = [[inf, -1], [inf, -1], [-inf, -1], [-inf, -1]]
-        summ = [[inf, -1], [inf, -1], [-inf, -1], [-inf, -1]]
+        diff = []
+        summ = []
         for i, (x, y) in enumerate(points):
-            if x-y <= diff[0][0]:
-                diff[1] = diff[0]
-                diff[0] = [x-y, i]
-            elif x-y < diff[1][0]: diff[1] = [x-y, i]
-            if x-y >= diff[3][0]:
-                diff[2] = diff[3]
-                diff[3] = [x-y, i]
-            elif x-y > diff[2][0]: diff[2] = [x-y, i]
-            if x+y <= summ[0][0]:
-                summ[1] = summ[0]
-                summ[0] = [x+y, i]
-            elif x+y < summ[1][0]: summ[1] = [x+y, i]
-            if x+y >= summ[3][0]:
-                summ[2] = summ[3]
-                summ[3] = [x+y, i]
-            elif x+y > summ[2][0]: summ[2] = [x+y, i]
-        cand = diff[0][1], diff[-1][1]
-        if diff[-1][0] - diff[0][0] < summ[-1][0] - summ[0][0]:
-            cand = summ[0][1], summ[-1][1]
-        print(cand, diff, summ)
+            diff.append([x-y, i])
+            summ.append([x+y, i])
+        d0, d1 = nsmallest(2, diff); d3, d2 = nlargest(2, diff)
+        s0, s1 = nsmallest(2, summ); s3, s2 = nlargest(2, summ)
+        cand = d0[1], d3[1]
+        if d3[0] - d0[0] < s3[0] - s0[0]: cand = s0[1], s3[1]
         ans = inf
         for x in cand:
             val = 0
-            if diff[0][1] == x: val = max(val, diff[-1][0] - diff[1][0])
-            elif diff[-1][1] == x: val = max(val, diff[-2][0] - diff[0][0])
-            else: val = max(val, diff[-1][0] - diff[0][0])
-            if summ[0][1] == x: val = max(val, summ[-1][0] - summ[1][0])
-            elif summ[-1][1] == x: val = max(val, summ[-2][0] - summ[0][0])
-            else: val = max(val, summ[-1][0] - summ[0][0])
+            if s0[1] == x: val = max(val, s3[0] - s1[0])
+            elif s3[1] == x: val = max(val, s2[0] - s0[0])
+            else: val = max(val, s3[0] - s0[0])
+            if d0[1] == x: val = max(val, d3[0] - d1[0])
+            elif d3[1] == x: val = max(val, d2[0] - d0[0])
+            else: val = max(val, d3[0] - d0[0])
             ans = min(ans, val)
         return ans
 
