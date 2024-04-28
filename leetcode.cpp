@@ -18715,37 +18715,34 @@ public:
     Note: 1 <= n <= 10000*/
 
     vector<int> sumOfDistancesInTree(int n, vector<vector<int>>& edges) {
-        vector<vector<int>> graph(n);
-        for (auto& edge : edges) {
-            graph[edge[0]].push_back(edge[1]);
-            graph[edge[1]].push_back(edge[0]);
+        vector<int> graph[n];
+        for (auto& e : edges) {
+            int u = e[0], v = e[1];
+            graph[u].push_back(v);
+            graph[v].push_back(u);
         }
 
-        vector<int> size(n);
-
-        function<int(int, int)> fn = [&](int x, int p) {
-            int sm = 0;
-            size[x] = 1;
-            for (auto& xx : graph[x])
-                if (xx != p) {
-                    int ss = fn(xx, x);
-                    size[x] += size[xx];
-                    sm += ss + size[xx];
+        function<pair<int, int>(int, int)> fn = [&](int u, int p) {
+            int cnt = 0, val = 0;
+            for (auto& v : graph[u])
+                if (v != p) {
+                    auto [cc, vv] = fn(v, u);
+                    cnt += cc;
+                    val += cc + vv;
                 }
-            return sm;
+            size[u] = ++cnt;
+            return make_pair(cnt, val);
         };
 
-        vector<int> ans(n);
-        ans[0] = fn(0, -1);
-
-        stack<int> stk;
-        stk.push(0);
+        vector<int> ans(n), size(n);
+        ans[0] = fn(0, -1).second;
+        stack<int> stk; stk.push(0);
         while (stk.size()) {
-            int x = stk.top(); stk.pop();
-            for (auto& xx : graph[x])
-                if (!ans[xx]) {
-                    ans[xx] = ans[x] + n - 2*size[xx];
-                    stk.push(xx);
+            auto u = stk.top(); stk.pop();
+            for (auto& v : graph[u])
+                if (ans[v] == 0) {
+                    ans[v] = ans[u] + n - 2*size[v];
+                    stk.push(v);
                 }
         }
         return ans;
