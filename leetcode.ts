@@ -7966,3 +7966,198 @@ function findAnswer(n: number, edges: number[][]): boolean[] {
         ans.push(dist0[u]+w+dist1[v] == dist0[n-1] || dist1[u]+w+dist0[v] == dist0[n-1]);
     return ans;
 };
+
+
+/*3127. Make a Square with the Same Color (Easy)
+You are given a 2D matrix grid of size 3 x 3 consisting only of characters
+'B' and 'W'. Character 'W' represents the white color, and character 'B'
+represents the black color. Your task is to change the color of at most one
+cell so that the matrix has a 2 x 2 square where all cells are of the same
+color. Return true if it is possible to create a 2 x 2 square of the same
+color, otherwise, return false.
+
+Example 1:
+Input: grid = [["B","W","B"],["B","W","W"],["B","W","B"]]
+Output: true
+Explanation: It can be done by changing the color of the grid[0][2].
+
+Example 2:
+Input: grid = [["B","W","B"],["W","B","W"],["B","W","B"]]
+Output: false
+Explanation: It cannot be done by changing at most one cell.
+
+Example 3:
+Input: grid = [["B","W","B"],["B","W","W"],["B","W","W"]]
+Output: true
+Explanation: The grid already contains a 2 x 2 square of the same color.
+
+Constraints:
+* grid.length == 3
+* grid[i].length == 3
+* grid[i][j] is either 'W' or 'B'.*/
+
+function canMakeSquare(grid: string[][]): boolean {
+    const m = grid.length, n = grid[0].length;
+    for (let i = 0; i < m-1; ++i)
+        for (let j = 0; j < n-1; ++j) {
+            const cnt = grid.slice(i, i+2).map(r => r.slice(j, j+2).filter(x => x == 'B').length).reduce((x, y) => x+y, 0);
+            if (cnt != 2) return true;
+        }
+    return false;
+};
+
+
+/*3128. Right Triangles (Medium)
+You are given a 2D boolean matrix grid. Return an integer that is the number
+of right triangles that can be made with the 3 elements of grid such that
+all of them have a value of 1. Note: A collection of 3 elements of grid is a
+right triangle if one of its elements is in the same row with another
+element and in the same column with the third element. The 3 elements do not
+have to be next to each other.
+
+Example 1: 0   1   0
+           0   1   1
+           0   1   0
+           0   1   0
+           0   1   1
+           0   1   0
+Input: grid = [[0,1,0],[0,1,1],[0,1,0]]
+Output: 2
+Explanation: There are two right triangles.
+
+Example 2: 1   0   0   0
+           0   1   0   1
+           1   0   0   0
+Input: grid = [[1,0,0,0],[0,1,0,1],[1,0,0,0]]
+Output: 0
+Explanation: There are no right triangles.
+
+Example 3: 1   0   1
+           1   0   0
+           1   0   0
+           1   0   1
+           1   0   0
+           1   0   0
+Input: grid = [[1,0,1],[1,0,0],[1,0,0]]
+Output: 2
+Explanation: There are two right triangles.
+
+Constraints:
+* 1 <= grid.length <= 1000
+* 1 <= grid[i].length <= 1000
+* 0 <= grid[i][j] <= 1*/
+
+function numberOfRightTriangles(grid: number[][]): number {
+    const m = grid.length, n = grid[0].length;
+    const rows = Array(m).fill(0), cols = Array(n).fill(0);
+    for (let i = 0; i < m; ++i)
+        for (let j = 0; j < n; ++j)
+            if (grid[i][j]) {
+                ++rows[i];
+                ++cols[j];
+            }
+    let ans = 0;
+    for (let i = 0; i < m; ++i)
+        for (let j = 0; j < n; ++j)
+            if (grid[i][j])
+                ans += (rows[i]-1)*(cols[j]-1);
+    return ans;
+};
+
+
+/*3129. Find All Possible Stable Binary Arrays I (Medium)
+You are given 3 positive integers zero, one, and limit. A binary array arr
+is called stable if:
+* The number of occurrences of 0 in arr is exactly zero.
+* The number of occurrences of 1 in arr is exactly one.
+* Each subarray of arr with a size greater than limit must contain both 0
+  and 1.
+Return the total number of stable binary arrays. Since the answer may be
+very large, return it modulo 10^9 + 7.
+
+Example 1:
+Input: zero = 1, one = 1, limit = 2
+Output: 2
+Explanation: The two possible stable binary arrays are [1,0] and [0,1], as
+             both arrays have a single 0 and a single 1, and no subarray has
+             a length greater than 2.
+
+Example 2:
+Input: zero = 1, one = 2, limit = 1
+Output: 1
+Explanation: The only possible stable binary array is [1,0,1]. Note that the
+             binary arrays [1,1,0] and [0,1,1] have subarrays of length 2
+             with identical elements, hence, they are not stable.
+
+Example 3:
+Input: zero = 3, one = 3, limit = 2
+Output: 14
+Explanation: All the possible stable binary arrays are [0,0,1,0,1,1],
+             [0,0,1,1,0,1], [0,1,0,0,1,1], [0,1,0,1,0,1], [0,1,0,1,1,0],
+             [0,1,1,0,0,1], [0,1,1,0,1,0], [1,0,0,1,0,1], [1,0,0,1,1,0],
+             [1,0,1,0,0,1], [1,0,1,0,1,0], [1,0,1,1,0,0], [1,1,0,0,1,0], and
+             [1,1,0,1,0,0].
+
+Constraints: 1 <= zero, one, limit <= 200*/
+
+function numberOfStableArrays(zero: number, one: number, limit: number): number {
+    const mod = 1_000_000_007;
+    const dp = Array(zero+1).fill(0).map(() => Array(one+1).fill(0).map(() => Array(2).fill(0)));
+    for (let i = 1; i <= zero && i <= limit; ++i) dp[i][0][0] = 1;
+    for (let j = 1; j <= one && j <= limit; ++j) dp[0][j][1] = 1;
+    for (let i = 1; i <= zero; ++i)
+        for (let j = 1; j <= one; ++j) {
+            dp[i][j][0] = (dp[i-1][j][1] + dp[i-1][j][0]) % mod;
+            if (i-1-limit >= 0) dp[i][j][0] = ((dp[i][j][0] - dp[i-1-limit][j][1]) % mod + mod) % mod;
+            dp[i][j][1] = (dp[i][j-1][0] + dp[i][j-1][1]) % mod;
+            if (j-1-limit >= 0) dp[i][j][1] = ((dp[i][j][1] - dp[i][j-1-limit][0]) % mod + mod) % mod;
+        }
+    return (dp[zero][one][0] + dp[zero][one][1]) % mod;
+};
+
+
+/*3130. Find All Possible Stable Binary Arrays II (Hard)
+You are given 3 positive integers zero, one, and limit. A binary array arr
+is called stable if:
+* The number of occurrences of 0 in arr is exactly zero.
+* The number of occurrences of 1 in arr is exactly one.
+* Each subarray of arr with a size greater than limit must contain both 0
+  and 1.
+Return the total number of stable binary arrays. Since the answer may be
+very large, return it modulo 10^9 + 7.
+
+Example 1:
+Input: zero = 1, one = 1, limit = 2
+Output: 2
+Explanation: The two possible stable binary arrays are [1,0] and [0,1].
+
+Example 2:
+Input: zero = 1, one = 2, limit = 1
+Output: 1
+Explanation: The only possible stable binary array is [1,0,1].
+
+Example 3:
+Input: zero = 3, one = 3, limit = 2
+Output: 14
+Explanation: All the possible stable binary arrays are [0,0,1,0,1,1],
+             [0,0,1,1,0,1], [0,1,0,0,1,1], [0,1,0,1,0,1], [0,1,0,1,1,0],
+             [0,1,1,0,0,1], [0,1,1,0,1,0], [1,0,0,1,0,1], [1,0,0,1,1,0],
+             [1,0,1,0,0,1], [1,0,1,0,1,0], [1,0,1,1,0,0], [1,1,0,0,1,0], and
+             [1,1,0,1,0,0].
+
+Constraints: 1 <= zero, one, limit <= 1000*/
+
+function numberOfStableArrays(zero: number, one: number, limit: number): number {
+    const mod = 1_000_000_007;
+    const dp = Array(zero+1).fill(0).map(() => Array(one+1).fill(0).map(() => Array(2).fill(0)));
+    for (let i = 1; i <= zero && i <= limit; ++i) dp[i][0][0] = 1;
+    for (let j = 1; j <= one && j <= limit; ++j) dp[0][j][1] = 1;
+    for (let i = 1; i <= zero; ++i)
+        for (let j = 1; j <= one; ++j) {
+            dp[i][j][0] = (dp[i-1][j][1] + dp[i-1][j][0]) % mod;
+            if (i-1-limit >= 0) dp[i][j][0] = ((dp[i][j][0] - dp[i-1-limit][j][1]) % mod + mod) % mod;
+            dp[i][j][1] = (dp[i][j-1][0] + dp[i][j-1][1]) % mod;
+            if (j-1-limit >= 0) dp[i][j][1] = ((dp[i][j][1] - dp[i][j-1-limit][0]) % mod + mod) % mod;
+        }
+    return (dp[zero][one][0] + dp[zero][one][1]) % mod;
+};

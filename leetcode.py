@@ -88997,6 +88997,193 @@ class SegTreeLazy:
         return [dist0[n-1] < inf and (dist0[u] + w + dist1[v] == dist0[n-1] or dist0[v] + w + dist1[u] == dist0[n-1]) for u, v, w in edges]
 
 
+    """3127. Make a Square with the Same Color (Easy)
+    You are given a 2D matrix grid of size 3 x 3 consisting only of characters
+    'B' and 'W'. Character 'W' represents the white color, and character 'B'
+    represents the black color. Your task is to change the color of at most one
+    cell so that the matrix has a 2 x 2 square where all cells are of the same
+    color. Return true if it is possible to create a 2 x 2 square of the same
+    color, otherwise, return false.
+
+    Example 1:
+    Input: grid = [["B","W","B"],["B","W","W"],["B","W","B"]]
+    Output: true
+    Explanation: It can be done by changing the color of the grid[0][2].
+
+    Example 2:
+    Input: grid = [["B","W","B"],["W","B","W"],["B","W","B"]]
+    Output: false
+    Explanation: It cannot be done by changing at most one cell.
+
+    Example 3:
+    Input: grid = [["B","W","B"],["B","W","W"],["B","W","W"]]
+    Output: true
+    Explanation: The grid already contains a 2 x 2 square of the same color.
+
+    Constraints:
+    * grid.length == 3
+    * grid[i].length == 3
+    * grid[i][j] is either 'W' or 'B'."""
+
+    def canMakeSquare(self, grid: List[List[str]]) -> bool:
+        m, n = len(grid), len(grid[0])
+        for i in range(m-1):
+            for j in range(n-1):
+                if sum(row[j:j+2].count('B') for row in grid[i:i+2]) != 2: return True
+        return False
+
+
+    """3128. Right Triangles (Medium)
+    You are given a 2D boolean matrix grid. Return an integer that is the number
+    of right triangles that can be made with the 3 elements of grid such that
+    all of them have a value of 1. Note: A collection of 3 elements of grid is a
+    right triangle if one of its elements is in the same row with another
+    element and in the same column with the third element. The 3 elements do not
+    have to be next to each other.
+
+    Example 1: 0   1   0
+               0   1   1
+               0   1   0
+               0   1   0
+               0   1   1
+               0   1   0
+    Input: grid = [[0,1,0],[0,1,1],[0,1,0]]
+    Output: 2
+    Explanation: There are two right triangles.
+
+    Example 2: 1   0   0   0
+               0   1   0   1
+               1   0   0   0
+    Input: grid = [[1,0,0,0],[0,1,0,1],[1,0,0,0]]
+    Output: 0
+    Explanation: There are no right triangles.
+
+    Example 3: 1   0   1
+               1   0   0
+               1   0   0
+               1   0   1
+               1   0   0
+               1   0   0
+    Input: grid = [[1,0,1],[1,0,0],[1,0,0]]
+    Output: 2
+    Explanation: There are two right triangles.
+
+    Constraints:
+    * 1 <= grid.length <= 1000
+    * 1 <= grid[i].length <= 1000
+    * 0 <= grid[i][j] <= 1"""
+
+    def numberOfRightTriangles(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        rows = [0]*m
+        cols = [0]*n
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j]:
+                    rows[i] += 1
+                    cols[j] += 1
+        ans = 0
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j]:
+                    ans += (rows[i]-1)*(cols[j]-1)
+        return ans
+
+
+    """3129. Find All Possible Stable Binary Arrays I (Medium)
+    You are given 3 positive integers zero, one, and limit. A binary array arr
+    is called stable if:
+    * The number of occurrences of 0 in arr is exactly zero.
+    * The number of occurrences of 1 in arr is exactly one.
+    * Each subarray of arr with a size greater than limit must contain both 0
+      and 1.
+    Return the total number of stable binary arrays. Since the answer may be
+    very large, return it modulo 10^9 + 7.
+
+    Example 1:
+    Input: zero = 1, one = 1, limit = 2
+    Output: 2
+    Explanation: The two possible stable binary arrays are [1,0] and [0,1], as
+                 both arrays have a single 0 and a single 1, and no subarray has
+                 a length greater than 2.
+
+    Example 2:
+    Input: zero = 1, one = 2, limit = 1
+    Output: 1
+    Explanation: The only possible stable binary array is [1,0,1]. Note that the
+                 binary arrays [1,1,0] and [0,1,1] have subarrays of length 2
+                 with identical elements, hence, they are not stable.
+
+    Example 3:
+    Input: zero = 3, one = 3, limit = 2
+    Output: 14
+    Explanation: All the possible stable binary arrays are [0,0,1,0,1,1],
+                 [0,0,1,1,0,1], [0,1,0,0,1,1], [0,1,0,1,0,1], [0,1,0,1,1,0],
+                 [0,1,1,0,0,1], [0,1,1,0,1,0], [1,0,0,1,0,1], [1,0,0,1,1,0],
+                 [1,0,1,0,0,1], [1,0,1,0,1,0], [1,0,1,1,0,0], [1,1,0,0,1,0], and
+                 [1,1,0,1,0,0].
+
+    Constraints: 1 <= zero, one, limit <= 200"""
+
+    def numberOfStableArrays(self, zero: int, one: int, limit: int) -> int:
+        mod = 1_000_000_007
+        dp = [[[0]*2 for _ in range(one+1)] for _ in range(zero+1)]
+        for i in range(1, min(zero, limit)+1): dp[i][0][0] = 1
+        for j in range(1, min(one, limit)+1): dp[0][j][1] = 1
+        for i in range(1, zero+1):
+            for j in range(1, one+1):
+                dp[i][j][0] = (dp[i-1][j][1] + dp[i-1][j][0]) % mod
+                if i-1-limit >= 0: dp[i][j][0] = (dp[i][j][0] - dp[i-1-limit][j][1]) % mod
+                dp[i][j][1] = (dp[i][j-1][0] + dp[i][j-1][1]) % mod
+                if j-1-limit >= 0: dp[i][j][1] = (dp[i][j][1] - dp[i][j-1-limit][0]) % mod
+        return (dp[zero][one][0] + dp[zero][one][1]) % mod
+
+
+    """3130. Find All Possible Stable Binary Arrays II (Hard)
+    You are given 3 positive integers zero, one, and limit. A binary array arr
+    is called stable if:
+    * The number of occurrences of 0 in arr is exactly zero.
+    * The number of occurrences of 1 in arr is exactly one.
+    * Each subarray of arr with a size greater than limit must contain both 0
+      and 1.
+    Return the total number of stable binary arrays. Since the answer may be
+    very large, return it modulo 10^9 + 7.
+
+    Example 1:
+    Input: zero = 1, one = 1, limit = 2
+    Output: 2
+    Explanation: The two possible stable binary arrays are [1,0] and [0,1].
+
+    Example 2:
+    Input: zero = 1, one = 2, limit = 1
+    Output: 1
+    Explanation: The only possible stable binary array is [1,0,1].
+
+    Example 3:
+    Input: zero = 3, one = 3, limit = 2
+    Output: 14
+    Explanation: All the possible stable binary arrays are [0,0,1,0,1,1],
+                 [0,0,1,1,0,1], [0,1,0,0,1,1], [0,1,0,1,0,1], [0,1,0,1,1,0],
+                 [0,1,1,0,0,1], [0,1,1,0,1,0], [1,0,0,1,0,1], [1,0,0,1,1,0],
+                 [1,0,1,0,0,1], [1,0,1,0,1,0], [1,0,1,1,0,0], [1,1,0,0,1,0], and
+                 [1,1,0,1,0,0].
+
+    Constraints: 1 <= zero, one, limit <= 1000"""
+
+    def numberOfStableArrays(self, zero: int, one: int, limit: int) -> int:
+        mod = 1_000_000_007
+        dp = [[[0]*2 for _ in range(one+1)] for _ in range(zero+1)]
+        for i in range(1, min(zero, limit)+1): dp[i][0][0] = 1
+        for j in range(1, min(one, limit)+1): dp[0][j][1] = 1
+        for i in range(1, zero+1):
+            for j in range(1, one+1):
+                dp[i][j][0] = (dp[i-1][j][1] + dp[i-1][j][0]) % mod
+                if i-1-limit >= 0: dp[i][j][0] = (dp[i][j][0] - dp[i-1-limit][j][1]) % mod
+                dp[i][j][1] = (dp[i][j-1][0] + dp[i][j-1][1]) % mod
+                if j-1-limit >= 0: dp[i][j][1] = (dp[i][j][1] - dp[i][j-1-limit][0]) % mod
+        return (dp[zero][one][0] + dp[zero][one][1]) % mod
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.
