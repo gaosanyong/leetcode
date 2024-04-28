@@ -8225,3 +8225,178 @@ function numberOfStableArrays(zero: number, one: number, limit: number): number 
         }
     return (dp[zero][one][0] + dp[zero][one][1]) % mod;
 };
+
+
+/*3131. Find the Integer Added to Array I (Easy)
+You are given two arrays of equal length, nums1 and nums2. Each element in
+nums1 has been increased (or decreased in the case of negative) by an
+integer, represented by the variable x. As a result, nums1 becomes equal to
+nums2. Two arrays are considered equal when they contain the same integers
+with the same frequencies. Return the integer x.
+
+Example 1:
+Input: nums1 = [2,6,4], nums2 = [9,7,5]
+Output: 3
+Explanation: The integer added to each element of nums1 is 3.
+
+Example 2:
+Input: nums1 = [10], nums2 = [5]
+Output: -5
+Explanation: The integer added to each element of nums1 is -5.
+
+Example 3:
+Input: nums1 = [1,1,1,1], nums2 = [1,1,1,1]
+Output: 0
+Explanation: The integer added to each element of nums1 is 0.
+
+Constraints:
+* 1 <= nums1.length == nums2.length <= 100
+* 0 <= nums1[i], nums2[i] <= 1000
+* The test cases are generated in a way that there is an integer x such that
+  nums1 can become equal to nums2 by adding x to each element of nums1.*/
+
+function addedInteger(nums1: number[], nums2: number[]): number {
+    return Math.min(...nums2) - Math.min(...nums1);
+};
+
+
+/*3132. Find the Integer Added to Array II (Medium)
+You are given two integer arrays nums1 and nums2. From nums1 two elements
+have been removed, and all other elements have been increased (or decreased
+in the case of negative) by an integer, represented by the variable x. As a
+result, nums1 becomes equal to nums2. Two arrays are considered equal when
+they contain the same integers with the same frequencies. Return the minimum
+possible integer x that achieves this equivalence.
+
+Example 1:
+Input: nums1 = [4,20,16,12,8], nums2 = [14,18,10]
+Output: -2
+Explanation: After removing elements at indices [0,4] and adding -2, nums1
+             becomes [18,14,10].
+
+Example 2:
+Input: nums1 = [3,5,5,3], nums2 = [7,7]
+Output: 2
+Explanation: After removing elements at indices [0,3] and adding 2, nums1
+             becomes [7,7].
+
+Constraints:
+* 3 <= nums1.length <= 200
+* nums2.length == nums1.length - 2
+* 0 <= nums1[i], nums2[i] <= 1000
+* The test cases are generated in a way that there is an integer x such that
+  nums1 can become equal to nums2 by removing two elements and adding x to
+  each element of nums1.*/
+
+function minimumAddedInteger(nums1: number[], nums2: number[]): number {
+    nums1.sort((x, y) => x-y);
+    nums2.sort((x, y) => x-y);
+    let ans = Infinity;
+    for (let x = 0, n = nums1.length; x < n; ++x)
+        for (let y = x+1; y < n; ++y) {
+            let found = false, seen = null;
+            for (let i = 0, j = 0; i < n; ++i) {
+                if (i != x && i != y) {
+                    const diff = nums2[j] - nums1[i];
+                    if (seen == null) seen = diff;
+                    else if (seen != diff) {
+                        found = true;
+                        break;
+                    }
+                    ++j;
+                }
+            }
+            if (!found) ans = Math.min(ans, seen);
+        }
+    return ans;
+};
+
+
+/*3133. Minimum Array End (Medium)
+You are given two integers n and x. You have to construct an array of
+positive integers nums of size n where for every 0 <= i < n - 1, nums[i + 1]
+is greater than nums[i], and the result of the bitwise AND operation between
+all elements of nums is x. Return the minimum possible value of nums[n - 1].
+
+Example 1:
+Input: n = 3, x = 4
+Output: 6
+Explanation: nums can be [4,5,6] and its last element is 6.
+
+Example 2:
+Input: n = 2, x = 7
+Output: 15
+Explanation: nums can be [7,15] and its last element is 15.
+
+Constraints: 1 <= n, x <= 10^8*/
+
+function minEnd(n: number, x: number): number {
+    --n;
+    let ans = BigInt(x);
+    for (let i = 0n; n; ++i)
+        if ((ans & 1n<<i) == 0n) {
+            if (n & 1) ans ^= 1n << i;
+            n >>= 1;
+        }
+    return Number(ans);
+};
+
+
+/*3134. Find the Median of the Uniqueness Array (Hard)
+You are given an integer array nums. The uniqueness array of nums is the
+sorted array that contains the number of distinct elements of all the
+subarrays of nums. In other words, it is a sorted array consisting of
+distinct(nums[i..j]), for all 0 <= i <= j < nums.length. Here,
+distinct(nums[i..j]) denotes the number of distinct elements in the subarray
+that starts at index i and ends at index j. Return the median of the
+uniqueness array of nums. Note that the median of an array is defined as the
+middle element of the array when it is sorted in non-decreasing order. If
+there are two choices for a median, the smaller of the two values is taken.
+
+Example 1:
+Input: nums = [1,2,3]
+Output: 1
+Explanation: The uniqueness array of nums is [distinct(nums[0..0]),
+             distinct(nums[1..1]), distinct(nums[2..2]),
+             distinct(nums[0..1]), distinct(nums[1..2]),
+             distinct(nums[0..2])] which is equal to [1, 1, 1, 2, 2, 3]. The
+             uniqueness array has a median of 1. Therefore, the answer is 1.
+
+Example 2:
+Input: nums = [3,4,3,4,5]
+Output: 2
+Explanation: The uniqueness array of nums is
+             [1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3]. The uniqueness
+             array has a median of 2. Therefore, the answer is 2.
+
+Example 3:
+Input: nums = [4,3,5,4]
+Output: 2
+Explanation: The uniqueness array of nums is [1, 1, 1, 1, 2, 2, 2, 3, 3, 3].
+             The uniqueness array has a median of 2. Therefore, the answer
+             is 2.
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 1 <= nums[i] <= 10^5*/
+
+function medianOfUniquenessArray(nums: number[]): number {
+    const n = nums.length;
+    let lo = 0, hi = n;
+    while (lo < hi) {
+        const mid = lo + Math.floor((hi-lo)/2);
+        let val = 0, ii = 0;
+        const freq = new Map();
+        for (const [i, x] of nums.entries()) {
+            freq.set(x, 1+(freq.get(x)??0));
+            for (; freq.size > mid; ++ii) {
+                freq.set(nums[ii], freq.get(nums[ii])-1);
+                if (freq.get(nums[ii]) == 0) freq.delete(nums[ii]);
+            }
+            val += i-ii+1;
+        }
+        if (val < Math.floor((n*(n+1)/2+1)/2)) lo = mid+1;
+        else hi = mid;
+    }
+    return lo;
+};
