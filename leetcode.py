@@ -49785,6 +49785,60 @@ class Fenwick:
         return sum(max(0, nums[i-1] - nums[i]) for i in range(1, len(nums))) + nums[-1]
 
 
+    """1915. Number of Wonderful Substrings (Medium)
+    A wonderful string is a string where at most one letter appears an odd
+    number of times. For example, "ccjjc" and "abab" are wonderful, but "ab" is
+    not. Given a string word that consists of the first ten lowercase English
+    letters ('a' through 'j'), return the number of wonderful non-empty
+    substrings in word. If the same substring appears multiple times in word,
+    then count each occurrence separately. A substring is a contiguous sequence
+    of characters in a string.
+
+    Example 1:
+    Input: word = "aba"
+    Output: 4
+    Explanation: The four wonderful substrings are underlined below:
+                 - "aba" -> "a"
+                 - "aba" -> "b"
+                 - "aba" -> "a"
+                 - "aba" -> "aba"
+
+    Example 2:
+    Input: word = "aabb"
+    Output: 9
+    Explanation: The nine wonderful substrings are underlined below:
+                 - "aabb" -> "a"
+                 - "aabb" -> "aa"
+                 - "aabb" -> "aab"
+                 - "aabb" -> "aabb"
+                 - "aabb" -> "a"
+                 - "aabb" -> "abb"
+                 - "aabb" -> "b"
+                 - "aabb" -> "bb"
+                 - "aabb" -> "b"
+
+    Example 3:
+    Input: word = "he"
+    Output: 2
+    Explanation: The two wonderful substrings are underlined below:
+                 - "he" -> "h"
+                 - "he" -> "e"
+
+    Constraints:
+    * 1 <= word.length <= 10^5
+    * word consists of lowercase English letters from 'a' to 'j'."""
+
+    def wonderfulSubstrings(self, word: str) -> int:
+        ans = mask = 0
+        freq = defaultdict(int, {0: 1})
+        for ch in word:
+            mask ^= 1 << ord(ch)-97
+            ans += freq[mask]
+            for i in range(10): ans += freq[mask ^ 1 << i]
+            freq[mask] += 1
+        return ans
+
+
     """1916. Count Ways to Build Rooms in an Ant Colony (Hard)
     You are an ant tasked with adding n new rooms numbered 0 to n-1 to your
     colony. You are given the expansion plan as a 0-indexed integer array of
@@ -89345,7 +89399,7 @@ class SegTreeLazy:
                 val += i-ii+1
             if val < (n*(n+1)//2+1)//2: lo = mid + 1
             else: hi = mid
-        return lo
+        return lo19
 
 
 """146. LRU Cache (Medium)

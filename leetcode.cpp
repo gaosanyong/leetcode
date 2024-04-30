@@ -36052,14 +36052,13 @@ public:
 
     long long wonderfulSubstrings(string word) {
         long long ans = 0;
+        unordered_map<int, int> freq = {{0, 1}};
         int mask = 0;
-        unordered_map<int, long long> freq = {{0, 1}};
-
         for (auto& ch : word) {
-            mask ^= 1 << (ch - 'a');
+            mask ^= 1 << ch-'a';
             ans += freq[mask];
             for (int i = 0; i < 10; ++i)
-                ans += freq[mask ^ (1 << i)];
+                ans += freq[mask ^ 1<<i];
             ++freq[mask];
         }
         return ans;
