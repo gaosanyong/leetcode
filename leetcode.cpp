@@ -5130,14 +5130,16 @@ public:
       bit integer.*/
 
     int compareVersion(string version1, string version2) {
-        for (int i1 = 0, i2 = 0; i1 < version1.size() || i2 < version2.size(); ++i1, ++i2) {
-            int x1 = 0, x2 = 0;
-            while (i1 < version1.size() && version1[i1] != '.')
-                x1 = 10*x1 + (version1[i1++] - '0');
-            while (i2 < version2.size() && version2[i2] != '.')
-                x2 = 10*x2 + (version2[i2++] - '0');
-            if (x1 > x2) return 1;
-            else if (x1 < x2) return -1;
+        vector<string> vals1, vals2;
+        stringstream ss1(version1), ss2(version2);
+        string item;
+        while (getline(ss1, item, '.')) vals1.push_back(item);
+        while (getline(ss2, item, '.')) vals2.push_back(item);
+        for (int i = 0, n1 = vals1.size(), n2 = vals2.size(); i < n1 || i < n2; ++i) {
+            int v1 = i < n1 ? stoi(vals1[i]) : 0;
+            int v2 = i < n2 ? stoi(vals2[i]) : 0;
+            if (v1 < v2) return -1;
+            else if (v1 > v2) return 1;
         }
         return 0;
     }
