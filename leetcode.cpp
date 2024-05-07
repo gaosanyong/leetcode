@@ -53556,14 +53556,13 @@ public:
     * 1 <= Node.val <= 10^5*/
 
     ListNode* removeNodes(ListNode* head) {
-        ListNode *dummy = new ListNode(INT_MAX);
-        stack<ListNode*> stk; stk.push(dummy);
+        deque<ListNode*> stk;
         for (ListNode* node = head; node; node = node->next) {
-            while (stk.top()->val < node->val) stk.pop();
-            stk.top()->next = node;
-            stk.push(node);
+            while (stk.size() && stk.back()->val < node->val) stk.pop_back();
+            if (stk.size()) stk.back()->next = node;
+            stk.push_back(node);
         }
-        return dummy->next;
+        return stk.front();
     }
 
 

@@ -73413,15 +73413,14 @@ class SegTree:
     * 1 <= Node.val <= 10^5"""
 
     def removeNodes(self, head: Optional[ListNode]) -> Optional[ListNode]:
-        dummy = ListNode(inf)
-        stack = [dummy]
+        stack = []
         node = head
         while node:
-            while stack[-1].val < node.val: stack.pop()
-            stack[-1].next = node
+            while stack and stack[-1].val < node.val: stack.pop()
+            if stack: stack[-1].next = node
             stack.append(node)
             node = node.next
-        return dummy.next
+        return stack[0]
 
 
     """2488. Count Subarrays With Median K (Hard)

@@ -2027,6 +2027,39 @@ function pivotInteger(n: number): number {
 };
 
 
+/*2487. Remove Nodes From Linked List (Medium)
+You are given the head of a linked list. Remove every node which has a node
+with a strictly greater value anywhere to the right side of it. Return the
+head of the modified linked list.
+
+Example 1:
+Input: head = [5,2,13,3,8]
+Output: [13,8]
+Explanation: The nodes that should be removed are 5, 2 and 3.
+             - Node 13 is to the right of node 5.
+             - Node 13 is to the right of node 2.
+             - Node 8 is to the right of node 3.
+
+Example 2:
+Input: head = [1,1,1,1]
+Output: [1,1,1,1]
+Explanation: Every node has value 1, so no nodes are removed.
+
+Constraints:
+* The number of the nodes in the given list is in the range [1, 10^5].
+* 1 <= Node.val <= 10^5*/
+
+function removeNodes(head: ListNode | null): ListNode | null {
+    const stack = [];
+    for (let node = head; node; node = node.next) {
+        while (stack.length && stack[stack.length-1].val < node.val) stack.pop();
+        if (stack.length) stack[stack.length-1].next = node;
+        stack.push(node);
+    }
+    return stack[0];
+};
+
+
 /*2540. Minimum Common Value (Easy)
 Given two integer arrays nums1 and nums2, sorted in non-decreasing order,
 return the minimum integer common to both arrays. If there is no common

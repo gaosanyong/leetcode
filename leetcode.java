@@ -8599,14 +8599,13 @@ class Solution {
     * 1 <= Node.val <= 10^5*/
 
     public ListNode removeNodes(ListNode head) {
-        ListNode dummy = new ListNode(Integer.MAX_VALUE);
-        Stack<ListNode> stk = new Stack<ListNode>(); stk.push(dummy);
+        Deque<ListNode> stk = new ArrayDeque();
         for (ListNode node = head; node != null; node = node.next) {
-            while (stk.peek().val < node.val) stk.pop();
-            stk.peek().next = node;
-            stk.push(node);
+            while (!stk.isEmpty() && stk.peekLast().val < node.val) stk.pollLast();
+            if (!stk.isEmpty()) stk.peekLast().next = node;
+            stk.addLast(node);
         }
-        return dummy.next;
+        return stk.peekFirst();
     }
 
 
