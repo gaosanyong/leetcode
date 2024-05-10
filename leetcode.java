@@ -3780,14 +3780,14 @@ class Solution {
         );
         for (int i = 0; i < n-1; ++i)
             pq.add(new int[]{i, n-1});
-        int[] ans = new int[2];
+        int i = 0, j = 0;
         while (k-- > 0) {
             var elem = pq.poll();
-            int i = elem[0], j = elem[1];
+            i = elem[0];
+            j = elem[1];
             if (i < j-1) pq.add(new int[]{i, j-1});
-            ans = new int[]{arr[i], arr[j]};
         }
-        return ans;
+        return new int[]{arr[i], arr[j]};
     }
 
 
