@@ -22347,13 +22347,14 @@ class Solution:
     * Answers within 10-5 of the correct answer will be considered correct."""
 
     def mincostToHireWorkers(self, quality: List[int], wage: List[int], k: int) -> float:
-        ans, rsm = inf, 0
-        pq = [] # max-heap
+        ans = inf
+        prefix = 0
+        pq = []
         for q, w in sorted(zip(quality, wage), key=lambda x: x[1]/x[0]):
-            rsm += q
+            prefix += q
             heappush(pq, -q)
-            if len(pq) > k: rsm += heappop(pq)
-            if len(pq) == k: ans = min(ans, rsm * w/q)
+            if len(pq) > k: prefix += heappop(pq)
+            if len(pq) == k: ans = min(ans, prefix * w/q)
         return ans
 
 

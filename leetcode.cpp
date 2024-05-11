@@ -19539,19 +19539,21 @@ public:
     * Answers within 10-5 of the correct answer will be considered correct.*/
 
     double mincostToHireWorkers(vector<int>& quality, vector<int>& wage, int k) {
-        vector<pair<int, int>> data; // zipped quality & wage
-        for (int i = 0; i < size(quality); ++i)
-            data.emplace_back(quality[i], wage[i]);
-
-        sort(begin(data), end(data), [](auto& lhs, auto& rhs) { return (double) lhs.second/lhs.first < (double) rhs.second/rhs.first; });
-
-        double ans = DBL_MAX, rsm = 0; // range sum
-        priority_queue<int> pq; // max-heap
-        for (auto& [q, w] : data) {
-            rsm += q;
+        vector<pair<int, int>> vals;
+        for (int i = 0; i < quality.size(); ++i)
+            vals.emplace_back(quality[i], wage[i]);
+        sort(vals.begin(), vals.end(), [&](auto& x, auto& y) {
+            return x.second*y.first < y.second*x.first;
+        });
+        double ans = DBL_MAX, prefix = 0;
+        priority_queue<int> pq;
+        for (auto& [q, w] : vals) {
+            prefix += q;
             pq.push(q);
-            if (size(pq) > k) rsm -= pq.top(), pq.pop();
-            if (size(pq) == k) ans = min(ans, rsm * w/q);
+            if (pq.size() > k)
+                prefix -= pq.top(), pq.pop();
+            if (pq.size() == k)
+                ans = min(ans, prefix * w/q);
         }
         return ans;
     }
