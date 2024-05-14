@@ -31565,17 +31565,16 @@ class UnionFind:
         m, n = len(grid), len(grid[0])
 
         def fn(i, j):
-            """Collect maximum gold from (i, j) via backtracking."""
-            if grid[i][j] <= 0: return 0
-            grid[i][j] *= -1 # mark as visited
-            ans = 0
+            """Return max gold mine starting from (i, j)."""
+            v = grid[i][j]
+            ans = grid[i][j] = 0
             for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
-                if 0 <= ii < m and 0 <= jj < n:
-                    ans = max(ans, fn(ii, jj) - grid[i][j])
-            grid[i][j] *= -1 # backtracking
-            return ans
+                if 0 <= ii < m and 0 <= jj < n and grid[ii][jj]:
+                    ans = max(ans, fn(ii, jj))
+            grid[i][j] = v
+            return grid[i][j] + ans
 
-        return max(fn(i, j) for i in range(m) for j in range(n) if grid[i][j])
+        return max((fn(i, j) for i, j in product(range(m), range(n)) if grid[i][j]), default=0)
 
 
     """1220. Count Vowels Permutation (Hard)
