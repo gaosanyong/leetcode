@@ -1389,6 +1389,46 @@ var deckRevealedIncreasing = function(deck) {
 };
 
 
+/*979. Distribute Coins in Binary Tree (Medium)
+You are given the root of a binary tree with n nodes where each node in the
+tree has node.val coins. There are n coins in total throughout the whole
+tree. In one move, we may choose two adjacent nodes and move one coin from
+one node to another. A move may be from parent to child, or from child to
+parent. Return the minimum number of moves required to make every node have
+exactly one coin.
+
+Example 1:
+Input: root = [3,0,0]
+Output: 2
+Explanation: From the root of the tree, we move one coin to its left child,
+             and one coin to its right child.
+
+Example 2:
+Input: root = [0,3,0]
+Output: 3
+Explanation: From the left child of the root, we move two coins to the root
+             [taking two moves]. Then, we move one coin from the root of the
+             tree to the right child.
+
+Constraints:
+* The number of nodes in the tree is n.
+* 1 <= n <= 100
+* 0 <= Node.val <= n
+* The sum of all Node.val is n.*/
+
+var distributeCoins = function(root) {
+
+    function fn(node) {
+        if (!node) return [0, 0];
+        const [v0, m0] = fn(node.left);
+        const [v1, m1] = fn(node.right);
+        return [node.val+v0+v1-1, m0+m1+Math.abs(v0)+Math.abs(v1)];
+    }
+
+    return fn(root)[1];
+};
+
+
 /*988. Smallest String Starting From Leaf (Medium)
 You are given the root of a binary tree where each node has a value in the
 range [0, 25] representing the letters 'a' to 'z'. Return the
