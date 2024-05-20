@@ -47874,13 +47874,7 @@ class Fenwick:
     * 1 <= nums[i] <= 20"""
 
     def subsetXORSum(self, nums: List[int]) -> int:
-        ans = 0
-        for mask in range(1 << len(nums)):
-            val = 0
-            for i in range(len(nums)):
-                if mask & 1 << i: val ^= nums[i]
-            ans += val
-        return ans
+        return reduce(or_, nums) << len(nums)-1
 
 
     """1864. Minimum Number of Swaps to Make the Binary String Alternating (Medium)

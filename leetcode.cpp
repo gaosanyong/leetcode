@@ -33976,10 +33976,7 @@ public:
     * 1 <= nums[i] <= 20*/
 
     int subsetXORSum(vector<int>& nums) {
-        int ans = 0;
-        for (auto x : nums)
-            ans |= x;
-        return ans * pow(2, nums.size()-1);
+        return accumulate(nums.begin(), nums.end(), 0, bit_or<int>()) << nums.size()-1;
     }
 
 
