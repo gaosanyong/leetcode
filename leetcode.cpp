@@ -4124,6 +4124,46 @@ public:
     }
 
 
+    /*131. Palindrome Partitioning (Medium)
+    Given a string s, partition s such that every substring of the partition is
+    a palindrome. Return all possible palindrome partitioning of s.
+
+    Example 1:
+    Input: s = "aab"
+    Output: [["a","a","b"],["aa","b"]]
+
+    Example 2:
+    Input: s = "a"
+    Output: [["a"]]
+
+    Constraints:
+    * 1 <= s.length <= 16
+    * s contains only lowercase English letters.*/
+
+    vector<vector<string>> partition(string s) {
+        int n = s.size();
+        vector<int> part[n];
+        for (int i = 0; i < 2*n-1; ++i)
+            for (int lo = i/2, hi = (i+1)/2; 0 <= lo && hi < n && s[lo] == s[hi]; --lo, ++hi)
+                part[lo].push_back(hi+1);
+        vector<vector<string>> ans;
+
+        function<void(int, vector<string>&)> fn = [&](int i, vector<string>& seq) {
+            if (i == n) ans.push_back(seq);
+            else
+                for (auto& j : part[i]) {
+                    seq.push_back(s.substr(i, j-i));
+                    fn(j, seq);
+                    seq.pop_back();
+                }
+        };
+
+        vector<string> seq;
+        fn(0, seq);
+        return ans;
+    }
+
+
     /*133. Clone Graph (Medium)
     Given a reference of a node in a connected undirected graph. Return a deep
     copy (clone) of the graph. Each node in the graph contains a value (int)

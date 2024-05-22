@@ -4489,21 +4489,27 @@ class Solution:
     ]"""
 
     def partition(self, s: str) -> List[List[str]]:
-        #pre-processing
-        palin = dict()
-        for k in range(len(s)):
-            for i, j in (k, k), (k, k+1):
-                while 0 <= i and j < len(s) and s[i] == s[j]:
-                    palin.setdefault(i, []).append(j)
-                    i, j = i-1, j+1
+        n = len(s)
+        part = [[] for _ in s]
+        for i in range(2*n-1):
+            lo = i//2
+            hi = (i+1)//2
+            while 0 <= lo <= hi < n and s[lo] == s[hi]:
+                part[lo].append(hi+1)
+                lo -= 1
+                hi += 1
+        ans = []
 
-        @cache
-        def fn(i):
-            """Return palindrome partitioning of s[i:]"""
-            if i == len(s): return [[]]
-            return [[s[i:ii+1]] + y for ii in palin[i] for y in fn(ii+1)]
+        def fn(i, seq):
+            """Backtrack to find all palindrome partitions."""
+            if i == n: return ans.append(seq[:])
+            for j in part[i]:
+                seq.append(s[i:j])
+                fn(j, seq)
+                seq.pop()
 
-        return fn(0)
+        fn(0, [])
+        return ans
 
 
     """132. Palindrome Partitioning II (Hard)

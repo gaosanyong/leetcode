@@ -1260,6 +1260,51 @@ class Solution {
     }
 
 
+    /*131. Palindrome Partitioning (Medium)
+    Given a string s, partition s such that every substring of the partition is
+    a palindrome. Return all possible palindrome partitioning of s.
+
+    Example 1:
+    Input: s = "aab"
+    Output: [["a","a","b"],["aa","b"]]
+
+    Example 2:
+    Input: s = "a"
+    Output: [["a"]]
+
+    Constraints:
+    * 1 <= s.length <= 16
+    * s contains only lowercase English letters.*/
+
+    public List<List<String>> partition(String s) {
+        int n = s.length();
+        List<Integer>[] part = new List[n];
+        for (int i = 0; i < n; ++i)
+            part[i] = new ArrayList();
+        for (int i = 0; i < 2*n-1; ++i)
+            for (int lo = i/2, hi = (i+1)/2; 0 <= lo && hi < n && s.charAt(lo) == s.charAt(hi); --lo, ++hi)
+                part[lo].add(hi+1);
+        List<List<String>> ans = new ArrayList();
+
+        class Solve {
+            public void fn(int i, List<String> seq) {
+                if (i == n) ans.add(new ArrayList(seq));
+                else
+                    for (var j : part[i]) {
+                        seq.add(s.substring(i, j));
+                        fn(j, seq);
+                        seq.remove(seq.size()-1);
+                    }
+            }
+        }
+
+        List<String> seq = new ArrayList();
+        Solve sol = new Solve();
+        sol.fn(0, seq);
+        return ans;
+    }
+
+
     /*141. Linked List Cycle (Easy)
     Given head, the head of a linked list, determine if the linked list has a
     cycle in it. There is a cycle in a linked list if there is some node in the

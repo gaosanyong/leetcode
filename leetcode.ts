@@ -280,6 +280,46 @@ function sumNumbers(root: TreeNode | null): number {
 };
 
 
+/*131. Palindrome Partitioning (Medium)
+Given a string s, partition s such that every substring of the partition is
+a palindrome. Return all possible palindrome partitioning of s.
+
+Example 1:
+Input: s = "aab"
+Output: [["a","a","b"],["aa","b"]]
+
+Example 2:
+Input: s = "a"
+Output: [["a"]]
+
+Constraints:
+* 1 <= s.length <= 16
+* s contains only lowercase English letters.*/
+
+function partition(s: string): string[][] {
+    const n = s.length;
+    const part = Array(n).fill(null).map(() => []);
+    for (let i = 0; i < 2*n-1; ++i)
+        for (let lo = Math.floor(i/2), hi = Math.ceil(i/2); 0 <= lo && hi < n && s[lo] == s[hi]; --lo, ++hi)
+            part[lo].push(hi+1);
+    const ans = [];
+
+    function fn(i, seq) {
+        if (i == n) ans.push([...seq]);
+        else
+            for (const j of part[i]) {
+                seq.push(s.substring(i, j));
+                fn(j, seq);
+                seq.pop();
+            }
+    }
+
+    fn(0, []);
+    return ans;
+
+};
+
+
 /*141. Linked List Cycle (Easy)
 Given head, the head of a linked list, determine if the linked list has a
 cycle in it. There is a cycle in a linked list if there is some node in the
