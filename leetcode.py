@@ -31249,7 +31249,7 @@ class UnionFind:
         ans = ii = val = 0
         for i in range(len(s)):
             val += abs(ord(s[i]) - ord(t[i]))
-            while ii <= i and val > maxCost:
+            while val > maxCost:
                 val -= abs(ord(s[ii]) - ord(t[ii]))
                 ii += 1
             ans = max(ans, i - ii + 1)
