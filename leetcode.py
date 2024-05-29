@@ -34657,13 +34657,13 @@ class UnionFind:
     * s[0] == '1'"""
 
     def numSteps(self, s: str) -> int:
-        n = int(s, 2)
-        ans = 0
-        while n > 1:
-            ans += 1
-            if n&1: n += 1
-            else: n //= 2
-        return ans
+        ans = one = 0
+        for i in range(len(s)-1, 0, -1):
+            if s[i] == '1':
+                ans += 2 - one
+                one = 1
+            else: ans += 1 + one
+        return ans + one
 
 
     """1405. Longest Happy String (Medium)
