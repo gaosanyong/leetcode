@@ -1898,6 +1898,41 @@ var numSteps = function(s) {
 };
 
 
+/*1442. Count Triplets That Can Form Two Arrays of Equal XOR (Medium)
+Given an array of integers arr. We want to select three indices i, j and k
+where (0 <= i < j <= k < arr.length). Let's define a and b as follows:
+* a = arr[i] ^ arr[i + 1] ^ ... ^ arr[j - 1]
+* b = arr[j] ^ arr[j + 1] ^ ... ^ arr[k]
+Note that ^ denotes the bitwise-xor operation. Return the number of triplets
+(i, j and k) Where a == b.
+
+Example 1:
+Input: arr = [2,3,1,6,7]
+Output: 4
+Explanation: The triplets are (0,1,2), (0,2,2), (2,3,4) and (2,4,4)
+
+Example 2:
+Input: arr = [1,1,1,1,1]
+Output: 10
+
+Constraints:
+* 1 <= arr.length <= 300
+* 1 <= arr[i] <= 10^8*/
+
+var countTriplets = function(arr) {
+    let ans = 0, prefix = 0;
+    const mp = new Map();
+    mp.set(0, [0, 1]);
+    for (const [i, x] of arr.entries()) {
+        prefix ^= x;
+        [s, c] = mp.get(prefix) ?? [0, 0];
+        ans += c*i - s;
+        mp.set(prefix, [s+i+1, c+1]);
+    }
+    return ans;
+};
+
+
 /*1544. Make The String Great (Easy)
 Given a string s of lower and upper case English letters. A good string is a
 string which doesn't have two adjacent characters s[i] and s[i + 1] where:
