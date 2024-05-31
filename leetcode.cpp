@@ -6862,13 +6862,11 @@ public:
       once.*/
 
     vector<int> singleNumber(vector<int>& nums) {
-        unsigned val = 0;
-        for (auto& x : nums) val ^= x;
+        unsigned val = accumulate(nums.begin(), nums.end(), 0, bit_xor<int>());
         val &= -val;
-
         vector<int> ans(2);
         for (auto& x : nums)
-            if (val & x) ans[0] ^= x;
+            if (x&val) ans[0] ^= x;
             else ans[1] ^= x;
         return ans;
     }

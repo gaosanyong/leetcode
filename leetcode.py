@@ -7858,11 +7858,12 @@ class Solution:
     Could you implement it using only constant space complexity?"""
 
     def singleNumber(self, nums: List[int]) -> List[int]:
-        diff = reduce(xor, nums)
-        diff &= -diff
-        ans = [0]*2
+        val = reduce(xor, nums)
+        val &= -val
+        ans = [0, 0]
         for x in nums:
-            ans[bool(diff & x)] ^= x
+            if x&val: ans[0] ^= x
+            else: ans[1] ^= x
         return ans
 
 
