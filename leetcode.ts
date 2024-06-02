@@ -9798,3 +9798,188 @@ Constraints:
   at distance x when the query is asked.
 * The input is generated such that there is at least one query of type 2.*/
 
+
+
+/*3168. Minimum Number of Chairs in a Waiting Room (Easy)
+You are given a string s. Simulate events at each second i:
+* If s[i] == 'E', a person enters the waiting room and takes one of the
+  chairs in it.
+* If s[i] == 'L', a person leaves the waiting room, freeing up a chair.
+Return the minimum number of chairs needed so that a chair is available for
+every person who enters the waiting room given that it is initially empty.
+
+Example 1:
+Input: s = "EEEEEEE"
+Output: 7
+Explanation: After each second, a person enters the waiting room and no
+             person leaves it. Therefore, a minimum of 7 chairs is needed.
+
+Example 2:
+Input: s = "ELELEEL"
+Output: 2
+Explanation: Let's consider that there are 2 chairs in the waiting room. The
+             table below shows the state of the waiting room at each second.
+             Second  Event   People in the Waiting Room  Available Chairs
+             0   Enter   1   1
+             1   Leave   0   2
+             2   Enter   1   1
+             3   Leave   0   2
+             4   Enter   1   1
+             5   Enter   2   0
+             6   Leave   1   1
+
+Example 3:
+Input: s = "ELEELEELLL"
+Output: 3
+Explanation: Let's consider that there are 3 chairs in the waiting room. The
+             table below shows the state of the waiting room at each second.
+             Second  Event   People in the Waiting Room  Available Chairs
+             0   Enter   1   2
+             1   Leave   0   3
+             2   Enter   1   2
+             3   Enter   2   1
+             4   Leave   1   2
+             5   Enter   2   1
+             6   Enter   3   0
+             7   Leave   2   1
+             8   Leave   1   2
+             9   Leave   0   3
+
+Constraints:
+* 1 <= s.length <= 50
+* s consists only of the letters 'E' and 'L'.
+* s represents a valid sequence of entries and exits.*/
+
+function minimumChairs(s: string): number {
+    let ans = 0, prefix = 0;
+    for (const ch of s) {
+        if (ch == 'E') ++prefix;
+        else --prefix;
+        ans = Math.max(ans, prefix);
+    }
+    return ans;
+};
+
+
+/*3169. Count Days Without Meetings (Medium)
+You are given a positive integer days representing the total number of days
+an employee is available for work (starting from day 1). You are also given
+a 2D array meetings of size n where, meetings[i] = [start_i, end_i]
+represents the starting and ending days of meeting i (inclusive). Return the
+count of days when the employee is available for work but no meetings are
+scheduled. Note: The meetings may overlap.
+
+Example 1:
+Input: days = 10, meetings = [[5,7],[1,3],[9,10]]
+Output: 2
+Explanation: There is no meeting scheduled on the 4th and 8th days.
+
+Example 2:
+Input: days = 5, meetings = [[2,4],[1,3]]
+Output: 1
+Explanation: There is no meeting scheduled on the 5th day.
+
+Example 3:
+Input: days = 6, meetings = [[1,6]]
+Output: 0
+Explanation: Meetings are scheduled for all working days.
+
+Constraints:
+* 1 <= days <= 10^9
+* 1 <= meetings.length <= 10^5
+* meetings[i].length == 2
+* 1 <= meetings[i][0] <= meetings[i][1] <= days*/
+
+function countDays(days: number, meetings: number[][]): number {
+    let ans = 0, prev = 0;
+    meetings.sort((x, y) => x[0]-y[0]);
+    for (const [x, y] of meetings) {
+        ans += Math.max(0, Math.min(x, days)-prev-1);
+        prev = Math.max(prev, y);
+    }
+    return ans + Math.max(0, days-prev);
+};
+
+
+/*3170. Lexicographically Minimum String After Removing Stars (Medium)
+You are given a string s. It may contain any number of '*' characters. Your
+task is to remove all '*' characters. While there is a '*', do the following
+operation:
+* Delete the leftmost '*' and the smallest non-'*' character to its left. If
+  there are several smallest characters, you can delete any of them.
+Return the lexicographically smallest resulting string after removing all
+'*' characters.
+
+Example 1:
+Input: s = "aaba*"
+Output: "aab"
+Explanation: We should delete one of the 'a' characters with '*'. If we
+             choose s[3], s becomes the lexicographically smallest.
+
+Example 2:
+Input: s = "abc"
+Output: "abc"
+Explanation: There is no '*' in the string.
+
+Constraints:
+* 1 <= s.length <= 10^5
+* s consists only of lowercase English letters and '*'.
+* The input is generated such that it is possible to delete all '*'
+characters.*/
+
+function clearStars(s: string): string {
+    const chs = s.split('');
+    const pq = new PriorityQueue({ compare : (i, j) => s[i] != s[j] ? s[i] > s[j] : j-i});
+    for (let i = 0; i < chs.length; ++i)
+        if (chs[i] == '*') chs[pq.dequeue()] = '*';
+        else pq.enqueue(i);
+    return chs.join('').replaceAll('\*', '');
+};
+
+
+/*3171. Find Subarray With Bitwise AND Closest to K (Hard)
+You are given an array nums and an integer k. You need to find a subarray of
+nums such that the absolute difference between k and the bitwise AND of the
+subarray elements is as small as possible. In other words, select a subarray
+nums[l..r] such that |k - (nums[l] AND nums[l + 1] ... AND nums[r])| is
+minimum. Return the minimum possible value of the absolute difference. A
+subarray is a contiguous non-empty sequence of elements within an array.
+
+Example 1:
+Input: nums = [1,2,4,5], k = 3
+Output: 1
+Explanation: The subarray nums[2..3] has AND value 4, which gives the
+             minimum absolute difference |3 - 4| = 1.
+
+Example 2:
+Input: nums = [1,2,1,2], k = 2
+Output: 0
+Explanation: The subarray nums[1..1] has AND value 2, which gives the
+             minimum absolute difference |2 - 2| = 0.
+
+Example 3:
+Input: nums = [1], k = 10
+Output: 9
+Explanation: There is a single subarray with AND value 1, which gives the
+             minimum absolute difference |10 - 1| = 9.
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 1 <= nums[i] <= 10^9
+* 1 <= k <= 10^9*/
+
+function minimumDifference(nums: number[], k: number): number {
+    const freq = Array(30).fill(0);
+    let ans = Infinity, mask = (1<<30)-1;
+    for (let i = 0, ii = 0; i < nums.length; ++i) {
+        for (let j = 0; j < 30; ++j)
+            if ((nums[i] & 1<<j) == 0 && freq[j]++ == 0) mask ^= 1<<j;
+        ans = Math.min(ans, Math.abs(mask-k));
+        for (; ii < i && mask < k; ++ii) {
+            for (let j = 0; j < 30; ++j)
+                if ((nums[ii] & 1<<j) == 0 && --freq[j] == 0) mask ^= 1<<j;
+            ans = Math.min(ans, Math.abs(mask-k));
+        }
+    }
+    return ans;
+};
