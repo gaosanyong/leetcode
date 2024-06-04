@@ -11477,9 +11477,8 @@ class Solution:
     * s consists of lowercase and/or uppercase English letters only."""
 
     def longestPalindrome(self, s: str) -> int:
-        freq = Counter(s)
         ans = odd = 0
-        for v in freq.values():
+        for v in Counter(s).values():
             if v&1: odd = 1
             ans += v//2*2
         return ans + odd
