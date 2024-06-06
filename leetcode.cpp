@@ -19151,7 +19151,6 @@ public:
     bool isNStraightHand(vector<int>& hand, int groupSize) {
         map<int, int> freq;
         for (auto& x : hand) ++freq[x];
-
         queue<pair<int, int>> q;
         int need = 0, prev = -1;
         for (auto& [x, v] : freq) {
