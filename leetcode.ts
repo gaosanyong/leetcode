@@ -1609,6 +1609,41 @@ function smallestFromLeaf(root: TreeNode | null): string {
 };
 
 
+/*1002. Find Common Characters (Easy)
+Given a string array words, return an array of all characters that show up
+in all strings within the words (including duplicates). You may return the
+answer in any order.
+
+Example 1:
+Input: words = ["bella","label","roller"]
+Output: ["e","l","l"]
+
+Example 2:
+Input: words = ["cool","lock","cook"]
+Output: ["c","o"]
+
+Constraints:
+* 1 <= words.length <= 100
+* 1 <= words[i].length <= 100
+* words[i] consists of lowercase English letters.*/
+
+function commonChars(words: string[]): string[] {
+    const freq = Array(26).fill(Infinity);
+    for (const word of words) {
+        const temp = Array(26).fill(0);
+        for (const ch of word)
+            ++temp[ch.charCodeAt(0)-97];
+        for (let i = 0; i < 26; ++i)
+            freq[i] = Math.min(freq[i], temp[i]);
+    }
+    const ans = [];
+    for (let [i, x] of freq.entries())
+        while (x--)
+            ans.push(String.fromCharCode(97 + i));
+    return ans;
+};
+
+
 /*1137. N-th Tribonacci Number (Easy)
 The Tribonacci sequence Tn is defined as follows:
 T0 = 0, T1 = 1, T2 = 1, and Tn+3 = Tn + Tn+1 + Tn+2 for n >= 0.

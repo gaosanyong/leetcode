@@ -23751,7 +23751,6 @@ public:
 
     vector<string> commonChars(vector<string>& words) {
         vector<int> freq(26, INT_MAX);
-
         for (auto& word : words) {
             vector<int> temp(26, 0);
             for (auto& ch : word)
