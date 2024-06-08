@@ -13863,13 +13863,13 @@ class Solution:
     * You may assume the sum of all the numbers is in the range of a signed 32-bit integer."""
 
     def checkSubarraySum(self, nums: List[int], k: int) -> bool:
-        prefix = 0 # prefix modulo
-        seen = {0: -1}
-        for i, x in enumerate(nums):
-            prefix += x
-            if k: prefix %= k
-            if prefix in seen and i - seen[prefix] >= 2: return True
-            seen.setdefault(prefix, i)
+        seen = set()
+        prefix = prev = 0
+        for x in nums:
+            prefix = (prefix + x) % k
+            if prefix in seen: return True
+            seen.add(prev)
+            prev = prefix
         return False
 
 
