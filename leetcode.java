@@ -4747,12 +4747,11 @@ class Solution {
 
     public int subarraysDivByK(int[] nums, int k) {
         int ans = 0, prefix = 0;
-        Map<Integer, Integer> freq = new HashMap();
-        freq.put(0, 1);
+        int[] freq = new int[k];
+        freq[0] = 1;
         for (var x : nums) {
             prefix = (prefix + x%k + k) % k;
-            ans += freq.getOrDefault(prefix, 0);
-            freq.merge(prefix, 1, Integer::sum);
+            ans += freq[prefix]++;
         }
         return ans;
     }
