@@ -1870,6 +1870,37 @@ var heightChecker = function(heights) {
 };
 
 
+/*1122. Relative Sort Array (Easy)
+Given two arrays arr1 and arr2, the elements of arr2 are distinct, and all
+elements in arr2 are also in arr1. Sort the elements of arr1 such that the
+relative ordering of items in arr1 are the same as in arr2. Elements that do
+not appear in arr2 should be placed at the end of arr1 in ascending order.
+
+Example 1:
+Input: arr1 = [2,3,1,3,2,4,6,7,9,2,19], arr2 = [2,1,4,3,9,6]
+Output: [2,2,2,1,4,3,3,9,6,7,19]
+
+Example 2:
+Input: arr1 = [28,6,22,8,44,17], arr2 = [22,28,8,6]
+Output: [22,28,8,6,17,44]
+
+Constraints:
+* 1 <= arr1.length, arr2.length <= 1000
+* 0 <= arr1[i], arr2[i] <= 1000
+* All the elements of arr2 are distinct.
+* Each arr2[i] is in arr1.*/
+
+var relativeSortArray = function(arr1, arr2) {
+    const mp = new Map(), n = arr2.length;
+    for (const [i, x] of arr2.entries())
+        mp.set(x, i);
+    return arr1.sort((x, y) => {
+        const ix = mp.get(x) ?? n, iy = mp.get(y) ?? n;
+        return ix !== iy ? ix - iy : x - y;
+    });
+};
+
+
 /*1137. N-th Tribonacci Number (Easy)
 The Tribonacci sequence Tn is defined as follows:
 T0 = 0, T1 = 1, T2 = 1, and Tn+3 = Tn + Tn+1 + Tn+2 for n >= 0.
