@@ -55359,7 +55359,7 @@ class Trie:
     * 1 <= seats[i], students[j] <= 100"""
 
     def minMovesToSeat(self, seats: List[int], students: List[int]) -> int:
-        return sum(abs(x-y) for x, y in zip(sorted(seats), sorted(students)))
+        return sum(abs(x-y) for x, y in zip(*map(sorted, (seats, students))))
 
 
     """2038. Remove Colored Pieces if Both Neighbors are the Same Color (Medium)
