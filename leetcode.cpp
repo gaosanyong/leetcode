@@ -7983,16 +7983,14 @@ public:
     * 1 <= n <= 2^31 - 1*/
 
     int minPatches(vector<int>& nums, int n) {
-        int ans = 0, k = 0;
-        long prefix = 0;
-        while (prefix < n) {
-            if (k < nums.size() && nums[k] <= prefix + 1) {
+        int ans = 0;
+        for (unsigned prefix = 0, k = 0; prefix < n; )
+            if (k < nums.size() && nums[k] <= prefix + 1)
                 prefix += nums[k++];
-            } else {
+            else {
                 ++ans;
-                prefix += prefix + 1;
+                prefix += prefix++;
             }
-        }
         return ans;
     }
 
