@@ -11466,3 +11466,189 @@ var minimumDifference = function(nums, k) {
     }
     return ans;
 };
+
+
+/*3184. Count Pairs That Form a Complete Day I (Easy)
+Given an integer array hours representing times in hours, return an integer
+denoting the number of pairs i, j where i < j and hours[i] + hours[j] forms
+a complete day. A complete day is defined as a time duration that is an
+exact multiple of 24 hours. For example, 1 day is 24 hours, 2 days is 48
+hours, 3 days is 72 hours, and so on.
+
+Example 1:
+Input: hours = [12,12,30,24,24]
+Output: 2
+Explanation: The pairs of indices that form a complete day are (0, 1) and
+             (3, 4).
+
+Example 2:
+Input: hours = [72,48,24,3]
+Output: 3
+Explanation: The pairs of indices that form a complete day are (0, 1),
+             (0, 2), and (1, 2).
+
+Constraints:
+* 1 <= hours.length <= 100
+* 1 <= hours[i] <= 10^9*/
+
+var countCompleteDayPairs = function(hours) {
+    let ans = 0;
+    const freq = Array(24).fill(0);
+    for (const h of hours) {
+        ans += freq[(24+(24-h)%24)%24];
+        ++freq[h%24];
+    }
+    return ans;
+};
+
+
+/*3185. Count Pairs That Form a Complete Day II (Medium)
+Given an integer array hours representing times in hours, return an integer
+denoting the number of pairs i, j where i < j and hours[i] + hours[j] forms
+a complete day. A complete day is defined as a time duration that is an
+exact multiple of 24 hours. For example, 1 day is 24 hours, 2 days is 48
+hours, 3 days is 72 hours, and so on.
+
+Example 1:
+Input: hours = [12,12,30,24,24]
+Output: 2
+Explanation: The pairs of indices that form a complete day are (0, 1) and
+             (3, 4).
+
+Example 2:
+Input: hours = [72,48,24,3]
+Output: 3
+Explanation: The pairs of indices that form a complete day are (0, 1),
+             (0, 2), and (1, 2).
+
+Constraints:
+* 1 <= hours.length <= 5 * 10^5
+* 1 <= hours[i] <= 10^9*/
+
+var countCompleteDayPairs = function(hours) {
+    let ans = 0;
+    const freq = Array(24).fill(0);
+    for (const h of hours) {
+        ans += freq[(24+(24-h)%24)%24];
+        ++freq[h%24];
+    }
+    return ans;
+};
+
+
+/*3186. Maximum Total Damage With Spell Casting (Medium)
+A magician has various spells. You are given an array power, where each
+element represents the damage of a spell. Multiple spells can have the same
+damage value. It is a known fact that if a magician decides to cast a spell
+with a damage of power[i], they cannot cast any spell with a damage of
+power[i] - 2, power[i] - 1, power[i] + 1, or power[i] + 2. Each spell can be
+cast only once. Return the maximum possible total damage that a magician can
+cast.
+
+Example 1:
+Input: power = [1,1,3,4]
+Output: 6
+Explanation: The maximum possible damage of 6 is produced by casting spells
+             0, 1, 3 with damage 1, 1, 4.
+
+Example 2:
+Input: power = [7,1,6,6]
+Output: 13
+Explanation: The maximum possible damage of 13 is produced by casting spells
+             1, 2, 3 with damage 1, 6, 6.
+
+Constraints:
+* 1 <= power.length <= 10^5
+* 1 <= power[i] <= 10^9*/
+
+var maximumTotalDamage = function(power) {
+    power.sort((x, y) => x-y);
+    let prefix = 0;
+    const n = power.length, dp = Array(n).fill(0);
+    for (let i = 0, j = 0; i < n; ++i)
+        if (i && power[i-1] == power[i]) dp[i] = dp[i-1] + power[i];
+        else {
+            for (; power[j] < power[i]-2; ++j)
+                prefix = Math.max(prefix, dp[j]);
+            dp[i] = prefix + power[i];
+        }
+    return Math.max(...dp);
+};
+
+
+/*3187. Peaks in Array (Hard)
+A peak in an array arr is an element that is greater than its previous and
+next element in arr. You are given an integer array nums and a 2D integer
+array queries. You have to process queries of two types:
+* queries[i] = [1, li, ri], determine the count of peak elements in the
+  subarray nums[li..ri].
+* queries[i] = [2, indexi, vali], change nums[indexi] to vali.
+Return an array answer containing the results of the queries of the first
+type in order. Notes:
+* The first and the last element of an array or a subarray cannot be a peak.
+
+Example 1:
+Input: nums = [3,1,4,2,5], queries = [[2,3,4],[1,0,4]]
+Output: [0]
+Explanation: First query: We change nums[3] to 4 and nums becomes
+             [3,1,4,4,5]. Second query: The number of peaks in the
+             [3,1,4,4,5] is 0.
+
+Example 2:
+Input: nums = [4,1,4,2,1,5], queries = [[2,2,4],[1,0,2],[1,0,4]]
+Output: [0,1]
+Explanation: First query: nums[2] should become 4, but it is already set to
+             4. Second query: The number of peaks in the [4,1,4] is 0. Third
+             query: The second 4 is a peak in the [4,1,4,2,1].
+
+Constraints:
+* 3 <= nums.length <= 10^5
+* 1 <= nums[i] <= 10^5
+* 1 <= queries.length <= 10^5
+* queries[i][0] == 1 or queries[i][0] == 2
+* For all i that:
+  - queries[i][0] == 1: 0 <= queries[i][1] <= queries[i][2] <= nums.length - 1
+  - queries[i][0] == 2: 0 <= queries[i][1] <= nums.length - 1,
+    1 <= queries[i][2] <= 10^5*/
+
+class Fenwick {
+    constructor(n) {
+        this.nums = Array(n+1).fill(0);
+    }
+
+    add(k, delta) {
+        for (++k; k < this.nums.length; k += k & -k)
+            this.nums[k] += delta;
+    }
+
+    query(k) {
+        let ans = 0;
+        for (++k; k > 0; k -= k & -k)
+            ans += this.nums[k];
+        return ans;
+    }
+};
+
+var countOfPeaks = function(nums, queries) {
+    const n = nums.length, tree = new Fenwick(n);
+    for (let i = 1; i+1 < n; ++i)
+        if (nums[i-1] < nums[i] && nums[i] > nums[i+1])
+            tree.add(i, 1);
+    const ans = [];
+    for (const q of queries) {
+        if (q[0] == 1) {
+            const [_, lo, hi] = q;
+            ans.push(tree.query(Math.max(lo, hi-1)) - tree.query(lo));
+        } else {
+            const [_, k, v] = q;
+            for (let i = Math.max(1, k-1); i <= k+1 && i+1 < n; ++i)
+                if (nums[i-1] < nums[i] && nums[i] > nums[i+1])
+                    tree.add(i, -1);
+            nums[k] = v;
+            for (let i = Math.max(1, k-1); i <= k+1 && i+1 < n; ++i)
+                if (nums[i-1] < nums[i] && nums[i] > nums[i+1])
+                    tree.add(i, 1);
+        }
+    }
+    return ans;
+};
