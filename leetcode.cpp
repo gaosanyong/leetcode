@@ -13653,16 +13653,12 @@ public:
 
     bool judgeSquareSum(int c) {
         /*Fermat theorem on sum of two squares*/
-        for (int x = 2; x*x <= c; ++x) {
+        for (int x = 2; x*x <= c; ++x)
             if (c % x == 0) {
                 int mult = 0;
-                while (c % x == 0) {
-                    ++mult;
-                    c /= x;
-                }
+                for (; c % x == 0; ++mult, c /= x);
                 if (x % 4 == 3 && mult & 1) return false;
             }
-        }
         return c % 4 != 3;
     }
 

@@ -3227,6 +3227,33 @@ class Solution {
     }
 
 
+    /*633. Sum of Square Numbers (Medium)
+    Given a non-negative integer c, decide whether there're two integers a and b
+    such that a2 + b2 = c.
+
+    Example 1:
+    Input: c = 5
+    Output: true
+    Explanation: 1 * 1 + 2 * 2 = 5
+
+    Example 2:
+    Input: c = 3
+    Output: false
+
+    Constraints: 0 <= c <= 2^31 - 1*/
+
+    public boolean judgeSquareSum(int c) {
+        /*Fermat theorem on sum of two squares*/
+        for (int x = 2; x*x <= c; ++x)
+            if (c % x == 0) {
+                int mult = 0;
+                for (; c % x == 0; ++mult, c /= x);
+                if (x % 4 == 3 && mult % 2 == 1) return false;
+            }
+        return c % 4 != 3;
+    }
+
+
     /*644. Maximum Average Subarray II (Hard)
     You are given an integer array nums consisting of n elements, and an
     integer k. Find a contiguous subarray whose length is greater than or equal

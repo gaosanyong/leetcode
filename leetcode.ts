@@ -1214,6 +1214,33 @@ function addOneRow(root: TreeNode | null, val: number, depth: number): TreeNode 
 };
 
 
+/*633. Sum of Square Numbers (Medium)
+Given a non-negative integer c, decide whether there're two integers a and b
+such that a2 + b2 = c.
+
+Example 1:
+Input: c = 5
+Output: true
+Explanation: 1 * 1 + 2 * 2 = 5
+
+Example 2:
+Input: c = 3
+Output: false
+
+Constraints: 0 <= c <= 2^31 - 1*/
+
+function judgeSquareSum(c: number): boolean {
+    /*Fermat theorem on sum of two squares*/
+    for (let x = 2; x*x <= c; ++x)
+        if (c % x == 0) {
+            let mult = 0;
+            for (; c % x == 0; ++mult, c /= x);
+            if (x % 4 == 3 && mult & 1) return false;
+        }
+    return c % 4 != 3;
+};
+
+
 /*648. Replace Words (Medium)
 In English, we have a concept called root, which can be followed by some
 other word to form another longer word - let's call this word derivative.
