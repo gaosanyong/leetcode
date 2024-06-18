@@ -21306,13 +21306,13 @@ class Solution:
     * difficulty[i], profit[i], worker[i]  are in range [1, 10^5]"""
 
     def maxProfitAssignment(self, difficulty: List[int], profit: List[int], worker: List[int]) -> int:
+        ans = k = prefix = 0
         job = sorted(zip(difficulty, profit))
-        ans = i = mx = 0
         for w in sorted(worker):
-            while i < len(job) and job[i][0] <= w:
-                mx = max(mx, job[i][1])
-                i += 1
-            ans += mx
+            while k < len(job) and job[k][0] <= w:
+                prefix = max(prefix, job[k][1])
+                k += 1
+            ans += prefix
         return ans
 
 
