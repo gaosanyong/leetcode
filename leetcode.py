@@ -27491,17 +27491,16 @@ class Solution:
     * 0 <= customers[i] <= 1000
     * 0 <= grumpy[i] <= 1"""
 
-    def maxSatisfied(self, customers: List[int], grumpy: List[int], X: int) -> int:
-        ans = val = ii = mx = 0
+    def maxSatisfied(self, customers: List[int], grumpy: List[int], minutes: int) -> int:
+        ans = val = ii = most = 0
         for i in range(len(customers)):
-            if not grumpy[i]: ans += customers[i]
-            else:
-                val += customers[i]
-                while ii <= i-X:
-                    if grumpy[ii]: val -= customers[ii]
-                    ii += 1
-                mx = max(mx, val)
-        return ans + mx
+            if grumpy[i]: val += customers[i]
+            else: ans += customers[i]
+            if ii == i-minutes:
+                if grumpy[ii]: val -= customers[ii]
+                ii += 1
+            most = max(most, val)
+        return ans + most
 
 
     """1054. Distant Barcodes (Medium)
