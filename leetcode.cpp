@@ -23612,20 +23612,16 @@ public:
     * 1 <= k <= nums.length*/
 
     int minKBitFlips(vector<int>& nums, int k) {
-        deque<int> dq;
-        int ans = 0, flip = 0;
-
-        for (int i = 0; i < size(nums); ++i) {
-            if (size(dq) && dq.front() == i) {
-                dq.pop_front();
-                flip ^= 1;
-            }
+        int ans = 0, flip = 0, n = nums.size();
+        vector<int> line(n);
+        for (int i = 0; i < n; ++i) {
             if (nums[i] == flip) {
-                if (size(nums)-i < k) return -1;
+                if (n <= i+k-1) return -1;
                 ++ans;
                 flip ^= 1;
-                dq.push_back(i+k);
+                line[i+k-1] = 1;
             }
+            if (line[i]) flip ^= 1;
         }
         return ans;
     }

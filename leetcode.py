@@ -25813,16 +25813,15 @@ class Solution:
 
     def minKBitFlips(self, nums: List[int], k: int) -> int:
         ans = flip = 0
-        queue = deque()
+        n = len(nums)
+        line = [0]*n
         for i, x in enumerate(nums):
-            if queue and i == queue[0]:
-                flip ^= 1
-                queue.popleft()
             if x == flip:
-                if len(nums) - i < k: return -1
+                if n <= i+k-1: return -1
                 ans += 1
                 flip ^= 1
-                queue.append(i+k)
+                line[i+k-1] = 1
+            if line[i]: flip ^= 1
         return ans
 
 
