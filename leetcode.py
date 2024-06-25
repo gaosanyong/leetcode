@@ -27083,16 +27083,16 @@ class Solution:
     * root is guaranteed to be a valid binary search tree."""
 
     def bstToGst(self, root: TreeNode) -> TreeNode:
-        val = 0
+        prefix = 0
         node = root
         stack = []
-        while stack or node:
+        while node or stack:
             if node:
                 stack.append(node)
                 node = node.right
             else:
                 node = stack.pop()
-                node.val = val = node.val + val
+                node.val = prefix = node.val + prefix
                 node = node.left
         return root
 
