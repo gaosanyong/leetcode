@@ -28357,6 +28357,193 @@ class SegTreeLazy {
         }
         return ans;
     }
+
+
+    /*3200. Maximum Height of a Triangle (Easy)
+    You are given two integers red and blue representing the count of red and
+    blue colored balls. You have to arrange these balls to form a triangle such
+    that the 1st row will have 1 ball, the 2nd row will have 2 balls, the 3rd
+    row will have 3 balls, and so on. All the balls in a particular row should
+    be the same color, and adjacent rows should have different colors. Return
+    the maximum height of the triangle that can be achieved.
+
+    Example 1:
+    Input: red = 2, blue = 4
+    Output: 3
+    Explanation: The only possible arrangement is shown above.
+
+    Example 2:
+    Input: red = 2, blue = 1
+    Output: 2
+    Explanation: The only possible arrangement is shown above.
+
+    Example 3:
+    Input: red = 1, blue = 1
+    Output: 1
+
+    Example 4:
+    Input: red = 10, blue = 1
+    Output: 2
+    Explanation: The only possible arrangement is shown above.
+
+    Constraints: 1 <= red, blue <= 100*/
+
+    public int maxHeightOfTriangle(int red, int blue) {
+        int ans = 0;
+        int[][] balls = new int[][]{{red, blue}, {blue, red}};
+        for (var ball : balls) {
+            int cand = 0;
+            for (int k = 1, i = 0; ball[i] >= k; ++k, i ^= 1) {
+                ball[i] -= k;
+                ++cand;
+            }
+            ans = Math.max(ans, cand);
+        }
+        return ans;
+    }
+
+
+    /*3201. Find the Maximum Length of Valid Subsequence I (Medium)
+    You are given an integer array nums. A subsequence sub of nums with length x
+    is called valid if it satisfies:
+    * (sub[0] + sub[1]) % 2 == (sub[1] + sub[2]) % 2 == ...
+      == (sub[x - 2] + sub[x - 1]) % 2.
+    Return the length of the longest valid subsequence of nums. A subsequence is
+    an array that can be derived from another array by deleting some or no
+    elements without changing the order of the remaining elements.
+
+    Example 1:
+    Input: nums = [1,2,3,4]
+    Output: 4
+    Explanation: The longest valid subsequence is [1, 2, 3, 4].
+
+    Example 2:
+    Input: nums = [1,2,1,1,2,1,2]
+    Output: 6
+    Explanation: The longest valid subsequence is [1, 2, 1, 2, 1, 2].
+
+    Example 3:
+    Input: nums = [1,3]
+    Output: 2
+    Explanation: The longest valid subsequence is [1, 3].
+
+    Constraints:
+    * 2 <= nums.length <= 2 * 10^5
+    * 1 <= nums[i] <= 10^7*/
+
+    public int maximumLength(int[] nums) {
+        int[][] dp = new int[2][2];
+        for (var x : nums) {
+            x %= 2;
+            dp[x][0] = 1 + dp[0][x];
+            dp[x][1] = 1 + dp[1][x];
+        }
+        return Math.max(Math.max(dp[0][0], dp[0][1]), Math.max(dp[1][0], dp[1][1]));
+    }
+
+
+    /*3202. Find the Maximum Length of Valid Subsequence II (Medium)
+    You are given an integer array nums and a positive integer k. A subsequence
+    sub of nums with length x is called valid if it satisfies:
+    * (sub[0] + sub[1]) % k == (sub[1] + sub[2]) % k == ... == (sub[x - 2] + sub[x - 1]) % k.
+    Return the length of the longest valid subsequence of nums.
+
+    Example 1:
+    Input: nums = [1,2,3,4,5], k = 2
+    Output: 5
+    Explanation: The longest valid subsequence is [1, 2, 3, 4, 5].
+
+    Example 2:
+    Input: nums = [1,4,2,3,1,4], k = 3
+    Output: 4
+    Explanation: The longest valid subsequence is [1, 4, 1, 4].
+
+    Constraints:
+    * 2 <= nums.length <= 10^3
+    * 1 <= nums[i] <= 10^7
+    * 1 <= k <= 10^3*/
+
+    public int maximumLength(int[] nums, int k) {
+        int[][] dp = new int[k][k];
+        for (var x : nums) {
+            x %= k;
+            for (int y = 0; y < k; ++y)
+                dp[x][y] = 1 + dp[y][x];
+        }
+        return Arrays.stream(dp).flatMapToInt(Arrays::stream).max().getAsInt();
+    }
+
+
+    /*3203. Find Minimum Diameter After Merging Two Trees (Hard)
+    There exist two undirected trees with n and m nodes, numbered from 0 to
+    n - 1 and from 0 to m - 1, respectively. You are given two 2D integer arrays
+    edges1 and edges2 of lengths n - 1 and m - 1, respectively, where
+    edges1[i] = [ai, bi] indicates that there is an edge between nodes ai and bi
+    in the first tree and edges2[i] = [ui, vi] indicates that there is an edge
+    between nodes ui and vi in the second tree. You must connect one node from
+    the first tree with another node from the second tree with an edge. Return
+    the minimum possible diameter of the resulting tree. The diameter of a tree
+    is the length of the longest path between any two nodes in the tree.
+
+    Example 1:
+    Input: edges1 = [[0,1],[0,2],[0,3]], edges2 = [[0,1]]
+    Output: 3
+    Explanation: We can obtain a tree of diameter 3 by connecting node 0 from
+                 the first tree with any node from the second tree.
+
+    Example 2:
+    Input: edges1 = [[0,1],[0,2],[0,3],[2,4],[2,5],[3,6],[2,7]], edges2 = [[0,1],[0,2],[0,3],[2,4],[2,5],[3,6],[2,7]]
+    Output: 5
+    Explanation: We can obtain a tree of diameter 5 by connecting node 0 from
+                 the first tree with node 0 from the second tree.
+
+    Constraints:
+    * 1 <= n, m <= 10^5
+    * edges1.length == n - 1
+    * edges2.length == m - 1
+    * edges1[i].length == edges2[i].length == 2
+    * edges1[i] = [ai, bi]
+    * 0 <= ai, bi < n
+    * edges2[i] = [ui, vi]
+    * 0 <= ui, vi < m
+    * The input is generated such that edges1 and edges2 represent valid trees.*/
+
+    private int[] bfs(int u, List<Integer>[] graph) {
+        int ans = 0;
+        Queue<int[]> q = new LinkedList();
+        q.add(new int[]{u, -1});
+        while (!q.isEmpty()) {
+            ++ans;
+            for (int sz = q.size(); sz > 0; --sz) {
+                var elem = q.poll();
+                u = elem[0];
+                int p = elem[1];
+                for (var v : graph[u])
+                    if (v != p)
+                        q.add(new int[]{v, u});
+            }
+        }
+        return new int[]{ans-1, u};
+    }
+
+    private int fn(int[][] edges) {
+        int n = 1 + edges.length;
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; ++i)
+            graph[i] = new ArrayList();
+        for (var e : edges) {
+            int u = e[0], v = e[1];
+            graph[u].add(v);
+            graph[v].add(u);
+        }
+        int[] u = bfs(0, graph);
+        int[] d = bfs(u[1], graph);
+        return d[0];
+    }
+    public int minimumDiameterAfterMerge(int[][] edges1, int[][] edges2) {
+        int d1 = fn(edges1), d2 = fn(edges2);
+        return Math.max(d1, Math.max(d2, (d1+1)/2 + (d2+1)/2 + 1));
+    }
 }
 
 
