@@ -15994,15 +15994,13 @@ class Solution:
 
     def judgeSquareSum(self, c: int) -> bool:
         # Fermat theorem on sum of two squares
-        x = 2
-        while x*x <= c:
+        for x in range(2, isqrt(c)+1):
             if c % x == 0:
                 mult = 0
                 while c % x == 0:
                     mult += 1
                     c //= x
                 if x % 4 == 3 and mult & 1: return False
-            x += 1
         return c % 4 != 3
 
 
@@ -21308,13 +21306,13 @@ class Solution:
     * difficulty[i], profit[i], worker[i]  are in range [1, 10^5]"""
 
     def maxProfitAssignment(self, difficulty: List[int], profit: List[int], worker: List[int]) -> int:
+        ans = k = prefix = 0
         job = sorted(zip(difficulty, profit))
-        ans = i = mx = 0
         for w in sorted(worker):
-            while i < len(job) and job[i][0] <= w:
-                mx = max(mx, job[i][1])
-                i += 1
-            ans += mx
+            while k < len(job) and job[k][0] <= w:
+                prefix = max(prefix, job[k][1])
+                k += 1
+            ans += prefix
         return ans
 
 
@@ -25815,16 +25813,15 @@ class Solution:
 
     def minKBitFlips(self, nums: List[int], k: int) -> int:
         ans = flip = 0
-        queue = deque()
+        n = len(nums)
+        line = [0]*n
         for i, x in enumerate(nums):
-            if queue and i == queue[0]:
-                flip ^= 1
-                queue.popleft()
             if x == flip:
-                if len(nums) - i < k: return -1
+                if n <= i+k-1: return -1
                 ans += 1
                 flip ^= 1
-                queue.append(i+k)
+                line[i+k-1] = 1
+            if line[i]: flip ^= 1
         return ans
 
 
@@ -27086,16 +27083,16 @@ class Solution:
     * root is guaranteed to be a valid binary search tree."""
 
     def bstToGst(self, root: TreeNode) -> TreeNode:
-        val = 0
+        prefix = 0
         node = root
         stack = []
-        while stack or node:
+        while node or stack:
             if node:
                 stack.append(node)
                 node = node.right
             else:
                 node = stack.pop()
-                node.val = val = node.val + val
+                node.val = prefix = node.val + prefix
                 node = node.left
         return root
 
@@ -27493,17 +27490,16 @@ class Solution:
     * 0 <= customers[i] <= 1000
     * 0 <= grumpy[i] <= 1"""
 
-    def maxSatisfied(self, customers: List[int], grumpy: List[int], X: int) -> int:
-        ans = val = ii = mx = 0
+    def maxSatisfied(self, customers: List[int], grumpy: List[int], minutes: int) -> int:
+        ans = val = ii = most = 0
         for i in range(len(customers)):
-            if not grumpy[i]: ans += customers[i]
-            else:
-                val += customers[i]
-                while ii <= i-X:
-                    if grumpy[ii]: val -= customers[ii]
-                    ii += 1
-                mx = max(mx, val)
-        return ans + mx
+            if grumpy[i]: val += customers[i]
+            else: ans += customers[i]
+            if ii == i-minutes:
+                if grumpy[ii]: val -= customers[ii]
+                ii += 1
+            most = max(most, val)
+        return ans + most
 
 
     """1054. Distant Barcodes (Medium)
@@ -36491,6 +36487,68 @@ class UnionFind:
         return prefix
 
 
+    """1482. Minimum Number of Days to Make m Bouquets (Medium)
+    You are given an integer array bloomDay, an integer m and an integer k. You
+    want to make m bouquets. To make a bouquet, you need to use k adjacent
+    flowers from the garden. The garden consists of n flowers, the ith flower
+    will bloom in the bloomDay[i] and then can be used in exactly one bouquet.
+    Return the minimum number of days you need to wait to be able to make m
+    bouquets from the garden. If it is impossible to make m bouquets return -1.
+
+    Example 1:
+    Input: bloomDay = [1,10,3,10,2], m = 3, k = 1
+    Output: 3
+    Explanation: Let us see what happened in the first three days. x means
+                 flower bloomed and _ means flower did not bloom in the garden.
+                 We need 3 bouquets each should contain 1 flower.
+                 After day 1: [x, _, _, _, _]   // we can only make one bouquet.
+                 After day 2: [x, _, _, _, x]   // we can only make two bouquets.
+                 After day 3: [x, _, x, _, x]   // we can make 3 bouquets. The
+                                                // answer is 3.
+
+    Example 2:
+    Input: bloomDay = [1,10,3,10,2], m = 3, k = 2
+    Output: -1
+    Explanation: We need 3 bouquets each has 2 flowers, that means we need 6
+                 flowers. We only have 5 flowers so it is impossible to get the
+                 needed bouquets and we return -1.
+
+    Example 3:
+    Input: bloomDay = [7,7,7,7,12,7,7], m = 2, k = 3
+    Output: 12
+    Explanation: We need 2 bouquets each should have 3 flowers. Here is the
+                 garden after the 7 and 12 days:
+                 After day 7: [x, x, x, x, _, x, x]
+                 We can make one bouquet of the first three flowers that
+                 bloomed. We cannot make another bouquet from the last three
+                 flowers that bloomed because they are not adjacent.
+                 After day 12: [x, x, x, x, x, x, x]
+                 It is obvious that we can make two bouquets in different ways.
+
+    Constraints:
+    * bloomDay.length == n
+    * 1 <= n <= 10^5
+    * 1 <= bloomDay[i] <= 10^9
+    * 1 <= m <= 10^6
+    * 1 <= k <= n"""
+
+    def minDays(self, bloomDay: List[int], m: int, k: int) -> int:
+        if len(bloomDay) < m*k: return -1
+        lo, hi = 0, max(bloomDay)
+        while lo < hi:
+            mid = lo + hi >> 1
+            bouquet = flower = 0
+            for x in bloomDay:
+                if x <= mid: flower += 1
+                else: flower = 0
+                if flower == k:
+                    flower = 0
+                    bouquet += 1
+            if bouquet >= m: hi = mid
+            else: lo = mid + 1
+        return lo
+
+
     """1485. Clone Binary Tree With Random Pointer (Medium)
     A binary tree is given such that each node contains an additional random
     pointer which could point to any node in the tree or null. Return a deep
@@ -36826,6 +36884,55 @@ class UnionFind:
             for child in node.children:
                 val ^= child.val
         return next(node for node in tree if node.val == val)
+
+
+    """1509. Minimum Difference Between Largest and Smallest Value in Three Moves (Medium)
+    You are given an integer array nums. In one move, you can choose one element
+    of nums and change it to any value. Return the minimum difference between
+    the largest and smallest value of nums after performing at most three moves.
+
+    Example 1:
+    Input: nums = [5,3,2,4]
+    Output: 0
+    Explanation: We can make at most 3 moves.
+                 In the first move, change 2 to 3. nums becomes [5,3,3,4].
+                 In the second move, change 4 to 3. nums becomes [5,3,3,3].
+                 In the third move, change 5 to 3. nums becomes [3,3,3,3].
+                 After performing 3 moves, the difference between the minimum
+                 and maximum is 3 - 3 = 0.
+
+    Example 2:
+    Input: nums = [1,5,0,10,14]
+    Output: 1
+    Explanation: We can make at most 3 moves.
+                 In the first move, change 5 to 0. nums becomes [1,0,0,10,14].
+                 In the second move, change 10 to 0. nums becomes [1,0,0,0,14].
+                 In the third move, change 14 to 1. nums becomes [1,0,0,0,1].
+                 After performing 3 moves, the difference between the minimum
+                 and maximum is 1 - 0 = 1. It can be shown that there is no way
+                 to make the difference 0 in 3 moves.
+
+    Example 3:
+    Input: nums = [3,100,20]
+    Output: 0
+    Explanation: We can make at most 3 moves.
+                 In the first move, change 100 to 7. nums becomes [3,7,20].
+                 In the second move, change 20 to 7. nums becomes [3,7,7].
+                 In the third move, change 3 to 7. nums becomes [7,7,7].
+                 After performing 3 moves, the difference between the minimum
+                 and maximum is 7 - 7 = 0.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * -10^9 <= nums[i] <= 10^9"""
+
+    def minDifference(self, nums: List[int]) -> int:
+        ans = inf
+        nums.sort()
+        for i in range(min(4, len(nums))):
+            j = max(i, len(nums)-4+i)
+            ans = min(ans, nums[j]-nums[i])
+        return ans
 
 
     """1510. Stone Game IV (Hard)
@@ -37798,6 +37905,78 @@ class UnionFind:
             ans.append(jj)
             jj = mp[i][jj]
         return ans
+
+
+    """1550. Three Consecutive Odds (Easy)
+    Given an integer array arr, return true if there are three consecutive odd
+    numbers in the array. Otherwise, return false.
+
+    Example 1:
+    Input: arr = [2,6,4,1]
+    Output: false
+    Explanation: There are no three consecutive odds.
+
+    Example 2:
+    Input: arr = [1,2,34,3,4,5,7,23,12]
+    Output: true
+    Explanation: [5,7,23] are three consecutive odds.
+
+    Constraints:
+    * 1 <= arr.length <= 1000
+    * 1 <= arr[i] <= 1000"""
+
+    def threeConsecutiveOdds(self, arr: List[int]) -> bool:
+        cnt = 0
+        for x in arr:
+            if x & 1: cnt += 1
+            else: cnt = 0
+            if cnt == 3: return True
+        return False
+
+
+    """1552. Magnetic Force Between Two Balls (Medium)
+    In the universe Earth C-137, Rick discovered a special form of magnetic
+    force between two balls if they are put in his new invented basket. Rick has
+    n empty baskets, the ith basket is at position[i], Morty has m balls and
+    needs to distribute the balls into the baskets such that the minimum
+    magnetic force between any two balls is maximum. Rick stated that magnetic
+    force between two different balls at positions x and y is |x - y|. Given the
+    integer array position and the integer m. Return the required force.
+
+    Example 1:
+    Input: position = [1,2,3,4,7], m = 3
+    Output: 3
+    Explanation: Distributing the 3 balls into baskets 1, 4 and 7 will make the
+                 magnetic force between ball pairs [3, 3, 6]. The minimum
+                 magnetic force is 3. We cannot achieve a larger minimum
+                 magnetic force than 3.
+
+    Example 2:
+    Input: position = [5,4,3,2,1,1000000000], m = 2
+    Output: 999999999
+    Explanation: We can use baskets 1 and 1000000000.
+
+    Constraints:
+    * n == position.length
+    * 2 <= n <= 10^5
+    * 1 <= position[i] <= 10^9
+    * All integers in position are distinct.
+    * 2 <= m <= position.length"""
+
+    def maxDistance(self, position: List[int], m: int) -> int:
+        position.sort()
+        lo, hi = 1, position[-1] - position[0]
+        while lo < hi:
+            mid = lo + hi + 1 >> 1
+            cnt = 0
+            prev = -inf
+            for x in position:
+                if x - prev >= mid:
+                    cnt += 1
+                    prev = x
+            if cnt >= m: lo = mid
+            else: hi = mid - 1
+        return lo
 
 
     """1554. Strings Differ by One Character (Medium)
@@ -90508,6 +90687,183 @@ class SegTreeLazy:
         return ans
 
 
+<<<<<<< HEAD
+=======
+    """3200. Maximum Height of a Triangle (Easy)
+    You are given two integers red and blue representing the count of red and
+    blue colored balls. You have to arrange these balls to form a triangle such
+    that the 1st row will have 1 ball, the 2nd row will have 2 balls, the 3rd
+    row will have 3 balls, and so on. All the balls in a particular row should
+    be the same color, and adjacent rows should have different colors. Return
+    the maximum height of the triangle that can be achieved.
+
+    Example 1:
+    Input: red = 2, blue = 4
+    Output: 3
+    Explanation: The only possible arrangement is shown above.
+
+    Example 2:
+    Input: red = 2, blue = 1
+    Output: 2
+    Explanation: The only possible arrangement is shown above.
+
+    Example 3:
+    Input: red = 1, blue = 1
+    Output: 1
+
+    Example 4:
+    Input: red = 10, blue = 1
+    Output: 2
+    Explanation: The only possible arrangement is shown above.
+
+    Constraints: 1 <= red, blue <= 100"""
+
+    def maxHeightOfTriangle(self, red: int, blue: int) -> int:
+        ans = 0
+        for ball in [red, blue], [blue, red]:
+            cand = i = 0
+            for k in count(1):
+                if ball[i] < k: break
+                ball[i] -= k
+                cand += 1
+                i ^= 1
+            ans = max(ans, cand)
+        return ans
+
+
+    """3201. Find the Maximum Length of Valid Subsequence I (Medium)
+    You are given an integer array nums. A subsequence sub of nums with length x
+    is called valid if it satisfies:
+    * (sub[0] + sub[1]) % 2 == (sub[1] + sub[2]) % 2 == ...
+      == (sub[x - 2] + sub[x - 1]) % 2.
+    Return the length of the longest valid subsequence of nums. A subsequence is
+    an array that can be derived from another array by deleting some or no
+    elements without changing the order of the remaining elements.
+
+    Example 1:
+    Input: nums = [1,2,3,4]
+    Output: 4
+    Explanation: The longest valid subsequence is [1, 2, 3, 4].
+
+    Example 2:
+    Input: nums = [1,2,1,1,2,1,2]
+    Output: 6
+    Explanation: The longest valid subsequence is [1, 2, 1, 2, 1, 2].
+
+    Example 3:
+    Input: nums = [1,3]
+    Output: 2
+    Explanation: The longest valid subsequence is [1, 3].
+
+    Constraints:
+    * 2 <= nums.length <= 2 * 10^5
+    * 1 <= nums[i] <= 10^7"""
+
+    def maximumLength(self, nums: List[int]) -> int:
+        dp = [[0]*2 for _ in range(2)]
+        for x in nums:
+            x %= 2
+            dp[x][0] = 1 + dp[0][x];
+            dp[x][1] = 1 + dp[1][x];
+        return max(map(max, dp))
+
+
+    """3202. Find the Maximum Length of Valid Subsequence II (Medium)
+    You are given an integer array nums and a positive integer k. A subsequence
+    sub of nums with length x is called valid if it satisfies:
+    * (sub[0] + sub[1]) % k == (sub[1] + sub[2]) % k == ... == (sub[x - 2] + sub[x - 1]) % k.
+    Return the length of the longest valid subsequence of nums.
+
+    Example 1:
+    Input: nums = [1,2,3,4,5], k = 2
+    Output: 5
+    Explanation: The longest valid subsequence is [1, 2, 3, 4, 5].
+
+    Example 2:
+    Input: nums = [1,4,2,3,1,4], k = 3
+    Output: 4
+    Explanation: The longest valid subsequence is [1, 4, 1, 4].
+
+    Constraints:
+    * 2 <= nums.length <= 10^3
+    * 1 <= nums[i] <= 10^7
+    * 1 <= k <= 10^3"""
+
+    def maximumLength(self, nums: List[int], k: int) -> int:
+        dp = [[0]*k for _ in range(k)]
+        for x in nums:
+            x %= k
+            for y in range(k):
+                dp[x][y] = 1 + dp[y][x]
+        return max(map(max, dp))
+
+
+    """3203. Find Minimum Diameter After Merging Two Trees (Hard)
+    There exist two undirected trees with n and m nodes, numbered from 0 to
+    n - 1 and from 0 to m - 1, respectively. You are given two 2D integer arrays
+    edges1 and edges2 of lengths n - 1 and m - 1, respectively, where
+    edges1[i] = [ai, bi] indicates that there is an edge between nodes ai and bi
+    in the first tree and edges2[i] = [ui, vi] indicates that there is an edge
+    between nodes ui and vi in the second tree. You must connect one node from
+    the first tree with another node from the second tree with an edge. Return
+    the minimum possible diameter of the resulting tree. The diameter of a tree
+    is the length of the longest path between any two nodes in the tree.
+
+    Example 1:
+    Input: edges1 = [[0,1],[0,2],[0,3]], edges2 = [[0,1]]
+    Output: 3
+    Explanation: We can obtain a tree of diameter 3 by connecting node 0 from
+                 the first tree with any node from the second tree.
+
+    Example 2:
+    Input: edges1 = [[0,1],[0,2],[0,3],[2,4],[2,5],[3,6],[2,7]], edges2 = [[0,1],[0,2],[0,3],[2,4],[2,5],[3,6],[2,7]]
+    Output: 5
+    Explanation: We can obtain a tree of diameter 5 by connecting node 0 from
+                 the first tree with node 0 from the second tree.
+
+    Constraints:
+    * 1 <= n, m <= 10^5
+    * edges1.length == n - 1
+    * edges2.length == m - 1
+    * edges1[i].length == edges2[i].length == 2
+    * edges1[i] = [ai, bi]
+    * 0 <= ai, bi < n
+    * edges2[i] = [ui, vi]
+    * 0 <= ui, vi < m
+    * The input is generated such that edges1 and edges2 represent valid trees."""
+
+    def minimumDiameterAfterMerge(self, edges1: List[List[int]], edges2: List[List[int]]) -> int:
+
+        def bfs(u, graph):
+            """Return """
+            ans = 0
+            queue = deque([(u, -1)])
+            while queue:
+                ans += 1
+                for _ in range(len(queue)):
+                    u, p = queue.popleft()
+                    for v in graph[u]:
+                        if v != p:
+                            queue.append((v, u))
+            return ans-1, u
+
+        def fn(edges):
+            """Return """
+            n = len(edges)+1
+            graph = [[] for _ in range(n)]
+            for u, v in edges:
+                graph[u].append(v)
+                graph[v].append(u)
+            _, u = bfs(0, graph)
+            dia, _ = bfs(u, graph)
+            return dia
+
+        d1 = fn(edges1)
+        d2 = fn(edges2)
+        return max(d1, d2, (d1+1)//2+(d2+1)//2+1)
+
+
+>>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.

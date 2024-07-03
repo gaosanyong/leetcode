@@ -3227,6 +3227,33 @@ class Solution {
     }
 
 
+    /*633. Sum of Square Numbers (Medium)
+    Given a non-negative integer c, decide whether there're two integers a and b
+    such that a2 + b2 = c.
+
+    Example 1:
+    Input: c = 5
+    Output: true
+    Explanation: 1 * 1 + 2 * 2 = 5
+
+    Example 2:
+    Input: c = 3
+    Output: false
+
+    Constraints: 0 <= c <= 2^31 - 1*/
+
+    public boolean judgeSquareSum(int c) {
+        /*Fermat theorem on sum of two squares*/
+        for (int x = 2; x*x <= c; ++x)
+            if (c % x == 0) {
+                int mult = 0;
+                for (; c % x == 0; ++mult, c /= x);
+                if (x % 4 == 3 && mult % 2 == 1) return false;
+            }
+        return c % 4 != 3;
+    }
+
+
     /*644. Maximum Average Subarray II (Hard)
     You are given an integer array nums consisting of n elements, and an
     integer k. Find a contiguous subarray whose length is greater than or equal
@@ -4195,6 +4222,57 @@ class Solution {
     }
 
 
+    /*826. Most Profit Assigning Work (Medium)
+    You have n jobs and m workers. You are given three arrays: difficulty,
+    profit, and worker where:
+    * difficulty[i] and profit[i] are the difficulty and the profit of the ith
+      job, and
+    * worker[j] is the ability of jth worker (i.e., the jth worker can only
+      complete a job with difficulty at most worker[j]).
+    Every worker can be assigned at most one job, but one job can be completed
+    multiple times.
+    * For example, if three workers attempt the same job that pays $1, then the
+      total profit will be $3. If a worker cannot complete any job, their profit
+      is $0.
+    Return the maximum profit we can achieve after assigning the workers to the
+    jobs.
+
+    Example 1:
+    Input: difficulty = [2,4,6,8,10], profit = [10,20,30,40,50], worker = [4,5,6,7]
+    Output: 100
+    Explanation: Workers are assigned jobs of difficulty [4,4,6,6] and they get
+                 a profit of [20,20,30,30] separately.
+
+    Example 2:
+    Input: difficulty = [85,47,57], profit = [24,66,99], worker = [40,25,25]
+    Output: 0
+
+    Constraints:
+    * n == difficulty.length
+    * n == profit.length
+    * m == worker.length
+    * 1 <= n, m <= 10^4
+    * 1 <= difficulty[i], profit[i], worker[i] <= 10^5*/
+
+    public int maxProfitAssignment(int[] difficulty, int[] profit, int[] worker) {
+        int n = difficulty.length;
+        int[][] job = new int[n][2];
+        for (int i = 0; i < n; ++i) {
+            job[i][0] = difficulty[i];
+            job[i][1] = profit[i];
+        }
+        Arrays.sort(job, (x, y) -> Integer.compare(x[0], y[0]));
+        Arrays.sort(worker);
+        int ans = 0, k = 0, prefix = 0;
+        for (var w : worker) {
+            for (; k < n && job[k][0] <= w; ++k)
+                prefix = Math.max(prefix, job[k][1]);
+            ans += prefix;
+        }
+        return ans;
+    }
+
+
     /*834. Sum of Distances in Tree (Hard)
     There is an undirected connected tree with n nodes labeled from 0 to n - 1
     and n - 1 edges. You are given the integer n and the array edges where
@@ -4968,6 +5046,51 @@ class Solution {
     }
 
 
+    /*995. Minimum Number of K Consecutive Bit Flips (Hard)
+    You are given a binary array nums and an integer k. A k-bit flip is choosing
+    a subarray of length k from nums and simultaneously changing every 0 in the
+    subarray to 1, and every 1 in the subarray to 0. Return the minimum number
+    of k-bit flips required so that there is no 0 in the array. If it is not
+    possible, return -1. A subarray is a contiguous part of an array.
+
+    Example 1:
+    Input: nums = [0,1,0], k = 1
+    Output: 2
+    Explanation: Flip nums[0], then flip nums[2].
+
+    Example 2:
+    Input: nums = [1,1,0], k = 2
+    Output: -1
+    Explanation: No matter how we flip subarrays of size 2, we cannot make the
+                 array become [1,1,1].
+
+    Example 3:
+    Input: nums = [0,0,0,1,0,1,1,0], k = 3
+    Output: 3
+    Explanation: Flip nums[0],nums[1],nums[2]: nums becomes [1,1,1,1,0,1,1,0]
+                 Flip nums[4],nums[5],nums[6]: nums becomes [1,1,1,1,1,0,0,0]
+                 Flip nums[5],nums[6],nums[7]: nums becomes [1,1,1,1,1,1,1,1]
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= k <= nums.length*/
+
+    public int minKBitFlips(int[] nums, int k) {
+        int ans = 0, flip = 0, n = nums.length;
+        int[] line = new int[n];
+        for (int i = 0; i < n; ++i) {
+            if (nums[i] == flip) {
+                if (n <= i+k-1) return -1;
+                ++ans;
+                flip ^= 1;
+                line[i+k-1] = 1;
+            }
+            if (line[i] == 1) flip ^= 1;
+        }
+        return ans;
+    }
+
+
     /*997. Find the Town Judge (Easy)
     In a town, there are n people labeled from 1 to n. There is a rumor that
     one of these people is secretly the town judge. If the town judge exists,
@@ -5115,6 +5238,50 @@ class Solution {
     }
 
 
+    /*1038. Binary Search Tree to Greater Sum Tree (Medium)
+    Given the root of a Binary Search Tree (BST), convert it to a Greater Tree
+    such that every key of the original BST is changed to the original key plus
+    the sum of all keys greater than the original key in BST. As a reminder, a
+    binary search tree is a tree that satisfies these constraints:
+    * The left subtree of a node contains only nodes with keys less than the
+      node's key.
+    * The right subtree of a node contains only nodes with keys greater than the
+      node's key.
+    * Both the left and right subtrees must also be binary search trees.
+
+    Example 1:
+    Input: root = [4,1,6,0,2,5,7,null,null,null,3,null,null,null,8]
+    Output: [30,36,21,36,35,26,15,null,null,null,33,null,null,null,8]
+
+    Example 2:
+    Input: root = [0,null,1]
+    Output: [1,null,1]
+
+    Constraints:
+    * The number of nodes in the tree is in the range [1, 100].
+    * 0 <= Node.val <= 100
+    * All the values in the tree are unique.
+
+    Note: This question is the same as 538:
+          https://leetcode.com/problems/convert-bst-to-greater-tree/*/
+
+    public TreeNode bstToGst(TreeNode root) {
+        Stack<TreeNode> stk = new Stack();
+        int prefix = 0;
+        TreeNode node = root;
+        while (node != null || !stk.isEmpty())
+            if (node != null) {
+                stk.push(node);
+                node = node.right;
+            } else {
+                node = stk.pop();
+                node.val = prefix = node.val + prefix;
+                node = node.left;
+            }
+        return root;
+    }
+
+
     /*1046. Last Stone Weight (Easy)
     You are given an array of integers stones where stones[i] is the weight of
     the ith stone. We are playing a game with the stones. On each turn, we
@@ -5202,6 +5369,52 @@ class Solution {
             --freq[v];
         }
         return ans;
+    }
+
+
+    /*1052. Grumpy Bookstore Owner (Medium)
+    There is a bookstore owner that has a store open for n minutes. Every
+    minute, some number of customers enter the store. You are given an integer
+    array customers of length n where customers[i] is the number of the customer
+    that enters the store at the start of the ith minute and all those customers
+    leave after the end of that minute. On some minutes, the bookstore owner is
+    grumpy. You are given a binary array grumpy where grumpy[i] is 1 if the
+    bookstore owner is grumpy during the ith minute, and is 0 otherwise. When
+    the bookstore owner is grumpy, the customers of that minute are not
+    satisfied, otherwise, they are satisfied. The bookstore owner knows a secret
+    technique to keep themselves not grumpy for minutes consecutive minutes, but
+    can only use it once. Return the maximum number of customers that can be
+    satisfied throughout the day.
+
+    Example 1:
+    Input: customers = [1,0,1,2,1,1,7,5], grumpy = [0,1,0,1,0,1,0,1], minutes = 3
+    Output: 16
+    Explanation: The bookstore owner keeps themselves not grumpy for the last 3
+                 minutes. The maximum number of customers that can be
+                 satisfied = 1 + 1 + 1 + 1 + 7 + 5 = 16.
+
+    Example 2:
+    Input: customers = [1], grumpy = [0], minutes = 1
+    Output: 1
+
+    Constraints:
+    * n == customers.length == grumpy.length
+    * 1 <= minutes <= n <= 2 * 10^4
+    * 0 <= customers[i] <= 1000
+    * grumpy[i] is either 0 or 1.*/
+
+    public int maxSatisfied(int[] customers, int[] grumpy, int minutes) {
+        int ans = 0, most = 0;
+        for (int i = 0, ii = 0, val = 0; i < customers.length; ++i) {
+            if (grumpy[i] == 1) val += customers[i];
+            else ans += customers[i];
+            if (ii == i-minutes) {
+                if (grumpy[ii] == 1) val -= customers[ii];
+                ++ii;
+            }
+            most = Math.max(most, val);
+        }
+        return ans + most;
     }
 
 
@@ -6292,6 +6505,123 @@ class Solution {
     }
 
 
+    /*1482. Minimum Number of Days to Make m Bouquets (Medium)
+    You are given an integer array bloomDay, an integer m and an integer k. You
+    want to make m bouquets. To make a bouquet, you need to use k adjacent
+    flowers from the garden. The garden consists of n flowers, the ith flower
+    will bloom in the bloomDay[i] and then can be used in exactly one bouquet.
+    Return the minimum number of days you need to wait to be able to make m
+    bouquets from the garden. If it is impossible to make m bouquets return -1.
+
+    Example 1:
+    Input: bloomDay = [1,10,3,10,2], m = 3, k = 1
+    Output: 3
+    Explanation: Let us see what happened in the first three days. x means
+                 flower bloomed and _ means flower did not bloom in the garden.
+                 We need 3 bouquets each should contain 1 flower.
+                 After day 1: [x, _, _, _, _]   // we can only make one bouquet.
+                 After day 2: [x, _, _, _, x]   // we can only make two bouquets.
+                 After day 3: [x, _, x, _, x]   // we can make 3 bouquets. The
+                                                // answer is 3.
+
+    Example 2:
+    Input: bloomDay = [1,10,3,10,2], m = 3, k = 2
+    Output: -1
+    Explanation: We need 3 bouquets each has 2 flowers, that means we need 6
+                 flowers. We only have 5 flowers so it is impossible to get the
+                 needed bouquets and we return -1.
+
+    Example 3:
+    Input: bloomDay = [7,7,7,7,12,7,7], m = 2, k = 3
+    Output: 12
+    Explanation: We need 2 bouquets each should have 3 flowers. Here is the
+                 garden after the 7 and 12 days:
+                 After day 7: [x, x, x, x, _, x, x]
+                 We can make one bouquet of the first three flowers that
+                 bloomed. We cannot make another bouquet from the last three
+                 flowers that bloomed because they are not adjacent.
+                 After day 12: [x, x, x, x, x, x, x]
+                 It is obvious that we can make two bouquets in different ways.
+
+    Constraints:
+    * bloomDay.length == n
+    * 1 <= n <= 10^5
+    * 1 <= bloomDay[i] <= 10^9
+    * 1 <= m <= 10^6
+    * 1 <= k <= n*/
+
+    public int minDays(int[] bloomDay, int m, int k) {
+        if (bloomDay.length < (long) m*k) return -1;
+        int lo = 0, hi = Arrays.stream(bloomDay).max().getAsInt();
+        while (lo < hi) {
+            int mid = lo + (hi-lo)/2;
+            int bouquet = 0, flower = 0;
+            for (var x : bloomDay) {
+                if (x <= mid) ++flower;
+                else flower = 0;
+                if (flower == k) {
+                    flower = 0;
+                    ++bouquet;
+                }
+            }
+            if (bouquet >= m) hi = mid;
+            else lo = mid + 1;
+        }
+        return lo;
+    }
+
+
+    /*1509. Minimum Difference Between Largest and Smallest Value in Three Moves (Medium)
+    You are given an integer array nums. In one move, you can choose one element
+    of nums and change it to any value. Return the minimum difference between
+    the largest and smallest value of nums after performing at most three moves.
+
+    Example 1:
+    Input: nums = [5,3,2,4]
+    Output: 0
+    Explanation: We can make at most 3 moves.
+                 In the first move, change 2 to 3. nums becomes [5,3,3,4].
+                 In the second move, change 4 to 3. nums becomes [5,3,3,3].
+                 In the third move, change 5 to 3. nums becomes [3,3,3,3].
+                 After performing 3 moves, the difference between the minimum
+                 and maximum is 3 - 3 = 0.
+
+    Example 2:
+    Input: nums = [1,5,0,10,14]
+    Output: 1
+    Explanation: We can make at most 3 moves.
+                 In the first move, change 5 to 0. nums becomes [1,0,0,10,14].
+                 In the second move, change 10 to 0. nums becomes [1,0,0,0,14].
+                 In the third move, change 14 to 1. nums becomes [1,0,0,0,1].
+                 After performing 3 moves, the difference between the minimum
+                 and maximum is 1 - 0 = 1. It can be shown that there is no way
+                 to make the difference 0 in 3 moves.
+
+    Example 3:
+    Input: nums = [3,100,20]
+    Output: 0
+    Explanation: We can make at most 3 moves.
+                 In the first move, change 100 to 7. nums becomes [3,7,20].
+                 In the second move, change 20 to 7. nums becomes [3,7,7].
+                 In the third move, change 3 to 7. nums becomes [7,7,7].
+                 After performing 3 moves, the difference between the minimum
+                 and maximum is 7 - 7 = 0.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * -10^9 <= nums[i] <= 10^9*/
+
+    public int minDifference(int[] nums) {
+        Arrays.sort(nums);
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0, n = nums.length; i < 4 && i < n; ++i) {
+            int j = Math.max(i, n-4+i);
+            ans = Math.min(ans, nums[j]-nums[i]);
+        }
+        return ans;
+    }
+
+
     /*1516. Move Sub-Tree of N-Ary Tree (Hard)
     Given the root of an N-ary tree of unique values, and two nodes of the tree
     p and q. You should move the subtree of the node p to become a direct child
@@ -6630,6 +6960,81 @@ class Solution {
             jj = mp[i][jj];
         }
         return ans;
+    }
+
+
+    /*1550. Three Consecutive Odds (Easy)
+    Given an integer array arr, return true if there are three consecutive odd
+    numbers in the array. Otherwise, return false.
+
+    Example 1:
+    Input: arr = [2,6,4,1]
+    Output: false
+    Explanation: There are no three consecutive odds.
+
+    Example 2:
+    Input: arr = [1,2,34,3,4,5,7,23,12]
+    Output: true
+    Explanation: [5,7,23] are three consecutive odds.
+
+    Constraints:
+    * 1 <= arr.length <= 1000
+    * 1 <= arr[i] <= 1000*/
+
+    public boolean threeConsecutiveOdds(int[] arr) {
+        int cnt = 0;
+        for (var x : arr) {
+            if (x % 2 == 1) ++cnt;
+            else cnt = 0;
+            if (cnt == 3) return true;
+        }
+        return false;
+    }
+
+
+    /*1552. Magnetic Force Between Two Balls (Medium)
+    In the universe Earth C-137, Rick discovered a special form of magnetic
+    force between two balls if they are put in his new invented basket. Rick has
+    n empty baskets, the ith basket is at position[i], Morty has m balls and
+    needs to distribute the balls into the baskets such that the minimum
+    magnetic force between any two balls is maximum. Rick stated that magnetic
+    force between two different balls at positions x and y is |x - y|. Given the
+    integer array position and the integer m. Return the required force.
+
+    Example 1:
+    Input: position = [1,2,3,4,7], m = 3
+    Output: 3
+    Explanation: Distributing the 3 balls into baskets 1, 4 and 7 will make the
+                 magnetic force between ball pairs [3, 3, 6]. The minimum
+                 magnetic force is 3. We cannot achieve a larger minimum
+                 magnetic force than 3.
+
+    Example 2:
+    Input: position = [5,4,3,2,1,1000000000], m = 2
+    Output: 999999999
+    Explanation: We can use baskets 1 and 1000000000.
+
+    Constraints:
+    * n == position.length
+    * 2 <= n <= 10^5
+    * 1 <= position[i] <= 10^9
+    * All integers in position are distinct.
+    * 2 <= m <= position.length*/
+
+    public int maxDistance(int[] position, int m) {
+        Arrays.sort(position);
+        int lo = 1, hi = position[position.length-1] - position[0];
+        while (lo < hi) {
+            int mid = (lo + hi + 1)/2, cnt = 0, prev = -1_000_000_000;
+            for (var x : position)
+                if (x - prev >= mid) {
+                    ++cnt;
+                    prev = x;
+                }
+            if (cnt >= m) lo = mid;
+            else hi = mid-1;
+        }
+        return lo;
     }
 
 
@@ -27843,8 +28248,13 @@ class SegTreeLazy {
         int ans = 0;
         int[] freq = new int[24];
         for (var h : hours) {
+<<<<<<< HEAD
             ans += freq[(24+(24-h)%24) % 24];
             ++freq[h%24];
+=======
+            ans += freq[(24-h%24) % 24];
+            ++freq[h % 24];
+>>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
         }
         return ans;
     }
@@ -27877,8 +28287,13 @@ class SegTreeLazy {
         long ans = 0;
         int[] freq = new int[24];
         for (var h : hours) {
+<<<<<<< HEAD
             ans += freq[(24+(24-h)%24) % 24];
             ++freq[h%24];
+=======
+            ans += freq[(24-h%24) % 24];
+            ++freq[h % 24];
+>>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
         }
         return ans;
     }
@@ -28003,6 +28418,196 @@ class SegTreeLazy {
         }
         return ans;
     }
+<<<<<<< HEAD
+=======
+
+
+    /*3200. Maximum Height of a Triangle (Easy)
+    You are given two integers red and blue representing the count of red and
+    blue colored balls. You have to arrange these balls to form a triangle such
+    that the 1st row will have 1 ball, the 2nd row will have 2 balls, the 3rd
+    row will have 3 balls, and so on. All the balls in a particular row should
+    be the same color, and adjacent rows should have different colors. Return
+    the maximum height of the triangle that can be achieved.
+
+    Example 1:
+    Input: red = 2, blue = 4
+    Output: 3
+    Explanation: The only possible arrangement is shown above.
+
+    Example 2:
+    Input: red = 2, blue = 1
+    Output: 2
+    Explanation: The only possible arrangement is shown above.
+
+    Example 3:
+    Input: red = 1, blue = 1
+    Output: 1
+
+    Example 4:
+    Input: red = 10, blue = 1
+    Output: 2
+    Explanation: The only possible arrangement is shown above.
+
+    Constraints: 1 <= red, blue <= 100*/
+
+    public int maxHeightOfTriangle(int red, int blue) {
+        int ans = 0;
+        int[][] balls = new int[][]{{red, blue}, {blue, red}};
+        for (var ball : balls) {
+            int cand = 0;
+            for (int k = 1, i = 0; ball[i] >= k; ++k, i ^= 1) {
+                ball[i] -= k;
+                ++cand;
+            }
+            ans = Math.max(ans, cand);
+        }
+        return ans;
+    }
+
+
+    /*3201. Find the Maximum Length of Valid Subsequence I (Medium)
+    You are given an integer array nums. A subsequence sub of nums with length x
+    is called valid if it satisfies:
+    * (sub[0] + sub[1]) % 2 == (sub[1] + sub[2]) % 2 == ...
+      == (sub[x - 2] + sub[x - 1]) % 2.
+    Return the length of the longest valid subsequence of nums. A subsequence is
+    an array that can be derived from another array by deleting some or no
+    elements without changing the order of the remaining elements.
+
+    Example 1:
+    Input: nums = [1,2,3,4]
+    Output: 4
+    Explanation: The longest valid subsequence is [1, 2, 3, 4].
+
+    Example 2:
+    Input: nums = [1,2,1,1,2,1,2]
+    Output: 6
+    Explanation: The longest valid subsequence is [1, 2, 1, 2, 1, 2].
+
+    Example 3:
+    Input: nums = [1,3]
+    Output: 2
+    Explanation: The longest valid subsequence is [1, 3].
+
+    Constraints:
+    * 2 <= nums.length <= 2 * 10^5
+    * 1 <= nums[i] <= 10^7*/
+
+    public int maximumLength(int[] nums) {
+        int[][] dp = new int[2][2];
+        for (var x : nums) {
+            x %= 2;
+            dp[x][0] = 1 + dp[0][x];
+            dp[x][1] = 1 + dp[1][x];
+        }
+        return Math.max(Math.max(dp[0][0], dp[0][1]), Math.max(dp[1][0], dp[1][1]));
+    }
+
+
+    /*3202. Find the Maximum Length of Valid Subsequence II (Medium)
+    You are given an integer array nums and a positive integer k. A subsequence
+    sub of nums with length x is called valid if it satisfies:
+    * (sub[0] + sub[1]) % k == (sub[1] + sub[2]) % k == ... == (sub[x - 2] + sub[x - 1]) % k.
+    Return the length of the longest valid subsequence of nums.
+
+    Example 1:
+    Input: nums = [1,2,3,4,5], k = 2
+    Output: 5
+    Explanation: The longest valid subsequence is [1, 2, 3, 4, 5].
+
+    Example 2:
+    Input: nums = [1,4,2,3,1,4], k = 3
+    Output: 4
+    Explanation: The longest valid subsequence is [1, 4, 1, 4].
+
+    Constraints:
+    * 2 <= nums.length <= 10^3
+    * 1 <= nums[i] <= 10^7
+    * 1 <= k <= 10^3*/
+
+    public int maximumLength(int[] nums, int k) {
+        int[][] dp = new int[k][k];
+        for (var x : nums) {
+            x %= k;
+            for (int y = 0; y < k; ++y)
+                dp[x][y] = 1 + dp[y][x];
+        }
+        return Arrays.stream(dp).flatMapToInt(Arrays::stream).max().getAsInt();
+    }
+
+
+    /*3203. Find Minimum Diameter After Merging Two Trees (Hard)
+    There exist two undirected trees with n and m nodes, numbered from 0 to
+    n - 1 and from 0 to m - 1, respectively. You are given two 2D integer arrays
+    edges1 and edges2 of lengths n - 1 and m - 1, respectively, where
+    edges1[i] = [ai, bi] indicates that there is an edge between nodes ai and bi
+    in the first tree and edges2[i] = [ui, vi] indicates that there is an edge
+    between nodes ui and vi in the second tree. You must connect one node from
+    the first tree with another node from the second tree with an edge. Return
+    the minimum possible diameter of the resulting tree. The diameter of a tree
+    is the length of the longest path between any two nodes in the tree.
+
+    Example 1:
+    Input: edges1 = [[0,1],[0,2],[0,3]], edges2 = [[0,1]]
+    Output: 3
+    Explanation: We can obtain a tree of diameter 3 by connecting node 0 from
+                 the first tree with any node from the second tree.
+
+    Example 2:
+    Input: edges1 = [[0,1],[0,2],[0,3],[2,4],[2,5],[3,6],[2,7]], edges2 = [[0,1],[0,2],[0,3],[2,4],[2,5],[3,6],[2,7]]
+    Output: 5
+    Explanation: We can obtain a tree of diameter 5 by connecting node 0 from
+                 the first tree with node 0 from the second tree.
+
+    Constraints:
+    * 1 <= n, m <= 10^5
+    * edges1.length == n - 1
+    * edges2.length == m - 1
+    * edges1[i].length == edges2[i].length == 2
+    * edges1[i] = [ai, bi]
+    * 0 <= ai, bi < n
+    * edges2[i] = [ui, vi]
+    * 0 <= ui, vi < m
+    * The input is generated such that edges1 and edges2 represent valid trees.*/
+
+    private int[] bfs(int u, List<Integer>[] graph) {
+        int ans = 0;
+        Queue<int[]> q = new LinkedList();
+        q.add(new int[]{u, -1});
+        while (!q.isEmpty()) {
+            ++ans;
+            for (int sz = q.size(); sz > 0; --sz) {
+                var elem = q.poll();
+                u = elem[0];
+                int p = elem[1];
+                for (var v : graph[u])
+                    if (v != p)
+                        q.add(new int[]{v, u});
+            }
+        }
+        return new int[]{ans-1, u};
+    }
+
+    private int fn(int[][] edges) {
+        int n = 1 + edges.length;
+        List<Integer>[] graph = new List[n];
+        for (int i = 0; i < n; ++i)
+            graph[i] = new ArrayList();
+        for (var e : edges) {
+            int u = e[0], v = e[1];
+            graph[u].add(v);
+            graph[v].add(u);
+        }
+        int[] u = bfs(0, graph);
+        int[] d = bfs(u[1], graph);
+        return d[0];
+    }
+    public int minimumDiameterAfterMerge(int[][] edges1, int[][] edges2) {
+        int d1 = fn(edges1), d2 = fn(edges2);
+        return Math.max(d1, Math.max(d2, (d1+1)/2 + (d2+1)/2 + 1));
+    }
+>>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
 }
 
 
