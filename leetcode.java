@@ -2387,6 +2387,46 @@ class Solution {
     }
 
 
+    /*350. Intersection of Two Arrays II (Easy)
+    Given two integer arrays nums1 and nums2, return an array of their
+    intersection. Each element in the result must appear as many times as it
+    shows in both arrays and you may return the result in any order.
+
+    Example 1:
+    Input: nums1 = [1,2,2,1], nums2 = [2,2]
+    Output: [2,2]
+
+    Example 2:
+    Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+    Output: [4,9]
+    Explanation: [9,4] is also accepted.
+
+    Constraints:
+    * 1 <= nums1.length, nums2.length <= 1000
+    * 0 <= nums1[i], nums2[i] <= 1000
+
+    Follow up:
+    * What if the given array is already sorted? How would you optimize your
+      algorithm?
+    * What if nums1's size is small compared to nums2's size? Which algorithm is
+      better?
+    * What if elements of nums2 are stored on disk, and the memory is limited
+      such that you cannot load all elements into the memory at once?*/
+
+    public int[] intersect(int[] nums1, int[] nums2) {
+        Map<Integer, Integer> freq = new HashMap();
+        for (var x : nums1)
+            freq.merge(x, 1, Integer::sum);
+        List<Integer> ans = new ArrayList();
+        for (var x : nums2)
+            if (freq.getOrDefault(x, 0) > 0) {
+                ans.add(x);
+                freq.merge(x, -1, Integer::sum);
+            }
+        return ans.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+
     /*358. Rearrange String k Distance Apart (Hard)
     Given a string s and an integer k, rearrange s such that the same
     characters are at least distance k from each other. If it is not possible
@@ -28248,13 +28288,8 @@ class SegTreeLazy {
         int ans = 0;
         int[] freq = new int[24];
         for (var h : hours) {
-<<<<<<< HEAD
-            ans += freq[(24+(24-h)%24) % 24];
-            ++freq[h%24];
-=======
             ans += freq[(24-h%24) % 24];
             ++freq[h % 24];
->>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
         }
         return ans;
     }
@@ -28287,13 +28322,8 @@ class SegTreeLazy {
         long ans = 0;
         int[] freq = new int[24];
         for (var h : hours) {
-<<<<<<< HEAD
-            ans += freq[(24+(24-h)%24) % 24];
-            ++freq[h%24];
-=======
             ans += freq[(24-h%24) % 24];
             ++freq[h % 24];
->>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
         }
         return ans;
     }
@@ -28418,8 +28448,6 @@ class SegTreeLazy {
         }
         return ans;
     }
-<<<<<<< HEAD
-=======
 
 
     /*3200. Maximum Height of a Triangle (Easy)
@@ -28607,7 +28635,6 @@ class SegTreeLazy {
         int d1 = fn(edges1), d2 = fn(edges2);
         return Math.max(d1, Math.max(d2, (d1+1)/2 + (d2+1)/2 + 1));
     }
->>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
 }
 
 

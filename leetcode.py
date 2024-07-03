@@ -90687,8 +90687,6 @@ class SegTreeLazy:
         return ans
 
 
-<<<<<<< HEAD
-=======
     """3200. Maximum Height of a Triangle (Easy)
     You are given two integers red and blue representing the count of red and
     blue colored balls. You have to arrange these balls to form a triangle such
@@ -90863,7 +90861,6 @@ class SegTreeLazy:
         return max(d1, d2, (d1+1)//2+(d2+1)//2+1)
 
 
->>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.

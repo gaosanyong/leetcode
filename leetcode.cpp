@@ -8269,7 +8269,6 @@ public:
     vector<int> intersect(vector<int>& nums1, vector<int>& nums2) {
         unordered_map<int, int> freq;
         for (auto& x : nums1) ++freq[x];
-
         vector<int> ans;
         for (auto& x : nums2)
             if (freq[x]-- > 0) ans.push_back(x);
@@ -72337,11 +72336,7 @@ public:
         int ans = 0;
         vector<int> freq(24);
         for (auto& h : hours) {
-<<<<<<< HEAD
-            ans += freq[(24+(24-h)%24) % 24];
-=======
             ans += freq[(24-h%24) % 24];
->>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
             ++freq[h % 24];
         }
         return ans;
@@ -72375,11 +72370,7 @@ public:
         long ans = 0;
         vector<int> freq(24);
         for (auto& h : hours) {
-<<<<<<< HEAD
-            ans += freq[(24+(24-h)%24) % 24];
-=======
             ans += freq[(24-h%24) % 24];
->>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
             ++freq[h % 24];
         }
         return ans;
@@ -72506,8 +72497,6 @@ public:
         }
         return ans;
     }
-<<<<<<< HEAD
-=======
 
 
     /*3200. Maximum Height of a Triangle (Easy)
@@ -72696,7 +72685,6 @@ public:
         int d1 = fn(edges1), d2 = fn(edges2);
         return max({d1, d2, (d1+1)/2 + (d2+1)/2 + 1});
     }
->>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
 }
 
 

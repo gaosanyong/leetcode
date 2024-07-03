@@ -801,6 +801,46 @@ function minPatches(nums: number[], n: number): number {
 };
 
 
+/*350. Intersection of Two Arrays II (Easy)
+Given two integer arrays nums1 and nums2, return an array of their
+intersection. Each element in the result must appear as many times as it
+shows in both arrays and you may return the result in any order.
+
+Example 1:
+Input: nums1 = [1,2,2,1], nums2 = [2,2]
+Output: [2,2]
+
+Example 2:
+Input: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+Output: [4,9]
+Explanation: [9,4] is also accepted.
+
+Constraints:
+* 1 <= nums1.length, nums2.length <= 1000
+* 0 <= nums1[i], nums2[i] <= 1000
+
+Follow up:
+* What if the given array is already sorted? How would you optimize your
+  algorithm?
+* What if nums1's size is small compared to nums2's size? Which algorithm is
+  better?
+* What if elements of nums2 are stored on disk, and the memory is limited
+  such that you cannot load all elements into the memory at once?*/
+
+function intersect(nums1: number[], nums2: number[]): number[] {
+    const freq = new Map();
+    for (const x of nums1)
+        freq.set(x, (freq.get(x)??0) + 1);
+    const ans = [];
+    for (const x of nums2)
+        if (freq.get(x)??0 > 0) {
+            ans.push(x);
+            freq.set(x, freq.get(x)-1);
+        }
+    return ans;
+};
+
+
 /*387. First Unique Character in a String (Easy)
 Given a string s, find the first non-repeating character in it and return
 its index. If it does not exist, return -1.
@@ -10877,13 +10917,8 @@ function countCompleteDayPairs(hours: number[]): number {
     let ans = 0;
     const freq = Array(24).fill(0);
     for (const h of hours) {
-<<<<<<< HEAD
-        ans += freq[(24+(24-h)%24)%24];
-        ++freq[h%24];
-=======
         ans += freq[(24-h%24) % 24];
         ++freq[h % 24];
->>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
     }
     return ans;
 };
@@ -10916,13 +10951,8 @@ function countCompleteDayPairs(hours: number[]): number {
     let ans = 0;
     const freq = Array(24).fill(0);
     for (const h of hours) {
-<<<<<<< HEAD
-        ans += freq[(24+(24-h)%24)%24];
-        ++freq[h%24];
-=======
         ans += freq[(24-h%24) % 24];
         ++freq[h % 24];
->>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
     }
     return ans;
 };
@@ -11045,9 +11075,7 @@ function countOfPeaks(nums: number[], queries: number[][]): number[] {
         }
     }
     return ans;
-};
-<<<<<<< HEAD
-=======
+};x
 
 
 /*3200. Maximum Height of a Triangle (Easy)
@@ -11230,4 +11258,3 @@ function minimumDiameterAfterMerge(edges1: number[][], edges2: number[][]): numb
     const d1 = fn(edges1), d2 = fn(edges2);
     return Math.max(d1, d2, Math.ceil(d1/2) + Math.ceil(d2/2) + 1);
 };
->>>>>>> 593f91dcba3497a95b3d8dad364118835805ea75
