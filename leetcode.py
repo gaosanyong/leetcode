@@ -42329,9 +42329,9 @@ class Fenwick:
 
     def averageWaitingTime(self, customers: List[List[int]]) -> float:
         ans = t = 0
-        for arrvl, tt in customers:
-            t = max(t, arrvl) + tt
-            ans += t - arrvl
+        for arrival, time in customers:
+            t = max(t, arrival) + time
+            ans += t - arrival
         return ans/len(customers)
 
 
