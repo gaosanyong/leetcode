@@ -43009,21 +43009,19 @@ class Fenwick:
 
     def maximumGain(self, s: str, x: int, y: int) -> int:
         a, b = "a", "b"
-        if x < y:
-            x, y = y, x
-            a, b = b, a
-        ans = cnt0 = cnt1 = 0
+        if x < y: a, b, x, y = b, a, y, x
+        ans = ca = cb = 0
         for c in s:
             if c not in "ab":
-                ans += min(cnt0, cnt1) * y
-                cnt0 = cnt1 = 0
+                ans += min(ca, cb) * y
+                ca = cb = 0
             elif c == b:
-                if cnt0:
-                    cnt0 -= 1
+                if ca:
+                    ca -= 1
                     ans += x
-                else: cnt1 += 1
-            else: cnt0 += 1
-        return ans + min(cnt0, cnt1) * y
+                else: cb += 1
+            else: ca += 1
+        return ans + min(ca, cb) * y
 
 
     """1718. Construct the Lexicographically Largest Valid Sequence (Medium)
