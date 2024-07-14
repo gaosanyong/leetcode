@@ -90971,6 +90971,203 @@ class SegTreeLazy:
         return max(d1, d2, (d1+1)//2+(d2+1)//2+1)
 
 
+    """3216. Lexicographically Smallest String After a Swap (Easy)
+    Given a string s containing only digits, return the lexicographically
+    smallest string that can be obtained after swapping adjacent digits in s
+    with the same parity at most once. Digits have the same parity if both are
+    odd or both are even. For example, 5 and 9, as well as 2 and 4, have the
+    same parity, while 6 and 9 do not.
+
+    Example 1:
+    Input: s = "45320"
+    Output: "43520"
+    Explanation: s[1] == '5' and s[2] == '3' both have the same parity, and
+                 swapping them results in the lexicographically smallest string.
+
+    Example 2:
+    Input: s = "001"
+    Output: "001"
+    Explanation: There is no need to perform a swap because s is already the
+                 lexicographically smallest.
+
+    Constraints:
+    * 2 <= s.length <= 100
+    * s consists only of digits."""
+
+    def getSmallestString(self, s: str) -> str:
+        s = list(map(int, s))
+        for i in range(len(s)-1):
+            if s[i]&1 == s[i+1]&1 and s[i] > s[i+1]:
+                s[i], s[i+1] = s[i+1], s[i]
+                break
+        return ''.join(map(str, s))
+
+
+    """3217. Delete Nodes From Linked List Present in Array (Medium)
+    You are given an array of integers nums and the head of a linked list.
+    Return the head of the modified linked list after removing all nodes from
+    the linked list that have a value that exists in nums.
+
+    Example 1:
+    Input: nums = [1,2,3], head = [1,2,3,4,5]
+    Output: [4,5]
+    Explanation: Remove the nodes with values 1, 2, and 3.
+
+    Example 2:
+    Input: nums = [1], head = [1,2,1,2,1,2]
+    Output: [2,2,2]
+    Explanation: Remove the nodes with value 1.
+
+    Example 3:
+    Input: nums = [5], head = [1,2,3,4]
+    Output: [1,2,3,4]
+    Explanation: No node has value 5.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^5
+    * All elements in nums are unique.
+    * The number of nodes in the given list is in the range [1, 10^5].
+    * 1 <= Node.val <= 10^5
+    * The input is generated such that there is at least one node in the linked
+      list that has a value not present in nums."""
+
+    def modifiedList(self, nums: List[int], head: Optional[ListNode]) -> Optional[ListNode]:
+        seen = set(nums)
+        dummy = node = ListNode(0, head)
+        while node.next:
+            if node.next.val in seen: node.next = node.next.next
+            else: node = node.next
+        return dummy.next
+
+
+    """3218. Minimum Cost for Cutting Cake I (Medium)
+    There is an m x n cake that needs to be cut into 1 x 1 pieces. You are given
+    integers m, n, and two arrays:
+    * horizontalCut of size m - 1, where horizontalCut[i] represents the cost to
+      cut along the horizontal line i.
+    * verticalCut of size n - 1, where verticalCut[j] represents the cost to cut
+      along the vertical line j.
+    In one operation, you can choose any piece of cake that is not yet a 1 x 1
+    square and perform one of the following cuts:
+    * Cut along a horizontal line i at a cost of horizontalCut[i].
+    * Cut along a vertical line j at a cost of verticalCut[j].
+    After the cut, the piece of cake is divided into two distinct pieces. The
+    cost of a cut depends only on the initial cost of the line and does not
+    change. Return the minimum total cost to cut the entire cake into 1 x 1
+    pieces.
+
+    Example 1:
+    Input: m = 3, n = 2, horizontalCut = [1,3], verticalCut = [5]
+    Output: 13
+    Explanation: Perform a cut on the vertical line 0 with cost 5, current total
+                 cost is 5.
+                 Perform a cut on the horizontal line 0 on 3 x 1 subgrid with
+                 cost 1.
+                 Perform a cut on the horizontal line 0 on 3 x 1 subgrid with
+                 cost 1.
+                 Perform a cut on the horizontal line 1 on 2 x 1 subgrid with
+                 cost 3.
+                 Perform a cut on the horizontal line 1 on 2 x 1 subgrid with
+                 cost 3.
+                 The total cost is 5 + 1 + 1 + 3 + 3 = 13.
+
+    Example 2:
+    Input: m = 2, n = 2, horizontalCut = [7], verticalCut = [4]
+    Output: 15
+    Explanation: Perform a cut on the horizontal line 0 with cost 7.
+                 Perform a cut on the vertical line 0 on 1 x 2 subgrid with cost
+                 4.
+                 Perform a cut on the vertical line 0 on 1 x 2 subgrid with cost
+                 4.
+                 The total cost is 7 + 4 + 4 = 15.
+
+    Constraints:
+    * 1 <= m, n <= 20
+    * horizontalCut.length == m - 1
+    * verticalCut.length == n - 1
+    * 1 <= horizontalCut[i], verticalCut[i] <= 10^3"""
+
+    def minimumCost(self, m: int, n: int, horizontalCut: List[int], verticalCut: List[int]) -> int:
+        ans = 0
+        horizontalCut.sort()
+        verticalCut.sort()
+        hh = sum(horizontalCut)
+        vv = sum(verticalCut)
+        while horizontalCut or verticalCut:
+            if not horizontalCut or verticalCut and verticalCut[-1] > horizontalCut[-1]:
+                ans += verticalCut[-1] + hh
+                vv -= verticalCut.pop()
+            else:
+                ans += horizontalCut[-1] + vv
+                hh -= horizontalCut.pop()
+        return ans
+
+
+    """3219. Minimum Cost for Cutting Cake II (Hard)
+    There is an m x n cake that needs to be cut into 1 x 1 pieces. You are given
+    integers m, n, and two arrays:
+    * horizontalCut of size m - 1, where horizontalCut[i] represents the cost to
+      cut along the horizontal line i.
+    * verticalCut of size n - 1, where verticalCut[j] represents the cost to cut
+      along the vertical line j.
+    In one operation, you can choose any piece of cake that is not yet a 1 x 1
+    square and perform one of the following cuts:
+    * Cut along a horizontal line i at a cost of horizontalCut[i].
+    * Cut along a vertical line j at a cost of verticalCut[j].
+    After the cut, the piece of cake is divided into two distinct pieces. The
+    cost of a cut depends only on the initial cost of the line and does not
+    change. Return the minimum total cost to cut the entire cake into 1 x 1
+    pieces.
+
+    Example 1:
+    Input: m = 3, n = 2, horizontalCut = [1,3], verticalCut = [5]
+    Output: 13
+    Explanation: Perform a cut on the vertical line 0 with cost 5, current total
+                 cost is 5.
+                 Perform a cut on the horizontal line 0 on 3 x 1 subgrid with
+                 cost 1.
+                 Perform a cut on the horizontal line 0 on 3 x 1 subgrid with
+                 cost 1.
+                 Perform a cut on the horizontal line 1 on 2 x 1 subgrid with
+                 cost 3.
+                 Perform a cut on the horizontal line 1 on 2 x 1 subgrid with
+                 cost 3.
+                 The total cost is 5 + 1 + 1 + 3 + 3 = 13.
+
+    Example 2:
+    Input: m = 2, n = 2, horizontalCut = [7], verticalCut = [4]
+    Output: 15
+    Explanation: Perform a cut on the horizontal line 0 with cost 7.
+                 Perform a cut on the vertical line 0 on 1 x 2 subgrid with cost
+                 4.
+                 Perform a cut on the vertical line 0 on 1 x 2 subgrid with cost
+                 4.
+                 The total cost is 7 + 4 + 4 = 15.
+
+    Constraints:
+    * 1 <= m, n <= 10^5
+    * horizontalCut.length == m - 1
+    * verticalCut.length == n - 1
+    * 1 <= horizontalCut[i], verticalCut[i] <= 10^3"""
+
+    def minimumCost(self, m: int, n: int, horizontalCut: List[int], verticalCut: List[int]) -> int:
+        ans = 0
+        horizontalCut.sort()
+        verticalCut.sort()
+        hh = sum(horizontalCut)
+        vv = sum(verticalCut)
+        while horizontalCut or verticalCut:
+            if not horizontalCut or verticalCut and verticalCut[-1] > horizontalCut[-1]:
+                ans += verticalCut[-1] + hh
+                vv -= verticalCut.pop()
+            else:
+                ans += horizontalCut[-1] + vv
+                hh -= horizontalCut.pop()
+        return ans
+
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.
