@@ -49856,17 +49856,17 @@ public:
 
     TreeNode* createBinaryTree(vector<vector<int>>& descriptions) {
         unordered_map<int, TreeNode*> mp;
-        unordered_set<int> seen;
-        for (auto& desc : descriptions) {
-            int p = desc[0], c = desc[1], left = desc[2];
-            if (!mp.count(p)) mp[p] = new TreeNode(p);
-            if (!mp.count(c)) mp[c] = new TreeNode(c);
+        unordered_set<int> child;
+        for (auto& d : descriptions) {
+            int p = d[0], c = d[1], left = d[2];
+            if (!mp.contains(p)) mp[p] = new TreeNode(p);
+            if (!mp.contains(c)) mp[c] = new TreeNode(c);
             if (left) mp[p]->left = mp[c];
             else mp[p]->right = mp[c];
-            seen.insert(c);
+            child.insert(c);
         }
-        for (auto& desc : descriptions)
-            if (!seen.count(desc[0])) return mp[desc[0]];
+        for (auto& d : descriptions)
+            if (!child.contains(d[0])) return mp[d[0]];
         return nullptr;
     }
 
