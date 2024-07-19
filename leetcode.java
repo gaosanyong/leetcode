@@ -6913,6 +6913,62 @@ class Solution {
     }
 
 
+    /*1530. Number of Good Leaf Nodes Pairs (Medium)
+    You are given the root of a binary tree and an integer distance. A pair of
+    two different leaf nodes of a binary tree is said to be good if the length
+    of the shortest path between them is less than or equal to distance. Return
+    the number of good leaf node pairs in the tree.
+
+    Example 1:
+    Input: root = [1,2,3,null,4], distance = 3
+    Output: 1
+    Explanation: The leaf nodes of the tree are 3 and 4 and the length of the
+                 shortest path between them is 3. This is the only good pair.
+
+    Example 2:
+    Input: root = [1,2,3,4,5,6,7], distance = 3
+    Output: 2
+    Explanation: The good pairs are [4,5] and [6,7] with shortest path = 2. The
+                 pair [4,6] is not good because the length of ther shortest path
+                 between them is 4.
+
+    Example 3:
+    Input: root = [7,1,4,6,null,5,3,null,null,null,null,null,2], distance = 3
+    Output: 1
+    Explanation: The only good pair is [2,5].
+
+    Constraints:
+    * The number of nodes in the tree is in the range [1, 2^10].
+    * 1 <= Node.val <= 100
+    * 1 <= distance <= 10*/
+
+    int ans = 0;
+
+    private List<Integer> dfs(TreeNode node, int distance) {
+        if (node == null) return new ArrayList();
+        if (node.left == null && node.right == null) return Arrays.asList(0);
+        List<Integer> left = dfs(node.left, distance);
+        List<Integer> right = dfs(node.right, distance);
+        for (int i = 0, j = right.size()-1; i < left.size(); ++i) {
+            for (; 0 <= j && left.get(i) + right.get(j) + 2 > distance; --j);
+            ans += j+1;
+        }
+        List<Integer> out = new ArrayList();
+        for (int i = 0, j = 0, m = left.size(), n = right.size(); i < m || j < n; ) {
+            if (j == n || i < m && left.get(i) < right.get(j))
+                out.add(left.get(i++) + 1);
+            else
+                out.add(right.get(j++) + 1);
+        }
+        return out;
+    }
+
+    public int countPairs(TreeNode root, int distance) {
+        dfs(root, distance);
+        return ans;
+    }
+
+
     /*1539. Kth Missing Positive Number (Easy)
     Given an array arr of positive integers sorted in a strictly increasing
     order, and an integer k. Return the kth positive integer that is missing

@@ -29709,6 +29709,61 @@ public:
     }
 
 
+    /*1530. Number of Good Leaf Nodes Pairs (Medium)
+    You are given the root of a binary tree and an integer distance. A pair of
+    two different leaf nodes of a binary tree is said to be good if the length
+    of the shortest path between them is less than or equal to distance. Return
+    the number of good leaf node pairs in the tree.
+
+    Example 1:
+    Input: root = [1,2,3,null,4], distance = 3
+    Output: 1
+    Explanation: The leaf nodes of the tree are 3 and 4 and the length of the
+                 shortest path between them is 3. This is the only good pair.
+
+    Example 2:
+    Input: root = [1,2,3,4,5,6,7], distance = 3
+    Output: 2
+    Explanation: The good pairs are [4,5] and [6,7] with shortest path = 2. The
+                 pair [4,6] is not good because the length of ther shortest path
+                 between them is 4.
+
+    Example 3:
+    Input: root = [7,1,4,6,null,5,3,null,null,null,null,null,2], distance = 3
+    Output: 1
+    Explanation: The only good pair is [2,5].
+
+    Constraints:
+    * The number of nodes in the tree is in the range [1, 2^10].
+    * 1 <= Node.val <= 100
+    * 1 <= distance <= 10*/
+
+    int countPairs(TreeNode* root, int distance) {
+        int ans = 0;
+
+        function<vector<int>(TreeNode*)> fn = [&](TreeNode* node) {
+            if (!node) return vector<int>();
+            if (!node->left && !node->right) return vector<int>{0};
+            vector<int> left = fn(node->left), right = fn(node->right);
+            int j = right.size()-1;
+            for (auto& x : left) {
+                for (; 0 <= j && x+right[j]+2 > distance; --j);
+                ans += j+1;
+            }
+            vector<int> out;
+            for (int i = 0, j = 0, ni = left.size(), nj = right.size(); i < ni || j < nj; )
+                if (j == nj || i < ni && left[i] < right[j])
+                    out.push_back(left[i++]+1);
+                else
+                    out.push_back(right[j++]+1);
+            return out;
+        };
+
+        fn(root);
+        return ans;
+    }
+
+
     /*1533. Find the Index of the Large Integer (Medium)
     We have an integer array arr, where all the integers in arr are equal
     except for one integer which is larger than the rest of the integers. You

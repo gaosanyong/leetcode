@@ -2811,6 +2811,60 @@ function numWaterBottles(numBottles: number, numExchange: number): number {
 };
 
 
+/*1530. Number of Good Leaf Nodes Pairs (Medium)
+You are given the root of a binary tree and an integer distance. A pair of
+two different leaf nodes of a binary tree is said to be good if the length
+of the shortest path between them is less than or equal to distance. Return
+the number of good leaf node pairs in the tree.
+
+Example 1:
+Input: root = [1,2,3,null,4], distance = 3
+Output: 1
+Explanation: The leaf nodes of the tree are 3 and 4 and the length of the
+             shortest path between them is 3. This is the only good pair.
+
+Example 2:
+Input: root = [1,2,3,4,5,6,7], distance = 3
+Output: 2
+Explanation: The good pairs are [4,5] and [6,7] with shortest path = 2. The
+             pair [4,6] is not good because the length of ther shortest path
+             between them is 4.
+
+Example 3:
+Input: root = [7,1,4,6,null,5,3,null,null,null,null,null,2], distance = 3
+Output: 1
+Explanation: The only good pair is [2,5].
+
+Constraints:
+* The number of nodes in the tree is in the range [1, 2^10].
+* 1 <= Node.val <= 100
+* 1 <= distance <= 10*/
+
+function countPairs(root: TreeNode | null, distance: number): number {
+    let ans = 0;
+
+    function fn(node) {
+        if (!node) return [];
+        if (!node.left && !node.right) return [0];
+        const left = fn(node.left), right = fn(node.right);
+        for (let i = 0, j = right.length-1; i < left.length; ++i) {
+            for (; 0 <= j && left[i] + right[j] + 2 > distance; --j);
+            ans += j+1;
+        }
+        const out = [];
+        for (let i = 0, j = 0, m = left.length, n = right.length; i < m || j < n; )
+            if (j == n || i < m && left[i] < right[j])
+                out.push(left[i++]+1);
+            else
+                out.push(right[j++]+1);
+        return out;
+    }
+
+    fn(root);
+    return ans;
+};
+
+
 /*1544. Make The String Great (Easy)
 Given a string s of lower and upper case English letters. A good string is a
 string which doesn't have two adjacent characters s[i] and s[i + 1] where:

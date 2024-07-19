@@ -37589,18 +37589,31 @@ class UnionFind:
     * 1 <= distance <= 10"""
 
     def countPairs(self, root: TreeNode, distance: int) -> int:
+        ans = 0
 
-        def dfs(node):
-            """Return (a list of) distances to leaves of sub-tree rooted at node."""
+        def fn(node):
+            """Return distances of leaves of sub-tree rooted at node."""
             nonlocal ans
             if not node: return []
             if node.left is node.right is None: return [0]
-            left,right = dfs(node.left), dfs(node.right)
-            ans += sum(2 + x + y <= distance for x in left for y in right)
-            return [1 + x for x in left + right]
+            left, right = fn(node.left), fn(node.right)
+            j = len(right)-1
+            for x in left:
+                while 0 <= j and x + right[j] + 2 > distance:
+                    j -= 1
+                ans += j+1
+            out = []
+            i = j = 0
+            while i < len(left) or j < len(right):
+                if j == len(right) or i < len(left) and left[i] < right[j]:
+                    out.append(1 + left[i])
+                    i += 1
+                else:
+                    out.append(1 + right[j])
+                    j += 1
+            return out
 
-        ans = 0
-        dfs(root)
+        fn(root)
         return ans
 
 
