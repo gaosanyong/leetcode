@@ -29510,6 +29510,160 @@ class SegTreeLazy {
             }
         return ans;
     }
+
+
+    /*3226. Number of Bit Changes to Make Two Integers Equal (Easy)
+    You are given two positive integers n and k. You can choose any bit in the
+    binary representation of n that is equal to 1 and change it to 0. Return the
+    number of changes needed to make n equal to k. If it is impossible, return
+    -1.
+
+    Example 1:
+    Input: n = 13, k = 4
+    Output: 2
+    Explanation: Initially, the binary representations of n and k are
+                 n = (1101)2 and k = (0100)2. We can change the first and fourth
+                 bits of n. The resulting integer is n = (0100)2 = k.
+
+    Example 2:
+    Input: n = 21, k = 21
+    Output: 0
+    Explanation: n and k are already equal, so no changes are needed.
+
+    Example 3:
+    Input: n = 14, k = 13
+    Output: -1
+    Explanation: It is not possible to make n equal to k.
+
+    Constraints: 1 <= n, k <= 10^6*/
+
+    public int minChanges(int n, int k) {
+        return (n & k) == k ? Integer.bitCount(n ^ k) : -1;
+    }
+
+
+    /*3227. Vowels Game in a String (Medium)
+    Alice and Bob are playing a game on a string. You are given a string s,
+    Alice and Bob will take turns playing the following game where Alice starts
+    first:
+    * On Alice's turn, she has to remove any non-empty substring from s that
+      contains an odd number of vowels.
+    * On Bob's turn, he has to remove any non-empty substring from s that
+      contains an even number of vowels.
+    The first player who cannot make a move on their turn loses the game. We
+    assume that both Alice and Bob play optimally. Return true if Alice wins the
+    game, and false otherwise. The English vowels are: a, e, i, o, and u.
+
+    Example 1:
+    Input: s = "leetcoder"
+    Output: true
+    Explanation: Alice can win the game as follows:
+                 * Alice plays first, she can delete the underlined substring in
+                   s = "leetcoder" which contains 3 vowels. The resulting string
+                   is s = "der".
+                 * Bob plays second, he can delete the underlined substring in
+                   s = "der" which contains 0 vowels. The resulting string is
+                   s = "er".
+                 * Alice plays third, she can delete the whole string s = "er"
+                   which contains 1 vowel.
+                 * Bob plays fourth, since the string is empty, there is no
+                 valid play for Bob. So Alice wins the game.
+
+    Example 2:
+    Input: s = "bbcd"
+    Output: false
+    Explanation: There is no valid play for Alice in her first turn, so Alice
+                 loses the game.
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s consists only of lowercase English letters.*/
+
+    public boolean doesAliceWin(String s) {
+        for (char ch : "aeiou".toCharArray())
+            if (s.indexOf(ch) != -1)
+                return true;
+        return false;
+    }
+
+
+    /*3228. Maximum Number of Operations to Move Ones to the End (Medium)
+    You are given a binary string s. You can perform the following operation on
+    the string any number of times:
+    * Choose any index i from the string where i + 1 < s.length such that
+      s[i] == '1' and s[i + 1] == '0'.
+    * Move the character s[i] to the right until it reaches the end of the
+      string or another '1'. For example, for s = "010010", if we choose i = 1,
+      the resulting string will be s = "000110".
+    Return the maximum number of operations that you can perform.
+
+    Example 1:
+    Input: s = "1001101"
+    Output: 4
+    Explanation: We can perform the following operations:
+                 Choose index i = 0. The resulting string is s = "0011101".
+                 Choose index i = 4. The resulting string is s = "0011011".
+                 Choose index i = 3. The resulting string is s = "0010111".
+                 Choose index i = 2. The resulting string is s = "0001111".
+
+    Example 2:
+    Input: s = "00111"
+    Output: 0
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s[i] is either '0' or '1'.*/
+
+    public int maxOperations(String s) {
+        int ans = 0, cnt = 0;
+        for (int n = s.length(), i = n-1; i >= 0; --i)
+            if (s.charAt(i) == '0') {
+                if (i+1 == n || s.charAt(i+1) == '1') ++cnt;
+            } else ans += cnt;
+        return ans;
+    }
+
+
+    /*3229. Minimum Operations to Make Array Equal to Target (Hard)
+    You are given two positive integer arrays nums and target, of the same
+    length. In a single operation, you can select any subarray of nums and
+    increment or decrement each element within that subarray by 1. Return the
+    minimum number of operations required to make nums equal to the array
+    target.
+
+    Example 1:
+    Input: nums = [3,5,1,2], target = [4,6,2,4]
+    Output: 2
+    Explanation: We will perform the following operations to make nums equal to
+                 target:
+                - Increment nums[0..3] by 1, nums = [4,6,2,3].
+                 - Increment nums[3..3] by 1, nums = [4,6,2,4].
+
+    Example 2:
+    Input: nums = [1,3,2], target = [2,1,4]
+    Output: 5
+    Explanation: We will perform the following operations to make nums equal to
+                 target:
+                 - Increment nums[0..0] by 1, nums = [2,3,2].
+                 - Decrement nums[1..1] by 1, nums = [2,2,2].
+                 - Decrement nums[1..1] by 1, nums = [2,1,2].
+                 - Increment nums[2..2] by 1, nums = [2,1,3].
+                 - Increment nums[2..2] by 1, nums = [2,1,4].
+
+    Constraints:
+    * 1 <= nums.length == target.length <= 10^5
+    * 1 <= nums[i], target[i] <= 10^8*/
+
+    public long minimumOperations(int[] nums, int[] target) {
+        long ans = 0;
+        int prev = 0;
+        for (int i = 0; i < nums.length; ++i) {
+            int diff = target[i] - nums[i];
+            ans += Math.max(0, diff - prev);
+            prev = diff;
+        }
+        return ans + Math.max(0, -prev);
+    }
 }
 
 
