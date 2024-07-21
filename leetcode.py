@@ -69932,18 +69932,18 @@ class Trie:
         def fn(cond):
             """Return topological sort"""
             graph = [[] for _ in range(k)]
-            indeg = [0]*k
+            degree = [0]*k
             for u, v in cond:
                 graph[u-1].append(v-1)
-                indeg[v-1] += 1
-            queue = deque(u for u, x in enumerate(indeg) if x == 0)
+                degree[v-1] += 1
+            queue = deque(u for u, x in enumerate(degree) if x == 0)
             ans = []
             while queue:
                 u = queue.popleft()
                 ans.append(u+1)
                 for v in graph[u]:
-                    indeg[v] -= 1
-                    if indeg[v] == 0: queue.append(v)
+                    degree[v] -= 1
+                    if degree[v] == 0: queue.append(v)
             return ans
 
         row = fn(rowConditions)
