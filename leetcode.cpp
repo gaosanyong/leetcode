@@ -51989,12 +51989,12 @@ public:
     * All the values of heights are distinct.*/
 
     vector<string> sortPeople(vector<string>& names, vector<int>& heights) {
-        vector<pair<int, string>> aug;
+        vector<pair<int, string>> hn;
         for (int i = 0; i < names.size(); ++i)
-            aug.emplace_back(heights[i], names[i]);
-        sort(aug.begin(), aug.end(), greater<>());
+            hn.emplace_back(heights[i], names[i]);
+        sort(hn.begin(), hn.end(), greater<>());
         vector<string> ans;
-        for (auto& [h, n] : aug) ans.push_back(n);
+        for (auto& [h, n] : hn) ans.push_back(n);
         return ans;
     }
 
