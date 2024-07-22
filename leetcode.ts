@@ -12221,6 +12221,183 @@ function minimumCost(m: number, n: number, horizontalCut: number[], verticalCut:
 };
 
 
+/*3222. Find the Winning Player in Coin Game (Easy)
+You are given two positive integers x and y, denoting the number of coins
+with values 75 and 10 respectively. Alice and Bob are playing a game. Each
+turn, starting with Alice, the player must pick up coins with a total value
+115. If the player is unable to do so, they lose the game. Return the name
+of the player who wins the game if both players play optimally.
+
+Example 1:
+Input: x = 2, y = 7
+Output: "Alice"
+Explanation: The game ends in a single turn:
+             - Alice picks 1 coin with a value of 75 and 4 coins with a value
+               of 10.
+
+Example 2:
+Input: x = 4, y = 11
+Output: "Bob"
+Explanation: The game ends in 2 turns:
+             - Alice picks 1 coin with a value of 75 and 4 coins with a
+               value of 10.
+             - Bob picks 1 coin with a value of 75 and 4 coins with a value
+               of 10.
+
+Constraints: 1 <= x, y <= 100*/
+
+function losingPlayer(x: number, y: number): string {
+    return Math.min(x, Math.floor(y/4)) & 1 ? "Alice" : "Bob";
+};
+
+
+/*3223. Minimum Length of String After Operations (Medium)
+You are given a string s. You can perform the following process on s any
+number of times:
+* Choose an index i in the string such that there is at least one character
+  to the left of index i that is equal to s[i], and at least one character
+  to the right that is also equal to s[i].
+* Delete the closest character to the left of index i that is equal to s[i].
+* Delete the closest character to the right of index i that is equal to s[i].
+Return the minimum length of the final string s that you can achieve.
+
+Example 1:
+Input: s = "abaacbcbb"
+Output: 5
+Explanation: We do the following operations:
+             - Choose index 2, then remove the characters at indices 0 and
+               3. The resulting string is s = "bacbcbb".
+             - Choose index 3, then remove the characters at indices 0 and
+               5. The resulting string is s = "acbcb".
+
+Example 2:
+Input: s = "aa"
+Output: 2
+Explanation: We cannot perform any operations, so we return the length of
+             the original string.
+
+Constraints:
+* 1 <= s.length <= 2 * 10^5
+* s consists only of lowercase English letters.*/
+
+function minimumLength(s: string): number {
+    const freq = new Map();
+    for (const ch of s)
+        freq.set(ch, 1 + (freq.get(ch) ?? 0));
+    return Array.from(freq.values()).reduce((s, x) => s+2-x%2, 0);
+};
+
+
+/*3224. Minimum Array Changes to Make Differences Equal (Medium)
+You are given an integer array nums of size n where n is even, and an
+integer k. You can perform some changes on the array, where in one change
+you can replace any element in the array with any integer in the range from
+0 to k. You need to perform some changes (possibly none) such that the final
+array satisfies the following condition:
+* There exists an integer X such that abs(a[i] - a[n - i - 1]) = X for all
+  (0 <= i < n).
+Return the minimum number of changes required to satisfy the above
+condition.
+
+Example 1:
+Input: nums = [1,0,1,2,4,3], k = 4
+Output: 2
+Explanation: We can perform the following changes:
+             - Replace nums[1] by 2. The resulting array is
+               nums = [1,2,1,2,4,3].
+             - Replace nums[3] by 3. The resulting array is
+               nums = [1,2,1,3,4,3].
+             The integer X will be 2.
+
+Example 2:
+Input: nums = [0,1,2,3,3,6,5,4], k = 6
+Output: 2
+Explanation: We can perform the following operations:
+             - Replace nums[3] by 0. The resulting array is
+               nums = [0,1,2,0,3,6,5,4].
+             - Replace nums[4] by 4. The resulting array is
+               nums = [0,1,2,0,4,6,5,4].
+             The integer X will be 4.
+
+Constraints:
+* 2 <= n == nums.length <= 10^5
+* n is even.
+* 0 <= nums[i] <= k <= 10^5*/
+
+function minChanges(nums: number[], k: number): number {
+    const line = Array(k+2).fill(0), n = nums.length;
+    for (let i = 0; i < n/2; ++i) {
+        if (nums[i] > nums[n-1-i])
+            [nums[i], nums[n-1-i]] = [nums[n-1-i], nums[i]];
+        let diff = nums[n-1-i] - nums[i];
+        --line[diff];
+        ++line[diff+1];
+        diff += Math.max(nums[i], k-nums[n-1-i]);
+        ++line[diff+1];
+    }
+    let ans = Math.floor(n/2);
+    for (let x = 0, prefix = ans; x <= k; ++x) {
+        prefix += line[x];
+        ans = Math.min(ans, prefix);
+    }
+    return ans;
+};
+
+
+/*3225. Maximum Score From Grid Operations (Hard)
+You are given a 2D matrix grid of size n x n. Initially, all cells of the
+grid are colored white. In one operation, you can select any cell of indices
+(i, j), and color black all the cells of the jth column starting from the
+top row down to the ith row. The grid score is the sum of all grid[i][j]
+such that cell (i, j) is white and it has a horizontally adjacent black
+cell. Return the maximum score that can be achieved after some number of
+operations.
+
+Example 1:
+Input: grid = [[0,0,0,0,0],[0,0,3,0,0],[0,1,0,0,0],[5,0,0,3,0],[0,0,0,0,2]]
+Output: 11
+Explanation: In the first operation, we color all cells in column 1 down to
+             row 3, and in the second operation, we color all cells in
+             column 4 down to the last row. The score of the resulting grid
+             is grid[3][0] + grid[1][2] + grid[3][3] which is equal to 11.
+
+Example 2:
+Input: grid = [[10,9,0,0,15],[7,1,0,8,0],[5,20,0,11,0],[0,0,0,1,2],[8,12,1,10,3]]
+Output: 94
+Explanation: We perform operations on 1, 2, and 3 down to rows 1, 4, and 0,
+             respectively. The score of the resulting grid is
+             grid[0][0] + grid[1][0] + grid[2][1] + grid[4][1] + grid[1][3]
+             + grid[2][3] + grid[3][3] + grid[4][3] + grid[0][4] which is
+             equal to 94.
+
+Constraints:
+* 1 <= n == grid.length <= 100
+* n == grid[i].length
+* 0 <= grid[i][j] <= 10^9*/
+
+function maximumScore(grid: number[][]): number {
+    const n = grid.length;
+    const prefix = Array(n+1).fill(0).map(() => Array(n).fill(0));
+    const excl = Array(n+1).fill(0).map(() => Array(n).fill(0));
+    const incl = Array(n+1).fill(0).map(() => Array(n).fill(0));
+    for (let j = 0; j < n; ++j) {
+        for (let i = 0; i < n; ++i)
+            prefix[i+1][j] = prefix[i][j] + grid[i][j];
+        if (j) {
+            for (let c = 0; c <= n; ++c)
+                for (let p = 0; p <= n; ++p) {
+                    let pv = 0, cv = 0;
+                    if (c > p) pv = prefix[c][j-1] - prefix[p][j-1];
+                    else cv = prefix[p][j] - prefix[c][j];
+                    excl[c][j] = Math.max(excl[c][j], pv + excl[p][j-1], incl[p][j-1]);
+                    incl[c][j] = Math.max(incl[c][j], cv + incl[p][j-1], pv + cv + excl[p][j-1]);
+                }
+        }
+    }
+    return incl.reduce((m, x) => Math.max(m, x[n-1]), 0);
+};
+
+
 /*3226. Number of Bit Changes to Make Two Integers Equal (Easy)
 You are given two positive integers n and k. You can choose any bit in the
 binary representation of n that is equal to 1 and change it to 0. Return the
