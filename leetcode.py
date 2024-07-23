@@ -40101,9 +40101,8 @@ class UnionFind:
     * -100 <= nums[i] <= 100"""
 
     def frequencySort(self, nums: List[int]) -> List[int]:
-        freq = {}
-        for x in nums: freq[x] = 1 + freq.get(x, 0)
-        return sorted(nums, key=lambda x: (freq[x], -x))
+        freq = Counter(nums)
+        return sorted(nums, key = lambda x: (freq[x], -x))
 
 
     """1637. Widest Vertical Area Between Two Points Containing No Points (Medium)
