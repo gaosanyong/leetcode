@@ -23539,11 +23539,11 @@ class Solution:
     * -50000 <= nums[i] <= 50000"""
 
     def sortArray(self, nums: List[int]) -> List[int]:
+        shuffle(nums)
 
-        def part(lo, hi):
-            """Return a random partition of nums[lo:hi]."""
-            mid = randint(lo, hi-1)
-            nums[lo], nums[mid] = nums[mid], nums[lo]
+        def sort(lo, hi):
+            """Sort subarray nums[lo:hi] in place."""
+            if lo + 1 >= hi: return
             i, j = lo+1, hi-1
             while i <= j:
                 if nums[i] < nums[lo]: i += 1
@@ -23553,15 +23553,8 @@ class Solution:
                     i += 1
                     j -= 1
             nums[lo], nums[j] = nums[j], nums[lo]
-            return j
-
-
-        def sort(lo, hi):
-            """Sort subarray nums[lo:hi] in place."""
-            if lo + 1 >= hi: return
-            mid = part(lo, hi)
-            sort(lo, mid)
-            sort(mid+1, hi)
+            sort(lo, j)
+            sort(j+1, hi)
 
         sort(0, len(nums))
         return nums
