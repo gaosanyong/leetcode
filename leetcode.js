@@ -12810,6 +12810,189 @@ var countOfPeaks = function(nums, queries) {
 };
 
 
+/*3190. Find Minimum Operations to Make All Elements Divisible by Three (Easy)
+You are given an integer array nums. In one operation, you can add or
+subtract 1 from any element of nums. Return the minimum number of operations
+to make all elements of nums divisible by 3.
+
+Example 1:
+Input: nums = [1,2,3,4]
+Output: 3
+Explanation: All array elements can be made divisible by 3 using 3
+             operations:
+             - Subtract 1 from 1.
+             - Add 1 to 2.
+             - Subtract 1 from 4.
+
+Example 2:
+Input: nums = [3,6,9]
+Output: 0
+
+Constraints:
+* 1 <= nums.length <= 50
+* 1 <= nums[i] <= 50*/
+
+var minimumOperations = function(nums) {
+    return nums.reduce((s, x) => s + Math.min(x%3, 3-x%3), 0);
+};
+
+
+/*3191. Minimum Operations to Make Binary Array Elements Equal to One I (Medium)
+You are given a binary array nums. You can do the following operation on the
+array any number of times (possibly zero):
+* Choose any 3 consecutive elements from the array and flip all of them.
+Flipping an element means changing its value from 0 to 1, and from 1 to 0.
+Return the minimum number of operations required to make all elements in
+nums equal to 1. If it is impossible, return -1.
+
+Example 1:
+Input: nums = [0,1,1,1,0,0]
+Output: 3
+Explanation: We can do the following operations:
+             - Choose the elements at indices 0, 1 and 2. The resulting
+               array is nums = [1,0,0,1,0,0].
+             - Choose the elements at indices 1, 2 and 3. The resulting
+               array is nums = [1,1,1,0,0,0].
+             - Choose the elements at indices 3, 4 and 5. The resulting
+               array is nums = [1,1,1,1,1,1].
+
+Example 2:
+Input: nums = [0,1,1,1]
+Output: -1
+Explanation: It is impossible to make all elements equal to 1.
+
+Constraints:
+* 3 <= nums.length <= 10^5
+* 0 <= nums[i] <= 1*/
+
+var minOperations = function(nums) {
+    let ans = 0, flip = 0;
+    const n = nums.length, line = Array(n).fill(0);
+    for (let [i, x] of nums.entries()) {
+        if (line[i]) flip ^= 1;
+        x ^= flip;
+        if (x == 0) {
+            if (i+2 >= n) return -1;
+            ++ans;
+            flip ^= 1;
+            if (i+3 < n) line[i+3] = 1;
+        }
+    }
+    return ans;
+};
+
+
+/*3192. Minimum Operations to Make Binary Array Elements Equal to One II (Medium)
+You are given a binary array nums. You can do the following operation on
+the array any number of times (possibly zero):
+* Choose any index i from the array and flip all the elements from index i
+  to the end of the array.
+Flipping an element means changing its value from 0 to 1, and from 1 to 0.
+Return the minimum number of operations required to make all elements in
+nums equal to 1.
+
+Example 1:
+Input: nums = [0,1,1,0,1]
+Output: 4
+Explanation: We can do the following operations:
+             - Choose the index i = 1. The resulting array will be
+               nums = [0,0,0,1,0].
+             - Choose the index i = 0. The resulting array will be
+               nums = [1,1,1,0,1].
+             - Choose the index i = 4. The resulting array will be
+               nums = [1,1,1,0,0].
+             - Choose the index i = 3. The resulting array will be
+               nums = [1,1,1,1,1].
+
+Example 2:
+Input: nums = [1,0,0,0]
+Output: 1
+Explanation: We can do the following operation:
+             - Choose the index i = 1. The resulting array will be
+               nums = [1,1,1,1].
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 0 <= nums[i] <= 1*/
+
+var minOperations = function(nums) {
+    let ans = 0;
+    for (const x of nums)
+        if (x == (ans & 1)) ++ans;
+    return ans;
+};
+
+
+/*3193. Count the Number of Inversions (Hard)
+You are given an integer n and a 2D array requirements, where
+requirements[i] = [endi, cnti] represents the end index and the inversion
+count of each requirement. A pair of indices (i, j) from an integer array
+nums is called an inversion if:
+* i < j and nums[i] > nums[j]
+Return the number of permutations perm of [0, 1, 2, ..., n - 1] such that
+for all requirements[i], perm[0..endi] has exactly cnti inversions. Since
+the answer may be very large, return it modulo 10^9 + 7.
+
+Example 1:
+Input: n = 3, requirements = [[2,2],[0,0]]
+Output: 2
+Explanation: The two permutations are:
+             - [2, 0, 1]
+               + Prefix [2, 0, 1] has inversions (0, 1) and (0, 2).
+               + Prefix [2] has 0 inversions.
+             - [1, 2, 0]
+               + Prefix [1, 2, 0] has inversions (0, 2) and (1, 2).
+               + Prefix [1] has 0 inversions.
+
+Example 2:
+Input: n = 3, requirements = [[2,2],[1,1],[0,0]]
+Output: 1
+Explanation: The only satisfying permutation is [2, 0, 1]:
+             - Prefix [2, 0, 1] has inversions (0, 1) and (0, 2).
+             - Prefix [2, 0] has an inversion (0, 1).
+             - Prefix [2] has 0 inversions.
+
+Example 3:
+Input: n = 2, requirements = [[0,0],[1,0]]
+Output: 1
+Explanation: The only satisfying permutation is [0, 1]:
+             - Prefix [0] has 0 inversions.
+             - Prefix [0, 1] has an inversion (0, 1).
+
+Constraints:
+* 2 <= n <= 300
+* 1 <= requirements.length <= n
+* requirements[i] = [endi, cnti]
+* 0 <= endi <= n - 1
+* 0 <= cnti <= 400
+* The input is generated such that there is at least one i such that
+  endi == n - 1.
+* The input is generated such that all endi are unique.*/
+
+var numberOfPermutations = function(n, requirements) {
+    const line = Array(n).fill(-1);
+    let m = 0, mod = 1_000_000_007;
+    for (const [k, v] of requirements) {
+        line[k] = v;
+        m = Math.max(m, v);
+    }
+    const dp = Array(n).fill(0).map(() => Array(m+1).fill(0));
+    dp[0][0] = 1;
+    for (let i = 0; i < n; ++i) {
+        let prefix = 0;
+        for (let j = 0; j <= m; ++j) {
+            if (i > 0) {
+                prefix += dp[i-1][j];
+                if (j > i) prefix -= dp[i-1][j-1-i];
+                dp[i][j] = prefix = (mod + prefix%mod) % mod;
+            }
+            if (line[i] != -1 && line[i] != j) dp[i][j] = 0;
+        }
+    }
+    return dp[n-1][line[n-1]];
+};
+
+
 /*3200. Maximum Height of a Triangle (Easy)
 You are given two integers red and blue representing the count of red and
 blue colored balls. You have to arrange these balls to form a triangle such
