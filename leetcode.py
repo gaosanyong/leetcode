@@ -91069,6 +91069,211 @@ class SegTreeLazy:
         return dp[n-1][requirements[n-1]]
 
 
+    """3194. Minimum Average of Smallest and Largest Elements (Easy)
+    You have an array of floating point numbers averages which is initially
+    empty. You are given an array nums of n integers where n is even. You repeat
+    the following procedure n / 2 times:
+    * Remove the smallest element, minElement, and the largest element
+      maxElement, from nums.
+    * Add (minElement + maxElement) / 2 to averages.
+    Return the minimum element in averages.
+
+    Example 1:
+    Input: nums = [7,8,3,4,15,13,4,1]
+    Output: 5.5
+    Explanation: step  nums                 averages
+                 0     [7,8,3,4,15,13,4,1]  []
+                 1     [7,8,3,4,13,4]       [8]
+                 2     [7,8,4,4]            [8,8]
+                 3     [7,4]                [8,8,6]
+                 4     []                   [8,8,6,5.5]
+                 The smallest element of averages, 5.5, is returned.
+
+    Example 2:
+    Input: nums = [1,9,8,3,10,5]
+    Output: 5.5
+    Explanation: step  nums                 averages
+                 0     [1,9,8,3,10,5]       []
+                 1     [9,8,3,5]            [5.5]
+                 2     [8,5]                [5.5,6]
+                 3     []                   [5.5,6,6.5]
+
+    Example 3:
+    Input: nums = [1,2,3,7,8,9]
+    Output: 5.0
+    Explanation: step  nums                 averages
+                 0     [1,2,3,7,8,9]        []
+                 1     [2,3,7,8]            [5]
+                 2     [3,7]                [5,5]
+                 3     []                   [5,5,5]
+
+    Constraints:
+    * 2 <= n == nums.length <= 50
+    * n is even.
+    * 1 <= nums[i] <= 50"""
+
+    def minimumAverage(self, nums: List[int]) -> float:
+        nums.sort()
+        return min((nums[i]+nums[~i])/2 for i in range(len(nums)//2))
+
+
+    """3195. Find the Minimum Area to Cover All Ones I (Medium)
+    You are given a 2D binary array grid. Find a rectangle with horizontal and
+    vertical sides with the smallest area, such that all the 1's in grid lie
+    inside this rectangle. Return the minimum possible area of the rectangle.
+
+    Example 1:
+    Input: grid = [[0,1,0],[1,0,1]]
+    Output: 6
+    Explanation: The smallest rectangle has a height of 2 and a width of 3, so
+                 it has an area of 2 * 3 = 6.
+
+    Example 2:
+    Input: grid = [[1,0],[0,0]]
+    Output: 1
+    Explanation: The smallest rectangle has both height and width 1, so its area
+                 is 1 * 1 = 1.
+
+    Constraints:
+    * 1 <= grid.length, grid[i].length <= 1000
+    * grid[i][j] is either 0 or 1.
+    * The input is generated such that there is at least one 1 in grid."""
+
+    def minimumArea(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        rmin = cmin = inf
+        rmax = cmax = -1
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j]:
+                    rmin = min(rmin, i)
+                    rmax = max(rmax, i)
+                    cmin = min(cmin, j)
+                    cmax = max(cmax, j)
+        return (rmax-rmin+1) * (cmax-cmin+1)
+
+
+    """3196. Maximize Total Cost of Alternating Subarrays (Medium)
+    You are given an integer array nums with length n. The cost of a subarray
+    nums[l..r], where 0 <= l <= r < n, is defined as:
+
+    * cost(l, r) = nums[l] - nums[l + 1] + ... + nums[r] * (−1)r − l
+
+    Your task is to split nums into subarrays such that the total cost of the
+    subarrays is maximized, ensuring each element belongs to exactly one
+    subarray. Formally, if nums is split into k subarrays, where k > 1, at
+    indices i1, i2, ..., ik − 1, where 0 <= i1 < i2 < ... < ik - 1 < n - 1, then
+    the total cost will be:
+
+    * cost(0, i1) + cost(i1 + 1, i2) + ... + cost(ik − 1 + 1, n − 1)
+
+    Return an integer denoting the maximum total cost of the subarrays after
+    splitting the array optimally. Note: If nums is not split into subarrays,
+    i.e. k = 1, the total cost is simply cost(0, n - 1).
+
+    Example 1:
+    Input: nums = [1,-2,3,4]
+    Output: 10
+    Explanation: One way to maximize the total cost is by splitting
+                 [1, -2, 3, 4] into subarrays [1, -2, 3] and [4]. The total cost
+                 will be (1 + 2 + 3) + 4 = 10.
+
+    Example 2:
+    Input: nums = [1,-1,1,-1]
+    Output: 4
+    Explanation: One way to maximize the total cost is by splitting
+                 [1, -1, 1, -1] into subarrays [1, -1] and [1, -1]. The total
+                 cost will be (1 + 1) + (1 + 1) = 4.
+
+    Example 3:
+    Input: nums = [0]
+    Output: 0
+    Explanation: We cannot split the array further, so the answer is 0.
+
+    Example 4:
+    Input: nums = [1,-1]
+    Output: 2
+    Explanation: Selecting the whole array gives a total cost of 1 + 1 = 2,
+                 which is the maximum.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * -10^9 <= nums[i] <= 10^9"""
+
+    def maximumTotalCost(self, nums: List[int]) -> int:
+        ans = suffix = 0
+        for x in reversed(nums):
+            suffix = x - suffix
+            if suffix > 0:
+                ans += suffix
+                suffix = 0
+        return ans + suffix
+
+
+    """3197. Find the Minimum Area to Cover All Ones II (Hard)
+    You are given a 2D binary array grid. You need to find 3 non-overlapping
+    rectangles having non-zero areas with horizontal and vertical sides such
+    that all the 1's in grid lie inside these rectangles. Return the minimum
+    possible sum of the area of these rectangles. Note that the rectangles are
+    allowed to touch.
+
+    Example 1:
+    Input: grid = [[1,0,1],[1,1,1]]
+    Output: 5
+    Explanation: - The 1's at (0, 0) and (1, 0) are covered by a rectangle of
+                   area 2.
+                 - The 1's at (0, 2) and (1, 2) are covered by a rectangle of
+                   area 2.
+                 - The 1 at (1, 1) is covered by a rectangle of area 1.
+
+    Example 2:
+    Input: grid = [[1,0,1,0],[0,1,0,1]]
+    Output: 5
+    Explanation: - The 1's at (0, 0) and (0, 2) are covered by a rectangle of
+                   area 3.
+                 - The 1 at (1, 1) is covered by a rectangle of area 1.
+                 - The 1 at (1, 3) is covered by a rectangle of area 1.
+
+    Constraints:
+    * 1 <= grid.length, grid[i].length <= 30
+    * grid[i][j] is either 0 or 1.
+    * The input is generated such that there are at least three 1's in grid."""
+
+    def minimumSum(self, grid: List[List[int]]) -> int:
+
+        def fn(grid):
+            """Return """
+            ans = []
+            imin = jmin = inf
+            imax = jmax = -inf
+            for i, row in enumerate(grid):
+                for j, val in enumerate(row):
+                    if val:
+                        imin = min(imin, i)
+                        jmin = min(jmin, j)
+                        imax = max(imax, i)
+                        jmax = max(jmax, j)
+                val = max(0, (imax-imin+1)*(jmax-jmin+1))
+                ans.append(val)
+            return ans[:-1]
+
+        ans = inf
+        for _ in range(4):
+            half = fn(grid)
+            for i, h in enumerate(half):
+                if h:
+                    sub = grid[i+1:]
+                    for _ in range(2):
+                        top = fn(sub)
+                        bottom = fn(sub[::-1])
+                        for i in range(len(top)):
+                            if top[i] and bottom[~i]:
+                                ans = min(ans, h + top[i] + bottom[~i])
+                        sub = list(zip(*sub[::-1]))
+            grid = list(zip(*grid[::-1]))
+        return ans
+
+
     """3200. Maximum Height of a Triangle (Easy)
     You are given two integers red and blue representing the count of red and
     blue colored balls. You have to arrange these balls to form a triangle such
