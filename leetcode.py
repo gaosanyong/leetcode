@@ -34554,17 +34554,22 @@ class UnionFind:
     * All the integers in rating are unique."""
 
     def numTeams(self, rating: List[int]) -> int:
-        ans = 0
-        seen = [[0]*2 for _ in rating]
-        for i in range(len(rating)):
-            for ii in range(i):
-                if rating[ii] < rating[i]:
-                    ans += seen[ii][0]
-                    seen[i][0] += 1
-                elif rating[ii] > rating[i]:
-                    ans += seen[ii][1]
-                    seen[i][1] += 1
-        return ans
+        n = len(rating)
+        mp = dict(zip(sorted(rating), range(n)))
+        vals = [mp[x] for x in rating]
+
+        def fn(vals):
+            """Return """
+            ans = 0
+            mark = Fenwick(n)
+            pair = Fenwick(n)
+            for x in vals:
+                ans += pair.query(x-1)
+                mark.add(x, 1)
+                pair.add(x, mark.query(x-1))
+            return ans
+
+        return fn(vals) + fn(vals[::-1])
 
 
     """1397. Find All Good Strings (Hard)
