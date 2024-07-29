@@ -92129,6 +92129,211 @@ class SegTreeLazy:
         return ans + max(0, -prev)
 
 
+    """3232. Find if Digit Game Can Be Won (Easy)
+    You are given an array of positive integers nums. Alice and Bob are playing
+    a game. In the game, Alice can choose either all single-digit numbers or all
+    double-digit numbers from nums, and the rest of the numbers are given to
+    Bob. Alice wins if the sum of her numbers is strictly greater than the sum
+    of Bob's numbers. Return true if Alice can win this game, otherwise, return
+    false.
+
+    Example 1:
+    Input: nums = [1,2,3,4,10]
+    Output: false
+    Explanation: Alice cannot win by choosing either single-digit or double-
+                 digit numbers.
+
+    Example 2:
+    Input: nums = [1,2,3,4,5,14]
+    Output: true
+    Explanation: Alice can win by choosing single-digit numbers which have a sum
+                 equal to 15.
+
+    Example 3:
+    Input: nums = [5,5,5,25]
+    Output: true
+    Explanation: Alice can win by choosing double-digit numbers which have a sum
+                 equal to 25.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * 1 <= nums[i] <= 99"""
+
+    def canAliceWin(self, nums: List[int]) -> bool:
+        single = total = 0
+        for x in nums:
+            if x < 10: single += x
+            total += x
+        return 2*single != total
+
+
+    """3233. Find the Count of Numbers Which Are Not Special (Medium)
+    You are given 2 positive integers l and r. For any number x, all positive
+    divisors of x except x are called the proper divisors of x. A number is
+    called special if it has exactly 2 proper divisors. For example:
+    * The number 4 is special because it has proper divisors 1 and 2.
+    * The number 6 is not special because it has proper divisors 1, 2, and 3.
+    Return the count of numbers in the range [l, r] that are not special.
+
+    Example 1:
+    Input: l = 5, r = 7
+    Output: 3
+    Explanation: There are no special numbers in the range [5, 7].
+
+    Example 2:
+    Input: l = 4, r = 16
+    Output: 11
+    Explanation: The special numbers in the range [4, 16] are 4 and 9.
+
+    Constraints: 1 <= l <= r <= 10^9"""
+
+    def nonSpecialCount(self, l: int, r: int) -> int:
+        lo = ceil(sqrt(l))
+        hi = floor(sqrt(r))
+        sieve = [1]*(hi+1)
+        sieve[0] = sieve[1] = 0
+        for x in range(2, hi+1):
+            if x:
+                for xx in range(x*x, hi+1, x):
+                    sieve[xx] = 0
+        return r-l+1-sum(sieve[x] for x in range(lo, hi+1))
+
+
+    """3234. Count the Number of Substrings With Dominant Ones (Medium)
+    You are given a binary string s. Return the number of substrings with
+    dominant ones. A string has dominant ones if the number of ones in the
+    string is greater than or equal to the square of the number of zeros in the
+    string.
+
+    Example 1:
+    Input: s = "00011"
+    Output: 5
+    Explanation: The substrings with dominant ones are shown in the table below.
+                 i   j   s[i..j] Number of Zeros Number of Ones
+                 3   3   1   0   1
+                 4   4   1   0   1
+                 2   3   01  1   1
+                 3   4   11  0   2
+                 2   4   011 1   2
+
+    Example 2:
+    Input: s = "101101"
+    Output: 16
+    Explanation: The substrings with non-dominant ones are shown in the table
+                 below. Since there are 21 substrings total and 5 of them have
+                 non-dominant ones, it follows that there are 16 substrings with
+                 dominant ones.
+                 i   j   s[i..j] Number of Zeros Number of Ones
+                 1   1   0   1   0
+                 4   4   0   1   0
+                 1   4   0110    2   2
+                 0   4   10110   2   3
+                 1   5   01101   2   3
+
+    Constraints:
+    * 1 <= s.length <= 4 * 10^4
+    * s consists only of characters '0' and '1'."""
+
+    def numberOfSubstrings(self, s: str) -> int:
+        ans = 0
+        for z in range(isqrt(len(s))+1):
+            j = zeroj = 0
+            k = zerok = onek = 0
+            for i, ch in enumerate(s):
+                if ch == '0': zeroj += 1; zerok += 1
+                else: onek += 1
+                while zeroj > z:
+                    if s[j] == '0': zeroj -= 1
+                    j += 1
+                while zerok > z or k <= i and zerok == z and onek >= zerok**2:
+                    if s[k] == '0': zerok -= 1
+                    else: onek -= 1
+                    k += 1
+                ans += k-j
+        return ans
+
+
+    """3235. Check if the Rectangle Corner Is Reachable (Hard)
+    You are given two positive integers X and Y, and a 2D array circles, where
+    circles[i] = [xi, yi, ri] denotes a circle with center at (xi, yi) and
+    radius ri. There is a rectangle in the coordinate plane with its bottom left
+    corner at the origin and top right corner at the coordinate (X, Y). You need
+    to check whether there is a path from the bottom left corner to the top
+    right corner such that the entire path lies inside the rectangle, does not
+    touch or lie inside any circle, and touches the rectangle only at the two
+    corners. Return true if such a path exists, and false otherwise.
+
+    Example 1:
+    Input: X = 3, Y = 4, circles = [[2,1,1]]
+    Output: true
+    Explanation: The black curve shows a possible path between (0, 0) and (3, 4).
+
+    Example 2:
+    Input: X = 3, Y = 3, circles = [[1,1,2]]
+    Output: false
+    Explanation: No path exists from (0, 0) to (3, 3).
+
+    Example 3:
+    Input: X = 3, Y = 3, circles = [[2,1,1],[1,2,1]]
+    Output: false
+    Explanation: No path exists from (0, 0) to (3, 3).
+
+    Constraints:
+    * 3 <= X, Y <= 10^9
+    * 1 <= circles.length <= 1000
+    * circles[i].length == 3
+    * 1 <= xi, yi, ri <= 10^9"""
+
+    def canReachCorner(self, X: int, Y: int, circles: List[List[int]]) -> bool:
+        vals = []
+        for x, y, r in circles:
+            if x**2 + y**2 <= r**2: return False
+            if (X-x)**2 + (Y-y)**2 <= r**2: return False
+            if x >= X+r or y >= Y+r: continue
+            vals.append([x, y, r])
+        circles = vals
+
+        n = len(circles)
+        parent = list(range(n))
+
+        def find(p):
+            if p != parent[p]:
+                parent[p] = find(parent[p])
+            return parent[p]
+
+        for i in range(n):
+            xi, yi, ri = circles[i]
+            for j in range(i+1, n):
+                xj, yj, rj = circles[j]
+                if (xi-xj)**2 + (yi-yj)**2 <= (ri+rj)**2:
+                    ii = find(i)
+                    jj = find(j)
+                    parent[ii] = jj
+
+        group = defaultdict(list)
+        for i in range(n):
+            ii = find(i)
+            group[ii].append(i)
+
+        for grp in group.values():
+            xmax = ymax = -inf
+            xmin = ymin = inf
+            inside = False
+            for i in grp:
+                x, y, r = circles[i]
+                if 0 <= x <= X or 0 <= y <= Y: inside = True
+                xmax = max(xmax, x+r)
+                ymax = max(ymax, y+r)
+                xmin = min(xmin, x-r)
+                ymin = min(ymin, y-r)
+            if inside:
+                if xmin <= 0 and xmax >= X: return False
+                if ymin <= 0 and ymax >= Y: return False
+                if xmax >= X and ymax >= Y: return False
+                if xmin <= 0 and ymin <= 0: return False
+        return True
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.

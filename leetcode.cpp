@@ -74267,8 +74267,7 @@ public:
     Constraints: 1 <= n, k <= 10^6*/
 
     int minChanges(int n, int k) {
-            return (n & k) == k ? __builtin_popcount(n ^ k) : -1;
-        }
+        return (n & k) == k ? __builtin_popcount(n ^ k) : -1;
     };
 
 
@@ -74393,6 +74392,222 @@ public:
             prev = diff;
         }
         return ans + max(0, -prev);
+    }
+
+
+    /*3232. Find if Digit Game Can Be Won (Easy)
+    You are given an array of positive integers nums. Alice and Bob are playing
+    a game. In the game, Alice can choose either all single-digit numbers or all
+    double-digit numbers from nums, and the rest of the numbers are given to
+    Bob. Alice wins if the sum of her numbers is strictly greater than the sum
+    of Bob's numbers. Return true if Alice can win this game, otherwise, return
+    false.
+
+    Example 1:
+    Input: nums = [1,2,3,4,10]
+    Output: false
+    Explanation: Alice cannot win by choosing either single-digit or double-
+                 digit numbers.
+
+    Example 2:
+    Input: nums = [1,2,3,4,5,14]
+    Output: true
+    Explanation: Alice can win by choosing single-digit numbers which have a sum
+                 equal to 15.
+
+    Example 3:
+    Input: nums = [5,5,5,25]
+    Output: true
+    Explanation: Alice can win by choosing double-digit numbers which have a sum
+                 equal to 25.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * 1 <= nums[i] <= 99*/
+
+    bool canAliceWin(vector<int>& nums) {
+        int single = 0, total = 0;
+        for (auto& x : nums) {
+            if (x < 10) single += x;
+            total += x;
+        }
+        return 2*single != total;
+    }
+
+
+    /*3233. Find the Count of Numbers Which Are Not Special (Medium)
+    You are given 2 positive integers l and r. For any number x, all positive
+    divisors of x except x are called the proper divisors of x. A number is
+    called special if it has exactly 2 proper divisors. For example:
+    * The number 4 is special because it has proper divisors 1 and 2.
+    * The number 6 is not special because it has proper divisors 1, 2, and 3.
+    Return the count of numbers in the range [l, r] that are not special.
+
+    Example 1:
+    Input: l = 5, r = 7
+    Output: 3
+    Explanation: There are no special numbers in the range [5, 7].
+
+    Example 2:
+    Input: l = 4, r = 16
+    Output: 11
+    Explanation: The special numbers in the range [4, 16] are 4 and 9.
+
+    Constraints: 1 <= l <= r <= 10^9*/
+
+    int nonSpecialCount(int l, int r) {
+        int lo = ceil(sqrt(l)), hi = floor(sqrt(r));
+        vector<int> sieve(hi+1, 1);
+        sieve[0] = sieve[1] = 0;
+        for (int x = 2; x <= hi; ++x)
+            if (sieve[x])
+                for (int xx = x*x; xx <= hi; xx += x)
+                    sieve[xx] = 0;
+        return r-l+1 - accumulate(sieve.begin()+lo, sieve.end(), 0);
+    }
+
+
+    /*3234. Count the Number of Substrings With Dominant Ones (Medium)
+    You are given a binary string s. Return the number of substrings with
+    dominant ones. A string has dominant ones if the number of ones in the
+    string is greater than or equal to the square of the number of zeros in the
+    string.
+
+    Example 1:
+    Input: s = "00011"
+    Output: 5
+    Explanation: The substrings with dominant ones are shown in the table below.
+                 i   j   s[i..j] Number of Zeros Number of Ones
+                 3   3   1   0   1
+                 4   4   1   0   1
+                 2   3   01  1   1
+                 3   4   11  0   2
+                 2   4   011 1   2
+
+    Example 2:
+    Input: s = "101101"
+    Output: 16
+    Explanation: The substrings with non-dominant ones are shown in the table
+                 below. Since there are 21 substrings total and 5 of them have
+                 non-dominant ones, it follows that there are 16 substrings with
+                 dominant ones.
+                 i   j   s[i..j] Number of Zeros Number of Ones
+                 1   1   0   1   0
+                 4   4   0   1   0
+                 1   4   0110    2   2
+                 0   4   10110   2   3
+                 1   5   01101   2   3
+
+    Constraints:
+    * 1 <= s.length <= 4 * 10^4
+    * s consists only of characters '0' and '1'.*/
+
+    int numberOfSubstrings(string s) {
+        int ans = 0;
+        for (int n = s.size(), z = 0; z*z <= n; ++z) {
+            int j = 0, zeroj = 0, k = 0, zerok = 0, onek = 0;
+            for (int i = 0; i < n; ++i) {
+                if (s[i] == '0') ++zeroj, ++zerok;
+                else ++onek;
+                for (; zeroj > z; ++j)
+                    if (s[j] == '0') --zeroj;
+                for (; zerok > z || k <= i && zerok == z && onek >= pow(zerok, 2); ++k)
+                    if (s[k] == '0') --zerok;
+                    else --onek;
+                ans += k - j;
+            }
+        }
+        return ans;
+    }
+
+
+    /*3235. Check if the Rectangle Corner Is Reachable (Hard)
+    You are given two positive integers X and Y, and a 2D array circles, where
+    circles[i] = [xi, yi, ri] denotes a circle with center at (xi, yi) and
+    radius ri. There is a rectangle in the coordinate plane with its bottom left
+    corner at the origin and top right corner at the coordinate (X, Y). You need
+    to check whether there is a path from the bottom left corner to the top
+    right corner such that the entire path lies inside the rectangle, does not
+    touch or lie inside any circle, and touches the rectangle only at the two
+    corners. Return true if such a path exists, and false otherwise.
+
+    Example 1:
+    Input: X = 3, Y = 4, circles = [[2,1,1]]
+    Output: true
+    Explanation: The black curve shows a possible path between (0, 0) and (3, 4).
+
+    Example 2:
+    Input: X = 3, Y = 3, circles = [[1,1,2]]
+    Output: false
+    Explanation: No path exists from (0, 0) to (3, 3).
+
+    Example 3:
+    Input: X = 3, Y = 3, circles = [[2,1,1],[1,2,1]]
+    Output: false
+    Explanation: No path exists from (0, 0) to (3, 3).
+
+    Constraints:
+    * 3 <= X, Y <= 10^9
+    * 1 <= circles.length <= 1000
+    * circles[i].length == 3
+    * 1 <= xi, yi, ri <= 10^9*/
+
+    bool canReachCorner(int X, int Y, vector<vector<int>>& circles) {
+        vector<vector<int>> vals;
+        for (auto& c : circles) {
+            int x = c[0], y = c[1], r = c[2];
+            if (pow(x, 2) + pow(y, 2) <= pow(r, 2)) return false;
+            if (pow(X-x, 2) + pow(Y-y, 2) <= pow(r, 2)) return false;
+            if (x >= X+r || y >= Y+r) continue;
+            vals.push_back({x, y, r});
+        }
+        circles = vals;
+        int n = circles.size();
+        vector<int> parent(n);
+        iota(parent.begin(), parent.end(), 0);
+
+        function<int(int)> find = [&](int p) {
+            if (p != parent[p])
+                parent[p] = find(parent[p]);
+            return parent[p];
+        };
+
+        for (int i = 0; i < n; ++i) {
+            int xi = circles[i][0], yi = circles[i][1], ri = circles[i][2];
+            for (int j = i+1; j < n; ++j) {
+                int xj = circles[j][0], yj = circles[j][1], rj = circles[j][2];
+                if (pow(xi-xj, 2) + pow(yi-yj, 2) <= pow(ri+rj, 2)) {
+                    int ii = find(i), jj = find(j);
+                    parent[ii] = jj;
+                }
+            }
+        }
+
+        unordered_map<int, vector<int>> group;
+        for (int i = 0; i < n; ++i) {
+            int ii = find(i);
+            group[ii].push_back(i);
+        }
+
+        for (auto& [_, grp] : group) {
+            bool inside = false;
+            int imax = INT_MIN, jmax = INT_MIN, imin = INT_MAX, jmin = INT_MAX;
+            for (auto& i : grp) {
+                int x = circles[i][0], y = circles[i][1], r = circles[i][2];
+                if (0 <= x && x <= X || 0 <= y && y <= Y) inside = true;
+                imax = max(imax, x+r);
+                jmax = max(jmax, y+r);
+                imin = min(imin, x-r);
+                jmin = min(jmin, y-r);
+            }
+            if (inside) {
+                if (imin <= 0 && imax >= X) return false;
+                if (jmin <= 0 && jmax >= Y) return false;
+                if (imax >= X && jmax >= Y) return false;
+                if (imin <= 0 && jmin <= 0) return false;
+            }
+        }
+        return true;
     }
 }
 
