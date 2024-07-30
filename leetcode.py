@@ -40874,7 +40874,7 @@ class Fenwick:
 
 
     """1653. Minimum Deletions to Make String Balanced (Medium)
-    You are given a string s consisting only of characters 'a' and 'b'​​​​. You
+    You are given a string s consisting only of characters 'a' and 'b'. You
     can delete any number of characters in s to make s balanced. s is balanced
     if there is no pair of indices (i,j) such that i < j and s[i] = 'b' and
     s[j]= 'a'. Return the minimum number of deletions needed to make s balanced.
@@ -40896,10 +40896,10 @@ class Fenwick:
     * s[i] is 'a' or 'b'."""
 
     def minimumDeletions(self, s: str) -> int:
-        ans = suffix = 0
-        for c in reversed(s):
-            if c == "a": suffix += 1
-            else: ans = min(1 + ans, suffix)
+        ans = prefix = 0
+        for ch in s:
+            if ch == 'b': prefix += 1
+            else: ans = min(1 + ans, prefix)
         return ans
 
 
