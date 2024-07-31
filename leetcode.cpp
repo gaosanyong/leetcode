@@ -73012,7 +73012,6 @@ public:
         for (int i = 1; i <= k; ++i) {
             if (i >= 2)
                 inv[i] = mod - mod/i * inv[mod % i] % mod;
-            cout << i << " " << inv[i] << endl;
             ans = ans * (n+k-i) % mod;
             ans = ans * inv[i] % mod;
         }
