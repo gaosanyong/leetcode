@@ -29042,21 +29042,19 @@ class UnionFind:
     * 1 <= books[i][0] <= shelf_width <= 1000
     * 1 <= books[i][1] <= 1000"""
 
-    def minHeightShelves(self, books: List[List[int]], shelf_width: int) -> int:
-
-        @cache
-        def fn(i):
-            """Return minimum height of stacking books[i:]."""
-            if i == len(books): return 0
-            ans = inf
+    def minHeightShelves(self, books: List[List[int]], shelfWidth: int) -> int:
+        n = len(books)
+        dp = [inf]*(n+1)
+        dp[-1] = 0
+        for i in range(n-1, -1, -1):
             w = h = 0
-            for j in range(i, len(books)):
-                if (w := w+books[j][0]) > shelf_width: return ans
-                h = max(h, books[j][1])
-                ans = min(ans, h + fn(j+1))
-            return ans
-
-        return fn(0)
+            for j in range(i, n):
+                w += books[j][0]
+                if w <= shelfWidth:
+                    h = max(h, books[j][1])
+                    dp[i] = min(dp[i], h + dp[j+1])
+                else: break
+        return dp[0]
 
 
     """1106. Parsing A Boolean Expression (Hard)
