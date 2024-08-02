@@ -60373,13 +60373,13 @@ class Trie:
     * nums[i] is either 0 or 1."""
 
     def minSwaps(self, nums: List[int]) -> int:
-        rsm = 0
         ans = inf
         ones = nums.count(1)
-        for i in range(len(nums) + ones):
-            rsm += nums[i % len(nums)]
-            if i >= ones: rsm -= nums[i - ones]
-            ans = min(ans, ones - rsm)
+        prefix = 0
+        for i in range(len(nums)+ones):
+            prefix += nums[i % len(nums)]
+            if i >= ones: prefix -= nums[(i-ones) % len(nums)]
+            ans = min(ans, ones - prefix)
         return ans
 
 

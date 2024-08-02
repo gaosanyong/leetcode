@@ -47862,11 +47862,11 @@ public:
     * nums[i] is either 0 or 1.*/
 
     int minSwaps(vector<int>& nums) {
-        int ans = INT_MAX, ones = count(begin(nums), end(nums), 1);
-        for (int i = 0, rsm = 0, n = nums.size(); i < n+ones; ++i) {
-            rsm += nums[i % n];
-            if (i >= ones) rsm -= nums[i-ones];
-            ans = min(ans, ones - rsm);
+        int ans = INT_MAX, ones = count(nums.begin(), nums.end(), 1);
+        for (int i = 0, n = nums.size(), prefix = 0; i < n + ones; ++i) {
+            prefix += nums[i % n];
+            if (i >= ones) prefix -= nums[(i-ones) % n];
+            ans = min(ans, ones - prefix);
         }
         return ans;
     }
