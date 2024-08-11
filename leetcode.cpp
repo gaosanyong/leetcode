@@ -75033,6 +75033,209 @@ public:
         }
         return true;
     }
+
+
+    /*3248. Snake in Matrix (Easy)
+    There is a snake in an n x n matrix grid and can move in four possible
+    directions. Each cell in the grid is identified by the position:
+    grid[i][j] = (i * n) + j. The snake starts at cell 0 and follows a sequence
+    of commands. You are given an integer n representing the size of the grid
+    and an array of strings commands where each command[i] is either "UP",
+    "RIGHT", "DOWN", and "LEFT". It's guaranteed that the snake will remain
+    within the grid boundaries throughout its movement. Return the position of
+    the final cell where the snake ends up after executing commands.
+
+    Example 1:
+    Input: n = 2, commands = ["RIGHT","DOWN"]
+    Output: 3
+    Explanation: 0   1
+                 2   3
+                 0   1
+                 2   3
+                 0   1
+                 2   3
+
+    Example 2:
+    Input: n = 3, commands = ["DOWN","RIGHT","UP"]
+    Output: 1
+    Explanation: 0   1   2
+                 3   4   5
+                 6   7   8
+                 0   1   2
+                 3   4   5
+                 6   7   8
+                 0   1   2
+                 3   4   5
+                 6   7   8
+                 0   1   2
+                 3   4   5
+                 6   7   8
+
+    Constraints:
+    * 2 <= n <= 10
+    * 1 <= commands.length <= 100
+    * commands consists only of "UP", "RIGHT", "DOWN", and "LEFT".
+    * The input is generated such the snake will not move outside of the
+      boundaries.*/
+
+    int finalPositionOfSnake(int n, vector<string>& commands) {
+        int i = 0, j = 0;
+        for (auto& c : commands)
+            if (c == "UP") --i;
+            else if (c == "RIGHT") ++j;
+            else if (c == "DOWN") ++i;
+            else --j;
+        return i*n + j;
+    }
+
+
+    /*3249. Count the Number of Good Nodes (Medium)
+    There is an undirected tree with n nodes labeled from 0 to n - 1, and rooted
+    at node 0. You are given a 2D integer array edges of length n - 1, where
+    edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi
+    in the tree. A node is good if all the subtrees rooted at its children have
+    the same size. Return the number of good nodes in the given tree. A subtree
+    of treeName is a tree consisting of a node in treeName and all of its
+    descendants.
+
+    Example 1:
+    Input: edges = [[0,1],[0,2],[1,3],[1,4],[2,5],[2,6]]
+    Output: 7
+    Explanation: All of the nodes of the given tree are good.
+
+    Example 2:
+    Input: edges = [[0,1],[1,2],[2,3],[3,4],[0,5],[1,6],[2,7],[3,8]]
+    Output: 6
+    Explanation: There are 6 good nodes in the given tree. They are colored in
+                 the image above.
+
+    Example 3:
+    Input: edges = [[0,1],[1,2],[1,3],[1,4],[0,5],[5,6],[6,7],[7,8],[0,9],[9,10],[9,12],[10,11]]
+    Output: 12
+    Explanation: All nodes except node 9 are good.
+
+    Constraints:
+    * 2 <= n <= 10^5
+    * edges.length == n - 1
+    * edges[i].length == 2
+    * 0 <= ai, bi < n
+    * The input is generated such that edges represents a valid tree.*/
+
+    int countGoodNodes(vector<vector<int>>& edges) {
+        int n = 1 + edges.size();
+        vector<vector<int>> tree(n);
+        for (auto& e : edges) {
+            int u = e[0], v = e[1];
+            tree[u].push_back(v);
+            tree[v].push_back(u);
+        }
+        int ans = 0;
+
+        function<int(int, int)> fn = [&](int u, int p) {
+            unordered_map<int, int> freq;
+            for (auto& v : tree[u])
+                if (v != p) ++freq[fn(v, u)];
+            if (freq.size() <= 1) ++ans;
+            return 1 + accumulate(freq.begin(), freq.end(), 0, [&](int s, auto& item) {
+                return s + item.first * item.second;
+            });
+        };
+
+        fn(0, -1);
+        return ans;
+    }
+
+
+    /*3250. Find the Count of Monotonic Pairs I (Hard)
+    You are given an array of positive integers nums of length n. We call a pair
+    of non-negative integer arrays (arr1, arr2) monotonic if:
+    * The lengths of both arrays are n.
+    * arr1 is monotonically non-decreasing, in other words,
+      arr1[0] <= arr1[1] <= ... <= arr1[n - 1].
+    * arr2 is monotonically non-increasing, in other words,
+      arr2[0] >= arr2[1] >= ... >= arr2[n - 1].
+    * arr1[i] + arr2[i] == nums[i] for all 0 <= i <= n - 1.
+    Return the count of monotonic pairs. Since the answer may be very large,
+    return it modulo 10^9 + 7.
+
+    Example 1:
+    Input: nums = [2,3,2]
+    Output: 4
+    Explanation: The good pairs are:
+                 ([0, 1, 1], [2, 2, 1])
+                 ([0, 1, 2], [2, 2, 0])
+                 ([0, 2, 2], [2, 1, 0])
+                 ([1, 2, 2], [1, 1, 0])
+
+    Example 2:
+    Input: nums = [5,5,5,5]
+    Output: 126
+
+    Constraints:
+    * 1 <= n == nums.length <= 2000
+    * 1 <= nums[i] <= 50*/
+
+    int countOfPairs(vector<int>& nums) {
+        int n = nums.size();
+        vector<vector<long>> dp(n+1, vector<long>(51));
+        fill_n(dp[n].begin(), 51, 1);
+        for (int i = n-1; i >= 0; --i) {
+            int diff = 0;
+            if (i) diff = max(0, nums[i] - nums[i-1]);
+            for (int j = 50; j >= 0; --j) {
+                if (j+1 <= 50) dp[i][j] = dp[i][j+1];
+                if (j+diff <= nums[i])
+                    dp[i][j] = (dp[i][j] + dp[i+1][j+diff]) % 1'000'000'007;
+            }
+        }
+        return dp[0][0];
+    }
+
+
+    /*3251. Find the Count of Monotonic Pairs II (Hard)
+    You are given an array of positive integers nums of length n. We call a pair
+    of non-negative integer arrays (arr1, arr2) monotonic if:
+    * The lengths of both arrays are n.
+    * arr1 is monotonically non-decreasing, in other words,
+      arr1[0] <= arr1[1] <= ... <= arr1[n - 1].
+    * arr2 is monotonically non-increasing, in other words,
+      arr2[0] >= arr2[1] >= ... >= arr2[n - 1].
+    * arr1[i] + arr2[i] == nums[i] for all 0 <= i <= n - 1.
+    Return the count of monotonic pairs. Since the answer may be very large,
+    return it modulo 10^9 + 7.
+
+    Example 1:
+    Input: nums = [2,3,2]
+    Output: 4
+    Explanation: The good pairs are:
+                 ([0, 1, 1], [2, 2, 1])
+                 ([0, 1, 2], [2, 2, 0])
+                 ([0, 2, 2], [2, 1, 0])
+                 ([1, 2, 2], [1, 1, 0])
+
+    Example 2:
+    Input: nums = [5,5,5,5]
+    Output: 126
+
+    Constraints:
+    * 1 <= n == nums.length <= 2000
+    * 1 <= nums[i] <= 1000*/
+
+    int countOfPairs(vector<int>& nums) {
+        int n = nums.size();
+        vector<vector<long>> dp(n+1, vector<long>(1001));
+        fill_n(dp[n].begin(), 1001, 1);
+        for (int i = n-1; i >= 0; --i) {
+            int diff = 0;
+            if (i) diff = max(0, nums[i] - nums[i-1]);
+            for (int j = 1000; j >= 0; --j) {
+                if (j+1 <= 1000) dp[i][j] = dp[i][j+1];
+                if (j+diff <= nums[i])
+                    dp[i][j] = (dp[i][j] + dp[i+1][j+diff]) % 1'000'000'007;
+            }
+        }
+        return dp[0][0];
+    }
 }
 
 
