@@ -7567,6 +7567,73 @@ class Solution {
     }
 
 
+    /*1568. Minimum Number of Days to Disconnect Island (Hard)
+    You are given an m x n binary grid grid where 1 represents land and 0
+    represents water. An island is a maximal 4-directionally (horizontal or
+    vertical) connected group of 1's. The grid is said to be connected if we
+    have exactly one island, otherwise is said disconnected. In one day, we are
+    allowed to change any single land cell (1) into a water cell (0). Return the
+    minimum number of days to disconnect the grid.
+
+    Example 1:
+    Input: grid = [[0,1,1,0],[0,1,1,0],[0,0,0,0]]
+    Output: 2
+    Explanation: We need at least 2 days to get a disconnected grid. Change land
+                 grid[1][1] and grid[0][2] to water and get 2 disconnected
+                 island.
+
+    Example 2:
+    Input: grid = [[1,1]]
+    Output: 2
+    Explanation: Grid of full water is also disconnected ([[1,1]] -> [[0,0]]), 0
+                 islands.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 30
+    * grid[i][j] is either 0 or 1.*/
+
+    private int dfs(int[][] grid) {
+        int ans = 0, m = grid.length, n = grid[0].length;
+        int[] dir = new int[]{-1, 0, 1, 0, -1};
+        boolean[][] seen = new boolean[m][n];
+        for (int x = 0; x < m; ++x)
+            for (int y = 0; y < n; ++y) {
+                if (grid[x][y] == 1 && !seen[x][y]) {
+                    ++ans;
+                    seen[x][y] = true;
+                    Stack<int[]> stk = new Stack(); stk.push(new int[]{x, y});
+                    while (!stk.isEmpty()) {
+                        var elem = stk.pop();
+                        int i = elem[0], j = elem[1];
+                        for (int k = 0; k < 4; ++k) {
+                            int ii = i + dir[k], jj = j + dir[k+1];
+                            if (0 <= ii && ii < m && 0 <= jj && jj < n && grid[ii][jj] == 1 && !seen[ii][jj]){
+                                seen[ii][jj] = true;
+                                stk.push(new int[]{ii, jj});
+                            }
+                        }
+                    }
+                }
+            }
+        return ans;
+    }
+
+    public int minDays(int[][] grid) {
+        int m = grid.length, n = grid[0].length;
+        if (dfs(grid) != 1) return 0;
+        for (int i = 0; i < m; ++i)
+            for (int j = 0; j < n; ++j)
+                if (grid[i][j] == 1) {
+                    grid[i][j] = 0;
+                    if (dfs(grid) != 1) return 1;
+                    grid[i][j] = 1;
+                }
+        return 2;
+    }
+
+
     /*1597. Build Binary Expression Tree From Infix Expression (Hard)
     A binary expression tree is a kind of binary tree used to represent
     arithmetic expressions. Each node of a binary expression tree has either
