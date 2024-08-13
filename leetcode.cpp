@@ -1246,16 +1246,24 @@ public:
 
     vector<vector<int>> combinationSum2(vector<int>& candidates, int target) {
         sort(candidates.begin(), candidates.end());
-        vector<set<vector<int>>> dp(target+1);
-        dp[0].insert(vector<int>{});
-        for (auto& x : candidates)
-            for (int i = target-1; i >= 0; --i)
-                if (i + x <= target)
-                    for (auto seq : dp[i]) {
-                        seq.push_back(x);
-                        dp[i+x].insert(seq);
-                    }
-        return vector<vector<int>>(dp[target].begin(), dp[target].end());
+        vector<vector<int>> ans;
+        vector<int> stk;
+
+        function<void(int, int, bool)> fn = [&](int i, int x, bool prev) {
+            if (x == 0) ans.push_back(stk);
+            else if (i < candidates.size()) {
+                if (candidates[i] > x) return;
+                fn(i+1, x, false);
+                if (i == 0 || candidates[i-1] != candidates[i] || prev) {
+                    stk.push_back(candidates[i]);
+                    fn(i+1, x-candidates[i], true);
+                    stk.pop_back();
+                }
+            }
+        };
+
+        fn(0, target, false);
+        return ans;
     }
 
 

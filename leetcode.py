@@ -1370,14 +1370,21 @@ class Solution:
 
     def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
         candidates.sort()
-        dp = [set() for _ in range(target+1)]
-        dp[0].add(())
-        for x in candidates:
-            for i in reversed(range(target)):
-                if x + i <= target:
-                    for seq in dp[i]:
-                        dp[i+x].add(seq + (x,))
-        return dp[-1]
+        ans = []
+        stack = []
+
+        def fn(i, x, prev):
+            if x == 0: ans.append(stack.copy())
+            elif i < len(candidates):
+                if candidates[i] > x: return
+                fn(i+1, x, False)
+                if i == 0 or candidates[i-1] != candidates[i] or prev:
+                    stack.append(candidates[i])
+                    fn(i+1, x-candidates[i], True)
+                    stack.pop()
+
+        fn(0, target, False)
+        return ans
 
 
     """41. First Missing Positive (Hard)
