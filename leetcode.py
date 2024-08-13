@@ -92612,6 +92612,207 @@ class SegTreeLazy:
         return True
 
 
+    """3238. Find the Number of Winning Players (Easy)
+    You are given an integer n representing the number of players in a game and
+    a 2D array pick where pick[i] = [xi, yi] represents that the player xi
+    picked a ball of color yi. Player i wins the game if they pick strictly more
+    than i balls of the same color. In other words,
+    * Player 0 wins if they pick any ball.
+    * Player 1 wins if they pick at least two balls of the same color.
+    * ...
+    * Player i wins if they pick at leasti + 1 balls of the same color.
+    Return the number of players who win the game. Note that multiple players
+    can win the game.
+
+    Example 1:
+    Input: n = 4, pick = [[0,0],[1,0],[1,0],[2,1],[2,1],[2,0]]
+    Output: 2
+    Explanation: Player 0 and player 1 win the game, while players 2 and 3 do
+    not win.
+
+    Example 2:
+    Input: n = 5, pick = [[1,1],[1,2],[1,3],[1,4]]
+    Output: 0
+    Explanation: No player wins the game.
+
+    Example 3:
+    Input: n = 5, pick = [[1,1],[2,4],[2,4],[2,4]]
+    Output: 1
+    Explanation: Player 2 wins the game by picking 3 balls with color 4.
+
+    Constraints:
+    * 2 <= n <= 10
+    * 1 <= pick.length <= 100
+    * pick[i].length == 2
+    * 0 <= xi <= n - 1
+    * 0 <= yi <= 10"""
+
+    def winningPlayerCount(self, n: int, pick: List[List[int]]) -> int:
+        freq = [[0]*11 for _ in range(n)]
+        for x, y in pick:
+            freq[x][y] += 1
+        return sum(1 for i, row in enumerate(freq) if i+1 <= max(row))
+
+
+    """3239. Minimum Number of Flips to Make Binary Grid Palindromic I (Medium)
+    You are given an m x n binary matrix grid. A row or column is considered
+    palindromic if its values read the same forward and backward. You can flip
+    any number of cells in grid from 0 to 1, or from 1 to 0. Return the minimum
+    number of cells that need to be flipped to make either all rows palindromic
+    or all columns palindromic.
+
+    Example 1:
+    Input: grid = [[1,0,0],[0,0,0],[0,0,1]]
+    Output: 2
+    Explanation: Flipping the highlighted cells makes all the rows palindromic.
+
+    Example 2:
+    Input: grid = [[0,1],[0,1],[0,0]]
+    Output: 1
+    Explanation: Flipping the highlighted cell makes all the columns palindromic.
+
+    Example 3:
+    Input: grid = [[1],[0]]
+    Output: 0
+    Explanation: All rows are already palindromic.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m * n <= 2 * 10^5
+    * 0 <= grid[i][j] <= 1"""
+
+    def minFlips(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        row = col = 0
+        for i in range(m):
+            for j in range(n):
+                row += grid[i][j] ^ grid[m-1-i][j]
+                col += grid[i][j] ^ grid[i][n-1-j]
+        return min(row, col)//2;
+
+
+    """3240. Minimum Number of Flips to Make Binary Grid Palindromic II (Medium)
+    You are given an m x n binary matrix grid. A row or column is considered
+    palindromic if its values read the same forward and backward. You can flip
+    any number of cells in grid from 0 to 1, or from 1 to 0. Return the minimum
+    number of cells that need to be flipped to make all rows and columns
+    palindromic, and the total number of 1's in grid divisible by 4.
+
+    Example 1:
+    Input: grid = [[1,0,0],[0,1,0],[0,0,1]]
+    Output: 3
+    Explanation:
+
+    Example 2:
+    Input: grid = [[0,1],[0,1],[0,0]]
+    Output: 2
+    Explanation:
+
+    Example 3:
+    Input: grid = [[1],[1]]
+    Output: 2
+    Explanation:
+
+    * Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m * n <= 2 * 10^5
+    * 0 <= grid[i][j] <= 1"""
+
+    def minFlips(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        ans = ones = 0
+        if n & 1:
+            for i in range(m//2):
+                total = grid[i][n//2] + grid[~i][n//2]
+                if total == 2: ones = (ones+1) % 2
+                elif total == 1: ans += 1
+        if m & 1:
+            for j in range(n//2):
+                total = grid[m//2][j] + grid[m//2][~j]
+                if total == 2: ones = (ones+1) % 2
+                elif total == 1: ans += 1
+        if ones and ans == 0: ans += 2
+        if m&1 and n&1 and grid[m//2][n//2]: ans += 1
+        for i in range(m//2):
+            for j in range(n//2):
+                total = grid[i][j] + grid[i][~j] + grid[~i][j] + grid[~i][~j]
+                ans += min(total, 4-total)
+        return ans
+
+
+    """3241. Time Taken to Mark All Nodes (Hard)
+    There exists an undirected tree with n nodes numbered 0 to n - 1. You are
+    given a 2D integer array edges of length n - 1, where edges[i] = [ui, vi]
+    indicates that there is an edge between nodes ui and vi in the tree.
+    Initially, all nodes are unmarked. For each node i:
+    * If i is odd, the node will get marked at time x if there is at least one
+      node adjacent to it which was marked at time x - 1.
+    * If i is even, the node will get marked at time x if there is at least one
+      node adjacent to it which was marked at time x - 2.
+    Return an array times where times[i] is the time when all nodes get marked
+    in the tree, if you mark node i at time t = 0. Note that the answer for each
+    times[i] is independent, i.e. when you mark node i all other nodes are
+    unmarked.
+
+    Example 1:
+    Input: edges = [[0,1],[0,2]]
+    Output: [2,4,3]
+    Explanation: For i = 0: Node 1 is marked at t = 1, and Node 2 at t = 2.
+                 For i = 1: Node 0 is marked at t = 2, and Node 2 at t = 4.
+                 For i = 2: Node 0 is marked at t = 2, and Node 1 at t = 3.
+
+    Example 2:
+    Input: edges = [[0,1]]
+    Output: [1,2]
+    Explanation: For i = 0: Node 1 is marked at t = 1.
+                 For i = 1: Node 0 is marked at t = 2.
+
+    Example 3:
+    Input: edges = [[2,4],[0,1],[2,3],[0,2]]
+    Output: [4,6,3,5,5]
+    Explanation:
+
+    Constraints:
+    * 2 <= n <= 10^5
+    * edges.length == n - 1
+    * edges[i].length == 2
+    * 0 <= edges[i][0], edges[i][1] <= n - 1
+    * The input is generated such that edges represents a valid tree."""
+
+    def timeTaken(self, edges: List[List[int]]) -> List[int]:
+        n = 1+len(edges)
+        tree = [[] for _ in range(n)]
+        for u, v in edges:
+            tree[u].append(v)
+            tree[v].append(u)
+        vals = [[(-1, 0)]*2 for _ in range(n)]
+
+        def dfs(u, p):
+            """Return """
+            for v in tree[u]:
+                if v != p:
+                    cand = 2-(v&1)+dfs(v, u)
+                    insort(vals[u], (v, cand), key = lambda x: -x[1])
+                    vals[u].pop()
+            return vals[u][0][1]
+
+        dfs(0, -1)
+        ans = [0]*n
+        stack = [(0, -1, 0)]
+        while stack:
+            u, p, x = stack.pop()
+            insort(vals[u], (p, x), key = lambda x: -x[1])
+            ans[u] = vals[u][0][1]
+            for v in tree[u]:
+                if v != p:
+                    if v != vals[u][0][0]: xx = vals[u][0][1]
+                    else: xx = vals[u][1][1]
+                    stack.append((v, u, xx+2-(u&1)))
+        return ans
+
+
     """3248. Snake in Matrix (Easy)
     There is a snake in an n x n matrix grid and can move in four possible
     directions. Each cell in the grid is identified by the position:

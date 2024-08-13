@@ -13932,6 +13932,226 @@ function canReachCorner(X: number, Y: number, circles: number[][]): boolean {
 };
 
 
+/*3238. Find the Number of Winning Players (Easy)
+You are given an integer n representing the number of players in a game and
+a 2D array pick where pick[i] = [xi, yi] represents that the player xi
+picked a ball of color yi. Player i wins the game if they pick strictly more
+than i balls of the same color. In other words,
+* Player 0 wins if they pick any ball.
+* Player 1 wins if they pick at least two balls of the same color.
+* ...
+* Player i wins if they pick at leasti + 1 balls of the same color.
+Return the number of players who win the game. Note that multiple players
+can win the game.
+
+Example 1:
+Input: n = 4, pick = [[0,0],[1,0],[1,0],[2,1],[2,1],[2,0]]
+Output: 2
+Explanation: Player 0 and player 1 win the game, while players 2 and 3 do
+not win.
+
+Example 2:
+Input: n = 5, pick = [[1,1],[1,2],[1,3],[1,4]]
+Output: 0
+Explanation: No player wins the game.
+
+Example 3:
+Input: n = 5, pick = [[1,1],[2,4],[2,4],[2,4]]
+Output: 1
+Explanation: Player 2 wins the game by picking 3 balls with color 4.
+
+Constraints:
+* 2 <= n <= 10
+* 1 <= pick.length <= 100
+* pick[i].length == 2
+* 0 <= xi <= n - 1
+* 0 <= yi <= 10*/
+
+function winningPlayerCount(n: number, pick: number[][]): number {
+    const freq = Array(n).fill(0).map(() => Array(11).fill(0));
+    for (const [x, y] of pick)
+        ++freq[x][y];
+    return freq.map((x, i) => i+1 <= Math.max(...x)).filter(Boolean).length;
+};
+
+
+/*3239. Minimum Number of Flips to Make Binary Grid Palindromic I (Medium)
+You are given an m x n binary matrix grid. A row or column is considered
+palindromic if its values read the same forward and backward. You can flip
+any number of cells in grid from 0 to 1, or from 1 to 0. Return the minimum
+number of cells that need to be flipped to make either all rows palindromic
+or all columns palindromic.
+
+Example 1:
+Input: grid = [[1,0,0],[0,0,0],[0,0,1]]
+Output: 2
+Explanation: Flipping the highlighted cells makes all the rows palindromic.
+
+Example 2:
+Input: grid = [[0,1],[0,1],[0,0]]
+Output: 1
+Explanation: Flipping the highlighted cell makes all the columns palindromic.
+
+Example 3:
+Input: grid = [[1],[0]]
+Output: 0
+Explanation: All rows are already palindromic.
+
+Constraints:
+* m == grid.length
+* n == grid[i].length
+* 1 <= m * n <= 2 * 10^5
+* 0 <= grid[i][j] <= 1*/
+
+function minFlips(grid: number[][]): number {
+    const m = grid.length, n = grid[0].length;
+    let row = 0, col = 0;
+    for (let i = 0; i < m; ++i)
+        for (let j = 0; j < n; ++j) {
+            row += grid[i][j] ^ grid[m-1-i][j];
+            col += grid[i][j] ^ grid[i][n-1-j];
+        }
+    return Math.floor(Math.min(row, col)/2);
+};
+
+
+/*3240. Minimum Number of Flips to Make Binary Grid Palindromic II (Medium)
+You are given an m x n binary matrix grid. A row or column is considered
+palindromic if its values read the same forward and backward. You can flip
+any number of cells in grid from 0 to 1, or from 1 to 0. Return the minimum
+number of cells that need to be flipped to make all rows and columns
+palindromic, and the total number of 1's in grid divisible by 4.
+
+Example 1:
+Input: grid = [[1,0,0],[0,1,0],[0,0,1]]
+Output: 3
+Explanation:
+
+Example 2:
+Input: grid = [[0,1],[0,1],[0,0]]
+Output: 2
+Explanation:
+
+Example 3:
+Input: grid = [[1],[1]]
+Output: 2
+Explanation:
+
+* Constraints:
+* m == grid.length
+* n == grid[i].length
+* 1 <= m * n <= 2 * 10^5
+* 0 <= grid[i][j] <= 1*/
+
+function minFlips(grid: number[][]): number {
+    const m = grid.length, n = grid[0].length;
+    const mm = Math.floor(m/2), nn = Math.floor(n/2);
+    let ans = 0, ones = 0;
+    if (n & 1)
+        for (let i = 0; i < mm; ++i) {
+            const total = grid[i][nn] + grid[m-1-i][nn];
+            if (total == 2) ++ones;
+            else if (total == 1) ++ans;
+        }
+    if (m & 1)
+        for (let j = 0; j < nn; ++j) {
+            const total = grid[mm][j] + grid[mm][n-1-j];
+            if (total == 2) ++ones;
+            else if (total == 1) ++ans;
+        }
+    if (ones&1 && ans == 0) ans += 2;
+    if (m&1 && n&1 && grid[mm][nn]) ++ans;
+    for (let i = 0; i < mm; ++i)
+        for (let j = 0; j < nn; ++j) {
+            const total = grid[i][j] + grid[i][n-1-j] + grid[m-1-i][j] + grid[m-1-i][n-1-j];
+            ans += Math.min(total, 4-total);
+        }
+    return ans;
+};
+
+
+/*3241. Time Taken to Mark All Nodes (Hard)
+There exists an undirected tree with n nodes numbered 0 to n - 1. You are
+given a 2D integer array edges of length n - 1, where edges[i] = [ui, vi]
+indicates that there is an edge between nodes ui and vi in the tree.
+Initially, all nodes are unmarked. For each node i:
+* If i is odd, the node will get marked at time x if there is at least one
+  node adjacent to it which was marked at time x - 1.
+* If i is even, the node will get marked at time x if there is at least one
+  node adjacent to it which was marked at time x - 2.
+Return an array times where times[i] is the time when all nodes get marked
+in the tree, if you mark node i at time t = 0. Note that the answer for each
+times[i] is independent, i.e. when you mark node i all other nodes are
+unmarked.
+
+Example 1:
+Input: edges = [[0,1],[0,2]]
+Output: [2,4,3]
+Explanation: For i = 0: Node 1 is marked at t = 1, and Node 2 at t = 2.
+             For i = 1: Node 0 is marked at t = 2, and Node 2 at t = 4.
+             For i = 2: Node 0 is marked at t = 2, and Node 1 at t = 3.
+
+Example 2:
+Input: edges = [[0,1]]
+Output: [1,2]
+Explanation: For i = 0: Node 1 is marked at t = 1.
+             For i = 1: Node 0 is marked at t = 2.
+
+Example 3:
+Input: edges = [[2,4],[0,1],[2,3],[0,2]]
+Output: [4,6,3,5,5]
+Explanation:
+
+Constraints:
+* 2 <= n <= 10^5
+* edges.length == n - 1
+* edges[i].length == 2
+* 0 <= edges[i][0], edges[i][1] <= n - 1
+* The input is generated such that edges represents a valid tree.*/
+
+function timeTaken(edges: number[][]): number[] {
+    const n = 1 + edges.length;
+    const tree = Array(n).fill(0).map(() => []);
+    for (const [u, v] of edges) {
+        tree[u].push(v);
+        tree[v].push(u);
+    }
+    const vals = Array(n).fill(0).map(() => [[-1, 0], [-1, 0]]);
+
+    function dfs(u, p) {
+        for (const v of tree[u])
+            if (v != p) {
+                const cand = 2 - v%2 + dfs(v, u);
+                if (cand > vals[u][0][1]) {
+                    vals[u][1] = vals[u][0];
+                    vals[u][0] = [v, cand];
+                } else if (cand > vals[u][1][1])
+                    vals[u][1] = [v, cand];
+            }
+        return vals[u][0][1];
+    }
+
+    dfs(0, -1);
+    const ans = Array(n).fill(0), stack = [[0, -1, 0]];
+    while (stack.length) {
+        const [u, p, x] = stack.pop();
+        if (x > vals[u][0][1]) {
+            vals[u][1] = vals[u][0];
+            vals[u][0] = [p, x];
+        } else if (x > vals[u][1][1])
+            vals[u][1] = [p, x];
+        ans[u] = vals[u][0][1];
+        for (const v of tree[u])
+            if (v != p) {
+                let xx = vals[u][0][1];
+                if (v == vals[u][0][0]) xx = vals[u][1][1];
+                stack.push([v, u, xx + 2 - u%2]);
+            }
+    }
+    return ans;
+};
+
+
 /*3248. Snake in Matrix (Easy)
 There is a snake in an n x n matrix grid and can move in four possible
 directions. Each cell in the grid is identified by the position:
