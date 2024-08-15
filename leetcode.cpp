@@ -19850,13 +19850,13 @@ public:
     * bills[i] will be either 5, 10, or 20.*/
 
     bool lemonadeChange(vector<int>& bills) {
-        int x05 = 0, x10 = 0;
-        for (auto bill : bills) {
-            if (bill == 5) ++x05;
-            else if (bill == 10) --x05, ++x10;
-            else if (x10 > 0) --x05, --x10;
-            else x05 -= 3;
-            if (x05 < 0) return false;
+        int five = 0, ten = 0;
+        for (auto& bill : bills) {
+            if (bill == 5) ++five;
+            else if (bill == 10) --five, ++ten;
+            else if (ten) --five, --ten;
+            else five -= 3;
+            if (five < 0) return false;
         }
         return true;
     }
