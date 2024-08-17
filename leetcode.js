@@ -13314,6 +13314,168 @@ var minimumDifference = function(nums, k) {
 };
 
 
+/*3174. Clear Digits (Easy)
+You are given a string s. Your task is to remove all digits by doing this
+operation repeatedly:
+* Delete the first digit and the closest non-digit character to its left.
+Return the resulting string after removing all digits.
+
+Example 1:
+Input: s = "abc"
+Output: "abc"
+Explanation: There is no digit in the string.
+
+Example 2:
+Input: s = "cb34"
+Output: ""
+Explanation: First, we apply the operation on s[2], and s becomes "c4". Then
+             we apply the operation on s[1], and s becomes "".
+
+Constraints:
+* 1 <= s.length <= 100
+* s consists only of lowercase English letters and digits.
+* The input is generated such that it is possible to delete all digits.*/
+
+var clearDigits = function(s) {
+    const ans = [];
+    for (const ch of s)
+        if ('0' <= ch && ch <= '9') ans.pop();
+        else ans.push(ch);
+    return ans.join('');
+};
+
+
+/*3175. Find The First Player to win K Games in a Row (Medium)
+A competition consists of n players numbered from 0 to n - 1. You are given
+an integer array skills of size n and a positive integer k, where skills[i]
+is the skill level of player i. All integers in skills are unique. All
+players are standing in a queue in order from player 0 to player n - 1. The
+competition process is as follows:
+* The first two players in the queue play a game, and the player with the
+  higher skill level wins.
+* After the game, the winner stays at the beginning of the queue, and the
+  loser goes to the end of it.
+The winner of the competition is the first player who wins k games in a row.
+Return the initial index of the winning player.
+
+Example 1:
+Input: skills = [4,2,6,3,9], k = 2
+Output: 2
+Explanation: Initially, the queue of players is [0,1,2,3,4]. The following
+             process happens:
+             - Players 0 and 1 play a game, since the skill of player 0 is
+               higher than that of player 1, player 0 wins. The resulting
+               queue is [0,2,3,4,1].
+             - Players 0 and 2 play a game, since the skill of player 2 is
+               higher than that of player 0, player 2 wins. The resulting
+               queue is [2,3,4,1,0].
+             - Players 2 and 3 play a game, since the skill of player 2 is
+               higher than that of player 3, player 2 wins. The resulting
+               queue is [2,4,1,0,3].
+             - Player 2 won k = 2 games in a row, so the winner is player 2.
+
+Example 2:
+Input: skills = [2,5,4], k = 3
+Output: 1
+Explanation: Initially, the queue of players is [0,1,2]. The following
+             process happens:
+             - Players 0 and 1 play a game, since the skill of player 1 is
+               higher than that of player 0, player 1 wins. The resulting
+               queue is [1,2,0].
+             - Players 1 and 2 play a game, since the skill of player 1 is
+               higher than that of player 2, player 1 wins. The resulting
+               queue is [1,0,2].
+             - Players 1 and 0 play a game, since the skill of player 1 is
+               higher than that of player 0, player 1 wins. The resulting
+               queue is [1,2,0].
+             - Player 1 won k = 3 games in a row, so the winner is player 1.
+
+Constraints:
+* n == skills.length
+* 2 <= n <= 10^5
+* 1 <= k <= 10^9
+* 1 <= skills[i] <= 10^6
+* All integers in skills are unique.*/
+
+var findWinningPlayer = function(skills, k) {
+    let j = 0;
+    for (let i = 1, cnt = 0; i < skills.length && cnt < k; ++i, ++cnt)
+        if (skills[j] < skills[i]) {
+            j = i;
+            cnt = 0;
+        }
+    return j;
+};
+
+
+/*3176. Find the Maximum Length of a Good Subsequence I (Medium)
+You are given an integer array nums and a non-negative integer k. A sequence
+of integers seq is called good if there are at most k indices i in the range
+[0, seq.length - 2] such that seq[i] != seq[i + 1]. Return the maximum
+possible length of a good subsequence of nums.
+
+Example 1:
+Input: nums = [1,2,1,1,3], k = 2
+Output: 4
+Explanation: The maximum length subsequence is [1,2,1,1,3].
+
+Example 2:
+Input: nums = [1,2,3,4,5,1], k = 0
+Output: 2
+Explanation: The maximum length subsequence is [1,2,3,4,5,1].
+
+Constraints:
+* 1 <= nums.length <= 500
+* 1 <= nums[i] <= 10^9
+* 0 <= k <= min(nums.length, 25)*/
+
+var maximumLength = function(nums, k) {
+    const dp = Array(k+1).fill(0).map(() => new Map());
+    const most = Array(k+1).fill(0);
+    for (const x of nums)
+        for (let i = k; i >= 0; --i) {
+            dp[i].set(x, 1 + (dp[i].get(x) ?? 0));
+            if (i > 0) dp[i].set(x, Math.max(dp[i].get(x), 1+most[i-1]));
+            most[i] = Math.max(most[i], dp[i].get(x));
+        }
+    return most[k];
+};
+
+
+/*3177. Find the Maximum Length of a Good Subsequence II (Hard)
+You are given an integer array nums and a non-negative integer k. A sequence
+of integers seq is called good if there are at most k indices i in the range
+[0, seq.length - 2] such that seq[i] != seq[i + 1]. Return the maximum
+possible length of a good subsequence of nums.
+
+Example 1:
+Input: nums = [1,2,1,1,3], k = 2
+Output: 4
+Explanation: The maximum length subsequence is [1,2,1,1,3].
+
+Example 2:
+Input: nums = [1,2,3,4,5,1], k = 0
+Output: 2
+Explanation: The maximum length subsequence is [1,2,3,4,5,1].
+
+Constraints:
+* 1 <= nums.length <= 5 * 10^3
+* 1 <= nums[i] <= 10^9
+* 0 <= k <= min(50, nums.length)*/
+
+var maximumLength = function(nums, k) {
+    const dp = Array(k+1).fill(0).map(() => new Map());
+    const most = Array(k+1).fill(0);
+    for (const x of nums)
+        for (let i = k; i >= 0; --i) {
+            dp[i].set(x, 1 + (dp[i].get(x) ?? 0));
+            if (i > 0) dp[i].set(x, Math.max(dp[i].get(x), 1+most[i-1]));
+            most[i] = Math.max(most[i], dp[i].get(x));
+        }
+    return most[k];
+};
+
+
 /*3179. Find the N-th Value After K Seconds (Medium)
 You are given two integers n and k. Initially, you start with an array a of
 n integers where a[i] = 1 for all 0 <= i <= n - 1. After each second, you
