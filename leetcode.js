@@ -15451,6 +15451,502 @@ var timeTaken = function(edges) {
 };
 
 
+/*3242. Design Neighbor Sum Service (Easy)
+You are given a n x n 2D array grid containing distinct elements in the range
+[0, n^2 - 1]. Implement the NeighborSum class:
+* NeighborSum(int [][]grid) initializes the object.
+* int adjacentSum(int value) returns the sum of elements which are adjacent
+  neighbors of value, that is either to the top, left, right, or bottom of value
+  in grid.
+* int diagonalSum(int value) returns the sum of elements which are diagonal
+  neighbors of value, that is either to the top-left, top-right, bottom-left, or
+  bottom-right of value in grid.
+
+Example 1:
+Input:
+["NeighborSum", "adjacentSum", "adjacentSum", "diagonalSum", "diagonalSum"]
+[[[[0, 1, 2], [3, 4, 5], [6, 7, 8]]], [1], [4], [4], [8]]
+Output: [null, 6, 16, 16, 4]
+
+Explanation: The adjacent neighbors of 1 are 0, 2, and 4.
+             The adjacent neighbors of 4 are 1, 3, 5, and 7.
+             The diagonal neighbors of 4 are 0, 2, 6, and 8.
+             The diagonal neighbor of 8 is 4.
+
+Example 2:
+Input:
+["NeighborSum", "adjacentSum", "diagonalSum"]
+[[[[1, 2, 0, 3], [4, 7, 15, 6], [8, 9, 10, 11], [12, 13, 14, 5]]], [15], [9]]
+Output: [null, 23, 45]
+Explanation: The adjacent neighbors of 15 are 0, 10, 7, and 6.
+             The diagonal neighbors of 9 are 4, 12, 14, and 15.
+
+Constraints:
+* 3 <= n == grid.length == grid[0].length <= 10
+* 0 <= grid[i][j] <= n^2 - 1
+* All grid[i][j] are distinct.
+* value in adjacentSum and diagonalSum will be in the range [0, n^2 - 1].
+* At most 2 * n^2 calls will be made to adjacentSum and diagonalSum.*/
+
+var neighborSum = function(grid) {
+    const n = grid.length;
+    this.vals = Array(2).fill(0).map(() => Array(n*n).fill(0));
+    for (let i = 0; i < n; ++i)
+        for (let j = 0; j < n; ++j) {
+            for (const [ii, jj] of [[i-1, j], [i, j-1], [i, j+1], [i+1, j]])
+                if (0 <= ii && ii < n && 0 <= jj && jj < n)
+                    this.vals[0][grid[i][j]] += grid[ii][jj];
+            for (const [ii, jj] of [[i-1, j-1], [i-1, j+1], [i+1, j-1], [i+1, j+1]])
+                if (0 <= ii && ii < n && 0 <= jj && jj < n)
+                    this.vals[1][grid[i][j]] += grid[ii][jj];
+        }
+};
+
+neighborSum.prototype.adjacentSum = function(value) {
+    return this.vals[0][value];
+};
+
+neighborSum.prototype.diagonalSum = function(value) {
+    return this.vals[1][value];
+};
+
+
+/*3243. Shortest Distance After Road Addition Queries I (Medium)
+You are given an integer n and a 2D integer array queries. There are n
+cities numbered from 0 to n - 1. Initially, there is a unidirectional road
+from city i to city i + 1 for all 0 <= i < n - 1. queries[i] = [ui, vi]
+represents the addition of a new unidirectional road from city ui to city
+vi. After each query, you need to find the length of the shortest path from
+city 0 to city n - 1. Return an array answer where for each i in the range
+[0, queries.length - 1], answer[i] is the length of the shortest path from
+city 0 to city n - 1 after processing the first i + 1 queries.
+
+Example 1:
+Input: n = 5, queries = [[2,4],[0,2],[0,4]]
+Output: [3,2,1]
+Explanation: - After the addition of the road from 2 to 4, the length of the
+               shortest path from 0 to 4 is 3.
+             - After the addition of the road from 0 to 2, the length of the
+               shortest path from 0 to 4 is 2.
+             - After the addition of the road from 0 to 4, the length of the
+               shortest path from 0 to 4 is 1.
+
+Example 2:
+Input: n = 4, queries = [[0,3],[0,2]]
+Output: [1,1]
+Explanation: - After the addition of the road from 0 to 3, the length of the
+               shortest path from 0 to 3 is 1.
+             - After the addition of the road from 0 to 2, the length of the
+               shortest path remains 1.
+
+Constraints:
+* 3 <= n <= 500
+* 1 <= queries.length <= 500
+* queries[i].length == 2
+* 0 <= queries[i][0] < queries[i][1] < n
+* 1 < queries[i][1] - queries[i][0]
+* There are no repeated roads among the queries.*/
+
+var shortestDistanceAfterQueries = function(n, queries) {
+    const graph = Array(n).fill(0).map(() => []);
+    for (let i = 0; i+1 < n; ++i)
+        graph[i].push(i+1);
+
+    function bfs(graph) {
+        const queue = [0];
+        const seen = Array(n).fill(false);
+        seen[0] = true;
+        for (let ans = 0; queue.length; ++ans) {
+            for (let sz = queue.length; sz; --sz) {
+                const u = queue.shift();
+                if (u == n-1) return ans;
+                for (const v of graph[u])
+                    if (!seen[v]) {
+                        queue.push(v);
+                        seen[v] = true;
+                    }
+            }
+        }
+    };
+
+    const ans = [];
+    for (const [u, v] of queries) {
+        graph[u].push(v);
+        ans.push(bfs(graph));
+    }
+    return ans;
+};
+
+
+/*3244. Shortest Distance After Road Addition Queries II (Hard)
+You are given an integer n and a 2D integer array queries. There are n
+cities numbered from 0 to n - 1. Initially, there is a unidirectional road
+from city i to city i + 1 for all 0 <= i < n - 1. queries[i] = [ui, vi]
+represents the addition of a new unidirectional road from city ui to city
+vi. After each query, you need to find the length of the shortest path from
+city 0 to city n - 1. There are no two queries such that
+queries[i][0] < queries[j][0] < queries[i][1] < queries[j][1]. Return an
+array answer where for each i in the range [0, queries.length - 1],
+answer[i] is the length of the shortest path from city 0 to city n - 1 after
+processing the first i + 1 queries.
+
+Example 1:
+Input: n = 5, queries = [[2,4],[0,2],[0,4]]
+Output: [3,2,1]
+Explanation: - After the addition of the road from 2 to 4, the length of the
+               shortest path from 0 to 4 is 3.
+             - After the addition of the road from 0 to 2, the length of the
+               shortest path from 0 to 4 is 2.
+             - After the addition of the road from 0 to 4, the length of the
+               shortest path from 0 to 4 is 1.
+
+Example 2:
+Input: n = 4, queries = [[0,3],[0,2]]
+Output: [1,1]
+Explanation: - After the addition of the road from 0 to 3, the length of the
+               shortest path from 0 to 3 is 1.
+             - After the addition of the road from 0 to 2, the length of the
+               shortest path remains 1.
+
+Constraints:
+* 3 <= n <= 10^5
+* 1 <= queries.length <= 10^5
+* queries[i].length == 2
+* 0 <= queries[i][0] < queries[i][1] < n
+* 1 < queries[i][1] - queries[i][0]
+* There are no repeated roads among the queries.
+* There are no two queries such that i != j and queries[i][0] < queries[j][0] < queries[i][1] < queries[j][1].*/
+
+var shortestDistanceAfterQueries = function(n, queries) {
+    const ans = [], jump = Array(--n).fill(0).map((_, i) => i+1);
+    for (let [u, v] of queries) {
+        for (; jump[u] < v; --n)
+            [jump[u], u] = [v, jump[u]];
+        ans.push(n);
+    }
+    return ans;
+};
+
+
+/*3245. Alternating Groups III (Hard)
+There are some red and blue tiles arranged circularly. You are given an
+array of integers colors and a 2D integers array queries. The color of tile
+i is represented by colors[i]:
+* colors[i] == 0 means that tile i is red.
+* colors[i] == 1 means that tile i is blue.
+An alternating group is a contiguous subset of tiles in the circle with
+alternating colors (each tile in the group except the first and last one has
+a different color from its adjacent tiles in the group). You have to process
+queries of two types:
+* queries[i] = [1, sizei], determine the count of alternating groups with
+  size sizei.
+* queries[i] = [2, indexi, colori], change colors[indexi] to colori.
+Return an array answer containing the results of the queries of the first
+type in order. Note that since colors represents a circle, the first and the
+last tiles are considered to be next to each other.
+
+Example 1:
+Input: colors = [0,1,1,0,1], queries = [[2,1,0],[1,4]]
+Output: [2]
+Explanation: First query:
+             Change colors[1] to 0.
+             Second query:
+             Count of the alternating groups with size 4:
+
+Example 2:
+Input: colors = [0,0,1,0,1,1], queries = [[1,3],[2,3,0],[1,5]]
+Output: [2,0]
+Explanation: First query:
+             Count of the alternating groups with size 3:
+             Second query: colors will not change.
+             Third query: There is no alternating group with size 5.
+
+Constraints:
+* 4 <= colors.length <= 5 * 10^4
+* 0 <= colors[i] <= 1
+* 1 <= queries.length <= 5 * 10^4
+* queries[i][0] == 1 or queries[i][0] == 2
+* For all i that:
+* queries[i][0] == 1: queries[i].length == 2, 3 <= queries[i][1] <= colors.length - 1
+* queries[i][0] == 2: queries[i].length == 3, 0 <= queries[i][1] <= colors.length - 1, 0 <= queries[i][2] <= 1*/
+
+class TreeNode {
+    constructor(key, value, left=null, right=null, height=1) {
+        this.key = key;
+        this.value = value;
+        this.left = left;
+        this.right = right;
+        this.height = height;
+    }
+}
+
+class AVLTree {
+
+    constructor() {
+        this.root = null;
+        this.size = 0;
+    }
+
+    balance(node) {
+        if (!node) return 0;
+        return this.height(node.left) - this.height(node.right);
+    }
+
+    ceilingEntry(key) {
+        let ans = null;
+        for (let node = this.root; node; )
+            if (node.key < key) node = node.right;
+            else {
+                ans = node;
+                node = node.left;
+            }
+        return ans;
+    }
+
+    entrySet() {
+        return this.#traverse().map(x => [x.key, x.value]);
+    }
+
+    firstEntry() {
+        return this.#firstEntry(this.root);
+    }
+
+    floorEntry(key) {
+        let ans = null;
+        for (let node = this.root; node; )
+            if (key < node.key) node = node.left;
+            else {
+                ans = node;
+                node = node.right;
+            }
+        return ans;
+    }
+
+    get(key) {
+        return this.#get(this.root, key);
+    }
+
+    height(node) {
+        return node ? node.height : 0;
+    }
+
+    put(key, value=0) {
+        this.root = this.#put(this.root, key, value);
+    }
+
+    remove(key) {
+        this.root = this.#remove(this.root, key);
+    }
+
+    toString() {
+        return "{" + this.#traverse().map(x => `${x.key}: ${x.value}`).join(", ") + "}";
+    }
+
+    #firstEntry(node) {
+        while (node && node.left) node = node.left;
+        return node;
+    }
+
+    #get(node, key) {
+        if (!node) return null;
+        if (node.key === key) return node.value;
+        if (node.key < key) return this.#get(node.right, key);
+        return this.#get(node.left, key);
+    }
+
+    #left_rotate(node) {
+        let y = node.right, T2 = y.left;
+        y.left = node;
+        node.right = T2;
+        node.height = 1 + Math.max(this.height(node.left), this.height(node.right));
+        y.height = 1 + Math.max(this.height(y.left), this.height(y.right));
+        return y;
+    }
+
+    #put(node, key, value) {
+        if (!node) {
+            ++this.size;
+            return new TreeNode(key, value);
+        } else if (key < node.key) node.left = this.#put(node.left, key, value);
+        else if (key > node.key) node.right = this.#put(node.right, key, value);
+        else {
+            node.value = value;
+            return node;
+        }
+        node.height = 1 + Math.max(this.height(node.left), this.height(node.right));
+        let bal = this.balance(node);
+        if (bal > 1 && key < node.left.key)
+            return this.#right_rotate(node);
+        if (bal < -1 && key > node.right.key)
+            return this.#left_rotate(node);
+        if (bal > 1 && key > node.left.key) {
+            node.left = this.#left_rotate(node.left);
+            return this.#right_rotate(node);
+        }
+        if (bal < -1 && key < node.right.key) {
+            node.right = this.#right_rotate(node.right);
+            return this.#left_rotate(node);
+        }
+        return node;
+    }
+
+    #remove(node, key) {
+        if (!node) return node;
+        if (key < node.key) node.left = this.#remove(node.left, key);
+        else if (key > node.key) node.right = this.#remove(node.right, key);
+        else {
+            if (!node.left) {
+                let temp = node.right;
+                node = null;
+                --this.size;
+                return temp;
+            }
+            if (!node.right) {
+                let temp = node.left;
+                node = null;
+                --this.size;
+                return temp;
+            }
+            let temp = this.#firstEntry(node.right);
+            node.key = temp.key;
+            node.value = temp.value;
+            node.right = this.#remove(node.right, temp.key);
+        }
+        if (!node) return node;
+        node.height = 1 + Math.max(this.height(node.left), this.height(node.right));
+        let bal = this.balance(node);
+        if (bal > 1 && this.balance(node.left) > 0)
+            return this.#right_rotate(node);
+        if (bal < -1 && this.balance(node.right) < 0)
+            return this.#left_rotate(node);
+        if (bal > 1 && this.balance(node.left) < 0) {
+            node.left = this.#left_rotate(node.left);
+            return this.#right_rotate(node);
+        }
+        if (bal < -1 && this.balance(node.right) > 0) {
+            node.right = this.#right_rotate(node.right);
+            return this.#left_rotate(node);
+        }
+        return node;
+    }
+
+    #right_rotate(node) {
+        let y = node.left, T3 = y.right;
+        y.right = node;
+        node.left = T3;
+        node.height = 1 + Math.max(this.height(node.left), this.height(node.right));
+        y.height = 1 + Math.max(this.height(y.left), this.height(y.right));
+        return y;
+    }
+
+    #traverse() {
+        const ans = [], stack = [];
+        let node = this.root;
+        while (stack.length || node)
+            if (node) {
+                stack.push(node);
+                node = node.left;
+            } else {
+                node = stack.pop();
+                ans.push(node);
+                node = node.right;
+            }
+        return ans;
+    }
+}
+
+class Fenwick {
+    constructor(n) {
+        this.cnts = Array(n+1).fill(0);
+        this.vals = Array(n+1).fill(0);
+    }
+
+    add(k, v) {
+        for (let i = k+1; i < this.cnts.length; i += i & -i) {
+            this.cnts[i] += v;
+            this.vals[i] += v*k;
+        }
+    }
+
+    query(k, v) {
+        let ans = 0;
+        for (let i = k+1; i; i -= i & -i)
+            ans += this.vals[i] - v*this.cnts[i];
+        return ans;
+    }
+}
+
+
+var numberOfAlternatingGroups = function(colors, queries) {
+    const n = colors.length;
+    const groups = new AVLTree();
+    for (let i = 0, j = 0; i < n; i = j+1) {
+        for (j = i; j < i+n-1 && colors[j%n] != colors[(j+1)%n]; ++j);
+        groups.put(j%n, i);
+    }
+    const fen = new Fenwick(n+1);
+
+    var dist = (lo, hi) => lo <= hi ? hi-lo+1 : n+hi-lo+1;
+
+    var add = function(lo, hi) {
+        groups.put(hi, lo);
+        fen.add(dist(lo, hi), 1);
+    };
+
+    var remove = function(i) {
+        let hi = groups.ceilingEntry(i);
+        if (hi == null) hi = groups.firstEntry().key;
+        else hi = hi.key;
+        const lo = groups.get(hi);
+        groups.remove(hi);
+        fen.add(dist(lo, hi), -1);
+        return [lo, hi];
+    };
+
+    for (const [j, i] of groups.entrySet()) {
+        add(i, j);
+    }
+    const ans = [];
+    for (const q of queries) {
+        if (q[0] === 1) {
+            if (groups.size == 1 && colors[groups.firstEntry().key] != colors[groups.firstEntry().value]) ans.push(n);
+            else {
+                const sz = q[1];
+                ans.push(fen.query(n, sz-1) - fen.query(sz-1, sz-1));
+            }
+        } else {
+            const i = q[1], c = q[2];
+            if (colors[i] != c) {
+                colors[i] = c;
+                let [lo, hi] = remove(i);
+                if (lo == hi) {
+                    if (colors[(i-1+n)%n] != colors[i]) lo = remove((i-1+n)%n)[0];
+                    if (colors[i] != colors[(i+1)%n] && groups.size) hi = remove((i+1)%n)[1];
+                    add(lo, hi);
+                } else if (lo == i) {
+                    add((i+1)%n, hi);
+                    if (colors[(i-1+n)%n] != colors[i]) lo = remove((i-1+n)%n)[0];
+                    add(lo, i);
+                } else if (i == hi) {
+                    add(lo, (i-1+n)%n);
+                    if (colors[i] != colors[(i+1)%n]) hi = remove((i+1)%n)[1];
+                    add(i, hi);
+                } else {
+                    const i0 = (i-1+n)%n, i1 = (i+1)%n;
+                    if (dist(lo, hi) == n && colors[lo] != colors[hi]) add(i1, i0);
+                    else {
+                        add(lo, i0);
+                        add(i1, hi);
+                    }
+                    add(i, i);
+                }
+            }
+        }
+    }
+    return ans;
+};
+
+
 /*3248. Snake in Matrix (Easy)
 There is a snake in an n x n matrix grid and can move in four possible
 directions. Each cell in the grid is identified by the position:

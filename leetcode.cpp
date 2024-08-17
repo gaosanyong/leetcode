@@ -75531,6 +75531,260 @@ public:
     }
 
 
+    /*3243. Shortest Distance After Road Addition Queries I (Medium)
+    You are given an integer n and a 2D integer array queries. There are n
+    cities numbered from 0 to n - 1. Initially, there is a unidirectional road
+    from city i to city i + 1 for all 0 <= i < n - 1. queries[i] = [ui, vi]
+    represents the addition of a new unidirectional road from city ui to city
+    vi. After each query, you need to find the length of the shortest path from
+    city 0 to city n - 1. Return an array answer where for each i in the range
+    [0, queries.length - 1], answer[i] is the length of the shortest path from
+    city 0 to city n - 1 after processing the first i + 1 queries.
+
+    Example 1:
+    Input: n = 5, queries = [[2,4],[0,2],[0,4]]
+    Output: [3,2,1]
+    Explanation: - After the addition of the road from 2 to 4, the length of the
+                   shortest path from 0 to 4 is 3.
+                 - After the addition of the road from 0 to 2, the length of the
+                   shortest path from 0 to 4 is 2.
+                 - After the addition of the road from 0 to 4, the length of the
+                   shortest path from 0 to 4 is 1.
+
+    Example 2:
+    Input: n = 4, queries = [[0,3],[0,2]]
+    Output: [1,1]
+    Explanation: - After the addition of the road from 0 to 3, the length of the
+                   shortest path from 0 to 3 is 1.
+                 - After the addition of the road from 0 to 2, the length of the
+                   shortest path remains 1.
+
+    Constraints:
+    * 3 <= n <= 500
+    * 1 <= queries.length <= 500
+    * queries[i].length == 2
+    * 0 <= queries[i][0] < queries[i][1] < n
+    * 1 < queries[i][1] - queries[i][0]
+    * There are no repeated roads among the queries.*/
+
+    vector<int> shortestDistanceAfterQueries(int n, vector<vector<int>>& queries) {
+        vector<vector<int>> graph(n);
+        for (int i = 0; i+1 < n; ++i)
+            graph[i].push_back(i+1);
+
+        auto bfs = [&](vector<vector<int>>& graph) {
+            queue<int> q; q.push(0);
+            vector<bool> seen(n); seen[0] = true;
+            for (int ans = 0; q.size(); ++ans)
+                for (int sz = q.size(); sz; --sz) {
+                    int u = q.front(); q.pop();
+                    if (u == n-1) return ans;
+                    for (auto& v : graph[u])
+                        if (!seen[v]) {
+                            q.push(v);
+                            seen[v] = true;
+                        }
+                }
+            return -1;
+        };
+
+        vector<int> ans;
+        for (auto& q : queries) {
+            int u = q[0], v = q[1];
+            graph[u].push_back(v);
+            ans.push_back(bfs(graph));
+        }
+        return ans;
+    }
+
+
+    /*3244. Shortest Distance After Road Addition Queries II (Hard)
+    You are given an integer n and a 2D integer array queries. There are n
+    cities numbered from 0 to n - 1. Initially, there is a unidirectional road
+    from city i to city i + 1 for all 0 <= i < n - 1. queries[i] = [ui, vi]
+    represents the addition of a new unidirectional road from city ui to city
+    vi. After each query, you need to find the length of the shortest path from
+    city 0 to city n - 1. There are no two queries such that
+    queries[i][0] < queries[j][0] < queries[i][1] < queries[j][1]. Return an
+    array answer where for each i in the range [0, queries.length - 1],
+    answer[i] is the length of the shortest path from city 0 to city n - 1 after
+    processing the first i + 1 queries.
+
+    Example 1:
+    Input: n = 5, queries = [[2,4],[0,2],[0,4]]
+    Output: [3,2,1]
+    Explanation: - After the addition of the road from 2 to 4, the length of the
+                   shortest path from 0 to 4 is 3.
+                 - After the addition of the road from 0 to 2, the length of the
+                   shortest path from 0 to 4 is 2.
+                 - After the addition of the road from 0 to 4, the length of the
+                   shortest path from 0 to 4 is 1.
+
+    Example 2:
+    Input: n = 4, queries = [[0,3],[0,2]]
+    Output: [1,1]
+    Explanation: - After the addition of the road from 0 to 3, the length of the
+                   shortest path from 0 to 3 is 1.
+                 - After the addition of the road from 0 to 2, the length of the
+                   shortest path remains 1.
+
+    Constraints:
+    * 3 <= n <= 10^5
+    * 1 <= queries.length <= 10^5
+    * queries[i].length == 2
+    * 0 <= queries[i][0] < queries[i][1] < n
+    * 1 < queries[i][1] - queries[i][0]
+    * There are no repeated roads among the queries.
+    * There are no two queries such that i != j and queries[i][0] < queries[j][0] < queries[i][1] < queries[j][1].*/
+
+    vector<int> shortestDistanceAfterQueries(int n, vector<vector<int>>& queries) {
+        vector<int> ans, jump(--n);
+        iota(jump.begin(), jump.end(), 1);
+        for (auto& q : queries) {
+            int u = q[0], v = q[1];
+            for (; jump[u] < v; --n)
+                tie(jump[u], u) = make_tuple(v, jump[u]);
+            ans.push_back(n);
+        }
+        return ans;
+    }
+
+
+    /*3245. Alternating Groups III (Hard)
+    There are some red and blue tiles arranged circularly. You are given an
+    array of integers colors and a 2D integers array queries. The color of tile
+    i is represented by colors[i]:
+    * colors[i] == 0 means that tile i is red.
+    * colors[i] == 1 means that tile i is blue.
+    An alternating group is a contiguous subset of tiles in the circle with
+    alternating colors (each tile in the group except the first and last one has
+    a different color from its adjacent tiles in the group). You have to process
+    queries of two types:
+    * queries[i] = [1, sizei], determine the count of alternating groups with
+      size sizei.
+    * queries[i] = [2, indexi, colori], change colors[indexi] to colori.
+    Return an array answer containing the results of the queries of the first
+    type in order. Note that since colors represents a circle, the first and the
+    last tiles are considered to be next to each other.
+
+    Example 1:
+    Input: colors = [0,1,1,0,1], queries = [[2,1,0],[1,4]]
+    Output: [2]
+    Explanation: First query:
+                 Change colors[1] to 0.
+                 Second query:
+                 Count of the alternating groups with size 4:
+
+    Example 2:
+    Input: colors = [0,0,1,0,1,1], queries = [[1,3],[2,3,0],[1,5]]
+    Output: [2,0]
+    Explanation: First query:
+                 Count of the alternating groups with size 3:
+                 Second query: colors will not change.
+                 Third query: There is no alternating group with size 5.
+
+    Constraints:
+    * 4 <= colors.length <= 5 * 10^4
+    * 0 <= colors[i] <= 1
+    * 1 <= queries.length <= 5 * 10^4
+    * queries[i][0] == 1 or queries[i][0] == 2
+    * For all i that:
+    * queries[i][0] == 1: queries[i].length == 2, 3 <= queries[i][1] <= colors.length - 1
+    * queries[i][0] == 2: queries[i].length == 3, 0 <= queries[i][1] <= colors.length - 1, 0 <= queries[i][2] <= 1
+
+    class Fenwick {
+        vector<int> cnts, vals;
+    public:
+        Fenwick(int n) {
+            cnts.resize(n+1);
+            vals.resize(n+1);
+        }
+
+        void add(int k, int v) {
+            for (int i = k+1; i < cnts.size(); i += i & -i) {
+                cnts[i] += v;
+                vals[i] += v*k;
+            }
+        }
+
+        int query(int k, int v) {
+            int ans = 0;
+            for (int i = k+1; i; i -= i & -i)
+                ans += vals[i] - v*cnts[i];
+            return ans;
+        }
+    }; */
+
+    vector<int> numberOfAlternatingGroups(vector<int>& colors, vector<vector<int>>& queries) {
+        int n = colors.size();
+        map<int, int> groups;
+        for (int i = 0, j = 0; i < n; i = j+1) {
+            for (j = i; j < i+n-1 && colors[j%n] != colors[(j+1)%n]; ++j);
+            groups[j%n] = i;
+        }
+        Fenwick *fen = new Fenwick(n+1);
+
+        auto dist = [&](int lo, int hi) {
+            return lo <= hi ? hi-lo+1 : n+hi-lo+1;
+        };
+
+        auto add = [&](int lo, int hi) {
+            groups[hi] = lo;
+            fen->add(dist(lo, hi), 1);
+        };
+
+        auto remove = [&](int i) {
+            auto p = groups.lower_bound(i);
+            if (p == groups.end())
+                p = groups.begin();
+            auto [hi, lo] = *p;
+            groups.erase(p);
+            fen->add(dist(lo, hi), -1);
+            return make_pair(lo, hi);
+        };
+
+        for (auto& [hi, lo] : groups) add(lo, hi);
+        vector<int> ans;
+        for (auto& q : queries) {
+            if (q[0] == 1) {
+                if (groups.size() == 1 && colors[groups.begin()->first] != colors[groups.begin()->second]) ans.push_back(n);
+                else {
+                    int sz = q[1];
+                    ans.push_back(fen->query(n, sz-1) - fen->query(sz-1, sz-1));
+                }
+            } else {
+                int i = q[1], c = q[2];
+                if (colors[i] != c) {
+                    colors[i] = c;
+                    auto [lo, hi] = remove(i);
+                    if (lo == hi) {
+                        if (colors[(i-1+n)%n] != colors[i]) lo = remove((i-1+n)%n).first;
+                        if (colors[i] != colors[(i+1)%n] && groups.size()) hi = remove((i+1)%n).second;
+                        add(lo, hi);
+                    } else if (lo == i) {
+                        add((i+1)%n, hi);
+                        if (colors[(i-1+n)%n] != colors[i]) lo = remove((i-1+n)%n).first;
+                        add(lo, i);
+                    } else if (i == hi) {
+                        add(lo, (i-1+n)%n);
+                        if (colors[i] != colors[(i+1)%n]) hi = remove((i+1)%n).second;
+                        add(i, hi);
+                    } else {
+                        int i0 = (i-1+n)%n, i1 = (i+1)%n;
+                        if (dist(lo, hi) == n && colors[lo] != colors[hi]) add(i1, i0);
+                        else {
+                            add(lo, i0);
+                            add(i1, hi);
+                        }
+                        add(i, i);
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+
+
     /*3248. Snake in Matrix (Easy)
     There is a snake in an n x n matrix grid and can move in four possible
     directions. Each cell in the grid is identified by the position:
@@ -79448,5 +79702,70 @@ public:
 
     bool hasFrequency(int frequency) {
         return group[frequency].size();
+    }
+};
+
+
+/*3242. Design Neighbor Sum Service (Easy)
+You are given a n x n 2D array grid containing distinct elements in the range
+[0, n^2 - 1]. Implement the NeighborSum class:
+* NeighborSum(int [][]grid) initializes the object.
+* int adjacentSum(int value) returns the sum of elements which are adjacent
+  neighbors of value, that is either to the top, left, right, or bottom of value
+  in grid.
+* int diagonalSum(int value) returns the sum of elements which are diagonal
+  neighbors of value, that is either to the top-left, top-right, bottom-left, or
+  bottom-right of value in grid.
+
+Example 1:
+Input:
+["NeighborSum", "adjacentSum", "adjacentSum", "diagonalSum", "diagonalSum"]
+[[[[0, 1, 2], [3, 4, 5], [6, 7, 8]]], [1], [4], [4], [8]]
+Output: [null, 6, 16, 16, 4]
+
+Explanation: The adjacent neighbors of 1 are 0, 2, and 4.
+             The adjacent neighbors of 4 are 1, 3, 5, and 7.
+             The diagonal neighbors of 4 are 0, 2, 6, and 8.
+             The diagonal neighbor of 8 is 4.
+
+Example 2:
+Input:
+["NeighborSum", "adjacentSum", "diagonalSum"]
+[[[[1, 2, 0, 3], [4, 7, 15, 6], [8, 9, 10, 11], [12, 13, 14, 5]]], [15], [9]]
+Output: [null, 23, 45]
+Explanation: The adjacent neighbors of 15 are 0, 10, 7, and 6.
+             The diagonal neighbors of 9 are 4, 12, 14, and 15.
+
+Constraints:
+* 3 <= n == grid.length == grid[0].length <= 10
+* 0 <= grid[i][j] <= n^2 - 1
+* All grid[i][j] are distinct.
+* value in adjacentSum and diagonalSum will be in the range [0, n^2 - 1].
+* At most 2 * n^2 calls will be made to adjacentSum and diagonalSum.*/
+
+class neighborSum {
+    vector<vector<int>> vals;
+
+public:
+    neighborSum(vector<vector<int>>& grid) {
+        int n = grid.size(), adj[] = {-1, 0, 1, 0, -1}, dia[] = {-1, -1, 1, 1, -1};
+        vals = vector<vector<int>>(2, vector<int>(n*n));
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < n; ++j) {
+                for (auto& [ii, jj] : vector<pair<int, int>>{{i-1, j}, {i, j-1}, {i, j+1}, {i+1, j}})
+                    if (0 <= ii && ii < n && 0 <= jj && jj < n)
+                        vals[0][grid[i][j]] += grid[ii][jj];
+                for (auto& [ii, jj] : vector<pair<int, int>>{{i-1, j-1}, {i-1, j+1}, {i+1, j-1}, {i+1, j+1}})
+                    if (0 <= ii && ii < n && 0 <= jj && jj < n)
+                        vals[1][grid[i][j]] += grid[ii][jj];
+            }
+    }
+
+    int adjacentSum(int value) {
+        return vals[0][value];
+    }
+
+    int diagonalSum(int value) {
+        return vals[1][value];
     }
 };

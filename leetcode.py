@@ -93059,6 +93059,245 @@ class SegTreeLazy:
         return ans
 
 
+    """3243. Shortest Distance After Road Addition Queries I (Medium)
+    You are given an integer n and a 2D integer array queries. There are n
+    cities numbered from 0 to n - 1. Initially, there is a unidirectional road
+    from city i to city i + 1 for all 0 <= i < n - 1. queries[i] = [ui, vi]
+    represents the addition of a new unidirectional road from city ui to city
+    vi. After each query, you need to find the length of the shortest path from
+    city 0 to city n - 1. Return an array answer where for each i in the range
+    [0, queries.length - 1], answer[i] is the length of the shortest path from
+    city 0 to city n - 1 after processing the first i + 1 queries.
+
+    Example 1:
+    Input: n = 5, queries = [[2,4],[0,2],[0,4]]
+    Output: [3,2,1]
+    Explanation: - After the addition of the road from 2 to 4, the length of the
+                   shortest path from 0 to 4 is 3.
+                 - After the addition of the road from 0 to 2, the length of the
+                   shortest path from 0 to 4 is 2.
+                 - After the addition of the road from 0 to 4, the length of the
+                   shortest path from 0 to 4 is 1.
+
+    Example 2:
+    Input: n = 4, queries = [[0,3],[0,2]]
+    Output: [1,1]
+    Explanation: - After the addition of the road from 0 to 3, the length of the
+                   shortest path from 0 to 3 is 1.
+                 - After the addition of the road from 0 to 2, the length of the
+                   shortest path remains 1.
+
+    Constraints:
+    * 3 <= n <= 500
+    * 1 <= queries.length <= 500
+    * queries[i].length == 2
+    * 0 <= queries[i][0] < queries[i][1] < n
+    * 1 < queries[i][1] - queries[i][0]
+    * There are no repeated roads among the queries."""
+
+    def shortestDistanceAfterQueries(self, n: int, queries: List[List[int]]) -> List[int]:
+        graph = [[] for _ in range(n)]
+        for i in range(n-1):
+            graph[i].append(i+1)
+
+        def bfs(graph):
+            """Return """
+            queue = deque([0])
+            seen = {0}
+            ans = 0
+            while queue:
+                for _ in range(len(queue)):
+                    u = queue.popleft()
+                    if u == n-1: return ans
+                    for v in graph[u]:
+                        if v not in seen:
+                            queue.append(v)
+                            seen.add(v)
+                ans += 1
+
+        ans = []
+        for u, v in queries:
+            graph[u].append(v)
+            ans.append(bfs(graph))
+        return ans
+
+
+    """3244. Shortest Distance After Road Addition Queries II (Hard)
+    You are given an integer n and a 2D integer array queries. There are n
+    cities numbered from 0 to n - 1. Initially, there is a unidirectional road
+    from city i to city i + 1 for all 0 <= i < n - 1. queries[i] = [ui, vi]
+    represents the addition of a new unidirectional road from city ui to city
+    vi. After each query, you need to find the length of the shortest path from
+    city 0 to city n - 1. There are no two queries such that
+    queries[i][0] < queries[j][0] < queries[i][1] < queries[j][1]. Return an
+    array answer where for each i in the range [0, queries.length - 1],
+    answer[i] is the length of the shortest path from city 0 to city n - 1 after
+    processing the first i + 1 queries.
+
+    Example 1:
+    Input: n = 5, queries = [[2,4],[0,2],[0,4]]
+    Output: [3,2,1]
+    Explanation: - After the addition of the road from 2 to 4, the length of the
+                   shortest path from 0 to 4 is 3.
+                 - After the addition of the road from 0 to 2, the length of the
+                   shortest path from 0 to 4 is 2.
+                 - After the addition of the road from 0 to 4, the length of the
+                   shortest path from 0 to 4 is 1.
+
+    Example 2:
+    Input: n = 4, queries = [[0,3],[0,2]]
+    Output: [1,1]
+    Explanation: - After the addition of the road from 0 to 3, the length of the
+                   shortest path from 0 to 3 is 1.
+                 - After the addition of the road from 0 to 2, the length of the
+                   shortest path remains 1.
+
+    Constraints:
+    * 3 <= n <= 10^5
+    * 1 <= queries.length <= 10^5
+    * queries[i].length == 2
+    * 0 <= queries[i][0] < queries[i][1] < n
+    * 1 < queries[i][1] - queries[i][0]
+    * There are no repeated roads among the queries.
+    * There are no two queries such that i != j and queries[i][0] < queries[j][0] < queries[i][1] < queries[j][1]."""
+
+    def shortestDistanceAfterQueries(self, n: int, queries: List[List[int]]) -> List[int]:
+        ans = []
+        jump = list(range(1, n))
+        n -= 1
+        for u, v in queries:
+            while jump[u] < v:
+                jump[u], u = v, jump[u]
+                n -= 1
+            ans.append(n)
+        return ans
+
+
+    """3245. Alternating Groups III (Hard)
+    There are some red and blue tiles arranged circularly. You are given an
+    array of integers colors and a 2D integers array queries. The color of tile
+    i is represented by colors[i]:
+    * colors[i] == 0 means that tile i is red.
+    * colors[i] == 1 means that tile i is blue.
+    An alternating group is a contiguous subset of tiles in the circle with
+    alternating colors (each tile in the group except the first and last one has
+    a different color from its adjacent tiles in the group). You have to process
+    queries of two types:
+    * queries[i] = [1, sizei], determine the count of alternating groups with
+      size sizei.
+    * queries[i] = [2, indexi, colori], change colors[indexi] to colori.
+    Return an array answer containing the results of the queries of the first
+    type in order. Note that since colors represents a circle, the first and the
+    last tiles are considered to be next to each other.
+
+    Example 1:
+    Input: colors = [0,1,1,0,1], queries = [[2,1,0],[1,4]]
+    Output: [2]
+    Explanation: First query:
+                 Change colors[1] to 0.
+                 Second query:
+                 Count of the alternating groups with size 4:
+
+    Example 2:
+    Input: colors = [0,0,1,0,1,1], queries = [[1,3],[2,3,0],[1,5]]
+    Output: [2,0]
+    Explanation: First query:
+                 Count of the alternating groups with size 3:
+                 Second query: colors will not change.
+                 Third query: There is no alternating group with size 5.
+
+    Constraints:
+    * 4 <= colors.length <= 5 * 10^4
+    * 0 <= colors[i] <= 1
+    * 1 <= queries.length <= 5 * 10^4
+    * queries[i][0] == 1 or queries[i][0] == 2
+    * For all i that:
+    * queries[i][0] == 1: queries[i].length == 2, 3 <= queries[i][1] <= colors.length - 1
+    * queries[i][0] == 2: queries[i].length == 3, 0 <= queries[i][1] <= colors.length - 1, 0 <= queries[i][2] <= 1
+
+    class Fenwick:
+
+        def __init__(self, n: int):
+            self.cnts = [0]*(n+1)
+            self.vals = [0]*(n+1)
+
+        def add(self, k: int, v: int) -> None:
+            i = k+1
+            while i < len(self.cnts):
+                self.cnts[i] += v
+                self.vals[i] += k*v
+                i += i & -i
+
+        def query(self, k: int, v: int) -> int:
+            ans = 0
+            i = k+1
+            while i:
+                ans += self.vals[i] - v*self.cnts[i]
+                i -= i & -i
+            return ans
+    """
+
+    def numberOfAlternatingGroups(self, colors: List[int], queries: List[List[int]]) -> List[int]:
+        n = len(colors)
+        i = 0
+        mp = {}
+        while i < n:
+            for j in range(i, i+n):
+                if colors[j%n] == colors[(j+1)%n]: break
+            mp[j%n] = i
+            i = j+1
+        groups = SortedList()
+        fen = Fenwick(n+1)
+
+        dist = lambda i, j: j-i+1 if i <= j else n+j-i+1
+
+        def add(i, j):
+            groups.add((j, i))
+            fen.add(dist(i, j), 1)
+
+        def remove(k):
+            j, i = groups.pop(k)
+            fen.add(dist(i, j), -1)
+            return i, j
+
+        for j, i in mp.items(): add(i, j)
+        ans = []
+        for q in queries:
+            if q[0] == 1:
+                if len(groups) == 1 and colors[groups[0][0]] != colors[groups[0][1]]: val = n
+                else:
+                    _, sz = q
+                    val = min(n, fen.query(n, sz-1) - fen.query(sz-1, sz-1))
+                ans.append(val)
+            else:
+                _, i, c = q
+                if colors[i] != c:
+                    colors[i] = c
+                    k = groups.bisect_left((i, 0)) % len(groups)
+                    lo, hi = remove(k)
+                    if lo == i == hi:
+                        if colors[(i-1)%n] != colors[i]: lo = remove((k-1) % len(groups))[0]
+                        if colors[i] != colors[(i+1)%n] and groups: hi = remove((k-1) % len(groups) if k else 0)[1]
+                        add(lo, hi)
+                    elif lo == i != hi:
+                        add((i+1)%n, hi)
+                        if colors[(i-1)%n] != colors[i]: lo = remove((k-1)%len(groups))[0]
+                        add(lo, i)
+                    elif lo != i == hi:
+                        add(lo, (i-1)%n)
+                        if colors[i] != colors[(i+1)%n]: hi = remove((k+1)%len(groups) if i else 0)[1]
+                        add(i, hi)
+                    else:
+                        i0 = (i-1)%n
+                        i1 = (i+1)%n
+                        if dist(lo, hi) == n and colors[lo] != colors[hi]: add(i1, i0)
+                        else:
+                            add(lo, i0)
+                            add(i1, hi)
+                        add(i, i)
+        return ans
+
+
     """3248. Snake in Matrix (Easy)
     There is a snake in an n x n matrix grid and can move in four possible
     directions. Each cell in the grid is identified by the position:
@@ -99275,3 +99514,61 @@ class FrequencyTracker:
 
     def hasFrequency(self, frequency: int) -> bool:
         return self.group[frequency]
+
+
+"""3242. Design Neighbor Sum Service (Easy)
+You are given a n x n 2D array grid containing distinct elements in the range
+[0, n^2 - 1]. Implement the NeighborSum class:
+* NeighborSum(int [][]grid) initializes the object.
+* int adjacentSum(int value) returns the sum of elements which are adjacent
+  neighbors of value, that is either to the top, left, right, or bottom of value
+  in grid.
+* int diagonalSum(int value) returns the sum of elements which are diagonal
+  neighbors of value, that is either to the top-left, top-right, bottom-left, or
+  bottom-right of value in grid.
+
+Example 1:
+Input:
+["NeighborSum", "adjacentSum", "adjacentSum", "diagonalSum", "diagonalSum"]
+[[[[0, 1, 2], [3, 4, 5], [6, 7, 8]]], [1], [4], [4], [8]]
+Output: [null, 6, 16, 16, 4]
+
+Explanation: The adjacent neighbors of 1 are 0, 2, and 4.
+             The adjacent neighbors of 4 are 1, 3, 5, and 7.
+             The diagonal neighbors of 4 are 0, 2, 6, and 8.
+             The diagonal neighbor of 8 is 4.
+
+Example 2:
+Input:
+["NeighborSum", "adjacentSum", "diagonalSum"]
+[[[[1, 2, 0, 3], [4, 7, 15, 6], [8, 9, 10, 11], [12, 13, 14, 5]]], [15], [9]]
+Output: [null, 23, 45]
+Explanation: The adjacent neighbors of 15 are 0, 10, 7, and 6.
+             The diagonal neighbors of 9 are 4, 12, 14, and 15.
+
+Constraints:
+* 3 <= n == grid.length == grid[0].length <= 10
+* 0 <= grid[i][j] <= n^2 - 1
+* All grid[i][j] are distinct.
+* value in adjacentSum and diagonalSum will be in the range [0, n^2 - 1].
+* At most 2 * n^2 calls will be made to adjacentSum and diagonalSum."""
+
+class neighborSum:
+
+    def __init__(self, grid: List[List[int]]):
+        n = len(grid)
+        self.vals = [[0]*(n*n) for _ in range(2)]
+        for i in range(n):
+            for j in range(n):
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
+                    if 0 <= ii < n and 0 <= jj < n:
+                        self.vals[0][grid[i][j]] += grid[ii][jj]
+                for ii, jj in (i-1, j-1), (i-1, j+1), (i+1, j-1), (i+1, j+1):
+                    if 0 <= ii < n and 0 <= jj < n:
+                        self.vals[1][grid[i][j]] += grid[ii][jj]
+
+    def adjacentSum(self, value: int) -> int:
+        return self.vals[0][value]
+
+    def diagonalSum(self, value: int) -> int:
+        return self.vals[1][value]
