@@ -38565,20 +38565,18 @@ public:
 
     long long maxPoints(vector<vector<int>>& points) {
         int m = points.size(), n = points[0].size();
-        vector<vector<long>> dp(m, vector<long>(n, 0));
-        for (int j = 0; j < n; ++j) dp[0][j] = points[0][j];
-
-        for (int i = 1; i < m; ++i) {
+        vector<vector<long long>> dp(m, vector<long long>(n));
+        dp[0] = vector<long long>(points[0].begin(), points[0].end());
+        for (int i = 1; i < m; ++i){
             for (int j = n-2; j >= 0; --j)
                 dp[i-1][j] = max(dp[i-1][j], dp[i-1][j+1]-1);
-
-            long prefix = 0;
+            long long prefix = 0;
             for (int j = 0; j < n; ++j) {
                 dp[i][j] = points[i][j] + max(prefix, dp[i-1][j]);
-                prefix = max(prefix, dp[i-1][j]) - 1;
+                prefix = max(prefix, dp[i-1][j])-1;
             }
         }
-        return *max_element(dp[m-1].begin(), dp[m-1].end());
+        return *max_element(dp.back().begin(), dp.back().end());
     }
 
 

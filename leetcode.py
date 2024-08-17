@@ -51498,14 +51498,16 @@ class Fenwick:
 
     def maxPoints(self, points: List[List[int]]) -> int:
         m, n = len(points), len(points[0])
+        dp = [[0]*n for _ in range(m)]
+        dp[0] = points[0]
         for i in range(1, m):
             for j in range(n-2, -1, -1):
-                points[i-1][j] = max(points[i-1][j], points[i-1][j+1]-1)
+                dp[i-1][j] = max(dp[i-1][j], dp[i-1][j+1]-1)
             prefix = 0
             for j in range(n):
-                points[i][j] += max(prefix, points[i-1][j])
-                prefix = max(prefix, points[i-1][j]) - 1
-        return max(points[-1])
+                dp[i][j] = points[i][j] + max(prefix, dp[i-1][j])
+                prefix = max(prefix, dp[i-1][j]) - 1
+        return max(dp[-1])
 
 
     """1938. Maximum Genetic Difference Query (Hard)
