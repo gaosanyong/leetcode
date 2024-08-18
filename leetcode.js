@@ -752,6 +752,37 @@ var singleNumber = function(nums) {
 };
 
 
+/*264. Ugly Number II (Medium)
+An ugly number is a positive integer whose prime factors are limited to 2,
+3, and 5. Given an integer n, return the nth ugly number.
+
+Example 1:
+Input: n = 10
+Output: 12
+Explanation: [1, 2, 3, 4, 5, 6, 8, 9, 10, 12] is the sequence of the first
+             10 ugly numbers.
+
+Example 2:
+Input: n = 1
+Output: 1
+Explanation: 1 has no prime factors, therefore all of its prime factors are
+             limited to 2, 3, and 5.
+
+Constraints: 1 <= n <= 1690*/
+
+var nthUglyNumber = function(n) {
+    const ans = [1];
+    for (let i = 0, p2 = 0, p3 = 0, p5 = 0; i < n-1; ++i) {
+        const cand = Math.min(2*ans[p2], 3*ans[p3], 5*ans[p5]);
+        ans.push(cand);
+        if (2*ans[p2] == cand) ++p2;
+        if (3*ans[p3] == cand) ++p3;
+        if (5*ans[p5] == cand) ++p5;
+    }
+    return ans[ans.length-1];
+};
+
+
 /*279. Perfect Squares (Medium)
 Given an integer n, return the least number of perfect square numbers that
 sum to n. A perfect square is an integer that is the square of an integer;

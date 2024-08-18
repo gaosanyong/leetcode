@@ -6972,15 +6972,16 @@ public:
     Constraints: 1 <= n <= 1690*/
 
     int nthUglyNumber(int n) {
-        vector<int> dp(1, 1);
+        vector<int> ans = {1};
         for (int i = 0, p2 = 0, p3 = 0, p5 = 0; i < n-1; ++i) {
-            dp.push_back(min({2*dp[p2], 3*dp[p3], 5*dp[p5]}));
-            if (2*dp[p2] == dp.back()) ++p2;
-            if (3*dp[p3] == dp.back()) ++p3;
-            if (5*dp[p5] == dp.back()) ++p5;
+            int cand = min({2*ans[p2], 3*ans[p3], 5*ans[p5]});
+            ans.push_back(cand);
+            if (2*ans[p2] == cand) ++p2;
+            if (3*ans[p3] == cand) ++p3;
+            if (5*ans[p5] == cand) ++p5;
         }
-        return dp.back();
-    }
+        return ans.back();
+    }g
 
 
     /*265. Paint House II (Hard)

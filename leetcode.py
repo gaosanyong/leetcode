@@ -7950,13 +7950,14 @@ class Solution:
     * n does not exceed 1690."""
 
     def nthUglyNumber(self, n: int) -> int:
-        ans = [1]*n
+        ans = [1]
         p2 = p3 = p5 = 0
-        for i in range(1, n):
-            ans[i] = min(2*ans[p2], 3*ans[p3], 5*ans[p5])
-            if 2*ans[p2] == ans[i]: p2 += 1
-            if 3*ans[p3] == ans[i]: p3 += 1
-            if 5*ans[p5] == ans[i]: p5 += 1
+        for _ in range(n-1):
+            cand = min(2*ans[p2], 3*ans[p3], 5*ans[p5])
+            ans.append(cand)
+            if 2*ans[p2] == cand: p2 += 1
+            if 3*ans[p3] == cand: p3 += 1
+            if 5*ans[p5] == cand: p5 += 1
         return ans[-1]
 
 
