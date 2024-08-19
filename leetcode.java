@@ -3560,6 +3560,40 @@ class Solution {
     }
 
 
+    /*650. 2 Keys Keyboard (Medium)
+    There is only one character 'A' on the screen of a notepad. You can perform
+    one of two operations on this notepad for each step:
+    * Copy All: You can copy all the characters present on the screen (a partial
+      copy is not allowed).
+    * Paste: You can paste the characters which are copied last time.
+    Given an integer n, return the minimum number of operations to get the
+    character 'A' exactly n times on the screen.
+
+    Example 1:
+    Input: n = 3
+    Output: 3
+    Explanation: Initially, we have one character 'A'.
+                 - In step 1, we use Copy All operation.
+                 - In step 2, we use Paste operation to get 'AA'.
+                 - In step 3, we use Paste operation to get 'AAA'.
+
+    Example 2:
+    Input: n = 1
+    Output: 0
+
+    Constraints: 1 <= n <= 1000*/
+
+    public int minSteps(int n) {
+        int[] dp = IntStream.range(0, n+1).toArray();
+        dp[1] = 0;
+        for (int x = 2; x <= n; ++x)
+            for (int p = 2; p <= Math.sqrt(x); ++p)
+                if (x % p == 0)
+                    dp[x] = Math.min(dp[x], dp[x/p] + p);
+        return dp[n];
+    }
+
+
     /*656. Coin Path (Hard)
     You are given an integer array coins (1-indexed) of length n and an integer
     maxJump. You can jump to any index i of the array coins if coins[i] != -1

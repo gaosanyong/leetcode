@@ -16304,9 +16304,13 @@ class Solution:
     Note: The n will be in the range [1, 1000]."""
 
     def minSteps(self, n: int) -> int:
-        for i in range(2, int(sqrt(n)+1)):
-            if n%i == 0: return i + self.minSteps(n//i)
-        return 0 if n == 1 else n
+        dp = list(range(n+1))
+        dp[1] = 0
+        for x in range(2, n+1):
+            for p in range(2, isqrt(x)+1):
+                if x % p == 0:
+                    dp[x] = min(dp[x], dp[x//p] + p)
+        return dp[-1]
 
 
     """651. 4 Keys Keyboard (Medium)
