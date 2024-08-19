@@ -93492,6 +93492,193 @@ class SegTreeLazy:
         return dp[0][0]
 
 
+    """3258. Count Substrings That Satisfy K-Constraint I (Easy)
+    You are given a binary string s and an integer k. A binary string satisfies
+    the k-constraint if either of the following conditions holds:
+    * The number of 0's in the string is at most k.
+    * The number of 1's in the string is at most k.
+    Return an integer denoting the number of substrings of s that satisfy the k-
+    constraint.
+
+    Example 1:
+    Input: s = "10101", k = 1
+    Output: 12
+    Explanation: Every substring of s except the substrings "1010", "10101", and
+                 "0101" satisfies the k-constraint.
+
+    Example 2:
+    Input: s = "1010101", k = 2
+    Output: 25
+    Explanation: Every substring of s except the substrings with a length
+                 greater than 5 satisfies the k-constraint.
+
+    Example 3:
+    Input: s = "11111", k = 1
+    Output: 15
+    Explanation: All substrings of s satisfy the k-constraint.
+
+    Constraints:
+    * 1 <= s.length <= 50
+    * 1 <= k <= s.length
+    * s[i] is either '0' or '1'."""
+
+    def countKConstraintSubstrings(self, s: str, k: int) -> int:
+        ans = one = ii = 0
+        for i, ch in enumerate(s):
+            if ch == '1': one += 1
+            while one > k and i-ii-one+1 > k:
+                if s[ii] == '1': one -= 1
+                ii += 1
+            ans += i-ii+1
+        return ans
+
+
+    """3259. Maximum Energy Boost From Two Drinks (Medium)
+    You are given two integer arrays energyDrinkA and energyDrinkB of the same
+    length n by a futuristic sports scientist. These arrays represent the energy
+    boosts per hour provided by two different energy drinks, A and B,
+    respectively. You want to maximize your total energy boost by drinking one
+    energy drink per hour. However, if you want to switch from consuming one
+    energy drink to the other, you need to wait for one hour to cleanse your
+    system (meaning you won't get any energy boost in that hour). Return the
+    maximum total energy boost you can gain in the next n hours. Note that you
+    can start consuming either of the two energy drinks.
+
+    Example 1:
+    Input: energyDrinkA = [1,3,1], energyDrinkB = [3,1,1]
+    Output: 5
+    Explanation: To gain an energy boost of 5, drink only the energy drink A (or
+                 only B).
+
+    Example 2:
+    Input: energyDrinkA = [4,1,1], energyDrinkB = [1,1,3]
+    Output: 7
+    Explanation: To gain an energy boost of 7:
+                 Drink the energy drink A for the first hour. Switch to the
+                 energy drink B and we lose the energy boost of the second hour.
+                 Gain the energy boost of the drink B in the third hour.
+
+    Constraints:
+    * n == energyDrinkA.length == energyDrinkB.length
+    * 3 <= n <= 10^5
+    * 1 <= energyDrinkA[i], energyDrinkB[i] <= 10^5"""
+
+    def maxEnergyBoost(self, energyDrinkA: List[int], energyDrinkB: List[int]) -> int:
+        dp = [0]*2
+        for i in range(len(energyDrinkA)):
+            dp = [max(dp[0] + energyDrinkA[i], dp[1]), max(dp[0], dp[1] + energyDrinkB[i])]
+        return max(dp)
+
+
+    """3260. Find the Largest Palindrome Divisible by K (Hard)
+    You are given two positive integers n and k. An integer x is called k-
+    palindromic if:
+    * x is a palindrome.
+    * x is divisible by k.
+    Return the largest integer having n digits (as a string) that is k-
+    palindromic. Note that the integer must not have leading zeros.
+
+    Example 1:
+    Input: n = 3, k = 5
+    Output: "595"
+    Explanation: 595 is the largest k-palindromic integer with 3 digits.
+
+    Example 2:
+    Input: n = 1, k = 4
+    Output: "8"
+    Explanation: 4 and 8 are the only k-palindromic integers with 1 digit.
+
+    Example 3:
+    Input: n = 5, k = 6
+    Output: "89898"
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * 1 <= k <= 9"""
+
+    def largestPalindrome(self, n: int, k: int) -> str:
+        pw = [1]*n
+        for i in range(1, n):
+            pw[i] = pw[i-1]*10 % k
+        dp = [[0]*k for _ in range((n+1)//2)]
+        dp[(n-1)//2][0] = 1
+        for i in range((n-1)//2, 0, -1):
+            if i == n-1-i: coef = pw[i]
+            else: coef = pw[i] + pw[n-1-i]
+            for j in range(k):
+                if dp[i][j]:
+                    for d in range(10):
+                        jj = (j + coef*d) % k
+                        dp[i-1][jj] = 1
+        ans = [9]*n
+        total = 0
+        for i in range((n-1)//2+1):
+            if i == n-1-i: coef = pw[i]
+            else: coef = pw[i] + pw[n-1-i]
+            for d in range(9, -1, -1):
+                j = (total - coef*d)%k
+                if dp[i][j]:
+                    ans[i] = ans[~i] = d
+                    total = j
+                    break
+        return "".join(map(str, ans))
+
+
+    """3261. Count Substrings That Satisfy K-Constraint II (Hard)
+    You are given a binary string s and an integer k. You are also given a 2D
+    integer array queries, where queries[i] = [li, ri]. A binary string
+    satisfies the k-constraint if either of the following conditions holds:
+    * The number of 0's in the string is at most k.
+    * The number of 1's in the string is at most k.
+    Return an integer array answer, where answer[i] is the number of substrings
+    of s[li..ri] that satisfy the k-constraint.
+
+    Example 1:
+    Input: s = "0001111", k = 2, queries = [[0,6]]
+    Output: [26]
+    Explanation: For the query [0, 6], all substrings of s[0..6] = "0001111"
+                 satisfy the k-constraint except for the substrings
+                 s[0..5] = "000111" and s[0..6] = "0001111".
+
+    Example 2:
+    Input: s = "010101", k = 1, queries = [[0,5],[1,4],[2,3]]
+    Output: [15,9,3]
+    Explanation: The substrings of s with a length greater than 3 do not satisfy
+                 the k-constraint.
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s[i] is either '0' or '1'.
+    * 1 <= k <= s.length
+    * 1 <= queries.length <= 10^5
+    * queries[i] == [li, ri]
+    * 0 <= li <= ri < s.length
+    * All queries are distinct."""
+
+    def countKConstraintSubstrings(self, s: str, k: int, queries: List[List[int]]) -> List[int]:
+        n = len(s)
+        prefix = [0]*(n+1)
+        jump = [0]*n
+        ii = one = 0
+        for i, ch in enumerate(s):
+            if ch == '1': one += 1
+            while one > k and i-ii-one+1 > k:
+                if s[ii] == '1': one -= 1
+                ii += 1
+            prefix[i+1] = prefix[i] + (i-ii+1)
+            jump[ii] = i
+        for i, x in enumerate(jump):
+            if x == 0: jump[i] = jump[i-1]
+        ans = []
+        for lo, hi in queries:
+            mid = min(hi, jump[lo])
+            c = mid-lo+1
+            cand = c*(c+1)//2
+            if mid < hi: cand += prefix[hi+1] - prefix[mid+1]
+            ans.append(cand)
+        return ans
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.
