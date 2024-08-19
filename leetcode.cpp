@@ -75987,6 +75987,244 @@ public:
     }
 
 
+    /*3254. Find the Power of K-Size Subarrays I (Medium)
+    You are given an array of integers nums of length n and a positive integer
+    k. The power of an array is defined as:
+    * Its maximum element if all of its elements are consecutive and sorted in
+      ascending order.
+    * -1 otherwise.
+    You need to find the power of all subarrays of nums of size k. Return an
+    integer array results of size n - k + 1, where results[i] is the power of
+    nums[i..(i + k - 1)].
+
+    Example 1:
+    Input: nums = [1,2,3,4,3,2,5], k = 3
+    Output: [3,4,-1,-1,-1]
+    Explanation: There are 5 subarrays of nums of size 3:
+                 - [1, 2, 3] with the maximum element 3.
+                 - [2, 3, 4] with the maximum element 4.
+                 - [3, 4, 3] whose elements are not consecutive.
+                 - [4, 3, 2] whose elements are not sorted.
+                 - [3, 2, 5] whose elements are not consecutive.
+
+    Example 2:
+    Input: nums = [2,2,2,2,2], k = 4
+    Output: [-1,-1]
+
+    Example 3:
+    Input: nums = [3,2,3,2,3,2], k = 2
+    Output: [-1,3,-1,3,-1]
+
+    Constraints:
+    * 1 <= n == nums.length <= 500
+    * 1 <= nums[i] <= 10^5
+    * 1 <= k <= n*/
+
+    vector<int> resultsArray(vector<int>& nums, int k) {
+        vector<int> ans;
+        for (int i = 0, cnt = 0; i < nums.size(); ++i) {
+            if (i && nums[i-1]+1 != nums[i]) cnt = 0;
+            ++cnt;
+            if (i >= k-1)
+                if (cnt >= k) ans.push_back(nums[i]);
+                else ans.push_back(-1);
+        }
+        return ans;
+    }
+
+
+    /*3255. Find the Power of K-Size Subarrays II (Medium)
+    You are given an array of integers nums of length n and a positive integer
+    k. The power of an array is defined as:
+    * Its maximum element if all of its elements are consecutive and sorted in
+      ascending order.
+    * -1 otherwise.
+    You need to find the power of all subarrays of nums of size k. Return an
+    integer array results of size n - k + 1, where results[i] is the power of
+    nums[i..(i + k - 1)].
+
+    Example 1:
+    Input: nums = [1,2,3,4,3,2,5], k = 3
+    Output: [3,4,-1,-1,-1]
+    Explanation: There are 5 subarrays of nums of size 3:
+                 - [1, 2, 3] with the maximum element 3.
+                 - [2, 3, 4] with the maximum element 4.
+                 - [3, 4, 3] whose elements are not consecutive.
+                 - [4, 3, 2] whose elements are not sorted.
+                 - [3, 2, 5] whose elements are not consecutive.
+
+    Example 2:
+    Input: nums = [2,2,2,2,2], k = 4
+    Output: [-1,-1]
+
+    Example 3:
+    Input: nums = [3,2,3,2,3,2], k = 2
+    Output: [-1,3,-1,3,-1]
+
+    Constraints:
+    * 1 <= n == nums.length <= 10^5
+    * 1 <= nums[i] <= 10^6
+    * 1 <= k <= n*/
+
+    vector<int> resultsArray(vector<int>& nums, int k) {
+        vector<int> ans;
+        for (int i = 0, cnt = 0; i < nums.size(); ++i) {
+            if (i && nums[i-1]+1 != nums[i]) cnt = 0;
+            ++cnt;
+            if (i >= k-1)
+                if (cnt >= k) ans.push_back(nums[i]);
+                else ans.push_back(-1);
+        }
+        return ans;
+    }
+
+
+    /*3256. Maximum Value Sum by Placing Three Rooks I (Hard)
+    You are given a m x n 2D array board representing a chessboard, where
+    board[i][j] represents the value of the cell (i, j). Rooks in the same row
+    or column attack each other. You need to place three rooks on the chessboard
+    such that the rooks do not attack each other. Return the maximum sum of the
+    cell values on which the rooks are placed.
+
+    Example 1:
+    Input: board = [[-3,1,1,1],[-3,1,-3,1],[-3,2,1,1]]
+    Output: 4
+    Explanation: We can place the rooks in the cells (0, 2), (1, 3), and (2, 1)
+                 for a sum of 1 + 1 + 2 = 4.
+
+    Example 2:
+    Input: board = [[1,2,3],[4,5,6],[7,8,9]]
+    Output: 15
+    Explanation: We can place the rooks in the cells (0, 0), (1, 1), and (2, 2)
+                 for a sum of 1 + 5 + 9 = 15.
+
+    Example 3:
+    Input: board = [[1,1,1],[1,1,1],[1,1,1]]
+    Output: 3
+    Explanation: We can place the rooks in the cells (0, 2), (1, 1), and (2, 0)
+                 for a sum of 1 + 1 + 1 = 3.
+
+    Constraints:
+    * 3 <= m == board.length <= 100
+    * 3 <= n == board[i].length <= 100
+    * -10^9 <= board[i][j] <= 10^9*/
+
+    long long maximumValueSum(vector<vector<int>>& board) {
+        int m = board.size(), n = board[0].size();
+        vector<vector<pair<int, int>>> cols(n);
+        for (int i = 0; i < m; ++i) {
+            vector<pair<int, int>> aug;
+            for (int j = 0; j < n; ++j)
+                aug.emplace_back(board[i][j], j);
+            nth_element(aug.begin(), aug.begin()+3, aug.end(), [&](auto& lhs, auto& rhs) { return lhs.first > rhs.first; });
+            for (int k = 0; k < 3; ++k) {
+                auto [x, j] = aug[k];
+                cols[j].emplace_back(x, i);
+            }
+        }
+        vector<tuple<int, int, int>> vals;
+        for (int j = 0; j < n; ++j) {
+            if (cols[j].size() > 3)
+                nth_element(cols[j].begin(), cols[j].begin()+3, cols[j].end(), [&](auto& lhs, auto& rhs) { return lhs.first > rhs.first; });
+            for (int k = 0; k < 3 && k < cols[j].size(); ++k) {
+                auto [x, i] = cols[j][k];
+                vals.emplace_back(x, i, j);
+            }
+        }
+        nth_element(vals.begin(), vals.begin()+9, vals.end(), [&](auto& lhs, auto& rhs) { return get<0>(lhs) > get<0>(rhs); });
+        long long ans = -1e10;
+        for (int i = 0; i < 9; ++i) {
+            auto [xi, ii, ji] = vals[i];
+            for (int j = i+1; j < 9; ++j) {
+                auto [xj, ij, jj] = vals[j];
+                if (ii != ij && ji != jj) {
+                    for (int k = j+1; k < 9; ++k) {
+                        auto [xk, ik, jk] = vals[k];
+                        if (ii != ik && ij != ik && ji != jk && jj != jk) {
+                            ans = max(ans, (long long) xi + xj + xk);
+                        }
+                    }
+                }
+            }
+        }
+        return ans;
+
+    }
+
+
+    /*3257. Maximum Value Sum by Placing Three Rooks II (Hard)
+    You are given a m x n 2D array board representing a chessboard, where
+    board[i][j] represents the value of the cell (i, j). Rooks in the same row
+    or column attack each other. You need to place three rooks on the chessboard
+    such that the rooks do not attack each other. Return the maximum sum of the
+    cell values on which the rooks are placed.
+
+    Example 1:
+    Input: board = [[-3,1,1,1],[-3,1,-3,1],[-3,2,1,1]]
+    Output: 4
+    Explanation: We can place the rooks in the cells (0, 2), (1, 3), and (2, 1)
+                 for a sum of 1 + 1 + 2 = 4.
+
+    Example 2:
+    Input: board = [[1,2,3],[4,5,6],[7,8,9]]
+    Output: 15
+    Explanation: We can place the rooks in the cells (0, 0), (1, 1), and (2, 2)
+                 for a sum of 1 + 5 + 9 = 15.
+
+    Example 3:
+    Input: board = [[1,1,1],[1,1,1],[1,1,1]]
+    Output: 3
+    Explanation: We can place the rooks in the cells (0, 2), (1, 1), and (2, 0)
+                 for a sum of 1 + 1 + 1 = 3.
+
+    Constraints:
+    * 3 <= m == board.length <= 500
+    * 3 <= n == board[i].length <= 500
+    * -10^9 <= board[i][j] <= 10^9*/
+
+    long long maximumValueSum(vector<vector<int>>& board) {
+        int m = board.size(), n = board[0].size();
+        vector<vector<pair<int, int>>> cols(n);
+        for (int i = 0; i < m; ++i) {
+            vector<pair<int, int>> aug;
+            for (int j = 0; j < n; ++j)
+                aug.emplace_back(board[i][j], j);
+            nth_element(aug.begin(), aug.begin()+3, aug.end(), [&](auto& lhs, auto& rhs) { return lhs.first > rhs.first; });
+            for (int k = 0; k < 3; ++k) {
+                auto [x, j] = aug[k];
+                cols[j].emplace_back(x, i);
+            }
+        }
+        vector<tuple<int, int, int>> vals;
+        for (int j = 0; j < n; ++j) {
+            if (cols[j].size() > 3)
+                nth_element(cols[j].begin(), cols[j].begin()+3, cols[j].end(), [&](auto& lhs, auto& rhs) { return lhs.first > rhs.first; });
+            for (int k = 0; k < 3 && k < cols[j].size(); ++k) {
+                auto [x, i] = cols[j][k];
+                vals.emplace_back(x, i, j);
+            }
+        }
+        nth_element(vals.begin(), vals.begin()+9, vals.end(), [&](auto& lhs, auto& rhs) { return get<0>(lhs) > get<0>(rhs); });
+        long long ans = -1e10;
+        for (int i = 0; i < 9; ++i) {
+            auto [xi, ii, ji] = vals[i];
+            for (int j = i+1; j < 9; ++j) {
+                auto [xj, ij, jj] = vals[j];
+                if (ii != ij && ji != jj) {
+                    for (int k = j+1; k < 9; ++k) {
+                        auto [xk, ik, jk] = vals[k];
+                        if (ii != ik && ij != ik && ji != jk && jj != jk) {
+                            ans = max(ans, (long long) xi + xj + xk);
+                        }
+                    }
+                }
+            }
+        }
+        return ans;
+
+    }
+
+
     /*3258. Count Substrings That Satisfy K-Constraint I (Easy)
     You are given a binary string s and an integer k. A binary string satisfies
     the k-constraint if either of the following conditions holds:
