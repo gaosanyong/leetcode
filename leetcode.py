@@ -29889,20 +29889,16 @@ class UnionFind:
     * 1 <= piles[i] <= 10^4"""
 
     def stoneGameII(self, piles: List[int]) -> int:
-        prefix = [0]
-        for x in piles: prefix.append(prefix[-1] + x)
-
-        @cache
-        def fn(i, m):
-            """Return the net stones one could get at position i with m."""
-            if i + 2*m >= len(piles): return prefix[-1] - prefix[i]
-            ans = -inf
-            for ii in range(1, 2*m+1):
-                if i+ii < len(prefix):
-                    ans = max(ans, prefix[i+ii] - prefix[i] - fn(i+ii, max(m, ii)))
-            return ans
-
-        return (fn(0, 1) + sum(piles))//2
+        n = len(piles)
+        prefix = list(accumulate(piles, initial=0))
+        dp = [[0]*(n+1) for _ in range(n+1)]
+        for i in range(n-1, -1, -1):
+            for j in range(1, n+1):
+                for ii in range(i, min(n, i+2*j)):
+                    jj = max(j, ii-i+1)
+                    cand = prefix[n] - prefix[i] - dp[ii+1][jj]
+                    dp[i][j] = max(dp[i][j], cand)
+        return dp[0][1]
 
 
     """1143. Longest Common Subsequence (Medium)
