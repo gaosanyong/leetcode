@@ -90870,6 +90870,184 @@ class SegTreeLazy:
         return ans[::-1]
 
 
+    """3162. Find the Number of Good Pairs I (Easy)
+    You are given 2 integer arrays nums1 and nums2 of lengths n and m
+    respectively. You are also given a positive integer k. A pair (i, j) is
+    called good if nums1[i] is divisible by nums2[j] * k (0 <= i <= n - 1,
+    0 <= j <= m - 1). Return the total number of good pairs.
+
+    Example 1:
+    Input: nums1 = [1,3,4], nums2 = [1,3,4], k = 1
+    Output: 5
+    Explanation: The 5 good pairs are (0, 0), (1, 0), (1, 1), (2, 0), and (2, 2).
+
+    Example 2:
+    Input: nums1 = [1,2,4,12], nums2 = [2,4], k = 3
+    Output: 2
+    Explanation: The 2 good pairs are (3, 0) and (3, 1).
+
+    Constraints:
+    * 1 <= n, m <= 50
+    * 1 <= nums1[i], nums2[j] <= 50
+    * 1 <= k <= 50"""
+
+    def numberOfPairs(self, nums1: List[int], nums2: List[int], k: int) -> int:
+        return sum(x % (y*k) == 0 for x, y in product(nums1, nums2))
+
+
+    """3163. String Compression III (Medium)
+    Given a string word, compress it using the following algorithm:
+    * Begin with an empty string comp. While word is not empty, use the
+      following operation:
+      - Remove a maximum length prefix of word made of a single character c
+        repeating at most 9 times.
+      - Append the length of the prefix followed by c to comp.
+    Return the string comp.
+
+    Example 1:
+    Input: word = "abcde"
+    Output: "1a1b1c1d1e"
+    Explanation: Initially, comp = "". Apply the operation 5 times, choosing
+                 "a", "b", "c", "d", and "e" as the prefix in each operation.
+                 For each prefix, append "1" followed by the character to comp.
+
+    Example 2:
+    Input: word = "aaaaaaaaaaaaaabb"
+    Output: "9a5a2b"
+    Explanation: Initially, comp = "". Apply the operation 3 times, choosing
+                 "aaaaaaaaa", "aaaaa", and "bb" as the prefix in each operation.
+                 - For prefix "aaaaaaaaa", append "9" followed by "a" to comp.
+                 - For prefix "aaaaa", append "5" followed by "a" to comp.
+                 - For prefix "bb", append "2" followed by "b" to comp.
+
+    Constraints:
+    * 1 <= word.length <= 2 * 10^5
+    * word consists only of lowercase English letters."""
+
+    def compressedString(self, word: str) -> str:
+        ans = []
+        for ch, grp in groupby(word):
+            x = len(list(grp))
+            q, x = divmod(x, 9)
+            ans.append(('9'+ch) * q)
+            if x: ans.append(str(x) + ch)
+        return "".join(ans)
+
+
+    """3164. Find the Number of Good Pairs II (Medium)
+    You are given 2 integer arrays nums1 and nums2 of lengths n and m
+    respectively. You are also given a positive integer k. A pair (i, j) is
+    called good if nums1[i] is divisible by nums2[j] * k (0 <= i <= n - 1,
+    0 <= j <= m - 1). Return the total number of good pairs.
+
+    Example 1:
+    Input: nums1 = [1,3,4], nums2 = [1,3,4], k = 1
+    Output: 5
+    Explanation: The 5 good pairs are (0, 0), (1, 0), (1, 1), (2, 0), and (2, 2).
+
+    Example 2:
+    Input: nums1 = [1,2,4,12], nums2 = [2,4], k = 3
+    Output: 2
+    Explanation: The 2 good pairs are (3, 0) and (3, 1).
+
+    Constraints:
+    * 1 <= n, m <= 10^5
+    * 1 <= nums1[i], nums2[j] <= 10^6
+    * 1 <= k <= 10^3"""
+
+    def numberOfPairs(self, nums1: List[int], nums2: List[int], k: int) -> int:
+        freq = Counter(x//k for x in nums1 if x % k == 0)
+        m = max(freq, default = 0)
+        ans = 0
+        for x, v in Counter(nums2).items():
+            for xx in range(x, m+1, x):
+                ans += freq[xx]*v
+        return ans
+
+
+    """3165. Maximum Sum of Subsequence With Non-adjacent Elements (Hard)
+    You are given an array nums consisting of integers. You are also given a 2D
+    array queries, where queries[i] = [posi, xi]. For query i, we first set
+    nums[posi] equal to xi, then we calculate the answer to query i which is the
+    maximum sum of a subsequence of nums where no two adjacent elements are
+    selected. Return the sum of the answers to all queries. Since the final
+    answer may be very large, return it modulo 10^9 + 7. A subsequence is an
+    array that can be derived from another array by deleting some or no elements
+    without changing the order of the remaining elements.
+
+    Example 1:
+    Input: nums = [3,5,9], queries = [[1,-2],[0,-3]]
+    Output: 21
+    Explanation: - After the 1st query, nums = [3,-2,9] and the maximum sum of a
+                   subsequence with non-adjacent elements is 3 + 9 = 12.
+                 - After the 2nd query, nums = [-3,-2,9] and the maximum sum of
+                   a subsequence with non-adjacent elements is 9.
+
+    Example 2:
+    Input: nums = [0,-1], queries = [[0,-5]]
+    Output: 0
+    Explanation: After the 1st query, nums = [-5,-1] and the maximum sum of a
+                 subsequence with non-adjacent elements is 0 (choosing an empty
+                 subsequence).
+
+    Constraints:
+    * 1 <= nums.length <= 5 * 10^4
+    * -10^5 <= nums[i] <= 10^5
+    * 1 <= queries.length <= 5 * 10^4
+    * queries[i] == [posi, xi]
+    * 0 <= posi <= nums.length - 1
+    * -10^5 <= xi <= 10^5
+
+class SegTree:
+
+    def __init__(self, arr: List[int]):
+        self.n = n = len(arr)
+        self.tree = [0]*(4*n)
+        self._build(arr, 0, 0, n)
+        print(self.tree)
+
+    def _op(self, left, right):
+        lv, ls, le, lse = left
+        rv, rs, re, rse = right
+        v = max(le+rv, lv+rs)
+        s = max(ls+rs, lse+rv)
+        e = max(le+re, lv+rse)
+        se = max(lse+re, ls+rse)
+        return (v, s, e, se)
+
+    def _build(self, arr: List[int], k: int, lo: int, hi: int) -> None:
+        if lo+1 == hi: self.tree[k] = (max(0, arr[lo]), 0, 0, 0)
+        else:
+            mid = lo + hi >> 1
+            self._build(arr, 2*k+1, lo, mid)
+            self._build(arr, 2*k+2, mid, hi)
+            self.tree[k] = self._op(self.tree[2*k+1], self.tree[2*k+2])
+
+    def update(self, i: int, x: int, k: int = 0, lo: int = 0, hi: int = 0) -> None:
+        if not hi: hi = self.n
+        if lo+1 == hi: self.tree[k] = (max(0, x), 0, 0, 0) # leaf node
+        else:
+            mid = lo + hi >> 1
+            if i < mid: self.update(i, x, 2*k+1, lo, mid)
+            else: self.update(i, x, 2*k+2, mid, hi)
+            self.tree[k] = self._op(self.tree[2*k+1], self.tree[2*k+2])
+
+    def query(self, qlo: int, qhi: int, k: int = 0, lo: int = 0, hi: int = 0) -> int:
+        if not hi: hi = self.n
+        if qhi <= lo or  hi <= qlo: return inf          #      no overlap
+        if qlo <= lo and hi <= qhi: return self.tree[k] #   total overlap
+        mid = lo + hi >> 1                              # partial overlap
+        return self._op(self.query(qlo, qhi, 2*k+1, lo, mid), self.query(qlo, qhi, 2*k+2, mid, hi))"""
+
+    def maximumSumSubsequence(self, nums: List[int], queries: List[List[int]]) -> int:
+        tree = SegTree(nums)
+        ans = 0
+        for i, x in queries:
+            tree.update(i, x)
+            ans = (ans + tree.query(0, len(nums))[0]) % 1_000_000_007
+        return ans
+
+
     """3168. Minimum Number of Chairs in a Waiting Room (Easy)
     You are given a string s. Simulate events at each second i:
     * If s[i] == 'E', a person enters the waiting room and takes one of the

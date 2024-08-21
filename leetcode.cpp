@@ -73259,6 +73259,206 @@ public:
     }
 
 
+    /*3162. Find the Number of Good Pairs I (Easy)
+    You are given 2 integer arrays nums1 and nums2 of lengths n and m
+    respectively. You are also given a positive integer k. A pair (i, j) is
+    called good if nums1[i] is divisible by nums2[j] * k (0 <= i <= n - 1,
+    0 <= j <= m - 1). Return the total number of good pairs.
+
+    Example 1:
+    Input: nums1 = [1,3,4], nums2 = [1,3,4], k = 1
+    Output: 5
+    Explanation: The 5 good pairs are (0, 0), (1, 0), (1, 1), (2, 0), and (2, 2).
+
+    Example 2:
+    Input: nums1 = [1,2,4,12], nums2 = [2,4], k = 3
+    Output: 2
+    Explanation: The 2 good pairs are (3, 0) and (3, 1).
+
+    Constraints:
+    * 1 <= n, m <= 50
+    * 1 <= nums1[i], nums2[j] <= 50
+    * 1 <= k <= 50*/
+
+    int numberOfPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+        int ans = 0;
+        for (auto& x : nums1)
+            for (auto& y : nums2)
+                if (x % (y*k) == 0) ++ans;
+        return ans;
+    }
+
+
+    /*3163. String Compression III (Medium)
+    Given a string word, compress it using the following algorithm:
+    * Begin with an empty string comp. While word is not empty, use the
+      following operation:
+      - Remove a maximum length prefix of word made of a single character c
+        repeating at most 9 times.
+      - Append the length of the prefix followed by c to comp.
+    Return the string comp.
+
+    Example 1:
+    Input: word = "abcde"
+    Output: "1a1b1c1d1e"
+    Explanation: Initially, comp = "". Apply the operation 5 times, choosing
+                 "a", "b", "c", "d", and "e" as the prefix in each operation.
+                 For each prefix, append "1" followed by the character to comp.
+
+    Example 2:
+    Input: word = "aaaaaaaaaaaaaabb"
+    Output: "9a5a2b"
+    Explanation: Initially, comp = "". Apply the operation 3 times, choosing
+                 "aaaaaaaaa", "aaaaa", and "bb" as the prefix in each operation.
+                 - For prefix "aaaaaaaaa", append "9" followed by "a" to comp.
+                 - For prefix "aaaaa", append "5" followed by "a" to comp.
+                 - For prefix "bb", append "2" followed by "b" to comp.
+
+    Constraints:
+    * 1 <= word.length <= 2 * 10^5
+    * word consists only of lowercase English letters.*/
+
+    string compressedString(string word) {
+        string ans;
+        for (int i = 0, n = word.size(), ii = 0; i < n; ++i)
+            if (i == n-1 || word[i] != word[i+1] || i-ii+1 == 9) {
+                ans.push_back('0'+(i-ii+1));
+                ans.push_back(word[i]);
+                ii = i+1;
+            }
+        return ans;
+    }
+
+
+    /*3164. Find the Number of Good Pairs II (Medium)
+    You are given 2 integer arrays nums1 and nums2 of lengths n and m
+    respectively. You are also given a positive integer k. A pair (i, j) is
+    called good if nums1[i] is divisible by nums2[j] * k (0 <= i <= n - 1,
+    0 <= j <= m - 1). Return the total number of good pairs.
+
+    Example 1:
+    Input: nums1 = [1,3,4], nums2 = [1,3,4], k = 1
+    Output: 5
+    Explanation: The 5 good pairs are (0, 0), (1, 0), (1, 1), (2, 0), and (2, 2).
+
+    Example 2:
+    Input: nums1 = [1,2,4,12], nums2 = [2,4], k = 3
+    Output: 2
+    Explanation: The 2 good pairs are (3, 0) and (3, 1).
+
+    Constraints:
+    * 1 <= n, m <= 10^5
+    * 1 <= nums1[i], nums2[j] <= 10^6
+    * 1 <= k <= 10^3*/
+
+    long long numberOfPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+        int m = *max_element(nums1.begin(), nums1.end());
+        unordered_map<int, int> freq1, freq2;
+        for (auto& x : nums1)
+            if (x % k == 0) ++freq1[x/k];
+        for (auto& x : nums2) ++freq2[x];
+        long long ans = 0;
+        for (auto& [x, v] : freq2)
+            for (int xx = x; xx <= m; xx += x)
+                ans += (long long) freq1[xx]*v;
+        return ans;
+    }
+
+
+    /*3165. Maximum Sum of Subsequence With Non-adjacent Elements (Hard)
+    You are given an array nums consisting of integers. You are also given a 2D
+    array queries, where queries[i] = [posi, xi]. For query i, we first set
+    nums[posi] equal to xi, then we calculate the answer to query i which is the
+    maximum sum of a subsequence of nums where no two adjacent elements are
+    selected. Return the sum of the answers to all queries. Since the final
+    answer may be very large, return it modulo 10^9 + 7. A subsequence is an
+    array that can be derived from another array by deleting some or no elements
+    without changing the order of the remaining elements.
+
+    Example 1:
+    Input: nums = [3,5,9], queries = [[1,-2],[0,-3]]
+    Output: 21
+    Explanation: - After the 1st query, nums = [3,-2,9] and the maximum sum of a
+                   subsequence with non-adjacent elements is 3 + 9 = 12.
+                 - After the 2nd query, nums = [-3,-2,9] and the maximum sum of
+                   a subsequence with non-adjacent elements is 9.
+
+    Example 2:
+    Input: nums = [0,-1], queries = [[0,-5]]
+    Output: 0
+    Explanation: After the 1st query, nums = [-5,-1] and the maximum sum of a
+                 subsequence with non-adjacent elements is 0 (choosing an empty
+                 subsequence).
+
+    Constraints:
+    * 1 <= nums.length <= 5 * 10^4
+    * -10^5 <= nums[i] <= 10^5
+    * 1 <= queries.length <= 5 * 10^4
+    * queries[i] == [posi, xi]
+    * 0 <= posi <= nums.length - 1
+    * -10^5 <= xi <= 10^5
+
+    class SegTree {
+        int n, mod = 1'000'000'007;
+        vector<array<long, 4>> tree;
+
+        array<long, 4> op(array<long, 4> left, array<long, 4> right) {
+            long lv = left[0], ls = left[1], le = left[2], lse = left[3];
+            long rv = right[0], rs = right[1], re = right[2], rse = right[3];
+            long v = max(le+rv, lv+rs), s = max(ls+rs, lse+rv), e = max(le+re, lv+rse), se = max(lse+re, ls+rse);
+            return {v, s, e, se};
+        }
+
+        void build(vector<int>& arr, int k, int lo, int hi) {
+            if (lo+1 == hi) tree[k] = {max(0, arr[lo]), 0, 0, 0};
+            else {
+                int mid = lo + (hi-lo)/2;
+                build(arr, 2*k+1, lo, mid);
+                build(arr, 2*k+2, mid, hi);
+                tree[k] = op(tree[2*k+1], tree[2*k+2]);
+            }
+        }
+
+
+    public:
+        SegTree(vector<int>& arr) {
+            n = arr.size();
+            tree.resize(4*n);
+            build(arr, 0, 0, n);
+        }
+
+        void update(int i, int val, int k = 0, int lo = 0, int hi = 0) {
+            if (hi == 0) hi = n;
+            if (lo+1 == hi) tree[k][0] = max(0, val);
+            else {
+                int mid = lo + (hi-lo)/2;
+                if (i < mid) update(i, val, 2*k+1, lo, mid);
+                else update(i, val, 2*k+2, mid, hi);
+                tree[k] = op(tree[2*k+1], tree[2*k+2]);
+            }
+        }
+
+        array<long, 4> query(int qlo, int qhi, int k = 0, int lo = 0, int hi = 0) {
+            if (hi == 0) hi = n;
+            if (qhi <= lo || hi <= qlo) return {0, 0, 0, 0};
+            if (qlo <= lo && hi <= qhi) return tree[k];
+            int mid = lo + (hi-lo)/2;
+            return op(query(qlo, qhi, 2*k+1, lo, mid), query(qlo, qhi, 2*k+2, mid, hi));
+        }
+    };*/
+
+    int maximumSumSubsequence(vector<int>& nums, vector<vector<int>>& queries) {
+        SegTree tree = SegTree(nums);
+        long ans = 0;
+        for (auto& q : queries) {
+            int i = q[0], x = q[1];
+            tree.update(i, x);
+            ans = (ans + tree.query(0, nums.size())[0]) % 1'000'000'007;
+        }
+        return ans;
+    }
+
+
     /*3168. Minimum Number of Chairs in a Waiting Room (Easy)
     You are given a string s. Simulate events at each second i:
     * If s[i] == 'E', a person enters the waiting room and takes one of the
