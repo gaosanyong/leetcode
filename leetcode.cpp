@@ -14346,20 +14346,18 @@ public:
     * s consists of lowercase English letters.*/
 
     int strangePrinter(string s) {
-        string ss;
-        for (int i = 0; i < s.size(); ++i)
-            if (i == 0 || s[i-1] != s[i]) ss.push_back(s[i]);
-
-        int n = ss.size();
-        vector<vector<int>> dp(n+1, vector<int>(n+1));
-
-        for (int lo = n-1; lo >= 0; --lo)
-            for (int hi = lo+1; hi <= n; ++hi) {
-                dp[lo][hi] = 1 + dp[lo+1][hi];
-                for (int mid = lo+1; mid < hi; ++mid)
-                    if (ss[lo] == ss[mid])
-                        dp[lo][hi] = min(dp[lo][hi], dp[lo][mid] + dp[mid+1][hi]);
+        int n = s.size();
+        vector<vector<int>> dp(n+1, vector<int>(n+1, INT_MAX));
+        dp[n] = vector<int>(n+1, 0);
+        for (int i = n-1; i >= 0; --i) {
+            dp[i][i] = 0;
+            for (int j = i+1; j <= n; ++j) {
+                dp[i][j] = 1 + dp[i+1][j];
+                for (int k = i+1; k < j; ++k)
+                    if (s[i] == s[k])
+                        dp[i][j] = min(dp[i][j], dp[i][k] + dp[k+1][j]);
             }
+        }
         return dp[0][n];
     }
 

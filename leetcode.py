@@ -16767,19 +16767,17 @@ class Solution:
     * s consists of lowercase English letters."""
 
     def strangePrinter(self, s: str) -> int:
-        s = "".join(ch for i, ch in enumerate(s) if i == 0 or s[i-1] != ch)
-
-        @cache
-        def fn(lo, hi):
-            """Return min ops to print s[lo:hi]."""
-            if lo == hi: return 0
-            ans = 1 + fn(lo+1, hi)
-            for mid in range(lo+1, hi):
-                if s[lo] == s[mid]:
-                    ans = min(ans, fn(lo, mid) + fn(mid+1, hi))
-            return ans
-
-        return fn(0, len(s))
+        n = len(s)
+        dp = [[inf]*(n+1) for _ in range(n+1)]
+        dp[n] = [0]*(n+1)
+        for i in range(n-1, -1, -1):
+            dp[i][i] = 0
+            for j in range(i+1, n+1):
+                dp[i][j] = 1 + dp[i+1][j]
+                for k in range(i+1, j):
+                    if s[i] == s[k]:
+                        dp[i][j] = min(dp[i][j], dp[i][k] + dp[k+1][j])
+        return dp[0][n]
 
 
     """665. Non-decreasing Array (Medium)
