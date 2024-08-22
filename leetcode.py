@@ -12866,7 +12866,8 @@ class Solution:
           https://leetcode.com/problems/complement-of-base-10-integer/"""
 
     def findComplement(self, num: int) -> int:
-        return num ^ (1 << num.bit_length()) - 1
+        n = num.bit_length()
+        return num ^ (1<<n) - 1
 
 
     """479. Largest Palindrome Product (Hard)

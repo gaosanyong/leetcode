@@ -10415,9 +10415,9 @@ public:
           https://leetcode.com/problems/complement-of-base-10-integer/*/
 
     int findComplement(int num) {
-        int mask = 0;
-        for (; mask < num; mask = mask << 1 | 1);
-        return num ^ mask;
+        int mask = 1;
+        while (mask < num) mask = mask << 1 | 1;
+        return mask ^ num;
     }
 
 
