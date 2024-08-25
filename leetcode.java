@@ -1555,6 +1555,50 @@ class Solution {
     }
 
 
+    /*145. Binary Tree Postorder Traversal (Easy)
+    Given the root of a binary tree, return the postorder traversal of its
+    nodes' values.
+
+    Example 1:
+    Input: root = [1,null,2,3]
+    Output: [3,2,1]
+
+    Example 2:
+    Input: root = []
+    Output: []
+
+    Example 3:
+    Input: root = [1]
+    Output: [1]
+
+    Constraints:
+    * The number of the nodes in the tree is in the range [0, 100].
+    * -100 <= Node.val <= 100
+
+    Follow up: Recursive solution is trivial, could you do it iteratively?*/
+
+    public List<Integer> postorderTraversal(TreeNode root) {
+        List<Integer> ans = new ArrayList<>();
+        Stack<TreeNode> stk = new Stack<>();
+        TreeNode prev = null, node = root;
+        while (node != null || !stk.isEmpty())
+            if (node != null) {
+                stk.push(node);
+                node = node.left;
+            } else {
+                node = stk.peek();
+                if (node.right != null && prev != node.right) node = node.right;
+                else {
+                    ans.add(node.val);
+                    stk.pop();
+                    prev = node;
+                    node = null;
+                }
+            }
+        return ans;
+    }
+
+
     /*149. Max Points on a Line (Hard)
     Given an array of points where points[i] = [xi, yi] represents a point on
     the X-Y plane, return the maximum number of points that lie on the same

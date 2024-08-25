@@ -469,6 +469,49 @@ var hasCycle = function(head) {
 };
 
 
+/*145. Binary Tree Postorder Traversal (Easy)
+Given the root of a binary tree, return the postorder traversal of its
+nodes' values.
+
+Example 1:
+Input: root = [1,null,2,3]
+Output: [3,2,1]
+
+Example 2:
+Input: root = []
+Output: []
+
+Example 3:
+Input: root = [1]
+Output: [1]
+
+Constraints:
+* The number of the nodes in the tree is in the range [0, 100].
+* -100 <= Node.val <= 100
+
+Follow up: Recursive solution is trivial, could you do it iteratively?*/
+
+var postorderTraversal = function(root) {
+    const ans = [], stack = [];
+    let prev = null, node = root;
+    while (node || stack.length)
+        if (node) {
+            stack.push(node);
+            node = node.left;
+        } else {
+            node = stack[stack.length-1];
+            if (node.right && prev != node.right) node = node.right;
+            else {
+                ans.push(node.val);
+                stack.pop();
+                prev = node;
+                node = null;
+            }
+        }
+    return ans;
+};
+
+
 /*165. Compare Version Numbers (Medium)
 Given two version numbers, version1 and version2, compare them. Version
 numbers consist of one or more revisions joined by a dot '.'. Each revision
