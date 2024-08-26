@@ -33286,6 +33286,234 @@ class SegTreeLazy {
         }
         return ans.stream().mapToLong(i->i).toArray();
     }
+
+
+    /*3264. Final Array State After K Multiplication Operations I (Easy)
+    You are given an integer array nums, an integer k, and an integer
+    multiplier. You need to perform k operations on nums. In each operation:
+    * Find the minimum value x in nums. If there are multiple occurrences of the
+      minimum value, select the one that appears first.
+    * Replace the selected minimum value x with x * multiplier.
+    Return an integer array denoting the final state of nums after performing
+    all k operations.
+
+    Example 1:
+    Input: nums = [2,1,3,5,6], k = 5, multiplier = 2
+    Output: [8,4,6,5,6]
+    Explanation: Operation           Result
+                 After operation 1   [2, 2, 3, 5, 6]
+                 After operation 2   [4, 2, 3, 5, 6]
+                 After operation 3   [4, 4, 3, 5, 6]
+                 After operation 4   [4, 4, 6, 5, 6]
+                 After operation 5   [8, 4, 6, 5, 6]
+
+    Example 2:
+    Input: nums = [1,2], k = 3, multiplier = 4
+    Output: [16,8]
+    Explanation: Operation           Result
+                 After operation 1   [4, 2]
+                 After operation 2   [4, 8]
+                 After operation 3   [16, 8]
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * 1 <= nums[i] <= 100
+    * 1 <= k <= 10
+    * 1 <= multiplier <= 5*/
+
+    public int[] getFinalState(int[] nums, int k, int multiplier) {
+        while (k-- > 0) {
+            int m = Arrays.stream(nums).min().getAsInt();
+            int i = IntStream.range(0, nums.length).filter(x -> nums[x] == m).findFirst().orElse(-1);
+            nums[i] *= multiplier;
+        }
+        return nums;
+    }
+
+
+    /*3265. Count Almost Equal Pairs I (Medium)
+    You are given an array nums consisting of positive integers. We call two
+    integers x and y in this problem almost equal if both integers can become
+    equal after performing the following operation at most once:
+    * Choose either x or y and swap any two digits within the chosen number.
+    Return the number of indices i and j in nums where i < j such that nums[i]
+    and nums[j] are almost equal. Note that it is allowed for an integer to have
+    leading zeros after performing an operation.
+
+    Example 1:
+    Input: nums = [3,12,30,17,21]
+    Output: 2
+    Explanation: The almost equal pairs of elements are:
+                 - 3 and 30. By swapping 3 and 0 in 30, you get 3.
+                 - 12 and 21. By swapping 1 and 2 in 12, you get 21.
+
+    Example 2:
+    Input: nums = [1,1,1,1,1]
+    Output: 10
+    Explanation: Every two elements in the array are almost equal.
+
+    Example 3:
+    Input: nums = [123,231]
+    Output: 0
+    Explanation: We cannot swap any two digits of 123 or 231 to reach the other.
+
+    Constraints:
+    * 2 <= nums.length <= 100
+    * 1 <= nums[i] <= 10^6*/
+
+    public int countPairs(int[] nums) {
+        int ans = 0;
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (var x : nums) {
+            ans += freq.getOrDefault(x, 0);
+            freq.merge(x, 1, Integer::sum);
+            char[] ch = String.format("%06d", x).toCharArray();
+            for (int i = 0; i < 6; ++i)
+                for (int j = i+1; j < 6; ++j)
+                    if (ch[i] != ch[j]) {
+                        char temp = ch[i]; ch[i] = ch[j]; ch[j] = temp;
+                        int cand = Integer.parseInt(new String(ch));
+                        ans += freq.getOrDefault(cand, 0);
+                        temp = ch[i]; ch[i] = ch[j]; ch[j] = temp;
+                    }
+        }
+        return ans;
+    }
+
+
+    /*3266. Final Array State After K Multiplication Operations II (Hard)
+    You are given an integer array nums, an integer k, and an integer
+    multiplier. You need to perform k operations on nums. In each operation:
+    * Find the minimum value x in nums. If there are multiple occurrences of the
+      minimum value, select the one that appears first.
+    * Replace the selected minimum value x with x * multiplier.
+    After the k operations, apply modulo 109 + 7 to every value in nums. Return
+    an integer array denoting the final state of nums after performing all k
+    operations and then applying the modulo.
+
+    Example 1:
+    Input: nums = [2,1,3,5,6], k = 5, multiplier = 2
+    Output: [8,4,6,5,6]
+    Explanation: Operation           Result
+                 After operation 1   [2, 2, 3, 5, 6]
+                 After operation 2   [4, 2, 3, 5, 6]
+                 After operation 3   [4, 4, 3, 5, 6]
+                 After operation 4   [4, 4, 6, 5, 6]
+                 After operation 5   [8, 4, 6, 5, 6]
+                 After applying modulo   [8, 4, 6, 5, 6]
+
+    Example 2:
+    Input: nums = [100000,2000], k = 2, multiplier = 1000000
+    Output: [999999307,999999993]
+    Explanation: Operation               Result
+                 After operation 1       [100000, 2000000000]
+                 After operation 2       [100000000000, 2000000000]
+                 After applying modulo   [999999307, 999999993]
+
+    Constraints:
+    * 1 <= nums.length <= 10^4
+    * 1 <= nums[i] <= 10^9
+    * 1 <= k <= 10^9
+    * 1 <= multiplier <= 10^6*/
+
+    public int[] getFinalState(int[] nums, int k, int multiplier) {
+        if (multiplier == 1) return nums;
+        int mod = 1_000_000_007;
+        int m = Arrays.stream(nums).max().getAsInt(), n = nums.length;
+        Queue<long[]> pq = new PriorityQueue<>((x, y) -> x[0] != y[0] ? Long.compare(x[0], y[0]) : Long.compare(x[1], y[1]));
+        for (int i = 0; i < n; ++i)
+            pq.add(new long[]{nums[i], i});
+        for (; k > 0 && pq.peek()[0]*multiplier <= m; --k) {
+            var elem = pq.poll();
+            long x = elem[0], i = elem[1];
+            pq.add(new long[]{x*multiplier, i});
+        }
+        List<long[]> vals = new ArrayList<>();
+        while (!pq.isEmpty())
+            vals.add(pq.poll());
+        long q = 1, mul = multiplier;
+        for (int p = k/n; p > 0; p >>= 1) {
+            if (p % 2 == 1) q = q * mul % mod;
+            mul = mul * mul % mod;
+        }
+        for (var v : vals)
+            v[0] = v[0] * q % mod;
+        for (int i = 0; i < k%n; ++i)
+            vals.get(i)[0] = vals.get(i)[0] * multiplier % mod;
+        int[] ans = new int[n];
+        for (var v : vals)
+            ans[(int) v[1]] = (int) v[0];
+        return ans;
+    }
+
+
+    /*3267. Count Almost Equal Pairs II (Hard)
+    Attention: In this version, the number of operations that can be performed,
+    has been increased to twice. You are given an array nums consisting of
+    positive integers. We call two integers x and y almost equal if both
+    integers can become equal after performing the following operation at most
+    twice:
+    * Choose either x or y and swap any two digits within the chosen number.
+    Return the number of indices i and j in nums where i < j such that nums[i]
+    and nums[j] are almost equal. Note that it is allowed for an integer to have
+    leading zeros after performing an operation.
+
+    Example 1:
+    Input: nums = [1023,2310,2130,213]
+    Output: 4
+    Explanation: The almost equal pairs of elements are:
+                 - 1023 and 2310. By swapping the digits 1 and 2, and then the
+                   digits 0 and 3 in 1023, you get 2310.
+                 - 1023 and 213. By swapping the digits 1 and 0, and then the
+                   digits 1 and 2 in 1023, you get 0213, which is 213.
+                 - 2310 and 213. By swapping the digits 2 and 0, and then the
+                   digits 3 and 2 in 2310, you get 0213, which is 213.
+                 - 2310 and 2130. By swapping the digits 3 and 1 in 2310, you
+                   get 2130.
+
+    Example 2:
+    Input: nums = [1,10,100]
+    Output: 3
+    Explanation: The almost equal pairs of elements are:
+                 - 1 and 10. By swapping the digits 1 and 0 in 10, you get 01
+                   which is 1.
+                 - 1 and 100. By swapping the second 0 with the digit 1 in 100,
+                   you get 001, which is 1.
+                 - 10 and 100. By swapping the first 0 with the digit 1 in 100,
+                   you get 010, which is 10.
+
+    Constraints:
+    * 2 <= nums.length <= 5000
+    * 1 <= nums[i] < 10^7*/
+
+    public int countPairs(int[] nums) {
+        int ans = 0;
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (var x : nums) freq.merge(x, 1, Integer::sum);
+        for (var x : freq.keySet()) {
+            ans += freq.get(x) * (freq.get(x)-1);
+            char[] ch = String.format("%07d", x).toCharArray();
+            Set<Integer> neighbor = new HashSet<>();
+            for (int i = 0; i < 7; ++i)
+                for (int j = 0; j < 7; ++j)
+                    if (ch[i] != ch[j]) {
+                        char temp = ch[i]; ch[i] = ch[j]; ch[j] = temp;
+                        neighbor.add(Integer.parseInt(String.valueOf(ch)));
+                        for (int k = 0; k < 7; ++k)
+                            for (int l = k+1; l < 7; ++l)
+                                if (ch[k] != ch[l] && (k != i || l != j)) {
+                                    temp = ch[k]; ch[k] = ch[l]; ch[l] = temp;
+                                    neighbor.add(Integer.parseInt(String.valueOf(ch)));
+                                    temp = ch[k]; ch[k] = ch[l]; ch[l] = temp;
+                                }
+                        temp = ch[i]; ch[i] = ch[j]; ch[j] = temp;
+                    }
+            for (var y : neighbor)
+                if (x != (int) y && freq.containsKey(y))
+                    ans += freq.get(x) * freq.get(y);
+        }
+        return ans/2;
+    }
 }
 
 
