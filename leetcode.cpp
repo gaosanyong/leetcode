@@ -12974,11 +12974,12 @@ public:
         vector<int> ans;
         if (root) {
             stack<Node*> stk; stk.push(root);
-            Node* prev = nullptr;
+            Node *prev = nullptr;
             while (stk.size()) {
                 auto node = stk.top();
                 if (node->children.size() && prev != node->children.back())
-                    for (auto ptr = node->children.rbegin(); ptr != node->children.rend(); ++ptr) stk.push(*ptr);
+                    for (int i = node->children.size()-1; i >= 0; --i)
+                        stk.push(node->children[i]);
                 else {
                     ans.push_back(node->val);
                     stk.pop();

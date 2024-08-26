@@ -1384,6 +1384,48 @@ function checkSubarraySum(nums: number[], k: number): boolean {
 };
 
 
+/*590. N-ary Tree Postorder Traversal (Easy)
+Given the root of an n-ary tree, return the postorder traversal of its
+nodes' values. Nary-Tree input serialization is represented in their level
+order traversal. Each group of children is separated by the null value (See
+examples)
+
+Example 1:
+Input: root = [1,null,3,2,4,null,5,6]
+Output: [5,6,3,2,4,1]
+
+Example 2:
+Input: root = [1,null,2,3,4,5,null,null,6,7,null,8,null,9,10,null,null,11,null,12,null,13,null,null,14]
+Output: [2,6,14,11,7,3,12,8,4,13,9,10,5,1]
+
+Constraints:
+* The number of nodes in the tree is in the range [0, 10^4].
+* 0 <= Node.val <= 10^4
+* The height of the n-ary tree is less than or equal to 1000.
+
+Follow up: Recursive solution is trivial, could you do it iteratively?*/
+
+function postorder(root: _Node | null): number[] {
+    const ans = [];
+    if (root) {
+        const stack = [root];
+        let prev = null;
+        while (stack.length) {
+            const node = stack[stack.length-1];
+            if (node.children.length && prev !== node.children[node.children.length-1])
+                for (const child of node.children.slice().reverse())
+                    stack.push(child);
+            else {
+                ans.push(node.val);
+                stack.pop();
+                prev = node;
+            }
+        }
+    }
+    return ans;
+};
+
+
 /*623. Add One Row to Tree (Medium)
 Given the root of a binary tree and two integers val and depth, add a row of
 nodes with value val at the given depth depth. Note that the root node is at
