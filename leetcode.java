@@ -29508,6 +29508,190 @@ class SegTreeLazy {
     }
 
 
+    /*3146. Permutation Difference between Two Strings (Easy)
+    You are given two strings s and t such that every character occurs at most
+    once in s and t is a permutation of s. The permutation difference between s
+    and t is defined as the sum of the absolute difference between the index of
+    the occurrence of each character in s and the index of the occurrence of the
+    same character in t. Return the permutation difference between s and t.
+
+    Example 1:
+    Input: s = "abc", t = "bac"
+    Output: 2
+    Explanation: For s = "abc" and t = "bac", the permutation difference of s
+                 and t is equal to the sum of:
+                 - The absolute difference between the index of the occurrence
+                   of "a" in s and the index of the occurrence of "a" in t.
+                 - The absolute difference between the index of the occurrence
+                   of "b" in s and the index of the occurrence of "b" in t.
+                 - The absolute difference between the index of the occurrence
+                   of "c" in s and the index of the occurrence of "c" in t.
+                 - That is, the permutation difference between s and t is equal
+                   to |0 - 1| + |1 - 0| + |2 - 2| = 2.
+
+    Example 2:
+    Input: s = "abcde", t = "edbac"
+    Output: 12
+    Explanation: The permutation difference between s and t is equal to
+                 |0 - 3| + |1 - 2| + |2 - 4| + |3 - 1| + |4 - 0| = 12.
+
+    Constraints:
+    * 1 <= s.length <= 26
+    * Each character occurs at most once in s.
+    * t is a permutation of s.
+    * s consists only of lowercase English letters.*/
+
+    public int findPermutationDifference(String s, String t) {
+        int[] loc = new int[26];
+        for (int i = 0; i < s.length(); ++i)
+            loc[s.charAt(i) - 'a'] = i;
+        int ans = 0;
+        for (int i = 0; i < t.length(); ++i)
+            ans += Math.abs(i - loc[t.charAt(i) - 'a']);
+        return ans;
+    }
+
+
+    /*3147. Taking Maximum Energy From the Mystic Dungeon (Medium)
+    In a mystic dungeon, n magicians are standing in a line. Each magician has
+    an attribute that gives you energy. Some magicians can give you negative
+    energy, which means taking energy from you. You have been cursed in such a
+    way that after absorbing energy from magician i, you will be instantly
+    transported to magician (i + k). This process will be repeated until you
+    reach the magician where (i + k) does not exist. In other words, you will
+    choose a starting point and then teleport with k jumps until you reach the
+    end of the magicians' sequence, absorbing all the energy during the journey.
+    You are given an array energy and an integer k. Return the maximum possible
+    energy you can gain.
+
+    Example 1:
+    Input:  energy = [5,2,-10,-5,1], k = 3
+    Output: 3
+    Explanation: We can gain a total energy of 3 by starting from magician 1
+                 absorbing 2 + 1 = 3.
+
+    Example 2:
+    Input: energy = [-2,-3,-1], k = 2
+    Output: -1
+    Explanation: We can gain a total energy of -1 by starting from magician 2.
+
+    Constraints:
+    * 1 <= energy.length <= 10^5
+    * -1000 <= energy[i] <= 1000
+    * 1 <= k <= energy.length - 1*/
+
+    public int maximumEnergy(int[] energy, int k) {
+        int[] dp = new int[k];
+        Arrays.fill(dp, Integer.MIN_VALUE);
+        for (int i = 0; i < energy.length; ++i)
+            dp[i % k] = Math.max(0, dp[i % k]) + energy[i];
+        return IntStream.of(dp).max().getAsInt();
+    }
+
+
+    /*3148. Maximum Difference Score in a Grid (Medium)
+    You are given an m x n matrix grid consisting of positive integers. You can
+    move from a cell in the matrix to any other cell that is either to the
+    bottom or to the right (not necessarily adjacent). The score of a move from
+    a cell with the value c1 to a cell with the value c2 is c2 - c1. You can
+    start at any cell, and you have to make at least one move. Return the
+    maximum total score you can achieve.
+
+    Example 1:
+    Input: grid = [[9,5,7,3],[8,9,6,1],[6,7,14,3],[2,5,3,1]]
+    Output: 9
+    Explanation: We start at the cell (0, 1), and we perform the following moves:
+                 - Move from the cell (0, 1) to (2, 1) with a score of 7 - 5 = 2.
+                 - Move from the cell (2, 1) to (2, 2) with a score of 14 - 7 = 7.
+                 The total score is 2 + 7 = 9.
+
+    Example 2:
+    Input: grid = [[4,3,2],[3,2,1]]
+    Output: -1
+    Explanation: We start at the cell (0, 0), and we perform one move: (0, 0) to
+                 (0, 1). The score is 3 - 4 = -1.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 2 <= m, n <= 1000
+    * 4 <= m * n <= 10^5
+    * 1 <= grid[i][j] <= 10^5*/
+
+    public int maxScore(List<List<Integer>> grid) {
+        int m = grid.size(), n = grid.get(0).size();
+        int ans = Integer.MIN_VALUE;
+        int[][] prefix = new int[m+1][n+1];
+        for (int i = 0; i <= m; ++i)
+            Arrays.fill(prefix[i], Integer.MAX_VALUE);
+        for (int i = 0; i < m; ++i)
+            for (int j = 0; j < n; ++j) {
+                int val = Math.min(prefix[i+1][j], prefix[i][j+1]);
+                ans = Math.max(ans, grid.get(i).get(j) - val);
+                prefix[i+1][j+1] = Math.min(grid.get(i).get(j), val);
+            }
+        return ans;
+    }
+
+
+    /*3149. Find the Minimum Cost Array Permutation (Hard)
+    You are given an array nums which is a permutation of [0, 1, 2, ..., n - 1].
+    The score of any permutation of [0, 1, 2, ..., n - 1] named perm is defined
+    as:
+    * score(perm) = |perm[0] - nums[perm[1]]| + |perm[1] - nums[perm[2]]| + ...
+      + |perm[n - 1] - nums[perm[0]]|
+    Return the permutation perm which has the minimum possible score. If
+    multiple permutations exist with this score, return the one that is
+    lexicographically smallest among them.
+
+    Example 1:
+    Input: nums = [1,0,2]
+    Output: [0,1,2]
+    Explanation: The lexicographically smallest permutation with minimum cost is
+                 [0,1,2]. The cost of this permutation is
+                 |0 - 0| + |1 - 2| + |2 - 1| = 2.
+
+    Example 2:
+    Input: nums = [0,2,1]
+    Output: [0,2,1]
+    Explanation: The lexicographically smallest permutation with minimum cost is
+                 [0,2,1]. The cost of this permutation is
+                 |0 - 1| + |2 - 2| + |1 - 0| = 2.
+
+    Constraints:
+    * 2 <= n == nums.length <= 14
+    * nums is a permutation of [0, 1, 2, ..., n - 1].*/
+
+    public int[] findPermutation(int[] nums) {
+        int n = nums.length;
+        int[][] dp = new int[1<<n][n], jump = new int[1<<n][n];
+        for (int i = 0; i < 1<<n; ++i)
+            Arrays.fill(dp[i], Integer.MAX_VALUE);
+        for (int m = (1<<n)-1; m > 0; --m) {
+            int i = 0;
+            for (int mm = m; mm > 0; mm &= mm-1, ++i);
+            for (int p = 0; p < n; ++p)
+                if (i == n) dp[m][p] = Math.abs(p - nums[0]);
+                else
+                    for (int k = 0; k < n; ++k)
+                        if ((m & 1<<k) == 0) {
+                            int cand = Math.abs(p - nums[k]) + dp[m^1<<k][k];
+                            if (cand < dp[m][p]) {
+                                dp[m][p] = cand;
+                                jump[m][p] = k;
+                            }
+                        }
+        }
+        int[] ans = new int[n];
+        for (int i = 1, m = 1; i < n; ++i) {
+            int k = jump[m][ans[i-1]];
+            ans[i] = k;
+            m ^= 1<<k;
+        }
+        return ans;
+    }
+
+
     /*3151. Special Array I (Easy)
     An array is considered special if every pair of its adjacent elements
     contains two numbers with different parity. You are given an array of
