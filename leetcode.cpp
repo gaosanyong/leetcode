@@ -37470,28 +37470,26 @@ public:
     * grid1[i][j] and grid2[i][j] are either 0 or 1.*/
 
     int countSubIslands(vector<vector<int>>& grid1, vector<vector<int>>& grid2) {
-        int m = size(grid1), n = size(grid1[0]), ans = 0, dir[5] = {1, 0, -1, 0, 1};
-        for (int i = 0; i < m; ++i)
-            for (int j = 0; j < n; ++j) {
-                if (grid2[i][j]) {
-                    grid2[i][j] = 0; // mark as visited
-                    stack<pair<int, int>> stk;
-                    stk.emplace(i, j);
+        int ans = 0, m = grid1.size(), n = grid1[0].size(), dir[] = {-1, 0, 1, 0, -1};
+        for (int x = 0; x < m; ++x)
+            for (int y = 0; y < n; ++y)
+                if (grid2[x][y]) {
                     int val = 1;
-                    while (size(stk)) {
-                        auto [r, c] = stk.top(); stk.pop();
-                        val &= grid1[r][c];
+                    grid2[x][y] = 0;
+                    stack<pair<int, int>> stk; stk.emplace(x, y);
+                    while (stk.size()) {
+                        auto [i, j] = stk.top(); stk.pop();
+                        val &= grid1[i][j];
                         for (int k = 0; k < 4; ++k) {
-                            int rr = r + dir[k], cc = c + dir[k+1];
-                            if (0 <= rr && rr < m && 0 <= cc && cc < n && grid2[rr][cc]) {
-                                grid2[rr][cc] = 0;
-                                stk.emplace(rr, cc);
+                            int ii = i + dir[k], jj = j + dir[k+1];
+                            if (0 <= ii && ii < m && 0 <= jj && jj < n && grid2[ii][jj]) {
+                                grid2[ii][jj] = 0;
+                                stk.emplace(ii, jj);
                             }
                         }
                     }
-                if (val) ++ans;
+                    ans += val;
                 }
-            }
         return ans;
     }
 

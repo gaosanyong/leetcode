@@ -50501,21 +50501,22 @@ class Fenwick:
     * grid1[i][j] and grid2[i][j] are either 0 or 1."""
 
     def countSubIslands(self, grid1: List[List[int]], grid2: List[List[int]]) -> int:
-        m, n = len(grid1), len(grid1[0]) # dimensions
-
-        def fn(i, j):
-            """Return True if i, j is in a sub-island."""
-            grid2[i][j] = 0 # mark as visited
-            ans = grid1[i][j]
-            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
-                if 0 <= ii < m and 0 <= jj < n and grid2[ii][jj]:
-                    ans &= fn(ii, jj)
-            return ans
-
+        m, n = len(grid2), len(grid2[0])
         ans = 0
-        for i in range(m):
-            for j in range(n):
-                if grid2[i][j] and fn(i, j): ans += 1
+        for x in range(m):
+            for y in range(n):
+                if grid2[x][y]:
+                    val = 1
+                    grid2[x][y] = 0
+                    stack = [(x, y)]
+                    while stack:
+                        i, j = stack.pop()
+                        val &= grid1[i][j]
+                        for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
+                            if 0 <= ii < m and 0 <= jj < n and grid2[ii][jj]:
+                                grid2[ii][jj] = 0
+                                stack.append((ii, jj))
+                    ans += val
         return ans
 
 
