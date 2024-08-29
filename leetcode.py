@@ -95459,30 +95459,29 @@ Example 2:
 Input: [1,[4,[6]]]
 Output: [1,4,6]
 Explanation: By calling next repeatedly until hasNext returns false,
-             the order of elements returned by next should be: [1,4,6]."""
+the order of elements returned by next should be: [1,4,6]."""
 
 class NestedIterator:
     def __init__(self, nestedList: [NestedInteger]):
-        self.stack = []
-        if nestedList: self.stack.append((nestedList, 0))
-        self.val = self._get()
-
-    def _get(self) -> int:
-        """Get next value in queue."""
-        while self.stack:
-            data, i = self.stack.pop()
-            if i+1 < len(data): self.stack.append((data, i+1)) #backtracking point
-            if data[i].isInteger(): return data[i].getInteger()
-            if not data[i].getList(): continue #empty list
-            self.stack.append((data[i].getList(), 0)) #push nested list on stack
-        return None
+        self.stack = [(nestedList, 0)]
+        self.val = self.read()
 
     def next(self) -> int:
-        ans, self.val = self.val, self._get()
+        ans = self.val
+        self.val = self.read()
         return ans
 
     def hasNext(self) -> bool:
         return self.val is not None
+
+    def read(self):
+        while self.stack:
+            data, i = self.stack.pop()
+            if i+1 < len(data): self.stack.append((data, i+1))
+            if data[i].isInteger(): return data[i].getInteger()
+            elif data[i].getList():
+                self.stack.append((data[i].getList(), 0))
+        return None
 
 
 """346. Moving Average from Data Stream (Easy)
