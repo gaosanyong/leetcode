@@ -10483,6 +10483,289 @@ var numberOfPairs = function(points) {
 };
 
 
+/*3028. Ant on the Boundary (Easy)
+An ant is on a boundary. It sometimes goes left and sometimes right. You are
+given an array of non-zero integers nums. The ant starts reading nums from
+the first element of it to its end. At each step, it moves according to the
+value of the current element:
+* If nums[i] < 0, it moves left by -nums[i] units.
+* If nums[i] > 0, it moves right by nums[i] units.
+Return the number of times the ant returns to the boundary.
+
+Notes:
+* There is an infinite space on both sides of the boundary.
+* We check whether the ant is on the boundary only after it has moved
+  |nums[i]| units. In other words, if the ant crosses the boundary during
+  its movement, it does not count.
+
+Example 1:
+Input: nums = [2,3,-5]
+Output: 1
+Explanation: - After the first step, the ant is 2 steps to the right of the
+               boundary.
+             - After the second step, the ant is 5 steps to the right of the
+               boundary.
+             - After the third step, the ant is on the boundary.
+             So the answer is 1.
+
+Example 2:
+Input: nums = [3,2,-3,-4]
+Output: 0
+Explanation: - After the first step, the ant is 3 steps to the right of the
+               boundary.
+             - After the second step, the ant is 5 steps to the right of the
+               boundary.
+             - After the third step, the ant is 2 steps to the right of the
+               boundary.
+             - After the fourth step, the ant is 2 steps to the left of the
+               boundary.
+             The ant never returned to the boundary, so the answer is 0.
+
+Constraints:
+* 1 <= nums.length <= 100
+* -10 <= nums[i] <= 10
+* nums[i] != 0*/
+
+var returnToBoundaryCount = function(nums) {
+    let ans = 0, prefix = 0;
+    for (const x of nums) {
+        prefix += x;
+        if (prefix == 0) ++ans;
+    }
+    return ans;
+};
+
+
+/*3029. Minimum Time to Revert Word to Initial State I (Medium)
+You are given a 0-indexed string word and an integer k. At every second, you
+must perform the following operations:
+* Remove the first k characters of word.
+* Add any k characters to the end of word.
+Note that you do not necessarily need to add the same characters that you
+removed. However, you must perform both operations at every second. Return
+the minimum time greater than zero required for word to revert to its
+initial state.
+
+Example 1:
+Input: word = "abacaba", k = 3
+Output: 2
+Explanation: - At the 1st second, we remove characters "aba" from the prefix
+               of word, and add characters "bac" to the end of word. Thus,
+               word becomes equal to "cababac".
+             - At the 2nd second, we remove characters "cab" from the prefix
+               of word, and add "aba" to the end of word. Thus, word becomes
+               equal to "abacaba" and reverts to its initial state.
+             It can be shown that 2 seconds is the minimum time greater than
+             zero required for word to revert to its initial state.
+
+Example 2:
+Input: word = "abacaba", k = 4
+Output: 1
+Explanation: - At the 1st second, we remove characters "abac" from the
+               prefix of word, and add characters "caba" to the end of word.
+               Thus, word becomes equal to "abacaba" and reverts to its
+               initial state.
+             It can be shown that 1 second is the minimum time greater than
+             zero required for word to revert to its initial state.
+
+Example 3:
+Input: word = "abcbabcd", k = 2
+Output: 4
+Explanation: - At every second, we will remove the first 2 characters of
+               word, and add the same characters to the end of word.
+             - After 4 seconds, word becomes equal to "abcbabcd" and reverts
+               to its initial state.
+             It can be shown that 4 seconds is the minimum time greater than
+             zero required for word to revert to its initial state.
+
+Constraints:
+* 1 <= word.length <= 50
+* 1 <= k <= word.length
+* word consists only of lowercase English letters.*/
+
+var minimumTimeToInitialState = function(word, k) {
+
+    function z_algo(s) {
+        const n = s.length;
+        const ans = Array(n).fill(0);
+        for (let i = 1, ii = 0, lo = 0, hi = 0; i < n; ++i) {
+            if (i <= hi) ii = i - lo;
+            if (i + ans[ii] <= hi) ans[i]= ans[ii];
+            else {
+                lo = i;
+                hi = Math.max(hi, i);
+                while (hi < n && s[hi] === s[hi-lo]) ++hi;
+                ans[i] = hi - lo;
+                --hi;
+            }
+        }
+        return ans;
+    };
+
+    const z = z_algo(word);
+    let i = 0;
+    for (const n = word.length; i*k < n; ++i)
+        if (i*k + z[i*k] == n) break;
+    return i;
+};
+
+
+/*3030. Find the Grid of Region Average (Medium)
+You are given m x n grid image which represents a grayscale image, where
+image[i][j] represents a pixel with intensity in the range [0..255]. You are
+also given a non-negative integer threshold. Two pixels are adjacent if they
+share an edge. A region is a 3 x 3 subgrid where the absolute difference in
+intensity between any two adjacent pixels is less than or equal to threshold.
+All pixels in a region belong to that region, note that a pixel can belong
+to multiple regions. You need to calculate a m x n grid result, where
+result[i][j] is the average intensity of the regions to which image[i][j]
+belongs, rounded down to the nearest integer. If image[i][j] belongs to
+multiple regions, result[i][j] is the average of the rounded-down average
+intensities of these regions, rounded down to the nearest integer. If
+image[i][j] does not belong to any region, result[i][j] is equal to
+image[i][j]. Return the grid result.
+
+Example 1:
+Input: image = [[5,6,7,10],[8,9,10,10],[11,12,13,10]], threshold = 3
+Output: [[9,9,9,9],[9,9,9,9],[9,9,9,9]]
+Explanation: There are two regions as illustrated above. The average
+             intensity of the first region is 9, while the average intensity
+             of the second region is 9.67 which is rounded down to 9. The
+             average intensity of both of the regions is (9 + 9) / 2 = 9. As
+             all the pixels belong to either region 1, region 2, or both of
+             them, the intensity of every pixel in the result is 9. Please
+             note that the rounded-down values are used when calculating the
+             average of multiple regions, hence the calculation is done
+             using 9 as the average intensity of region 2, not 9.67.
+
+Example 2:
+Input: image = [[10,20,30],[15,25,35],[20,30,40],[25,35,45]], threshold = 12
+Output: [[25,25,25],[27,27,27],[27,27,27],[30,30,30]]
+Explanation: There are two regions as illustrated above. The average
+             intensity of the first region is 25, while the average
+             intensity of the second region is 30. The average intensity of
+             both of the regions is (25 + 30) / 2 = 27.5 which is rounded
+             down to 27. All the pixels in row 0 of the image belong to
+             region 1, hence all the pixels in row 0 in the result are 25.
+             Similarly, all the pixels in row 3 in the result are 30. The
+             pixels in rows 1 and 2 of the image belong to region 1 and
+             region 2, hence their assigned value is 27 in the result.
+
+Example 3:
+Input: image = [[5,6,7],[8,9,10],[11,12,13]], threshold = 1
+Output: [[5,6,7],[8,9,10],[11,12,13]]
+Explanation: There is only one 3 x 3 subgrid, while it does not have the
+             condition on difference of adjacent pixels, for example, the
+             difference between image[0][0] and image[1][0] is
+             |5 - 8| = 3 > threshold = 1. None of them belong to any valid
+             regions, so the result should be the same as image.
+
+Constraints:
+* 3 <= n, m <= 500
+* 0 <= image[i][j] <= 255
+* 0 <= threshold <= 255*/
+
+var resultGrid = function(image, threshold) {
+    const m = image.length, n = image[0].length;
+    const ans = Array(m).fill(0).map(() => Array(n).fill(0).map(() => Array(2).fill(0)));
+    for (let i = 0; i < m-2; ++i)
+        for (let j = 0; j < n-2; ++j) {
+            let diff = 0, total = 0;
+            for (let ii = i; ii <= i+2; ++ii)
+                for (let jj = j; jj <= j+2; ++jj) {
+                    total += image[ii][jj];
+                    if (ii+1 <= i+2) diff = Math.max(diff, Math.abs(image[ii][jj]-image[ii+1][jj]));
+                    if (jj+1 <= j+2) diff = Math.max(diff, Math.abs(image[ii][jj]-image[ii][jj+1]));
+                }
+            if (diff <= threshold)
+                for (let ii = i; ii <= i+2; ++ii)
+                    for (let jj = j; jj <= j+2; ++jj) {
+                        ans[ii][jj][0] += Math.floor(total/9);
+                        ans[ii][jj][1] += 1;
+                    }
+        }
+    for (let i = 0; i < m; ++i)
+        for (let j = 0; j < n; ++j)
+            if (ans[i][j][1])
+                image[i][j] = Math.floor(ans[i][j][0] / ans[i][j][1]);
+    return image;
+};
+
+
+/*3031. Minimum Time to Revert Word to Initial State II (Hard)
+You are given a 0-indexed string word and an integer k. At every second, you
+must perform the following operations:
+* Remove the first k characters of word.
+* Add any k characters to the end of word.
+Note that you do not necessarily need to add the same characters that you
+removed. However, you must perform both operations at every second. Return
+the minimum time greater than zero required for word to revert to its
+initial state.
+
+Example 1:
+Input: word = "abacaba", k = 3
+Output: 2
+Explanation: - At the 1st second, we remove characters "aba" from the prefix
+               of word, and add characters "bac" to the end of word. Thus,
+               word becomes equal to "cababac".
+             - At the 2nd second, we remove characters "cab" from the prefix
+               of word, and add "aba" to the end of word. Thus, word becomes
+               equal to "abacaba" and reverts to its initial state.
+             It can be shown that 2 seconds is the minimum time greater than
+             zero required for word to revert to its initial state.
+
+Example 2:
+Input: word = "abacaba", k = 4
+Output: 1
+Explanation: - At the 1st second, we remove characters "abac" from the
+               prefix of word, and add characters "caba" to the end of word.
+               Thus, word becomes equal to "abacaba" and reverts to its
+               initial state.
+             It can be shown that 1 second is the minimum time greater than
+             zero required for word to revert to its initial state.
+
+Example 3:
+Input: word = "abcbabcd", k = 2
+Output: 4
+Explanation: - At every second, we will remove the first 2 characters of
+               word, and add the same characters to the end of word.
+             - After 4 seconds, word becomes equal to "abcbabcd" and reverts
+               to its initial state.
+             It can be shown that 4 seconds is the minimum time greater than
+             zero required for word to revert to its initial state.
+
+Constraints:
+* 1 <= word.length <= 10^6
+* 1 <= k <= word.length
+* word consists only of lowercase English letters.*/
+
+var minimumTimeToInitialState = function(word, k) {
+
+    function z_algo(s) {
+        const n = s.length;
+        const ans = Array(n).fill(0);
+        for (let i = 1, ii = 0, lo = 0, hi = 0; i < n; ++i) {
+            if (i <= hi) ii = i - lo;
+            if (i + ans[ii] <= hi) ans[i]= ans[ii];
+            else {
+                lo = i;
+                hi = Math.max(hi, i);
+                while (hi < n && s[hi] === s[hi-lo]) ++hi;
+                ans[i] = hi - lo;
+                --hi;
+            }
+        }
+        return ans;
+    };
+
+    const z = z_algo(word);
+    let i = 0;
+    for (const n = word.length; i*k < n; ++i)
+        if (i*k + z[i*k] == n) break;
+    return i;
+};
+
+
 /*3032. Count Numbers With Unique Digits II (Easy)
 Given two positive integers a and b, return the count of numbers having
 unique digits in the range [a, b] (inclusive).
