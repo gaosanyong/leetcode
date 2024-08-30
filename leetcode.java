@@ -21280,10 +21280,133 @@ class SegTreeLazy {
     * words[i] and s consist of lowercase English letters.*/
 
     public boolean isAcronym(List<String> words, String s) {
-        if (words.size() != s.length()) return false;
-        for (int i = 0; i < words.size(); ++i)
-            if (words.get(i).charAt(0) != s.charAt(i)) return false;
-        return true;
+        return words.size() == s.length() && IntStream.range(0, words.size()).allMatch((i) -> words.get(i).charAt(0) == s.charAt(i));
+    }
+
+
+    /*2829. Determine the Minimum Sum of a k-avoiding Array (Medium)
+    You are given two integers, n and k. An array of distinct positive integers
+    is called a k-avoiding array if there does not exist any pair of distinct
+    elements that sum to k. Return the minimum possible sum of a k-avoiding
+    array of length n.
+
+    Example 1:
+    Input: n = 5, k = 4
+    Output: 18
+    Explanation: Consider the k-avoiding array [1,2,4,5,6], which has a sum of
+                 18. It can be proven that there is no k-avoiding array with a
+                 sum less than 18.
+
+    Example 2:
+    Input: n = 2, k = 6
+    Output: 3
+    Explanation: We can construct the array [1,2], which has a sum of 3. It can
+                 be proven that there is no k-avoiding array with a sum less
+                 than 3.
+
+    Constraints: 1 <= n, k <= 50*/
+
+    public int minimumSum(int n, int k) {
+        if (n <= k/2) return n*(n+1)/2;
+        return (int) Math.pow(k/2, 2) - k/2*(n+k-1) + n*(n+2*k-1)/2;
+    }
+
+
+    /*2830. Maximize the Profit as the Salesman (Medium)
+    You are given an integer n representing the number of houses on a number
+    line, numbered from 0 to n - 1. Additionally, you are given a 2D integer
+    array offers where offers[i] = [starti, endi, goldi], indicating that ith
+    buyer wants to buy all the houses from starti to endi for goldi amount of
+    gold. As a salesman, your goal is to maximize your earnings by strategically
+    selecting and selling houses to buyers. Return the maximum amount of gold
+    you can earn. Note that different buyers can't buy the same house, and some
+    houses may remain unsold.
+
+    Example 1:
+    Input: n = 5, offers = [[0,0,1],[0,2,2],[1,3,2]]
+    Output: 3
+    Explanation: There are 5 houses numbered from 0 to 4 and there are 3
+                 purchase offers. We sell houses in the range [0,0] to 1st buyer
+                 for 1 gold and houses in the range [1,3] to 3rd buyer for 2
+                 golds. It can be proven that 3 is the maximum amount of gold we
+                 can achieve.
+
+    Example 2:
+    Input: n = 5, offers = [[0,0,1],[0,2,10],[1,3,2]]
+    Output: 10
+    Explanation: There are 5 houses numbered from 0 to 4 and there are 3
+                 purchase offers. We sell houses in the range [0,2] to 2nd buyer
+                 for 10 golds. It can be proven that 10 is the maximum amount of
+                 gold we can achieve.
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * 1 <= offers.length <= 10^5
+    * offers[i].length == 3
+    * 0 <= starti <= endi <= n - 1
+    * 1 <= goldi <= 10^3*/
+
+    public int maximizeTheProfit(int n, List<List<Integer>> offers) {
+        List<int[]>[] mp = new List[n];
+        for (int i = 0; i < n; ++i)
+            mp[i] = new ArrayList<>();
+        for (var offer : offers) {
+            int start = offer.get(0), end = offer.get(1), gold = offer.get(2);
+            mp[start].add(new int[]{end, gold});
+        }
+        int[] dp = new int[n+1];
+        for (int i = n-1; i >= 0; --i) {
+            dp[i] = dp[i+1];
+            for (var elem : mp[i]) {
+                int j = elem[0], x = elem[1];
+                dp[i] = Math.max(dp[i], x + dp[j+1]);
+            }
+        }
+        return dp[0];
+    }
+
+
+    /*2831. Find the Longest Equal Subarray (Medium)
+    You are given a 0-indexed integer array nums and an integer k. A subarray is
+    called equal if all of its elements are equal. Note that the empty subarray
+    is an equal subarray. Return the length of the longest possible equal
+    subarray after deleting at most k elements from nums. A subarray is a
+    contiguous, possibly empty sequence of elements within an array.
+
+    Example 1:
+    Input: nums = [1,3,2,3,1,3], k = 3
+    Output: 3
+    Explanation: It's optimal to delete the elements at index 2 and index 4.
+                 After deleting them, nums becomes equal to [1, 3, 3, 3]. The
+                 longest equal subarray starts at i = 1 and ends at j = 3 with
+                 length equal to 3. It can be proven that no longer equal
+                 subarrays can be created.
+
+    Example 2:
+    Input: nums = [1,1,2,2,1,1], k = 2
+    Output: 4
+    Explanation: It's optimal to delete the elements at index 2 and index 3.
+                 After deleting them, nums becomes equal to [1, 1, 1, 1]. The
+                 array itself is an equal subarray, so the answer is 4. It can
+                 be proven that no longer equal subarrays can be created.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= nums.length
+    * 0 <= k <= nums.length*/
+
+    public int longestEqualSubarray(List<Integer> nums, int k) {
+        int most = 0;
+        Map<Integer, Integer> freq = new HashMap();
+        for (int i = 0, ii = 0; i < nums.size(); ++i) {
+            freq.merge(nums.get(i), 1, Integer::sum);
+            most = Math.max(most, freq.get(nums.get(i)));
+            if (i - ii - most >= k) {
+                freq.merge(nums.get(ii), -1, Integer::sum);
+                ++ii;
+            }
+        }
+        return most;
     }
 
 
