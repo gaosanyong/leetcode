@@ -18250,3 +18250,191 @@ var countPairs = function(nums) {
     }
     return ans/2;
 };
+
+
+/*3274. Check if Two Chessboard Squares Have the Same Color (Easy)
+You are given two strings, coordinate1 and coordinate2, representing the
+coordinates of a square on an 8 x 8 chessboard. Below is the chessboard for
+reference. Return true if these two squares have the same color and false
+otherwise. The coordinate will always represent a valid chessboard square.
+The coordinate will always have the letter first (indicating its column),
+and the number second (indicating its row).
+
+Example 1:
+Input: coordinate1 = "a1", coordinate2 = "c3"
+Output: true
+Explanation: Both squares are black.
+
+Example 2:
+Input: coordinate1 = "a1", coordinate2 = "h3"
+Output: false
+Explanation: Square "a1" is black and "h3" is white.
+
+Constraints:
+* coordinate1.length == coordinate2.length == 2
+* 'a' <= coordinate1[0], coordinate2[0] <= 'h'
+* '1' <= coordinate1[1], coordinate2[1] <= '8'*/
+
+var checkTwoChessboards = function(coordinate1, coordinate2) {
+    return (coordinate1.charCodeAt(0) + coordinate1.charCodeAt(1)) % 2 == (coordinate2.charCodeAt(0)+ coordinate2.charCodeAt(1)) % 2;
+};
+
+
+/*3275. K-th Nearest Obstacle Queries (Medium)
+There is an infinite 2D plane. You are given a positive integer k. You are
+also given a 2D array queries, which contains the following queries:
+* queries[i] = [x, y]: Build an obstacle at coordinate (x, y) in the plane.
+  It is guaranteed that there is no obstacle at this coordinate when this
+  query is made.
+After each query, you need to find the distance of the kth nearest obstacle
+from the origin. Return an integer array results where results[i] denotes
+the kth nearest obstacle after query i, or results[i] == -1 if there are
+less than k obstacles. Note that initially there are no obstacles anywhere.
+The distance of an obstacle at coordinate (x, y) from the origin is given by
+|x| + |y|.
+
+Example 1:
+Input: queries = [[1,2],[3,4],[2,3],[-3,0]], k = 2
+Output: [-1,7,5,3]
+Explanation: Initially, there are 0 obstacles.
+             - After queries[0], there are less than 2 obstacles.
+             - After queries[1], there are obstacles at distances 3 and 7.
+             - After queries[2], there are obstacles at distances 3, 5, and
+               7.
+             - After queries[3], there are obstacles at distances 3, 3, 5,
+               and 7.
+
+Example 2:
+Input: queries = [[5,5],[4,4],[3,3]], k = 1
+Output: [10,8,6]
+Explanation: - After queries[0], there is an obstacle at distance 10.
+             - After queries[1], there are obstacles at distances 8 and 10.
+             - After queries[2], there are obstacles at distances 6, 8, and
+               10.
+
+Constraints:
+* 1 <= queries.length <= 2 * 10^5
+* All queries[i] are unique.
+* -10^9 <= queries[i][0], queries[i][1] <= 10^9
+* 1 <= k <= 10^5*/
+
+var resultsArray = function(queries, k) {
+    const ans = [];
+    const pq = new PriorityQueue({ compare : (x, y) => y-x });
+    for (const [x, y] of queries) {
+        pq.enqueue(Math.abs(x) + Math.abs(y));
+        if (pq.size() > k) pq.dequeue();
+        ans.push(pq.size() == k ? pq.front() : -1);
+    }
+    return ans;
+};
+
+
+/*3276. Select Cells in Grid With Maximum Score (Hard)
+You are given a 2D matrix grid consisting of positive integers. You have to
+select one or more cells from the matrix such that the following conditions
+are satisfied:
+* No two selected cells are in the same row of the matrix.
+* The values in the set of selected cells are unique.
+Your score will be the sum of the values of the selected cells. Return the
+maximum score you can achieve.
+
+Example 1:
+Input: grid = [[1,2,3],[4,3,2],[1,1,1]]
+Output: 8
+Explanation: We can select the cells with values 1, 3, and 4 that are
+             colored above.
+
+Example 2:
+Input: grid = [[8,7,6],[8,3,2]]
+Output: 15
+Explanation: We can select the cells with values 7 and 8 that are colored
+             above.
+
+Constraints:
+* 1 <= grid.length, grid[i].length <= 10
+* 1 <= grid[i][j] <= 100*/
+
+var maxScore = function(grid) {
+    const m = grid.length, n = grid[0].length;
+    const vals = [];
+    for (const [i, row] of grid.entries())
+        for (const x of row)
+            vals.push([x, i]);
+    vals.sort((x, y) => x[0]-y[0]);
+    const dp = Array(m*n+1).fill(0).map(() => Array(1<<m).fill(0));
+    for (let i = m*n-1; i >= 0; --i) {
+        const [v, k] = vals[i];
+        for (let x = 0; x < (1<<m); ++x) {
+            dp[i][x] = dp[i+1][x];
+            if ((x & 1<<k) == 0) {
+                let ii = i+1;
+                while (ii < vals.length && vals[ii][0] == vals[i][0]) ++ii;
+                dp[i][x] = Math.max(dp[i][x], v + dp[ii][x ^ 1<<k]);
+            }
+        }
+    }
+    return dp[0][0];
+};
+
+
+/*3277. Maximum XOR Score Subarray Queries (Hard)
+You are given an array nums of n integers, and a 2D integer array queries of
+size q, where queries[i] = [li, ri]. For each query, you must find the
+maximum XOR score of any subarray of nums[li..ri]. The XOR score of an array
+a is found by repeatedly applying the following operations on a so that only
+one element remains, that is the score:
+* Simultaneously replace a[i] with a[i] XOR a[i + 1] for all indices i
+  except the last one.
+* Remove the last element of a.
+Return an array answer of size q where answer[i] is the answer to query i.
+
+Example 1:
+Input: nums = [2,8,4,32,16,1], queries = [[0,2],[1,4],[0,5]]
+Output: [12,60,60]
+Explanation: - In the first query, nums[0..2] has 6 subarrays [2], [8], [4],
+               [2, 8], [8, 4], and [2, 8, 4] each with a respective XOR
+               score of 2, 8, 4, 10, 12, and 6. The answer for the query is
+               12, the largest of all XOR scores.
+             - In the second query, the subarray of nums[1..4] with the
+               largest XOR score is nums[1..4] with a score of 60.
+             - In the third query, the subarray of nums[0..5] with the
+               largest XOR score is nums[1..4] with a score of 60.
+
+Example 2:
+Input: nums = [0,7,3,2,8,5,1], queries = [[0,3],[1,5],[2,4],[2,6],[5,6]]
+Output: [7,14,11,14,5]
+Explanation: Index   nums[li..ri]    Maximum XOR Score Subarray  Maximum Subarray XOR Score
+                 0   [0, 7, 3, 2]    [7]                         7
+                 1   [7, 3, 2, 8, 5] [7, 3, 2, 8]                14
+                 2   [3, 2, 8]       [3, 2, 8]                   11
+                 3   [3, 2, 8, 5, 1] [2, 8, 5, 1]                14
+                 4   [5, 1]          [5]                         5
+
+Constraints:
+* 1 <= n == nums.length <= 2000
+* 0 <= nums[i] <= 2^31 - 1
+* 1 <= q == queries.length <= 10^5
+* queries[i].length == 2
+* queries[i] = [li, ri]
+* 0 <= li <= ri <= n - 1*/
+
+var maximumSubarrayXor = function(nums, queries) {
+    const n = nums.length;
+    const dp = Array(n+1).fill(0).map(() => Array(n).fill(0));
+    for (let l = n-1; l >= 0; --l) {
+        dp[l][l] = nums[l];
+        for (let r = l+1; r < n; ++r)
+            dp[l][r] = dp[l][r-1] ^ dp[l+1][r];
+    }
+    for (let l = 0; l < n; ++l)
+        for (let r = l+1; r < n; ++r)
+            dp[l][r] = Math.max(dp[l][r], dp[l][r-1]);
+    for (let r = 0; r < n; ++r)
+        for (let l = r-1; l >= 0; --l)
+            dp[l][r] = Math.max(dp[l][r], dp[l+1][r]);
+    const ans = [];
+    for (const [l, r] of queries)
+        ans.push(dp[l][r]);
+    return ans;
+};
