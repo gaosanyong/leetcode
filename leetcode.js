@@ -7390,14 +7390,184 @@ Constraints:
 * nums contains distinct integers.*/
 
 var minimumRightShifts = function(nums) {
-    let k = 0, n = nums.length;
-    for (let i = 1; i < n; ++i)
-        if (nums[i-1] > nums[i]) {
-            if (k) return -1;
+    let c = 0, k = 0, n = nums.length;
+    for (let i = 0; i < n; ++i)
+        if (nums[i] > nums[(i+1)%n]) {
+            ++c;
             k = i;
         }
-    if (k === 0) return 0;
-    return nums[n-1] < nums[0] ? n - k : -1;
+    switch (c) {
+        case 0: return 0;
+        case 1: return n-1-k;
+    }
+    return -1;
+};
+
+
+/*2856. Minimum Array Length After Pair Removals (Medium)
+Given an integer array num sorted in non-decreasing order. You can perform
+the following operation any number of times:
+* Choose two indices, i and j, where nums[i] < nums[j].
+* Then, remove the elements at indices i and j from nums. The remaining
+  elements retain their original order, and the array is re-indexed.
+Return the minimum length of nums after applying the operation zero or more
+times.
+
+Example 1:
+Input: nums = [1,2,3,4]
+Output: 0
+Explanation:
+
+Example 2:
+Input: nums = [1,1,2,2,3,3]
+Output: 0
+Explanation:
+
+Example 3:
+Input: nums = [1000000000,1000000000]
+Output: 2
+Explanation: Since both numbers are equal, they cannot be removed.
+
+Example 4:
+Input: nums = [2,3,4,4,4]
+Output: 1
+Explanation:
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 1 <= nums[i] <= 10^9
+* nums is sorted in non-decreasing order.*/
+
+var minLengthAfterRemovals = function(nums) {
+    let most = 0, n = nums.length;
+    const freq = new Map();
+    for (const x of nums) {
+        freq.set(x, 1 + (freq.get(x) ?? 0));
+        most = Math.max(most, freq.get(x));
+    }
+    return 2*most >= n ? 2*most - n : n&1;
+};
+
+
+/*2857. Count Pairs of Points With Distance k (Medium)
+You are given a 2D integer array coordinates and an integer k, where
+coordinates[i] = [xi, yi] are the coordinates of the ith point in a 2D
+plane. We define the distance between two points (x1, y1) and (x2, y2) as
+(x1 XOR x2) + (y1 XOR y2) where XOR is the bitwise XOR operation. Return the
+number of pairs (i, j) such that i < j and the distance between points i and
+j is equal to k.
+
+Example 1:
+Input: coordinates = [[1,2],[4,2],[1,3],[5,2]], k = 5
+Output: 2
+Explanation: We can choose the following pairs:
+             - (0,1): Because we have (1 XOR 4) + (2 XOR 2) = 5.
+             - (2,3): Because we have (1 XOR 5) + (3 XOR 2) = 5.
+
+Example 2:
+Input: coordinates = [[1,3],[1,3],[1,3],[1,3],[1,3]], k = 0
+Output: 10
+Explanation: Any two chosen pairs will have a distance of 0. There are 10
+             ways to choose two pairs.
+
+Constraints:
+* 2 <= coordinates.length <= 50000
+* 0 <= xi, yi <= 10^6
+* 0 <= k <= 100*/
+
+var countPairs = function(coordinates, k) {
+    let ans = 0;
+    const freq = new Map();
+    for (const [x, y] of coordinates) {
+        for (let v = 0; v <= k; ++v) {
+            const xx = x ^ v, yy = y ^ (k-v);
+            ans += freq.get(1000001*xx + yy) ?? 0;
+        }
+        freq.set(1000001*x+y, 1 + (freq.get(1000001*x+y) ?? 0));
+    }
+    return ans;
+};
+
+
+/*2858. Minimum Edge Reversals So Every Node Is Reachable (Hard)
+There is a simple directed graph with n nodes labeled from 0 to n - 1. The
+graph would form a tree if its edges were bi-directional. You are given an
+integer n and a 2D integer array edges, where edges[i] = [ui, vi] represents
+a directed edge going from node ui to node vi. An edge reversal changes the
+direction of an edge, i.e., a directed edge going from node ui to node vi
+becomes a directed edge going from node vi to node ui. For every node i in
+the range [0, n - 1], your task is to independently calculate the minimum
+number of edge reversals required so it is possible to reach any other node
+starting from node i through a sequence of directed edges. Return an integer
+array answer, where answer[i] is the minimum number of edge reversals
+required so it is possible to reach any other node starting from node i
+through a sequence of directed edges.
+
+Example 1:
+Input: n = 4, edges = [[2,0],[2,1],[1,3]]
+Output: [1,1,0,2]
+Explanation: The image above shows the graph formed by the edges.
+             - For node 0: after reversing the edge [2,0], it is possible to
+               reach any other node starting from node 0. So, answer[0] = 1.
+             - For node 1: after reversing the edge [2,1], it is possible to
+               reach any other node starting from node 1. So, answer[1] = 1.
+             - For node 2: it is already possible to reach any other node
+               starting from node 2. So, answer[2] = 0.
+             - For node 3: after reversing the edges [1,3] and [2,1], it is
+               possible to reach any other node starting from node 3. So,
+               answer[3] = 2.
+
+Example 2:
+Input: n = 3, edges = [[1,2],[2,0]]
+Output: [2,0,1]
+Explanation: The image above shows the graph formed by the edges.
+             - For node 0: after reversing the edges [2,0] and [1,2], it is
+               possible to reach any other node starting from node 0. So,
+               answer[0] = 2.
+             - For node 1: it is already possible to reach any other node
+               starting from node 1. So, answer[1] = 0.
+             - For node 2: after reversing the edge [1, 2], it is possible
+               to reach any other node starting from node 2. So,
+               answer[2] = 1.
+
+Constraints:
+* 2 <= n <= 10^5
+* edges.length == n - 1
+* edges[i].length == 2
+* 0 <= ui == edges[i][0] < n
+* 0 <= vi == edges[i][1] < n
+* ui != vi
+* The input is generated such that if the edges were bi-directional, the
+  graph would be a tree.*/
+
+var minEdgeReversals = function(n, edges) {
+    const tree = Array(n).fill(0).map(() => new Map());
+    for (const [u, v] of edges) {
+        tree[u].set(v, 1);
+        tree[v].set(u, -1);
+    }
+    const ans = Array(n).fill(0);
+
+    function fn(u, p) {
+        for (const [v, x] of tree[u].entries())
+            if (v != p) {
+                ans[u] += fn(v, u);
+                if (x == -1) ++ans[u];
+            }
+        return ans[u];
+    };
+
+    fn(0, -1);
+    const stack = [[0, -1]];
+    while (stack.length) {
+        const [u, p] = stack.pop();
+        for (const v of tree[u].keys())
+            if (v != p) {
+                ans[v] += ans[u] - ans[v] + tree[u].get(v);
+                stack.push([v, u]);
+            }
+    }
+    return ans;
 };
 
 

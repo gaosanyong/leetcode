@@ -84021,13 +84021,168 @@ class SegTreeLazy:
     * nums contains distinct integers."""
 
     def minimumRightShifts(self, nums: List[int]) -> int:
-        k = 0
-        for i in range(1, len(nums)):
-            if nums[i-1] > nums[i]:
-                if k: return -1
+        c = k = 0
+        n = len(nums)
+        for i in range(len(nums)):
+            if nums[i] > nums[(i+1)%n]:
+                c += 1
                 k = i
-        if not k: return 0
-        return len(nums)-k if nums[-1] < nums[0] else -1
+        if c == 0: return 0
+        if c == 1: return len(nums)-1-k
+        return -1
+
+
+    """2856. Minimum Array Length After Pair Removals (Medium)
+    Given an integer array num sorted in non-decreasing order. You can perform
+    the following operation any number of times:
+    * Choose two indices, i and j, where nums[i] < nums[j].
+    * Then, remove the elements at indices i and j from nums. The remaining
+      elements retain their original order, and the array is re-indexed.
+    Return the minimum length of nums after applying the operation zero or more
+    times.
+
+    Example 1:
+    Input: nums = [1,2,3,4]
+    Output: 0
+    Explanation:
+
+    Example 2:
+    Input: nums = [1,1,2,2,3,3]
+    Output: 0
+    Explanation:
+
+    Example 3:
+    Input: nums = [1000000000,1000000000]
+    Output: 2
+    Explanation: Since both numbers are equal, they cannot be removed.
+
+    Example 4:
+    Input: nums = [2,3,4,4,4]
+    Output: 1
+    Explanation:
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9
+    * nums is sorted in non-decreasing order."""
+
+    def minLengthAfterRemovals(self, nums: List[int]) -> int:
+        most = max(Counter(nums).values())
+        if 2*most >= len(nums): return 2*most - len(nums)
+        return len(nums) & 1
+
+
+    """2857. Count Pairs of Points With Distance k (Medium)
+    You are given a 2D integer array coordinates and an integer k, where
+    coordinates[i] = [xi, yi] are the coordinates of the ith point in a 2D
+    plane. We define the distance between two points (x1, y1) and (x2, y2) as
+    (x1 XOR x2) + (y1 XOR y2) where XOR is the bitwise XOR operation. Return the
+    number of pairs (i, j) such that i < j and the distance between points i and
+    j is equal to k.
+
+    Example 1:
+    Input: coordinates = [[1,2],[4,2],[1,3],[5,2]], k = 5
+    Output: 2
+    Explanation: We can choose the following pairs:
+                 - (0,1): Because we have (1 XOR 4) + (2 XOR 2) = 5.
+                 - (2,3): Because we have (1 XOR 5) + (3 XOR 2) = 5.
+
+    Example 2:
+    Input: coordinates = [[1,3],[1,3],[1,3],[1,3],[1,3]], k = 0
+    Output: 10
+    Explanation: Any two chosen pairs will have a distance of 0. There are 10
+                 ways to choose two pairs.
+
+    Constraints:
+    * 2 <= coordinates.length <= 50000
+    * 0 <= xi, yi <= 10^6
+    * 0 <= k <= 100"""
+
+    def countPairs(self, coordinates: List[List[int]], k: int) -> int:
+        ans = 0
+        freq = Counter()
+        for x, y in coordinates:
+            for v in range(k+1):
+                ans += freq[x^v, y^(k-v)]
+            freq[x, y] += 1
+        return ans
+
+
+    """2858. Minimum Edge Reversals So Every Node Is Reachable (Hard)
+    There is a simple directed graph with n nodes labeled from 0 to n - 1. The
+    graph would form a tree if its edges were bi-directional. You are given an
+    integer n and a 2D integer array edges, where edges[i] = [ui, vi] represents
+    a directed edge going from node ui to node vi. An edge reversal changes the
+    direction of an edge, i.e., a directed edge going from node ui to node vi
+    becomes a directed edge going from node vi to node ui. For every node i in
+    the range [0, n - 1], your task is to independently calculate the minimum
+    number of edge reversals required so it is possible to reach any other node
+    starting from node i through a sequence of directed edges. Return an integer
+    array answer, where answer[i] is the minimum number of edge reversals
+    required so it is possible to reach any other node starting from node i
+    through a sequence of directed edges.
+
+    Example 1:
+    Input: n = 4, edges = [[2,0],[2,1],[1,3]]
+    Output: [1,1,0,2]
+    Explanation: The image above shows the graph formed by the edges.
+                 - For node 0: after reversing the edge [2,0], it is possible to
+                   reach any other node starting from node 0. So, answer[0] = 1.
+                 - For node 1: after reversing the edge [2,1], it is possible to
+                   reach any other node starting from node 1. So, answer[1] = 1.
+                 - For node 2: it is already possible to reach any other node
+                   starting from node 2. So, answer[2] = 0.
+                 - For node 3: after reversing the edges [1,3] and [2,1], it is
+                   possible to reach any other node starting from node 3. So,
+                   answer[3] = 2.
+
+    Example 2:
+    Input: n = 3, edges = [[1,2],[2,0]]
+    Output: [2,0,1]
+    Explanation: The image above shows the graph formed by the edges.
+                 - For node 0: after reversing the edges [2,0] and [1,2], it is
+                   possible to reach any other node starting from node 0. So,
+                   answer[0] = 2.
+                 - For node 1: it is already possible to reach any other node
+                   starting from node 1. So, answer[1] = 0.
+                 - For node 2: after reversing the edge [1, 2], it is possible
+                   to reach any other node starting from node 2. So,
+                   answer[2] = 1.
+
+    Constraints:
+    * 2 <= n <= 10^5
+    * edges.length == n - 1
+    * edges[i].length == 2
+    * 0 <= ui == edges[i][0] < n
+    * 0 <= vi == edges[i][1] < n
+    * ui != vi
+    * The input is generated such that if the edges were bi-directional, the
+      graph would be a tree."""
+
+    def minEdgeReversals(self, n: int, edges: List[List[int]]) -> List[int]:
+        tree = [{} for _ in range(n)]
+        for u, v in edges:
+            tree[u][v] = 1
+            tree[v][u] = -1
+        ans = [0]*n
+
+        def fn(u, p):
+            """Return """
+            for v, x in tree[u].items():
+                if v != p:
+                    ans[u] += fn(v, u)
+                    if x == -1: ans[u] += 1
+            return ans[u]
+
+        fn(0, -1)
+        stack = [(0, -1)]
+        while stack:
+            u, p = stack.pop()
+            for v in tree[u]:
+                if v != p:
+                    ans[v] += ans[u] - ans[v] + tree[u][v]
+                    stack.append((v, u))
+        return ans
 
 
     """2859. Sum of Values at Indices With K Set Bits (Easy)
