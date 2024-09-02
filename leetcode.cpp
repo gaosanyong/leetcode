@@ -71082,6 +71082,289 @@ public:
     }
 
 
+    /*3042. Count Prefix and Suffix Pairs I (Easy)
+    You are given a 0-indexed string array words. Let's define a boolean
+    function isPrefixAndSuffix that takes two strings, str1 and str2:
+    * isPrefixAndSuffix(str1, str2) returns true if str1 is both a prefix and a
+      suffix of str2, and false otherwise.
+    For example, isPrefixAndSuffix("aba", "ababa") is true because "aba" is a
+    prefix of "ababa" and also a suffix, but isPrefixAndSuffix("abc", "abcd") is
+    false. Return an integer denoting the number of index pairs (i, j) such that
+    i < j, and isPrefixAndSuffix(words[i], words[j]) is true.
+
+    Example 1:
+    Input: words = ["a","aba","ababa","aa"]
+    Output: 4
+    Explanation: In this example, the counted index pairs are:
+                 - i = 0 and j = 1 because isPrefixAndSuffix("a", "aba") is true.
+                 - i = 0 and j = 2 because isPrefixAndSuffix("a", "ababa") is
+                   true.
+                 - i = 0 and j = 3 because isPrefixAndSuffix("a", "aa") is true.
+                 - i = 1 and j = 2 because isPrefixAndSuffix("aba", "ababa") is
+                   true.
+                 Therefore, the answer is 4.
+
+    Example 2:
+    Input: words = ["pa","papa","ma","mama"]
+    Output: 2
+    Explanation: In this example, the counted index pairs are:
+                 - i = 0 and j = 1 because isPrefixAndSuffix("pa", "papa") is
+                   true.
+                 - i = 2 and j = 3 because isPrefixAndSuffix("ma", "mama") is
+                   true.
+                 Therefore, the answer is 2.
+
+    Example 3:
+    Input: words = ["abab","ab"]
+    Output: 0
+    Explanation: In this example, the only valid index pair is i = 0 and j = 1,
+                 and isPrefixAndSuffix("abab", "ab") is false. Therefore, the
+                 answer is 0.
+
+    Constraints:
+    * 1 <= words.length <= 50
+    * 1 <= words[i].length <= 10
+    * words[i] consists only of lowercase English letters.*/
+
+    int countPrefixSuffixPairs(vector<string>& words) {
+        int ans = 0;
+        for (int i = 0; i < words.size(); ++i)
+            for (int ii = 0; ii < i; ++ii)
+                if (words[i].starts_with(words[ii]) && words[i].ends_with(words[ii])) ++ans;
+        return ans;
+    }
+
+
+    /*3043. Find the Length of the Longest Common Prefix (Medium)
+    You are given two arrays with positive integers arr1 and arr2. A prefix of a
+    positive integer is an integer formed by one or more of its digits, starting
+    from its leftmost digit. For example, 123 is a prefix of the integer 12345,
+    while 234 is not. A common prefix of two integers a and b is an integer c,
+    such that c is a prefix of both a and b. For example, 5655359 and 56554 have
+    a common prefix 565 while 1223 and 43456 do not have a common prefix. You
+    need to find the length of the longest common prefix between all pairs of
+    integers (x, y) such that x belongs to arr1 and y belongs to arr2. Return
+    the length of the longest common prefix among all pairs. If no common prefix
+    exists among them, return 0.
+
+    Example 1:
+    Input: arr1 = [1,10,100], arr2 = [1000]
+    Output: 3
+    Explanation: There are 3 pairs (arr1[i], arr2[j]):
+                 - The longest common prefix of (1, 1000) is 1.
+                 - The longest common prefix of (10, 1000) is 10.
+                 - The longest common prefix of (100, 1000) is 100.
+                 The longest common prefix is 100 with a length of 3.
+
+    Example 2:
+    Input: arr1 = [1,2,3], arr2 = [4,4,4]
+    Output: 0
+    Explanation: There exists no common prefix for any pair (arr1[i], arr2[j]),
+                 hence we return 0. Note that common prefixes between elements
+                 of the same array do not count.
+
+    Constraints:
+    * 1 <= arr1.length, arr2.length <= 5 * 10^4
+    * 1 <= arr1[i], arr2[i] <= 10^8
+
+    class TrieNode {
+    public:
+        TrieNode* child[10] = {nullptr};
+    };*/
+
+    int longestCommonPrefix(vector<int>& arr1, vector<int>& arr2) {
+        TrieNode *trie = new TrieNode();
+        for (auto& x : arr1) {
+            TrieNode *node = trie;
+            for (auto& d : to_string(x)) {
+                if (!node->child[d-'0']) node->child[d-'0'] = new TrieNode();
+                node = node->child[d-'0'];
+            }
+        }
+        int ans = 0;
+        for (auto& x : arr2) {
+            TrieNode *node = trie;
+            int prefix = 0;
+            for (auto& d : to_string(x)) {
+                if (!node->child[d-'0']) break;
+                node = node->child[d-'0'];
+                ++prefix;
+            }
+            ans = max(ans, prefix);
+        }
+        return ans;
+    }
+
+
+    /*3044. Most Frequent Prime (Medium)
+    You are given a m x n 0-indexed 2D matrix mat. From every cell, you can
+    create numbers in the following way:
+    * There could be at most 8 paths from the cells namely: east, south-east,
+      south, south-west, west, north-west, north, and north-east.
+    * Select a path from them and append digits in this path to the number being
+      formed by traveling in this direction.
+    * Note that numbers are generated at every step, for example, if the digits
+      along the path are 1, 9, 1, then there will be three numbers generated
+      along the way: 1, 19, 191.
+    Return the most frequent prime number greater than 10 out of all the numbers
+    created by traversing the matrix or -1 if no such prime number exists. If
+    there are multiple prime numbers with the highest frequency, then return the
+    largest among them. Note: It is invalid to change the direction during the
+    move.
+
+    Example 1:
+    Input: mat = [[1,1],[9,9],[1,1]]
+    Output: 19
+    Explanation: From cell (0,0) there are 3 possible directions and the numbers
+                 greater than 10 which can be created in those directions are:
+                 East: [11], South-East: [19], South: [19,191].
+                 - Numbers greater than 10 created from the cell (0,1) in all
+                   possible directions are: [19,191,19,11].
+                 - Numbers greater than 10 created from the cell (1,0) in all
+                   possible directions are: [99,91,91,91,91].
+                 - Numbers greater than 10 created from the cell (1,1) in all
+                   possible directions are: [91,91,99,91,91].
+                 - Numbers greater than 10 created from the cell (2,0) in all
+                   possible directions are: [11,19,191,19].
+                 - Numbers greater than 10 created from the cell (2,1) in all
+                   possible directions are: [11,19,19,191].
+                 The most frequent prime number among all the created numbers is
+                 19.
+
+    Example 2:
+    Input: mat = [[7]]
+    Output: -1
+    Explanation: The only number which can be formed is 7. It is a prime number
+                 however it is not greater than 10, so return -1.
+
+    Example 3:
+    Input: mat = [[9,7,8],[4,6,5],[2,8,6]]
+    Output: 97
+    Explanation: - Numbers greater than 10 created from the cell (0,0) in all
+                   possible directions are: [97,978,96,966,94,942].
+                 - Numbers greater than 10 created from the cell (0,1) in all
+                   possible directions are: [78,75,76,768,74,79].
+                 - Numbers greater than 10 created from the cell (0,2) in all
+                   possible directions are: [85,856,86,862,87,879].
+                 - Numbers greater than 10 created from the cell (1,0) in all
+                   possible directions are: [46,465,48,42,49,47].
+                 - Numbers greater than 10 created from the cell (1,1) in all
+                   possible directions are: [65,66,68,62,64,69,67,68].
+                 - Numbers greater than 10 created from the cell (1,2) in all
+                   possible directions are: [56,58,56,564,57,58].
+                 - Numbers greater than 10 created from the cell (2,0) in all
+                   possible directions are: [28,286,24,249,26,268].
+                 - Numbers greater than 10 created from the cell (2,1) in all
+                   possible directions are: [86,82,84,86,867,85].
+                 - Numbers greater than 10 created from the cell (2,2) in all
+                   possible directions are: [68,682,66,669,65,658].
+                 The most frequent prime number among all the created numbers is
+                 97.
+
+    Constraints:
+    * m == mat.length
+    * n == mat[i].length
+    * 1 <= m, n <= 6
+    * 1 <= mat[i][j] <= 9*/
+
+    int mostFrequentPrime(vector<vector<int>>& mat) {
+        int m = mat.size(), n = mat[0].size(), dir[] = {-1, -1, 0, 1, 0, -1, 1, 1, -1};
+
+        auto check = [](int x) {
+            for (int p = 2; p <= sqrt(x); ++p)
+                if (x % p == 0) return false;
+            return true;
+        };
+
+        int ans = -1;
+        unordered_map<int, int> freq;
+        for (int i = 0; i < m; ++i)
+            for (int j = 0; j < n; ++j)
+                for (int k = 0; k < 8; ++k) {
+                    int di = dir[k], dj = dir[k+1];
+                    for (int ii = i, jj = j, prefix = 0; 0 <= ii && ii < m && 0 <= jj && jj < n; ii += di, jj += dj) {
+                        prefix = 10*prefix + mat[ii][jj];
+                        if (prefix > 10 && check(prefix)) {
+                            ++freq[prefix];
+                            if (ans == -1 || freq[ans] < freq[prefix] || freq[ans] == freq[prefix] && ans < prefix)
+                                ans = prefix;
+                        }
+                    }
+                }
+        return ans;
+    }
+
+
+    /*3045. Count Prefix and Suffix Pairs II (Hard)
+    You are given a 0-indexed string array words. Let's define a boolean
+    function isPrefixAndSuffix that takes two strings, str1 and str2:
+    * isPrefixAndSuffix(str1, str2) returns true if str1 is both a prefix and a
+      suffix of str2, and false otherwise.
+    For example, isPrefixAndSuffix("aba", "ababa") is true because "aba" is a
+    prefix of "ababa" and also a suffix, but isPrefixAndSuffix("abc", "abcd") is
+    false. Return an integer denoting the number of index pairs (i, j) such that
+    i < j, and isPrefixAndSuffix(words[i], words[j]) is true.
+
+    Example 1:
+    Input: words = ["a","aba","ababa","aa"]
+    Output: 4
+    Explanation: In this example, the counted index pairs are:
+                 - i = 0 and j = 1 because isPrefixAndSuffix("a", "aba") is true.
+                 - i = 0 and j = 2 because isPrefixAndSuffix("a", "ababa") is
+                   true.
+                 - i = 0 and j = 3 because isPrefixAndSuffix("a", "aa") is true.
+                 - i = 1 and j = 2 because isPrefixAndSuffix("aba", "ababa") is
+                   true.
+                 Therefore, the answer is 4.
+
+    Example 2:
+    Input: words = ["pa","papa","ma","mama"]
+    Output: 2
+    Explanation: In this example, the counted index pairs are:
+                 - i = 0 and j = 1 because isPrefixAndSuffix("pa", "papa") is
+                   true.
+                 - i = 2 and j = 3 because isPrefixAndSuffix("ma", "mama") is
+                   true.
+                 Therefore, the answer is 2.
+
+    Example 3:
+    Input: words = ["abab","ab"]
+    Output: 0
+    Explanation: In this example, the only valid index pair is i = 0 and j = 1,
+                 and isPrefixAndSuffix("abab", "ab") is false. Therefore, the
+                 answer is 0.
+
+    Constraints:
+    * 1 <= words.length <= 10^5
+    * 1 <= words[i].length <= 10^5
+    * words[i] consists only of lowercase English letters.
+    * The sum of the lengths of all words[i] does not exceed 5 * 10^5.
+
+    class TrieNode {
+    public:
+        unordered_map<string, TrieNode*> child;
+        int count = 0;
+        ~TrieNode() = default;
+    };*/
+
+    long long countPrefixSuffixPairs(vector<string>& words) {
+        long long ans = 0;
+        TrieNode* trie = new TrieNode();
+        for (auto& w : words) {
+            TrieNode* node = trie;
+            for (int i = 0, n = w.size(); i < n; ++i) {
+                string k = string() + w[i] + w[n-1-i];
+                if (!node->child.contains(k))
+                    node->child[k] = new TrieNode();
+                node = node->child[k];
+                ans += node->count;
+            }
+            ++node->count;
+        }
+        return ans;
+    }
+
+
     /*3063. Linked List Frequency (Medium)
     Given the head of a linked list containing k distinct elements, return the
     head to a linked list of length k containing the frequency of each distinct
