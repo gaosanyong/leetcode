@@ -39219,12 +39219,9 @@ public:
             int x = ch - 'a' + 1;
             ans += x/10 + x%10;
         }
-
-        while (--k) {
-            int sm = 0;
-            for (; ans; ans /= 10) sm += ans % 10;
-            ans = sm;
-        }
+        for (int v = 0; --k; ans = v)
+            for (v = 0; ans; ans /= 10)
+                v += ans % 10;
         return ans;
     }
 

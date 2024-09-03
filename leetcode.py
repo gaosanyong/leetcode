@@ -52001,9 +52001,13 @@ class Trie:
     * s consists of lowercase English letters."""
 
     def getLucky(self, s: str, k: int) -> int:
-        s = "".join(str(ord(ch)-96) for ch in s)
-        for _ in range(k): s = str(sum(int(ch) for ch in s))
-        return s
+        ans = 0
+        for ch in s:
+            q, r = divmod(ord(ch)-96, 10)
+            ans += q + r
+        for _ in range(k-1):
+            ans = sum(map(int, str(ans)))
+        return ans
 
 
     """1946. Largest Number After Mutating Substring (Medium)
