@@ -36938,10 +36938,10 @@ public:
     * 1 <= k <= 10^9*/
 
     int chalkReplacer(vector<int>& chalk, int k) {
-        k %= accumulate(begin(chalk), end(chalk), 0l);
-        for (int i = 0; i < size(chalk); ++i) {
+        long total = accumulate(chalk.begin(), chalk.end(), 0l);
+        k %= total;
+        for (int i = 0; i < chalk.size(); ++i)
             if ((k -= chalk[i]) < 0) return i;
-        }
         return -1;
     }
 
