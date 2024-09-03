@@ -10588,7 +10588,205 @@ function findPattern(stream: InfiniteStream, pattern: number[]): number {
         if (pattern[k] == ch) ++k;
         if (k == pattern.length) return i-k+1;
     }
+};
 
+
+/*3038. Maximum Number of Operations With the Same Score I (Easy)
+Given an array of integers called nums, you can perform the following
+operation while nums contains at least 2 elements:
+* Choose the first two elements of nums and delete them.
+The score of the operation is the sum of the deleted elements. Your task is
+to find the maximum number of operations that can be performed, such that
+all operations have the same score. Return the maximum number of operations
+possible that satisfy the condition mentioned above.
+
+Example 1:
+Input: nums = [3,2,1,4,5]
+Output: 2
+Explanation: We perform the following operations:
+             - Delete the first two elements, with score 3 + 2 = 5,
+               nums = [1,4,5].
+             - Delete the first two elements, with score 1 + 4 = 5,
+               nums = [5].
+             We are unable to perform any more operations as nums contain
+             only 1 element.
+
+Example 2:
+Input: nums = [3,2,6,1,4]
+Output: 1
+Explanation: We perform the following operations:
+             - Delete the first two elements, with score 3 + 2 = 5,
+               nums = [6,1,4].
+             We are unable to perform any more operations as the score of
+             the next operation isn't the same as the previous one.
+
+Constraints:
+* 2 <= nums.length <= 100
+* 1 <= nums[i] <= 1000*/
+
+function maxOperations(nums: number[]): number {
+    let ans = 0, score = nums[0]+nums[1];
+    for (let i = 0; i+1 < nums.length; i += 2)
+        if (nums[i] + nums[i+1] == score) ++ans;
+        else break;
+    return ans;
+};
+
+
+/*3039. Apply Operations to Make String Empty (Medium)
+You are given a string s. Consider performing the following operation until
+s becomes empty:
+* For every alphabet character from 'a' to 'z', remove the first occurrence
+  of that character in s (if it exists).
+For example, let initially s = "aabcbbca". We do the following operations:
+* Remove the underlined characters s = "aabcbbca". The resulting string is
+  s = "abbca".
+* Remove the underlined characters s = "abbca". The resulting string is
+  s = "ba".
+* Remove the underlined characters s = "ba". The resulting string is s = "".
+Return the value of the string s right before applying the last operation.
+In the example above, answer is "ba".
+
+Example 1:
+Input: s = "aabcbbca"
+Output: "ba"
+Explanation: Explained in the statement.
+
+Example 2:
+Input: s = "abcd"
+Output: "abcd"
+Explanation: We do the following operation:
+             - Remove the underlined characters s = "abcd". The resulting
+               string is s = "".
+             The string just before the last operation is "abcd".
+
+Constraints:
+* 1 <= s.length <= 5 * 10^5
+* s consists only of lowercase English letters.*/
+
+function lastNonEmptyString(s: string): string {
+    let m = 0;
+    const freq = new Map();
+    for (const ch of s) {
+        freq.set(ch, 1 + (freq.get(ch) ?? 0));
+        m = Math.max(m, freq.get(ch));
+    }
+    let ans = [];
+    for (const ch of s.split('').reverse())
+        if (freq.get(ch) == m) {
+            ans.push(ch);
+            freq.set(ch, freq.get(ch) - 1);
+        }
+    return ans.reverse().join('');
+};
+
+
+/*3040. Maximum Number of Operations With the Same Score II (Medium)
+Given an array of integers called nums, you can perform any of the following
+operation while nums contains at least 2 elements:
+* Choose the first two elements of nums and delete them.
+* Choose the last two elements of nums and delete them.
+* Choose the first and the last elements of nums and delete them.
+The score of the operation is the sum of the deleted elements. Your task is
+to find the maximum number of operations that can be performed, such that
+all operations have the same score. Return the maximum number of operations
+possible that satisfy the condition mentioned above.
+
+Example 1:
+Input: nums = [3,2,1,2,3,4]
+Output: 3
+Explanation: We perform the following operations:
+             - Delete the first two elements, with score 3 + 2 = 5,
+               nums = [1,2,3,4].
+             - Delete the first and the last elements, with score 1 + 4 = 5,
+               nums = [2,3].
+             - Delete the first and the last elements, with score 2 + 3 = 5,
+               nums = [].
+             We are unable to perform any more operations as nums is empty.
+
+Example 2:
+Input: nums = [3,2,6,1,4]
+Output: 2
+Explanation: We perform the following operations:
+             - Delete the first two elements, with score 3 + 2 = 5,
+               nums = [6,1,4].
+             - Delete the last two elements, with score 1 + 4 = 5,
+               nums = [6].
+             It can be proven that we can perform at most 2 operations.
+
+Constraints:
+* 2 <= nums.length <= 2000
+* 1 <= nums[i] <= 1000*/
+
+function maxOperations(nums: number[]): number {
+    const n = nums.length;
+    const memo = new Map();
+
+    function fn(i, j, t) {
+        if (i >= j) return 0;
+        if (!memo.has(t))
+            memo.set(t, Array(n).fill(0).map(() => Array(n).fill(0)));
+        if (memo.get(t)[i][j] == 0) {
+            let ans = 0;
+            if (nums[i]+nums[i+1] == t) ans = Math.max(ans, 1+fn(i+2, j, t));
+            if (nums[j-1]+nums[j] == t) ans = Math.max(ans, 1+fn(i, j-2, t));
+            if (nums[i]+nums[j] == t) ans = Math.max(ans, 1+fn(i+1, j-1, t));
+            memo.get(t)[i][j] = ans;
+        }
+        return memo.get(t)[i][j];
+    };
+
+    let ans = 0;
+    for (const t of new Set([nums[0]+nums[1], nums[n-2]+nums[n-1], nums[0]+nums[n-1]]))
+        ans = Math.max(ans, fn(0, n-1, t));
+    return ans;
+};
+
+
+/*3041. Maximize Consecutive Elements in an Array After Modification (Hard)
+You are given a 0-indexed array nums consisting of positive integers.
+Initially, you can increase the value of any element in the array by at most
+1. After that, you need to select one or more elements from the final array
+such that those elements are consecutive when sorted in increasing order.
+For example, the elements [3, 4, 5] are consecutive while [3, 4, 6] and
+[1, 1, 2, 3] are not. Return the maximum number of elements that you can
+select.
+
+Example 1:
+Input: nums = [2,1,5,1,1]
+Output: 3
+Explanation: We can increase the elements at indices 0 and 3. The resulting
+             array is nums = [3,1,5,2,1]. We select the elements [3,1,5,2,1]
+             and we sort them to obtain [1,2,3], which are consecutive. It
+             can be shown that we cannot select more than 3 consecutive
+             elements.
+
+Example 2:
+Input: nums = [1,4,7,10]
+Output: 1
+Explanation: The maximum consecutive elements that we can select is 1.
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 1 <= nums[i] <= 10^6*/
+
+function maxSelectedElements(nums: number[]): number {
+    nums.sort((x, y) => x-y);
+    const n = nums.length;
+    let ans = 1;
+    const dp = Array(n).fill(0).map(() => Array(2).fill(1));
+    for (let i = 1; i < n; ++i) {
+        if (nums[i-1] + 2 == nums[i]) dp[i][0] = dp[i-1][1] + 1;
+        else if (nums[i-1] + 1 == nums[i]) {
+            dp[i][0] = dp[i-1][0] + 1;
+            dp[i][1] = dp[i-1][1] + 1;
+        } else if (nums[i-1] == nums[i]) {
+            dp[i][0] = dp[i-1][0];
+            dp[i][1] = Math.max(dp[i-1][1], dp[i-1][0] + 1);
+        }
+        ans = Math.max(ans, ...dp[i]);
+    }
+    return ans;
 };
 
 
