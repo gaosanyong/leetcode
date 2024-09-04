@@ -8078,6 +8078,179 @@ function findKOr(nums: number[], k: number): number {
 };
 
 
+/*2918. Minimum Equal Sum of Two Arrays After Replacing Zeros (Medium)
+You are given two arrays nums1 and nums2 consisting of positive integers.
+You have to replace all the 0's in both arrays with strictly positive
+integers such that the sum of elements of both arrays becomes equal. Return
+the minimum equal sum you can obtain, or -1 if it is impossible.
+
+Example 1:
+Input: nums1 = [3,2,0,1,0], nums2 = [6,5,0]
+Output: 12
+Explanation: We can replace 0's in the following way:
+             - Replace the two 0's in nums1 with the values 2 and 4. The
+               resulting array is nums1 = [3,2,2,1,4].
+             - Replace the 0 in nums2 with the value 1. The resulting array
+               is nums2 = [6,5,1].
+             Both arrays have an equal sum of 12. It can be shown that it is
+             the minimum sum we can obtain.
+
+Example 2:
+Input: nums1 = [2,0,2,0], nums2 = [1,4]
+Output: -1
+Explanation: It is impossible to make the sum of both arrays equal.
+
+Constraints:
+* 1 <= nums1.length, nums2.length <= 10^5
+* 0 <= nums1[i], nums2[i] <= 10^6*/
+
+function minSum(nums1: number[], nums2: number[]): number {
+    const s1 = nums1.reduce((s, x) => s + Math.max(x, 1), 0);
+    const s2 = nums2.reduce((s, x) => s + Math.max(x, 1), 0);
+    const n1 = nums1.filter(x => x == 0).length;
+    const n2 = nums2.filter(x => x == 0).length;
+    if (s1 < s2 && n1 == 0 || s2 < s1 && n2 == 0) return -1;
+    return Math.max(s1, s2);
+};
+
+
+/*2919. Minimum Increment Operations to Make Array Beautiful (Medium)
+You are given a 0-indexed integer array nums having length n, and an integer
+k. You can perform the following increment operation any number of times
+(including zero):
+* Choose an index i in the range [0, n - 1], and increase nums[i] by 1.
+An array is considered beautiful if, for any subarray with a size of 3 or
+more, its maximum element is greater than or equal to k. Return an integer
+denoting the minimum number of increment operations needed to make nums
+beautiful. A subarray is a contiguous non-empty sequence of elements within
+an array.
+
+Example 1:
+Input: nums = [2,3,0,0,2], k = 4
+Output: 3
+Explanation: We can perform the following increment operations to make nums
+             beautiful:
+             - Choose index i = 1 and increase nums[1] by 1 -> [2,4,0,0,2].
+             - Choose index i = 4 and increase nums[4] by 1 -> [2,4,0,0,3].
+             - Choose index i = 4 and increase nums[4] by 1 -> [2,4,0,0,4].
+             The subarrays with a size of 3 or more are: [2,4,0], [4,0,0],
+             [0,0,4], [2,4,0,0], [4,0,0,4], [2,4,0,0,4]. In all the
+             subarrays, the maximum element is equal to k = 4, so nums is
+             now beautiful. It can be shown that nums cannot be made
+             beautiful with fewer than 3 increment operations. Hence, the
+             answer is 3.
+
+Example 2:
+Input: nums = [0,1,3,3], k = 5
+Output: 2
+Explanation: We can perform the following increment operations to make nums
+             beautiful:
+             - Choose index i = 2 and increase nums[2] by 1 -> [0,1,4,3].
+             - Choose index i = 2 and increase nums[2] by 1 -> [0,1,5,3].
+             The subarrays with a size of 3 or more are: [0,1,5], [1,5,3],
+             [0,1,5,3]. In all the subarrays, the maximum element is equal
+             to k = 5, so nums is now beautiful. It can be shown that nums
+             cannot be made beautiful with fewer than 2 increment
+             operations. Hence, the answer is 2.
+
+Example 3:
+Input: nums = [1,1,2], k = 1
+Output: 0
+Explanation: The only subarray with a size of 3 or more in this example is
+             [1,1,2]. The maximum element, 2, is already greater than k = 1,
+             so we don't need any increment operation. Hence, the answer is
+             0.
+
+Constraints:
+* 3 <= n == nums.length <= 10^5
+* 0 <= nums[i] <= 10^9
+* 0 <= k <= 10^9*/
+
+function minIncrementOperations(nums: number[], k: number): number {
+    const n = nums.length;
+    const dp = Array(n+1).fill(Infinity);
+    dp[n] = 0;
+    for (let i = n-1; i >= 0; --i) {
+        for (let j = i+1; j <= i+3 && j <= n; ++j)
+            dp[i] = Math.min(dp[i], dp[j]);
+        dp[i] += Math.max(0, k-nums[i]);
+    }
+    return Math.min(...dp.slice(0, 3));
+};
+
+
+/*2920. Maximum Points After Collecting Coins From All Nodes (Hard)
+There exists an undirected tree rooted at node 0 with n nodes labeled from 0
+to n - 1. You are given a 2D integer array edges of length n - 1, where
+edges[i] = [ai, bi] indicates that there is an edge between nodes ai and bi
+in the tree. You are also given a 0-indexed array coins of size n where
+coins[i] indicates the number of coins in the vertex i, and an integer k.
+Starting from the root, you have to collect all the coins such that the
+coins at a node can only be collected if the coins of its ancestors have
+been already collected. Coins at nodei can be collected in one of the
+following ways:
+* Collect all the coins, but you will get coins[i] - k points. If
+  coins[i] - k is negative then you will lose abs(coins[i] - k) points.
+* Collect all the coins, but you will get floor(coins[i] / 2) points. If
+  this way is used, then for all the nodej present in the subtree of nodei,
+  coins[j] will get reduced to floor(coins[j] / 2).
+Return the maximum points you can get after collecting the coins from all
+the tree nodes.
+
+Example 1:
+Input: edges = [[0,1],[1,2],[2,3]], coins = [10,10,3,3], k = 5
+Output: 11
+Explanation: - Collect all the coins from node 0 using the first way. Total
+               points = 10 - 5 = 5.
+             - Collect all the coins from node 1 using the first way. Total
+               points = 5 + (10 - 5) = 10.
+             - Collect all the coins from node 2 using the second way so
+               coins left at node 3 will be floor(3 / 2) = 1. Total points
+               = 10 + floor(3 / 2) = 11.
+             - Collect all the coins from node 3 using the second way. Total
+               points = 11 + floor(1 / 2) = 11.
+             It can be shown that the maximum points we can get after
+             collecting coins from all the nodes is 11.
+
+Example 2:
+Input: edges = [[0,1],[0,2]], coins = [8,4,4], k = 0
+Output: 16
+Explanation: Coins will be collected from all the nodes using the first way.
+             Therefore, total points = (8 - 0) + (4 - 0) + (4 - 0) = 16.
+
+Constraints:
+* n == coins.length
+* 2 <= n <= 10^5
+* 0 <= coins[i] <= 10^4
+* edges.length == n - 1
+* 0 <= edges[i][0], edges[i][1] < n
+* 0 <= k <= 10^4*/
+
+function maximumPoints(edges: number[][], coins: number[], k: number): number {
+    const n = 1 + edges.length;
+    const tree = Array(n).fill(0).map(() => []);
+    for (const [u, v] of edges) {
+        tree[u].push(v);
+        tree[v].push(u);
+    }
+    const memo = Array(n).fill(0);
+
+    function dfs(u, p, d) {
+        if (d >= 14 || memo[u] > d) return 0;
+        ++memo[u];
+        let op1 = 0, op2 = 0;
+        for (const v of tree[u])
+            if (v != p) {
+                op1 += dfs(v, u, d);
+                op2 += dfs(v, u, d+1);
+            }
+        return Math.max((coins[u]>>d) - k + op1, (coins[u]>>d+1) + op2);
+    }
+
+    return dfs(0, -1, 0);
+};
+
+
 /*2932. Maximum Strong Pair XOR I (Easy)
 You are given a 0-indexed integer array nums. A pair of integers x and y is
 called a strong pair if it satisfies the condition:
