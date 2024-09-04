@@ -24402,6 +24402,218 @@ class SegTreeLazy {
     }
 
 
+    /*2933. High-Access Employees (Medium)
+    You are given a 2D 0-indexed array of strings, access_times, with size n.
+    For each i where 0 <= i <= n - 1, access_times[i][0] represents the name of
+    an employee, and access_times[i][1] represents the access time of that
+    employee. All entries in access_times are within the same day. The access
+    time is represented as four digits using a 24-hour time format, for example,
+    "0800" or "2250". An employee is said to be high-access if he has accessed
+    the system three or more times within a one-hour period. Times with exactly
+    one hour of difference are not considered part of the same one-hour period.
+    For example, "0815" and "0915" are not part of the same one-hour period.
+    Access times at the start and end of the day are not counted within the same
+    one-hour period. For example, "0005" and "2350" are not part of the same
+    one-hour period. Return a list that contains the names of high-access
+    employees with any order you want.
+
+    Example 1:
+    Input: access_times = [["a","0549"],["b","0457"],["a","0532"],["a","0621"],["b","0540"]]
+    Output: ["a"]
+    Explanation: "a" has three access times in the one-hour period of
+                 [05:32, 06:31] which are 05:32, 05:49, and 06:21. But "b" does
+                 not have more than two access times at all. So the answer is
+                 ["a"].
+
+    Example 2:
+    Input: access_times = [["d","0002"],["c","0808"],["c","0829"],["e","0215"],["d","1508"],["d","1444"],["d","1410"],["c","0809"]]
+    Output: ["c","d"]
+    Explanation: "c" has three access times in the one-hour period of
+                 [08:08, 09:07] which are 08:08, 08:09, and 08:29. "d" has also
+                 three access times in the one-hour period of [14:10, 15:09]
+                 which are 14:10, 14:44, and 15:08. However, "e" has just one
+                 access time, so it can not be in the answer and the final
+                 answer is ["c","d"].
+
+    Example 3:
+    Input: access_times = [["cd","1025"],["ab","1025"],["cd","1046"],["cd","1055"],["ab","1124"],["ab","1120"]]
+    Output: ["ab","cd"]
+    Explanation: "ab" has three access times in the one-hour period of
+                 [10:25, 11:24] which are 10:25, 11:20, and 11:24. "cd" has also
+                 three access times in the one-hour period of [10:25, 11:24]
+                 which are 10:25, 10:46, and 10:55. So the answer is ["ab","cd"].
+
+    Constraints:
+    * 1 <= access_times.length <= 100
+    * access_times[i].length == 2
+    * 1 <= access_times[i][0].length <= 10
+    * access_times[i][0] consists only of English small letters.
+    * access_times[i][1].length == 4
+    * access_times[i][1] is in 24-hour time format.
+    * access_times[i][1] consists only of '0' to '9'.*/
+
+    public List<String> findHighAccessEmployees(List<List<String>> access_times) {
+        Map<String, List<Integer>> mp = new HashMap<>();
+        for (var x : access_times) {
+            String name = x.get(0), time = x.get(1);
+            int t = 60*Integer.valueOf(time.substring(0, 2)) + Integer.valueOf(time.substring(2));
+            if (!mp.containsKey(name)) mp.put(name, new ArrayList<>());
+            mp.get(name).add(t);
+        }
+        List<String> ans = new ArrayList<>();
+        for (var name : mp.keySet()) {
+            List<Integer> times = mp.get(name);
+            Collections.sort(times);
+            for (int i = 2; i < times.size(); ++i)
+                if (times.get(i) - times.get(i-2) < 60) {
+                    ans.add(name);
+                    break;
+                }
+        }
+        return ans;
+    }
+
+
+    /*2934. Minimum Operations to Maximize Last Elements in Arrays (Medium)
+    You are given two 0-indexed integer arrays, nums1 and nums2, both having
+    length n. You are allowed to perform a series of operations (possibly none).
+    In an operation, you select an index i in the range [0, n - 1] and swap the
+    values of nums1[i] and nums2[i]. Your task is to find the minimum number of
+    operations required to satisfy the following conditions:
+    * nums1[n - 1] is equal to the maximum value among all elements of nums1,
+      i.e., nums1[n - 1] = max(nums1[0], nums1[1], ..., nums1[n - 1]).
+    * nums2[n - 1] is equal to the maximum value among all elements of nums2,
+      i.e., nums2[n - 1] = max(nums2[0], nums2[1], ..., nums2[n - 1]).
+    Return an integer denoting the minimum number of operations needed to meet
+    both conditions, or -1 if it is impossible to satisfy both conditions.
+
+    Example 1:
+    Input: nums1 = [1,2,7], nums2 = [4,5,3]
+    Output: 1
+    Explanation: In this example, an operation can be performed using index
+                 i = 2. When nums1[2] and nums2[2] are swapped, nums1 becomes
+                 [1,2,3] and nums2 becomes [4,5,7]. Both conditions are now
+                 satisfied. It can be shown that the minimum number of
+                 operations needed to be performed is 1. So, the answer is 1.
+
+    Example 2:
+    Input: nums1 = [2,3,4,5,9], nums2 = [8,8,4,4,4]
+    Output: 2
+    Explanation: In this example, the following operations can be performed:
+                 - First operation using index i = 4. When nums1[4] and nums2[4]
+                   are swapped, nums1 becomes [2,3,4,5,4], and nums2 becomes
+                   [8,8,4,4,9].
+                 - Another operation using index i = 3. When nums1[3] and
+                   nums2[3] are swapped, nums1 becomes [2,3,4,4,4], and nums2
+                   becomes [8,8,4,5,9].
+                 Both conditions are now satisfied. It can be shown that the
+                 minimum number of operations needed to be performed is 2. So,
+                 the answer is 2.
+
+    Example 3:
+    Input: nums1 = [1,5,4], nums2 = [2,5,3]
+    Output: -1
+    Explanation: In this example, it is not possible to satisfy both conditions.
+                 So, the answer is -1.
+
+    Constraints:
+    * 1 <= n == nums1.length == nums2.length <= 1000
+    * 1 <= nums1[i] <= 10^9
+    * 1 <= nums2[i] <= 10^9*/
+
+    public int minOperations(int[] nums1, int[] nums2) {
+        int yes = 0, no = 0;
+        for (int i = 0, n = nums1.length; i < n; ++i) {
+            int x1 = nums1[i], x2 = nums2[i];
+            if (Math.max(nums1[n-1], nums2[n-1]) < Math.max(x1, x2) || Math.min(nums1[n-1], nums2[n-1]) < Math.min(x1, x2)) return -1;
+            if (nums1[n-1] < x1 || nums2[n-1] < x2) ++yes;
+            if (nums1[n-1] < x2 || nums2[n-1] < x1) ++no;
+        }
+        return Math.min(yes, no);
+    }
+
+
+    /*2935. Maximum Strong Pair XOR II (Hard)
+    You are given a 0-indexed integer array nums. A pair of integers x and y is
+    called a strong pair if it satisfies the condition:
+    * |x - y| <= min(x, y)
+    You need to select two integers from nums such that they form a strong pair
+    and their bitwise XOR is the maximum among all strong pairs in the array.
+    Return the maximum XOR value out of all possible strong pairs in the array
+    nums. Note that you can pick the same integer twice to form a pair.
+
+    Example 1:
+    Input: nums = [1,2,3,4,5]
+    Output: 7
+    Explanation: There are 11 strong pairs in the array nums: (1, 1), (1, 2),
+                 (2, 2), (2, 3), (2, 4), (3, 3), (3, 4), (3, 5), (4, 4), (4, 5)
+                 and (5, 5). The maximum XOR possible from these pairs is
+                 3 XOR 4 = 7.
+
+    Example 2:
+    Input: nums = [10,100]
+    Output: 0
+    Explanation: There are 2 strong pairs in the array nums: (10, 10) and
+                 (100, 100). The maximum XOR possible from these pairs is
+                 10 XOR 10 = 0 since the pair (100, 100) also gives
+                 100 XOR 100 = 0.
+
+    Example 3:
+    Input: nums = [500,520,2500,3000]
+    Output: 1020
+    Explanation: There are 6 strong pairs in the array nums: (500, 500),
+                 (500, 520), (520, 520), (2500, 2500), (2500, 3000) and
+                 (3000, 3000). The maximum XOR possible from these pairs is
+                 500 XOR 520 = 1020 since the only other non-zero XOR value is
+                 2500 XOR 3000 = 636.
+
+    Constraints:
+    * 1 <= nums.length <= 5 * 10^4
+    * 1 <= nums[i] <= 2^20 - 1
+
+    class TrieNode {
+        public TrieNode[] child = new TrieNode[2];
+        public int count = 0;
+        public int value = 0;
+    }*/
+
+    public int maximumStrongPairXor(int[] nums) {
+        Arrays.sort(nums);
+        TrieNode trie = new TrieNode();
+        int ans = 0, k = 0;
+        for (var x : nums) {
+            TrieNode node = trie;
+            for (int i = 19; i >= 0; --i) {
+                int b = x>>i & 1;
+                if (node.child[b] == null)
+                    node.child[b] = new TrieNode();
+                node = node.child[b];
+                ++node.count;
+            }
+            node.value = x;
+            for (; 2*nums[k] < x; ++k) {
+                node = trie;
+                for (int i = 19; i >= 0; --i) {
+                    int b = nums[k]>>i & 1;
+                    if (--node.child[b].count == 0) {
+                        node.child[b] = null;
+                        break;
+                    }
+                    node = node.child[b];
+                }
+            }
+            node = trie;
+            for (int i = 19; i >= 0; --i) {
+                int b = x>>i & 1;
+                if (node.child[1^b] != null) node = node.child[1^b];
+                else node = node.child[b];
+            }
+            ans = Math.max(ans, x ^ node.value);
+        }
+        return ans;
+    }
+
+
     /*2936. Number of Equal Numbers Blocks (Medium)
     You are given a 0-indexed array of integers, nums. The following property
     holds for nums:
