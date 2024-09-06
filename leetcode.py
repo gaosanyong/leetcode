@@ -55736,10 +55736,12 @@ class Trie:
     * 1 <= rolls[i], mean <= 6"""
 
     def missingRolls(self, rolls: List[int], mean: int, n: int) -> List[int]:
-        total = mean * (len(rolls) + n) - sum(rolls)
-        if not n <= total <= 6*n: return []
-        q, r = divmod(total, n)
-        return [q]*(n-r) + [q+1]*r
+        m = len(rolls)
+        total = mean*(m+n) - sum(rolls)
+        if n <= total <= 6*n:
+            q, r = divmod(total, n)
+            return [q+1]*r + [q]*(n-r)
+        return []
 
 
     """2029. Stone Game IX (Medium)

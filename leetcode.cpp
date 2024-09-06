@@ -43134,11 +43134,15 @@ public:
     * 1 <= rolls[i], mean <= 6*/
 
     vector<int> missingRolls(vector<int>& rolls, int mean, int n) {
-        int total = mean * (n + rolls.size()) - accumulate(rolls.begin(), rolls.end(), 0);
-        if (total < n || total > 6*n) return {};
-        vector<int> ans(n, total/n);
-        for (int i = 0; i < total%n; ++i) ++ans[i];
-        return ans;
+        int m = rolls.size();
+        int total = mean*(m+n) - accumulate(rolls.begin(), rolls.end(), 0);
+        if (n <= total && total <= 6*n) {
+            int q = total/n, r = total % n;
+            vector<int> ans(n, q);
+            fill(ans.begin(), ans.begin()+r, q+1);
+            return ans;
+        }
+        return {};
     }
 
 
