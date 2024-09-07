@@ -28764,6 +28764,59 @@ public:
     }
 
 
+    /*1367. Linked List in Binary Tree (Medium)
+    Given a binary tree root and a linked list with head as the first node.
+    Return True if all the elements in the linked list starting from the head
+    correspond to some downward path connected in the binary tree otherwise
+    return False. In this context downward path means a path that starts at some
+    node and goes downwards.
+
+    Example 1:
+    Input: head = [4,2,8],
+           root = [1,4,4,null,2,2,null,1,null,6,8,null,null,null,null,1,3]
+    Output: true
+    Explanation: Nodes in blue form a subpath in the binary Tree.
+
+    Example 2:
+    Input: head = [1,4,2,6],
+           root = [1,4,4,null,2,2,null,1,null,6,8,null,null,null,null,1,3]
+    Output: true
+
+    Example 3:
+    Input: head = [1,4,2,6,8],
+           root = [1,4,4,null,2,2,null,1,null,6,8,null,null,null,null,1,3]
+    Output: false
+    Explanation: There is no path in the binary tree that contains all the
+                 elements of the linked list from head.
+
+    Constraints:
+    * The number of nodes in the tree will be in the range [1, 2500].
+    * The number of nodes in the list will be in the range [1, 100].
+    * 1 <= Node.val <= 100 for each node in the linked list and binary tree.*/
+
+    bool isSubPath(ListNode* head, TreeNode* root) {
+        vector<int> pattern;
+        for (ListNode *node = head; node; node = node->next)
+            pattern.push_back(node->val);
+        vector<int> lps(1);
+        for (int i = 1, k = 0; i < pattern.size(); ++i) {
+            while (k && pattern[k] != pattern[i]) k = lps[k-1];
+            if (pattern[k] == pattern[i]) ++k;
+            lps.push_back(k);
+        }
+
+        function<bool(TreeNode*, int)> dfs = [&](TreeNode *node, int k) {
+            if (k == pattern.size()) return true;
+            if (!node) return false;
+            while (k && pattern[k] != node->val) k = lps[k-1];
+            if (pattern[k] == node->val) ++k;
+            return dfs(node->left, k) || dfs(node->right, k);
+        };
+
+        return dfs(root, 0);
+    }
+
+
     /*1372. Longest ZigZag Path in a Binary Tree (Medium)
     You are given the root of a binary tree. A ZigZag path for a binary tree is
     defined as follow:

@@ -3418,6 +3418,60 @@ function findTheCity(n: number, edges: number[][], distanceThreshold: number): n
 };
 
 
+/*1367. Linked List in Binary Tree (Medium)
+Given a binary tree root and a linked list with head as the first node.
+Return True if all the elements in the linked list starting from the head
+correspond to some downward path connected in the binary tree otherwise
+return False. In this context downward path means a path that starts at some
+node and goes downwards.
+
+Example 1:
+Input: head = [4,2,8],
+       root = [1,4,4,null,2,2,null,1,null,6,8,null,null,null,null,1,3]
+Output: true
+Explanation: Nodes in blue form a subpath in the binary Tree.
+
+Example 2:
+Input: head = [1,4,2,6],
+       root = [1,4,4,null,2,2,null,1,null,6,8,null,null,null,null,1,3]
+Output: true
+
+Example 3:
+Input: head = [1,4,2,6,8],
+       root = [1,4,4,null,2,2,null,1,null,6,8,null,null,null,null,1,3]
+Output: false
+Explanation: There is no path in the binary tree that contains all the
+             elements of the linked list from head.
+
+Constraints:
+* The number of nodes in the tree will be in the range [1, 2500].
+* The number of nodes in the list will be in the range [1, 100].
+* 1 <= Node.val <= 100 for each node in the linked list and binary tree.*/
+
+function isSubPath(head: ListNode | null, root: TreeNode | null): boolean {
+    const pattern = [];
+    for (let node = head; node; node = node.next)
+        pattern.push(node.val);
+    const lps = [0];
+    let k = 0;
+    for (let i = 1, k = 0; i < pattern.length; ++i) {
+        while (k && pattern[k] != pattern[i]) k = lps[k-1];
+        if (pattern[k] == pattern[i]) ++k;
+        lps.push(k);
+    }
+
+    function dfs(node, k) {
+        if (k == pattern.length) return true;
+        if (!node) return false;
+        while (k && pattern[k] != node.val) k = lps[k-1];
+        if (pattern[k] == node.val) ++k;
+        return dfs(node.left, k) || dfs(node.right, k);
+    };
+
+    return dfs(root, 0);
+};
+
+
 /*1395. Count Number of Teams (Medium)
 There are n soldiers standing in a line. Each soldier is assigned a unique
 rating value. You have to form a team of 3 soldiers amongst them under the

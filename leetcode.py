@@ -34316,6 +34316,59 @@ class UnionFind:
         return ans
 
 
+    """1367. Linked List in Binary Tree (Medium)
+    Given a binary tree root and a linked list with head as the first node.
+    Return True if all the elements in the linked list starting from the head
+    correspond to some downward path connected in the binary tree otherwise
+    return False. In this context downward path means a path that starts at some
+    node and goes downwards.
+
+    Example 1:
+    Input: head = [4,2,8],
+           root = [1,4,4,null,2,2,null,1,null,6,8,null,null,null,null,1,3]
+    Output: true
+    Explanation: Nodes in blue form a subpath in the binary Tree.
+
+    Example 2:
+    Input: head = [1,4,2,6],
+           root = [1,4,4,null,2,2,null,1,null,6,8,null,null,null,null,1,3]
+    Output: true
+
+    Example 3:
+    Input: head = [1,4,2,6,8],
+           root = [1,4,4,null,2,2,null,1,null,6,8,null,null,null,null,1,3]
+    Output: false
+    Explanation: There is no path in the binary tree that contains all the
+                 elements of the linked list from head.
+
+    Constraints:
+    * The number of nodes in the tree will be in the range [1, 2500].
+    * The number of nodes in the list will be in the range [1, 100].
+    * 1 <= Node.val <= 100 for each node in the linked list and binary tree."""
+
+    def isSubPath(self, head: Optional[ListNode], root: Optional[TreeNode]) -> bool:
+        pattern = []
+        while head:
+            pattern.append(head.val)
+            head = head.next
+        lps = [0]
+        k = 0
+        for i in range(1, len(pattern)):
+            while k and pattern[k] != pattern[i]: k = lps[k-1]
+            if pattern[k] == pattern[i]: k += 1
+            lps.append(k)
+
+        def dfs(node, k):
+            """Return True of tree rooted at "node" match pattern"""
+            if k == len(pattern): return True
+            if node:
+                while k and pattern[k] != node.val: k = lps[k-1]
+                if pattern[k] == node.val: k += 1
+                return dfs(node.left, k) or dfs(node.right, k)
+
+        return dfs(root, 0)
+
+
     """1372. Longest ZigZag Path in a Binary Tree (Medium)
     You are given the root of a binary tree. A ZigZag path for a binary tree is
     defined as follow:
