@@ -79239,6 +79239,223 @@ public:
         }
         return ans;
     }
+
+
+    /*3280. Convert Date to Binary (Easy)
+    You are given a string date representing a Gregorian calendar date in the
+    yyyy-mm-dd format. date can be written in its binary representation obtained
+    by converting year, month, and day to their binary representations without
+    any leading zeroes and writing them down in year-month-day format. Return
+    the binary representation of date.
+
+    Example 1:
+    Input: date = "2080-02-29"
+    Output: "100000100000-10-11101"
+    Explanation: 100000100000, 10, and 11101 are the binary representations of
+                 2080, 02, and 29 respectively.
+
+    Example 2:
+    Input: date = "1900-01-01"
+    Output: "11101101100-1-1"
+    Explanation: 11101101100, 1, and 1 are the binary representations of 1900,
+                 1, and 1 respectively.
+
+    Constraints:
+    * date.length == 10
+    * date[4] == date[7] == '-', and all other date[i]'s are digits.
+    * The input is generated such that date represents a valid Gregorian
+      calendar date between Jan 1st, 1900 and Dec 31st, 2100 (both inclusive).*/
+
+    string convertDateToBinary(string date) {
+        string year = bitset<16>(stoi(date.substr(0, 4))).to_string();
+        string month = bitset<8>(stoi(date.substr(5, 2))).to_string();
+        string day = bitset<8>(stoi(date.substr(8, 2))).to_string();
+        return year.substr(year.find('1')) + "-" + month.substr(month.find('1')) + "-" + day.substr(day.find('1'));
+    }
+
+
+    /*3281. Maximize Score of Numbers in Ranges (Medium)
+    You are given an array of integers start and an integer d, representing n
+    intervals [start[i], start[i] + d]. You are asked to choose n integers where
+    the ith integer must belong to the ith interval. The score of the chosen
+    integers is defined as the minimum absolute difference between any two
+    integers that have been chosen. Return the maximum possible score of the
+    chosen integers.
+
+    Example 1:
+    Input: start = [6,0,3], d = 2
+    Output: 4
+    Explanation: The maximum possible score can be obtained by choosing
+                 integers: 8, 0, and 4. The score of these chosen integers is
+                 min(|8 - 0|, |8 - 4|, |0 - 4|) which equals 4.
+
+    Example 2:
+    Input: start = [2,6,13,13], d = 5
+    Output: 5
+    Explanation: The maximum possible score can be obtained by choosing
+                 integers: 2, 7, 13, and 18. The score of these chosen integers
+                 is min(|2 - 7|, |2 - 13|, |2 - 18|, |7 - 13|, |7 - 18|, |13 - 18|)
+                 which equals 5.
+
+    Constraints:
+    * 2 <= start.length <= 10^5
+    * 0 <= start[i] <= 10^9
+    * 0 <= d <= 10^9*/
+
+    int maxPossibleScore(vector<int>& start, int d) {
+        sort(start.begin(), start.end());
+
+        auto fn = [&](int mid) {
+            long x = LONG_MIN;
+            for (long s : start) {
+                x += mid;
+                if (x > s+d) return false;
+                x = max(x, s);
+            }
+            return true;
+        };
+
+        int lo = 0, hi = 2'000'000'000;
+        while (lo < hi) {
+            int mid = lo + (hi-lo+1)/2;
+            if (fn(mid)) lo = mid;
+            else hi = mid-1;
+        }
+        return lo;
+    }
+
+
+    /*3282. Reach End of Array With Max Score (Medium)
+    You are given an integer array nums of length n. Your goal is to start at
+    index 0 and reach index n - 1. You can only jump to indices greater than
+    your current index. The score for a jump from index i to index j is
+    calculated as (j - i) * nums[i]. Return the maximum possible total score by
+    the time you reach the last index.
+
+    Example 1:
+    Input: nums = [1,3,1,5]
+    Output: 7
+    Explanation: First, jump to index 1 and then jump to the last index. The
+                 final score is 1 * 1 + 2 * 3 = 7.
+
+    Example 2:
+    Input: nums = [4,3,1,3,2]
+    Output: 16
+    Explanation: Jump directly to the last index. The final score is 4 * 4 = 16.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^5*/
+
+    long long findMaximumScore(vector<int>& nums) {
+        long long dp = 0;
+        int prefix = 0;
+        for (auto& x : nums) {
+            dp += prefix;
+            prefix = max(prefix, x);
+        }
+        return dp;
+    }
+
+
+    /*3283. Maximum Number of Moves to Kill All Pawns (Hard)
+    There is a 50 x 50 chessboard with one knight and some pawns on it. You are
+    given two integers kx and ky where (kx, ky) denotes the position of the
+    knight, and a 2D array positions where positions[i] = [xi, yi] denotes the
+    position of the pawns on the chessboard. Alice and Bob play a turn-based
+    game, where Alice goes first. In each player's turn:
+    * The player selects a pawn that still exists on the board and captures it
+      with the knight in the fewest possible moves. Note that the player can
+      select any pawn, it might not be one that can be captured in the least
+      number of moves.
+    * In the process of capturing the selected pawn, the knight may pass other
+      pawns without capturing them. Only the selected pawn can be captured in
+      this turn.
+    Alice is trying to maximize the sum of the number of moves made by both
+    players until there are no more pawns on the board, whereas Bob tries to
+    minimize them. Return the maximum total number of moves made during the game
+    that Alice can achieve, assuming both players play optimally. Note that in
+    one move, a chess knight has eight possible positions it can move to, as
+    illustrated below. Each move is two cells in a cardinal direction, then one
+    cell in an orthogonal direction.
+
+    Example 1:
+    Input: kx = 1, ky = 1, positions = [[0,0]]
+    Output: 4
+    Explanation: The knight takes 4 moves to reach the pawn at (0, 0).
+
+    Example 2:
+    Input: kx = 0, ky = 2, positions = [[1,1],[2,2],[3,3]]
+    Output: 8
+    Explanation: - Alice picks the pawn at (2, 2) and captures it in two moves:
+                   (0, 2) -> (1, 4) -> (2, 2).
+                 - Bob picks the pawn at (3, 3) and captures it in two moves:
+                   (2, 2) -> (4, 1) -> (3, 3).
+                 - Alice picks the pawn at (1, 1) and captures it in four moves:
+                   (3, 3) -> (4, 1) -> (2, 2) -> (0, 3) -> (1, 1).
+
+    Example 3:
+    Input: kx = 0, ky = 0, positions = [[1,2],[2,4]]
+    Output: 3
+    Explanation: - Alice picks the pawn at (2, 4) and captures it in two moves:
+                   (0, 0) -> (1, 2) -> (2, 4). Note that the pawn at (1, 2) is
+                   not captured.
+                 - Bob picks the pawn at (1, 2) and captures it in one move:
+                   (2, 4) -> (1, 2).
+
+    Constraints:
+    * 0 <= kx, ky <= 49
+    * 1 <= positions.length <= 15
+    * positions[i].length == 2
+    * 0 <= positions[i][0], positions[i][1] <= 49
+    * All positions[i] are unique.
+    * The input is generated such that positions[i] != [kx, ky] for all
+    0 <= i < positions.length.*/
+
+    int maxMoves(int kx, int ky, vector<vector<int>>& positions) {
+        int n = positions.size();
+        vector<vector<int>> dist(n+1, vector<int>(n+1)), dir = {{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2}, {1, -2},{1, 2}, {2, -1}, {2, 1}};
+        positions.push_back({kx, ky});
+
+        auto bfs = [&](int i, int j) {
+            queue<vector<int>> q; q.push(positions[i]);
+            bool seen[50][50] = {false};
+            seen[positions[i][0]][positions[i][1]] = true;
+            for (int step = 0; q.size(); ++step)
+                for (int sz = q.size(); sz; --sz) {
+                    auto elem = q.front(); q.pop();
+                    if (elem == positions[j]) return step;
+                    int x = elem[0], y = elem[1];
+                    for (int k = 0; k < 8; ++k) {
+                        int xx = x + dir[k][0], yy = y + dir[k][1];
+                        if (0 <= xx && xx < 50 && 0 <= yy && yy < 50 && !seen[xx][yy]) {
+                            q.push({xx, yy});
+                            seen[xx][yy] = true;
+                        }
+                    }
+                }
+            return -1;
+        };
+
+        for (int i = 0; i <= n; ++i)
+            for (int j = i+1; j <= n; ++j)
+                dist[i][j] = dist[j][i] = bfs(i, j);
+        vector<vector<vector<int>>> dp(1<<n, vector<vector<int>>(n+1, vector<int>(2)));
+        for (int m = (1<<n)-2; m >= 0; --m)
+            for (int i = 0; i <= n; ++i)
+                if (m & 1<<i || i == n) {
+                    dp[m][i][0] = 0;
+                    dp[m][i][1] = INT_MAX;
+                    for (int j = 0; j < n; ++j)
+                        if ((m & 1<<j) == 0) {
+                            int mm = m ^ 1<<j;
+                            dp[m][i][0] = max(dp[m][i][0], dist[i][j] + dp[mm][j][1]);
+                            dp[m][i][1] = min(dp[m][i][1], dist[i][j] + dp[mm][j][0]);
+
+                        }
+                }
+        return dp[0][n][0];
+    }
 }
 
 
