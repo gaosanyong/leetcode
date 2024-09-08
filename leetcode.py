@@ -18468,20 +18468,20 @@ class Solution:
     * Each value of a node in the input will be an integer in the range [0, 999].
     * k will be an integer in the range [1, 50]."""
 
-    def splitListToParts(self, root: ListNode, k: int) -> List[ListNode]:
-        n, node = 0, root # length of linked list
-        while node: n, node = n+1, node.next
-
+    def splitListToParts(self, head: Optional[ListNode], k: int) -> List[Optional[ListNode]]:
+        sz = 0
+        node = head
+        while node:
+            sz += 1
+            node = node.next
+        q, r = divmod(sz+k, k)
         ans = []
-        node = root
-        q, r = divmod(n, k) # quotient & residual
-        q += 1
+        node = head
         for i in range(k):
             ans.append(node)
             if i == r: q -= 1
-            prev = None
-            for _ in range(q): prev, node = node, node.next
-            if prev: prev.next = None # break list into parts
+            for _ in range(q-1): node = node.next
+            if node: node.next, node = None, node.next
         return ans
 
 

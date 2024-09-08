@@ -16149,21 +16149,17 @@ public:
     * 1 <= k <= 50*/
 
     vector<ListNode*> splitListToParts(ListNode* head, int k) {
-        int n = 0;
-        for (ListNode* node = head; node; node = node->next, n++);
-        int q = n/k+1, r = n%k;
-
+        int sz = 0;
+        for (ListNode *node = head; node; node = node->next, ++sz);
+        int q = sz/k, r = sz%k;
         vector<ListNode*> ans;
-        ListNode* node = head;
-        for (; k; --k, --r) {
+        ListNode *node = head;
+        for (int i = 0; i < k; ++i) {
             ans.push_back(node);
-            if (r == 0) --q;
-            ListNode* prev = nullptr;
-            for (int i = 0; i < q; ++i) {
-                prev = node;
+            for (int v = i < r ? q : q-1; v > 0; --v)
                 node = node->next;
-            }
-            if (prev) prev->next = nullptr;
+            if (node)
+                tie(node->next, node) = make_pair(nullptr, node->next);
         }
         return ans;
     }
