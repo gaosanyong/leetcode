@@ -20521,6 +20521,167 @@ class SegTreeLazy {
     }
 
 
+    /*2745. Construct the Longest New String (Medium)
+    You are given three integers x, y, and z. You have x strings equal to "AA",
+    y strings equal to "BB", and z strings equal to "AB". You want to choose
+    some (possibly all or none) of these strings and concatenate them in some
+    order to form a new string. This new string must not contain "AAA" or "BBB"
+    as a substring. Return the maximum possible length of the new string. A
+    substring is a contiguous non-empty sequence of characters within a string.
+
+    Example 1:
+    Input: x = 2, y = 5, z = 1
+    Output: 12
+    Explanation: We can concactenate the strings "BB", "AA", "BB", "AA", "BB",
+                 and "AB" in that order. Then, our new string is "BBAABBAABBAB".
+                 That string has length 12, and we can show that it is
+                 impossible to construct a string of longer length.
+
+    Example 2:
+    Input: x = 3, y = 2, z = 2
+    Output: 14
+    Explanation: We can concactenate the strings "AB", "AB", "AA", "BB", "AA",
+                 "BB", and "AA" in that order. Then, our new string is
+                 "ABABAABBAABBAA". That string has length 14, and we can show
+                 that it is impossible to construct a string of longer length.
+
+    Constraints: 1 <= x, y, z <= 50*/
+
+    public int longestString(int x, int y, int z) {
+        return 2*(Math.min(x+y, 2*Math.min(x, y)+1) + z);
+    }
+
+
+    /*2746. Decremental String Concatenation (Medium)
+    You are given a 0-indexed array words containing n strings. Let's define a
+    join operation join(x, y) between two strings x and y as concatenating them
+    into xy. However, if the last character of x is equal to the first character
+    of y, one of them is deleted. For example join("ab", "ba") = "aba" and
+    join("ab", "cde") = "abcde". You are to perform n - 1 join operations. Let
+    str0 = words[0]. Starting from i = 1 up to i = n - 1, for the ith operation,
+    you can do one of the following:
+    * Make stri = join(stri - 1, words[i])
+    * Make stri = join(words[i], stri - 1)
+    Your task is to minimize the length of strn - 1. Return an integer denoting
+    the minimum possible length of strn - 1.
+
+    Example 1:
+    Input: words = ["aa","ab","bc"]
+    Output: 4
+    Explanation: In this example, we can perform join operations in the
+                 following order to minimize the length of str2:
+                 - str0 = "aa"
+                 - str1 = join(str0, "ab") = "aab"
+                 - str2 = join(str1, "bc") = "aabc"
+                 It can be shown that the minimum possible length of str2 is 4.
+
+    Example 2:
+    Input: words = ["ab","b"]
+    Output: 2
+    Explanation: In this example, str0 = "ab", there are two ways to get str1:
+                 join(str0, "b") = "ab" or join("b", str0) = "bab".
+                 The first string, "ab", has the minimum length. Hence, the
+                 answer is 2.
+
+    Example 3:
+    Input: words = ["aaa","c","aba"]
+    Output: 6
+    Explanation: In this example, we can perform join operations in the
+                 following order to minimize the length of str2:
+                 - str0 = "aaa"
+                 - str1 = join(str0, "c") = "aaac"
+                 - str2 = join("aba", str1) = "abaaac"
+                 It can be shown that the minimum possible length of str2 is 6.
+
+    Constraints:
+    * 1 <= words.length <= 1000
+    * 1 <= words[i].length <= 50
+    * Each character in words[i] is an English lowercase letter*/
+
+    private int fn(int i, int s, int e, String[] words, int[][][] memo) {
+        if (i == words.length) return 0;
+        if (memo[i][s][e] == -1) {
+            String w = words[i];
+            int sz = w.length();
+            int cand1 = fn(i+1, s, w.charAt(sz-1) - 'a', words, memo) - (e == w.charAt(0) - 'a' ? 1 : 0);
+            int cand2 = fn(i+1, w.charAt(0) - 'a', e, words, memo) - (w.charAt(sz-1) - 'a' == s ? 1 : 0);
+            memo[i][s][e] = sz + Math.min(cand1, cand2);
+        }
+        return memo[i][s][e];
+    }
+
+    public int minimizeConcatenatedLength(String[] words) {
+        int n = words.length, sz = words[0].length();
+        int[][][] memo = new int[n][26][26];
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < 26; ++j)
+                Arrays.fill(memo[i][j], -1);
+        return sz + fn(1, words[0].charAt(0) - 'a', words[0].charAt(sz-1) - 'a', words, memo);
+    }
+
+
+    /*2747. Count Zero Request Servers (Medium)
+    You are given an integer n denoting the total number of servers and a 2D
+    0-indexed integer array logs, where logs[i] = [server_id, time] denotes that
+    the server with id server_id received a request at time time. You are also
+    given an integer x and a 0-indexed integer array queries. Return a 0-indexed
+    integer array arr of length queries.length where arr[i] represents the
+    number of servers that did not receive any requests during the time interval
+    [queries[i] - x, queries[i]]. Note that the time intervals are inclusive.
+
+    Example 1:
+    Input: n = 3, logs = [[1,3],[2,6],[1,5]], x = 5, queries = [10,11]
+    Output: [1,2]
+    Explanation:  - For queries[0]: The servers with ids 1 and 2 get requests in
+                    the duration of [5, 10]. Hence, only server 3 gets zero
+                    requests.
+                  - For queries[1]: Only the server with id 2 gets a request in
+                    duration of [6,11]. Hence, the servers with ids 1 and 3 are
+                    the only servers that do not receive any requests during
+                    that time period.
+
+    Example 2:
+    Input: n = 3, logs = [[2,4],[2,1],[1,2],[3,1]], x = 2, queries = [3,4]
+    Output: [0,1]
+    Explanation: - For queries[0]: All servers get at least one request in the
+                   duration of [1, 3].
+                 - For queries[1]: Only server with id 3 gets no request in the
+                   duration [2,4].
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * 1 <= logs.length <= 10^5
+    * 1 <= queries.length <= 10^5
+    * logs[i].length == 2
+    * 1 <= logs[i][0] <= n
+    * 1 <= logs[i][1] <= 10^6
+    * 1 <= x <= 10^5
+    * x < queries[i] <= 10^6*/
+
+    public int[] countServers(int n, int[][] logs, int x, int[] queries) {
+        Arrays.sort(logs, (a, b) -> Integer.compare(a[1], b[1]));
+        int sz = queries.length;
+        int[] ans = new int[sz];
+        int[][] aug = new int[sz][2];
+        for (int i = 0; i < sz; ++i)
+            aug[i] = new int[]{queries[i], i};
+        Arrays.sort(aug, (a, b) -> Integer.compare(a[0], b[0]));
+        Map<Integer, Integer> freq = new HashMap<>();
+        int j = 0, jj = 0;
+        for (var v : aug) {
+            int q = v[0], i = v[1];
+            for (; j < logs.length && logs[j][1] <= q; ++j)
+                freq.merge(logs[j][0], 1, Integer::sum);
+            for (; jj < logs.length && logs[jj][1] < q-x; ++jj) {
+                freq.merge(logs[jj][0], -1, Integer::sum);
+                if (freq.get(logs[jj][0]) == 0) freq.remove(logs[jj][0]);
+            }
+            ans[i] = n - freq.size();
+        }
+        return ans;
+    }
+
+
     /*2751. Robot Collisions (Hard)
     There are n 1-indexed robots, each having a position on a line, health, and
     movement direction. You are given 0-indexed integer arrays positions,

@@ -82049,6 +82049,150 @@ class SegTreeLazy:
         return ans
 
 
+    """2745. Construct the Longest New String (Medium)
+    You are given three integers x, y, and z. You have x strings equal to "AA",
+    y strings equal to "BB", and z strings equal to "AB". You want to choose
+    some (possibly all or none) of these strings and concatenate them in some
+    order to form a new string. This new string must not contain "AAA" or "BBB"
+    as a substring. Return the maximum possible length of the new string. A
+    substring is a contiguous non-empty sequence of characters within a string.
+
+    Example 1:
+    Input: x = 2, y = 5, z = 1
+    Output: 12
+    Explanation: We can concactenate the strings "BB", "AA", "BB", "AA", "BB",
+                 and "AB" in that order. Then, our new string is "BBAABBAABBAB".
+                 That string has length 12, and we can show that it is
+                 impossible to construct a string of longer length.
+
+    Example 2:
+    Input: x = 3, y = 2, z = 2
+    Output: 14
+    Explanation: We can concactenate the strings "AB", "AB", "AA", "BB", "AA",
+                 "BB", and "AA" in that order. Then, our new string is
+                 "ABABAABBAABBAA". That string has length 14, and we can show
+                 that it is impossible to construct a string of longer length.
+
+    Constraints: 1 <= x, y, z <= 50"""
+
+    def longestString(self, x: int, y: int, z: int) -> int:
+        return 2*(min(x+y, 2*x+1, 2*y+1) + z)
+
+
+    """2746. Decremental String Concatenation (Medium)
+    You are given a 0-indexed array words containing n strings. Let's define a
+    join operation join(x, y) between two strings x and y as concatenating them
+    into xy. However, if the last character of x is equal to the first character
+    of y, one of them is deleted. For example join("ab", "ba") = "aba" and
+    join("ab", "cde") = "abcde". You are to perform n - 1 join operations. Let
+    str0 = words[0]. Starting from i = 1 up to i = n - 1, for the ith operation,
+    you can do one of the following:
+    * Make stri = join(stri - 1, words[i])
+    * Make stri = join(words[i], stri - 1)
+    Your task is to minimize the length of strn - 1. Return an integer denoting
+    the minimum possible length of strn - 1.
+
+    Example 1:
+    Input: words = ["aa","ab","bc"]
+    Output: 4
+    Explanation: In this example, we can perform join operations in the
+                 following order to minimize the length of str2:
+                 - str0 = "aa"
+                 - str1 = join(str0, "ab") = "aab"
+                 - str2 = join(str1, "bc") = "aabc"
+                 It can be shown that the minimum possible length of str2 is 4.
+
+    Example 2:
+    Input: words = ["ab","b"]
+    Output: 2
+    Explanation: In this example, str0 = "ab", there are two ways to get str1:
+                 join(str0, "b") = "ab" or join("b", str0) = "bab".
+                 The first string, "ab", has the minimum length. Hence, the
+                 answer is 2.
+
+    Example 3:
+    Input: words = ["aaa","c","aba"]
+    Output: 6
+    Explanation: In this example, we can perform join operations in the
+                 following order to minimize the length of str2:
+                 - str0 = "aaa"
+                 - str1 = join(str0, "c") = "aaac"
+                 - str2 = join("aba", str1) = "abaaac"
+                 It can be shown that the minimum possible length of str2 is 6.
+
+    Constraints:
+    * 1 <= words.length <= 1000
+    * 1 <= words[i].length <= 50
+    * Each character in words[i] is an English lowercase letter"""
+
+    def minimizeConcatenatedLength(self, words: List[str]) -> int:
+        n = len(words)
+
+        @cache
+        def fn(i, s, e):
+            """Return """
+            if i == n: return 0
+            w = words[i]
+            return len(w) + min(fn(i+1, s, w[-1]) - int(e == w[0]), fn(i+1, w[0], e) - int(w[-1] == s))
+
+        return len(words[0]) + fn(1, words[0][0], words[0][-1])
+
+
+    """2747. Count Zero Request Servers (Medium)
+    You are given an integer n denoting the total number of servers and a 2D
+    0-indexed integer array logs, where logs[i] = [server_id, time] denotes that
+    the server with id server_id received a request at time time. You are also
+    given an integer x and a 0-indexed integer array queries. Return a 0-indexed
+    integer array arr of length queries.length where arr[i] represents the
+    number of servers that did not receive any requests during the time interval
+    [queries[i] - x, queries[i]]. Note that the time intervals are inclusive.
+
+    Example 1:
+    Input: n = 3, logs = [[1,3],[2,6],[1,5]], x = 5, queries = [10,11]
+    Output: [1,2]
+    Explanation:  - For queries[0]: The servers with ids 1 and 2 get requests in
+                    the duration of [5, 10]. Hence, only server 3 gets zero
+                    requests.
+                  - For queries[1]: Only the server with id 2 gets a request in
+                    duration of [6,11]. Hence, the servers with ids 1 and 3 are
+                    the only servers that do not receive any requests during
+                    that time period.
+
+    Example 2:
+    Input: n = 3, logs = [[2,4],[2,1],[1,2],[3,1]], x = 2, queries = [3,4]
+    Output: [0,1]
+    Explanation: - For queries[0]: All servers get at least one request in the
+                   duration of [1, 3].
+                 - For queries[1]: Only server with id 3 gets no request in the
+                   duration [2,4].
+
+    Constraints:
+    * 1 <= n <= 10^5
+    * 1 <= logs.length <= 10^5
+    * 1 <= queries.length <= 10^5
+    * logs[i].length == 2
+    * 1 <= logs[i][0] <= n
+    * 1 <= logs[i][1] <= 10^6
+    * 1 <= x <= 10^5
+    * x < queries[i] <= 10^6"""
+
+    def countServers(self, n: int, logs: List[List[int]], x: int, queries: List[int]) -> List[int]:
+        logs.sort(key = lambda x: x[1])
+        ans = [0]*len(queries)
+        freq = Counter()
+        j = jj = 0
+        for i, q in sorted(enumerate(queries), key = lambda x: x[1]):
+            while j < len(logs) and logs[j][1] <= q:
+                freq[logs[j][0]] += 1
+                j += 1
+            while jj < len(logs) and logs[jj][1] < q-x:
+                freq[logs[jj][0]] -= 1
+                if freq[logs[jj][0]] == 0: freq.pop(logs[jj][0])
+                jj += 1
+            ans[i] = n - len(freq)
+        return ans
+
+
     """2751. Robot Collisions (Hard)
     There are n 1-indexed robots, each having a position on a line, health, and
     movement direction. You are given 0-indexed integer arrays positions,
