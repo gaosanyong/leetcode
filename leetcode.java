@@ -20682,6 +20682,139 @@ class SegTreeLazy {
     }
 
 
+    /*2748. Number of Beautiful Pairs (Easy)
+    You are given a 0-indexed integer array nums. A pair of indices i, j where
+    0 <= i < j < nums.length is called beautiful if the first digit of nums[i]
+    and the last digit of nums[j] are coprime. Return the total number of
+    beautiful pairs in nums. Two integers x and y are coprime if there is no
+    integer greater than 1 that divides both of them. In other words, x and y
+    are coprime if gcd(x, y) == 1, where gcd(x, y) is the greatest common
+    divisor of x and y.
+
+    Example 1:
+    Input: nums = [2,5,1,4]
+    Output: 5
+    Explanation: There are 5 beautiful pairs in nums:
+                 - When i = 0 and j = 1: the first digit of nums[0] is 2, and
+                   the last digit of nums[1] is 5. We can confirm that 2 and 5
+                   are coprime, since gcd(2,5) == 1.
+                 - When i = 0 and j = 2: the first digit of nums[0] is 2, and
+                   the last digit of nums[2] is 1. Indeed, gcd(2,1) == 1.
+                 - When i = 1 and j = 2: the first digit of nums[1] is 5, and
+                   the last digit of nums[2] is 1. Indeed, gcd(5,1) == 1.
+                 - When i = 1 and j = 3: the first digit of nums[1] is 5, and
+                   the last digit of nums[3] is 4. Indeed, gcd(5,4) == 1.
+                 - When i = 2 and j = 3: the first digit of nums[2] is 1, and
+                   the last digit of nums[3] is 4. Indeed, gcd(1,4) == 1.
+                 Thus, we return 5.
+
+    Example 2:
+    Input: nums = [11,21,12]
+    Output: 2
+    Explanation: There are 2 beautiful pairs:
+                 - When i = 0 and j = 1: the first digit of nums[0] is 1, and
+                   the last digit of nums[1] is 1. Indeed, gcd(1,1) == 1.
+                 - When i = 0 and j = 2: the first digit of nums[0] is 1, and
+                   the last digit of nums[2] is 2. Indeed, gcd(1,2) == 1.
+                 Thus, we return 2.
+
+    Constraints:
+    * 2 <= nums.length <= 100
+    * 1 <= nums[i] <= 9999
+    * nums[i] % 10 != 0*/
+
+    public int countBeautifulPairs(int[] nums) {
+        int ans = 0;
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (var x : nums) {
+            for (int y = 0; y < 10; ++y)
+                if (BigInteger.valueOf(x%10).gcd(BigInteger.valueOf(y)).intValue() == 1)
+                    ans += freq.getOrDefault(y, 0);
+            for (; x >= 10; x /= 10);
+            freq.merge(x, 1, Integer::sum);
+        }
+        return ans;
+    }
+
+
+    /*2749. Minimum Operations to Make the Integer Zero (Medium)
+    You are given two integers num1 and num2. In one operation, you can choose
+    integer i in the range [0, 60] and subtract 2i + num2 from num1. Return the
+    integer denoting the minimum number of operations needed to make num1 equal
+    to 0. If it is impossible to make num1 equal to 0, return -1.
+
+    Example 1:
+    Input: num1 = 3, num2 = -2
+    Output: 3
+    Explanation: We can make 3 equal to 0 with the following operations:
+                 - We choose i = 2 and substract 22 + (-2) from 3,
+                   3 - (4 + (-2)) = 1.
+                 - We choose i = 2 and substract 22 + (-2) from 1,
+                   1 - (4 + (-2)) = -1.
+                 - We choose i = 0 and substract 20 + (-2) from -1,
+                   (-1) - (1 + (-2)) = 0.
+                 It can be proven, that 3 is the minimum number of operations
+                 that we need to perform.
+
+    Example 2:
+    Input: num1 = 5, num2 = 7
+    Output: -1
+    Explanation: It can be proven, that it is impossible to make 5 equal to 0
+                 with the given operation.
+
+    Constraints:
+    * 1 <= num1 <= 10^9
+    * -10^9 <= num2 <= 10^9*/
+
+    public int makeTheIntegerZero(int num1, int num2) {
+        for (long i = 1; true; ++i) {
+            long diff = num1 - i*num2;
+            if (diff <= 0) break;
+            if (Long.bitCount(diff) <= i && i <= diff) return (int) i;
+        }
+        return -1;
+    }
+
+
+    /*2750. Ways to Split Array Into Good Subarrays (Medium)
+    You are given a binary array nums. A subarray of an array is good if it
+    contains exactly one element with the value 1. Return an integer denoting
+    the number of ways to split the array nums into good subarrays. As the
+    number may be too large, return it modulo 10^9 + 7. A subarray is a
+    contiguous non-empty sequence of elements within an array.
+
+    Example 1:
+    Input: nums = [0,1,0,0,1]
+    Output: 3
+    Explanation: There are 3 ways to split nums into good subarrays:
+                 - [0,1] [0,0,1]
+                 - [0,1,0] [0,1]
+                 - [0,1,0,0] [1]
+
+    Example 2:
+    Input: nums = [0,1,0]
+    Output: 1
+    Explanation: There is 1 way to split nums into good subarrays:
+                 - [0,1,0]
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] <= 1*/
+
+    public int numberOfGoodSubarraySplits(int[] nums) {
+        long ans = 0;
+        int cnt = 0;
+        for (var x : nums)
+            if (x == 0) ++cnt;
+            else {
+                if (ans > 0) ans = ans * (cnt+1) % 1_000_000_007;
+                else ans = 1;
+                cnt = 0;
+            }
+        return (int) ans;
+    }
+
+
     /*2751. Robot Collisions (Hard)
     There are n 1-indexed robots, each having a position on a line, health, and
     movement direction. You are given 0-indexed integer arrays positions,
