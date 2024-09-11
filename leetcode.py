@@ -64372,7 +64372,7 @@ class Trie:
     Constraints: 0 <= start, goal <= 10^9"""
 
     def minBitFlips(self, start: int, goal: int) -> int:
-        return bin(start^goal).count('1')
+        return (start ^ goal).bit_count()
 
 
     """2221. Find Triangular Sum of an Array (Medium)
