@@ -20199,6 +20199,185 @@ class SegTreeLazy {
     }
 
 
+    /*2739. Total Distance Traveled (Easy)
+    A truck has two fuel tanks. You are given two integers, mainTank
+    representing the fuel present in the main tank in liters and additionalTank
+    representing the fuel present in the additional tank in liters. The truck
+    has a mileage of 10 km per liter. Whenever 5 liters of fuel get used up in
+    the main tank, if the additional tank has at least 1 liters of fuel, 1
+    liters of fuel will be transferred from the additional tank to the main
+    tank. Return the maximum distance which can be traveled. Note: Injection
+    from the additional tank is not continuous. It happens suddenly and
+    immediately for every 5 liters consumed.
+
+    Example 1:
+    Input: mainTank = 5, additionalTank = 10
+    Output: 60
+    Explanation: - After spending 5 litre of fuel, fuel remaining is
+                   (5 - 5 + 1) = 1 litre and distance traveled is 50km.
+                 - After spending another 1 litre of fuel, no fuel gets injected
+                   in the main tank and the main tank becomes empty.
+                 Total distance traveled is 60km.
+
+    Example 2:
+    Input: mainTank = 1, additionalTank = 2
+    Output: 10
+    Explanation: After spending 1 litre of fuel, the main tank becomes empty.
+                 Total distance traveled is 10km.
+
+    Constraints: 1 <= mainTank, additionalTank <= 100*/
+
+    public int distanceTraveled(int mainTank, int additionalTank) {
+        int ans = 0;
+        while (mainTank >= 5) {
+            int q = mainTank / 5;
+            mainTank %= 5;
+            ans += 50*q;
+            q = Math.min(q, additionalTank);
+            mainTank += q;
+            additionalTank -= q;
+        }
+        return ans + 10*mainTank;
+    }
+
+
+    /*2740. Find the Value of the Partition (Medium)
+    You are given a positive integer array nums. Partition nums into two arrays,
+    nums1 and nums2, such that:
+    * Each element of the array nums belongs to either the array nums1 or the
+      array nums2.
+    * Both arrays are non-empty.
+    * The value of the partition is minimized.
+    The value of the partition is |max(nums1) - min(nums2)|. Here, max(nums1)
+    denotes the maximum element of the array nums1, and min(nums2) denotes the
+    minimum element of the array nums2. Return the integer denoting the value of
+    such partition.
+
+    Example 1:
+    Input: nums = [1,3,2,4]
+    Output: 1
+    Explanation: We can partition the array nums into nums1 = [1,2] and
+                 nums2 = [3,4].
+                 - The maximum element of the array nums1 is equal to 2.
+                 - The minimum element of the array nums2 is equal to 3.
+                 The value of the partition is |2 - 3| = 1. It can be proven
+                 that 1 is the minimum value out of all partitions.
+
+    Example 2:
+    Input: nums = [100,1,10]
+    Output: 9
+    Explanation: We can partition the array nums into nums1 = [10] and
+                 nums2 = [100,1].
+                 - The maximum element of the array nums1 is equal to 10.
+                 - The minimum element of the array nums2 is equal to 1.
+                 The value of the partition is |10 - 1| = 9. It can be proven
+                 that 9 is the minimum value out of all partitions.
+
+    Constraints:
+    * 2 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9*/
+
+    public int findValueOfPartition(int[] nums) {
+        Arrays.sort(nums);
+        int ans = Integer.MAX_VALUE;
+        for (int i = 0; i < nums.length-1; ++i)
+            ans = Math.min(ans, nums[i+1]-nums[i]);
+        return ans;
+    }
+
+
+    /*2741. Special Permutations (Medium)
+    You are given a 0-indexed integer array nums containing n distinct positive
+    integers. A permutation of nums is called special if:
+    * For all indexes 0 <= i < n - 1, either nums[i] % nums[i+1] == 0 or
+      nums[i+1] % nums[i] == 0.
+    Return the total number of special permutations. As the answer could be
+    large, return it modulo 10^9 + 7.
+
+    Example 1:
+    Input: nums = [2,3,6]
+    Output: 2
+    Explanation: [3,6,2] and [2,6,3] are the two special permutations of nums.
+
+    Example 2:
+    Input: nums = [1,4,3]
+    Output: 2
+    Explanation: [3,1,4] and [4,1,3] are the two special permutations of nums.
+
+    Constraints:
+    * 2 <= nums.length <= 14
+    * 1 <= nums[i] <= 10^9*/
+
+    private int fn(int i, int m, int n, int[] nums, int[][] memo, int mod) {
+        if (m+1 == 1<<n) return 1;
+        if (memo[i][m] == -1) {
+            memo[i][m] = 0;
+            for (int j = 0; j < n; ++j)
+                if ((m & 1<<j) == 0 && (nums[i]%nums[j] == 0 || nums[j]%nums[i] == 0))
+                    memo[i][m] = (memo[i][m] + fn(j, m ^ 1<<j, n, nums, memo, mod)) % mod;
+        }
+        return memo[i][m];
+    }
+    public int specialPerm(int[] nums) {
+        int mod = 1_000_000_007, n = nums.length;
+        int[][] memo = new int[n][1<<n];
+        for (int i = 0; i < n; ++i)
+            Arrays.fill(memo[i], -1);
+        int ans = 0;
+        for (int i = 0; i < n; ++i)
+            ans = (ans + fn(i, 1<<i, n, nums, memo, mod)) % mod;
+        return ans;
+    }
+
+
+    /*2742. Painting the Walls (Hard)
+    You are given two 0-indexed integer arrays, cost and time, of size n
+    representing the costs and the time taken to paint n different walls
+    respectively. There are two painters available:
+    * A paid painter that paints the ith wall in time[i] units of time and takes
+      cost[i] units of money.
+    * A free painter that paints any wall in 1 unit of time at a cost of 0. But
+      the free painter can only be used if the paid painter is already occupied.
+    Return the minimum amount of money required to paint the n walls.
+
+    Example 1:
+    Input: cost = [1,2,3,2], time = [1,2,3,2]
+    Output: 3
+    Explanation: The walls at index 0 and 1 will be painted by the paid painter,
+                 and it will take 3 units of time; meanwhile, the free painter
+                 will paint the walls at index 2 and 3, free of cost in 2 units
+                 of time. Thus, the total cost is 1 + 2 = 3.
+
+    Example 2:
+    Input: cost = [2,3,4,2], time = [1,1,1,1]
+    Output: 4
+    Explanation: The walls at index 0 and 3 will be painted by the paid painter,
+                 and it will take 2 units of time; meanwhile, the free painter
+                 will paint the walls at index 1 and 2, free of cost in 2 units
+                 of time. Thus, the total cost is 2 + 2 = 4.
+
+    Constraints:
+    * 1 <= cost.length <= 500
+    * cost.length == time.length
+    * 1 <= cost[i] <= 10^6
+    * 1 <= time[i] <= 500*/
+
+    public int paintWalls(int[] cost, int[] time) {
+        int n = cost.length;
+        int[][] dp = new int[n+1][n+1];
+        for (int i = 0; i <= n; ++i)
+            Arrays.fill(dp[i], 500_000_000);
+        for (int i = n-1; i >= 0; --i)
+            for (int j = 0; j <= n; ++j) {
+                dp[i][j] = dp[i+1][j];
+                int cand = cost[i];
+                if (j > 1+time[i]) cand += dp[i+1][j-1-time[i]];
+                dp[i][j] = Math.min(dp[i][j], cand);
+            }
+        return dp[0][n];
+    }
+
+
     /*2743. Count Substrings Without Repeating Character (Medium)
     You are given a string s consisting only of lowercase English letters. We
     call a substring special if it contains no character which has occurred at
