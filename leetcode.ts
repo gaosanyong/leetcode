@@ -6737,6 +6737,194 @@ function findNonMinOrMax(nums: number[]): number {
 };
 
 
+/*2734. Lexicographically Smallest String After Substring Operation (Medium)
+Given a string s consisting of lowercase English letters. Perform the
+following operation:
+* Select any non-empty substring then replace every letter of the substring
+  with the preceding letter of the English alphabet. For example, 'b' is
+  converted to 'a', and 'a' is converted to 'z'.
+Return the lexicographically smallest string after performing the operation.
+
+Example 1:
+Input: s = "cbabc"
+Output: "baabc"
+Explanation: Perform the operation on the substring starting at index 0, and
+             ending at index 1 inclusive.
+
+Example 2:
+Input: s = "aa"
+Output: "az"
+Explanation: Perform the operation on the last letter.
+
+Example 3:
+Input: s = "acbbc"
+Output: "abaab"
+Explanation: Perform the operation on the substring starting at index 1, and
+             ending at index 4 inclusive.
+
+Example 4:
+Input: s = "leetcode"
+Output: "kddsbncd"
+Explanation: Perform the operation on the entire string.
+
+Constraints:
+* 1 <= s.length <= 3 * 10^5
+* s consists of lowercase English letters*/
+
+function smallestString(s: string): string {
+    const ch = s.split(''), n = ch.length;
+    for (var i = 0; i < n && ch[i] == 'a'; ++i);
+    if (i == n) ch[n-1] = 'z';
+    for (; i < n && ch[i] != 'a'; ++i)
+        ch[i] = String.fromCharCode(ch[i].charCodeAt(0)-1);
+    return ch.join('');
+};
+
+
+/*2735. Collecting Chocolates (Medium)
+You are given a 0-indexed integer array nums of size n representing the cost
+of collecting different chocolates. The cost of collecting the chocolate at
+the index i is nums[i]. Each chocolate is of a different type, and initially,
+the chocolate at the index i is of ith type. In one operation, you can do
+the following with an incurred cost of x:
+* Simultaneously change the chocolate of ith type to ((i + 1) mod n)th type
+  for all chocolates.
+Return the minimum cost to collect chocolates of all types, given that you
+can perform as many operations as you would like.
+
+Example 1:
+Input: nums = [20,1,15], x = 5
+Output: 13
+Explanation: - Initially, the chocolate types are [0,1,2]. We will buy the
+               1st type of chocolate at a cost of 1.
+             - Now, we will perform the operation at a cost of 5, and the
+               types of chocolates will become [1,2,0]. We will buy the 2nd
+               type of chocolate at a cost of 1.
+             - Now, we will again perform the operation at a cost of 5, and
+               the chocolate types will become [2,0,1]. We will buy the 0th
+               type of chocolate at a cost of 1.
+             Thus, the total cost will become (1 + 5 + 1 + 5 + 1) = 13. We
+             can prove that this is optimal.
+
+Example 2:
+Input: nums = [1,2,3], x = 4
+Output: 6
+Explanation: We will collect all three types of chocolates at their own
+             price without performing any operations. Therefore, the total
+             cost is 1 + 2 + 3 = 6.
+
+Constraints:
+* 1 <= nums.length <= 1000
+* 1 <= nums[i] <= 10^9
+* 1 <= x <= 10^9*/
+
+function minCost(nums: number[], x: number): number {
+    const n = nums.length;
+    const ans = Array(n).fill(0);
+    for (let [i, prefix] of nums.entries()) {
+        ans[i] += i*x;
+        for (let j = 0; j < n; ++j) {
+            prefix = Math.min(prefix, nums[(i-j+n)%n]);
+            ans[j] += prefix;
+        }
+    }
+    return Math.min(...ans);
+};
+
+
+/*2736. Maximum Sum Queries (Hard)
+You are given two 0-indexed integer arrays nums1 and nums2, each of length
+n, and a 1-indexed 2D array queries where queries[i] = [xi, yi]. For the ith
+query, find the maximum value of nums1[j] + nums2[j] among all indices j
+(0 <= j < n), where nums1[j] >= xi and nums2[j] >= yi, or -1 if there is no
+j satisfying the constraints. Return an array answer where answer[i] is the
+answer to the ith query.
+
+Example 1:
+Input: nums1 = [4,3,1,2], nums2 = [2,4,9,5], queries = [[4,1],[1,3],[2,5]]
+Output: [6,10,7]
+Explanation: - For the 1st query xi = 4 and yi = 1, we can select index
+               j = 0 since nums1[j] >= 4 and nums2[j] >= 1. The sum
+               nums1[j] + nums2[j] is 6, and we can show that 6 is the
+               maximum we can obtain.
+             - For the 2nd query xi = 1 and yi = 3, we can select index
+               j = 2 since nums1[j] >= 1 and nums2[j] >= 3. The sum
+               nums1[j] + nums2[j] is 10, and we can show that 10 is the
+               maximum we can obtain.
+             - For the 3rd query xi = 2 and yi = 5, we can select index
+               j = 3 since nums1[j] >= 2 and nums2[j] >= 5. The sum
+               nums1[j] + nums2[j] is 7, and we can show that 7 is the
+               maximum we can obtain.
+             Therefore, we return [6,10,7].
+
+Example 2:
+Input: nums1 = [3,2,5], nums2 = [2,3,4], queries = [[4,4],[3,2],[1,1]]
+Output: [9,9,9]
+Explanation: For this example, we can use index j = 2 for all the queries
+             since it satisfies the constraints for each query.
+
+Example 3:
+Input: nums1 = [2,1], nums2 = [2,3], queries = [[3,3]]
+Output: [-1]
+Explanation: There is one query in this example with xi = 3 and yi = 3. For
+             every index, j, either nums1[j] < xi or nums2[j] < yi. Hence,
+             there is no solution.
+
+Constraints:
+* nums1.length == nums2.length
+* n == nums1.length
+* 1 <= n <= 10^5
+* 1 <= nums1[i], nums2[i] <= 10^9
+* 1 <= queries.length <= 10^5
+* queries[i].length == 2
+* xi == queries[i][1]
+* yi == queries[i][2]
+* 1 <= xi, yi <= 10^9*/
+
+class Fenwick {
+    private nums: number[];
+
+    constructor(n) {
+        this.nums = Array(n+1).fill(0);
+    }
+
+    update(k, v) {
+        for (++k; k < this.nums.length; k += k & -k)
+            this.nums[k] = Math.max(this.nums[k], v);
+    }
+
+    query(k) {
+        let ans = 0;
+        for (++k; k; k -= k & -k)
+            ans = Math.max(ans, this.nums[k]);
+        return ans;
+    }
+}
+
+function maximumSumQueries(nums1: number[], nums2: number[], queries: number[][]): number[] {
+    const n = nums1.length, q = queries.length;
+    const mp = new Map();
+    const uniq = new Set(nums2.concat(queries.map(x => x[1])));
+    [...uniq].sort((x, y) => y-x).forEach((x, i) => mp.set(x, i));
+    const both = nums1.map((x, i) => [x, nums2[i]]).sort((x, y) => y[0]-x[0]);
+    const ans = Array(q).fill(0);
+    const idx = Array(q).fill(0).map((x, i) => i).sort((i, j) => queries[j][0] - queries[i][0]);
+    const fen = new Fenwick(mp.size);
+    let j = 0;
+    for (const i of idx) {
+        const x = queries[i][0], y = queries[i][1];
+        for (; j < both.length && both[j][0] >= x; ++j) {
+            const k = mp.get(both[j][1]), v = both[j][0] + both[j][1];
+            fen.update(k, v);
+        }
+        let cand = fen.query(mp.get(y));
+        if (cand === 0) cand = -1;
+        ans[i] = cand;
+    }
+    return ans;
+};
+
+
 /*2737. Find the Closest Marked Node (Medium)
 You are given a positive integer n which is the number of nodes of a 0-
 indexed directed weighted graph and a 0-indexed 2D array edges where

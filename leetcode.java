@@ -20199,6 +20199,182 @@ class SegTreeLazy {
     }
 
 
+    /*2734. Lexicographically Smallest String After Substring Operation (Medium)
+    Given a string s consisting of lowercase English letters. Perform the
+    following operation:
+    * Select any non-empty substring then replace every letter of the substring
+      with the preceding letter of the English alphabet. For example, 'b' is
+      converted to 'a', and 'a' is converted to 'z'.
+    Return the lexicographically smallest string after performing the operation.
+
+    Example 1:
+    Input: s = "cbabc"
+    Output: "baabc"
+    Explanation: Perform the operation on the substring starting at index 0, and
+                 ending at index 1 inclusive.
+
+    Example 2:
+    Input: s = "aa"
+    Output: "az"
+    Explanation: Perform the operation on the last letter.
+
+    Example 3:
+    Input: s = "acbbc"
+    Output: "abaab"
+    Explanation: Perform the operation on the substring starting at index 1, and
+                 ending at index 4 inclusive.
+
+    Example 4:
+    Input: s = "leetcode"
+    Output: "kddsbncd"
+    Explanation: Perform the operation on the entire string.
+
+    Constraints:
+    * 1 <= s.length <= 3 * 10^5
+    * s consists of lowercase English letters*/
+
+    public String smallestString(String s) {
+        char[] ch = s.toCharArray();
+        int i = 0, n = ch.length;
+        for (; i < n && ch[i] == 'a'; ++i);
+        if (i == n) ch[n-1] = 'z';
+        for (; i < n && ch[i] != 'a'; --ch[i], ++i);
+        return new String(ch);
+    }
+
+
+    /*2735. Collecting Chocolates (Medium)
+    You are given a 0-indexed integer array nums of size n representing the cost
+    of collecting different chocolates. The cost of collecting the chocolate at
+    the index i is nums[i]. Each chocolate is of a different type, and initially,
+    the chocolate at the index i is of ith type. In one operation, you can do
+    the following with an incurred cost of x:
+    * Simultaneously change the chocolate of ith type to ((i + 1) mod n)th type
+      for all chocolates.
+    Return the minimum cost to collect chocolates of all types, given that you
+    can perform as many operations as you would like.
+
+    Example 1:
+    Input: nums = [20,1,15], x = 5
+    Output: 13
+    Explanation: - Initially, the chocolate types are [0,1,2]. We will buy the
+                   1st type of chocolate at a cost of 1.
+                 - Now, we will perform the operation at a cost of 5, and the
+                   types of chocolates will become [1,2,0]. We will buy the 2nd
+                   type of chocolate at a cost of 1.
+                 - Now, we will again perform the operation at a cost of 5, and
+                   the chocolate types will become [2,0,1]. We will buy the 0th
+                   type of chocolate at a cost of 1.
+                 Thus, the total cost will become (1 + 5 + 1 + 5 + 1) = 13. We
+                 can prove that this is optimal.
+
+    Example 2:
+    Input: nums = [1,2,3], x = 4
+    Output: 6
+    Explanation: We will collect all three types of chocolates at their own
+                 price without performing any operations. Therefore, the total
+                 cost is 1 + 2 + 3 = 6.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i] <= 10^9
+    * 1 <= x <= 10^9*/
+
+    public long minCost(int[] nums, int x) {
+        int n = nums.length;
+        long[] ans = new long[n];
+        for (int i = 0; i < n; ++i) {
+            ans[i] += (long) i*x;
+            int prefix = nums[i];
+            for (int j = 0; j < n; ++j) {
+                prefix = Math.min(prefix, nums[(i-j+n)%n]);
+                ans[j] += prefix;
+            }
+        }
+        return Arrays.stream(ans).min().getAsLong();
+    }
+
+
+    /*2736. Maximum Sum Queries (Hard)
+    You are given two 0-indexed integer arrays nums1 and nums2, each of length
+    n, and a 1-indexed 2D array queries where queries[i] = [xi, yi]. For the ith
+    query, find the maximum value of nums1[j] + nums2[j] among all indices j
+    (0 <= j < n), where nums1[j] >= xi and nums2[j] >= yi, or -1 if there is no
+    j satisfying the constraints. Return an array answer where answer[i] is the
+    answer to the ith query.
+
+    Example 1:
+    Input: nums1 = [4,3,1,2], nums2 = [2,4,9,5], queries = [[4,1],[1,3],[2,5]]
+    Output: [6,10,7]
+    Explanation: - For the 1st query xi = 4 and yi = 1, we can select index
+                   j = 0 since nums1[j] >= 4 and nums2[j] >= 1. The sum
+                   nums1[j] + nums2[j] is 6, and we can show that 6 is the
+                   maximum we can obtain.
+                 - For the 2nd query xi = 1 and yi = 3, we can select index
+                   j = 2 since nums1[j] >= 1 and nums2[j] >= 3. The sum
+                   nums1[j] + nums2[j] is 10, and we can show that 10 is the
+                   maximum we can obtain.
+                 - For the 3rd query xi = 2 and yi = 5, we can select index
+                   j = 3 since nums1[j] >= 2 and nums2[j] >= 5. The sum
+                   nums1[j] + nums2[j] is 7, and we can show that 7 is the
+                   maximum we can obtain.
+                 Therefore, we return [6,10,7].
+
+    Example 2:
+    Input: nums1 = [3,2,5], nums2 = [2,3,4], queries = [[4,4],[3,2],[1,1]]
+    Output: [9,9,9]
+    Explanation: For this example, we can use index j = 2 for all the queries
+                 since it satisfies the constraints for each query.
+
+    Example 3:
+    Input: nums1 = [2,1], nums2 = [2,3], queries = [[3,3]]
+    Output: [-1]
+    Explanation: There is one query in this example with xi = 3 and yi = 3. For
+                 every index, j, either nums1[j] < xi or nums2[j] < yi. Hence,
+                 there is no solution.
+
+    Constraints:
+    * nums1.length == nums2.length
+    * n == nums1.length
+    * 1 <= n <= 10^5
+    * 1 <= nums1[i], nums2[i] <= 10^9
+    * 1 <= queries.length <= 10^5
+    * queries[i].length == 2
+    * xi == queries[i][1]
+    * yi == queries[i][2]
+    * 1 <= xi, yi <= 10^9*/
+
+    public int[] maximumSumQueries(int[] nums1, int[] nums2, int[][] queries) {
+        int n = nums1.length, q = queries.length;
+        int[][] both = new int[n][2];
+        for (int i = 0; i < n; ++i) {
+            both[i][0] = nums1[i];
+            both[i][1] = nums2[i];
+        }
+        Arrays.sort(both, Comparator.comparingInt(x -> -x[0]));
+        int[] ans = new int[q];
+        Integer[] idx = IntStream.range(0, q).boxed().toArray(Integer[]::new);
+        Arrays.sort(idx, Comparator.comparingInt(i -> -queries[i][0]));
+        TreeMap<Integer, Integer> mp = new TreeMap<>();
+        int j = 0;
+        for (var i : idx) {
+            int x = queries[i][0], y = queries[i][1];
+            for (; j < n && both[j][0] >= x; ++j) {
+                int key = both[j][1], val = both[j][0] + both[j][1];
+                Integer k = mp.ceilingKey(key);
+                if (k != null && val <= mp.get(k)) continue;
+                for (var p = mp.floorKey(key-1); p != null && mp.get(p) <= val; p = mp.floorKey(key-1))
+                    mp.remove(p);
+                mp.put(key, val);
+            }
+            Integer k = mp.ceilingKey(y);
+            if (k == null) ans[i] = -1;
+            else ans[i] = mp.get(k);
+        }
+        return ans;
+    }
+
+
     /*2737. Find the Closest Marked Node (Medium)
     You are given a positive integer n which is the number of nodes of a 0-
     indexed directed weighted graph and a 0-indexed 2D array edges where
