@@ -7706,6 +7706,196 @@ Date.prototype.nextDay = function(): string {
 }
 
 
+/*2760. Longest Even Odd Subarray With Threshold (Easy)
+You are given a 0-indexed integer array nums and an integer threshold. Find
+the length of the longest subarray of nums starting at index l and ending at
+index r (0 <= l <= r < nums.length) that satisfies the following conditions:
+* nums[l] % 2 == 0
+* For all indices i in the range [l, r - 1], nums[i] % 2 != nums[i + 1] % 2
+* For all indices i in the range [l, r], nums[i] <= threshold
+Return an integer denoting the length of the longest such subarray. Note: A
+subarray is a contiguous non-empty sequence of elements within an array.
+
+Example 1:
+Input: nums = [3,2,5,4], threshold = 5
+Output: 3
+Explanation: In this example, we can select the subarray that starts at
+             l = 1 and ends at r = 3 => [2,5,4]. This subarray satisfies the
+             conditions. Hence, the answer is the length of the subarray, 3.
+             We can show that 3 is the maximum possible achievable length.
+
+Example 2:
+Input: nums = [1,2], threshold = 2
+Output: 1
+Explanation: In this example, we can select the subarray that starts at
+             l = 1 and ends at r = 1 => [2]. It satisfies all the conditions
+             and we can show that 1 is the maximum possible achievable
+             length.
+
+Example 3:
+Input: nums = [2,3,4,5], threshold = 4
+Output: 3
+Explanation: In this example, we can select the subarray that starts at
+             l = 0 and ends at r = 2 => [2,3,4]. It satisfies all the
+             conditions. Hence, the answer is the length of the subarray, 3.
+             We can show that 3 is the maximum possible achievable length.
+
+Constraints:
+* 1 <= nums.length <= 100
+* 1 <= nums[i] <= 100
+* 1 <= threshold <= 100*/
+
+function longestAlternatingSubarray(nums: number[], threshold: number): number {
+    let ans = 0, cnt = 0, prev = -1;
+    for (const [i, x] of nums.entries()) {
+        if (x <= threshold) {
+            if (prev == x % 2) cnt = 0;
+            if (x % 2 == 0 || cnt) ++cnt;
+        } else cnt = 0;
+        ans = Math.max(ans, cnt);
+        prev = x % 2;
+    }
+    return ans;
+};
+
+
+/*2761. Prime Pairs With Target Sum (Medium)
+You are given an integer n. We say that two integers x and y form a prime
+number pair if:
+* 1 <= x <= y <= n
+* x + y == n
+* x and y are prime numbers
+Return the 2D sorted list of prime number pairs [xi, yi]. The list should be
+sorted in increasing order of xi. If there are no prime number pairs at all,
+return an empty array. Note: A prime number is a natural number greater than
+1 with only two factors, itself and 1.
+
+Example 1:
+Input: n = 10
+Output: [[3,7],[5,5]]
+Explanation: In this example, there are two prime pairs that satisfy the
+             criteria. These pairs are [3,7] and [5,5], and we return them
+             in the sorted order as described in the problem statement.
+
+Example 2:
+Input: n = 2
+Output: []
+Explanation: We can show that there is no prime number pair that gives a sum
+             of 2, so we return an empty array.
+
+Constraints: 1 <= n <= 10^6*/
+
+function findPrimePairs(n: number): number[][] {
+    const sieve = Array(n).fill(true);
+    sieve[0] = sieve[1] = false;
+    for (let x = 0; x*x <= n; ++x)
+        if (sieve[x])
+            for (let xx = x*x; xx <= n; xx += x)
+                sieve[xx] = false;
+    return [...Array(Math.floor(n/2)+1).keys()].filter(x => sieve[x] && sieve[n-x]).map(x => [x, n-x]);
+};
+
+
+/*2762. Continuous Subarrays (Medium)
+You are given a 0-indexed integer array nums. A subarray of nums is called
+continuous if:
+* Let i, i + 1, ..., j be the indices in the subarray. Then, for each pair
+  of indices i <= i1, i2 <= j, 0 <= |nums[i1] - nums[i2]| <= 2.
+Return the total number of continuous subarrays. A subarray is a contiguous
+non-empty sequence of elements within an array.
+
+Example 1:
+Input: nums = [5,4,2,4]
+Output: 8
+Explanation: - Continuous subarray of size 1: [5], [4], [2], [4].
+             - Continuous subarray of size 2: [5,4], [4,2], [2,4].
+             - Continuous subarray of size 3: [4,2,4].
+             - Thereare no subarrys of size 4.
+             Total continuous subarrays = 4 + 3 + 1 = 8. It can be shown
+             that there are no more continuous subarrays.
+
+Example 2:
+Input: nums = [1,2,3]
+Output: 6
+Explanation: - Continuous subarray of size 1: [1], [2], [3].
+             - Continuous subarray of size 2: [1,2], [2,3].
+             - Continuous subarray of size 3: [1,2,3].
+             - Total continuous subarrays = 3 + 2 + 1 = 6.
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 1 <= nums[i] <= 10^9*/
+
+function continuousSubarrays(nums: number[]): number {
+    let ans = 0, ii = 0, last = new Map();
+    for (const [i, x] of nums.entries()) {
+        const temp = new Map();
+        for (const [k, v] of last.entries())
+            if (Math.abs(x-k) > 2) ii = Math.max(ii, v+1);
+            else temp.set(k, v);
+        temp.set(x, i);
+        last = temp;
+        ans += i-ii+1;
+    }
+    return ans;
+};
+
+
+/*2763. Sum of Imbalance Numbers of All Subarrays (Hard)
+The imbalance number of a 0-indexed integer array arr of length n is defined
+as the number of indices in sarr = sorted(arr) such that:
+* 0 <= i < n - 1, and
+* sarr[i+1] - sarr[i] > 1
+Here, sorted(arr) is the function that returns the sorted version of arr.
+Given a 0-indexed integer array nums, return the sum of imbalance numbers of
+all its subarrays. A subarray is a contiguous non-empty sequence of elements
+within an array.
+
+Example 1:
+Input: nums = [2,3,1,4]
+Output: 3
+Explanation: There are 3 subarrays with non-zero imbalance numbers:
+             - Subarray [3, 1] with an imbalance number of 1.
+             - Subarray [3, 1, 4] with an imbalance number of 1.
+             - Subarray [1, 4] with an imbalance number of 1.
+             The imbalance number of all other subarrays is 0. Hence, the
+             sum of imbalance numbers of all the subarrays of nums is 3.
+
+Example 2:
+Input: nums = [1,3,3,3,5]
+Output: 8
+Explanation: There are 7 subarrays with non-zero imbalance numbers:
+             - Subarray [1, 3] with an imbalance number of 1.
+             - Subarray [1, 3, 3] with an imbalance number of 1.
+             - Subarray [1, 3, 3, 3] with an imbalance number of 1.
+             - Subarray [1, 3, 3, 3, 5] with an imbalance number of 2.
+             - Subarray [3, 3, 3, 5] with an imbalance number of 1.
+             - Subarray [3, 3, 5] with an imbalance number of 1.
+             - Subarray [3, 5] with an imbalance number of 1.
+             The imbalance number of all other subarrays is 0. Hence, the
+             sum of imbalance numbers of all the subarrays of nums is 8.
+
+Constraints:
+* 1 <= nums.length <= 1000
+* 1 <= nums[i] <= nums.length*/
+
+function sumImbalanceNumbers(nums: number[]): number {
+    const n = nums.length;
+    const left = Array(n).fill(0);
+    let ans = 0, seen = Array(n+2).fill(-1);
+    for (const [i, x] of nums.entries()) {
+        left[i] = Math.max(seen[x+1], seen[x]);
+        seen[x] = i;
+    }
+    seen = Array(n+2).fill(n);
+    for (let i = n-1; i >= 0; --i) {
+        ans += (i-left[i]) * (seen[nums[i]+1]-i);
+        seen[nums[i]] = i;
+    }
+    return ans - n*(n+1)/2;
+};
+
+
 /*2764. Is Array a Preorder of Some Binary Tree (Medium）
 Given a 0-indexed integer 2D array nodes, your task is to determine if the
 given array represents the preorder traversal of some binary tree. For each
