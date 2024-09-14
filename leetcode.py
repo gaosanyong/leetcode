@@ -71577,7 +71577,7 @@ class SegTree:
 
     def longestSubarray(self, nums: List[int]) -> int:
         most = max(nums)
-        return max(len(list(grp)) for k, grp in groupby(nums) if k == most)
+        return max(len(list(grp)) for x, grp in groupby(nums) if x == most)
 
 
     """2420. Find All Good Indices (Medium)

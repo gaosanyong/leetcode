@@ -52953,12 +52953,10 @@ public:
     * 1 <= nums[i] <= 10^6*/
 
     int longestSubarray(vector<int>& nums) {
-        int ans = 0;
-        for (int i = 0, ii = 0, most = 0; i < nums.size(); ++i) {
-            for (; nums[ii] != nums[i]; ++ii);
-            if (most < nums[i]) tie(most, ans) = make_tuple(nums[i], i-ii+1);
-            else if (most == nums[i]) ans = max(ans, i-ii+1);
-        }
+        int ans = 0, cnt = 0, most = *max_element(nums.begin(), nums.end());
+        for (auto& x : nums)
+            if (x == most) ans = max(ans, ++cnt);
+            else cnt = 0;
         return ans;
     }
 
