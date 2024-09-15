@@ -28857,6 +28857,46 @@ public:
     }
 
 
+    /*1371. Find the Longest Substring Containing Vowels in Even Counts (Medium)
+    Given the string s, return the size of the longest substring containing each
+    vowel an even number of times. That is, 'a', 'e', 'i', 'o', and 'u' must
+    appear an even number of times.
+
+    Example 1:
+    Input: s = "eleetminicoworoep"
+    Output: 13
+    Explanation: The longest substring is "leetminicowor" which contains two
+                 each of the vowels: e, i and o and zero of the vowels: a and u.
+
+    Example 2:
+    Input: s = "leetcodeisgreat"
+    Output: 5
+    Explanation: The longest substring is "leetc" which contains two e's.
+
+    Example 3:
+    Input: s = "bcbcbc"
+    Output: 6
+    Explanation: In this case, the given string "bcbcbc" is the longest because
+                 all vowels: a, e, i, o and u appear zero times.
+
+    Constraints:
+    * 1 <= s.length <= 5 x 10^5
+    * s contains only lowercase English letters.*/
+
+    int findTheLongestSubstring(string s) {
+        int ans = 0, mask = 0;
+        vector<int> pos(1<<5, -2); pos[0] = -1;
+        string vowels = "aeiou";
+        for (int i = 0; i < s.size(); ++i) {
+            int k = vowels.find(s[i]);
+            if (k != string::npos) mask ^= 1<<k;
+            if (pos[mask] >= -1) ans = max(ans, i - pos[mask]);
+            else pos[mask] = i;
+        }
+        return ans;
+    }
+
+
     /*1372. Longest ZigZag Path in a Binary Tree (Medium)
     You are given the root of a binary tree. A ZigZag path for a binary tree is
     defined as follow:
