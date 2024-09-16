@@ -80730,6 +80730,259 @@ public:
                 }
         return dp[0][n][0];
     }
+
+
+    /*3289. The Two Sneaky Numbers of Digitville (Easy)
+    In the town of Digitville, there was a list of numbers called nums
+    containing integers from 0 to n - 1. Each number was supposed to appear
+    exactly once in the list, however, two mischievous numbers sneaked in an
+    additional time, making the list longer than usual. As the town detective,
+    your task is to find these two sneaky numbers. Return an array of size two
+    containing the two numbers (in any order), so peace can return to
+    Digitville.
+
+    Example 1:
+    Input: nums = [0,1,1,0]
+    Output: [0,1]
+    Explanation: The numbers 0 and 1 each appear twice in the array.
+
+    Example 2:
+    Input: nums = [0,3,2,1,3,2]
+    Output: [2,3]
+    Explanation: The numbers 2 and 3 each appear twice in the array.
+
+    Example 3:
+    Input: nums = [7,1,5,4,3,4,6,0,9,5,8,2]
+    Output: [4,5]
+    Explanation: The numbers 4 and 5 each appear twice in the array.
+
+    Constraints:
+    * 2 <= n <= 100
+    * nums.length == n + 2
+    * 0 <= nums[i] < n
+    * The input is generated such that nums contains exactly two repeated
+      elements.*/
+
+    vector<int> getSneakyNumbers(vector<int>& nums) {
+        unordered_map<int, int> freq;
+        for (auto& x : nums) ++freq[x];
+        vector<int> ans;
+        for (auto& [x, v] : freq)
+            if (v == 2) ans.push_back(x);
+        return ans;
+    }
+
+
+    /*3290. Maximum Multiplication Score (Medium)
+    You are given an integer array a of size 4 and another integer array b of
+    size at least 4. You need to choose 4 indices i0, i1, i2, and i3 from the
+    array b such that i0 < i1 < i2 < i3. Your score will be equal to the value
+    a[0] * b[i0] + a[1] * b[i1] + a[2] * b[i2] + a[3] * b[i3]. Return the
+    maximum score you can achieve.
+
+    Example 1:
+    Input: a = [3,2,5,6], b = [2,-6,4,-5,-3,2,-7]
+    Output: 26
+    Explanation: We can choose the indices 0, 1, 2, and 5. The score will be
+                 3 * 2 + 2 * (-6) + 5 * 4 + 6 * 2 = 26.
+
+    Example 2:
+    Input: a = [-1,4,5,-2], b = [-5,-1,-3,-2,-4]
+    Output: -1
+    Explanation: We can choose the indices 0, 1, 3, and 4. The score will be
+                 (-1) * (-5) + 4 * (-1) + 5 * (-2) + (-2) * (-4) = -1.
+
+    Constraints:
+    * a.length == 4
+    * 4 <= b.length <= 10^5
+    * -10^5 <= a[i], b[i] <= 10^5*/
+
+    long long maxScore(vector<int>& a, vector<int>& b) {
+        int n = b.size();
+        vector<vector<long long>> dp(5, vector<long long>(n+1));
+        for (int i = 0; i < 4; ++i)
+            dp[i][n] = -1e11;
+        for (int i = 3; i >= 0; --i)
+            for (int j = n-1; j >= 0; --j)
+                dp[i][j] = max(dp[i][j+1], (long long) a[i]*b[j] + dp[i+1][j+1]);
+        return dp[0][0] > -1e11 ? dp[0][0] : -1;
+    }
+
+
+    /*3291. Minimum Number of Valid Strings to Form Target I (Medium)
+    You are given an array of strings words and a string target. A string x is
+    called valid if x is a prefix of any string in words. Return the minimum
+    number of valid strings that can be concatenated to form target. If it is
+    not possible to form target, return -1. A prefix of a string is a substring
+    that starts from the beginning of the string and extends to any point within
+    it.
+
+    Example 1:
+    Input: words = ["abc","aaaaa","bcdef"], target = "aabcdabc"
+    Output: 3
+    Explanation: The target string can be formed by concatenating:
+                 - Prefix of length 2 of words[1], i.e. "aa".
+                 - Prefix of length 3 of words[2], i.e. "bcd".
+                 - Prefix of length 3 of words[0], i.e. "abc".
+
+    Example 2:
+    Input: words = ["abababab","ab"], target = "ababaababa"
+    Output: 2
+    Explanation: The target string can be formed by concatenating:
+                 - Prefix of length 5 of words[0], i.e. "ababa".
+                 - Prefix of length 5 of words[0], i.e. "ababa".
+
+    Example 3:
+    Input: words = ["abcdef"], target = "xyz"
+    Output: -1
+
+    Constraints:
+    * 1 <= words.length <= 100
+    * 1 <= words[i].length <= 5 * 10^3
+    * The input is generated such that sum(words[i].length) <= 10^5.
+    * words[i] consists only of lowercase English letters.
+    * 1 <= target.length <= 5 * 10^3
+    * target consists only of lowercase English letters.
+
+    class TrieNode {
+    public:
+        TrieNode *child[26] = {nullptr};
+        string word;
+    };*/
+
+    int minValidStrings(vector<string>& words, string target) {
+        TrieNode *trie = new TrieNode();
+        for (auto& word : words) {
+            TrieNode *node = trie;
+            for (auto& ch : word) {
+                if (!node->child[ch-'a'])
+                    node->child[ch-'a'] = new TrieNode();
+                node = node->child[ch-'a'];
+            }
+            node->word = word;
+        }
+        int n = target.size();
+        vector<int> dp(n+1, -1);
+        dp[n] = 0;
+        for (int i = n-1; i >= 0; --i) {
+            TrieNode *node = trie;
+            for (int j = i; j < n; ++j) {
+                if (node->child[target[j]-'a']) node = node->child[target[j]-'a'];
+                else break;
+                if (dp[j+1] != -1)
+                    if (dp[i] == -1) dp[i] = 1+dp[j+1];
+                    else dp[i] = min(dp[i], 1+dp[j+1]);
+            }
+        }
+        return dp[0];
+    }
+
+
+    /*3292. Minimum Number of Valid Strings to Form Target II (Hard)
+    You are given an array of strings words and a string target. A string x is
+    called valid if x is a prefix of any string in words. Return the minimum
+    number of valid strings that can be concatenated to form target. If it is
+    not possible to form target, return -1. A prefix of a string is a substring
+    that starts from the beginning of the string and extends to any point within
+    it.
+
+    Example 1:
+    Input: words = ["abc","aaaaa","bcdef"], target = "aabcdabc"
+    Output: 3
+    Explanation: The target string can be formed by concatenating:
+                 - Prefix of length 2 of words[1], i.e. "aa".
+                 - Prefix of length 3 of words[2], i.e. "bcd".
+                 - Prefix of length 3 of words[0], i.e. "abc".
+
+    Example 2:
+    Input: words = ["abababab","ab"], target = "ababaababa"
+    Output: 2
+    Explanation: The target string can be formed by concatenating:
+                 - Prefix of length 5 of words[0], i.e. "ababa".
+                 - Prefix of length 5 of words[0], i.e. "ababa".
+
+    Example 3:
+    Input: words = ["abcdef"], target = "xyz"
+    Output: -1
+
+    Constraints:
+    * 1 <= words.length <= 100
+    * 1 <= words[i].length <= 5 * 10^4
+    * The input is generated such that sum(words[i].length) <= 10^5.
+    * words[i] consists only of lowercase English letters.
+    * 1 <= target.length <= 5 * 10^4
+    * target consists only of lowercase English letters.
+
+    class TrieNode {
+    public:
+        TrieNode *child[26] = {nullptr};
+        TrieNode *parent;
+        TrieNode *suffix;
+        int size = 0;
+    };
+
+    class AhoCorasick {
+        TrieNode *root = new TrieNode();
+
+    public:
+        void build(vector<string> patterns) {
+            for (auto& pattern : patterns) {
+                TrieNode *node = root;
+                int size = 0;
+                for (auto& ch : pattern) {
+                    int i = ch - 'a';
+                    if (!node->child[i]) {
+                        node->child[i] = new TrieNode();
+                        node->child[i]->parent = node;
+                    }
+                    node = node->child[i];
+                    node->size = ++size;
+                }
+            }
+            queue<TrieNode*> q; q.push(root);
+            while (q.size())
+                for (int sz = q.size(); sz; --sz) {
+                    TrieNode* node = q.front(); q.pop();
+                    for (int i = 0; i < 26; ++i)
+                        if (node->child[i]) {
+                            TrieNode *child = node->child[i], *suffix = node->suffix;
+                            while (suffix && !suffix->child[i]) suffix = suffix->suffix;
+                            if (suffix) child->suffix = suffix->child[i];
+                            else child->suffix = root;
+                            q.push(child);
+                        }
+                }
+        }
+
+        vector<int> match(string text) {
+            vector<int> ans;
+            TrieNode *node = root;
+            for (auto& ch : text) {
+                int i = ch - 'a';
+                while (!node->child[i] && node->suffix)
+                    node = node->suffix;
+                if (node->child[i]) node = node->child[i];
+                ans.push_back(node->size);
+            }
+            return ans;
+        }
+    };*/
+
+    int minValidStrings(vector<string>& words, string target) {
+        int n = target.size();
+        AhoCorasick *trie = new AhoCorasick();
+        trie->build(words);
+        vector<int> dp(n+1, -1); dp[n] = 0;
+        vector<int> outcome = trie->match(target);
+        for (int i = n-1; i >= 0; --i) {
+            int x = outcome[i];
+            if (x == 0) return -1;
+            if (dp[i+1] != -1)
+                if (dp[i+1-x] == -1) dp[i+1-x] = dp[i+1]+1;
+                else dp[i+1-x] = min(dp[i+1-x], dp[i+1]+1);
+        }
+        return dp[0];
+    }
 }
 
 

@@ -97718,6 +97718,211 @@ class SegTree:
         return dp[0][n][0]
 
 
+    """3289. The Two Sneaky Numbers of Digitville (Easy)
+    In the town of Digitville, there was a list of numbers called nums
+    containing integers from 0 to n - 1. Each number was supposed to appear
+    exactly once in the list, however, two mischievous numbers sneaked in an
+    additional time, making the list longer than usual. As the town detective,
+    your task is to find these two sneaky numbers. Return an array of size two
+    containing the two numbers (in any order), so peace can return to
+    Digitville.
+
+    Example 1:
+    Input: nums = [0,1,1,0]
+    Output: [0,1]
+    Explanation: The numbers 0 and 1 each appear twice in the array.
+
+    Example 2:
+    Input: nums = [0,3,2,1,3,2]
+    Output: [2,3]
+    Explanation: The numbers 2 and 3 each appear twice in the array.
+
+    Example 3:
+    Input: nums = [7,1,5,4,3,4,6,0,9,5,8,2]
+    Output: [4,5]
+    Explanation: The numbers 4 and 5 each appear twice in the array.
+
+    Constraints:
+    * 2 <= n <= 100
+    * nums.length == n + 2
+    * 0 <= nums[i] < n
+    * The input is generated such that nums contains exactly two repeated
+      elements."""
+
+    def getSneakyNumbers(self, nums: List[int]) -> List[int]:
+        return [x for x, v in Counter(nums).items() if v == 2]
+
+
+    """3290. Maximum Multiplication Score (Medium)
+    You are given an integer array a of size 4 and another integer array b of
+    size at least 4. You need to choose 4 indices i0, i1, i2, and i3 from the
+    array b such that i0 < i1 < i2 < i3. Your score will be equal to the value
+    a[0] * b[i0] + a[1] * b[i1] + a[2] * b[i2] + a[3] * b[i3]. Return the
+    maximum score you can achieve.
+
+    Example 1:
+    Input: a = [3,2,5,6], b = [2,-6,4,-5,-3,2,-7]
+    Output: 26
+    Explanation: We can choose the indices 0, 1, 2, and 5. The score will be
+                 3 * 2 + 2 * (-6) + 5 * 4 + 6 * 2 = 26.
+
+    Example 2:
+    Input: a = [-1,4,5,-2], b = [-5,-1,-3,-2,-4]
+    Output: -1
+    Explanation: We can choose the indices 0, 1, 3, and 4. The score will be
+                 (-1) * (-5) + 4 * (-1) + 5 * (-2) + (-2) * (-4) = -1.
+
+    Constraints:
+    * a.length == 4
+    * 4 <= b.length <= 10^5
+    * -10^5 <= a[i], b[i] <= 10^5"""
+
+    def maxScore(self, a: List[int], b: List[int]) -> int:
+        n = len(b)
+        dp = [[0]*(n+1) for _ in range(5)]
+        for i in range(4): dp[i][n] = -inf
+        for i in range(3, -1, -1):
+            for j in range(n-1, -1, -1):
+                dp[i][j] = max(dp[i][j+1], a[i]*b[j] + dp[i+1][j+1])
+        return dp[0][0] if dp[0][0] < inf else -1
+
+
+    """3291. Minimum Number of Valid Strings to Form Target I (Medium)
+    You are given an array of strings words and a string target. A string x is
+    called valid if x is a prefix of any string in words. Return the minimum
+    number of valid strings that can be concatenated to form target. If it is
+    not possible to form target, return -1. A prefix of a string is a substring
+    that starts from the beginning of the string and extends to any point within
+    it.
+
+    Example 1:
+    Input: words = ["abc","aaaaa","bcdef"], target = "aabcdabc"
+    Output: 3
+    Explanation: The target string can be formed by concatenating:
+                 - Prefix of length 2 of words[1], i.e. "aa".
+                 - Prefix of length 3 of words[2], i.e. "bcd".
+                 - Prefix of length 3 of words[0], i.e. "abc".
+
+    Example 2:
+    Input: words = ["abababab","ab"], target = "ababaababa"
+    Output: 2
+    Explanation: The target string can be formed by concatenating:
+                 - Prefix of length 5 of words[0], i.e. "ababa".
+                 - Prefix of length 5 of words[0], i.e. "ababa".
+
+    Example 3:
+    Input: words = ["abcdef"], target = "xyz"
+    Output: -1
+
+    Constraints:
+    * 1 <= words.length <= 100
+    * 1 <= words[i].length <= 5 * 10^3
+    * The input is generated such that sum(words[i].length) <= 10^5.
+    * words[i] consists only of lowercase English letters.
+    * 1 <= target.length <= 5 * 10^3
+    * target consists only of lowercase English letters."""
+
+    def minValidStrings(self, words: List[str], target: str) -> int:
+        trie = {}
+        for word in words:
+            node = trie
+            for ch in word:
+                node = node.setdefault(ch, {})
+            node["#"] = word
+        n = len(target)
+        dp = [inf]*(n+1)
+        dp[n] = 0
+        for i in range(n-1, -1, -1):
+            node = trie
+            for j in range(i, n):
+                if target[j] in node: node = node[target[j]]
+                else: break
+                dp[i] = min(dp[i], 1 + dp[j+1])
+        return dp[0] if dp[0] < inf else -1
+
+
+    """3292. Minimum Number of Valid Strings to Form Target II (Hard)
+    You are given an array of strings words and a string target. A string x is
+    called valid if x is a prefix of any string in words. Return the minimum
+    number of valid strings that can be concatenated to form target. If it is
+    not possible to form target, return -1. A prefix of a string is a substring
+    that starts from the beginning of the string and extends to any point within
+    it.
+
+    Example 1:
+    Input: words = ["abc","aaaaa","bcdef"], target = "aabcdabc"
+    Output: 3
+    Explanation: The target string can be formed by concatenating:
+                 - Prefix of length 2 of words[1], i.e. "aa".
+                 - Prefix of length 3 of words[2], i.e. "bcd".
+                 - Prefix of length 3 of words[0], i.e. "abc".
+
+    Example 2:
+    Input: words = ["abababab","ab"], target = "ababaababa"
+    Output: 2
+    Explanation: The target string can be formed by concatenating:
+                 - Prefix of length 5 of words[0], i.e. "ababa".
+                 - Prefix of length 5 of words[0], i.e. "ababa".
+
+    Example 3:
+    Input: words = ["abcdef"], target = "xyz"
+    Output: -1
+
+    Constraints:
+    * 1 <= words.length <= 100
+    * 1 <= words[i].length <= 5 * 10^4
+    * The input is generated such that sum(words[i].length) <= 10^5.
+    * words[i] consists only of lowercase English letters.
+    * 1 <= target.length <= 5 * 10^4
+    * target consists only of lowercase English letters.
+
+    class AhoCorasick:
+        def __init__(self):
+            self.root = {"parent": None, "suffix": None, "$": 0}
+
+        def build(self, patterns: List[str]):
+            for pattern in patterns:
+                node = self.root
+                size = 0
+                for ch in pattern:
+                    if ch not in node: node[ch] = {"parent": node}
+                    node = node[ch]
+                    size += 1
+                    node["$"] = size
+            queue = deque([self.root])
+            while queue:
+                for _ in range(len(queue)):
+                    node = queue.popleft()
+                    for ch, child in node.items():
+                        if ch not in ("parent", "suffix", "$"):
+                            suffix = node["suffix"]
+                            while suffix and ch not in suffix: suffix = suffix["suffix"]
+                            if suffix: child["suffix"] = suffix[ch]
+                            else: child["suffix"] = self.root
+                            queue.append(child)
+
+        def match(self, text: str):
+            ans = []
+            node = self.root
+            for ch in text:
+                while ch not in node and node["suffix"]:
+                    node = node["suffix"]
+                if ch in node: node = node[ch]
+                ans.append(node["$"])
+            return ans """
+
+    def minValidStrings(self, words: List[str], target: str) -> int:
+        n = len(target)
+        trie = AhoCorasick()
+        trie.build(words)
+        dp = [inf]*(n+1)
+        dp[n] = 0
+        for i, x in reversed(list(enumerate(trie.match(target)))):
+            if x == 0: return -1
+            dp[i+1-x] = min(dp[i+1-x], dp[i+1] + 1)
+        return dp[0]
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.
