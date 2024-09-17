@@ -20807,16 +20807,14 @@ public:
     * 0 <= B.length <= 200
     * A and B both contain only spaces and lowercase letters.*/
 
-    vector<string> uncommonFromSentences(string A, string B) {
-        istringstream iss(A + " " + B);
+    vector<string> uncommonFromSentences(string s1, string s2) {
         unordered_map<string, int> freq;
-        string word;
-        while (iss >> word) ++freq[word];
-
+        string buf;
+        istringstream iss(s1 + " " + s2);
+        while (iss >> buf) ++freq[buf];
         vector<string> ans;
-        for (auto x : freq) {
-            if (x.second == 1) ans.push_back(x.first);
-        }
+        for (auto& [w, v] : freq)
+            if (v == 1) ans.push_back(w);
         return ans;
     }
 
