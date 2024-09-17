@@ -80730,6 +80730,200 @@ public:
     }
 
 
+    /*3285. Find Indices of Stable Mountains (Easy)
+    There are n mountains in a row, and each mountain has a height. You are
+    given an integer array height where height[i] represents the height of
+    mountain i, and an integer threshold. A mountain is called stable if the
+    mountain just before it (if it exists) has a height strictly greater than
+    threshold. Note that mountain 0 is not stable. Return an array containing
+    the indices of all stable mountains in any order.
+
+    Example 1:
+    Input: height = [1,2,3,4,5], threshold = 2
+    Output: [3,4]
+    Explanation: - Mountain 3 is stable because height[2] == 3 is greater than
+                   threshold == 2.
+                 - Mountain 4 is stable because height[3] == 4 is greater than
+                   threshold == 2.
+
+    Example 2:
+    Input: height = [10,1,10,1,10], threshold = 3
+    Output: [1,3]
+
+    Example 3:
+    Input: height = [10,1,10,1,10], threshold = 10
+    Output: []
+
+    Constraints:
+    * 2 <= n == height.length <= 100
+    * 1 <= height[i] <= 100
+    * 1 <= threshold <= 100*/
+
+    vector<int> stableMountains(vector<int>& height, int threshold) {
+        vector<int> ans;
+        for (int i = 1; i < height.size(); ++i)
+            if (height[i-1] > threshold) ans.push_back(i);
+        return ans;
+    }
+
+
+    /*3286. Find a Safe Walk Through a Grid (Medium)
+    You are given an m x n binary matrix grid and an integer health. You start
+    on the upper-left corner (0, 0) and would like to get to the lower-right
+    corner (m - 1, n - 1). You can move up, down, left, or right from one cell
+    to another adjacent cell as long as your health remains positive. Cells
+    (i, j) with grid[i][j] = 1 are considered unsafe and reduce your health by
+    1. Return true if you can reach the final cell with a health value of 1 or
+    more, and false otherwise.
+
+    Example 1:
+    Input: grid = [[0,1,0,0,0],[0,1,0,1,0],[0,0,0,1,0]], health = 1
+    Output: true
+    Explanation: The final cell can be reached safely by walking along the gray
+                 cells below.
+
+    Example 2:
+    Input: grid = [[0,1,1,0,0,0],[1,0,1,0,0,0],[0,1,1,1,0,1],[0,0,1,0,1,0]], health = 3
+    Output: false
+    Explanation: A minimum of 4 health points is needed to reach the final cell
+                 safely.
+
+    Example 3:
+    Input: grid = [[1,1,1],[1,0,1],[1,1,1]], health = 5
+    Output: true
+    Explanation: The final cell can be reached safely by walking along the gray
+                 cells below. Any path that does not go through the cell (1, 1)
+                 is unsafe since your health will drop to 0 when reaching the
+                 final cell.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 50
+    * 2 <= m * n
+    * 1 <= health <= m + n
+    * grid[i][j] is either 0 or 1.*/
+
+    bool findSafeWalk(vector<vector<int>>& grid, int health) {
+        int m = grid.size(), n = grid[0].size(), dir[] = {-1, 0, 1, 0, -1};
+        vector<vector<int>> dist(m, vector<int>(n));
+        dist[0][0] = health - grid[0][0];
+        queue<tuple<int, int, int>> q; q.emplace(0, 0, dist[0][0]);
+        while (q.size()) {
+            auto [i, j, h] = q.front(); q.pop();
+            if (i == m-1 && j == n-1) return h > 0;
+            if (dist[i][j] == h)
+                for (int k = 0; k < 4; ++k) {
+                    int ii = i+dir[k], jj = j+dir[k+1];
+                    if (0 <= ii && ii < m && 0 <= jj && jj < n) {
+                        int hh = h - grid[ii][jj];
+                        if (dist[ii][jj] < hh) {
+                            dist[ii][jj] = hh;
+                            q.emplace(ii, jj, hh);
+                        }
+                    }
+                }
+        }
+        return false;
+    }
+
+
+    /*3287. Find the Maximum Sequence Value of Array (Hard)
+    You are given an integer array nums and a positive integer k. The value of a
+    sequence seq of size 2 * x is defined as:
+    * (seq[0] OR seq[1] OR ... OR seq[x - 1]) XOR
+      (seq[x] OR seq[x + 1] OR ... OR seq[2 * x - 1]).
+    Return the maximum value of any subsequence of nums having size 2 * k.
+
+    Example 1:
+    Input: nums = [2,6,7], k = 1
+    Output: 5
+    Explanation: The subsequence [2, 7] has the maximum value of 2 XOR 7 = 5.
+
+    Example 2:
+    Input: nums = [4,2,5,6,7], k = 2
+    Output: 2
+    Explanation: The subsequence [4, 5, 6, 7] has the maximum value of
+                 (4 OR 5) XOR (6 OR 7) = 2.
+
+    Constraints:
+    * 2 <= nums.length <= 400
+    * 1 <= nums[i] < 27
+    * 1 <= k <= nums.length / 2*/
+
+    int maxValue(vector<int>& nums, int k) {
+        int n = nums.size();
+        vector<unordered_set<int>> vals(k+1);
+        vals[0].insert(0);
+        vector<unordered_set<int>> left;
+        for (int i = 0; i < n; ++i) {
+            for (int j = k-1; j >= 0; --j)
+                for (auto& x : vals[j])
+                    vals[j+1].insert(x | nums[i]);
+            left.push_back(vals[k]);
+        }
+        int ans = 0;
+        vals = vector<unordered_set<int>>(k+1);
+        vals[0].insert(0);
+        for (int i = n-1; i > 0; --i) {
+            for (int j = k-1; j >= 0; --j)
+                for (auto& x : vals[j])
+                    vals[j+1].insert(x | nums[i]);
+            for (auto& l : left[i-1])
+                for (auto& r : vals[k])
+                    ans = max(ans, l ^ r);
+        }
+        return ans;
+    }
+
+
+    /*3288. Length of the Longest Increasing Path (Hard)
+    You are given a 2D array of integers coordinates of length n and an integer
+    k, where 0 <= k < n.
+    coordinates[i] = [xi, yi] indicates the point (xi, yi) in a 2D plane.
+    An increasing path of length m is defined as a list of points (x1, y1),
+    (x2, y2), (x3, y3), ..., (xm, ym) such that:
+    * xi < xi + 1 and yi < yi + 1 for all i where 1 <= i < m.
+    * (xi, yi) is in the given coordinates for all i where 1 <= i <= m.
+    Return the maximum length of an increasing path that contains coordinates[k].
+
+    Example 1:
+    Input: coordinates = [[3,1],[2,2],[4,1],[0,0],[5,3]], k = 1
+    Output: 3
+    Explanation: (0, 0), (2, 2), (5, 3) is the longest increasing path that
+                 contains (2, 2).
+
+    Example 2:
+    Input: coordinates = [[2,1],[7,0],[5,6]], k = 2
+    Output: 2
+    Explanation: (2, 1), (5, 6) is the longest increasing path that contains
+                 (5, 6).
+
+    Constraints:
+    * 1 <= n == coordinates.length <= 10^5
+    * coordinates[i].length == 2
+    * 0 <= coordinates[i][0], coordinates[i][1] <= 10^9
+    * All elements in coordinates are distinct.
+    * 0 <= k <= n - 1*/
+
+    int maxPathLength(vector<vector<int>>& coordinates, int k) {
+        int xk = coordinates[k][0], yk = coordinates[k][1];
+        sort(coordinates.begin(), coordinates.end(), [&](auto& lhs, auto& rhs) {
+            return lhs[0] != rhs[0] ? lhs[0] < rhs[0] : lhs[1] > rhs[1];
+        });
+        vector<int> lis;
+        for (auto& c : coordinates) {
+            int x = c[0], y = c[1];
+            if (x < xk && y < yk || x == xk && y == yk || x > xk && y > yk) {
+                auto it = lower_bound(lis.begin(), lis.end(), y);
+                if (it == lis.end()) lis.push_back(y);
+                else *it = y;
+            }
+        }
+        return lis.size();
+    }
+
+
     /*3289. The Two Sneaky Numbers of Digitville (Easy)
     In the town of Digitville, there was a list of numbers called nums
     containing integers from 0 to n - 1. Each number was supposed to appear

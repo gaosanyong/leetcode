@@ -21569,6 +21569,202 @@ var maxMoves = function(kx, ky, positions) {
 };
 
 
+/*3285. Find Indices of Stable Mountains (Easy)
+There are n mountains in a row, and each mountain has a height. You are
+given an integer array height where height[i] represents the height of
+mountain i, and an integer threshold. A mountain is called stable if the
+mountain just before it (if it exists) has a height strictly greater than
+threshold. Note that mountain 0 is not stable. Return an array containing
+the indices of all stable mountains in any order.
+
+Example 1:
+Input: height = [1,2,3,4,5], threshold = 2
+Output: [3,4]
+Explanation: - Mountain 3 is stable because height[2] == 3 is greater than
+               threshold == 2.
+             - Mountain 4 is stable because height[3] == 4 is greater than
+               threshold == 2.
+
+Example 2:
+Input: height = [10,1,10,1,10], threshold = 3
+Output: [1,3]
+
+Example 3:
+Input: height = [10,1,10,1,10], threshold = 10
+Output: []
+
+Constraints:
+* 2 <= n == height.length <= 100
+* 1 <= height[i] <= 100
+* 1 <= threshold <= 100*/
+
+var stableMountains = function(height, threshold) {
+    return [...Array(height.length).keys()].filter(i => i > 0 && height[i-1] > threshold);
+};
+
+
+/*3286. Find a Safe Walk Through a Grid (Medium)
+You are given an m x n binary matrix grid and an integer health. You start
+on the upper-left corner (0, 0) and would like to get to the lower-right
+corner (m - 1, n - 1). You can move up, down, left, or right from one cell
+to another adjacent cell as long as your health remains positive. Cells
+(i, j) with grid[i][j] = 1 are considered unsafe and reduce your health by
+1. Return true if you can reach the final cell with a health value of 1 or
+more, and false otherwise.
+
+Example 1:
+Input: grid = [[0,1,0,0,0],[0,1,0,1,0],[0,0,0,1,0]], health = 1
+Output: true
+Explanation: The final cell can be reached safely by walking along the gray
+             cells below.
+
+Example 2:
+Input: grid = [[0,1,1,0,0,0],[1,0,1,0,0,0],[0,1,1,1,0,1],[0,0,1,0,1,0]], health = 3
+Output: false
+Explanation: A minimum of 4 health points is needed to reach the final cell
+             safely.
+
+Example 3:
+Input: grid = [[1,1,1],[1,0,1],[1,1,1]], health = 5
+Output: true
+Explanation: The final cell can be reached safely by walking along the gray
+             cells below. Any path that does not go through the cell (1, 1)
+             is unsafe since your health will drop to 0 when reaching the
+             final cell.
+
+Constraints:
+* m == grid.length
+* n == grid[i].length
+* 1 <= m, n <= 50
+* 2 <= m * n
+* 1 <= health <= m + n
+* grid[i][j] is either 0 or 1.*/
+
+var findSafeWalk = function(grid, health) {
+    const m = grid.length, n = grid[0].length;
+    const dist = Array(m).fill(0).map(() => Array(n).fill(0));
+    dist[0][0] = health - grid[0][0];
+    const queue = [[0, 0, dist[0][0]]];
+    while (queue.length) {
+        const [i, j, h] = queue.shift();
+        if (i == m-1 && j == n-1) return true;
+        for (const [ii, jj] of [[i-1, j], [i, j-1], [i, j+1], [i+1, j]])
+            if (0 <= ii && ii < m && 0 <= jj && jj < n) {
+                const hh = h - grid[ii][jj];
+                if (dist[ii][jj] < hh) {
+                    dist[ii][jj] = hh;
+                    queue.push([ii, jj, hh]);
+                }
+            }
+    }
+    return false;
+};
+
+
+/*3287. Find the Maximum Sequence Value of Array (Hard)
+You are given an integer array nums and a positive integer k. The value of a
+sequence seq of size 2 * x is defined as:
+* (seq[0] OR seq[1] OR ... OR seq[x - 1]) XOR
+  (seq[x] OR seq[x + 1] OR ... OR seq[2 * x - 1]).
+Return the maximum value of any subsequence of nums having size 2 * k.
+
+Example 1:
+Input: nums = [2,6,7], k = 1
+Output: 5
+Explanation: The subsequence [2, 7] has the maximum value of 2 XOR 7 = 5.
+
+Example 2:
+Input: nums = [4,2,5,6,7], k = 2
+Output: 2
+Explanation: The subsequence [4, 5, 6, 7] has the maximum value of
+             (4 OR 5) XOR (6 OR 7) = 2.
+
+Constraints:
+* 2 <= nums.length <= 400
+* 1 <= nums[i] < 27
+* 1 <= k <= nums.length / 2*/
+
+var maxValue = function(nums, k) {
+    const n = nums.length;
+    const left = [];
+    let vals = Array(k+1).fill(0).map(() => new Set());
+    vals[0].add(0);
+    for (let i = 0; i < n; ++i) {
+        for (let j = k-1; j >= 0; --j)
+            for (const x of vals[j])
+                vals[j+1].add(x | nums[i]);
+        left.push([...vals[k]]);
+    }
+    let ans = 0;
+    vals = Array(k+1).fill(0).map(() => new Set());
+    vals[0].add(0);
+    for (let i = n-1; i > 0; --i) {
+        for (let j = k-1; j >= 0; --j)
+            for (const x of vals[j])
+                vals[j+1].add(x | nums[i]);
+        for (const l of left[i-1])
+            for (const r of vals[k])
+                ans = Math.max(ans, l ^ r);
+    }
+    return ans;
+};
+
+
+/*3288. Length of the Longest Increasing Path (Hard)
+You are given a 2D array of integers coordinates of length n and an integer
+k, where 0 <= k < n.
+coordinates[i] = [xi, yi] indicates the point (xi, yi) in a 2D plane.
+An increasing path of length m is defined as a list of points (x1, y1),
+(x2, y2), (x3, y3), ..., (xm, ym) such that:
+* xi < xi + 1 and yi < yi + 1 for all i where 1 <= i < m.
+* (xi, yi) is in the given coordinates for all i where 1 <= i <= m.
+Return the maximum length of an increasing path that contains coordinates[k].
+
+Example 1:
+Input: coordinates = [[3,1],[2,2],[4,1],[0,0],[5,3]], k = 1
+Output: 3
+Explanation: (0, 0), (2, 2), (5, 3) is the longest increasing path that
+             contains (2, 2).
+
+Example 2:
+Input: coordinates = [[2,1],[7,0],[5,6]], k = 2
+Output: 2
+Explanation: (2, 1), (5, 6) is the longest increasing path that contains
+             (5, 6).
+
+Constraints:
+* 1 <= n == coordinates.length <= 10^5
+* coordinates[i].length == 2
+* 0 <= coordinates[i][0], coordinates[i][1] <= 10^9
+* All elements in coordinates are distinct.
+* 0 <= k <= n - 1*/
+
+var maxPathLength = function(coordinates, k) {
+    const [xk, yk] = coordinates[k];
+    coordinates.sort((x, y) => x[0] != y[0] ? x[0] - y[0] : y[1] - x[1]);
+    const lis = [];
+
+    function binarySearch(lis, y) {
+        let lo = 0, hi = lis.length;
+        while (lo < hi) {
+            const mid = lo + hi >> 1;
+            if (lis[mid] < y) lo = mid + 1;
+            else hi = mid;
+        }
+        return lo;
+    }
+
+    for (const [x, y] of coordinates) {
+        if (x < xk && y < yk || x == xk && y == yk || x > xk && y > yk) {
+            const i = binarySearch(lis, y);
+            if (i == lis.length) lis.push(y);
+            else lis[i] = y;
+        }
+    }
+    return lis.length;
+};
+
+
 /*3289. The Two Sneaky Numbers of Digitville (Easy)
 In the town of Digitville, there was a list of numbers called nums
 containing integers from 0 to n - 1. Each number was supposed to appear

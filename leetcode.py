@@ -97746,6 +97746,178 @@ class SegTree:
         return dp[0][n][0]
 
 
+    """3285. Find Indices of Stable Mountains (Easy)
+    There are n mountains in a row, and each mountain has a height. You are
+    given an integer array height where height[i] represents the height of
+    mountain i, and an integer threshold. A mountain is called stable if the
+    mountain just before it (if it exists) has a height strictly greater than
+    threshold. Note that mountain 0 is not stable. Return an array containing
+    the indices of all stable mountains in any order.
+
+    Example 1:
+    Input: height = [1,2,3,4,5], threshold = 2
+    Output: [3,4]
+    Explanation: - Mountain 3 is stable because height[2] == 3 is greater than
+                   threshold == 2.
+                 - Mountain 4 is stable because height[3] == 4 is greater than
+                   threshold == 2.
+
+    Example 2:
+    Input: height = [10,1,10,1,10], threshold = 3
+    Output: [1,3]
+
+    Example 3:
+    Input: height = [10,1,10,1,10], threshold = 10
+    Output: []
+
+    Constraints:
+    * 2 <= n == height.length <= 100
+    * 1 <= height[i] <= 100
+    * 1 <= threshold <= 100"""
+
+    def stableMountains(self, height: List[int], threshold: int) -> List[int]:
+        return [i for i in range(1, len(height)) if height[i-1] > threshold]
+
+
+    """3286. Find a Safe Walk Through a Grid (Medium)
+    You are given an m x n binary matrix grid and an integer health. You start
+    on the upper-left corner (0, 0) and would like to get to the lower-right
+    corner (m - 1, n - 1). You can move up, down, left, or right from one cell
+    to another adjacent cell as long as your health remains positive. Cells
+    (i, j) with grid[i][j] = 1 are considered unsafe and reduce your health by
+    1. Return true if you can reach the final cell with a health value of 1 or
+    more, and false otherwise.
+
+    Example 1:
+    Input: grid = [[0,1,0,0,0],[0,1,0,1,0],[0,0,0,1,0]], health = 1
+    Output: true
+    Explanation: The final cell can be reached safely by walking along the gray
+                 cells below.
+
+    Example 2:
+    Input: grid = [[0,1,1,0,0,0],[1,0,1,0,0,0],[0,1,1,1,0,1],[0,0,1,0,1,0]], health = 3
+    Output: false
+    Explanation: A minimum of 4 health points is needed to reach the final cell
+                 safely.
+
+    Example 3:
+    Input: grid = [[1,1,1],[1,0,1],[1,1,1]], health = 5
+    Output: true
+    Explanation: The final cell can be reached safely by walking along the gray
+                 cells below. Any path that does not go through the cell (1, 1)
+                 is unsafe since your health will drop to 0 when reaching the
+                 final cell.
+
+    Constraints:
+    * m == grid.length
+    * n == grid[i].length
+    * 1 <= m, n <= 50
+    * 2 <= m * n
+    * 1 <= health <= m + n
+    * grid[i][j] is either 0 or 1."""
+
+    def findSafeWalk(self, grid: List[List[int]], health: int) -> bool:
+        m, n = len(grid), len(grid[0])
+        dist = [[0]*n for _ in range(m)]
+        dist[0][0] = health - grid[0][0]
+        queue = deque([(0, 0, dist[0][0])])
+        while queue:
+            i, j, h = queue.popleft()
+            if (i, j) == (m-1, n-1): return h > 0
+            if dist[i][j] == h:
+                for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
+                    if 0 <= ii < m and 0 <= jj < n:
+                        hh = h - grid[ii][jj]
+                        if dist[ii][jj] < hh:
+                            dist[ii][jj] = hh
+                            queue.append((ii, jj, hh))
+        return False
+
+
+    """3287. Find the Maximum Sequence Value of Array (Hard)
+    You are given an integer array nums and a positive integer k. The value of a
+    sequence seq of size 2 * x is defined as:
+    * (seq[0] OR seq[1] OR ... OR seq[x - 1]) XOR
+      (seq[x] OR seq[x + 1] OR ... OR seq[2 * x - 1]).
+    Return the maximum value of any subsequence of nums having size 2 * k.
+
+    Example 1:
+    Input: nums = [2,6,7], k = 1
+    Output: 5
+    Explanation: The subsequence [2, 7] has the maximum value of 2 XOR 7 = 5.
+
+    Example 2:
+    Input: nums = [4,2,5,6,7], k = 2
+    Output: 2
+    Explanation: The subsequence [4, 5, 6, 7] has the maximum value of
+                 (4 OR 5) XOR (6 OR 7) = 2.
+
+    Constraints:
+    * 2 <= nums.length <= 400
+    * 1 <= nums[i] < 27
+    * 1 <= k <= nums.length / 2"""
+
+    def maxValue(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        left = []
+        vals = [set() for _ in range(k+1)]
+        vals[0].add(0)
+        for i in range(n):
+            for j in range(k-1, -1, -1):
+                vals[j+1] |= {nums[i] | x for x in vals[j]}
+            left.append(vals[k].copy())
+        print(left)
+        ans = 0
+        vals = [set() for _ in range(k+1)]
+        vals[0].add(0)
+        for i in range(n-1, 0, -1):
+            for j in range(k-1, -1, -1):
+                vals[j+1] |= {nums[i] | x for x in vals[j]}
+            cand = max((v ^ vv for v, vv in product(vals[k], left[i-1])), default=0)
+            ans = max(ans, cand)
+        return ans
+
+
+    """3288. Length of the Longest Increasing Path (Hard)
+    You are given a 2D array of integers coordinates of length n and an integer
+    k, where 0 <= k < n.
+    coordinates[i] = [xi, yi] indicates the point (xi, yi) in a 2D plane.
+    An increasing path of length m is defined as a list of points (x1, y1),
+    (x2, y2), (x3, y3), ..., (xm, ym) such that:
+    * xi < xi + 1 and yi < yi + 1 for all i where 1 <= i < m.
+    * (xi, yi) is in the given coordinates for all i where 1 <= i <= m.
+    Return the maximum length of an increasing path that contains coordinates[k].
+
+    Example 1:
+    Input: coordinates = [[3,1],[2,2],[4,1],[0,0],[5,3]], k = 1
+    Output: 3
+    Explanation: (0, 0), (2, 2), (5, 3) is the longest increasing path that
+                 contains (2, 2).
+
+    Example 2:
+    Input: coordinates = [[2,1],[7,0],[5,6]], k = 2
+    Output: 2
+    Explanation: (2, 1), (5, 6) is the longest increasing path that contains
+                 (5, 6).
+
+    Constraints:
+    * 1 <= n == coordinates.length <= 10^5
+    * coordinates[i].length == 2
+    * 0 <= coordinates[i][0], coordinates[i][1] <= 10^9
+    * All elements in coordinates are distinct.
+    * 0 <= k <= n - 1"""
+
+    def maxPathLength(self, coordinates: List[List[int]], k: int) -> int:
+        xk, yk = coordinates[k]
+        lis = []
+        for x, y in sorted(coordinates, key = lambda x : (x[0], -x[1])):
+            if x < xk and y < yk or x == xk and y == yk or x > xk and y > yk:
+                i = bisect_left(lis, y)
+                if i == len(lis): lis.append(y)
+                else: lis[i] = y
+        return len(lis)
+
+
     """3289. The Two Sneaky Numbers of Digitville (Easy)
     In the town of Digitville, there was a list of numbers called nums
     containing integers from 0 to n - 1. Each number was supposed to appear
