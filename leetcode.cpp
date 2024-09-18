@@ -5386,6 +5386,36 @@ public:
     }
 
 
+    /*179. Largest Number (Medium)
+    Given a list of non-negative integers nums, arrange them such that they form
+    the largest number and return it. Since the result may be very large, so you
+    need to return a string instead of an integer.
+
+    Example 1:
+    Input: nums = [10,2]
+    Output: "210"
+
+    Example 2:
+    Input: nums = [3,30,34,5,9]
+    Output: "9534330"
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * 0 <= nums[i] <= 10^9*/
+
+    string largestNumber(vector<int>& nums) {
+        vector<string> vals;
+        for (auto& x : nums)
+            vals.push_back(to_string(x));
+        sort(vals.begin(), vals.end(), [&](auto& x, auto& y) {
+            return x + y > y + x;
+        });
+        string ans = accumulate(vals.begin(), vals.end(), string(""));
+        ans.erase(0, ans.find_first_not_of('0'));
+        return ans.empty() ? "0" : ans;
+    }
+
+
     /*187. Repeated DNA Sequences (Medium)
     The DNA sequence is composed of a series of nucleotides abbreviated as 'A',
     'C', 'G', and 'T'. For example, "ACGAATTCCG" is a DNA sequence. When
