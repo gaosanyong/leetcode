@@ -2041,6 +2041,37 @@ class Solution {
     }
 
 
+    /*214. Shortest Palindrome (Hard)
+    You are given a string s. You can convert s to a palindrome by adding
+    characters in front of it. Return the shortest palindrome you can find by
+    performing this transformation.
+
+    Example 1:
+    Input: s = "aacecaaa"
+    Output: "aaacecaaa"
+
+    Example 2:
+    Input: s = "abcd"
+    Output: "dcbabcd"
+
+    Constraints:
+    * 0 <= s.length <= 5 * 10^4
+    * s consists of lowercase English letters only.*/
+
+    public String shortestPalindrome(String s) {
+        String ss = s + "#" + new StringBuilder(s).reverse().toString();
+        int n = ss.length();
+        int[] lps = new int[n];
+        int k = 0;
+        for (int i = 1; i < n; ++i) {
+            while (k > 0 && ss.charAt(k) != ss.charAt(i)) k = lps[k-1];
+            if (ss.charAt(k) == ss.charAt(i)) ++k;
+            lps[i] = k;
+        }
+        return new StringBuilder(s.substring(k)).reverse().toString() + s;
+    }
+
+
     /*200. Number of Islands (Medium)
     Given an m x n 2D binary grid grid which represents a map of '1's (land) and
     '0's (water), return the number of islands. An island is surrounded by water

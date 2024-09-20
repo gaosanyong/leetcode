@@ -6127,6 +6127,41 @@ public:
     }
 
 
+    /*214. Shortest Palindrome (Hard)
+    You are given a string s. You can convert s to a palindrome by adding
+    characters in front of it. Return the shortest palindrome you can find by
+    performing this transformation.
+
+    Example 1:
+    Input: s = "aacecaaa"
+    Output: "aaacecaaa"
+
+    Example 2:
+    Input: s = "abcd"
+    Output: "dcbabcd"
+
+    Constraints:
+    * 0 <= s.length <= 5 * 10^4
+    * s consists of lowercase English letters only.*/
+
+    string shortestPalindrome(string s) {
+        string rev = s;
+        reverse(rev.begin(), rev.end());
+        string ss = s + "#" + rev;
+        int n = ss.size();
+        vector<int> lps(n);
+        int k = 0;
+        for (int i = 1; i < n; ++i) {
+            while (k && ss[k] != ss[i]) k = lps[k-1];
+            if (ss[k] == ss[i]) ++k;
+            lps[i] = k;
+        }
+        string prefix = s.substr(k);
+        reverse(prefix.begin(), prefix.end());
+        return prefix + s;
+    }
+
+
     /*215. Kth Largest Element in an Array (Medium)
     Given an integer array nums and an integer k, return the kth largest
     element in the array. Note that it is the kth largest element in the

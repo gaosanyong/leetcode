@@ -676,6 +676,37 @@ var numIslands = function(grid) {
 };
 
 
+/*214. Shortest Palindrome (Hard)
+You are given a string s. You can convert s to a palindrome by adding
+characters in front of it. Return the shortest palindrome you can find by
+performing this transformation.
+
+Example 1:
+Input: s = "aacecaaa"
+Output: "aaacecaaa"
+
+Example 2:
+Input: s = "abcd"
+Output: "dcbabcd"
+
+Constraints:
+* 0 <= s.length <= 5 * 10^4
+* s consists of lowercase English letters only.*/
+
+var shortestPalindrome = function(s) {
+    const ss = s + "#" + s.split("").reverse().join("");
+    const n = ss.length;
+    const lps = Array(n).fill(0);
+    let k = 0;
+    for (let i = 1; i < n; ++i) {
+        while (k && ss[k] != ss[i]) k = lps[k-1];
+        if (ss[k] == ss[i]) ++k;
+        lps[i] = k;
+    }
+    return s.substring(k).split("").reverse().join("") + s;
+};
+
+
 /*231. Power of Two (Easy)
 Given an integer n, return true if it is a power of two. Otherwise, return
 false. An integer n is a power of two, if there exists an integer x such
