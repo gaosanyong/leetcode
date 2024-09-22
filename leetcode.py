@@ -10810,15 +10810,14 @@ class Solution:
     5,000,000."""
 
     def lexicalOrder(self, n: int) -> List[int]:
-
-        def dfs(x):
-            """Pre-order traverse the tree."""
-            if x <= n:
-                ans.append(x)
-                for xx in range(10): dfs(10*x + xx)
-
         ans = []
-        for x in range(1, 10): dfs(x)
+        v = 1
+        for _ in range(n):
+            ans.append(v)
+            if 10*v <= n: v *= 10
+            else:
+                while v % 10 == 9 or v == n: v //= 10
+                v += 1
         return ans
 
 
