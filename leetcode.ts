@@ -21066,3 +21066,191 @@ function minValidStrings(words: string[], target: string): number {
     }
     return dp[0];
 };
+
+
+/*3295. Report Spam Message (Medium)
+You are given an array of strings message and an array of strings
+bannedWords. An array of words is considered spam if there are at least two
+words in it that exactly match any word in bannedWords. Return true if the
+array message is spam, and false otherwise.
+
+Example 1:
+Input: message = ["hello","world","leetcode"], bannedWords = ["world","hello"]
+Output: true
+Explanation: The words "hello" and "world" from the message array both
+             appear in the bannedWords array.
+
+Example 2:
+Input: message = ["hello","programming","fun"], bannedWords = ["world","programming","leetcode"]
+Output: false
+Explanation: Only one word from the message array ("programming") appears in
+             the bannedWords array.
+
+Constraints:
+* 1 <= message.length, bannedWords.length <= 10^5
+* 1 <= message[i].length, bannedWords[i].length <= 15
+* message[i] and bannedWords[i] consist only of lowercase English letters.*/
+
+function reportSpam(message: string[], bannedWords: string[]): boolean {
+    const banned = new Set(bannedWords);
+    return message.filter(m => banned.has(m)).length >= 2;
+};
+
+
+/*3296. Minimum Number of Seconds to Make Mountain Height Zero (Medium)
+You are given an integer mountainHeight denoting the height of a mountain.
+You are also given an integer array workerTimes representing the work time
+of workers in seconds. The workers work simultaneously to reduce the height
+of the mountain. For worker i:
+* To decrease the mountain's height by x, it takes
+  workerTimes[i] + workerTimes[i] * 2 + ... + workerTimes[i] * x seconds.
+  For example:
+  - To reduce the height of the mountain by 1, it takes workerTimes[i]
+    seconds.
+  - To reduce the height of the mountain by 2, it takes
+    workerTimes[i] + workerTimes[i] * 2 seconds, and so on.
+Return an integer representing the minimum number of seconds required for
+the workers to make the height of the mountain 0.
+
+Example 1:
+Input: mountainHeight = 4, workerTimes = [2,1,1]
+Output: 3
+Explanation: One way the height of the mountain can be reduced to 0 is:
+             - Worker 0 reduces the height by 1, taking workerTimes[0] = 2
+               seconds.
+             - Worker 1 reduces the height by 2, taking
+               workerTimes[1] + workerTimes[1] * 2 = 3 seconds.
+             - Worker 2 reduces the height by 1, taking workerTimes[2] = 1
+               second.
+             - Since they work simultaneously, the minimum time needed is
+               max(2, 3, 1) = 3 seconds.
+
+Example 2:
+Input: mountainHeight = 10, workerTimes = [3,2,2,4]
+Output: 12
+Explanation: - Worker 0 reduces the height by 2, taking
+               workerTimes[0] + workerTimes[0] * 2 = 9 seconds.
+             - Worker 1 reduces the height by 3, taking
+               workerTimes[1] + workerTimes[1] * 2 + workerTimes[1] * 3 = 12
+               seconds.
+             - Worker 2 reduces the height by 3, taking
+               workerTimes[2] + workerTimes[2] * 2 + workerTimes[2] * 3 = 12
+               seconds.
+             - Worker 3 reduces the height by 2, taking
+               workerTimes[3] + workerTimes[3] * 2 = 12 seconds.
+             The number of seconds needed is max(9, 12, 12, 12) = 12 seconds.
+
+Example 3:
+Input: mountainHeight = 5, workerTimes = [1]
+Output: 15
+Explanation: There is only one worker in this example, so the answer is
+             workerTimes[0] + workerTimes[0] * 2 + workerTimes[0] * 3 +
+             workerTimes[0] * 4 + workerTimes[0] * 5 = 15.
+
+Constraints:
+* 1 <= mountainHeight <= 10^5
+* 1 <= workerTimes.length <= 10^4
+* 1 <= workerTimes[i] <= 10^6*/
+
+function minNumberOfSeconds(mountainHeight: number, workerTimes: number[]): number {
+    let ans = 0;
+    const pq = new PriorityQueue({ compare : (x, y) => x[0] - y[0]});
+    for (const t of workerTimes)
+        pq.enqueue([t, t, 1]);
+    while (mountainHeight--) {
+        const [v, t, i] = pq.dequeue();
+        ans = Math.max(ans, v);
+        pq.enqueue([v+t*(i+1), t, i+1]);
+    }
+    return ans;
+};
+
+
+/*3297. Count Substrings That Can Be Rearranged to Contain a String I (Medium)
+You are given two strings word1 and word2. A string x is called valid if x
+can be rearranged to have word2 as a prefix. Return the total number of
+valid substrings of word1.
+
+Example 1:
+Input: word1 = "bcca", word2 = "abc"
+Output: 1
+Explanation: The only valid substring is "bcca" which can be rearranged to
+             "abcc" having "abc" as a prefix.
+
+Example 2:
+Input: word1 = "abcabc", word2 = "abc"
+Output: 10
+Explanation: All the substrings except substrings of size 1 and size 2 are
+             valid.
+
+Example 3:
+Input: word1 = "abcabc", word2 = "aaabc"
+Output: 0
+
+Constraints:
+* 1 <= word1.length <= 10^5
+* 1 <= word2.length <= 10^4
+* word1 and word2 consist only of lowercase English letters.*/
+
+function validSubstringCount(word1: string, word2: string): number {
+    const freq = {};
+    for (const ch of word2)
+        freq[ch] = ++freq[ch] || 1;
+    let ans = 0, ii = 0, cnt = word2.length;
+    for (const ch of word1) {
+        if (freq[ch] > 0) --cnt;
+        freq[ch] = (freq[ch] ?? 0) - 1;
+        for (; cnt == 0; ++ii) {
+            if (freq[word1[ii]] == 0) ++cnt;
+            ++freq[word1[ii]];
+        }
+        ans += ii;
+    }
+    return ans;
+};
+
+
+/*3298. Count Substrings That Can Be Rearranged to Contain a String II (Hard)
+You are given two strings word1 and word2. A string x is called valid if x
+can be rearranged to have word2 as a prefix. Return the total number of
+valid substrings of word1. Note that the memory limits in this problem are
+smaller than usual, so you must implement a solution with a linear runtime
+complexity.
+
+Example 1:
+Input: word1 = "bcca", word2 = "abc"
+Output: 1
+Explanation: The only valid substring is "bcca" which can be rearranged to
+             "abcc" having "abc" as a prefix.
+
+Example 2:
+Input: word1 = "abcabc", word2 = "abc"
+Output: 10
+Explanation: All the substrings except substrings of size 1 and size 2 are
+             valid.
+
+Example 3:
+Input: word1 = "abcabc", word2 = "aaabc"
+Output: 0
+
+Constraints:
+* 1 <= word1.length <= 10^6
+* 1 <= word2.length <= 10^4
+* word1 and word2 consist only of lowercase English letters.*/
+
+function validSubstringCount(word1: string, word2: string): number {
+    const freq = {};
+    for (const ch of word2)
+        freq[ch] = ++freq[ch] || 1;
+    let ans = 0, ii = 0, cnt = word2.length;
+    for (const ch of word1) {
+        if (freq[ch] > 0) --cnt;
+        freq[ch] = (freq[ch] ?? 0) - 1;
+        for (; cnt == 0; ++ii) {
+            if (freq[word1[ii]] == 0) ++cnt;
+            ++freq[word1[ii]];
+        }
+        ans += ii;
+    }
+    return ans;
+};
