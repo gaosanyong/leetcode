@@ -20176,6 +20176,130 @@ class SegTreeLazy {
     }
 
 
+    /*2707. Extra Characters in a String (Medium)
+    You are given a 0-indexed string s and a dictionary of words dictionary. You
+    have to break s into one or more non-overlapping substrings such that each
+    substring is present in dictionary. There may be some extra characters in s
+    which are not present in any of the substrings. Return the minimum number of
+    extra characters left over if you break up s optimally.
+
+    Example 1:
+    Input: s = "leetscode", dictionary = ["leet","code","leetcode"]
+    Output: 1
+    Explanation: We can break s in two substrings: "leet" from index 0 to 3 and
+                 "code" from index 5 to 8. There is only 1 unused character (at
+                 index 4), so we return 1.
+
+    Example 2:
+    Input: s = "sayhelloworld", dictionary = ["hello","world"]
+    Output: 3
+    Explanation: We can break s in two substrings: "hello" from index 3 to 7 and
+                 "world" from index 8 to 12. The characters at indices 0, 1, 2
+                 are not used in any substring and thus are considered as extra
+                 characters. Hence, we return 3.
+
+    Constraints:
+    * 1 <= s.length <= 50
+    * 1 <= dictionary.length <= 50
+    * 1 <= dictionary[i].length <= 50
+    * dictionary[i] and s consists of only lowercase English letters
+    * dictionary contains distinct words
+
+    class TrieNode {
+        public TrieNode[] child = new TrieNode[26];
+        public TrieNode output = null;
+        public TrieNode parent = null;
+        public TrieNode suffix = null;
+        public String word;
+    }
+
+    public class AhoCorasick {
+        public TrieNode root = new TrieNode();
+
+        public void build(String[] patterns) {
+            for (var pattern : patterns) {
+                TrieNode node = root;
+                for (var ch : pattern.toCharArray()) {
+                    int c = (int) (ch - 'a');
+                    if (node.child[c] == null) {
+                        node.child[c] = new TrieNode();
+                        node.child[c].parent = node;
+                    }
+                    node = node.child[c];
+                }
+                node.word = pattern;
+            }
+            Queue<TrieNode> q = new LinkedList<>(); q.add(root);
+            while (!q.isEmpty())
+                for (int sz = q.size(); sz > 0; --sz) {
+                    TrieNode node = q.poll();
+                    for (int i = 0; i < 26; ++i) {
+                        TrieNode child = node.child[i], suffix = node.suffix;
+                        if (child != null) {
+                            while (suffix != null && suffix.child[i] == null)
+                                suffix = suffix.suffix;
+                            if (suffix != null) {
+                                child.suffix = suffix.child[i];
+                                if (child.suffix.word != null) child.output =child.suffix;
+                                else child.output = child.suffix.output;
+                            } else {
+                                child.output = null;
+                                child.suffix = root;
+                            }
+                            q.add(child);
+                        }
+                    }
+                }
+        }
+
+        public Map<String, List<Integer>> match(String text) {
+            Map<String, List<Integer>> ans = new HashMap<>();
+            TrieNode node = root;
+            for (int i = 0; i < text.length(); ++i) {
+                char ch = text.charAt(i);
+                int c = (int) (ch - 'a');
+                while (node.child[c] == null && node.suffix != null)
+                    node = node.suffix;
+                if (node.child[c] != null) node = node.child[c];
+                for (TrieNode output = node; output != null; output = output.output)
+                    if (output.word != null) {
+                        String pattern = output.word;
+                        if (!ans.containsKey(pattern))
+                            ans.put(pattern, new ArrayList<>());
+                        ans.get(pattern).add(i-pattern.length()+1);
+                    }
+            }
+            return ans;
+        }
+    }*/
+
+    public int minExtraChar(String s, String[] dictionary) {
+        AhoCorasick trie = new AhoCorasick();
+        trie.build(dictionary);
+        Map<Integer, List<String>> mp = new HashMap<>();
+        Map<String, List<Integer>> match = trie.match(s);
+        for (var k : match.keySet()) {
+            List<Integer> v = match.get(k);
+            for (var i : match.get(k)) {
+                if (!mp.containsKey(i))
+                    mp.put(i, new ArrayList<>());
+                mp.get(i).add(k);
+            }
+        }
+        int n = s.length();
+        int[] dp = new int[n+1];
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[n] = 0;
+        for (int i = n-1; i >= 0; --i) {
+            dp[i] = dp[i+1] + 1;
+            if (mp.containsKey(i))
+                for (var k : mp.get(i))
+                    dp[i] = Math.min(dp[i], dp[i+k.length()]);
+        }
+        return dp[0];
+    }
+
+
     /*2728. Count Houses in a Circular Street (Easy)
     You are given an object street of class Street that represents a circular
     street and a positive integer k which represents a maximum bound for the

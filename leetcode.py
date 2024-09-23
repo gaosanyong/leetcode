@@ -81571,6 +81571,95 @@ class SegTreeLazy:
         return ans
 
 
+    """2707. Extra Characters in a String (Medium)
+    You are given a 0-indexed string s and a dictionary of words dictionary. You
+    have to break s into one or more non-overlapping substrings such that each
+    substring is present in dictionary. There may be some extra characters in s
+    which are not present in any of the substrings. Return the minimum number of
+    extra characters left over if you break up s optimally.
+
+    Example 1:
+    Input: s = "leetscode", dictionary = ["leet","code","leetcode"]
+    Output: 1
+    Explanation: We can break s in two substrings: "leet" from index 0 to 3 and
+                 "code" from index 5 to 8. There is only 1 unused character (at
+                 index 4), so we return 1.
+
+    Example 2:
+    Input: s = "sayhelloworld", dictionary = ["hello","world"]
+    Output: 3
+    Explanation: We can break s in two substrings: "hello" from index 3 to 7 and
+                 "world" from index 8 to 12. The characters at indices 0, 1, 2
+                 are not used in any substring and thus are considered as extra
+                 characters. Hence, we return 3.
+
+    Constraints:
+    * 1 <= s.length <= 50
+    * 1 <= dictionary.length <= 50
+    * 1 <= dictionary[i].length <= 50
+    * dictionary[i] and s consists of only lowercase English letters
+    * dictionary contains distinct words
+
+    class AhoCorasick:
+        def __init__(self):
+            self.root = {"output" : None, "parent" : None, "suffix" : None}
+
+        def build(self, patterns: List[str]):
+            for pattern in patterns:
+                node = self.root
+                for ch in pattern:
+                    if ch not in node: node[ch] = {"output" : None, "parent" : node, "suffix" : None}
+                    node = node[ch]
+                node["$"] = pattern
+            queue = deque([self.root])
+            while queue:
+                for _ in range(len(queue)):
+                    node = queue.popleft()
+                    for ch, child in node.items():
+                        if ch not in ("parent", "output", "suffix", "$"):
+                            suffix = node["suffix"]
+                            while suffix and ch not in suffix: suffix = suffix["suffix"]
+                            if suffix:
+                                child["suffix"] = suffix[ch]
+                                if "$" in child["suffix"]: child["output"] = child["suffix"]
+                                else: child["output"] = child["suffix"]["output"]
+                            else:
+                                child["output"] = None
+                                child["suffix"] = self.root
+                            queue.append(child)
+
+        def match(self, text: str):
+            ans = defaultdict(list)
+            node = self.root
+            for i, ch in enumerate(text):
+                while ch not in node and node["suffix"]: node = node["suffix"]
+                if ch in node: node = node[ch]
+                output = node
+                while output:
+                    if "$" in output:
+                        pattern = output["$"]
+                        ans[pattern].append(i-len(pattern)+1)
+                    output = output["output"]
+            return ans"""
+
+    def minExtraChar(self, s: str, dictionary: List[str]) -> int:
+        trie = AhoCorasick()
+        trie.build(dictionary)
+        mp = defaultdict(list)
+        for k, v in trie.match(s).items():
+            for i in v:
+                mp[i].append(k)
+        n = len(s)
+        dp = [inf]*(n+1)
+        dp[n] = 0
+        for i in range(n-1, -1, -1):
+            dp[i] = dp[i+1] + 1
+            if i in mp:
+                for k in mp[i]:
+                    dp[i] = min(dp[i], dp[i+len(k)])
+        return dp[0]
+
+
     """2728. Count Houses in a Circular Street (Easy)
     You are given an object street of class Street that represents a circular
     street and a positive integer k which represents a maximum bound for the

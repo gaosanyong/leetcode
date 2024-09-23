@@ -6624,6 +6624,121 @@ function compactObject(obj: Obj): Obj {
 };
 
 
+/*2707. Extra Characters in a String (Medium)
+You are given a 0-indexed string s and a dictionary of words dictionary. You
+have to break s into one or more non-overlapping substrings such that each
+substring is present in dictionary. There may be some extra characters in s
+which are not present in any of the substrings. Return the minimum number of
+extra characters left over if you break up s optimally.
+
+Example 1:
+Input: s = "leetscode", dictionary = ["leet","code","leetcode"]
+Output: 1
+Explanation: We can break s in two substrings: "leet" from index 0 to 3 and
+             "code" from index 5 to 8. There is only 1 unused character (at
+             index 4), so we return 1.
+
+Example 2:
+Input: s = "sayhelloworld", dictionary = ["hello","world"]
+Output: 3
+Explanation: We can break s in two substrings: "hello" from index 3 to 7 and
+             "world" from index 8 to 12. The characters at indices 0, 1, 2
+             are not used in any substring and thus are considered as extra
+             characters. Hence, we return 3.
+
+Constraints:
+* 1 <= s.length <= 50
+* 1 <= dictionary.length <= 50
+* 1 <= dictionary[i].length <= 50
+* dictionary[i] and s consists of only lowercase English letters
+* dictionary contains distinct words*/
+
+class AhoCorasick {
+    public root;
+
+    constructor() {
+        this.root = {
+            output: null,
+            parent: null,
+            suffix: null
+        };
+    }
+
+    build(patterns) {
+        for (const pattern of patterns) {
+            let node = this.root;
+            for (const ch of pattern) {
+                if (!(ch in node))
+                    node[ch] = {
+                        output: null,
+                        parent: node,
+                        suffix: null
+                    }
+                node = node[ch];
+            }
+            node["$"] = pattern
+        }
+        const queue = [this.root]
+        const forbidden = new Set(["parent", "output", "suffix", "$"])
+        while (queue.length)
+            for (let sz = queue.length; sz; --sz) {
+                let node = queue.shift();
+                for (const [ch, child] of Object.entries(node))
+                    if (!forbidden.has(ch)) {
+                        let suffix = node["suffix"];
+                        while (suffix && !(ch in suffix)) suffix = suffix["suffix"];
+                        if (suffix) {
+                            child["suffix"] = suffix[ch];
+                            if ("$" in child["suffix"]) child["output"] = child["suffix"];
+                            else child["output"] = child["suffix"];
+                        } else {
+                            child["output"] = null;
+                            child["suffix"] = this.root;
+                        }
+                        queue.push(child);
+                    }
+            }
+    }
+
+    match(text): Record<string, number[]> {
+        const ans = {};
+        let node = this.root;
+        for (const [i, ch] of text.split('').entries()) {
+            while (!(ch in node) && node["suffix"]) node = node["suffix"];
+            if (ch in node) node = node[ch];
+            for (let output = node; output; output = output["output"])
+                if ("$" in output) {
+                    const pattern = output["$"];
+                    if (!(pattern in ans)) ans[pattern] = [];
+                    ans[pattern].push(i-pattern.length+1);
+                }
+        }
+        return ans;
+    }
+}
+
+function minExtraChar(s: string, dictionary: string[]): number {
+    const trie = new AhoCorasick();
+    trie.build(dictionary);
+    const mp = new Map();
+    for (const [k, v] of Object.entries(trie.match(s)))
+        for (const i of v) {
+            if (!mp.has(i)) mp.set(i, []);
+            mp.get(i).push(k);
+        }
+    const n = s.length;
+    const dp = Array(n+1).fill(Infinity);
+    dp[n] = 0;
+    for (let i = n-1; i >= 0; --i) {
+        dp[i] = dp[i+1] + 1;
+        if (mp.has(i))
+            for (const k of mp.get(i))
+                dp[i] = Math.min(dp[i], dp[i+k.length]);
+    }
+    return dp[0];
+};
+
+
 /*2722. Join Two Arrays by ID (Medium)
 Given two arrays arr1 and arr2, return a new array joinedArray. All the objects
 in each of the two inputs arrays will contain an id field that has an integer
