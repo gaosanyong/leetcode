@@ -71562,19 +71562,19 @@ class SegTree:
     * words[i] consists of lowercase English letters."""
 
     def sumPrefixScores(self, words: List[str]) -> List[int]:
-        root = {}
+        trie = {}
         for word in words:
-            node = root
+            node = trie
             for ch in word:
                 node = node.setdefault(ch, {})
-                node['#'] = node.get('#', 0) + 1
+                node["#"] = node.get("#", 0) + 1
         ans = []
         for word in words:
             val = 0
-            node = root
+            node = trie
             for ch in word:
                 node = node[ch]
-                val += node['#']
+                val += node["#"]
             ans.append(val)
         return ans
 
