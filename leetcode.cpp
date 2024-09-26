@@ -83277,15 +83277,14 @@ Note:
   range [0, 10^9].*/
 
 class MyCalendar {
-    set<pair<int, int>> cal;
+    map<int, int> cal;
 public:
     MyCalendar() {}
 
     bool book(int start, int end) {
-        auto it = cal.lower_bound({start, end});
-        if (it != cal.begin() && prev(it)->second > start) return false;
-        if (it != cal.end() && end > it->first) return false;
-        cal.insert({start, end});
+        auto it = cal.lower_bound(start);
+        if (it != cal.begin() && prev(it)->second > start || it != cal.end() && end > it->first) return false;
+        cal[start] = end;
         return true;
     }
 };

@@ -100927,36 +100927,17 @@ takes every time less than 20, but not including 20.
 Note:
 * The number of calls to MyCalendar.book per test case will be at most 1000.
 * In calls to MyCalendar.book(start, end), start and end are integers in the
-  range [0, 10^9].
-
-class Node:
-    def __init__(self, val=(0,0), left=None, right=None):
-        self.val = val
-        self.left = left
-        self.right = right
-"""
+  range [0, 10^9]."""
 
 class MyCalendar:
 
     def __init__(self):
-        self.root = None
+        self.cal = SortedList()
 
     def book(self, start: int, end: int) -> bool:
-        if not self.root: self.root = Node((start, end))
-        else:
-            node = self.root
-            while node:
-                if end <= node.val[0]:
-                    if node.left: node = node.left
-                    else:
-                        node.left = Node((start, end))
-                        break
-                elif node.val[1] <= start:
-                    if node.right: node = node.right
-                    else:
-                        node.right = Node((start, end))
-                        break
-                else: return False # double booking
+        k = self.cal.bisect_left((start, end))
+        if k and self.cal[k-1][1] > start or k < len(self.cal) and end > self.cal[k][0]: return False
+        self.cal.add((start, end))
         return True
 
 
