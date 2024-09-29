@@ -38940,6 +38940,196 @@ class SegTreeLazy {
             if (prefix[k+i+1] + suffix[n-i+1] >= k-1) return i;
         return -1;
     }
+
+
+    /*3304. Find the K-th Character in String Game I (Easy)
+    Alice and Bob are playing a game. Initially, Alice has a string word = "a".
+    You are given a positive integer k. Now Bob will ask Alice to perform the
+    following operation forever:
+    * Generate a new string by changing each character in word to its next
+      character in the English alphabet, and append it to the original word.
+    For example, performing the operation on "c" generates "cd" and performing
+    the operation on "zb" generates "zbac". Return the value of the kth
+    character in word, after enough operations have been done for word to have
+    at least k characters. Note that the character 'z' can be changed to 'a' in
+    the operation.
+
+    Example 1:
+    Input: k = 5
+    Output: "b"
+    Explanation: Initially, word = "a". We need to do the operation three times:
+                 - Generated string is "b", word becomes "ab".
+                 - Generated string is "bc", word becomes "abbc".
+                 - Generated string is "bccd", word becomes "abbcbccd".
+
+    Example 2:
+    Input: k = 10
+    Output: "c"
+
+    Constraints: 1 <= k <= 500*/
+
+    public char kthCharacter(int k) {
+        return (char) ('a' + Integer.bitCount(k-1) % 26);
+    }
+
+
+    /*3305. Count of Substrings Containing Every Vowel and K Consonants I (Medium)
+    You are given a string word and a non-negative integer k. Return the total
+    number of substrings of word that contain every vowel ('a', 'e', 'i', 'o',
+    and 'u') at least once and exactly k consonants.
+
+    Example 1:
+    Input: word = "aeioqq", k = 1
+    Output: 0
+    Explanation: There is no substring with every vowel.
+
+    Example 2:
+    Input: word = "aeiou", k = 0
+    Output: 1
+    Explanation: The only substring with every vowel and zero consonants is
+                 word[0..4], which is "aeiou".
+
+    Example 3:
+    Input: word = "ieaouqqieaouqq", k = 1
+    Output: 3
+    Explanation: The substrings with every vowel and one consonant are:
+                 - word[0..5], which is "ieaouq".
+                 - word[6..11], which is "qieaou".
+                 - word[7..12], which is "ieaouq".
+
+    Constraints:
+    * 5 <= word.length <= 250
+    * word consists only of lowercase English letters.
+    * 0 <= k <= word.length - 5*/
+
+    private int[] fn(String word, int k, BiFunction<Integer, Integer, Boolean> op) {
+        List<Integer> ans = new ArrayList<>();
+        Map<Character, Integer> vowel = new HashMap<>();
+        int consonant = 0, j = 0;
+        for (var ch : word.toCharArray()) {
+            if ("aeiou".indexOf(ch) >= 0) vowel.merge(ch, 1, Integer::sum);
+            else ++consonant;
+            for (; vowel.size() == 5 && op.apply(consonant, k); ++j)
+                if ("aeiou".indexOf(word.charAt(j)) >= 0) {
+                    vowel.merge(word.charAt(j), -1, Integer::sum);
+                    if (vowel.get(word.charAt(j)) == 0) vowel.remove(word.charAt(j));
+                } else --consonant;
+            ans.add(j);
+        }
+        return ans.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    public int countOfSubstrings(String word, int k) {
+        int[] lo = fn(word, k, (x, y) -> x > y), hi = fn(word, k, (x, y) -> x >= y);
+        int ans = 0;
+        for (int i = 0; i < lo.length; ++i)
+            ans += hi[i] - lo[i];
+        return ans;
+    }
+
+    /*3306. Count of Substrings Containing Every Vowel and K Consonants II (Medium)
+    You are given a string word and a non-negative integer k. Return the total
+    number of substrings of word that contain every vowel ('a', 'e', 'i', 'o',
+    and 'u') at least once and exactly k consonants.
+
+    Example 1:
+    Input: word = "aeioqq", k = 1
+    Output: 0
+    Explanation: There is no substring with every vowel.
+
+    Example 2:
+    Input: word = "aeiou", k = 0
+    Output: 1
+    Explanation: The only substring with every vowel and zero consonants is
+                 word[0..4], which is "aeiou".
+
+    Example 3:
+    Input: word = "ieaouqqieaouqq", k = 1
+    Output: 3
+    Explanation: The substrings with every vowel and one consonant are:
+                 - word[0..5], which is "ieaouq".
+                 - word[6..11], which is "qieaou".
+                 - word[7..12], which is "ieaouq".
+
+    Constraints:
+    * 5 <= word.length <= 2 * 10^5
+    * word consists only of lowercase English letters.
+    * 0 <= k <= word.length - 5*/
+
+    private int[] fn(String word, int k, BiFunction<Integer, Integer, Boolean> op) {
+        List<Integer> ans = new ArrayList<>();
+        Map<Character, Integer> vowel = new HashMap<>();
+        int consonant = 0, j = 0;
+        for (var ch : word.toCharArray()) {
+            if ("aeiou".indexOf(ch) >= 0) vowel.merge(ch, 1, Integer::sum);
+            else ++consonant;
+            for (; vowel.size() == 5 && op.apply(consonant, k); ++j)
+                if ("aeiou".indexOf(word.charAt(j)) >= 0) {
+                    vowel.merge(word.charAt(j), -1, Integer::sum);
+                    if (vowel.get(word.charAt(j)) == 0) vowel.remove(word.charAt(j));
+                } else --consonant;
+            ans.add(j);
+        }
+        return ans.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    public long countOfSubstrings(String word, int k) {
+        int[] lo = fn(word, k, (x, y) -> x > y), hi = fn(word, k, (x, y) -> x >= y);
+        long ans = 0;
+        for (int i = 0; i < lo.length; ++i)
+            ans += hi[i] - lo[i];
+        return ans;
+    }
+
+
+    /*3307. Find the K-th Character in String Game II (Hard)
+    Alice and Bob are playing a game. Initially, Alice has a string word = "a".
+    You are given a positive integer k. You are also given an integer array
+    operations, where operations[i] represents the type of the ith operation.
+    Now Bob will ask Alice to perform all operations in sequence:
+    * If operations[i] == 0, append a copy of word to itself.
+    * If operations[i] == 1, generate a new string by changing each character in
+      word to its next character in the English alphabet, and append it to the
+      original word. For example, performing the operation on "c" generates "cd"
+      and performing the operation on "zb" generates "zbac".
+    Return the value of the kth character in word after performing all the
+    operations. Note that the character 'z' can be changed to 'a' in the second
+    type of operation.
+
+    Example 1:
+    Input: k = 5, operations = [0,0,0]
+    Output: "a"
+    Explanation: Initially, word == "a". Alice performs the three operations as
+                 follows:
+                 - Appends "a" to "a", word becomes "aa".
+                 - Appends "aa" to "aa", word becomes "aaaa".
+                 - Appends "aaaa" to "aaaa", word becomes "aaaaaaaa".
+
+    Example 2:
+    Input: k = 10, operations = [0,1,0,1]
+    Output: "b"
+    Explanation: Initially, word == "a". Alice performs the four operations as
+                 follows:
+                 - Appends "a" to "a", word becomes "aa".
+                 - Appends "bb" to "aa", word becomes "aabb".
+                 - Appends "aabb" to "aabb", word becomes "aabbaabb".
+                 - Appends "bbccbbcc" to "aabbaabb", word becomes "aabbaabbbbccbbcc".
+
+    Constraints:
+    * 1 <= k <= 10^14
+    * 1 <= operations.length <= 100
+    * operations[i] is either 0 or 1.
+    * The input is generated such that word has at least k characters after all
+      operations.*/
+
+    public char kthCharacter(long k, int[] operations) {
+        --k;
+        int cnt = 0;
+        for (int i = 0; i < 47 && i < operations.length; ++i)
+            if ((k & 1l<<i) > 0)
+                cnt += operations[i];
+        return (char) ('a' + cnt%26);
+    }
 }
 
 
