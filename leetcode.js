@@ -22493,3 +22493,207 @@ var validSubstringCount = function(word1, word2) {
     }
     return ans;
 };
+
+
+/*3300. Minimum Element After Replacement With Digit Sum (Easy)
+You are given an integer array nums. You replace each element in nums with
+the sum of its digits. Return the minimum element in nums after all
+replacements.
+
+Example 1:
+Input: nums = [10,12,13,14]
+Output: 1
+Explanation: nums becomes [1, 3, 4, 5] after all replacements, with minimum
+             element 1.
+
+Example 2:
+Input: nums = [1,2,3,4]
+Output: 1
+Explanation: nums becomes [1, 2, 3, 4] after all replacements, with minimum
+             element 1.
+
+Example 3:
+Input: nums = [999,19,199]
+Output: 10
+Explanation: nums becomes [27, 10, 19] after all replacements, with minimum
+             element 10.
+
+Constraints:
+* 1 <= nums.length <= 100
+* 1 <= nums[i] <= 10^4*/
+
+var minElement = function(nums) {
+    let ans = Infinity;
+    for (let x of nums) {
+        let cand = 0;
+        for (; x; x = Math.floor(x/10))
+            cand += x % 10;
+        ans = Math.min(ans, cand);
+    }
+    return ans;
+};
+
+
+/*3301. Maximize the Total Height of Unique Towers (Medium)
+You are given an array maximumHeight, where maximumHeight[i] denotes the
+maximum height the ith tower can be assigned. Your task is to assign a
+height to each tower so that:
+* The height of the ith tower is a positive integer and does not exceed
+  maximumHeight[i].
+* No two towers have the same height.
+Return the maximum possible total sum of the tower heights. If it's not
+possible to assign heights, return -1.
+
+Example 1:
+Input: maximumHeight = [2,3,4,3]
+Output: 10
+Explanation: We can assign heights in the following way: [1, 2, 4, 3].
+
+Example 2:
+Input: maximumHeight = [15,10]
+Output: 25
+Explanation: We can assign heights in the following way: [15, 10].
+
+Example 3:
+Input: maximumHeight = [2,2,1]
+Output: -1
+Explanation: It's impossible to assign positive heights to each index so
+             that no two towers have the same height.
+
+Constraints:
+* 1 <= maximumHeight.length <= 10^5
+* 1 <= maximumHeight[i] <= 10^9*/
+
+var maximumTotalSum = function(maximumHeight) {
+    let ans = 0, val = Infinity;
+    maximumHeight.sort((x, y) => y-x);
+    for (const x of maximumHeight) {
+        val = Math.min(val, x);
+        if (val <= 0) return -1;
+        ans += val--;
+    }
+    return ans;
+};
+
+
+/*3302. Find the Lexicographically Smallest Valid Sequence (Medium)
+You are given two strings word1 and word2. A string x is called almost equal
+to y if you can change at most one character in x to make it identical to y.
+A sequence of indices seq is called valid if:
+* The indices are sorted in ascending order.
+* Concatenating the characters at these indices in word1 in the same order
+  results in a string that is almost equal to word2.
+Return an array of size word2.length representing the lexicographically
+smallest valid sequence of indices. If no such sequence of indices exists,
+return an empty array. Note that the answer must represent the
+lexicographically smallest array, not the corresponding string formed by
+those indices.
+
+Example 1:
+Input: word1 = "vbcca", word2 = "abc"
+Output: [0,1,2]
+Explanation: The lexicographically smallest valid sequence of indices is
+             [0, 1, 2]:
+             - Change word1[0] to 'a'.
+             - word1[1] is already 'b'.
+             - word1[2] is already 'c'.
+
+Example 2:
+Input: word1 = "bacdc", word2 = "abc"
+Output: [1,2,4]
+Explanation: The lexicographically smallest valid sequence of indices is
+             [1, 2, 4]:
+             - word1[1] is already 'a'.
+             - Change word1[2] to 'b'.
+             - word1[4] is already 'c'.
+
+Example 3:
+Input: word1 = "aaaaaa", word2 = "aaabc"
+Output: []
+Explanation: There is no valid sequence of indices.
+
+Example 4:
+Input: word1 = "abc", word2 = "ab"
+Output: [0,1]
+
+Constraints:
+* 1 <= word2.length < word1.length <= 3 * 10^5
+* word1 and word2 consist only of lowercase English letters.*/
+
+var validSequence = function(word1, word2) {
+    const m = word1.length, n = word2.length;
+    const last = Array(n).fill(-1);
+    for (let i = m-1, j = n-1; i >= 0 && j >= 0; --i)
+        if (word1[i] == word2[j])
+            last[j--] = i;
+    let can = true, j = 0;
+    const ans = [];
+    for (let i = 0; i < m && j < n; ++i)
+        if (word1[i] == word2[j] || can && (j == n-1 || i+1 <= last[j+1])) {
+            if (word1[i] != word2[j]) can = false;
+            ans.push(i);
+            ++j;
+        }
+    return j == n ? ans : [];
+};
+
+
+/*3303. Find the Occurrence of First Almost Equal Substring (Hard)
+You are given two strings s and pattern. A string x is called almost equal
+to y if you can change at most one character in x to make it identical to y.
+Return the smallest starting index of a substring in s that is almost equal
+to pattern. If no such index exists, return -1. A substring is a contiguous
+non-empty sequence of characters within a string.
+
+Example 1:
+Input: s = "abcdefg", pattern = "bcdffg"
+Output: 1
+Explanation: The substring s[1..6] == "bcdefg" can be converted to "bcdffg"
+             by changing s[4] to "f".
+
+Example 2:
+Input: s = "ababbababa", pattern = "bacaba"
+Output: 4
+Explanation: The substring s[4..9] == "bababa" can be converted to "bacaba"
+             by changing s[6] to "c".
+
+Example 3:
+Input: s = "abcd", pattern = "dba"
+Output: -1
+
+Example 4:
+Input: s = "dde", pattern = "d"
+Output: 0
+
+Constraints:
+* 1 <= pattern.length < s.length <= 3 * 10^5
+* s and pattern consist only of lowercase English letters.
+
+Follow-up: Could you solve the problem if at most k consecutive characters
+           can be changed?*/
+
+var minStartingIndex = function(s, pattern) {
+
+    function z_algo(s) {
+        const n = s.length;
+        const ans = Array(n).fill(0);
+        for (let i = 1, ii = 0, lo = 0, hi = 0; i < n; ++i) {
+            if (i <= hi) ii = i - lo;
+            if (i + ans[ii] <= hi) ans[i]= ans[ii];
+            else {
+                lo = i;
+                hi = Math.max(hi, i);
+                while (hi < n && s[hi] === s[hi-lo]) ++hi;
+                ans[i] = hi - lo;
+                --hi;
+            }
+        }
+        return ans;
+    }
+
+    const prefix = z_algo(pattern + "#" + s);
+    const suffix = z_algo((s + "#" + pattern).split('').reverse().join(''));
+    for (let i = 0, n = s.length, k = pattern.length; i <= n-k; ++i)
+        if (prefix[k+i+1] + suffix[n-i+1] >= k-1) return i;
+    return -1;
+};
