@@ -39083,14 +39083,16 @@ class UnionFind:
     * 1 <= p <= 10^9"""
 
     def minSubarray(self, nums: List[int], p: int) -> int:
-        target = sum(nums) % p # targetted remainder
-        ans = inf
-        seen = {(prefix := 0): -1}
+        total = sum(nums) % p
+        prefix = 0
+        last = {0: -1}
+        ans = n = len(nums)
         for i, x in enumerate(nums):
-            seen[(prefix := (prefix+x)%p)] = i # update seen before check
-            if (prefix-target) % p in seen:
-                ans = min(ans, i - seen[(prefix-target) % p])
-        return ans if ans < len(nums) else -1 # not allowed to remove whole array
+            prefix = (prefix + x) % p
+            last[prefix] = i
+            val = (prefix - total) % p
+            if val in last: ans = min(ans, i - last[val])
+        return ans if ans < n else -1
 
 
     """1591. Strange Printer II (Hard)
