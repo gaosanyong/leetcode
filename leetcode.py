@@ -53154,15 +53154,13 @@ class Trie:
     * The number of opening brackets '[' equals n / 2, and the number of
       closing brackets ']' equals n / 2."""
 
-    def minSwaps(self, s: str) -> int:
-        ans = prefix = 0
-        for ch in s:
-            if ch == "[": prefix += 1
-            else: prefix -= 1
-            if prefix == -1:
-                ans += 1
-                prefix = 1
-        return ans
+      def minSwaps(self, s: str) -> int:
+          ans = bal = 0
+          for ch in s:
+              if ch == ']': bal += 1
+              else: bal -= 1
+              ans = max(ans, bal)
+          return (ans+1)//2
 
 
     """1964. Find the Longest Valid Obstacle Course at Each Position (Hard)

@@ -40516,16 +40516,13 @@ public:
       closing brackets ']' equals n / 2.*/
 
     int minSwaps(string s) {
-        int ans = 0, prefix = 0;
+        int ans = 0, bal = 0;
         for (auto& ch : s) {
-            if (ch == '[') prefix += 1;
-            else prefix -= 1;
-            if (prefix == -1) {
-                ++ans;
-                prefix = 1;
-            }
+            if (ch == ']') ++bal;
+            else --bal;
+            ans = max(ans, bal);
         }
-        return ans;
+        return ++ans/2;
     }
 
 
