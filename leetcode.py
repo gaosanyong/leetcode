@@ -24006,14 +24006,13 @@ class Solution:
     * S.length <= 1000
     * S only consists of '(' and ')' characters."""
 
-    def minAddToMakeValid(self, S: str) -> int:
-        op = cl = 0 # open and closed parenthesis needed
-        for c in S:
-            cl += 1 if c == "(" else -1 # need ) to balance extra (
-            if cl < 0:
-                cl = 0
-                op += 1 # need ( to balance extra )
-        return op + cl
+    def minAddToMakeValid(self, s: str) -> int:
+        left = right = 0
+        for ch in s:
+            if ch == '(': left += 1
+            elif left: left -= 1
+            else: right += 1
+        return left + right
 
 
     """922. Sort Array By Parity II (Easy)
