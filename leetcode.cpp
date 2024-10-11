@@ -39457,29 +39457,21 @@ public:
     * Each arrivali time is distinct.*/
 
     int smallestChair(vector<vector<int>>& times, int targetFriend) {
-        vector<vector<int>> vals;
+        vector<tuple<int, int, int>> line;
         for (int i = 0; i < times.size(); ++i) {
-            vals.push_back({times[i][0], 1, i});
-            vals.push_back({times[i][1], 0, i});
+            line.emplace_back(times[i][0], 1, i);
+            line.emplace_back(times[i][1], 0, i);
         }
-        sort(vals.begin(), vals.end());
-
         int k = 0;
-        priority_queue<int, vector<int>, greater<>> pq;
         unordered_map<int, int> mp;
-
-        for (auto& val : vals) {
-            int i = val[2], s = 0;
-            if (val[1]) {
-                if (pq.size()) {
-                    s = pq.top(); pq.pop();
-                } else
-                    s = k++;
-                if (i == targetFriend) return s;
-                mp[i] = s;
-            } else
-                pq.push(mp[i]);
-        }
+        priority_queue<int, vector<int>, greater<>> pq;
+        sort(line.begin(), line.end());
+        for (auto& [_, arrival, i] : line)
+            if (arrival) {
+                if (pq.size()) mp[i] = pq.top(), pq.pop();
+                else mp[i] = k++;
+                if (i == targetFriend) return mp[i];
+            } else pq.push(mp[i]);
         return -1;
     }
 
