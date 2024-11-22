@@ -39483,6 +39483,199 @@ class SegTreeLazy {
     }
 
 
+    /*3349. Adjacent Increasing Subarrays Detection I (Easy)
+    Given an array nums of n integers and an integer k, determine whether there
+    exist two adjacent subarrays of length k such that both subarrays are
+    strictly increasing. Specifically, check if there are two subarrays starting
+    at indices a and b (a < b), where:
+    * Both subarrays nums[a..a + k - 1] and nums[b..b + k - 1] are strictly
+      increasing.
+    * The subarrays must be adjacent, meaning b = a + k.
+    Return true if it is possible to find two such subarrays, and false
+    otherwise.
+
+    Example 1:
+    Input: nums = [2,5,7,8,9,2,3,4,3,1], k = 3
+    Output: true
+    Explanation: * The subarray starting at index 2 is [7, 8, 9], which is
+                   strictly increasing.
+                 * The subarray starting at index 5 is [2, 3, 4], which is also
+                   strictly increasing.
+                 * These two subarrays are adjacent, so the result is true.
+
+    Example 2:
+    Input: nums = [1,2,3,4,4,4,4,5,6,7], k = 5
+    Output: false
+
+    Constraints:
+    * 2 <= nums.length <= 100
+    * 1 < 2 * k <= nums.length
+    * -1000 <= nums[i] <= 1000*/
+
+    public boolean hasIncreasingSubarrays(List<Integer> nums, int k) {
+        int prev = 0, cnt = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (i > 0 && nums.get(i-1) >= nums.get(i)) {
+                prev = cnt;
+                cnt = 0;
+            }
+            ++cnt;
+            if (cnt >= 2*k || prev >= k && cnt >= k) return true;
+        }
+        return false;
+    }
+
+
+    /*3350. Adjacent Increasing Subarrays Detection II (Medium)
+    Given an array nums of n integers, your task is to find the maximum value of
+    k for which there exist two adjacent subarrays of length k each, such that
+    both subarrays are strictly increasing. Specifically, check if there are two
+    subarrays of length k starting at indices a and b (a < b), where:
+    * Both subarrays nums[a..a + k - 1] and nums[b..b + k - 1] are strictly
+      increasing.
+    * The subarrays must be adjacent, meaning b = a + k.
+    Return the maximum possible value of k. A subarray is a contiguous non-empty
+    sequence of elements within an array.
+
+    Example 1:
+    Input: nums = [2,5,7,8,9,2,3,4,3,1]
+    Output: 3
+    Explanation: * The subarray starting at index 2 is [7, 8, 9], which is
+                   strictly increasing.
+                 * The subarray starting at index 5 is [2, 3, 4], which is also
+                   strictly increasing.
+                 * These two subarrays are adjacent, and 3 is the maximum
+                   possible value of k for which two such adjacent strictly
+                   increasing subarrays exist.
+
+    Example 2:
+    Input: nums = [1,2,3,4,4,4,4,5,6,7]
+    Output: 2
+    Explanation: * The subarray starting at index 0 is [1, 2], which is strictly
+                   increasing.
+                 * The subarray starting at index 2 is [3, 4], which is also
+                   strictly increasing.
+                 * These two subarrays are adjacent, and 2 is the maximum
+                   possible value of k for which two such adjacent strictly
+                   increasing subarrays exist.
+
+    Constraints:
+    * 2 <= nums.length <= 2 * 10^5
+    * -10^9 <= nums[i] <= 10^9*/
+
+    public int maxIncreasingSubarrays(List<Integer> nums) {
+        int ans = 0, prev = 0, cnt = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            if (i > 0 && nums.get(i-1) >= nums.get(i)) {
+                prev = cnt;
+                cnt = 0;
+            }
+            ++cnt;
+            ans = Math.max(ans, Math.max(cnt/2, Math.min(prev, cnt)));
+        }
+        return ans;
+    }
+
+
+    /*3351. Sum of Good Subsequences (Hard)
+    You are given an integer array nums. A good subsequence is defined as a
+    subsequence of nums where the absolute difference between any two
+    consecutive elements in the subsequence is exactly 1. Return the sum of all
+    possible good subsequences of nums. Since the answer may be very large,
+    return it modulo 10^9 + 7. Note that a subsequence of size 1 is considered
+    good by definition.
+
+    Example 1:
+    Input: nums = [1,2,1]
+    Output: 14
+    Explanation: Good subsequences are: [1], [2], [1], [1,2], [2,1], [1,2,1].
+                 The sum of elements in these subsequences is 14.
+
+    Example 2:
+    Input: nums = [3,4,5]
+    Output: 40
+    Explanation: Good subsequences are: [3], [4], [5], [3,4], [4,5], [3,4,5].
+                 The sum of elements in these subsequences is 40.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] <= 10^5*/
+
+    public int sumOfGoodSubsequences(int[] nums) {
+        Map<Integer, Long> cnt = new HashMap<>(), val = new HashMap<>();
+        final int mod = 1_000_000_007;
+        for (var x : nums) {
+            long more = (1 + cnt.getOrDefault(x-1, 0l) + cnt.getOrDefault(x+1, 0l)) % mod;
+            cnt.put(x, (cnt.getOrDefault(x, 0l) + more) % mod);
+            val.put(x, (val.getOrDefault(x-1, 0l) + val.getOrDefault(x, 0l) + val.getOrDefault(x+1, 0l) + more*x) % mod);
+        }
+        return (int) val.values().stream().mapToLong(i -> i).reduce(0l, (sum, x) -> (sum + x) % mod);
+    }
+
+
+    /*3352. Count K-Reducible Numbers Less Than N (Hard)
+    You are given a binary string s representing a number n in its binary form.
+    You are also given an integer k. An integer x is called k-reducible if
+    performing the following operation at most k times reduces it to 1:
+    * Replace x with the count of set bits in its binary representation.
+    For example, the binary representation of 6 is "110". Applying the operation
+    once reduces it to 2 (since "110" has two set bits). Applying the operation
+    again to 2 (binary "10") reduces it to 1 (since "10" has one set bit).
+    Return an integer denoting the number of positive integers less than n that
+    are k-reducible. Since the answer may be too large, return it modulo
+    10^9 + 7.
+
+    Example 1:
+    Input: s = "111", k = 1
+    Output: 3
+    Explanation: n = 7. The 1-reducible integers less than 7 are 1, 2, and 4.
+
+    Example 2:
+    Input: s = "1000", k = 2
+    Output: 6
+    Explanation: n = 8. The 2-reducible integers less than 8 are 1, 2, 3, 4, 5,
+                 and 6.
+
+    Example 3:
+    Input: s = "1", k = 3
+    Output: 0
+    Explanation: There are no positive integers less than n = 1, so the answer
+                 is 0.
+
+    Constraints:
+    * 1 <= s.length <= 800
+    * s has no leading zeros.
+    * s consists only of the characters '0' and '1'.
+    * 1 <= k <= 5*/
+
+    public int countKReducibleNumbers(String s, int k) {
+        final int mod = 1_000_000_007, n = s.length();
+        int[] dp = new int[n+1];
+        for (int x = 2; x <= n; ++x)
+            dp[x] = 1 + dp[Integer.bitCount(x)];
+
+        long[] fact = new long[n+1], ifact = new long[n+1], inv = new long[n+1];
+        Arrays.fill(fact, 1);
+        Arrays.fill(ifact, 1);
+        Arrays.fill(inv, 1);
+        for (int x = 1; x <= n; ++x) {
+            if (x >= 2) inv[x] = mod - mod/x * inv[mod % x] % mod;
+            fact[x] = fact[x-1] * x % mod;
+            ifact[x] = ifact[x-1] * inv[x] % mod;
+        }
+
+        long ans = 0;
+        for (int i = 0, prefix = 0; i < s.length(); ++i)
+            if (s.charAt(i) == '1') {
+                for (int suffix = 0; suffix < n-i; ++suffix)
+                    if (prefix + suffix > 0 && dp[prefix + suffix] + 1 <= k)
+                        ans = (ans + fact[n-i-1] * ifact[suffix] % mod * ifact[n-1-i-suffix] % mod) % mod;
+                ++prefix;
+            }
+        return (int) ans;
+    }
+
+
     /*3354. Make Array Elements Equal to Zero (Easy)
     You are given an integer array nums. Start by selecting a starting position
     curr such that nums[curr] == 0, and choose a movement direction of either

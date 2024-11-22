@@ -22296,6 +22296,203 @@ function kthCharacter(k: number, operations: number[]): string {
 };
 
 
+/*3349. Adjacent Increasing Subarrays Detection I (Easy)
+Given an array nums of n integers and an integer k, determine whether there
+exist two adjacent subarrays of length k such that both subarrays are
+strictly increasing. Specifically, check if there are two subarrays starting
+at indices a and b (a < b), where:
+* Both subarrays nums[a..a + k - 1] and nums[b..b + k - 1] are strictly
+  increasing.
+* The subarrays must be adjacent, meaning b = a + k.
+Return true if it is possible to find two such subarrays, and false
+otherwise.
+
+Example 1:
+Input: nums = [2,5,7,8,9,2,3,4,3,1], k = 3
+Output: true
+Explanation: * The subarray starting at index 2 is [7, 8, 9], which is
+               strictly increasing.
+             * The subarray starting at index 5 is [2, 3, 4], which is also
+               strictly increasing.
+             * These two subarrays are adjacent, so the result is true.
+
+Example 2:
+Input: nums = [1,2,3,4,4,4,4,5,6,7], k = 5
+Output: false
+
+Constraints:
+* 2 <= nums.length <= 100
+* 1 < 2 * k <= nums.length
+* -1000 <= nums[i] <= 1000*/
+
+function hasIncreasingSubarrays(nums: number[], k: number): boolean {
+    let prev = 0, cnt = 0;
+    for (const [i, x] of nums.entries()) {
+        if (i && nums[i-1] >= x) {
+            prev = cnt;
+            cnt = 0;
+        }
+        ++cnt;
+        if (cnt >= 2*k || prev >= k && cnt >= k) return true;
+    }
+    return false;
+};
+
+
+/*3350. Adjacent Increasing Subarrays Detection II (Medium)
+Given an array nums of n integers, your task is to find the maximum value of
+k for which there exist two adjacent subarrays of length k each, such that
+both subarrays are strictly increasing. Specifically, check if there are two
+subarrays of length k starting at indices a and b (a < b), where:
+* Both subarrays nums[a..a + k - 1] and nums[b..b + k - 1] are strictly
+  increasing.
+* The subarrays must be adjacent, meaning b = a + k.
+Return the maximum possible value of k. A subarray is a contiguous non-empty
+sequence of elements within an array.
+
+Example 1:
+Input: nums = [2,5,7,8,9,2,3,4,3,1]
+Output: 3
+Explanation: * The subarray starting at index 2 is [7, 8, 9], which is
+               strictly increasing.
+             * The subarray starting at index 5 is [2, 3, 4], which is also
+               strictly increasing.
+             * These two subarrays are adjacent, and 3 is the maximum
+               possible value of k for which two such adjacent strictly
+               increasing subarrays exist.
+
+Example 2:
+Input: nums = [1,2,3,4,4,4,4,5,6,7]
+Output: 2
+Explanation: * The subarray starting at index 0 is [1, 2], which is strictly
+               increasing.
+             * The subarray starting at index 2 is [3, 4], which is also
+               strictly increasing.
+             * These two subarrays are adjacent, and 2 is the maximum
+               possible value of k for which two such adjacent strictly
+               increasing subarrays exist.
+
+Constraints:
+* 2 <= nums.length <= 2 * 10^5
+* -10^9 <= nums[i] <= 10^9*/
+
+function maxIncreasingSubarrays(nums: number[]): number {
+    let ans = 0, prev = 0, cnt = 0;
+    for (const [i, x] of nums.entries()) {
+        if (i && nums[i-1] >= x) {
+            prev = cnt;
+            cnt = 0;
+        }
+        ++cnt;
+        ans = Math.max(ans, cnt >> 1, Math.min(prev, cnt));
+    }
+    return ans;
+};
+
+
+/*3351. Sum of Good Subsequences (Hard)
+You are given an integer array nums. A good subsequence is defined as a
+subsequence of nums where the absolute difference between any two
+consecutive elements in the subsequence is exactly 1. Return the sum of all
+possible good subsequences of nums. Since the answer may be very large,
+return it modulo 10^9 + 7. Note that a subsequence of size 1 is considered
+good by definition.
+
+Example 1:
+Input: nums = [1,2,1]
+Output: 14
+Explanation: Good subsequences are: [1], [2], [1], [1,2], [2,1], [1,2,1].
+             The sum of elements in these subsequences is 14.
+
+Example 2:
+Input: nums = [3,4,5]
+Output: 40
+Explanation: Good subsequences are: [3], [4], [5], [3,4], [4,5], [3,4,5].
+             The sum of elements in these subsequences is 40.
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 0 <= nums[i] <= 10^5*/
+
+function sumOfGoodSubsequences(nums: number[]): number {
+    const cnt = new Map(), val = new Map();
+    const mod = 1_000_000_007;
+    for (const x of nums) {
+        const more = (1 + (cnt.get(x-1) ?? 0) + (cnt.get(x+1) ?? 0)) % mod;
+        cnt.set(x, ((cnt.get(x) ?? 0) + more) % mod);
+        val.set(x, ((val.get(x-1) ?? 0) + (val.get(x) ?? 0) + (val.get(x+1) ?? 0) + more*x) % mod);
+    }
+    return [...val.values()].reduce((sum, x) => (sum + x) % mod, 0);
+};
+
+
+/*3352. Count K-Reducible Numbers Less Than N (Hard)
+You are given a binary string s representing a number n in its binary form.
+You are also given an integer k. An integer x is called k-reducible if
+performing the following operation at most k times reduces it to 1:
+* Replace x with the count of set bits in its binary representation.
+For example, the binary representation of 6 is "110". Applying the operation
+once reduces it to 2 (since "110" has two set bits). Applying the operation
+again to 2 (binary "10") reduces it to 1 (since "10" has one set bit).
+Return an integer denoting the number of positive integers less than n that
+are k-reducible. Since the answer may be too large, return it modulo
+10^9 + 7.
+
+Example 1:
+Input: s = "111", k = 1
+Output: 3
+Explanation: n = 7. The 1-reducible integers less than 7 are 1, 2, and 4.
+
+Example 2:
+Input: s = "1000", k = 2
+Output: 6
+Explanation: n = 8. The 2-reducible integers less than 8 are 1, 2, 3, 4, 5,
+             and 6.
+
+Example 3:
+Input: s = "1", k = 3
+Output: 0
+Explanation: There are no positive integers less than n = 1, so the answer
+             is 0.
+
+Constraints:
+* 1 <= s.length <= 800
+* s has no leading zeros.
+* s consists only of the characters '0' and '1'.
+* 1 <= k <= 5*/
+
+function countKReducibleNumbers(s: string, k: number): number {
+    const n = s.length;
+    const dp = Array(n+1).fill(0);
+    for (let x = 2; x <= n; ++x) {
+        const bits = x.toString(2).split('').filter(x => x === '1').length;
+        dp[x] = 1 + dp[bits];
+    }
+
+    const m = 1_000_000_007, mm = 1_000_000_007n;
+    const fact = Array(n+1).fill(1n);
+    const ifact : bigint[] = Array(n+1).fill(1n);
+    const inv = Array(n+1).fill(1n);
+    for (let x = 1; x <= n; ++x) {
+        const xx = BigInt(x);
+        if (x >= 2) inv[x] = mm - mm/xx * inv[m % x] % mm;
+        fact[x] = fact[x-1] * xx % mm;
+        ifact[x] = ifact[x-1] * inv[x] % mm;
+    }
+
+    let ans = 0n, prefix = 0;
+    for (const [i, ch] of s.split('').entries()) {
+        if (ch === '1') {
+            for (let suffix = 0; suffix < n-i; ++suffix)
+                if (prefix + suffix && dp[prefix + suffix] + 1 <= k)
+                    ans = (ans + fact[n-i-1] * ifact[suffix] % mm * ifact[n-i-1-suffix] % mm) % mm;
+            ++prefix;
+        }
+    }
+    return Number(ans);
+};
+
+
 /*3354. Make Array Elements Equal to Zero (Easy)
 You are given an integer array nums. Start by selecting a starting position
 curr such that nums[curr] == 0, and choose a movement direction of either
