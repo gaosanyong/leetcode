@@ -98911,6 +98911,231 @@ class SegTree:
         return chr(cnt%26 + 97)
 
 
+    """3354. Make Array Elements Equal to Zero (Easy)
+    You are given an integer array nums. Start by selecting a starting position
+    curr such that nums[curr] == 0, and choose a movement direction of either
+    left or right. After that, you repeat the following process:
+    * If curr is out of the range [0, n - 1], this process ends.
+    * If nums[curr] == 0, move in the current direction by incrementing curr if
+      you are moving right, or decrementing curr if you are moving left.
+    * Else if nums[curr] > 0:
+      + Decrement nums[curr] by 1.
+      + Reverse your movement direction (left becomes right and vice versa).
+      + Take a step in your new direction.
+    A selection of the initial position curr and movement direction is
+    considered valid if every element in nums becomes 0 by the end of the
+    process. Return the number of possible valid selections.
+
+    Example 1:
+    Input: nums = [1,0,2,0,3]
+    Output: 2
+    Explanation: The only possible valid selections are the following:
+                 * Choose curr = 3, and a movement direction to the left.
+                   + [1,0,2,0,3] -> [1,0,2,0,3] -> [1,0,1,0,3] -> [1,0,1,0,3] ->
+                     [1,0,1,0,2] -> [1,0,1,0,2] -> [1,0,0,0,2] -> [1,0,0,0,2] ->
+                     [1,0,0,0,1] -> [1,0,0,0,1] -> [1,0,0,0,1] -> [1,0,0,0,1] ->
+                     [0,0,0,0,1] -> [0,0,0,0,1] -> [0,0,0,0,1] -> [0,0,0,0,1] ->
+                     [0,0,0,0,0].
+                 * Choose curr = 3, and a movement direction to the right.
+                   + [1,0,2,0,3] -> [1,0,2,0,3] -> [1,0,2,0,2] -> [1,0,2,0,2] ->
+                     [1,0,1,0,2] -> [1,0,1,0,2] -> [1,0,1,0,1] -> [1,0,1,0,1] ->
+                     [1,0,0,0,1] -> [1,0,0,0,1] -> [1,0,0,0,0] -> [1,0,0,0,0] ->
+                     [1,0,0,0,0] -> [1,0,0,0,0] -> [0,0,0,0,0].
+
+    Example 2:
+    Input: nums = [2,3,4,0,4,1,0]
+    Output: 0
+    Explanation: There are no possible valid selections.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * 0 <= nums[i] <= 100
+    * There is at least one element i where nums[i] == 0."""
+
+    def countValidSelections(self, nums: List[int]) -> int:
+        ans = 0
+        prefix = list(accumulate(nums, initial=0))
+        for i, x in enumerate(nums):
+            if x == 0:
+                if prefix[-1] - 2*prefix[i] == 0: ans += 2
+                elif abs(prefix[-1] - 2*prefix[i]) == 1: ans += 1
+        return ans
+
+
+    """3355. Zero Array Transformation I (Medium)
+    You are given an integer array nums of length n and a 2D array queries,
+    where queries[i] = [li, ri]. For each queries[i]:
+    * Select a subset of indices within the range [li, ri] in nums.
+    * Decrement the values at the selected indices by 1.
+    A Zero Array is an array where all elements are equal to 0. Return true if
+    it is possible to transform nums into a Zero Array after processing all the
+    queries sequentially, otherwise return false. A subset of an array is a
+    selection of elements (possibly none) of the array.
+
+    Example 1:
+    Input: nums = [1,0,1], queries = [[0,2]]
+    Output: true
+    Explanation: For i = 0:
+                 * Select the subset of indices as [0, 2] and decrement the
+                   values at these indices by 1.
+                 * The array will become [0, 0, 0], which is a Zero Array.
+
+    Example 2:
+    Input: nums = [4,3,2,1], queries = [[1,3],[0,2]]
+    Output: false
+    Explanation: For i = 0:
+                 * Select the subset of indices as [1, 2, 3] and decrement the
+                   values at these indices by 1.
+                 * The array will become [4, 2, 1, 0].
+                 For i = 1:
+                 * Select the subset of indices as [0, 1, 2] and decrement the
+                   values at these indices by 1.
+                 * The array will become [3, 1, 0, 0], which is not a Zero
+                   Array.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] <= 10^5
+    * 1 <= queries.length <= 10^5
+    * queries[i].length == 2
+    * 0 <= li <= ri < nums.length"""
+
+    def isZeroArray(self, nums: List[int], queries: List[List[int]]) -> bool:
+        n = len(nums)
+        line = [0]*n
+        for l, r in queries:
+            line[l] += 1
+            if r+1 < n: line[r+1] -= 1
+        prefix = 0
+        for i, x in enumerate(nums):
+            prefix += line[i]
+            if prefix < x: return False
+        return True
+
+
+    """3356. Zero Array Transformation II (Medium)
+    You are given an integer array nums of length n and a 2D array queries where
+    queries[i] = [li, ri, vali]. Each queries[i] represents the following action
+    on nums:
+    * Decrement the value at each index in the range [li, ri] in nums by at most
+      vali.
+    * The amount by which each value is decremented can be chosen independently
+      for each index.
+    A Zero Array is an array with all its elements equal to 0. Return the
+    minimum possible non-negative value of k, such that after processing the
+    first k queries in sequence, nums becomes a Zero Array. If no such k exists,
+    return -1.
+
+    Example 1:
+    Input: nums = [2,0,2], queries = [[0,2,1],[0,2,1],[1,1,3]]
+    Output: 2
+    Explanation: For i = 0 (l = 0, r = 2, val = 1):
+                 * Decrement values at indices [0, 1, 2] by [1, 0, 1]
+                   respectively.
+                 * The array will become [1, 0, 1].
+                 For i = 1 (l = 0, r = 2, val = 1):
+                 * Decrement values at indices [0, 1, 2] by [1, 0, 1]
+                   respectively.
+                 * The array will become [0, 0, 0], which is a Zero Array.
+                   Therefore, the minimum value of k is 2.
+
+    Example 2:
+    Input: nums = [4,3,2,1], queries = [[1,3,2],[0,2,1]]
+    Output: -1
+    Explanation: For i = 0 (l = 1, r = 3, val = 2):
+                 * Decrement values at indices [1, 2, 3] by [2, 2, 1]
+                   respectively.
+                 * The array will become [4, 1, 0, 0].
+                 For i = 1 (l = 0, r = 2, val = 1):
+                 * Decrement values at indices [0, 1, 2] by [1, 1, 0]
+                   respectively.
+                 * The array will become [3, 0, 0, 0], which is not a Zero
+                   Array.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] <= 5 * 10^5
+    * 1 <= queries.length <= 10^5
+    * queries[i].length == 3
+    * 0 <= li <= ri < nums.length
+    * 1 <= vali <= 5"""
+
+    def minZeroArray(self, nums: List[int], queries: List[List[int]]) -> int:
+        n = len(nums)
+        line = [0]*(n+1)
+        j = prefix = 0
+        for i, x in enumerate(nums):
+            prefix += line[i]
+            while prefix < x and j < len(queries):
+                l, r, v = queries[j]
+                j += 1
+                if i <= r:
+                    line[r+1] -= v
+                    if l <= i: prefix += v
+                    else: line[l] += v
+            if prefix < x: return -1
+        return j
+
+
+    """3357. Minimize the Maximum Adjacent Element Difference (Hard)
+    You are given an array of integers nums. Some values in nums are missing and
+    are denoted by -1. You can choose a pair of positive integers (x, y) exactly
+    once and replace each missing element with either x or y. You need to
+    minimize the maximum absolute difference between adjacent elements of nums
+    after replacements. Return the minimum possible difference.
+
+    Example 1:
+    Input: nums = [1,2,-1,10,8]
+    Output: 4
+    Explanation: By choosing the pair as (6, 7), nums can be changed to
+                 [1, 2, 6, 10, 8]. The absolute differences between adjacent
+                 elements are:
+                 * |1 - 2| == 1
+                 * |2 - 6| == 4
+                 * |6 - 10| == 4
+                 * |10 - 8| == 2
+
+    Example 2:
+    Input: nums = [-1,-1,-1]
+    Output: 0
+    Explanation: By choosing the pair as (4, 4), nums can be changed to
+                 [4, 4, 4].
+
+    Example 3:
+    Input: nums = [-1,10,-1,8]
+    Output: 1
+    Explanation: By choosing the pair as (11, 9), nums can be changed to
+                 [11, 10, 9, 8].
+
+    Constraints:
+    * 2 <= nums.length <= 10^5
+    * nums[i] is either -1 or in the range [1, 10^9]."""
+
+    def minDifference(self, nums: List[int]) -> int:
+        n = len(nums)
+        diff = 0
+        lo, hi = inf, 0
+        for x, y in pairwise(nums):
+            if x > 0 and y > 0: diff = max(diff, abs(x - y))
+            elif x > 0 or y > 0:
+                lo = min(lo, max(x, y))
+                hi = max(hi, max(x, y))
+        ans = cnt = prev = 0
+        span = (hi-lo+2) // 3
+        for i, v in enumerate(nums):
+            if v == -1: cnt += 1
+            if cnt and (i == n-1 or v != -1):
+                vals = list(filter(lambda x: x > 0, (prev, v)))
+                x = min(vals, default = inf)
+                y = max(vals, default = 0)
+                cand = min(hi - x, y - lo)
+                if cnt > 1: cand = min(cand, 2*span)
+                ans = max(ans, cand)
+                cnt = 0
+            if v != -1: prev = v
+        return max(diff, (ans + 1) // 2)
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.
