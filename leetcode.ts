@@ -22730,3 +22730,218 @@ function minDifference(nums: number[]): number {
     }
     return Math.max(diff, (ans+1) >> 1);
 };
+
+
+/*3364. Minimum Positive Sum Subarray (Easy)
+You are given an integer array nums and two integers l and r. Your task is
+to find the minimum sum of a subarray whose size is between l and r
+(inclusive) and whose sum is greater than 0. Return the minimum sum of such
+a subarray. If no such subarray exists, return -1. A subarray is a
+contiguous non-empty sequence of elements within an array.
+
+Example 1:
+Input: nums = [3, -2, 1, 4], l = 2, r = 3
+Output: 1
+Explanation: The subarrays of length between l = 2 and r = 3 where the sum
+             is greater than 0 are:
+             * [3, -2] with a sum of 1
+             * [1, 4] with a sum of 5
+             * [3, -2, 1] with a sum of 2
+             * [-2, 1, 4] with a sum of 3
+             Out of these, the subarray [3, -2] has a sum of 1, which is the
+             smallest positive sum. Hence, the answer is 1.
+
+Example 2:
+Input: nums = [-2, 2, -3, 1], l = 2, r = 3
+Output: -1
+Explanation: There is no subarray of length between l and r that has a sum
+             greater than 0. So, the answer is -1.
+
+Example 3:
+Input: nums = [1, 2, 3, 4], l = 2, r = 4
+Output: 3
+Explanation: The subarray [1, 2] has a length of 2 and the minimum sum
+             greater than 0. So, the answer is 3.
+
+Constraints:
+* 1 <= nums.length <= 100
+* 1 <= l <= r <= nums.length
+* -1000 <= nums[i] <= 1000*/
+
+function minimumSumSubarray(nums: number[], l: number, r: number): number {
+    let ans = Infinity;
+    for (let i = 0, n = nums.length; i < n; ++i) {
+        let total = 0;
+        for (let j = i; j < n && j < i+r; ++j) {
+            total += nums[j];
+            if (j >= i+l-1 && total > 0) ans = Math.min(ans, total);
+        }
+    }
+    return ans < Infinity ? ans : -1;
+};
+
+
+/*3365. Rearrange K Substrings to Form Target String (Medium)
+You are given two strings s and t, both of which are anagrams of each other,
+and an integer k. Your task is to determine whether it is possible to split
+the string s into k equal-sized substrings, rearrange the substrings, and
+concatenate them in any order to create a new string that matches the given
+string t. Return true if this is possible, otherwise, return false. An
+anagram is a word or phrase formed by rearranging the letters of a different
+word or phrase, using all the original letters exactly once. A substring is
+a contiguous non-empty sequence of characters within a string.
+
+Example 1:
+Input: s = "abcd", t = "cdab", k = 2
+Output: true
+Explanation: Split s into 2 substrings of length 2: ["ab", "cd"].
+             Rearranging these substrings as ["cd", "ab"], and then
+             concatenating them results in "cdab", which matches t.
+
+Example 2:
+Input: s = "aabbcc", t = "bbaacc", k = 3
+Output: true
+Explanation: Split s into 3 substrings of length 2: ["aa", "bb", "cc"].
+             Rearranging these substrings as ["bb", "aa", "cc"], and then
+             concatenating them results in "bbaacc", which matches t.
+
+Example 3:
+Input: s = "aabbcc", t = "bbaacc", k = 2
+Output: false
+Explanation: Split s into 2 substrings of length 3: ["aab", "bcc"]. These
+             substrings cannot be rearranged to form t = "bbaacc", so the
+             output is false.
+
+Constraints:
+* 1 <= s.length == t.length <= 2 * 10^5
+* 1 <= k <= s.length
+* s.length is divisible by k.
+* s and t consist only of lowercase English letters.
+* The input is generated such that s and t are anagrams of each other.*/
+
+function isPossibleToRearrange(s: string, t: string, k: number): boolean {
+    const n = s.length;
+    k = Math.floor(n/k);
+    const freq = {};
+    for (let i = 0; i < n; i += k) {
+        const ss = s.substring(i, i+k), tt = t.substring(i, i+k);
+        freq[ss] = ss in freq ? ++freq[ss] : 1;
+        freq[tt] = tt in freq ? --freq[tt] : -1;
+    }
+    return Object.values(freq).every(x => x == 0);
+};
+
+
+/*3366. Minimum Array Sum (Medium)
+You are given an integer array nums and three integers k, op1, and op2. You
+can perform the following operations on nums:
+* Operation 1: Choose an index i and divide nums[i] by 2, rounding up to the
+               nearest whole number. You can perform this operation at most
+               op1 times, and not more than once per index.
+* Operation 2: Choose an index i and subtract k from nums[i], but only if
+               nums[i] is greater than or equal to k. You can perform this
+               operation at most op2 times, and not more than once per
+               index.
+Note: Both operations can be applied to the same index, but at most once
+each. Return the minimum possible sum of all elements in nums after
+performing any number of operations.
+
+Example 1:
+Input: nums = [2,8,3,19,3], k = 3, op1 = 1, op2 = 1
+Output: 23
+Explanation: * Apply Operation 2 to nums[1] = 8, making nums[1] = 5.
+             * Apply Operation 1 to nums[3] = 19, making nums[3] = 10.
+             * The resulting array becomes [2, 5, 3, 10, 3], which has the
+               minimum possible sum of 23 after applying the operations.
+
+Example 2:
+Input: nums = [2,4,3], k = 3, op1 = 2, op2 = 1
+Output: 3
+Explanation: * Apply Operation 1 to nums[0] = 2, making nums[0] = 1.
+             * Apply Operation 1 to nums[1] = 4, making nums[1] = 2.
+             * Apply Operation 2 to nums[2] = 3, making nums[2] = 0.
+             * The resulting array becomes [1, 2, 0], which has the minimum
+               possible sum of 3 after applying the operations.
+
+Constraints:
+* 1 <= nums.length <= 100
+* 0 <= nums[i] <= 10^5
+* 0 <= k <= 10^5
+* 0 <= op1, op2 <= nums.length*/
+
+function minArraySum(nums: number[], v: number, op1: number, op2: number): number {
+    const n = nums.length, dp = Array(n+1).fill(0).map(() => Array(op1+1).fill(0).map(() => Array(op2+1).fill(0)));
+    for (let i = n-1; i >= 0; --i)
+        for (let j = 0; j <= op1; ++j)
+            for (let k = 0; k <= op2; ++k) {
+                dp[i][j][k] = nums[i] + dp[i+1][j][k];
+                if (j) dp[i][j][k] = Math.min(dp[i][j][k], Math.ceil(nums[i]/2) + dp[i+1][j-1][k]);
+                if (k && nums[i] >= v) dp[i][j][k] = Math.min(dp[i][j][k], nums[i]-v + dp[i+1][j][k-1]);
+                if (j && k && Math.ceil(nums[i]/2) >= v) dp[i][j][k] = Math.min(dp[i][j][k], Math.ceil(nums[i]/2)-v + dp[i+1][j-1][k-1]);
+                if (j && k && nums[i] >= v) dp[i][j][k] = Math.min(dp[i][j][k], Math.ceil((nums[i]-v)/2) + dp[i+1][j-1][k-1]);
+            }
+    return dp[0][op1][op2];
+};
+
+
+/*3367. Maximize Sum of Weights after Edge Removals (Hard)
+There exists an undirected tree with n nodes numbered 0 to n - 1. You are
+given a 2D integer array edges of length n - 1, where
+edges[i] = [ui, vi, wi] indicates that there is an edge between nodes ui and
+vi with weight wi in the tree. Your task is to remove zero or more edges
+such that:
+* Each node has an edge with at most k other nodes, where k is given.
+* The sum of the weights of the remaining edges is maximized.
+Return the maximum possible sum of weights for the remaining edges after
+making the necessary removals.
+
+Example 1:
+Input: edges = [[0,1,4],[0,2,2],[2,3,12],[2,4,6]], k = 2
+Output: 22
+Explanation: Node 2 has edges with 3 other nodes. We remove the edge
+             [0, 2, 2], ensuring that no node has edges with more than k = 2
+             nodes. The sum of weights is 22, and we can't achieve a greater
+             sum. Thus, the answer is 22.
+
+Example 2:
+Input: edges = [[0,1,5],[1,2,10],[0,3,15],[3,4,20],[3,5,5],[0,6,10]], k = 3
+Output: 65
+Explanation: Since no node has edges connecting it to more than k = 3 nodes,
+             we don't remove any edges. The sum of weights is 65. Thus, the
+             answer is 65.
+
+Constraints:
+* 2 <= n <= 10^5
+* 1 <= k <= n - 1
+* edges.length == n - 1
+* edges[i].length == 3
+* 0 <= edges[i][0] <= n - 1
+* 0 <= edges[i][1] <= n - 1
+* 1 <= edges[i][2] <= 10^6
+* The input is generated such that edges form a valid tree.*/
+
+function maximizeSumOfWeights(edges: number[][], k: number): number {
+    const n = edges.length+1;
+    const tree = Array(n).fill(0).map(() => []);
+    for (const [u, v, w] of edges) {
+        tree[u].push([v, w]);
+        tree[v].push([u, w]);
+    }
+
+    function fn(u, p) {
+        let ans = 0;
+        const diff = [];
+        for (const [v, w] of tree[u])
+            if (v != p) {
+                const [no, yes] = fn(v, u);
+                ans += no;
+                diff.push(Math.max(0, w + yes - no));
+            }
+        diff.sort((x, y) => y-x);
+        for (let i = 0; i < k && i < diff.length; ++i)
+            ans += diff[i];
+        return [ans, ans - (diff.length >= k ? diff[k-1] : 0)];
+    }
+
+    return fn(0, -1)[0];
+};
