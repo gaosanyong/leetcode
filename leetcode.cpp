@@ -82717,6 +82717,243 @@ public:
     }
 
 
+    /*3360. Stone Removal Game (Easy)
+    Alice and Bob are playing a game where they take turns removing stones from
+    a pile, with Alice going first.
+    * Alice starts by removing exactly 10 stones on her first turn.
+    * For each subsequent turn, each player removes exactly 1 fewer stone than
+      the previous opponent.
+    The player who cannot make a move loses the game. Given a positive integer
+    n, return true if Alice wins the game and false otherwise.
+
+    Example 1:
+    Input: n = 12
+    Output: true
+    Explanation: * Alice removes 10 stones on her first turn, leaving 2 stones
+                   for Bob.
+                 * Bob cannot remove 9 stones, so Alice wins.
+    Example 2:
+    Input: n = 1
+    Output: false
+    Explanation: Alice cannot remove 10 stones, so Alice loses.
+
+    Constraints: 1 <= n <= 50*/
+
+    bool canAliceWin(int n) {
+        for (int i = 10; i > 0; --i) {
+            if (i > n) return i & 1;
+            n -= i;
+        }
+        return true;
+    }
+
+
+    /*3361. Shift Distance Between Two Strings (Medium)
+    You are given two strings s and t of the same length, and two integer arrays
+    nextCost and previousCost. In one operation, you can pick any index i of s,
+    and perform either one of the following actions:
+    * Shift s[i] to the next letter in the alphabet. If s[i] == 'z', you should
+      replace it with 'a'. This operation costs nextCost[j] where j is the index
+      of s[i] in the alphabet.
+    * Shift s[i] to the previous letter in the alphabet. If s[i] == 'a', you
+      should replace it with 'z'. This operation costs previousCost[j] where j
+      is the index of s[i] in the alphabet.
+    The shift distance is the minimum total cost of operations required to
+    transform s into t. Return the shift distance from s to t.
+
+    Example 1:
+    Input: s = "abab",
+           t = "baba",
+           nextCost = [100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+           previousCost = [1,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+    Output: 2
+    Explanation: * We choose index i = 0 and shift s[0] 25 times to the previous
+                   character for a total cost of 1.
+                 * We choose index i = 1 and shift s[1] 25 times to the next
+                   character for a total cost of 0.
+                 * We choose index i = 2 and shift s[2] 25 times to the previous
+                   character for a total cost of 1.
+                 * We choose index i = 3 and shift s[3] 25 times to the next
+                   character for a total cost of 0.
+
+    Example 2:
+    Input: s = "leet",
+           t = "code",
+           nextCost = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+           previousCost = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+    Output: 31
+    Explanation: * We choose index i = 0 and shift s[0] 9 times to the previous
+                   character for a total cost of 9.
+                 * We choose index i = 1 and shift s[1] 10 times to the next
+                   character for a total cost of 10.
+                 * We choose index i = 2 and shift s[2] 1 time to the previous
+                   character for a total cost of 1.
+                 * We choose index i = 3 and shift s[3] 11 times to the next
+                   character for a total cost of 11.
+
+    Constraints:
+    * 1 <= s.length == t.length <= 10^5
+    * s and t consist only of lowercase English letters.
+    * nextCost.length == previousCost.length == 26
+    * 0 <= nextCost[i], previousCost[i] <= 10^9*/
+
+    long long shiftDistance(string s, string t, vector<int>& nextCost, vector<int>& previousCost) {
+        vector<long long> nextPref(27), prevPref(27);
+        inclusive_scan(nextCost.begin(), nextCost.end(), nextPref.begin()+1, plus(), 0ll);
+        inclusive_scan(previousCost.begin(), previousCost.end(), prevPref.begin()+1, plus(), 0ll);
+        long long ans = 0;
+        for (int i = 0; i < s.size(); ++i) {
+            int si = s[i] - 'a', ti = t[i] - 'a';
+            if (si < ti)
+                ans += min(nextPref[ti] - nextPref[si], prevPref.back() - (prevPref[ti+1] - prevPref[si+1]));
+            else
+                ans += min(prevPref[si+1] - prevPref[ti+1], nextPref.back() - (nextPref[si] - nextPref[ti]));
+        }
+        return ans;
+    }
+
+
+    /*3362. Zero Array Transformation III (Medium)
+    You are given an integer array nums of length n and a 2D array queries where
+    queries[i] = [li, ri]. Each queries[i] represents the following action on
+    nums:
+    * Decrement the value at each index in the range [li, ri] in nums by at most
+      1.
+    * The amount by which the value is decremented can be chosen independently
+      for each index.
+    A Zero Array is an array with all its elements equal to 0. Return the
+    maximum number of elements that can be removed from queries, such that nums
+    can still be converted to a zero array using the remaining queries. If it is
+    not possible to convert nums to a zero array, return -1.
+
+    Example 1:
+    Input: nums = [2,0,2], queries = [[0,2],[0,2],[1,1]]
+    Output: 1
+    Explanation: After removing queries[2], nums can still be converted to a
+                 zero array.
+                 * Using queries[0], decrement nums[0] and nums[2] by 1 and
+                   nums[1] by 0.
+                 * Using queries[1], decrement nums[0] and nums[2] by 1 and
+                   nums[1] by 0.
+
+    Example 2:
+    Input: nums = [1,1,1,1], queries = [[1,3],[0,2],[1,3],[1,2]]
+    Output: 2
+    Explanation: We can remove queries[2] and queries[3].
+
+    Example 3:
+    Input: nums = [1,2,3,4], queries = [[0,3]]
+    Output: -1
+    Explanation: nums cannot be converted to a zero array even after using all
+                 the queries.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] <= 10^5
+    * 1 <= queries.length <= 10^5
+    * queries[i].length == 2
+    * 0 <= li <= ri < nums.length*/
+
+    int maxRemoval(vector<int>& nums, vector<vector<int>>& queries) {
+        sort(queries.begin(), queries.end());
+        int ans = queries.size(), n = nums.size();
+        priority_queue<int> pq;
+        vector<int> line(n+1);
+        for (int i = 0, j = 0, prefix = 0; i < n; ++i) {
+            while (j < queries.size() && queries[j][0] <= i) {
+                pq.push(queries[j][1]);
+                ++j;
+            }
+            prefix += line[i];
+            while (prefix < nums[i] && pq.size()) {
+                int r = pq.top(); pq.pop();
+                if (r >= i) {
+                    --ans;
+                    ++prefix;
+                    --line[r+1];
+                }
+            }
+            if (prefix < nums[i]) return -1;
+        }
+        return ans;
+    }
+
+
+    /*3363. Find the Maximum Number of Fruits Collected (Hard)
+    There is a game dungeon comprised of n x n rooms arranged in a grid. You are
+    given a 2D array fruits of size n x n, where fruits[i][j] represents the
+    number of fruits in the room (i, j). Three children will play in the game
+    dungeon, with initial positions at the corner rooms (0, 0), (0, n - 1), and
+    (n - 1, 0). The children will make exactly n - 1 moves according to the
+    following rules to reach the room (n - 1, n - 1):
+    * The child starting from (0, 0) must move from their current room (i, j) to
+      one of the rooms (i + 1, j + 1), (i + 1, j), and (i, j + 1) if the target
+      room exists.
+    * The child starting from (0, n - 1) must move from their current room
+      (i, j) to one of the rooms (i + 1, j - 1), (i + 1, j), and (i + 1, j + 1)
+      if the target room exists.
+    * The child starting from (n - 1, 0) must move from their current room
+      (i, j) to one of the rooms (i - 1, j + 1), (i, j + 1), and (i + 1, j + 1)
+      if the target room exists.
+    When a child enters a room, they will collect all the fruits there. If two
+    or more children enter the same room, only one child will collect the
+    fruits, and the room will be emptied after they leave. Return the maximum
+    number of fruits the children can collect from the dungeon.
+
+    Example 1:
+    Input: fruits = [[1,2,3,4],[5,6,8,7],[9,10,11,12],[13,14,15,16]]
+    Output: 100
+    Explanation: In this example:
+                 * The 1st child (green) moves on the path (0,0) -> (1,1) ->
+                   (2,2) -> (3, 3).
+                 * The 2nd child (red) moves on the path (0,3) -> (1,2) ->
+                   (2,3) -> (3, 3).
+                 * The 3rd child (blue) moves on the path (3,0) -> (3,1) ->
+                   (3,2) -> (3, 3).
+                 In total they collect 1 + 6 + 11 + 16 + 4 + 8 + 12 + 13 + 14 +
+                 15 = 100 fruits.
+
+    Example 2:
+    Input: fruits = [[1,1],[1,1]]
+    Output: 4
+    Explanation: In this example:
+                 * The 1st child moves on the path (0,0) -> (1,1).
+                 * The 2nd child moves on the path (0,1) -> (1,1).
+                 * The 3rd child moves on the path (1,0) -> (1,1).
+                 In total they collect 1 + 1 + 1 + 1 = 4 fruits.
+
+    Constraints:
+    * 2 <= n == fruits.length == fruits[i].length <= 1000
+    * 0 <= fruits[i][j] <= 1000*/
+
+    int maxCollectedFruits(vector<vector<int>>& fruits) {
+        int diag = 0, lower = 0, upper = 0, n = fruits.size();
+        for (int i = 0; i < n; ++i) {
+            diag += fruits[i][i];
+            for (int j = max(i+1, n-1-i); j < n; ++j) {
+                if (i) {
+                    int cand = 0;
+                    for (int jj = max(j-1, n-i); jj <= j+1 && jj < n; ++jj)
+                        cand = max(cand, fruits[i-1][jj]);
+                    fruits[i][j] += cand;
+                }
+                upper = max(upper, fruits[i][j]);
+            }
+        }
+        for (int j = 0; j < n; ++j)
+            for (int i = max(j+1, n-1-j); i < n; ++i) {
+                if (j) {
+                    int cand = 0;
+                    for (int ii = max(i-1, n-j); ii <= i+1 && ii < n; ++ii)
+                        cand = max(cand, fruits[ii][j-1]);
+                   fruits[i][j] += cand;
+                }
+                lower = max(lower, fruits[i][j]);
+            }
+        return diag + lower + upper;
+    }
+
+
     /*3364. Minimum Positive Sum Subarray (Easy)
     You are given an integer array nums and two integers l and r. Your task is
     to find the minimum sum of a subarray whose size is between l and r
