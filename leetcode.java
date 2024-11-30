@@ -39483,6 +39483,222 @@ class SegTreeLazy {
     }
 
 
+    /*3324. Find the Sequence of Strings Appeared on the Screen (Medium)
+    You are given a string target. Alice is going to type target on her computer
+    using a special keyboard that has only two keys:
+    * Key 1 appends the character "a" to the string on the screen.
+    * Key 2 changes the last character of the string on the screen to its next
+      character in the English alphabet. For example, "c" changes to "d" and "z"
+      changes to "a".
+    Note that initially there is an empty string "" on the screen, so she can
+    only press key 1. Return a list of all strings that appear on the screen as
+    Alice types target, in the order they appear, using the minimum key presses.
+
+    Example 1:
+    Input: target = "abc"
+    Output: ["a","aa","ab","aba","abb","abc"]
+    Explanation: The sequence of key presses done by Alice are:
+                 * Press key 1, and the string on the screen becomes "a".
+                 * Press key 1, and the string on the screen becomes "aa".
+                 * Press key 2, and the string on the screen becomes "ab".
+                 * Press key 1, and the string on the screen becomes "aba".
+                 * Press key 2, and the string on the screen becomes "abb".
+                 * Press key 2, and the string on the screen becomes "abc".
+
+    Example 2:
+    Input: target = "he"
+    Output: ["a","b","c","d","e","f","g","h","ha","hb","hc","hd","he"]
+
+    Constraints:
+    * 1 <= target.length <= 400
+    * target consists only of lowercase English letters.*/
+
+    public List<String> stringSequence(String target) {
+        List<String> ans = new ArrayList<>();
+        String prefix = "";
+        for (var ch : target.toCharArray()) {
+            for (char x = 'a'; x <= ch; ++x)
+                ans.add(prefix + x);
+            prefix = prefix + ch;
+        }
+        return ans;
+    }
+
+
+    /*3325. Count Substrings With K-Frequency Characters I (Medium)
+    Given a string s and an integer k, return the total number of substrings of
+    s where at least one character appears at least k times.
+
+    Example 1:
+    Input: s = "abacb", k = 2
+    Output: 4
+    Explanation: The valid substrings are:
+                 * "aba" (character 'a' appears 2 times).
+                 * "abac" (character 'a' appears 2 times).
+                 * "abacb" (character 'a' appears 2 times).
+                 * "bacb" (character 'b' appears 2 times).
+
+    Example 2:
+    Input: s = "abcde", k = 1
+    Output: 15
+    Explanation: All substrings are valid because every character appears at
+                 least once.
+
+    Constraints:
+    * 1 <= s.length <= 3000
+    * 1 <= k <= s.length
+    * s consists only of lowercase English letters.*/
+
+    public int numberOfSubstrings(String s, int k) {
+        Map<Character, Integer> freq = new HashMap<>();
+        int ans = 0, ii = 0;
+        for (var ch : s.toCharArray()) {
+            freq.merge(ch, 1, Integer::sum);
+            while (freq.get(ch) == k)
+                freq.merge(s.charAt(ii++), -1, Integer::sum);
+            ans += ii;
+        }
+        return ans;
+    }
+
+
+    /*3326. Minimum Division Operations to Make Array Non Decreasing (Medium)
+    You are given an integer array nums. Any positive divisor of a natural
+    number x that is strictly less than x is called a proper divisor of x. For
+    example, 2 is a proper divisor of 4, while 6 is not a proper divisor of 6.
+    You are allowed to perform an operation any number of times on nums, where
+    in each operation you select any one element from nums and divide it by its
+    greatest proper divisor. Return the minimum number of operations required to
+    make the array non-decreasing. If it is not possible to make the array non-
+    decreasing using any number of operations, return -1.
+
+    Example 1:
+    Input: nums = [25,7]
+    Output: 1
+    Explanation: Using a single operation, 25 gets divided by 5 and nums becomes
+                 [5, 7].
+
+    Example 2:
+    Input: nums = [7,7,6]
+    Output: -1
+
+    Example 3:
+    Input: nums = [1,1,1,1]
+    Output: 0
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^6*/
+
+    public int minOperations(int[] nums) {
+        int ans = 0;
+        for (int i = nums.length-2; i >= 0; --i)
+            while (nums[i] > nums[i+1]) {
+                int op = 0;
+                for (int cand = 2; cand <= Math.sqrt(nums[i]); ++cand)
+                    if (nums[i] % cand == 0) {
+                        nums[i] = cand;
+                        ++op;
+                        break;
+                    }
+                if (op == 0) return -1;
+                ans += op;
+            }
+        return ans;
+    }
+
+
+    /*3327. Check if DFS Strings Are Palindromes (Hard)
+    You are given a tree rooted at node 0, consisting of n nodes numbered from 0
+    to n - 1. The tree is represented by an array parent of size n, where
+    parent[i] is the parent of node i. Since node 0 is the root, parent[0] == -1.
+    You are also given a string s of length n, where s[i] is the character
+    assigned to node i. Consider an empty string dfsStr, and define a recursive
+    function dfs(int x) that takes a node x as a parameter and performs the
+    following steps in order:
+    * Iterate over each child y of x in increasing order of their numbers, and call dfs(y).
+    * Add the character s[x] to the end of the string dfsStr.
+    Note that dfsStr is shared across all recursive calls of dfs. You need to
+    find a boolean array answer of size n, where for each index i from 0 to
+    n - 1, you do the following:
+    * Empty the string dfsStr and call dfs(i).
+    * If the resulting string dfsStr is a palindrome, then set answer[i] to true.
+      Otherwise, set answer[i] to false.
+    Return the array answer.
+
+    Example 1:
+    Input: parent = [-1,0,0,1,1,2], s = "aababa"
+    Output: [true,true,false,true,true,true]
+    Explanation: * Calling dfs(0) results in the string dfsStr = "abaaba", which
+                   is a palindrome.
+                 * Calling dfs(1) results in the string dfsStr = "aba", which is
+                   a palindrome.
+                 * Calling dfs(2) results in the string dfsStr = "ab", which is
+                   not a palindrome.
+                 * Calling dfs(3) results in the string dfsStr = "a", which is a
+                   palindrome.
+                 * Calling dfs(4) results in the string dfsStr = "b", which is a
+                   palindrome.
+                 * Calling dfs(5) results in the string dfsStr = "a", which is a
+                   palindrome.
+
+    Example 2:
+    Input: parent = [-1,0,0,0,0], s = "aabcb"
+    Output: [true,true,true,true,true]
+    Explanation: Every call on dfs(x) results in a palindrome string.
+
+    Constraints:
+    * n == parent.length == s.length
+    * 1 <= n <= 10^5
+    * 0 <= parent[i] <= n - 1 for all i >= 1.
+    * parent[0] == -1
+    * parent represents a valid tree.
+    * s consists only of lowercase English letters.*/
+
+    private void dfs(int u, int p, String s, int[][] pos, StringBuilder vals, List<Integer>[] tree) {
+        pos[u][0] = vals.length();
+        for (var v : tree[u])
+            if (v != p) dfs(v, u, s, pos, vals, tree);
+        vals.append(s.charAt(u));
+        pos[u][1] = vals.length();
+    }
+
+    public boolean[] findAnswer(int[] parent, String s) {
+        int n = parent.length;
+        List<Integer>[] tree = new List[n];
+        for (int i = 0; i < n; ++i)
+            tree[i] = new ArrayList<>();
+        for (int i = 0; i < n; ++i)
+            if (parent[i] != -1) tree[parent[i]].add(i);
+        StringBuilder vals = new StringBuilder();
+        int[][] pos = new int[n][2];
+        dfs(0, -1, s, pos, vals, tree);
+
+        StringBuilder sb = new StringBuilder("#");
+        for (var ch : vals.toString().toCharArray()) {
+            sb.append(ch);
+            sb.append('#');
+        }
+        String ss = sb.toString();
+        int sz = ss.length(), center = 0, right = 0;
+        int[] hlen = new int[sz];
+        for (int i = 0; i < sz; ++i) {
+            if (i < right) hlen[i] = Math.min(right-i, hlen[2*center-i]);
+            while (0 <= i-1-hlen[i] && i+1+hlen[i] < sz && ss.charAt(i-1-hlen[i]) == ss.charAt(i+1+hlen[i])) ++hlen[i];
+            if (right < i+hlen[i]) {
+                center = i;
+                right = i+hlen[i];
+            }
+        }
+        boolean[] ans = new boolean[n];
+        for (int i = 0; i < n; ++i) {
+            int lo = pos[i][0], hi = pos[i][1];
+            ans[i] = hi-lo <= hlen[lo+hi];
+        }
+        return ans;
+    }
+
+
     /*3349. Adjacent Increasing Subarrays Detection I (Easy)
     Given an array nums of n integers and an integer k, determine whether there
     exist two adjacent subarrays of length k such that both subarrays are
