@@ -99925,6 +99925,219 @@ class SegTree:
         return fn(0, -1)[0]
 
 
+    """3370. Smallest Number With All Set Bits (Easy)
+    You are given a positive number n. Return the smallest number x greater than
+    or equal to n, such that the binary representation of x contains only set
+    bits. A set bit refers to a bit in the binary representation of a number
+    that has a value of 1.
+
+    Example 1:
+    Input: n = 5
+    Output: 7
+    Explanation: The binary representation of 7 is "111".
+
+    Example 2:
+    Input: n = 10
+    Output: 15
+    Explanation: The binary representation of 15 is "1111".
+
+    Example 3:
+    Input: n = 3
+    Output: 3
+    Explanation: The binary representation of 3 is "11".
+
+    Constraints: 1 <= n <= 1000"""
+
+    def smallestNumber(self, n: int) -> int:
+        return (1<<n.bit_length()) - 1
+
+
+    """3371. Identify the Largest Outlier in an Array (Medium)
+    You are given an integer array nums. This array contains n elements, where
+    exactly n - 2 elements are special numbers. One of the remaining two
+    elements is the sum of these special numbers, and the other is an outlier.
+    An outlier is defined as a number that is neither one of the original
+    special numbers nor the element representing the sum of those numbers. Note
+    that special numbers, the sum element, and the outlier must have distinct
+    indices, but may share the same value. Return the largest potential outlier
+    in nums.
+
+    Example 1:
+    Input: nums = [2,3,5,10]
+    Output: 10
+    Explanation: The special numbers could be 2 and 3, thus making their sum 5
+                 and the outlier 10.
+
+    Example 2:
+    Input: nums = [-2,-1,-3,-6,4]
+    Output: 4
+    Explanation: The special numbers could be -2, -1, and -3, thus making their
+                 sum -6 and the outlier 4.
+
+    Example 3:
+    Input: nums = [1,1,1,1,1,5,5]
+    Output: 5
+    Explanation: The special numbers could be 1, 1, 1, 1, and 1, thus making
+                 their sum 5 and the other 5 as the outlier.
+
+    Constraints:
+    * 3 <= nums.length <= 10^5
+    * -1000 <= nums[i] <= 1000
+    * The input is generated such that at least one potential outlier exists in
+      nums."""
+
+    def getLargestOutlier(self, nums: List[int]) -> int:
+        freq = Counter(nums)
+        total = sum(nums)
+        ans = -inf
+        for i, x in enumerate(nums):
+            cand = total - x
+            if not cand & 1:
+                cand //= 2
+                if cand in freq and (x != cand or freq[cand] > 1): ans = max(ans, x)
+        return ans
+
+
+    """3372. Maximize the Number of Target Nodes After Connecting Trees I (Medium)
+    There exist two undirected trees with n and m nodes, with distinct labels in
+    ranges [0, n - 1] and [0, m - 1], respectively. You are given two 2D integer
+    arrays edges1 and edges2 of lengths n - 1 and m - 1, respectively, where
+    edges1[i] = [ai, bi] indicates that there is an edge between nodes ai and bi
+    in the first tree and edges2[i] = [ui, vi] indicates that there is an edge
+    between nodes ui and vi in the second tree. You are also given an integer k.
+    Node u is target to node v if the number of edges on the path from u to v is
+    less than or equal to k. Note that a node is always target to itself. Return
+    an array of n integers answer, where answer[i] is the maximum possible
+    number of nodes target to node i of the first tree if you have to connect
+    one node from the first tree to another node in the second tree. Note that
+    queries are independent from each other. That is, for every query you will
+    remove the added edge before proceeding to the next query.
+
+    Example 1:
+    Input: edges1 = [[0,1],[0,2],[2,3],[2,4]], edges2 = [[0,1],[0,2],[0,3],[2,7],[1,4],[4,5],[4,6]], k = 2
+    Output: [9,7,9,8,8]
+    Explanation: * For i = 0, connect node 0 from the first tree to node 0 from
+                   the second tree.
+                 * For i = 1, connect node 1 from the first tree to node 0 from
+                   the second tree.
+                 * For i = 2, connect node 2 from the first tree to node 4 from
+                   the second tree.
+                 * For i = 3, connect node 3 from the first tree to node 4 from
+                   the second tree.
+                 * For i = 4, connect node 4 from the first tree to node 4 from
+                   the second tree.
+
+    Example 2:
+    Input: edges1 = [[0,1],[0,2],[0,3],[0,4]], edges2 = [[0,1],[1,2],[2,3]], k = 1
+    Output: [6,3,3,3,3]
+    Explanation: For every i, connect node i of the first tree with any node of
+                 the second tree.
+
+    Constraints:
+    * 2 <= n, m <= 1000
+    * edges1.length == n - 1
+    * edges2.length == m - 1
+    * edges1[i].length == edges2[i].length == 2
+    * edges1[i] = [ai, bi]
+    * 0 <= ai, bi < n
+    * edges2[i] = [ui, vi]
+    * 0 <= ui, vi < m
+    * The input is generated such that edges1 and edges2 represent valid trees.
+    * 0 <= k <= 1000"""
+
+    def maxTargetNodes(self, edges1: List[List[int]], edges2: List[List[int]], k: int) -> List[int]:
+
+        def fn(edges, k):
+            n = len(edges)+1
+            tree = [[] for _ in range(n)]
+            for u, v in edges:
+                tree[u].append(v)
+                tree[v].append(u)
+            ans = [0]*n
+            for x in range(n):
+                stack = []
+                if 0 <= k: stack.append((x, -1, 0))
+                while stack:
+                    u, p, d = stack.pop()
+                    ans[x] += 1
+                    for v in tree[u]:
+                        if v != p and d+1 <= k:
+                            stack.append((v, u, d+1))
+            return ans
+
+        most = max(fn(edges2, k-1))
+        return [x+most for x in fn(edges1, k)]
+
+
+    """3373. Maximize the Number of Target Nodes After Connecting Trees II (Hard)
+    There exist two undirected trees with n and m nodes, labeled from [0, n - 1]
+    and [0, m - 1], respectively. You are given two 2D integer arrays edges1 and
+    edges2 of lengths n - 1 and m - 1, respectively, where edges1[i] = [ai, bi]
+    indicates that there is an edge between nodes ai and bi in the first tree
+    and edges2[i] = [ui, vi] indicates that there is an edge between nodes ui
+    and vi in the second tree. Node u is target to node v if the number of edges
+    on the path from u to v is even. Note that a node is always target to itself.
+    Return an array of n integers answer, where answer[i] is the maximum
+    possible number of nodes that are target to node i of the first tree if you
+    had to connect one node from the first tree to another node in the second
+    tree. Note that queries are independent from each other. That is, for every
+    query you will remove the added edge before proceeding to the next query.
+
+    Example 1:
+    Input: edges1 = [[0,1],[0,2],[2,3],[2,4]], edges2 = [[0,1],[0,2],[0,3],[2,7],[1,4],[4,5],[4,6]]
+    Output: [8,7,7,8,8]
+    Explanation: * For i = 0, connect node 0 from the first tree to node 0 from
+                   the second tree.
+                 * For i = 1, connect node 1 from the first tree to node 4 from
+                   the second tree.
+                 * For i = 2, connect node 2 from the first tree to node 7 from
+                   the second tree.
+                 * For i = 3, connect node 3 from the first tree to node 0 from
+                   the second tree.
+                 * For i = 4, connect node 4 from the first tree to node 4 from
+                   the second tree.
+
+    Example 2:
+    Input: edges1 = [[0,1],[0,2],[0,3],[0,4]], edges2 = [[0,1],[1,2],[2,3]]
+    Output: [3,6,6,6,6]
+    Explanation: For every i, connect node i of the first tree with any node of
+                 the second tree.
+
+    Constraints:
+    * 2 <= n, m <= 10^5
+    * edges1.length == n - 1
+    * edges2.length == m - 1
+    * edges1[i].length == edges2[i].length == 2
+    * edges1[i] = [ai, bi]
+    * 0 <= ai, bi < n
+    * edges2[i] = [ui, vi]
+    * 0 <= ui, vi < m
+    * The input is generated such that edges1 and edges2 represent valid trees."""
+
+    def maxTargetNodes(self, edges1: List[List[int]], edges2: List[List[int]], k: int) -> List[int]:
+
+        def fn(edges, k):
+            n = len(edges)+1
+            tree = [[] for _ in range(n)]
+            for u, v in edges:
+                tree[u].append(v)
+                tree[v].append(u)
+            ans = [0]*n
+            for x in range(n):
+                stack = []
+                if 0 <= k: stack.append((x, -1, 0))
+                while stack:
+                    u, p, d = stack.pop()
+                    ans[x] += 1
+                    for v in tree[u]:
+                        if v != p and d+1 <= k:
+                            stack.append((v, u, d+1))
+            return ans
+
+        most = max(fn(edges2, k-1))
+        return [x+most for x in fn(edges1, k)]
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.
