@@ -82486,6 +82486,268 @@ public:
     }
 
 
+    /*3318. Find X-Sum of All K-Long Subarrays I (Easy)
+    You are given an array nums of n integers and two integers k and x. The x-
+    sum of an array is calculated by the following procedure:
+    * Count the occurrences of all elements in the array.
+    * Keep only the occurrences of the top x most frequent elements. If two
+      elements have the same number of occurrences, the element with the bigger
+      value is considered more frequent.
+    * Calculate the sum of the resulting array.
+    Note that if an array has less than x distinct elements, its x-sum is the
+    sum of the array. Return an integer array answer of length n - k + 1 where
+    answer[i] is the x-sum of the subarray nums[i..i + k - 1].
+
+    Example 1:
+    Input: nums = [1,1,2,2,3,4,2,3], k = 6, x = 2
+    Output: [6,10,12]
+    Explanation: * For subarray [1, 1, 2, 2, 3, 4], only elements 1 and 2 will
+                   be kept in the resulting array. Hence,
+                   answer[0] = 1 + 1 + 2 + 2.
+                 * For subarray [1, 2, 2, 3, 4, 2], only elements 2 and 4 will
+                   be kept in the resulting array. Hence,
+                   answer[1] = 2 + 2 + 2 + 4. Note that 4 is kept in the array
+                   since it is bigger than 3 and 1 which occur the same number
+                   of times.
+                 * For subarray [2, 2, 3, 4, 2, 3], only elements 2 and 3 are
+                   kept in the resulting array. Hence,
+                   answer[2] = 2 + 2 + 2 + 3 + 3.
+
+    Example 2:
+    Input: nums = [3,8,7,8,7,5], k = 2, x = 2
+    Output: [11,15,15,15,12]
+    Explanation: Since k == x, answer[i] is equal to the sum of the subarray
+                 nums[i..i + k - 1].
+
+    Constraints:
+    * 1 <= n == nums.length <= 50
+    * 1 <= nums[i] <= 50
+    * 1 <= x <= k <= nums.length*/
+
+    vector<int> findXSum(vector<int>& nums, int k, int x) {
+        vector<int> ans;
+        unordered_map<int, int> freq;
+        for (int i = 0; i < nums.size(); ++i) {
+            ++freq[nums[i]];
+            if (i >= k) --freq[nums[i-k]];
+            if (i >= k-1) {
+                vector<pair<int, int>> vals(freq.begin(), freq.end());
+                sort(vals.begin(), vals.end(), [&](auto& a, auto& b) {
+                    return a.second != b.second ? a.second > b.second : a.first > b.first;
+                });
+                int cand = 0;
+                for (int j = 0; j < x && j < vals.size(); ++j)
+                    cand += vals[j].first * vals[j].second;
+                ans.push_back(cand);
+            }
+        }
+        return ans;
+    }
+
+
+    /*3319. K-th Largest Perfect Subtree Size in Binary Tree (Medium)
+    You are given the root of a binary tree and an integer k. Return an integer
+    denoting the size of the kth largest perfect binary subtree, or -1 if it
+    doesn't exist. A perfect binary tree is a tree where all leaves are on the
+    same level, and every parent has two children.
+
+    Example 1:
+    Input: root = [5,3,6,5,2,5,7,1,8,null,null,6,8], k = 2
+    Output: 3
+    Explanation: The roots of the perfect binary subtrees are highlighted in
+                 black. Their sizes, in non-increasing order are
+                 [3, 3, 1, 1, 1, 1, 1, 1]. The 2nd largest size is 3.
+
+    Example 2:
+    Input: root = [1,2,3,4,5,6,7], k = 1
+    Output: 7
+    Explanation: The sizes of the perfect binary subtrees in non-increasing
+                 order are [7, 3, 3, 1, 1, 1, 1]. The size of the largest
+                 perfect binary subtree is 7.
+
+    Example 3:
+    Input: root = [1,2,3,null,4], k = 3
+    Output: -1
+    Explanation: The sizes of the perfect binary subtrees in non-increasing
+                 order are [1, 1]. There are fewer than 3 perfect binary
+                 subtrees.
+
+    Constraints:
+    * The number of nodes in the tree is in the range [1, 2000].
+    * 1 <= Node.val <= 2000
+    * 1 <= k <= 1024*/
+
+    int kthLargestPerfectSubtree(TreeNode* root, int k) {
+        vector<int> vals;
+
+        function<int(TreeNode*)> fn = [&](TreeNode* node) {
+            if (!node) return 0;
+            int left = fn(node->left), right = fn(node->right);
+            if (left == right && left != -1) {
+                vals.push_back(1 + left + right);
+                return 1 + left + right;
+            }
+            return -1;
+        };
+
+        fn(root);
+        sort(vals.begin(), vals.end(), greater<int>());
+        return k <= vals.size() ? vals[k-1] : -1;
+    }
+
+
+    /*3320. Count The Number of Winning Sequences (Hard)
+    Alice and Bob are playing a fantasy battle game consisting of n rounds where
+    they summon one of three magical creatures each round: a Fire Dragon, a
+    Water Serpent, or an Earth Golem. In each round, players simultaneously
+    summon their creature and are awarded points as follows:
+    * If one player summons a Fire Dragon and the other summons an Earth Golem,
+      the player who summoned the Fire Dragon is awarded a point.
+    * If one player summons a Water Serpent and the other summons a Fire Dragon,
+      the player who summoned the Water Serpent is awarded a point.
+    * If one player summons an Earth Golem and the other summons a Water
+      Serpent, the player who summoned the Earth Golem is awarded a point.
+    * If both players summon the same creature, no player is awarded a point.
+    You are given a string s consisting of n characters 'F', 'W', and 'E',
+    representing the sequence of creatures Alice will summon in each round:
+    * If s[i] == 'F', Alice summons a Fire Dragon.
+    * If s[i] == 'W', Alice summons a Water Serpent.
+    * If s[i] == 'E', Alice summons an Earth Golem.
+    Bob’s sequence of moves is unknown, but it is guaranteed that Bob will never
+    summon the same creature in two consecutive rounds. Bob beats Alice if the
+    total number of points awarded to Bob after n rounds is strictly greater
+    than the points awarded to Alice. Return the number of distinct sequences
+    Bob can use to beat Alice. Since the answer may be very large, return it
+    modulo 10^9 + 7.
+
+    Example 1:
+    Input: s = "FFF"
+    Output: 3
+    Explanation: Bob can beat Alice by making one of the following sequences of
+                 moves: "WFW", "FWF", or "WEW". Note that other winning
+                 sequences like "WWE" or "EWW" are invalid since Bob cannot make
+                 the same move twice in a row.
+
+    Example 2:
+    Input: s = "FWEFW"
+    Output: 18
+    Explanation: Bob can beat Alice by making one of the following sequences of
+                 moves: "FWFWF", "FWFWE", "FWEFE", "FWEWE", "FEFWF", "FEFWE",
+                 "FEFEW", "FEWFE", "WFEFE", "WFEWE", "WEFWF", "WEFWE", "WEFEF",
+                 "WEFEW", "WEWFW", "WEWFE", "EWFWE", or "EWEWE".
+
+    Constraints:
+    * 1 <= s.length <= 1000
+    * s[i] is one of 'F', 'W', or 'E'.*/
+
+    int countWinningSequences(string s) {
+        const int mod = 1'000'000'007, n = s.size();
+        vector<vector<vector<long long>>> dp(n, vector<vector<long long>>(3, vector<long long>(2*n+1)));
+        for (int i = 0; i < n; ++i) {
+            int v = string("EFW").find(s[i]);
+            for (int j = 0; j < 3; ++j) {
+                int diff = (j - v) % 3;
+                if (diff == 2) diff = -1;
+                else if (diff == -2) diff = 1;
+                if (i == 0) dp[i][j][n+diff] = 1;
+                else
+                    for (int p = 0; p < 3; ++p)
+                        if (j != p)
+                            for (int k = -i; k <= i; ++k)
+                                dp[i][j][n+k+diff] = (dp[i][j][n+k+diff] + dp[i-1][p][n+k]) % mod;
+            }
+        }
+        long long ans = 0;
+        for (int j = 0; j < 3; ++j)
+            for (int k = 1; k <= n; ++k)
+                ans = (ans + dp[n-1][j][n+k]) % mod;
+        return ans;
+    }
+
+
+    /*3321. Find X-Sum of All K-Long Subarrays II (Hard)
+    You are given an array nums of n integers and two integers k and x. The x-
+    sum of an array is calculated by the following procedure:
+    * Count the occurrences of all elements in the array.
+    * Keep only the occurrences of the top x most frequent elements. If two
+      elements have the same number of occurrences, the element with the bigger
+      value is considered more frequent.
+    * Calculate the sum of the resulting array.
+    Note that if an array has less than x distinct elements, its x-sum is the
+    sum of the array. Return an integer array answer of length n - k + 1 where
+    answer[i] is the x-sum of the subarray nums[i..i + k - 1].
+
+    Example 1:
+    Input: nums = [1,1,2,2,3,4,2,3], k = 6, x = 2
+    Output: [6,10,12]
+    Explanation: * For subarray [1, 1, 2, 2, 3, 4], only elements 1 and 2 will
+                   be kept in the resulting array. Hence,
+                   answer[0] = 1 + 1 + 2 + 2.
+                 * For subarray [1, 2, 2, 3, 4, 2], only elements 2 and 4 will
+                   be kept in the resulting array. Hence,
+                   answer[1] = 2 + 2 + 2 + 4. Note that 4 is kept in the array
+                   since it is bigger than 3 and 1 which occur the same number
+                   of times.
+                 * For subarray [2, 2, 3, 4, 2, 3], only elements 2 and 3 are
+                   kept in the resulting array. Hence,
+                   answer[2] = 2 + 2 + 2 + 3 + 3.
+
+    Example 2:
+    Input: nums = [3,8,7,8,7,5], k = 2, x = 2
+    Output: [11,15,15,15,12]
+    Explanation: Since k == x, answer[i] is equal to the sum of the subarray
+                 nums[i..i + k - 1].
+
+    Constraints:
+    * nums.length == n
+    * 1 <= n <= 10^5
+    * 1 <= nums[i] <= 10^9
+    * 1 <= x <= k <= nums.length*/
+
+    vector<long long> findXSum(vector<int>& nums, int k, int x) {
+        unordered_map<int, long long> freq;
+        set<pair<long long, int>> top, bottom;
+        vector<long long> ans;
+        long long val = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            int v = nums[i];
+            if (freq[v]) {
+                auto elem = make_pair(freq[v], v);
+                if (elem >= *top.begin()) {
+                    top.erase(elem);
+                    val -= freq[v] * v;
+                } else bottom.erase(elem);
+            }
+            ++freq[v];
+            top.insert(make_pair(freq[v], v));
+            val += freq[v] * v;
+            if (top.size() > x) {
+                bottom.insert(*top.begin());
+                auto [f, z] = *top.begin();
+                val -= f * z;
+                top.erase(top.begin());
+            }
+            if (i >= k) {
+                int vv = nums[i-k];
+                auto elem = make_pair(freq[vv], vv);
+                if (elem >= *top.begin()) {
+                    top.erase(elem);
+                    val -= freq[vv] * vv;
+                } else bottom.erase(elem);
+                if (--freq[vv]) bottom.insert(make_pair(freq[vv], vv));
+                if (top.size() < x && bottom.size()) {
+                    top.insert(*prev(bottom.end()));
+                    auto [f, z] = *prev(bottom.end());
+                    val += f * z;
+                    bottom.erase(prev(bottom.end()));
+                }
+            }
+            if (i >= k-1) ans.push_back(val);
+        }
+        return ans;
+    }
+
+
     /*3324. Find the Sequence of Strings Appeared on the Screen (Medium)
     You are given a string target. Alice is going to type target on her computer
     using a special keyboard that has only two keys:
