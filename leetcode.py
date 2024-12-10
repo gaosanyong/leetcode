@@ -100777,6 +100777,229 @@ class SegTree:
         return len(set(map(find, nums)))
 
 
+    """3379. Transformed Array (Easy)
+    You are given an integer array nums that represents a circular array. Your
+    task is to create a new array result of the same size, following these rules:
+    For each index i (where 0 <= i < nums.length), perform the following
+    independent actions:
+    * If nums[i] > 0: Start at index i and move nums[i] steps to the right in
+      the circular array. Set result[i] to the value of the index where you land.
+    * If nums[i] < 0: Start at index i and move abs(nums[i]) steps to the left
+      in the circular array. Set result[i] to the value of the index where you
+      land.
+    * If nums[i] == 0: Set result[i] to nums[i].
+    Return the new array result. Note: Since nums is circular, moving past the
+    last element wraps around to the beginning, and moving before the first
+    element wraps back to the end.
+
+    Example 1:
+    Input: nums = [3,-2,1,1]
+    Output: [1,1,1,3]
+    Explanation: * For nums[0] that is equal to 3, If we move 3 steps to right,
+                   we reach nums[3]. So result[0] should be 1.
+                 * For nums[1] that is equal to -2, If we move 2 steps to left,
+                   we reach nums[3]. So result[1] should be 1.
+                 * For nums[2] that is equal to 1, If we move 1 step to right,
+                   we reach nums[3]. So result[2] should be 1.
+                 * For nums[3] that is equal to 1, If we move 1 step to right,
+                   we reach nums[0]. So result[3] should be 3.
+
+    Example 2:
+    Input: nums = [-1,4,-1]
+    Output: [-1,-1,4]
+    Explanation: * For nums[0] that is equal to -1, If we move 1 step to left,
+                   we reach nums[2]. So result[0] should be -1.
+                 * For nums[1] that is equal to 4, If we move 4 steps to right,
+                   we reach nums[2]. So result[1] should be -1.
+                 * For nums[2] that is equal to -1, If we move 1 step to left,
+                   we reach nums[1]. So result[2] should be 4.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * -100 <= nums[i] <= 100"""
+
+    def constructTransformedArray(self, nums: List[int]) -> List[int]:
+        return [nums[(i+x)%len(nums)] for i, x in enumerate(nums)]
+
+
+    """3380. Maximum Area Rectangle With Point Constraints I (Medium)
+    You are given an array points where points[i] = [xi, yi] represents the
+    coordinates of a point on an infinite plane. Your task is to find the
+    maximum area of a rectangle that:
+    * Can be formed using four of these points as its corners.
+    * Does not contain any other point inside or on its border.
+    * Has its edges parallel to the axes.
+    Return the maximum area that you can obtain or -1 if no such rectangle is
+    possible.
+
+    Example 1:
+    Input: points = [[1,1],[1,3],[3,1],[3,3]]
+    Output: 4
+    Explanation: We can make a rectangle with these 4 points as corners and
+                 there is no other point that lies inside or on the border.
+                 Hence, the maximum possible area would be 4.
+
+    Example 2:
+    Input: points = [[1,1],[1,3],[3,1],[3,3],[2,2]]
+    Output: -1
+    Explanation: There is only one rectangle possible is with points [1,1],
+                 [1,3], [3,1] and [3,3] but [2,2] will always lie inside it.
+                 Hence, returning -1.
+
+    Example 3:
+    Input: points = [[1,1],[1,3],[3,1],[3,3],[1,2],[3,2]]
+    Output: 2
+    Explanation: The maximum area rectangle is formed by the points [1,3],
+                 [1,2], [3,2], [3,3], which has an area of 2. Additionally, the
+                 points [1,1], [1,2], [3,1], [3,2] also form a valid rectangle
+                 with the same area.
+
+    Constraints:
+    * 1 <= points.length <= 10
+    * points[i].length == 2
+    * 0 <= xi, yi <= 100
+    * All the given points are unique."""
+
+    def maxRectangleArea(self, points: List[List[int]]) -> int:
+        points.sort()
+        last = defaultdict(lambda : -1)
+        ans = px = py = -1
+        for x, y in points:
+            if x == px and last[y] == last[py] != -1:
+                xx = last[y]
+                for u, v in points:
+                    if u in (xx, x) and py < v < y or xx < u < x and v in (py, y) or xx < u < x and py < v < y: break
+                else: ans = max(ans, (x-xx)*(y-py))
+            last[py] = px
+            px, py = x, y
+        return ans
+
+
+    """3381. Maximum Subarray Sum With Length Divisible by K (Medium)
+    You are given an array of integers nums and an integer k. Return the maximum
+    sum of a non-empty subarray of nums, such that the size of the subarray is
+    divisible by k. A subarray is a contiguous non-empty sequence of elements
+    within an array.
+
+    Example 1:
+    Input: nums = [1,2], k = 1
+    Output: 3
+    Explanation: The subarray [1, 2] with sum 3 has length equal to 2 which is
+                 divisible by 1.
+
+    Example 2:
+    Input: nums = [-1,-2,-3,-4,-5], k = 4
+    Output: -10
+    Explanation: The maximum sum subarray is [-1, -2, -3, -4] which has length
+                 equal to 4 which is divisible by 4.
+
+    Example 3:
+    Input: nums = [-5,1,2,-3,4], k = 2
+    Output: 4
+    Explanation: The maximum sum subarray is [1, 2, -3, 4] which has length
+                 equal to 4 which is divisible by 2.
+
+    Constraints:
+    * 1 <= k <= nums.length <= 2 * 10^5
+    * -10^9 <= nums[i] <= 10^9"""
+
+    def maxSubarraySum(self, nums: List[int], k: int) -> int:
+        ans = -inf
+        seen = defaultdict(lambda: inf, {k-1 : 0})
+        for i, prefix in enumerate(accumulate(nums)):
+            i %= k
+            ans = max(ans, prefix - seen[i])
+            seen[i] = min(seen[i], prefix)
+        return ans
+
+
+    """3382. Maximum Area Rectangle With Point Constraints II (Hard)
+    There are n points on an infinite plane. You are given two integer arrays
+    xCoord and yCoord where (xCoord[i], yCoord[i]) represents the coordinates of
+    the ith point. Your task is to find the maximum area of a rectangle that:
+    * Can be formed using four of these points as its corners.
+    * Does not contain any other point inside or on its border.
+    * Has its edges parallel to the axes.
+    Return the maximum area that you can obtain or -1 if no such rectangle is
+    possible.
+
+    Example 1:
+    Input: xCoord = [1,1,3,3], yCoord = [1,3,1,3]
+    Output: 4
+    Explanation: We can make a rectangle with these 4 points as corners and
+                 there is no other point that lies inside or on the border.
+                 Hence, the maximum possible area would be 4.
+
+    Example 2:
+    Input: xCoord = [1,1,3,3,2], yCoord = [1,3,1,3,2]
+    Output: -1
+    Explanation: There is only one rectangle possible is with points [1,1],
+                 [1,3], [3,1] and [3,3] but [2,2] will always lie inside it.
+                 Hence, returning -1.
+
+    Example 3:
+    Input: xCoord = [1,1,3,3,1,3], yCoord = [1,3,1,3,2,2]
+    Output: 2
+    Explanation: The maximum area rectangle is formed by the points [1,3],
+                 [1,2], [3,2], [3,3], which has an area of 2. Additionally, the
+                 points [1,1], [1,2], [3,1], [3,2] also form a valid rectangle
+                 with the same area.
+
+    Constraints:
+    * 1 <= xCoord.length == yCoord.length <= 2 * 10^5
+    * 0 <= xCoord[i], yCoord[i] <= 8 * 10^7
+    * All the given points are unique.
+
+class SegTree:
+
+    def __init__(self, arr: List[int]):
+        self.n = n = len(arr)
+        self.tree = [0]*(4*n)
+        self._build(arr, 0, 0, n)
+
+    def _build(self, arr: List[int], k: int, lo: int, hi: int) -> None:
+        if lo+1 == hi: self.tree[k] = arr[lo]
+        else:
+            mid = lo + hi >> 1
+            self._build(arr, 2*k+1, lo, mid)
+            self._build(arr, 2*k+2, mid, hi)
+            self.tree[k] = max(self.tree[2*k+1], self.tree[2*k+2])
+
+    def update(self, i: int, val: int, k: int = 0, lo: int = 0, hi: int = 0) -> None:
+        if not hi: hi = self.n
+        if lo+1 == hi: self.tree[k] = val
+        else:
+            mid = lo + hi >> 1
+            if i < mid: self.update(i, val, 2*k+1, lo, mid)
+            else: self.update(i, val, 2*k+2, mid, hi)
+            self.tree[k] = max(self.tree[2*k+1], self.tree[2*k+2])
+
+    def query(self, qlo: int, qhi: int, k: int = 0, lo: int = 0, hi: int = 0) -> int:
+        if not hi: hi = self.n
+        if qhi <= lo or  hi <= qlo: return -inf         #      no overlap
+        if qlo <= lo and hi <= qhi: return self.tree[k] #   total overlap
+        mid = lo + hi >> 1                              # partial overlap
+        return max(self.query(qlo, qhi, 2*k+1, lo, mid), self.query(qlo, qhi, 2*k+2, mid, hi))"""
+
+    def maxRectangleArea(self, xCoord: List[int], yCoord: List[int]) -> int:
+        points = sorted(zip(xCoord, yCoord))
+        yCoord = set(yCoord)
+        comp = dict(zip(sorted(yCoord), range(len(yCoord))))
+        last = defaultdict(lambda : -inf)
+        tree = SegTree([-1]*len(yCoord))
+        ans = px = py = -1
+        for x, y in points:
+            if x == px and last[y] == last[py] >= 0:
+                xx = last[y]
+                most = tree.query(comp[py]+1, comp[y])
+                if most < xx: ans = max(ans, (x-xx)*(y-py))
+            if py >= 0:
+                last[py] = px
+                tree.update(comp[py], px)
+            px, py = x, y
+        return ans
+
+
 """146. LRU Cache (Medium)
 Design and implement a data structure for Least Recently Used (LRU) cache. It
 should support the following operations: get and put.

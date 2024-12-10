@@ -41524,6 +41524,283 @@ class SegTreeLazy {
             else ++ans;
         return ans + uniq.size();
     }
+
+
+    /*3379. Transformed Array (Easy)
+    You are given an integer array nums that represents a circular array. Your
+    task is to create a new array result of the same size, following these rules:
+    For each index i (where 0 <= i < nums.length), perform the following
+    independent actions:
+    * If nums[i] > 0: Start at index i and move nums[i] steps to the right in
+      the circular array. Set result[i] to the value of the index where you land.
+    * If nums[i] < 0: Start at index i and move abs(nums[i]) steps to the left
+      in the circular array. Set result[i] to the value of the index where you
+      land.
+    * If nums[i] == 0: Set result[i] to nums[i].
+    Return the new array result. Note: Since nums is circular, moving past the
+    last element wraps around to the beginning, and moving before the first
+    element wraps back to the end.
+
+    Example 1:
+    Input: nums = [3,-2,1,1]
+    Output: [1,1,1,3]
+    Explanation: * For nums[0] that is equal to 3, If we move 3 steps to right,
+                   we reach nums[3]. So result[0] should be 1.
+                 * For nums[1] that is equal to -2, If we move 2 steps to left,
+                   we reach nums[3]. So result[1] should be 1.
+                 * For nums[2] that is equal to 1, If we move 1 step to right,
+                   we reach nums[3]. So result[2] should be 1.
+                 * For nums[3] that is equal to 1, If we move 1 step to right,
+                   we reach nums[0]. So result[3] should be 3.
+
+    Example 2:
+    Input: nums = [-1,4,-1]
+    Output: [-1,-1,4]
+    Explanation: * For nums[0] that is equal to -1, If we move 1 step to left,
+                   we reach nums[2]. So result[0] should be -1.
+                 * For nums[1] that is equal to 4, If we move 4 steps to right,
+                   we reach nums[2]. So result[1] should be -1.
+                 * For nums[2] that is equal to -1, If we move 1 step to left,
+                   we reach nums[1]. So result[2] should be 4.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * -100 <= nums[i] <= 100*/
+
+    public int[] constructTransformedArray(int[] nums) {
+        int n = nums.length;
+        int[] ans = new int[n];
+        for (int i = 0; i < n; ++i)
+            ans[i] = nums[(n+(i+nums[i])%n)%n];
+        return ans;
+    }
+
+
+    /*3380. Maximum Area Rectangle With Point Constraints I (Medium)
+    You are given an array points where points[i] = [xi, yi] represents the
+    coordinates of a point on an infinite plane. Your task is to find the
+    maximum area of a rectangle that:
+    * Can be formed using four of these points as its corners.
+    * Does not contain any other point inside or on its border.
+    * Has its edges parallel to the axes.
+    Return the maximum area that you can obtain or -1 if no such rectangle is
+    possible.
+
+    Example 1:
+    Input: points = [[1,1],[1,3],[3,1],[3,3]]
+    Output: 4
+    Explanation: We can make a rectangle with these 4 points as corners and
+                 there is no other point that lies inside or on the border.
+                 Hence, the maximum possible area would be 4.
+
+    Example 2:
+    Input: points = [[1,1],[1,3],[3,1],[3,3],[2,2]]
+    Output: -1
+    Explanation: There is only one rectangle possible is with points [1,1],
+                 [1,3], [3,1] and [3,3] but [2,2] will always lie inside it.
+                 Hence, returning -1.
+
+    Example 3:
+    Input: points = [[1,1],[1,3],[3,1],[3,3],[1,2],[3,2]]
+    Output: 2
+    Explanation: The maximum area rectangle is formed by the points [1,3],
+                 [1,2], [3,2], [3,3], which has an area of 2. Additionally, the
+                 points [1,1], [1,2], [3,1], [3,2] also form a valid rectangle
+                 with the same area.
+
+    Constraints:
+    * 1 <= points.length <= 10
+    * points[i].length == 2
+    * 0 <= xi, yi <= 100
+    * All the given points are unique.*/
+
+    public int maxRectangleArea(int[][] points) {
+        Arrays.sort(points, (x, y) -> x[0] != y[0] ? Integer.compare(x[0], y[0]) : Integer.compare(x[1], y[1]));
+        Map<Integer, Integer> last = new HashMap<>();
+        int ans = -1, px = -1, py = -1;
+        for (var p : points) {
+            int x = p[0], y = p[1];
+            if (x == px && last.containsKey(y) && last.containsKey(py) && last.get(y) == last.get(py)) {
+                int xx = last.get(y);
+                boolean found = false;
+                for (var pp : points) {
+                    int u = pp[0], v = pp[1];
+                    if ((u == xx || u == x) && py < v && v < y) found = true;
+                    if (xx < u && u < x && (v == py || v == y)) found = true;
+                    if (xx < u && u < x && py < v && v < y) found = true;
+                    if (found) break;
+                }
+                if (!found) ans = Math.max(ans, (x-xx)*(y-py));
+            }
+            last.put(py, px);
+            px = x; py = y;
+        }
+        return ans;
+    }
+
+
+    /*3381. Maximum Subarray Sum With Length Divisible by K (Medium)
+    You are given an array of integers nums and an integer k. Return the maximum
+    sum of a non-empty subarray of nums, such that the size of the subarray is
+    divisible by k. A subarray is a contiguous non-empty sequence of elements
+    within an array.
+
+    Example 1:
+    Input: nums = [1,2], k = 1
+    Output: 3
+    Explanation: The subarray [1, 2] with sum 3 has length equal to 2 which is
+                 divisible by 1.
+
+    Example 2:
+    Input: nums = [-1,-2,-3,-4,-5], k = 4
+    Output: -10
+    Explanation: The maximum sum subarray is [-1, -2, -3, -4] which has length
+                 equal to 4 which is divisible by 4.
+
+    Example 3:
+    Input: nums = [-5,1,2,-3,4], k = 2
+    Output: 4
+    Explanation: The maximum sum subarray is [1, 2, -3, 4] which has length
+                 equal to 4 which is divisible by 2.
+
+    Constraints:
+    * 1 <= k <= nums.length <= 2 * 10^5
+    * -10^9 <= nums[i] <= 10^9*/
+
+    public long maxSubarraySum(int[] nums, int k) {
+        long ans = -1_000_000_000_000_000l, prefix = 0;
+        long[] seen = new long[k];
+        Arrays.fill(seen, 1_000_000_000_000_000l);
+        seen[k-1] = 0;
+        for (int i = 0; i < nums.length; ++i) {
+            prefix += nums[i];
+            int ii = i % k;
+            ans = Math.max(ans, prefix - seen[ii]);
+            seen[ii] = Math.min(seen[ii], prefix);
+        }
+        return ans;
+    }
+
+
+
+    /*3382. Maximum Area Rectangle With Point Constraints II (Hard)
+    There are n points on an infinite plane. You are given two integer arrays
+    xCoord and yCoord where (xCoord[i], yCoord[i]) represents the coordinates of
+    the ith point. Your task is to find the maximum area of a rectangle that:
+    * Can be formed using four of these points as its corners.
+    * Does not contain any other point inside or on its border.
+    * Has its edges parallel to the axes.
+    Return the maximum area that you can obtain or -1 if no such rectangle is
+    possible.
+
+    Example 1:
+    Input: xCoord = [1,1,3,3], yCoord = [1,3,1,3]
+    Output: 4
+    Explanation: We can make a rectangle with these 4 points as corners and
+                 there is no other point that lies inside or on the border.
+                 Hence, the maximum possible area would be 4.
+
+    Example 2:
+    Input: xCoord = [1,1,3,3,2], yCoord = [1,3,1,3,2]
+    Output: -1
+    Explanation: There is only one rectangle possible is with points [1,1],
+                 [1,3], [3,1] and [3,3] but [2,2] will always lie inside it.
+                 Hence, returning -1.
+
+    Example 3:
+    Input: xCoord = [1,1,3,3,1,3], yCoord = [1,3,1,3,2,2]
+    Output: 2
+    Explanation: The maximum area rectangle is formed by the points [1,3],
+                 [1,2], [3,2], [3,3], which has an area of 2. Additionally, the
+                 points [1,1], [1,2], [3,1], [3,2] also form a valid rectangle
+                 with the same area.
+
+    Constraints:
+    * 1 <= xCoord.length == yCoord.length <= 2 * 10^5
+    * 0 <= xCoord[i], yCoord[i] <= 8 * 10^7
+    * All the given points are unique.
+
+class SegTree {
+    private int n;
+    private int[] tree;
+
+    private void build(int[] arr, int k, int lo, int hi) {
+        if (lo+1 == hi) tree[k] = arr[lo];
+        else {
+            int mid = lo + (hi-lo)/2;
+            build(arr, 2*k+1, lo, mid);
+            build(arr, 2*k+2, mid, hi);
+            tree[k] = Math.max(tree[2*k+1], tree[2*k+2]);
+        }
+    }
+
+    public SegTree(int[] arr) {
+        n = arr.length;
+        tree = new int[4*n];
+        build(arr, 0, 0, n);
+    }
+
+    public void update(int i, int val) {
+        update(i, val, 0, 0, n);
+    }
+
+    private void update(int i, int val, int k, int lo, int hi) {
+        if (lo+1 == hi) tree[k] = val;
+        else {
+            int mid = lo + (hi-lo)/2;
+            if (i < mid) update(i, val, 2*k+1, lo, mid);
+            else update(i, val, 2*k+2, mid, hi);
+            tree[k] = Math.max(tree[2*k+1], tree[2*k+2]);
+        }
+    }
+
+    public int query(int qlo, int qhi) {
+        return query(qlo, qhi, 0, 0, n);
+    }
+
+    private int query(int qlo, int qhi, int k, int lo, int hi) {
+        if (qhi <= lo || hi <= qlo) return Integer.MIN_VALUE;
+        if (qlo <= lo && hi <= qhi) return tree[k];
+        int mid = lo + (hi-lo)/2;
+        return Math.max(query(qlo, qhi, 2*k+1, lo, mid), query(qlo, qhi, 2*k+2, mid, hi));
+    }
+}*/
+
+    public long maxRectangleArea(int[] xCoord, int[] yCoord) {
+        int n = xCoord.length;
+        int[][] points = new int[n][2];
+        for (int i = 0; i < n; ++i) {
+            points[i][0] = xCoord[i];
+            points[i][1] = yCoord[i];
+        }
+        Arrays.sort(points, (x, y) -> x[0] != y[0] ? Integer.compare(x[0], y[0]) : Integer.compare(x[1], y[1]));
+        List<Integer> yvals = new ArrayList<>();
+        for (var y : Arrays.stream(yCoord).boxed().collect(Collectors.toSet()))
+            yvals.add(y);
+        Collections.sort(yvals);
+        Map<Integer, Integer> comp = new HashMap<>();
+        for (int i = 0; i < yvals.size(); ++i)
+            comp.put(yvals.get(i), i);
+        Map<Integer, Integer> last = new HashMap<>();
+        int[] arr = new int[yvals.size()];
+        Arrays.fill(arr, -1);
+        SegTree tree = new SegTree(arr);
+        long ans = -1;
+        int px = -1, py = -1;
+        for (var p : points) {
+            int x = p[0], y = p[1];
+            if (x == px && last.containsKey(y) && last.containsKey(py) && Integer.compare(last.get(y), last.get(py)) == 0) {
+                int xx = last.get(y), most = tree.query(comp.get(py)+1, comp.get(y));
+                if (most < xx) ans = Math.max(ans, (long) (x-xx)*(y-py));
+            }
+            if (py >= 0) {
+                last.put(py, px);
+                tree.update(comp.get(py), px);
+            }
+            px = x; py = y;
+        }
+        return ans;
+    }
 }
 
 

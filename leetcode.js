@@ -25234,3 +25234,257 @@ var countComponents = function(nums, threshold) {
         else ++ans;
     return ans + uniq.size;
 };
+
+
+/*3379. Transformed Array (Easy)
+You are given an integer array nums that represents a circular array. Your
+task is to create a new array result of the same size, following these rules:
+For each index i (where 0 <= i < nums.length), perform the following
+independent actions:
+* If nums[i] > 0: Start at index i and move nums[i] steps to the right in
+  the circular array. Set result[i] to the value of the index where you land.
+* If nums[i] < 0: Start at index i and move abs(nums[i]) steps to the left
+  in the circular array. Set result[i] to the value of the index where you
+  land.
+* If nums[i] == 0: Set result[i] to nums[i].
+Return the new array result. Note: Since nums is circular, moving past the
+last element wraps around to the beginning, and moving before the first
+element wraps back to the end.
+
+Example 1:
+Input: nums = [3,-2,1,1]
+Output: [1,1,1,3]
+Explanation: * For nums[0] that is equal to 3, If we move 3 steps to right,
+               we reach nums[3]. So result[0] should be 1.
+             * For nums[1] that is equal to -2, If we move 2 steps to left,
+               we reach nums[3]. So result[1] should be 1.
+             * For nums[2] that is equal to 1, If we move 1 step to right,
+               we reach nums[3]. So result[2] should be 1.
+             * For nums[3] that is equal to 1, If we move 1 step to right,
+               we reach nums[0]. So result[3] should be 3.
+
+Example 2:
+Input: nums = [-1,4,-1]
+Output: [-1,-1,4]
+Explanation: * For nums[0] that is equal to -1, If we move 1 step to left,
+               we reach nums[2]. So result[0] should be -1.
+             * For nums[1] that is equal to 4, If we move 4 steps to right,
+               we reach nums[2]. So result[1] should be -1.
+             * For nums[2] that is equal to -1, If we move 1 step to left,
+               we reach nums[1]. So result[2] should be 4.
+
+Constraints:
+* 1 <= nums.length <= 100
+* -100 <= nums[i] <= 100*/
+
+var constructTransformedArray = function(nums) {
+    const n = nums.length;
+    const ans = Array(n).fill(0);
+    for (const [i, x] of nums.entries())
+        ans[i] = nums[(n+(i+x)%n)%n];
+    return ans;
+};
+
+
+/*3380. Maximum Area Rectangle With Point Constraints I (Medium)
+You are given an array points where points[i] = [xi, yi] represents the
+coordinates of a point on an infinite plane. Your task is to find the
+maximum area of a rectangle that:
+* Can be formed using four of these points as its corners.
+* Does not contain any other point inside or on its border.
+* Has its edges parallel to the axes.
+Return the maximum area that you can obtain or -1 if no such rectangle is
+possible.
+
+Example 1:
+Input: points = [[1,1],[1,3],[3,1],[3,3]]
+Output: 4
+Explanation: We can make a rectangle with these 4 points as corners and
+             there is no other point that lies inside or on the border.
+             Hence, the maximum possible area would be 4.
+
+Example 2:
+Input: points = [[1,1],[1,3],[3,1],[3,3],[2,2]]
+Output: -1
+Explanation: There is only one rectangle possible is with points [1,1],
+             [1,3], [3,1] and [3,3] but [2,2] will always lie inside it.
+             Hence, returning -1.
+
+Example 3:
+Input: points = [[1,1],[1,3],[3,1],[3,3],[1,2],[3,2]]
+Output: 2
+Explanation: The maximum area rectangle is formed by the points [1,3],
+             [1,2], [3,2], [3,3], which has an area of 2. Additionally, the
+             points [1,1], [1,2], [3,1], [3,2] also form a valid rectangle
+             with the same area.
+
+Constraints:
+* 1 <= points.length <= 10
+* points[i].length == 2
+* 0 <= xi, yi <= 100
+* All the given points are unique.*/
+
+var maxRectangleArea = function(points) {
+    points.sort((x, y) => x[0] != y[0] ? x[0] - y[0] : x[1] - y[1]);
+    const last = new Map();
+    let ans = -1, px = -1, py = -1;
+    for (const [x, y] of points) {
+        if (x == px && last.has(y) && last.get(y) == last.get(py)) {
+            const xx = last.get(y);
+            let found = false;
+            for (const [u, v] of points) {
+                if ((u == xx || u == x) && py < v && v < y) found = true;
+                if (xx < u && u < x && (v == py || v == y)) found = true;
+                if (xx < u && u < x && py < v && v < y) found = true;
+                if (found) break;
+            }
+            if (!found) ans = Math.max(ans, (x-xx)*(y-py));
+        }
+        last.set(py, px);
+        [px, py] = [x, y];
+    }
+    return ans;
+};
+
+
+/*3381. Maximum Subarray Sum With Length Divisible by K (Medium)
+You are given an array of integers nums and an integer k. Return the maximum
+sum of a non-empty subarray of nums, such that the size of the subarray is
+divisible by k. A subarray is a contiguous non-empty sequence of elements
+within an array.
+
+Example 1:
+Input: nums = [1,2], k = 1
+Output: 3
+Explanation: The subarray [1, 2] with sum 3 has length equal to 2 which is
+             divisible by 1.
+
+Example 2:
+Input: nums = [-1,-2,-3,-4,-5], k = 4
+Output: -10
+Explanation: The maximum sum subarray is [-1, -2, -3, -4] which has length
+             equal to 4 which is divisible by 4.
+
+Example 3:
+Input: nums = [-5,1,2,-3,4], k = 2
+Output: 4
+Explanation: The maximum sum subarray is [1, 2, -3, 4] which has length
+             equal to 4 which is divisible by 2.
+
+Constraints:
+* 1 <= k <= nums.length <= 2 * 10^5
+* -10^9 <= nums[i] <= 10^9*/
+
+var maxSubarraySum = function(nums, k) {
+    let ans = -Infinity, prefix = 0;
+    const seen = Array(k).fill(Infinity);
+    seen[k-1] = 0;
+    for (let [i, x] of nums.entries()) {
+        prefix += x;
+        i %= k;
+        ans = Math.max(ans, prefix - seen[i]);
+        seen[i] = Math.min(seen[i], prefix);
+    }
+    return ans;
+};
+
+
+
+/*3382. Maximum Area Rectangle With Point Constraints II (Hard)
+There are n points on an infinite plane. You are given two integer arrays
+xCoord and yCoord where (xCoord[i], yCoord[i]) represents the coordinates of
+the ith point. Your task is to find the maximum area of a rectangle that:
+* Can be formed using four of these points as its corners.
+* Does not contain any other point inside or on its border.
+* Has its edges parallel to the axes.
+Return the maximum area that you can obtain or -1 if no such rectangle is
+possible.
+
+Example 1:
+Input: xCoord = [1,1,3,3], yCoord = [1,3,1,3]
+Output: 4
+Explanation: We can make a rectangle with these 4 points as corners and
+             there is no other point that lies inside or on the border.
+             Hence, the maximum possible area would be 4.
+
+Example 2:
+Input: xCoord = [1,1,3,3,2], yCoord = [1,3,1,3,2]
+Output: -1
+Explanation: There is only one rectangle possible is with points [1,1],
+             [1,3], [3,1] and [3,3] but [2,2] will always lie inside it.
+             Hence, returning -1.
+
+Example 3:
+Input: xCoord = [1,1,3,3,1,3], yCoord = [1,3,1,3,2,2]
+Output: 2
+Explanation: The maximum area rectangle is formed by the points [1,3],
+             [1,2], [3,2], [3,3], which has an area of 2. Additionally, the
+             points [1,1], [1,2], [3,1], [3,2] also form a valid rectangle
+             with the same area.
+
+Constraints:
+* 1 <= xCoord.length == yCoord.length <= 2 * 10^5
+* 0 <= xCoord[i], yCoord[i] <= 8 * 10^7
+* All the given points are unique.*/
+
+var maxRectangleArea = function(xCoord, yCoord) {
+    const points = xCoord.map((x, i) => [x, yCoord[i]]);
+    points.sort((x, y) => x[0] != y[0] ? x[0] - y[0] : x[1] - y[1]);
+    const yvals = Array.from(new Set(yCoord)).sort((x, y) => x-y);
+    const comp = new Map();
+    yvals.forEach((x, i) => comp.set(x, i));
+    const last = new Map();
+    const tree = new SegTree(Array(yvals.length).fill(-1));
+    let ans = -1, px = -1, py = -1;
+    for (const [x, y] of points) {
+        if (x == px && last.get(y) == last.get(py) && last.get(y) >= 0) {
+            const xx = last.get(y);
+            const most = tree.query(comp.get(py)+1, comp.get(y));
+            if (most < xx) ans = Math.max(ans, (x-xx)*(y-py));
+        }
+        if (py >= 0) {
+            last.set(py, px);
+            tree.update(comp.get(py), px);
+        }
+        [px, py] = [x, y];
+    }
+    return ans;
+};
+
+class SegTree {
+
+    constructor(arr) {
+        this.n = arr.length;
+        this.tree = Array(4*this.n).fill(0);
+        this.#build(arr, 0, 0, this.n);
+    }
+
+    #build(arr, k, lo, hi) {
+        if (lo+1 == hi) this.tree[k] = arr[lo];
+        else {
+            const mid = lo + Math.floor((hi-lo)/2);
+            this.#build(arr, 2*k+1, lo, mid);
+            this.#build(arr, 2*k+2, mid, hi);
+            this.tree[k] = Math.max(this.tree[2*k+1], this.tree[2*k+2]);
+        }
+    }
+
+    update(i, val, k=0, lo=0, hi=0) {
+        if (hi == 0) hi = this.n;
+        if (lo+1 == hi) this.tree[k] = val;
+        else {
+            const mid = lo + Math.floor((hi-lo)/2);
+            if (i < mid) this.update(i, val, 2*k+1, lo, mid);
+            else this.update(i, val, 2*k+2, mid, hi);
+            this.tree[k] = Math.max(this.tree[2*k+1], this.tree[2*k+2]);
+        }
+    }
+
+    query(qlo, qhi, k=0, lo=0, hi=0) {
+        if (hi == 0) hi = this.n;
+        if (qhi <= lo || hi <= qlo) return -Infinity;
+        if (qlo <= lo && hi <= qhi) return this.tree[k];
+        const mid = lo + Math.floor((hi-lo)/2);
+        return Math.max(this.query(qlo, qhi, 2*k+1, lo, mid), this.query(qlo, qhi, 2*k+2, mid, hi));
+    }
+}

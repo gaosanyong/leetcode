@@ -84321,6 +84321,270 @@ public:
             else ans += 1;
         return ans + uniq.size();
     }
+
+
+    /*3379. Transformed Array (Easy)
+    You are given an integer array nums that represents a circular array. Your
+    task is to create a new array result of the same size, following these rules:
+    For each index i (where 0 <= i < nums.length), perform the following
+    independent actions:
+    * If nums[i] > 0: Start at index i and move nums[i] steps to the right in
+      the circular array. Set result[i] to the value of the index where you land.
+    * If nums[i] < 0: Start at index i and move abs(nums[i]) steps to the left
+      in the circular array. Set result[i] to the value of the index where you
+      land.
+    * If nums[i] == 0: Set result[i] to nums[i].
+    Return the new array result. Note: Since nums is circular, moving past the
+    last element wraps around to the beginning, and moving before the first
+    element wraps back to the end.
+
+    Example 1:
+    Input: nums = [3,-2,1,1]
+    Output: [1,1,1,3]
+    Explanation: * For nums[0] that is equal to 3, If we move 3 steps to right,
+                   we reach nums[3]. So result[0] should be 1.
+                 * For nums[1] that is equal to -2, If we move 2 steps to left,
+                   we reach nums[3]. So result[1] should be 1.
+                 * For nums[2] that is equal to 1, If we move 1 step to right,
+                   we reach nums[3]. So result[2] should be 1.
+                 * For nums[3] that is equal to 1, If we move 1 step to right,
+                   we reach nums[0]. So result[3] should be 3.
+
+    Example 2:
+    Input: nums = [-1,4,-1]
+    Output: [-1,-1,4]
+    Explanation: * For nums[0] that is equal to -1, If we move 1 step to left,
+                   we reach nums[2]. So result[0] should be -1.
+                 * For nums[1] that is equal to 4, If we move 4 steps to right,
+                   we reach nums[2]. So result[1] should be -1.
+                 * For nums[2] that is equal to -1, If we move 1 step to left,
+                   we reach nums[1]. So result[2] should be 4.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * -100 <= nums[i] <= 100*/
+
+    vector<int> constructTransformedArray(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> ans(n);
+        for (int i = 0; i < n; ++i)
+            ans[i] = nums[(n + (i+nums[i]) % n) % n];
+        return ans;
+    }
+
+
+    /*3380. Maximum Area Rectangle With Point Constraints I (Medium)
+    You are given an array points where points[i] = [xi, yi] represents the
+    coordinates of a point on an infinite plane. Your task is to find the
+    maximum area of a rectangle that:
+    * Can be formed using four of these points as its corners.
+    * Does not contain any other point inside or on its border.
+    * Has its edges parallel to the axes.
+    Return the maximum area that you can obtain or -1 if no such rectangle is
+    possible.
+
+    Example 1:
+    Input: points = [[1,1],[1,3],[3,1],[3,3]]
+    Output: 4
+    Explanation: We can make a rectangle with these 4 points as corners and
+                 there is no other point that lies inside or on the border.
+                 Hence, the maximum possible area would be 4.
+
+    Example 2:
+    Input: points = [[1,1],[1,3],[3,1],[3,3],[2,2]]
+    Output: -1
+    Explanation: There is only one rectangle possible is with points [1,1],
+                 [1,3], [3,1] and [3,3] but [2,2] will always lie inside it.
+                 Hence, returning -1.
+
+    Example 3:
+    Input: points = [[1,1],[1,3],[3,1],[3,3],[1,2],[3,2]]
+    Output: 2
+    Explanation: The maximum area rectangle is formed by the points [1,3],
+                 [1,2], [3,2], [3,3], which has an area of 2. Additionally, the
+                 points [1,1], [1,2], [3,1], [3,2] also form a valid rectangle
+                 with the same area.
+
+    Constraints:
+    * 1 <= points.length <= 10
+    * points[i].length == 2
+    * 0 <= xi, yi <= 100
+    * All the given points are unique.*/
+
+    int maxRectangleArea(vector<vector<int>>& points) {
+        sort(points.begin(), points.end());
+        unordered_map<int, int> last;
+        int ans = -1, px = -1, py = -1;
+        for (auto& p : points) {
+            int x = p[0], y = p[1];
+            if (x == px && last.contains(y) && last.contains(py) && last[y] == last[py]) {
+                int xx = last[y];
+                bool found = false;
+                for (auto& pp : points) {
+                    int u = pp[0], v = pp[1];
+                    if ((u == xx || u == x) && py < v && v < y) found = true;
+                    if (xx < u && u < x && (v == py || v == y)) found = true;
+                    if (xx < u && u < x && (py < v && v < y)) found = true;
+                    if (found) break;
+                }
+                if (!found) ans = max(ans, (x-xx)*(y-py));
+            }
+            last[py] = px;
+            tie(px, py) = make_pair(x, y);
+        }
+        return ans;
+    }
+
+
+    /*3381. Maximum Subarray Sum With Length Divisible by K (Medium)
+    You are given an array of integers nums and an integer k. Return the maximum
+    sum of a non-empty subarray of nums, such that the size of the subarray is
+    divisible by k. A subarray is a contiguous non-empty sequence of elements
+    within an array.
+
+    Example 1:
+    Input: nums = [1,2], k = 1
+    Output: 3
+    Explanation: The subarray [1, 2] with sum 3 has length equal to 2 which is
+                 divisible by 1.
+
+    Example 2:
+    Input: nums = [-1,-2,-3,-4,-5], k = 4
+    Output: -10
+    Explanation: The maximum sum subarray is [-1, -2, -3, -4] which has length
+                 equal to 4 which is divisible by 4.
+
+    Example 3:
+    Input: nums = [-5,1,2,-3,4], k = 2
+    Output: 4
+    Explanation: The maximum sum subarray is [1, 2, -3, 4] which has length
+                 equal to 4 which is divisible by 2.
+
+    Constraints:
+    * 1 <= k <= nums.length <= 2 * 10^5
+    * -10^9 <= nums[i] <= 10^9*/
+
+    long long maxSubarraySum(vector<int>& nums, int k) {
+        long long ans = -1e15, prefix = 0;
+        vector<long long> seen(k, 1e15);
+        seen[k-1] = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            prefix += nums[i];
+            int ii = i % k;
+            ans = max(ans, prefix - seen[ii]);
+            seen[ii] = min(seen[ii], prefix);
+        }
+        return ans;
+    }
+
+
+    /*3382. Maximum Area Rectangle With Point Constraints II (Hard)
+    There are n points on an infinite plane. You are given two integer arrays
+    xCoord and yCoord where (xCoord[i], yCoord[i]) represents the coordinates of
+    the ith point. Your task is to find the maximum area of a rectangle that:
+    * Can be formed using four of these points as its corners.
+    * Does not contain any other point inside or on its border.
+    * Has its edges parallel to the axes.
+    Return the maximum area that you can obtain or -1 if no such rectangle is
+    possible.
+
+    Example 1:
+    Input: xCoord = [1,1,3,3], yCoord = [1,3,1,3]
+    Output: 4
+    Explanation: We can make a rectangle with these 4 points as corners and
+                 there is no other point that lies inside or on the border.
+                 Hence, the maximum possible area would be 4.
+
+    Example 2:
+    Input: xCoord = [1,1,3,3,2], yCoord = [1,3,1,3,2]
+    Output: -1
+    Explanation: There is only one rectangle possible is with points [1,1],
+                 [1,3], [3,1] and [3,3] but [2,2] will always lie inside it.
+                 Hence, returning -1.
+
+    Example 3:
+    Input: xCoord = [1,1,3,3,1,3], yCoord = [1,3,1,3,2,2]
+    Output: 2
+    Explanation: The maximum area rectangle is formed by the points [1,3],
+                 [1,2], [3,2], [3,3], which has an area of 2. Additionally, the
+                 points [1,1], [1,2], [3,1], [3,2] also form a valid rectangle
+                 with the same area.
+
+    Constraints:
+    * 1 <= xCoord.length == yCoord.length <= 2 * 10^5
+    * 0 <= xCoord[i], yCoord[i] <= 8 * 10^7
+    * All the given points are unique.
+
+class SegTree {
+    int n;
+    vector<int> tree;
+    void build(vector<int>& arr, int k, int lo, int hi) {
+        if (lo+1 == hi) tree[k] = arr[lo];
+        else {
+            int mid = lo + (hi-lo)/2;
+            build(arr, 2*k+1, lo, mid);
+            build(arr, 2*k+2, mid, hi);
+            tree[k] = min(tree[2*k+1], tree[2*k+2]);
+        }
+    }
+public:
+    SegTree(vector<int> arr) {
+        n = arr.size();
+        tree.resize(4*n);
+        build(arr, 0, 0, n);
+    }
+
+    void update(int i, int val, int k = 0, int lo = 0, int hi = 0) {
+        if (hi == 0) hi = n;
+        if (lo+1 == hi) tree[k] = val;
+        else {
+            int mid = lo + (hi-lo)/2;
+            if (i < mid) update(i, val, 2*k+1, lo, mid);
+            else update(i, val, 2*k+2, mid, hi);
+            tree[k] = max(tree[2*k+1], tree[2*k+2]);
+        }
+    }
+
+    int query(int qlo, int qhi, int k = 0, int lo = 0, int hi = 0) {
+        if (hi == 0) hi = n;
+        if (qhi <= lo || hi <= qlo) return INT_MIN;
+        if (qlo <= lo && hi <= qhi) return tree[k];
+        int mid = lo + (hi-lo)/2;
+        return max(query(qlo, qhi, 2*k+1, lo, mid), query(qlo, qhi, 2*k+2, mid, hi));
+    }
+};*/
+
+    long long maxRectangleArea(vector<int>& xCoord, vector<int>& yCoord) {
+        vector<pair<int, int>> points;
+        for (int i = 0; i < xCoord.size(); ++i)
+            points.emplace_back(xCoord[i], yCoord[i]);
+        sort(points.begin(), points.end());
+        vector<int> yvals;
+        for (auto y : unordered_set<int>(yCoord.begin(), yCoord.end()))
+            yvals.push_back(y);
+        sort(yvals.begin(), yvals.end());
+        unordered_map<int, int> comp;
+        for (int i = 0; i < yvals.size(); ++i)
+            comp[yvals[i]] = i;
+        unordered_map<int, int> last;
+        vector<int> arr(yvals.size(), -1);
+        SegTree *tree = new SegTree(arr);
+        long long ans = -1;
+        int px = -1, py = -1;
+        for (auto& [x, y] : points) {
+            if (x == px && last.contains(y) && last.contains(py) && last[y] == last[py]) {
+                int xx = last[y], most = tree->query(comp[py]+1, comp[y]);
+                if (most < xx) ans = max(ans, (long long) (x-xx)*(y-py));
+            }
+            if (py >= 0) {
+                last[py] = px;
+                tree->update(comp[py], px);
+            }
+            tie(px, py) = make_pair(x, y);
+        }
+        delete tree;
+        return ans;
+    }
 }
 
 
