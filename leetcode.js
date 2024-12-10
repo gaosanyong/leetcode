@@ -25007,3 +25007,230 @@ var maxTargetNodes = function(edges1, edges2, k) {
     const most = Math.max(...fn(edges2, k-1));
     return fn(edges1, k).map(x => x+most);
 };
+
+
+/*3375. Minimum Operations to Make Array Values Equal to K (Easy)
+You are given an integer array nums and an integer k. An integer h is called
+valid if all values in the array that are strictly greater than h are
+identical. For example, if nums = [10, 8, 10, 8], a valid integer is h = 9
+because all nums[i] > 9 are equal to 10, but 5 is not a valid integer. You
+are allowed to perform the following operation on nums:
+* Select an integer h that is valid for the current values in nums.
+* For each index i where nums[i] > h, set nums[i] to h.
+Return the minimum number of operations required to make every element in
+nums equal to k. If it is impossible to make all elements equal to k, return
+-1.
+
+Example 1:
+Input: nums = [5,2,5,4,5], k = 2
+Output: 2
+Explanation: The operations can be performed in order using valid integers 4
+             and then 2.
+
+Example 2:
+Input: nums = [2,1,2], k = 2
+Output: -1
+Explanation: It is impossible to make all the values equal to 2.
+
+Example 3:
+Input: nums = [9,7,5,3], k = 1
+Output: 4
+Explanation: The operations can be performed using valid integers in the
+             order 7, 5, 3, and 1.
+
+Constraints:
+* 1 <= nums.length <= 100
+* 1 <= nums[i] <= 100
+* 1 <= k <= 100*/
+
+var minOperations = function(nums, k) {
+    const seen = new Set(nums);
+    const lo = Math.min(...nums);
+    return lo < k ? -1 : seen.size - (k == lo);
+};
+
+
+/*3376. Minimum Time to Break Locks I (Medium)
+Bob is stuck in a dungeon and must break n locks, each requiring some amount
+of energy to break. The required energy for each lock is stored in an array
+called strength where strength[i] indicates the energy needed to break the
+ith lock. To break a lock, Bob uses a sword with the following
+characteristics:
+* The initial energy of the sword is 0.
+* The initial factor X by which the energy of the sword increases is 1.
+* Every minute, the energy of the sword increases by the current factor X.
+* To break the ith lock, the energy of the sword must reach at least
+  strength[i].
+* After breaking a lock, the energy of the sword resets to 0, and the factor
+  X increases by a given value K.
+Your task is to determine the minimum time in minutes required for Bob to
+break all n locks and escape the dungeon. Return the minimum time required
+for Bob to break all n locks.
+
+Example 1:
+Input: strength = [3,4,1], K = 1
+Output: 4
+Explanation: Time    Energy  X   Action  Updated X
+             0   0   1   Nothing 1
+             1   1   1   Break 3rd Lock  2
+             2   2   2   Nothing 2
+             3   4   2   Break 2nd Lock  3
+             4   3   3   Break 1st Lock  3
+             The locks cannot be broken in less than 4 minutes; thus, the
+             answer is 4.
+
+Example 2:
+Input: strength = [2,5,4], K = 2
+Output: 5
+Explanation: Time    Energy  X   Action  Updated X
+             0   0   1   Nothing 1
+             1   1   1   Nothing 1
+             2   2   1   Break 1st Lock  3
+             3   3   3   Nothing 3
+             4   6   3   Break 2nd Lock  5
+             5   5   5   Break 3rd Lock  7
+             The locks cannot be broken in less than 5 minutes; thus, the
+             answer is 5.
+
+Constraints:
+* n == strength.length
+* 1 <= n <= 8
+* 1 <= K <= 10
+* 1 <= strength[i] <= 10^6*/
+
+var findMinimumTime = function(strength, K) {
+    const n = strength.length;
+    const memo = Array(n+1).fill(0).map(() => Array(1<<n).fill(Infinity));
+
+    function fn(i, m) {
+        if (memo[i][m] == Infinity)
+            if (i == n) memo[i][m] = 0;
+            else
+                for (let j = 0; j < n; ++j)
+                    if ((m & 1<<j) == 0)
+                        memo[i][m] = Math.min(memo[i][m], Math.ceil(strength[j]/(1+i*K)) + fn(i+1, m ^ 1<<j));
+        return memo[i][m];
+    }
+
+    return fn(0, 0);
+};
+
+
+/*3377. Digit Operations to Make Two Integers Equal (Medium)
+You are given two integers n and m that consist of the same number of
+digits. You can perform the following operations any number of times:
+* Choose any digit from n that is not 9 and increase it by 1.
+* Choose any digit from n that is not 0 and decrease it by 1.
+The integer n must not be a prime number at any point, including its
+original value and after each operation. The cost of a transformation is the
+sum of all values that n takes throughout the operations performed. Return
+the minimum cost to transform n into m. If it is impossible, return -1. A
+prime number is a natural number greater than 1 with only two factors, 1 and
+itself.
+
+Example 1:
+Input: n = 10, m = 12
+Output: 85
+Explanation: We perform the following operations:
+             - Increase the first digit, now n = 20.
+             - Increase the second digit, now n = 21.
+             - Increase the second digit, now n = 22.
+             - Decrease the first digit, now n = 12.
+
+Example 2:
+Input: n = 4, m = 8
+Output: -1
+Explanation: It is impossible to make n equal to m.
+
+Example 3:
+Input: n = 6, m = 2
+Output: -1
+Explanation: Since 2 is already a prime, we can't make n equal to m.
+
+Constraints:
+* 1 <= n, m < 10^4
+* n and m consist of the same number of digits.*/
+
+var minOperations = function(n, m) {
+    const sieve = Array(100_000).fill(true);
+    sieve[0] = sieve[1] = false;
+    for (let x = 2; x <= Math.sqrt(100_000); ++x)
+        if (sieve[x])
+            for (let xx = x*x; xx < 100_000; xx += x)
+                sieve[xx] = false;
+    const pq = new PriorityQueue({ compare: (x, y) => x[0]-y[0] });
+    const dist = new Map();
+    if (!sieve[n]) {
+        pq.enqueue([n, n]);
+        dist.set(n, n);
+    }
+    const d = String(n).length;
+    while (pq.size()) {
+        const [cost, x] = pq.dequeue();
+        if (x == m) return cost;
+        for (const [i, ch] of String(x).split('').entries()) {
+            if (i && ch != '0' || i == 0 && ch != '1') {
+                const cand = x - Math.pow(10, d-1-i);
+                if (!sieve[cand] && (!dist.has(cand) || cost+cand < dist.get(cand))) {
+                    pq.enqueue([cost+cand, cand]);
+                    dist.set(cand, cost+cand);
+                }
+            }
+            if (ch != '9') {
+                const cand = x + Math.pow(10, d-1-i);
+                if (!sieve[cand] && (!dist.has(cand) || cost+cand < dist.get(cand))) {
+                    pq.enqueue([cost+cand, cand]);
+                    dist.set(cand, cost+cand);
+                }
+            }
+        }
+    }
+    return -1;
+};
+
+
+/*3378. Count Connected Components in LCM Graph (Hard)
+You are given an array of integers nums of size n and a positive integer
+threshold. There is a graph consisting of n nodes with the ith node having a
+value of nums[i]. Two nodes i and j in the graph are connected via an
+undirected edge if lcm(nums[i], nums[j]) <= threshold. Return the number of
+connected components in this graph. A connected component is a subgraph of a
+graph in which there exists a path between any two vertices, and no vertex
+of the subgraph shares an edge with a vertex outside of the subgraph. The
+term lcm(a, b) denotes the least common multiple of a and b.
+
+Example 1:
+Input: nums = [2,4,8,3,9], threshold = 5
+Output: 4
+Explanation: The four connected components are (2, 4), (3), (8), (9).
+
+Example 2:
+Input: nums = [2,4,8,3,9,12], threshold = 10
+Output: 2
+Explanation:  The two connected components are (2, 3, 4, 8, 9), and (12).
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 1 <= nums[i] <= 10^9
+* All elements of nums are unique.
+* 1 <= threshold <= 2 * 10^5*/
+
+var countComponents = function(nums, threshold) {
+    const parent = Array(threshold+1).fill(0).map((x, i) => i);
+
+    function find(p) {
+        if (p != parent[p])
+            parent[p] = find(parent[p]);
+        return parent[p];
+    }
+
+    for (const x of nums)
+        for (let xx = 2*x; xx <= threshold; xx += x)
+            parent[find(xx)] = find(x);
+    let ans = 0;
+    const uniq = new Set();
+    for (const x of nums)
+        if (x <= threshold) uniq.add(find(x));
+        else ++ans;
+    return ans + uniq.size;
+};

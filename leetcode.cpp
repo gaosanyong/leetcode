@@ -84086,7 +84086,240 @@ public:
         vector<int> ans = fn(edges1, k);
         for_each(ans.begin(), ans.end(), [&](auto& x) { return x += most; });
         return ans;
+    }
 
+
+    /*3375. Minimum Operations to Make Array Values Equal to K (Easy)
+    You are given an integer array nums and an integer k. An integer h is called
+    valid if all values in the array that are strictly greater than h are
+    identical. For example, if nums = [10, 8, 10, 8], a valid integer is h = 9
+    because all nums[i] > 9 are equal to 10, but 5 is not a valid integer. You
+    are allowed to perform the following operation on nums:
+    * Select an integer h that is valid for the current values in nums.
+    * For each index i where nums[i] > h, set nums[i] to h.
+    Return the minimum number of operations required to make every element in
+    nums equal to k. If it is impossible to make all elements equal to k, return
+    -1.
+
+    Example 1:
+    Input: nums = [5,2,5,4,5], k = 2
+    Output: 2
+    Explanation: The operations can be performed in order using valid integers 4
+                 and then 2.
+
+    Example 2:
+    Input: nums = [2,1,2], k = 2
+    Output: -1
+    Explanation: It is impossible to make all the values equal to 2.
+
+    Example 3:
+    Input: nums = [9,7,5,3], k = 1
+    Output: 4
+    Explanation: The operations can be performed using valid integers in the
+                 order 7, 5, 3, and 1.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * 1 <= nums[i] <= 100
+    * 1 <= k <= 100*/
+
+    int minOperations(vector<int>& nums, int k) {
+        unordered_set<int> seen(nums.begin(), nums.end());
+        int lo = *min_element(seen.begin(), seen.end());
+        return lo < k ? -1 : seen.size() - int(lo == k);
+    }
+
+
+    /*3376. Minimum Time to Break Locks I (Medium)
+    Bob is stuck in a dungeon and must break n locks, each requiring some amount
+    of energy to break. The required energy for each lock is stored in an array
+    called strength where strength[i] indicates the energy needed to break the
+    ith lock. To break a lock, Bob uses a sword with the following
+    characteristics:
+    * The initial energy of the sword is 0.
+    * The initial factor X by which the energy of the sword increases is 1.
+    * Every minute, the energy of the sword increases by the current factor X.
+    * To break the ith lock, the energy of the sword must reach at least
+      strength[i].
+    * After breaking a lock, the energy of the sword resets to 0, and the factor
+      X increases by a given value K.
+    Your task is to determine the minimum time in minutes required for Bob to
+    break all n locks and escape the dungeon. Return the minimum time required
+    for Bob to break all n locks.
+
+    Example 1:
+    Input: strength = [3,4,1], K = 1
+    Output: 4
+    Explanation: Time    Energy  X   Action  Updated X
+                 0   0   1   Nothing 1
+                 1   1   1   Break 3rd Lock  2
+                 2   2   2   Nothing 2
+                 3   4   2   Break 2nd Lock  3
+                 4   3   3   Break 1st Lock  3
+                 The locks cannot be broken in less than 4 minutes; thus, the
+                 answer is 4.
+
+    Example 2:
+    Input: strength = [2,5,4], K = 2
+    Output: 5
+    Explanation: Time    Energy  X   Action  Updated X
+                 0   0   1   Nothing 1
+                 1   1   1   Nothing 1
+                 2   2   1   Break 1st Lock  3
+                 3   3   3   Nothing 3
+                 4   6   3   Break 2nd Lock  5
+                 5   5   5   Break 3rd Lock  7
+                 The locks cannot be broken in less than 5 minutes; thus, the
+                 answer is 5.
+
+    Constraints:
+    * n == strength.length
+    * 1 <= n <= 8
+    * 1 <= K <= 10
+    * 1 <= strength[i] <= 10^6*/
+
+    int findMinimumTime(vector<int>& strength, int K) {
+        int n = strength.size();
+        int memo[n+1][1<<n];
+        memset(memo, -1, sizeof(memo));
+
+        function<int(int, int)> fn = [&](int i, int m) {
+            if (memo[i][m] == -1)
+                if (i == n) memo[i][m] = 0;
+                else
+                    for (int j = 0; j < n; ++j)
+                        if ((m & 1<<j) == 0) {
+                            int cand = (strength[j]+i*K)/(1+i*K) + fn(i+1, m ^ 1<<j);
+                            if (memo[i][m] == -1) memo[i][m] = cand;
+                            else memo[i][m] = min(memo[i][m], cand);
+                        }
+            return memo[i][m];
+        };
+
+        return fn(0, 0);
+    }
+
+
+    /*3377. Digit Operations to Make Two Integers Equal (Medium)
+    You are given two integers n and m that consist of the same number of
+    digits. You can perform the following operations any number of times:
+    * Choose any digit from n that is not 9 and increase it by 1.
+    * Choose any digit from n that is not 0 and decrease it by 1.
+    The integer n must not be a prime number at any point, including its
+    original value and after each operation. The cost of a transformation is the
+    sum of all values that n takes throughout the operations performed. Return
+    the minimum cost to transform n into m. If it is impossible, return -1. A
+    prime number is a natural number greater than 1 with only two factors, 1 and
+    itself.
+
+    Example 1:
+    Input: n = 10, m = 12
+    Output: 85
+    Explanation: We perform the following operations:
+                 - Increase the first digit, now n = 20.
+                 - Increase the second digit, now n = 21.
+                 - Increase the second digit, now n = 22.
+                 - Decrease the first digit, now n = 12.
+
+    Example 2:
+    Input: n = 4, m = 8
+    Output: -1
+    Explanation: It is impossible to make n equal to m.
+
+    Example 3:
+    Input: n = 6, m = 2
+    Output: -1
+    Explanation: Since 2 is already a prime, we can't make n equal to m.
+
+    Constraints:
+    * 1 <= n, m < 10^4
+    * n and m consist of the same number of digits.*/
+
+    int minOperations(int n, int m) {
+        bool sieve[100'000];
+        memset(sieve, true, sizeof(sieve));
+        sieve[0] = sieve[1] = false;
+        for (int x = 2; x <= sqrt(100'000); ++x)
+            if (sieve[x])
+                for (int xx = x*x; xx < 100'000; xx += x)
+                    sieve[xx] = false;
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
+        unordered_map<int, int> dist;
+        if (!sieve[n]) {
+            pq.emplace(n, n);
+            dist[n] = n;
+        }
+        int d = to_string(n).size();
+        while (pq.size()) {
+            auto [cost, x] = pq.top(); pq.pop();
+            if (x == m) return cost;
+            string s = to_string(x);
+            for (int i = 0; i < d; ++i) {
+                if (i && s[i] != '0' || i == 0 && s[i] != '1') {
+                    int cand = x - pow(10, d-1-i);
+                    if (!sieve[cand] && (!dist.contains(cand) || cost+cand < dist[cand])) {
+                        pq.emplace(cost+cand, cand);
+                        dist[cand] = cost+cand;
+                    }
+                }
+                if (s[i] != '9') {
+                    int cand = x + pow(10, d-1-i);
+                    if (!sieve[cand] && (!dist.contains(cand) || cost+cand < dist[cand])) {
+                        pq.emplace(cost+cand, cand);
+                        dist[cand] = cost+cand;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+
+    /*3378. Count Connected Components in LCM Graph (Hard)
+    You are given an array of integers nums of size n and a positive integer
+    threshold. There is a graph consisting of n nodes with the ith node having a
+    value of nums[i]. Two nodes i and j in the graph are connected via an
+    undirected edge if lcm(nums[i], nums[j]) <= threshold. Return the number of
+    connected components in this graph. A connected component is a subgraph of a
+    graph in which there exists a path between any two vertices, and no vertex
+    of the subgraph shares an edge with a vertex outside of the subgraph. The
+    term lcm(a, b) denotes the least common multiple of a and b.
+
+    Example 1:
+    Input: nums = [2,4,8,3,9], threshold = 5
+    Output: 4
+    Explanation: The four connected components are (2, 4), (3), (8), (9).
+
+    Example 2:
+    Input: nums = [2,4,8,3,9,12], threshold = 10
+    Output: 2
+    Explanation:  The two connected components are (2, 3, 4, 8, 9), and (12).
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^9
+    * All elements of nums are unique.
+    * 1 <= threshold <= 2 * 10^5*/
+
+    int countComponents(vector<int>& nums, int threshold) {
+        vector<int> parent(threshold+1);
+        iota(parent.begin(), parent.end(), 0);
+
+        function<int(int)> find = [&](int p) {
+            if (p != parent[p])
+                parent[p] = find(parent[p]);
+            return parent[p];
+        };
+
+        for (auto& x : nums)
+            for (int xx = 2*x; xx <= threshold; xx += x)
+                parent[find(xx)] = find(x);
+        int ans = 0;
+        unordered_set<int> uniq;
+        for (auto& x : nums)
+            if (x <= threshold) uniq.insert(find(x));
+            else ans += 1;
+        return ans + uniq.size();
     }
 }
 
