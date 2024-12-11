@@ -22913,6 +22913,188 @@ function findAnswer(parent: number[], s: string): boolean[] {
 };
 
 
+/*3340. Check Balanced String (Easy)
+You are given a string num consisting of only digits. A string of digits is
+called balanced if the sum of the digits at even indices is equal to the sum
+of digits at odd indices. Return true if num is balanced, otherwise return
+false.
+
+Example 1:
+Input: num = "1234"
+Output: false
+Explanation: The sum of digits at even indices is 1 + 3 == 4, and the sum of
+             digits at odd indices is 2 + 4 == 6. Since 4 is not equal to 6,
+             num is not balanced.
+
+Example 2:
+Input: num = "24123"
+Output: true
+Explanation: The sum of digits at even indices is 2 + 1 + 3 == 6, and the
+             sum of digits at odd indices is 4 + 2 == 6. Since both are
+             equal the num is balanced.
+
+Constraints:
+* 2 <= num.length <= 100
+* num consists of digits only*/
+
+function isBalanced(num: string): boolean {
+    return num.split('').reduce((s, ch, i) => s + (2*(i&1)-1)*(ch.charCodeAt(0)-48), 0) == 0;
+};
+
+
+/*3341. Find Minimum Time to Reach Last Room I (Medium)
+There is a dungeon with n x m rooms arranged as a grid. You are given a 2D
+array moveTime of size n x m, where moveTime[i][j] represents the minimum
+time in seconds when you can start moving to that room. You start from the
+room (0, 0) at time t = 0 and can move to an adjacent room. Moving between
+adjacent rooms takes exactly one second. Return the minimum time to reach
+the room (n - 1, m - 1). Two rooms are adjacent if they share a common wall,
+either horizontally or vertically.
+
+Example 1:
+Input: moveTime = [[0,4],[4,4]]
+Output: 6
+Explanation: The minimum time required is 6 seconds.
+             * At time t == 4, move from room (0, 0) to room (1, 0) in one
+               second.
+             * At time t == 5, move from room (1, 0) to room (1, 1) in one
+               second.
+
+Example 2:
+Input: moveTime = [[0,0,0],[0,0,0]]
+Output: 3
+Explanation: The minimum time required is 3 seconds.
+             * At time t == 0, move from room (0, 0) to room (1, 0) in one
+               second.
+             * At time t == 1, move from room (1, 0) to room (1, 1) in one
+               second.
+             * At time t == 2, move from room (1, 1) to room (1, 2) in one
+               second.
+
+Example 3:
+Input: moveTime = [[0,1],[1,2]]
+Output: 3
+
+Constraints:
+* 2 <= n == moveTime.length <= 50
+* 2 <= m == moveTime[i].length <= 50
+* 0 <= moveTime[i][j] <= 10^9*/
+
+function minTimeToReach(moveTime: number[][]): number {
+    const n = moveTime.length, m = moveTime[0].length;
+    const pq = new PriorityQueue({ compare : (x, y) => x[0] - y[0] });
+    pq.enqueue([0, 0, 0]);
+    const dist = Array(n).fill(0).map(() => Array(m).fill(Infinity));
+    dist[0][0] = 0;
+    while (pq.size) {
+        const [t, i, j] = pq.dequeue();
+        if (i === n-1 && j === m-1) return t;
+        for (const [ii, jj] of [[i-1, j], [i, j-1], [i, j+1], [i+1, j]])
+            if (0 <= ii && ii < n && 0 <= jj && jj < m) {
+                const tt = Math.max(t, moveTime[ii][jj]) + 1;
+                if (tt < dist[ii][jj]) {
+                    pq.enqueue([tt, ii, jj]);
+                    dist[ii][jj] = tt;
+                }
+            }
+    }
+    return -1;
+};
+
+
+/*3342. Find Minimum Time to Reach Last Room II (Medium)
+There is a dungeon with n x m rooms arranged as a grid. You are given a 2D
+array moveTime of size n x m, where moveTime[i][j] represents the minimum
+time in seconds when you can start moving to that room. You start from the
+room (0, 0) at time t = 0 and can move to an adjacent room. Moving between
+adjacent rooms takes one second for one move and two seconds for the next,
+alternating between the two. Return the minimum time to reach the room
+(n - 1, m - 1). Two rooms are adjacent if they share a common wall, either
+horizontally or vertically.
+
+Example 1:
+Input: moveTime = [[0,4],[4,4]]
+Output: 7
+Explanation: The minimum time required is 7 seconds.
+             * At time t == 4, move from room (0, 0) to room (1, 0) in one
+               second.
+             * At time t == 5, move from room (1, 0) to room (1, 1) in two
+               seconds.
+
+Example 2:
+Input: moveTime = [[0,0,0,0],[0,0,0,0]]
+Output: 6
+Explanation: The minimum time required is 6 seconds.
+             * At time t == 0, move from room (0, 0) to room (1, 0) in one
+               second.
+             * At time t == 1, move from room (1, 0) to room (1, 1) in two
+               seconds.
+             * At time t == 3, move from room (1, 1) to room (1, 2) in one
+               second.
+             * At time t == 4, move from room (1, 2) to room (1, 3) in two
+               seconds.
+
+Example 3:
+Input: moveTime = [[0,1],[1,2]]
+Output: 4
+
+Constraints:
+* 2 <= n == moveTime.length <= 750
+* 2 <= m == moveTime[i].length <= 750
+* 0 <= moveTime[i][j] <= 10^9*/
+
+function minTimeToReach(moveTime: number[][]): number {
+    const n = moveTime.length, m = moveTime[0].length;
+    const dist = Array(n).fill(0).map(() => Array(m).fill(m).map(() => Array(2).fill(Infinity)));
+    dist[0][0][0] = 0;
+    const pq = new PriorityQueue({ compare : (x, y) => x[0]-y[0] });
+    pq.enqueue([0, 0, 0, 0]);
+    while (pq.size) {
+        const [t, i, j, s] = pq.dequeue();
+        if (i == n-1 && j == m-1) return t;
+        for (const [ii, jj] of [[i-1, j], [i, j-1], [i, j+1], [i+1, j]])
+            if (0 <= ii && ii < n && 0 <= jj && jj < m) {
+                const tt = Math.max(t, moveTime[ii][jj]) + s + 1;
+                if (tt < dist[ii][jj][s^1]) {
+                    pq.enqueue([tt, ii, jj, s^1]);
+                    dist[ii][jj][s^1] = tt;
+                }
+            }
+    }
+};
+
+
+/*3343. Count Number of Balanced Permutations (Hard)
+You are given a string num. A string of digits is called balanced if the sum
+of the digits at even indices is equal to the sum of the digits at odd
+indices. Return the number of distinct permutations of num that are
+balanced. Since the answer may be very large, return it modulo 10^9 + 7. A
+permutation is a rearrangement of all the characters of a string.
+
+Example 1:
+Input: num = "123"
+Output: 2
+Explanation: The distinct permutations of num are "123", "132", "213",
+             "231", "312" and "321". Among them, "132" and "231" are
+             balanced. Thus, the answer is 2.
+
+Example 2:
+Input: num = "112"
+Output: 1
+Explanation: The distinct permutations of num are "112", "121", and "211".
+             Only "121" is balanced. Thus, the answer is 1.
+
+Example 3:
+Input: num = "12345"
+Output: 0
+Explanation: None of the permutations of num are balanced, so the answer is
+             0.
+
+Constraints:
+* 2 <= num.length <= 80
+* num consists of digits '0' to '9' only.*/
+
+
 /*3349. Adjacent Increasing Subarrays Detection I (Easy)
 Given an array nums of n integers and an integer k, determine whether there
 exist two adjacent subarrays of length k such that both subarrays are

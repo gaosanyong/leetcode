@@ -99538,6 +99538,193 @@ class SegTree:
         return [hi-lo <= hlen[lo+hi] for lo, hi in pos]
 
 
+    """3340. Check Balanced String (Easy)
+    You are given a string num consisting of only digits. A string of digits is
+    called balanced if the sum of the digits at even indices is equal to the sum
+    of digits at odd indices. Return true if num is balanced, otherwise return
+    false.
+
+    Example 1:
+    Input: num = "1234"
+    Output: false
+    Explanation: The sum of digits at even indices is 1 + 3 == 4, and the sum of
+                 digits at odd indices is 2 + 4 == 6. Since 4 is not equal to 6,
+                 num is not balanced.
+
+    Example 2:
+    Input: num = "24123"
+    Output: true
+    Explanation: The sum of digits at even indices is 2 + 1 + 3 == 6, and the
+                 sum of digits at odd indices is 4 + 2 == 6. Since both are
+                 equal the num is balanced.
+
+    Constraints:
+    * 2 <= num.length <= 100
+    * num consists of digits only"""
+
+    def isBalanced(self, num: str) -> bool:
+        return sum((2*(i&1)-1) * (ord(ch)-48) for i, ch in enumerate(num)) == 0
+
+
+    """3341. Find Minimum Time to Reach Last Room I (Medium)
+    There is a dungeon with n x m rooms arranged as a grid. You are given a 2D
+    array moveTime of size n x m, where moveTime[i][j] represents the minimum
+    time in seconds when you can start moving to that room. You start from the
+    room (0, 0) at time t = 0 and can move to an adjacent room. Moving between
+    adjacent rooms takes exactly one second. Return the minimum time to reach
+    the room (n - 1, m - 1). Two rooms are adjacent if they share a common wall,
+    either horizontally or vertically.
+
+    Example 1:
+    Input: moveTime = [[0,4],[4,4]]
+    Output: 6
+    Explanation: The minimum time required is 6 seconds.
+                 * At time t == 4, move from room (0, 0) to room (1, 0) in one
+                   second.
+                 * At time t == 5, move from room (1, 0) to room (1, 1) in one
+                   second.
+
+    Example 2:
+    Input: moveTime = [[0,0,0],[0,0,0]]
+    Output: 3
+    Explanation: The minimum time required is 3 seconds.
+                 * At time t == 0, move from room (0, 0) to room (1, 0) in one
+                   second.
+                 * At time t == 1, move from room (1, 0) to room (1, 1) in one
+                   second.
+                 * At time t == 2, move from room (1, 1) to room (1, 2) in one
+                   second.
+
+    Example 3:
+    Input: moveTime = [[0,1],[1,2]]
+    Output: 3
+
+    Constraints:
+    * 2 <= n == moveTime.length <= 50
+    * 2 <= m == moveTime[i].length <= 50
+    * 0 <= moveTime[i][j] <= 10^9"""
+
+    def minTimeToReach(self, moveTime: List[List[int]]) -> int:
+        n, m = len(moveTime), len(moveTime[0])
+        pq = [(0, 0, 0)]
+        dist = [[inf]*m for _ in range(n)]
+        dist[0][0] = 0
+        while pq:
+            t, i, j = heappop(pq)
+            if (i, j) == (n-1, m-1): return t
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
+                if 0 <= ii < n and 0 <= jj < m:
+                    tt = max(moveTime[ii][jj], t) + 1
+                    if tt < dist[ii][jj]:
+                        heappush(pq, (tt, ii, jj))
+                        dist[ii][jj] = tt
+
+
+    """3342. Find Minimum Time to Reach Last Room II (Medium)
+    There is a dungeon with n x m rooms arranged as a grid. You are given a 2D
+    array moveTime of size n x m, where moveTime[i][j] represents the minimum
+    time in seconds when you can start moving to that room. You start from the
+    room (0, 0) at time t = 0 and can move to an adjacent room. Moving between
+    adjacent rooms takes one second for one move and two seconds for the next,
+    alternating between the two. Return the minimum time to reach the room
+    (n - 1, m - 1). Two rooms are adjacent if they share a common wall, either
+    horizontally or vertically.
+
+    Example 1:
+    Input: moveTime = [[0,4],[4,4]]
+    Output: 7
+    Explanation: The minimum time required is 7 seconds.
+                 * At time t == 4, move from room (0, 0) to room (1, 0) in one
+                   second.
+                 * At time t == 5, move from room (1, 0) to room (1, 1) in two
+                   seconds.
+
+    Example 2:
+    Input: moveTime = [[0,0,0,0],[0,0,0,0]]
+    Output: 6
+    Explanation: The minimum time required is 6 seconds.
+                 * At time t == 0, move from room (0, 0) to room (1, 0) in one
+                   second.
+                 * At time t == 1, move from room (1, 0) to room (1, 1) in two
+                   seconds.
+                 * At time t == 3, move from room (1, 1) to room (1, 2) in one
+                   second.
+                 * At time t == 4, move from room (1, 2) to room (1, 3) in two
+                   seconds.
+
+    Example 3:
+    Input: moveTime = [[0,1],[1,2]]
+    Output: 4
+
+    Constraints:
+    * 2 <= n == moveTime.length <= 750
+    * 2 <= m == moveTime[i].length <= 750
+    * 0 <= moveTime[i][j] <= 10^9"""
+
+    def minTimeToReach(self, moveTime: List[List[int]]) -> int:
+        n, m = len(moveTime), len(moveTime[0])
+        dist = [[[inf]*2 for _ in range(m)] for _ in range(n)]
+        pq = [(0, 0, 0, 0)]
+        dist[0][0][0] = 0
+        while pq:
+            t, i, j, s = heappop(pq)
+            if (i, j) == (n-1, m-1): return t
+            for ii, jj in (i-1, j), (i, j-1), (i, j+1), (i+1, j):
+                if 0 <= ii < n and 0 <= jj < m:
+                    tt = max(t, moveTime[ii][jj]) + s + 1
+                    if tt < dist[ii][jj][s^1]:
+                        heappush(pq, (tt, ii, jj, s^1))
+                        dist[ii][jj][s^1] = tt
+
+
+    """3343. Count Number of Balanced Permutations (Hard)
+    You are given a string num. A string of digits is called balanced if the sum
+    of the digits at even indices is equal to the sum of the digits at odd
+    indices. Return the number of distinct permutations of num that are
+    balanced. Since the answer may be very large, return it modulo 10^9 + 7. A
+    permutation is a rearrangement of all the characters of a string.
+
+    Example 1:
+    Input: num = "123"
+    Output: 2
+    Explanation: The distinct permutations of num are "123", "132", "213",
+                 "231", "312" and "321". Among them, "132" and "231" are
+                 balanced. Thus, the answer is 2.
+
+    Example 2:
+    Input: num = "112"
+    Output: 1
+    Explanation: The distinct permutations of num are "112", "121", and "211".
+                 Only "121" is balanced. Thus, the answer is 1.
+
+    Example 3:
+    Input: num = "12345"
+    Output: 0
+    Explanation: None of the permutations of num are balanced, so the answer is
+                 0.
+
+    Constraints:
+    * 2 <= num.length <= 80
+    * num consists of digits '0' to '9' only."""
+
+    def countBalancedPermutations(self, num: str) -> int:
+        mod = 1_000_000_007
+        if sum(map(int, num)) & 1: return 0
+        freq = Counter(map(int, num))
+
+        @cache
+        def fn(v, odd, even, bal):
+            """Return """
+            if v == 10: return int(bal == 0)
+            ans = 0
+            for x in range(max(0, freq[v]-even), min(freq[v], odd)+1):
+                ans += comb(odd, x) * comb(even, freq[v]-x) * fn(v+1, odd-x, even+x-freq[v], bal+(2*x-freq[v])*v)
+            return ans % mod
+
+        n = len(num)
+        return fn(0, (n+1)//2, n//2, 0)
+
+
     """3349. Adjacent Increasing Subarrays Detection I (Easy)
     Given an array nums of n integers and an integer k, determine whether there
     exist two adjacent subarrays of length k such that both subarrays are

@@ -40159,6 +40159,241 @@ class SegTreeLazy {
     }
 
 
+    /*3340. Check Balanced String (Easy)
+    You are given a string num consisting of only digits. A string of digits is
+    called balanced if the sum of the digits at even indices is equal to the sum
+    of digits at odd indices. Return true if num is balanced, otherwise return
+    false.
+
+    Example 1:
+    Input: num = "1234"
+    Output: false
+    Explanation: The sum of digits at even indices is 1 + 3 == 4, and the sum of
+                 digits at odd indices is 2 + 4 == 6. Since 4 is not equal to 6,
+                 num is not balanced.
+
+    Example 2:
+    Input: num = "24123"
+    Output: true
+    Explanation: The sum of digits at even indices is 2 + 1 + 3 == 6, and the
+                 sum of digits at odd indices is 4 + 2 == 6. Since both are
+                 equal the num is balanced.
+
+    Constraints:
+    * 2 <= num.length <= 100
+    * num consists of digits only*/
+
+    public boolean isBalanced(String num) {
+        int bal = 0;
+        for (int i = 0; i < num.length(); ++i)
+            if (i % 2 == 1) bal += num.charAt(i) - '0';
+            else bal -= num.charAt(i) - '0';
+        return bal == 0;
+    }
+
+
+    /*3341. Find Minimum Time to Reach Last Room I (Medium)
+    There is a dungeon with n x m rooms arranged as a grid. You are given a 2D
+    array moveTime of size n x m, where moveTime[i][j] represents the minimum
+    time in seconds when you can start moving to that room. You start from the
+    room (0, 0) at time t = 0 and can move to an adjacent room. Moving between
+    adjacent rooms takes exactly one second. Return the minimum time to reach
+    the room (n - 1, m - 1). Two rooms are adjacent if they share a common wall,
+    either horizontally or vertically.
+
+    Example 1:
+    Input: moveTime = [[0,4],[4,4]]
+    Output: 6
+    Explanation: The minimum time required is 6 seconds.
+                 * At time t == 4, move from room (0, 0) to room (1, 0) in one
+                   second.
+                 * At time t == 5, move from room (1, 0) to room (1, 1) in one
+                   second.
+
+    Example 2:
+    Input: moveTime = [[0,0,0],[0,0,0]]
+    Output: 3
+    Explanation: The minimum time required is 3 seconds.
+                 * At time t == 0, move from room (0, 0) to room (1, 0) in one
+                   second.
+                 * At time t == 1, move from room (1, 0) to room (1, 1) in one
+                   second.
+                 * At time t == 2, move from room (1, 1) to room (1, 2) in one
+                   second.
+
+    Example 3:
+    Input: moveTime = [[0,1],[1,2]]
+    Output: 3
+
+    Constraints:
+    * 2 <= n == moveTime.length <= 50
+    * 2 <= m == moveTime[i].length <= 50
+    * 0 <= moveTime[i][j] <= 10^9*/
+
+    public int minTimeToReach(int[][] moveTime) {
+        int n = moveTime.length, m = moveTime[0].length;
+        int[] dir = new int[]{-1, 0, 1, 0, -1};
+        Queue<int[]> pq = new PriorityQueue<>((x, y) -> Integer.compare(x[0], y[0]));
+        pq.add(new int[]{0, 0, 0});
+        int[][] dist = new int[n][m];
+        for (int i = 0; i < n; ++i)
+            Arrays.fill(dist[i], Integer.MAX_VALUE);
+        dist[0][0] = 0;
+        while (!pq.isEmpty()) {
+            var elem = pq.poll();
+            int t = elem[0], i = elem[1], j = elem[2];
+            if (i == n-1 && j == m-1) return t;
+            for (int k = 0; k < 4; ++k) {
+                int ii = i+dir[k], jj = j+dir[k+1];
+                if (0 <= ii && ii < n && 0 <= jj && jj < m) {
+                    int tt = Math.max(t, moveTime[ii][jj]) + 1;
+                    if (tt < dist[ii][jj]) {
+                        pq.add(new int[]{tt, ii, jj});
+                        dist[ii][jj] = tt;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+
+    /*3342. Find Minimum Time to Reach Last Room II (Medium)
+    There is a dungeon with n x m rooms arranged as a grid. You are given a 2D
+    array moveTime of size n x m, where moveTime[i][j] represents the minimum
+    time in seconds when you can start moving to that room. You start from the
+    room (0, 0) at time t = 0 and can move to an adjacent room. Moving between
+    adjacent rooms takes one second for one move and two seconds for the next,
+    alternating between the two. Return the minimum time to reach the room
+    (n - 1, m - 1). Two rooms are adjacent if they share a common wall, either
+    horizontally or vertically.
+
+    Example 1:
+    Input: moveTime = [[0,4],[4,4]]
+    Output: 7
+    Explanation: The minimum time required is 7 seconds.
+                 * At time t == 4, move from room (0, 0) to room (1, 0) in one
+                   second.
+                 * At time t == 5, move from room (1, 0) to room (1, 1) in two
+                   seconds.
+
+    Example 2:
+    Input: moveTime = [[0,0,0,0],[0,0,0,0]]
+    Output: 6
+    Explanation: The minimum time required is 6 seconds.
+                 * At time t == 0, move from room (0, 0) to room (1, 0) in one
+                   second.
+                 * At time t == 1, move from room (1, 0) to room (1, 1) in two
+                   seconds.
+                 * At time t == 3, move from room (1, 1) to room (1, 2) in one
+                   second.
+                 * At time t == 4, move from room (1, 2) to room (1, 3) in two
+                   seconds.
+
+    Example 3:
+    Input: moveTime = [[0,1],[1,2]]
+    Output: 4
+
+    Constraints:
+    * 2 <= n == moveTime.length <= 750
+    * 2 <= m == moveTime[i].length <= 750
+    * 0 <= moveTime[i][j] <= 10^9*/
+
+    public int minTimeToReach(int[][] moveTime) {
+        int n = moveTime.length, m = moveTime[0].length;
+        int[] dir = new int[]{-1, 0, 1, 0, -1};
+        Queue<int[]> pq = new PriorityQueue<>((x, y) -> Integer.compare(x[0], y[0]));
+        pq.add(new int[]{0, 0, 0, 0});
+        int[][][] dist = new int[n][m][2];
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < m; ++j)
+                Arrays.fill(dist[i][j], Integer.MAX_VALUE);
+        dist[0][0][0] = 0;
+        while (!pq.isEmpty()) {
+            var elem = pq.poll();
+            int t = elem[0], i = elem[1], j = elem[2], s = elem[3];
+            if (i == n-1 && j == m-1) return t;
+            for (int k = 0; k < 4; ++k) {
+                int ii = i+dir[k], jj = j+dir[k+1];
+                if (0 <= ii && ii < n && 0 <= jj && jj < m) {
+                    int tt = Math.max(t, moveTime[ii][jj]) + s + 1;
+                    if (tt < dist[ii][jj][s^1]) {
+                        pq.add(new int[]{tt, ii, jj, s^1});
+                        dist[ii][jj][s^1] = tt;
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+
+
+    /*3343. Count Number of Balanced Permutations (Hard)
+    You are given a string num. A string of digits is called balanced if the sum
+    of the digits at even indices is equal to the sum of the digits at odd
+    indices. Return the number of distinct permutations of num that are
+    balanced. Since the answer may be very large, return it modulo 10^9 + 7. A
+    permutation is a rearrangement of all the characters of a string.
+
+    Example 1:
+    Input: num = "123"
+    Output: 2
+    Explanation: The distinct permutations of num are "123", "132", "213",
+                 "231", "312" and "321". Among them, "132" and "231" are
+                 balanced. Thus, the answer is 2.
+
+    Example 2:
+    Input: num = "112"
+    Output: 1
+    Explanation: The distinct permutations of num are "112", "121", and "211".
+                 Only "121" is balanced. Thus, the answer is 1.
+
+    Example 3:
+    Input: num = "12345"
+    Output: 0
+    Explanation: None of the permutations of num are balanced, so the answer is
+                 0.
+
+    Constraints:
+    * 2 <= num.length <= 80
+    * num consists of digits '0' to '9' only.*/
+
+    private long fn(int v, int odd, int even, int val, int total, int mod, int[] freq, long[][] choose, long[][][][] memo) {
+        if (val > total/2) return 0l;
+        if (v == 10) return val == total/2 ? 1l : 0l;
+        if (memo[v][odd][even][val] == -1) {
+            long ans = 0;
+            for (int x = Math.max(0, freq[v]-even); x <= freq[v] && x <= odd; ++x) {
+                long cand = choose[odd][x] * choose[even][freq[v]-x] % mod * fn(v+1, odd-x, even-freq[v]+x, val + x*v, total, mod, freq, choose, memo) % mod;
+                ans = (ans + cand) % mod;
+            }
+            memo[v][odd][even][val] = ans;
+        }
+        return memo[v][odd][even][val];
+    }
+
+    public int countBalancedPermutations(String num) {
+        int total = num.chars().map(ch -> ch - '0').sum();
+        if (total % 2 == 1) return 0;
+        int[] freq = new int[10];
+        for (var ch : num.toCharArray())
+            ++freq[ch - '0'];
+        final int mod = 1_000_000_007, n = num.length();
+        long[][] choose = new long[n+1][n+1];
+        for (int x = 0; x <= n; ++x) {
+            choose[x][0] = 1;
+            for (int k = 1; k <= x; ++k)
+                choose[x][k] = (choose[x-1][k-1] + choose[x-1][k]) % mod;
+        }
+        long[][][][] memo = new long[10][(n+1)/2+1][n/2+1][total/2+1];
+        for (int i = 0; i < 10; ++i)
+            for (int j = 0; j <= (n+1)/2; ++j)
+                for (int k = 0; k <= n/2; ++k)
+                    Arrays.fill(memo[i][j][k], -1);
+        return (int) fn(0, (n+1)/2, n/2, 0, total, mod, freq, choose, memo);
+    }
+
+
     /*3349. Adjacent Increasing Subarrays Detection I (Easy)
     Given an array nums of n integers and an integer k, determine whether there
     exist two adjacent subarrays of length k such that both subarrays are
