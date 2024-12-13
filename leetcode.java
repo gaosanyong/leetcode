@@ -40159,6 +40159,224 @@ class SegTreeLazy {
     }
 
 
+    /*3330. Find the Original Typed String I (Easy)
+    Alice is attempting to type a specific string on her computer. However, she
+    tends to be clumsy and may press a key for too long, resulting in a
+    character being typed multiple times. Although Alice tried to focus on her
+    typing, she is aware that she may still have done this at most once. You are
+    given a string word, which represents the final output displayed on Alice's
+    screen. Return the total number of possible original strings that Alice
+    might have intended to type.
+
+    Example 1:
+    Input: word = "abbcccc"
+    Output: 5
+    Explanation: The possible strings are: "abbcccc", "abbccc", "abbcc", "abbc",
+                 and "abcccc".
+
+    Example 2:
+    Input: word = "abcd"
+    Output: 1
+    Explanation: The only possible string is "abcd".
+
+    Example 3:
+    Input: word = "aaaa"
+    Output: 4
+
+    Constraints:
+    * 1 <= word.length <= 100
+    * word consists only of lowercase English letters.*/
+
+    public int possibleStringCount(String word) {
+        int ans = 1;
+        for (int i = 0, cnt = 0, n = word.length(); i < n; ++i) {
+            ++cnt;
+            if (i == n-1 || word.charAt(i) != word.charAt(i+1)) {
+                ans += cnt - 1;
+                cnt = 0;
+            }
+        }
+        return ans;
+    }
+
+
+    /*3331. Find Subtree Sizes After Changes (Medium)
+    You are given a tree rooted at node 0 that consists of n nodes numbered from
+    0 to n - 1. The tree is represented by an array parent of size n, where
+    parent[i] is the parent of node i. Since node 0 is the root, parent[0] == -1.
+    You are also given a string s of length n, where s[i] is the character
+    assigned to node i. We make the following changes on the tree one time
+    simultaneously for all nodes x from 1 to n - 1:
+    * Find the closest node y to node x such that y is an ancestor of x, and s
+      [x] == s[y].
+    * If node y does not exist, do nothing.
+    * Otherwise, remove the edge between x and its current parent and make node
+      y the new parent of x by adding an edge between them.
+    Return an array answer of size n where answer[i] is the size of the subtree
+    rooted at node i in the final tree.
+
+    Example 1:
+    Input: parent = [-1,0,0,1,1,1], s = "abaabc"
+    Output: [6,3,1,1,1,1]
+    Explanation: The parent of node 3 will change from node 1 to node 0.
+
+    Example 2:
+    Input: parent = [-1,0,4,0,1], s = "abbba"
+    Output: [5,2,1,1,1]
+    Explanation: The following changes will happen at the same time:
+                 * The parent of node 4 will change from node 1 to node 0.
+                 * The parent of node 2 will change from node 4 to node 1.
+
+    Constraints:
+    * n == parent.length == s.length
+    * 1 <= n <= 10^5
+    * 0 <= parent[i] <= n - 1 for all i >= 1.
+    * parent[0] == -1
+    * parent represents a valid tree.
+    * s consists only of lowercase English letters.*/
+
+    private void fn(int u, int p, String s, Map<Character, Stack<Integer>> mp, Set<Integer>[] tree) {
+        if (!mp.containsKey(s.charAt(u))) mp.put(s.charAt(u), new Stack<>());
+        Stack<Integer> stk = mp.get(s.charAt(u));
+        if (!stk.isEmpty()) {
+            tree[p].remove(u);
+            tree[stk.peek()].add(u);
+        }
+        stk.push(u);
+        Set<Integer> vals = new HashSet(tree[u]);
+        for (var v : vals) fn(v, u, s, mp, tree);
+        stk.pop();
+    }
+
+    private int dfs(int u, int[] ans, Set<Integer>[] tree) {
+        ans[u] = 1;
+        for (var v : tree[u])
+            ans[u] += dfs(v, ans, tree);
+        return ans[u];
+    }
+
+    public int[] findSubtreeSizes(int[] parent, String s) {
+        int n = parent.length;
+        Set<Integer>[] tree = new Set[n];
+        for (int u = 0; u < n; ++u)
+            tree[u] = new HashSet<>();
+        for (int u = 0; u < n; ++u)
+            if (parent[u] != -1) tree[parent[u]].add(u);
+        Map<Character, Stack<Integer>> mp = new HashMap<>();
+        fn(0, -1, s, mp, tree);
+        int[] ans = new int[n];
+        dfs(0, ans, tree);
+        return ans;
+    }
+
+
+    /*3332. Maximum Points Tourist Can Earn (Medium)
+    You are given two integers, n and k, along with two 2D integer arrays,
+    stayScore and travelScore. A tourist is visiting a country with n cities,
+    where each city is directly connected to every other city. The tourist's
+    journey consists of exactly k 0-indexed days, and they can choose any city
+    as their starting point. Each day, the tourist has two choices:
+    * Stay in the current city: If the tourist stays in their current city curr
+      during day i, they will earn stayScore[i][curr] points.
+    * Move to another city: If the tourist moves from their current city curr to
+      city dest, they will earn travelScore[curr][dest] points.
+    Return the maximum possible points the tourist can earn.
+
+    Example 1:
+    Input: n = 2, k = 1, stayScore = [[2,3]], travelScore = [[0,2],[1,0]]
+    Output: 3
+    Explanation: The tourist earns the maximum number of points by starting in
+                 city 1 and staying in that city.
+
+    Example 2:
+    Input: n = 3, k = 2, stayScore = [[3,4,2],[2,1,2]], travelScore = [[0,2,1],[2,0,4],[3,2,0]]
+    Output: 8
+    Explanation: The tourist earns the maximum number of points by starting in
+                 city 1, staying in that city on day 0, and traveling to city 2
+                 on day 1.
+
+    Constraints:
+    * 1 <= n <= 200
+    * 1 <= k <= 200
+    * n == travelScore.length == travelScore[i].length == stayScore[i].length
+    * k == stayScore.length
+    * 1 <= stayScore[i][j] <= 100
+    * 0 <= travelScore[i][j] <= 100
+    * travelScore[i][i] == 0*/
+
+    public int maxScore(int n, int k, int[][] stayScore, int[][] travelScore) {
+        int[][] dp = new int[k+1][n];
+        for (int i = k-1; i >= 0; --i)
+            for (int j = 0; j < n; ++j)
+                for (int jj = 0; jj < n; ++jj) {
+                    int cand = 0;
+                    if (j == jj) cand = stayScore[i][j] + dp[i+1][j];
+                    else cand = travelScore[j][jj] + dp[i+1][jj];
+                    dp[i][j] = Math.max(dp[i][j], cand);
+                }
+        return Arrays.stream(dp[0]).max().getAsInt();
+    }
+
+
+    /*3333. Find the Original Typed String II (Hard)
+    Alice is attempting to type a specific string on her computer. However, she
+    tends to be clumsy and may press a key for too long, resulting in a
+    character being typed multiple times. You are given a string word, which
+    represents the final output displayed on Alice's screen. You are also given
+    a positive integer k. Return the total number of possible original strings
+    that Alice might have intended to type, if she was trying to type a string
+    of size at least k. Since the answer may be very large, return it modulo
+    10^9 + 7.
+
+    Example 1:
+    Input: word = "aabbccdd", k = 7
+    Output: 5
+    Explanation: The possible strings are: "aabbccdd", "aabbccd", "aabbcdd",
+                 "aabccdd", and "abbccdd".
+
+    Example 2:
+    Input: word = "aabbccdd", k = 8
+    Output: 1
+    Explanation: The only possible string is "aabbccdd".
+
+    Example 3:
+    Input: word = "aaabbb", k = 3
+    Output: 8
+
+    Constraints:
+    * 1 <= word.length <= 5 * 10^5
+    * word consists only of lowercase English letters.
+    * 1 <= k <= 2000*/
+
+    public int possibleStringCount(String word, int k) {
+        final int mod = 1_000_000_007;
+        List<Integer> vals = new ArrayList<>();
+        long total = 1;
+        for (int i = 0, cnt = 0, n = word.length(); i < n; ++i) {
+            ++cnt;
+            if (i == n-1 || word.charAt(i) != word.charAt(i+1)) {
+                total = total * cnt % mod;
+                vals.add(cnt);
+                cnt = 0;
+            }
+        }
+        int n = vals.size();
+        if (n >= k) return (int) total;
+        long[][] dp = new long[n+1][k];
+        for (int j = 0; j < k; ++j)
+            dp[n][j] = 1;
+        for (int i = n-1; i >= 0; --i) {
+            long prefix = 0;
+            for (int j = 0; j < k; ++j) {
+                dp[i][j] = prefix;
+                prefix = (prefix + dp[i+1][j]) % mod;
+                if (j >= vals.get(i)) prefix = (mod + (prefix - dp[i+1][j-vals.get(i)]) % mod) % mod;
+            }
+        }
+        return (int) (mod + (total - dp[0][k-1]) % mod) % mod;
+    }
+
+
     /*3340. Check Balanced String (Easy)
     You are given a string num consisting of only digits. A string of digits is
     called balanced if the sum of the digits at even indices is equal to the sum
