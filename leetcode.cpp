@@ -65830,6 +65830,65 @@ public:
     }
 
 
+    /*2801. Count Stepping Numbers in Range (Hard)
+    Given two positive integers low and high represented as strings, find the
+    count of stepping numbers in the inclusive range [low, high]. A stepping
+    number is an integer such that all of its adjacent digits have an absolute
+    difference of exactly 1. Return an integer denoting the count of stepping
+    numbers in the inclusive range [low, high]. Since the answer may be very
+    large, return it modulo 10^9 + 7. Note: A stepping number should not have a
+    leading zero.
+
+    Example 1:
+    Input: low = "1", high = "11"
+    Output: 10
+    Explanation: The stepping numbers in the range [1,11] are 1, 2, 3, 4, 5, 6,
+                 7, 8, 9 and 10. There are a total of 10 stepping numbers in the
+                 range. Hence, the output is 10.
+
+    Example 2:
+    Input: low = "90", high = "101"
+    Output: 2
+    Explanation: The stepping numbers in the range [90,101] are 98 and 101.
+                 There are a total of 2 stepping numbers in the range. Hence,
+                 the output is 2.
+
+    Constraints:
+    * 1 <= int(low) <= int(high) < 10^100
+    * 1 <= low.length, high.length <= 100
+    * low and high consist of only digits.
+    * low and high don't have any leading zeros.*/
+
+    int countSteppingNumbers(string low, string high) {
+        const int mod = 1'000'000'007;
+        long long memo[100][10][2][2];
+
+        function<long long(int, int, int, int, string&)> fn = [&](int i, int p, int lead, int profile, string& num) {
+            if (i == num.size()) return 1ll;
+            if (memo[i][p][lead][profile] == -1) {
+                long ans = 0;
+                if (lead) {
+                    int hi = profile ? num[i]-'0' : 9;
+                    for (int x = 0; x <= hi; ++x)
+                        ans = (ans + fn(i+1, x, lead && x == 0, profile && x == hi, num)) % mod;
+                } else
+                    for (int x = p-1; x <= p+1; x += 2)
+                        if (0 <= x && x <= 9 && (profile && x <= num[i]-'0' || !profile))
+                            ans = (ans + fn(i+1, x, lead && x == 0, profile && x == num[i]-'0', num)) % mod;
+                memo[i][p][lead][profile] = ans;
+            }
+            return memo[i][p][lead][profile];
+        };
+
+        memset(memo, -1l, sizeof(memo)); long long hi = fn(0, 0, 1, 1, high);
+        memset(memo, -1l, sizeof(memo)); long long lo = fn(0, 0, 1, 1, low);
+        vector<int> diff;
+        adjacent_difference(low.begin(), low.end(), back_inserter(diff));
+        int check = all_of(diff.begin()+1, diff.end(), [&](auto& x) { return abs(x) == 1; });
+        return (mod + (hi - lo + check) % mod) % mod;
+    }
+
+
     /*2802. Find The K-th Lucky Number (Medium）
     We know that 4 and 7 are lucky digits. Also, a number is called lucky if it
     contains only lucky digits. You are given an integer k, return the kth lucky

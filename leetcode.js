@@ -6843,6 +6843,61 @@ var areDeeplyEqual = function(o1, o2) {
 };
 
 
+/*2630. Memoize II (Hard)
+Given a function fn, return a memoized version of that function. A memoized
+function is a function that will never be called twice with the same inputs.
+Instead it will return a cached value. fn can be any function and there are no
+constraints on what type of values it accepts. Inputs are considered identical
+if they are === to each other.
+
+Example 1:
+Input: getInputs = () => [[2,2],[2,2],[1,2]]
+       fn = function (a, b) { return a + b; }
+Output: [{"val":4,"calls":1},{"val":4,"calls":1},{"val":3,"calls":2}]
+Explanation: const inputs = getInputs();
+             const memoized = memoize(fn);
+             for (const arr of inputs) {
+               memoized(...arr);
+             }
+             * For the inputs of (2, 2): 2 + 2 = 4, and it required a call to
+               fn().
+             * For the inputs of (2, 2): 2 + 2 = 4, but those inputs were seen
+               before so no call to fn() was required.
+             * For the inputs of (1, 2): 1 + 2 = 3, and it required another call
+             to fn() for a total of 2.
+
+Example 2:
+Input: getInputs = () => [[{},{}],[{},{}],[{},{}]]
+       fn = function (a, b) { return ({...a, ...b}); }
+Output: [{"val":{},"calls":1},{"val":{},"calls":2},{"val":{},"calls":3}]
+Explanation: Merging two empty objects will always result in an empty object. It
+             may seem like there should only be 1 call to fn() because of cache-
+             hits, however none of those objects are === to each other.
+
+Example 3:
+Input: getInputs = () => { const o = {}; return [[o,o],[o,o],[o,o]]; }
+       fn = function (a, b) { return ({...a, ...b}); }
+Output: [{"val":{},"calls":1},{"val":{},"calls":1},{"val":{},"calls":1}]
+Explanation: Merging two empty objects will always result in an empty object.
+             The 2nd and 3rd third function calls result in a cache-hit. This is
+             because every object passed in is identical.
+
+Constraints:
+* 1 <= inputs.length <= 10^5
+* 0 <= inputs.flat().length <= 10^5
+* inputs[i][j] != NaN*/
+
+function memoize(fn) {
+   const memo = new Map();
+   const pool = new Map();
+   return function(...args) {
+       const key = args.map(item => pool.get(item) ?? pool.set(item, pool.size).get(item)).join("-");
+       if (!(memo.has(key))) memo.set(key, fn(...args));
+       return memo.get(key);
+   }
+}
+
+
 /*2633. Convert Object to JSON String (Medium)
 Given a value, return a valid JSON string of that value. The value can be a
 string, number, array, object, boolean, or null. The returned string should not
@@ -9295,6 +9350,64 @@ var partial = function(fn, args) {
         args = args.map(x => x === '_' ? restArgs.shift() : x);
         return fn(...args.concat(restArgs));
     }
+};
+
+
+/*2801. Count Stepping Numbers in Range (Hard)
+Given two positive integers low and high represented as strings, find the
+count of stepping numbers in the inclusive range [low, high]. A stepping
+number is an integer such that all of its adjacent digits have an absolute
+difference of exactly 1. Return an integer denoting the count of stepping
+numbers in the inclusive range [low, high]. Since the answer may be very
+large, return it modulo 10^9 + 7. Note: A stepping number should not have a
+leading zero.
+
+Example 1:
+Input: low = "1", high = "11"
+Output: 10
+Explanation: The stepping numbers in the range [1,11] are 1, 2, 3, 4, 5, 6,
+             7, 8, 9 and 10. There are a total of 10 stepping numbers in the
+             range. Hence, the output is 10.
+
+Example 2:
+Input: low = "90", high = "101"
+Output: 2
+Explanation: The stepping numbers in the range [90,101] are 98 and 101.
+             There are a total of 2 stepping numbers in the range. Hence,
+             the output is 2.
+
+Constraints:
+* 1 <= int(low) <= int(high) < 10^100
+* 1 <= low.length, high.length <= 100
+* low and high consist of only digits.
+* low and high don't have any leading zeros.*/
+
+var countSteppingNumbers = function(low, high) {
+    const mod = 1_000_000_007;
+
+    function fn(i, p, lead, profile, num) {
+        if (i == num.length) return 1;
+        if (memo[i][p][lead][profile] == -1) {
+            let ans = 0;
+            if (lead) {
+                const hi = profile ? num.charCodeAt(i)-48 : 9;
+                for (let x = 0; x <= hi; ++x)
+                    ans = (ans + fn(i+1, x, Number(lead && x == 0), Number(profile && x == hi), num)) % mod;
+            } else
+                for (const x of [p-1, p+1])
+                    if (0 <= x && x <= 9 && (profile && x <= num.charCodeAt(i)-48 || !profile))
+                        ans = (ans + fn(i+1, x, Number(lead && x == 0), Number(profile && x == num.charCodeAt(i)-48), num)) % mod;
+            memo[i][p][lead][profile] = ans;
+        }
+        return memo[i][p][lead][profile];
+    }
+
+    let memo = Array(100).fill(0).map(() => Array(10).fill(0).map(() => Array(2).fill(0).map(() => Array(2).fill(-1))));
+    const lo = fn(0, 0, 1, 1, low);
+    memo = Array(100).fill(0).map(() => Array(10).fill(0).map(() => Array(2).fill(0).map(() => Array(2).fill(-1))));
+    const hi = fn(0, 0, 1, 1, high);
+    const check = low.split('').slice(1).map((ch, i) => ch.charCodeAt(0) - low.charCodeAt(i)).every(x => Math.abs(x) == 1);
+    return (mod + (hi - lo + check) % mod) % mod;
 };
 
 
