@@ -25258,3 +25258,209 @@ class SegTree {
         return Math.max(this.query(qlo, qhi, 2*k+1, lo, mid), this.query(qlo, qhi, 2*k+2, mid, hi));
     }
 }
+
+
+/*3396. Minimum Number of Operations to Make Elements in Array Distinct (Easy)
+You are given an integer array nums. You need to ensure that the elements in
+the array are distinct. To achieve this, you can perform the following
+operation any number of times:
+* Remove 3 elements from the beginning of the array. If the array has fewer
+  than 3 elements, remove all remaining elements.
+Note that an empty array is considered to have distinct elements. Return the
+minimum number of operations needed to make the elements in the array
+distinct.
+
+Example 1:
+Input: nums = [1,2,3,4,2,3,3,5,7]
+Output: 2
+Explanation: * In the first operation, the first 3 elements are removed,
+               resulting in the array [4, 2, 3, 3, 5, 7].
+             * In the second operation, the next 3 elements are removed,
+               resulting in the array [3, 5, 7], which has distinct elements.
+             Therefore, the answer is 2.
+
+Example 2:
+Input: nums = [4,5,6,4,4]
+Output: 2
+Explanation: * In the first operation, the first 3 elements are removed,
+               resulting in the array [4, 4].
+             * In the second operation, all remaining elements are removed,
+               resulting in an empty array.
+             Therefore, the answer is 2.
+
+Example 3:
+Input: nums = [6,7,8,9]
+Output: 0
+Explanation: The array already contains distinct elements. Therefore, the
+             answer is 0.
+
+Constraints:
+* 1 <= nums.length <= 100
+* 1 <= nums[i] <= 100*/
+
+function minimumOperations(nums: number[]): number {
+    const freq = new Map();
+    for (const [i, x] of Array.from(nums.entries()).reverse()) {
+        freq.set(x, (freq.get(x) ?? 0) + 1);
+        if (freq.get(x) == 2) return Math.ceil((i+1)/3);
+    }
+    return 0;
+};
+
+
+/*3397. Maximum Number of Distinct Elements After Operations (Medium)
+You are given an integer array nums and an integer k. You are allowed to
+perform the following operation on each element of the array at most once:
+* Add an integer in the range [-k, k] to the element.
+Return the maximum possible number of distinct elements in nums after
+performing the operations.
+
+Example 1:
+Input: nums = [1,2,2,3,3,4], k = 2
+Output: 6
+Explanation: nums changes to [-1, 0, 1, 2, 3, 4] after performing operations
+             on the first four elements.
+
+Example 2:
+Input: nums = [4,4,4,4], k = 1
+Output: 3
+Explanation: By adding -1 to nums[0] and 1 to nums[1], nums changes to
+             [3, 5, 4, 4].
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 1 <= nums[i] <= 10^9
+* 0 <= k <= 10^9*/
+
+function maxDistinctElements(nums: number[], k: number): number {
+    let ans = 0, prev = -Infinity;
+    nums.sort((x, y) => x-y);
+    for (const x of nums) {
+        const cand = Math.max(prev+1, x-k);
+        if (cand <= x+k) {
+            ++ans;
+            prev = cand;
+        }
+    }
+    return ans;
+};
+
+
+/*3398. Smallest Substring With Identical Characters I (Hard)
+You are given a binary string s of length n and an integer numOps. You are
+allowed to perform the following operation on s at most numOps times:
+* Select any index i (where 0 <= i < n) and flip s[i], i.e., if s[i] == '1',
+  change s[i] to '0' and vice versa.
+You need to minimize the length of the longest substring of s such that all
+the characters in the substring are identical. Return the minimum length
+after the operations. A substring is a contiguous non-empty sequence of
+characters within a string.
+
+Example 1:
+Input: s = "000001", numOps = 1
+Output: 2
+Explanation: By changing s[2] to '1', s becomes "001001". The longest
+             substrings with identical characters are s[0..1] and s[3..4].
+
+Example 2:
+Input: s = "0000", numOps = 2
+Output: 1
+Explanation: By changing s[0] and s[2] to '1', s becomes "1010".
+
+Example 3:
+Input: s = "0101", numOps = 0
+Output: 1
+
+Constraints:
+* 1 <= n == s.length <= 1000
+* s consists only of '0' and '1'.
+* 0 <= numOps <= n*/
+
+function minLength(s: string, numOps: number): number {
+    const n = s.length;
+    const one = s.split('').map((ch, i) => Math.abs(ch.charCodeAt(0) - 48 - (1&i))).reduce((v, x) => v+x, 0);
+    if (Math.min(one, n-one) <= numOps) return 1;
+
+    function fn(x) {
+        let cnt = 0, need = 0, prev = '0';
+        for (const [i, ch] of s.split('').entries()) {
+            if (i && prev !== ch) cnt = 0;
+            prev = s[i];
+            if (cnt == x) {
+                if (i+1 < n && s[i] === s[i+1]) prev = (1^Number(s[i])).toString();
+                ++need;
+                cnt = 0;
+            }
+            ++cnt;
+        }
+        return need <= numOps;
+    };
+
+    let lo = 2, hi = n;
+    while (lo < hi) {
+        const mid = lo + hi >> 1;
+        if (fn(mid)) hi = mid;
+        else lo = mid+1;
+    }
+    return lo;
+};
+
+
+/*3399. Smallest Substring With Identical Characters II (Hard)
+You are given a binary string s of length n and an integer numOps. You are
+allowed to perform the following operation on s at most numOps times:
+* Select any index i (where 0 <= i < n) and flip s[i]. If s[i] == '1',
+  change s[i] to '0' and vice versa.
+You need to minimize the length of the longest substring of s such that all
+the characters in the substring are identical. Return the minimum length
+after the operations. A substring is a contiguous non-empty sequence of
+characters within a string.
+
+Example 1:
+Input: s = "000001", numOps = 1
+Output: 2
+Explanation: By changing s[2] to '1', s becomes "001001". The longest
+             substrings with identical characters are s[0..1] and s[3..4].
+
+Example 2:
+Input: s = "0000", numOps = 2
+Output: 1
+Explanation: By changing s[0] and s[2] to '1', s becomes "1010".
+
+Example 3:
+Input: s = "0101", numOps = 0
+Output: 1
+
+Constraints:
+* 1 <= n == s.length <= 10^5
+* s consists only of '0' and '1'.
+* 0 <= numOps <= n*/
+
+function minLength(s: string, numOps: number): number {
+    const n = s.length;
+    const one = s.split('').map((ch, i) => Math.abs(ch.charCodeAt(0) - 48 - (1&i))).reduce((v, x) => v+x, 0);
+    if (Math.min(one, n-one) <= numOps) return 1;
+
+    function fn(x) {
+        let cnt = 0, need = 0, prev = '0';
+        for (const [i, ch] of s.split('').entries()) {
+            if (i && prev !== ch) cnt = 0;
+            prev = s[i];
+            if (cnt == x) {
+                if (i+1 < n && s[i] === s[i+1]) prev = (1^Number(s[i])).toString();
+                ++need;
+                cnt = 0;
+            }
+            ++cnt;
+        }
+        return need <= numOps;
+    };
+
+    let lo = 2, hi = n;
+    while (lo < hi) {
+        const mid = lo + hi >> 1;
+        if (fn(mid)) hi = mid;
+        else lo = mid+1;
+    }
+    return lo;
+};
