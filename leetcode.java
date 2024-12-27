@@ -42322,6 +42322,238 @@ class SegTree {
     }
 
 
+    /*3392. Count Subarrays of Length Three With a Condition (Easy)
+    Given an integer array nums, return the number of subarrays of length 3 such
+    that the sum of the first and third numbers equals exactly half of the
+    second number.
+
+    Example 1:
+    Input: nums = [1,2,1,4,1]
+    Output: 1
+    Explanation: Only the subarray [1,4,1] contains exactly 3 elements where the
+                 sum of the first and third numbers equals half the middle
+                 number.
+
+    Example 2:
+    Input: nums = [1,1,1]
+    Output: 0
+    Explanation: [1,1,1] is the only subarray of length 3. However, its first
+                 and third numbers do not add to half the middle number.
+
+    Constraints:
+    * 3 <= nums.length <= 100
+    * -100 <= nums[i] <= 100*/
+
+    public int countSubarrays(int[] nums) {
+        int ans = 0;
+        for (int i = 0; i < nums.length-2; ++i)
+            if (2*(nums[i] + nums[i+2]) == nums[i+1]) ++ans;
+        return ans;
+    }
+
+
+    /*3393. Count Paths With the Given XOR Value (Medium)
+    You are given a 2D integer array grid with size m x n. You are also given an
+    integer k. Your task is to calculate the number of paths you can take from
+    the top-left cell (0, 0) to the bottom-right cell (m - 1, n - 1) satisfying
+    the following constraints:
+    * You can either move to the right or down. Formally, from the cell (i, j)
+      you may move to the cell (i, j + 1) or to the cell (i + 1, j) if the
+      target cell exists.
+    * The XOR of all the numbers on the path must be equal to k.
+    Return the total number of such paths. Since the answer can be very large,
+    return the result modulo 10^9 + 7.
+
+    Example 1:
+    Input: grid = [[2, 1, 5], [7, 10, 0], [12, 6, 4]], k = 11
+    Output: 3
+    Explanation: The 3 paths are:
+                 (0, 0) → (1, 0) → (2, 0) → (2, 1) → (2, 2)
+                 (0, 0) → (1, 0) → (1, 1) → (1, 2) → (2, 2)
+                 (0, 0) → (0, 1) → (1, 1) → (2, 1) → (2, 2)
+
+    Example 2:
+    Input: grid = [[1, 3, 3, 3], [0, 3, 3, 2], [3, 0, 1, 1]], k = 2
+    Output: 5
+    Explanation: The 5 paths are:
+                 (0, 0) → (1, 0) → (2, 0) → (2, 1) → (2, 2) → (2, 3)
+                 (0, 0) → (1, 0) → (1, 1) → (2, 1) → (2, 2) → (2, 3)
+                 (0, 0) → (1, 0) → (1, 1) → (1, 2) → (1, 3) → (2, 3)
+                 (0, 0) → (0, 1) → (1, 1) → (1, 2) → (2, 2) → (2, 3)
+                 (0, 0) → (0, 1) → (0, 2) → (1, 2) → (2, 2) → (2, 3)
+
+    Example 3:
+    Input: grid = [[1, 1, 1, 2], [3, 0, 3, 2], [3, 0, 2, 2]], k = 10
+    Output: 0
+
+    Constraints:
+    * 1 <= m == grid.length <= 300
+    * 1 <= n == grid[r].length <= 300
+    * 0 <= grid[r][c] < 16
+    * 0 <= k < 16*/
+
+    public int countPathsWithXorValue(int[][] grid, int k) {
+        final int mod = 1_000_000_007, m = grid.length, n = grid[0].length;
+        int[] dir = new int[]{1, 0, 1};
+        long[][][] freq = new long[m][n][16];
+        freq[0][0][grid[0][0]] = 1;
+        for (int diag = 0; diag <= m+n-2; ++diag) {
+            for (int i = Math.min(m-1, diag); i >= 0 && i >= diag-n+1; --i) {
+                int j = diag-i;
+                for (int d = 0; d <= 1; ++d) {
+                    int ii = i+dir[d], jj = j+dir[d+1];
+                    if (0 <= ii && ii < m && 0 <= jj && jj < n)
+                        for (int v = 0; v < 16; ++v) {
+                            int vv = v ^ grid[ii][jj];
+                            freq[ii][jj][vv] = (freq[ii][jj][vv] + freq[i][j][v]) % mod;
+                        }
+                }
+            }
+        }
+        return (int) freq[m-1][n-1][k];
+    }
+
+
+    /*3394. Check if Grid can be Cut into Sections (Medium)
+    You are given an integer n representing the dimensions of an n x n grid,
+    with the origin at the bottom-left corner of the grid. You are also given a
+    2D array of coordinates rectangles, where rectangles[i] is in the form
+    [startx, starty, endx, endy], representing a rectangle on the grid. Each
+    rectangle is defined as follows:
+    * (startx, starty): The bottom-left corner of the rectangle.
+    * (endx, endy): The top-right corner of the rectangle.
+    Note that the rectangles do not overlap. Your task is to determine if it is
+    possible to make either two horizontal or two vertical cuts on the grid such
+    that:
+    * Each of the three resulting sections formed by the cuts contains at least
+      one rectangle.
+    * Every rectangle belongs to exactly one section.
+    Return true if such cuts can be made; otherwise, return false.
+
+    Example 1:
+    Input: n = 5, rectangles = [[1,0,5,2],[0,2,2,4],[3,2,5,3],[0,4,4,5]]
+    Output: true
+    Explanation: The grid is shown in the diagram. We can make horizontal cuts
+                 at y = 2 and y = 4. Hence, output is true.
+
+    Example 2:
+    Input: n = 4, rectangles = [[0,0,1,1],[2,0,3,4],[0,2,2,3],[3,0,4,3]]
+    Output: true
+    Explanation: We can make vertical cuts at x = 2 and x = 3. Hence, output is
+                 true.
+
+    Example 3:
+    Input: n = 4, rectangles = [[0,2,2,4],[1,0,3,2],[2,2,3,4],[3,0,4,2],[3,2,4,4]]
+    Output: false
+    Explanation: We cannot make two horizontal or two vertical cuts that satisfy
+                 the conditions. Hence, output is false.
+
+    Constraints:
+    * 3 <= n <= 10^9
+    * 3 <= rectangles.length <= 10^5
+    * 0 <= rectangles[i][0] < rectangles[i][2] <= n
+    * 0 <= rectangles[i][1] < rectangles[i][3] <= n
+    * No two rectangles overlap.*/
+
+    private boolean check(List<int[]> line) {
+        int last = 0, cnt = 0;
+        Collections.sort(line, (x, y) -> x[0] != y[0] ? Integer.compare(x[0], y[0]) : Integer.compare(x[1], y[1]));
+        for (var elem : line) {
+            int lo = elem[0], hi = elem[1];
+            if (last <= lo) ++cnt;
+            last = Math.max(last, hi);
+        }
+        return cnt >= 3;
+    }
+
+    public boolean checkValidCuts(int n, int[][] rectangles) {
+        List<int[]> xs = new ArrayList<>(), ys = new ArrayList<>();
+        for (var r : rectangles) {
+            xs.add(new int[]{r[0], r[2]});
+            ys.add(new int[]{r[1], r[3]});
+        }
+        return check(xs) || check(ys);
+    }
+
+
+    /*3395. Subsequences with a Unique Middle Mode I (Hard)
+    Given an integer array nums, find the number of  subsequences of size 5 of
+    nums with a unique middle mode. Since the answer may be very large, return
+    it modulo 10^9 + 7. A mode of a sequence of numbers is defined as the
+    element that appears the maximum number of times in the sequence. A sequence
+    of numbers contains a unique mode if it has only one mode. A sequence of
+    numbers seq of size 5 contains a unique middle mode if the middle element
+    (seq[2]) is a unique mode.
+
+    Example 1:
+    Input: nums = [1,1,1,1,1,1]
+    Output: 6
+    Explanation: [1, 1, 1, 1, 1] is the only subsequence of size 5 that can be
+                 formed, and it has a unique middle mode of 1. This subsequence
+                 can be formed in 6 different ways, so the output is 6.
+
+    Example 2:
+    Input: nums = [1,2,2,3,3,4]
+    Output: 4
+    Explanation: [1, 2, 2, 3, 4] and [1, 2, 3, 3, 4] each have a unique middle
+                 mode because the number at index 2 has the greatest frequency
+                 in the subsequence. [1, 2, 2, 3, 3] does not have a unique
+                 middle mode because 2 and 3 appear twice.
+
+    Example 3:
+    Input: nums = [0,1,2,3,4,5,6,7,8]
+    Output: 0
+    Explanation: There is no subsequence of length 5 with a unique middle mode.
+
+    Constraints:
+    * 5 <= nums.length <= 1000
+    * -10^9 <= nums[i] <= 10^9*/
+
+    private long comb(long x) {
+        return x * (x-1)/2;
+    }
+
+    public int subsequencesWithMiddleMode(int[] nums) {
+        final int n = nums.length, mod = 1_000_000_007;
+        Map<Integer, Integer> freq = new HashMap<>(), prefix = new HashMap<>(), suffix = new HashMap<>();
+        long ans = 0, pdiff = 0, sdiff = 0;
+        for (int i = 0; i < n; ++i) {
+            int x = nums[i];
+            sdiff += i - suffix.getOrDefault(x, 0);
+            suffix.merge(x, 1, Integer::sum);
+        }
+        for (int i = 0; i < n; ++i) {
+            int x = nums[i];
+            sdiff -= n-i-suffix.getOrDefault(x, 0);
+            suffix.merge(x, -1, Integer::sum);
+            long cand = 0;
+            if (prefix.containsKey(x)) {
+                for (var elem : prefix.entrySet()) {
+                    int y = elem.getKey(), v = elem.getValue();
+                    if (v > 0 && x != y) {
+                        long val = sdiff - suffix.get(x)*(n-i-1-suffix.get(x)) - suffix.get(y)*(n-i-1-suffix.get(y)) + suffix.get(x)*suffix.get(y);
+                        cand += val * prefix.get(x) * v;
+                    }
+                }
+            }
+            if (suffix.containsKey(x)) {
+                for (var elem : suffix.entrySet()) {
+                    int y = elem.getKey(), v = elem.getValue();
+                    if (v > 0 && x != y) {
+                        long val = pdiff - prefix.getOrDefault(x, 0)*(i-prefix.getOrDefault(x, 0)) - prefix.getOrDefault(y, 0)*(i-prefix.getOrDefault(y, 0)) + prefix.getOrDefault(x, 0)*prefix.getOrDefault(y, 0);
+                        cand += val * suffix.get(x) * v;
+                    }
+                }
+            }
+            cand += comb(prefix.getOrDefault(x, 0))*comb(n-1-i) + prefix.getOrDefault(x, 0)*(i-prefix.getOrDefault(x, 0))*(comb(n-i-1)-comb(n-i-1-suffix.get(x))) + comb(i-prefix.getOrDefault(x, 0))*comb(suffix.get(x));
+            ans = (ans + cand) % mod;
+            pdiff += i-prefix.getOrDefault(x, 0);
+            prefix.merge(x, 1, Integer::sum);
+        }
+        return (int) ans;
+    }
+
+
     /*3396. Minimum Number of Operations to Make Elements in Array Distinct (Easy)
     You are given an integer array nums. You need to ensure that the elements in
     the array are distinct. To achieve this, you can perform the following
