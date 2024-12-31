@@ -42322,6 +42322,247 @@ class SegTree {
     }
 
 
+    /*3386. Button with Longest Push Time (Easy)
+    You are given a 2D array events which represents a sequence of events where
+    a child pushes a series of buttons on a keyboard. Each
+    events[i] = [indexi, timei] indicates that the button at index indexi was
+    pressed at time timei.
+    * The array is sorted in increasing order of time.
+    * The time taken to press a button is the difference in time between
+      consecutive button presses. The time for the first button is simply the
+      time at which it was pressed.
+    Return the index of the button that took the longest time to push. If
+    multiple buttons have the same longest time, return the button with the
+    smallest index.
+
+    Example 1:
+    Input: events = [[1,2],[2,5],[3,9],[1,15]]
+    Output: 1
+    Explanation: * Button with index 1 is pressed at time 2.
+                 * Button with index 2 is pressed at time 5, so it took 5 - 2 =
+                   3 units of time.
+                 * Button with index 3 is pressed at time 9, so it took 9 - 5 =
+                   4 units of time.
+                 * Button with index 1 is pressed again at time 15, so it took
+                   15 - 9 = 6 units of time.
+
+    Example 2:
+    Input: events = [[10,5],[1,7]]
+    Output: 10
+    Explanation: * Button with index 10 is pressed at time 5.
+                 * Button with index 1 is pressed at time 7, so it took 7 - 5 =
+                   2 units of time.
+
+    Constraints:
+    * 1 <= events.length <= 1000
+    * events[i] == [indexi, timei]
+    * 1 <= indexi, timei <= 10^5
+    * The input is generated such that events is sorted in increasing order of
+      timei.*/
+
+    public int buttonWithLongestTime(int[][] events) {
+        int ans = 0, most = 0, prev = 0;
+        for (var e : events) {
+            int i = e[0], t = e[1], diff = t - prev;
+            if (diff > most || diff == most && i < ans) {
+                ans = i;
+                most = diff;
+            }
+            prev = t;
+        }
+        return ans;
+    }
+
+
+    /*3387. Maximize Amount After Two Days of Conversions (Medium)
+    You are given a string initialCurrency, and you start with 1.0 of
+    initialCurrency. You are also given four arrays with currency pairs
+    (strings) and rates (real numbers):
+    * pairs1[i] = [startCurrencyi, targetCurrencyi] denotes that you can convert
+      from startCurrencyi to targetCurrencyi at a rate of rates1[i] on day 1.
+    * pairs2[i] = [startCurrencyi, targetCurrencyi] denotes that you can convert
+      from startCurrencyi to targetCurrencyi at a rate of rates2[i] on day 2.
+    * Also, each targetCurrency can be converted back to its corresponding
+      startCurrency at a rate of 1 / rate.
+    You can perform any number of conversions, including zero, using rates1 on
+    day 1, followed by any number of additional conversions, including zero,
+    using rates2 on day 2. Return the maximum amount of initialCurrency you can
+    have after performing any number of conversions on both days in order. Note:
+    Conversion rates are valid, and there will be no contradictions in the rates
+    for either day. The rates for the days are independent of each other.
+
+    Example 1:
+    Input: initialCurrency = "EUR", pairs1 = [["EUR","USD"],["USD","JPY"]], rates1 = [2.0,3.0], pairs2 = [["JPY","USD"],["USD","CHF"],["CHF","EUR"]], rates2 = [4.0,5.0,6.0]
+    Output: 720.00000
+    Explanation: To get the maximum amount of EUR, starting with 1.0 EUR:
+                 On Day 1:
+                 Convert EUR to USD to get 2.0 USD.
+                 Convert USD to JPY to get 6.0 JPY.
+                 On Day 2:
+                 Convert JPY to USD to get 24.0 USD.
+                 Convert USD to CHF to get 120.0 CHF.
+                 Finally, convert CHF to EUR to get 720.0 EUR.
+
+    Example 2:
+    Input: initialCurrency = "NGN", pairs1 = [["NGN","EUR"]], rates1 = [9.0], pairs2 = [["NGN","EUR"]], rates2 = [6.0]
+    Output: 1.50000
+    Explanation: Converting NGN to EUR on day 1 and EUR to NGN using the inverse
+                 rate on day 2 gives the maximum amount.
+
+    Example 3:
+    Input: initialCurrency = "USD", pairs1 = [["USD","EUR"]], rates1 = [1.0], pairs2 = [["EUR","JPY"]], rates2 = [10.0]
+    Output: 1.00000
+    Explanation: In this example, there is no need to make any conversions on
+                 either day.
+
+    Constraints:
+    * 1 <= initialCurrency.length <= 3
+    * initialCurrency consists only of uppercase English letters.
+    * 1 <= n == pairs1.length <= 10
+    * 1 <= m == pairs2.length <= 10
+    * pairs1[i] == [startCurrencyi, targetCurrencyi]
+    * pairs2[i] == [startCurrencyi, targetCurrencyi]
+    * 1 <= startCurrencyi.length, targetCurrencyi.length <= 3
+    * startCurrencyi and targetCurrencyi consist only of uppercase English letters.
+    * rates1.length == n
+    * rates2.length == m
+    * 1.0 <= rates1[i], rates2[i] <= 10.0
+    * The input is generated such that there are no contradictions or cycles in
+      the conversion graphs for either day.
+    * The input is generated such that the output is at most 5 * 10^10.*/
+
+    public double maxAmount(String initialCurrency, List<List<String>> pairs1, double[] rates1, List<List<String>> pairs2, double[] rates2) {
+        Map<String, Double> dist = new HashMap<>();
+        dist.put(initialCurrency, 1.0);
+        List<Pair<List<List<String>>, double[]>> vals = new ArrayList<>();
+        vals.add(new Pair<>(pairs1, rates1));
+        vals.add(new Pair<>(pairs2, rates2));
+        for (var item : vals) {
+            var pairs = item.getKey();
+            var rates = item.getValue();
+            for (var _ : pairs) {
+                for (int i = 0; i < pairs.size(); ++i) {
+                    String u = pairs.get(i).get(0), v = pairs.get(i).get(1);
+                    double r = rates[i];
+                    dist.put(u, Math.max(dist.getOrDefault(u, 0.), dist.getOrDefault(v, 0.) / r));
+                    dist.put(v, Math.max(dist.getOrDefault(v, 0.), dist.getOrDefault(u, 0.) * r));
+                }
+            }
+        }
+        return dist.get(initialCurrency);
+    }
+
+
+    /*3388. Count Beautiful Splits in an Array (Medium)
+    You are given an array nums. A split of an array nums is beautiful if:
+    * The array nums is split into three subarrays: nums1, nums2, and nums3,
+      such that nums can be formed by concatenating nums1, nums2, and nums3 in
+      that order.
+    * The subarray nums1 is a prefix of nums2 OR nums2 is a prefix of nums3.
+    Return the number of ways you can make this split.
+
+    Example 1:
+    Input: nums = [1,1,2,1]
+    Output: 2
+    Explanation: The beautiful splits are:
+                 * A split with nums1 = [1], nums2 = [1,2], nums3 = [1].
+                 * A split with nums1 = [1], nums2 = [1], nums3 = [2,1].
+
+    Example 2:
+    Input: nums = [1,2,3,4]
+    Output: 0
+    Explanation: There are 0 beautiful splits.
+
+    Constraints:
+    * 1 <= nums.length <= 5000
+    * 0 <= nums[i] <= 50*/
+
+    public static int[] z_algo(int[] nums) {
+        int n = nums.length;
+        int[] ans = new int[n];
+        for (int i = 1, ii = 0, lo = 0, hi = 0; i < n; ++i) {
+            if (i <= hi) ii = i - lo;
+            if (i + ans[ii] <= hi) ans[i] = ans[ii];
+            else {
+                lo = i; hi = Math.max(hi, i);
+                while (hi < n && nums[hi] == nums[hi-lo]) ++hi;
+                ans[i] = hi - lo;
+                --hi;
+            }
+        }
+        return ans;
+    }
+    public int beautifulSplits(int[] nums) {
+        int ans = 0;
+        int[] p0 = z_algo(nums);
+        for (int i = 1, n = nums.length; i < n; ++i) {
+            if (i <= p0[i] && i+p0[i] <= n) ans += n-2*i;
+            int[] pi = z_algo(Arrays.copyOfRange(nums, i, n));
+            for (int ii = 0; ii < n-i; ++ii)
+                if (ii > 0 && ii <= pi[ii] && (i > p0[i] || i <= p0[i] && ii < i)) ++ans;
+        }
+        return ans;
+    }
+
+
+    /*3389. Minimum Operations to Make Character Frequencies Equal (Hard)
+    You are given a string s. A string t is called good if all characters of t
+    occur the same number of times. You can perform the following operations any
+    number of times:
+    * Delete a character from s.
+    * Insert a character in s.
+    * Change a character in s to its next letter in the alphabet.
+    Note that you cannot change 'z' to 'a' using the third operation. Return the
+    minimum number of operations required to make s good.
+
+    Example 1:
+    Input: s = "acab"
+    Output: 1
+    Explanation: We can make s good by deleting one occurrence of character 'a'.
+
+    Example 2:
+    Input: s = "wddw"
+    Output: 0
+    Explanation: We do not need to perform any operations since s is initially
+                 good.
+
+    Example 3:
+    Input: s = "aaabc"
+    Output: 2
+    Explanation: We can make s good by applying these operations:
+                 * Change one occurrence of 'a' to 'b'
+                 * Insert one occurrence of 'c' into s
+
+    Constraints:
+    * 3 <= s.length <= 2 * 10^4
+    * s contains only lowercase English letters.*/
+
+    public int makeStringGood(String s) {
+        int[] freq = new int[26];
+        int ans = Integer.MAX_VALUE, m = 0;
+        for (var ch : s.toCharArray())
+            m = Math.max(m, ++freq[ch-'a']);
+        for (int k = 0; k <= m; ++k) {
+            int[][] dp = new int[27][2];
+            for (int i = 25; i >= 0; --i)
+                for (int j = 0; j <= 1; ++j) {
+                    int credit = 0;
+                    if (i > 0 && j > 0)
+                        if (freq[i-1] >= k) credit = freq[i-1]-k;
+                        else credit = freq[i-1];
+                    if (freq[i] >= k) dp[i][j] = freq[i]-k+dp[i+1][1];
+                    else {
+                        int up = Math.max(0, k-credit-freq[i]) + dp[i+1][0];
+                        int dn = freq[i] + dp[i+1][1];
+                        dp[i][j] = Math.min(up, dn);
+                    }
+                }
+            ans = Math.min(ans, dp[0][0]);
+        }
+        return ans;
+    }
+
+
     /*3392. Count Subarrays of Length Three With a Condition (Easy)
     Given an integer array nums, return the number of subarrays of length 3 such
     that the sum of the first and third numbers equals exactly half of the
