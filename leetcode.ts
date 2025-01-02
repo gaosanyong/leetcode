@@ -10568,6 +10568,221 @@ function sumCounts(nums: number[]): number {
 };
 
 
+/*2914. Minimum Number of Changes to Make Binary String Beautiful (Medium)
+You are given a 0-indexed binary string s having an even length. A string is
+beautiful if it's possible to partition it into one or more substrings such
+that:
+* Each substring has an even length.
+* Each substring contains only 1's or only 0's.
+You can change any character in s to 0 or 1. Return the minimum number of
+changes required to make the string s beautiful.
+
+Example 1:
+Input: s = "1001"
+Output: 2
+Explanation: We change s[1] to 1 and s[3] to 0 to get string "1100". It can
+             be seen that the string "1100" is beautiful because we can
+             partition it into "11|00". It can be proven that 2 is the
+             minimum number of changes needed to make the string beautiful.
+
+Example 2:
+Input: s = "10"
+Output: 1
+Explanation: We change s[1] to 1 to get string "11". It can be seen that the
+             string "11" is beautiful because we can partition it into "11".
+             It can be proven that 1 is the minimum number of changes needed
+             to make the string beautiful.
+
+Example 3:
+Input: s = "0000"
+Output: 0
+Explanation: We don't need to make any changes as the string "0000" is
+             beautiful already.
+
+Constraints:
+* 2 <= s.length <= 10^5
+* s has an even length.
+* s[i] is either '0' or '1'.*/
+
+function minChanges(s: string): number {
+    return [...Array(s.length/2).keys()].reduce((v, i) => v + (s[2*i] != s[2*i+1] ? 1 : 0), 0);
+};
+
+
+/*2915. Length of the Longest Subsequence That Sums to Target (Medium)
+You are given a 0-indexed array of integers nums, and an integer target.
+Return the length of the longest subsequence of nums that sums up to target.
+If no such subsequence exists, return -1. A subsequence is an array that can
+be derived from another array by deleting some or no elements without
+changing the order of the remaining elements.
+
+Example 1:
+Input: nums = [1,2,3,4,5], target = 9
+Output: 3
+Explanation: There are 3 subsequences with a sum equal to 9: [4,5], [1,3,5],
+             and [2,3,4]. The longest subsequences are [1,3,5], and [2,3,4].
+             Hence, the answer is 3.
+
+Example 2:
+Input: nums = [4,1,3,2,1,5], target = 7
+Output: 4
+Explanation: There are 5 subsequences with a sum equal to 7: [4,3], [4,1,2],
+             [4,2,1], [1,1,5], and [1,3,2,1]. The longest subsequence is
+             [1,3,2,1]. Hence, the answer is 4.
+
+Example 3:
+Input: nums = [1,1,5,4,5], target = 3
+Output: -1
+Explanation: It can be shown that nums has no subsequence that sums up to 3.
+
+Constraints:
+* 1 <= nums.length <= 1000
+* 1 <= nums[i] <= 1000
+* 1 <= target <= 1000*/
+
+function lengthOfLongestSubsequence(nums: number[], target: number): number {
+    const n = nums.length;
+    const dp = Array(n+1).fill(0).map(() => Array(target+1).fill(-Infinity));
+    dp[n][0] = 0;
+    for (let i = n-1; i >= 0; --i)
+        for (let j = 0; j <= target; ++j) {
+            dp[i][j] = dp[i+1][j];
+            if (j >= nums[i]) dp[i][j] = Math.max(dp[i][j], 1 + dp[i+1][j-nums[i]]);
+        }
+    return Math.max(-1, dp[0][target]);
+};
+
+
+/*2916. Subarrays Distinct Element Sum of Squares II (Hard)
+You are given a 0-indexed integer array nums. The distinct count of a
+subarray of nums is defined as:
+* Let nums[i..j] be a subarray of nums consisting of all the indices from i
+  to j such that 0 <= i <= j < nums.length. Then the number of distinct
+  values in nums[i..j] is called the distinct count of nums[i..j].
+Return the sum of the squares of distinct counts of all subarrays of nums.
+Since the answer may be very large, return it modulo 10^9 + 7. A subarray is
+a contiguous non-empty sequence of elements within an array.
+
+Example 1:
+Input: nums = [1,2,1]
+Output: 15
+Explanation: Six possible subarrays are:
+             [1]: 1 distinct value
+             [2]: 1 distinct value
+             [1]: 1 distinct value
+             [1,2]: 2 distinct values
+             [2,1]: 2 distinct values
+             [1,2,1]: 2 distinct values
+             The sum of the squares of the distinct counts in all subarrays
+             is equal to 12 + 12 + 12 + 22 + 22 + 22 = 15.
+
+Example 2:
+Input: nums = [2,2]
+Output: 3
+Explanation: Three possible subarrays are:
+             [2]: 1 distinct value
+             [2]: 1 distinct value
+             [2,2]: 1 distinct value
+             The sum of the squares of the distinct counts in all subarrays
+             is equal to 12 + 12 + 12 = 3.
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 1 <= nums[i] <= 10^5*/
+
+class LazySegTreeSum {
+    private n: number;
+    private mod: number;
+    private lazy: number[];
+    private tree: number[];
+    private vals: number[];
+
+    constructor(n: number, mod: number) {
+        this.n = n;
+        this.mod = mod;
+        this.lazy = Array(4*this.n).fill(0);
+        this.tree = Array(4*this.n).fill(0);
+        this.vals = Array(4*this.n).fill(0);
+    }
+
+    /**
+     * Updates value at i to val.
+     * @param {number} i   - the index of the value to be updated.
+     * @param {number} val - the value to be updated to.
+     * @param {number} k   - the index of the array representing the tree.
+     * @param {number} lo  - the lower end of the array representing the tree.
+     * @param {number} hi  - the higher end of the array representing the tree.
+     */
+    increment(qlo: number, qhi: number, k=0, lo=0, hi=this.n): void {
+        if (this.lazy[k]) {
+            this.vals[k] = (this.vals[k] + 2*this.tree[k]*this.lazy[k] + (hi-lo)*this.lazy[k]**2) % this.mod;
+            this.tree[k] = (this.tree[k] + (hi-lo)*this.lazy[k]) % this.mod;
+            if (lo+1 < hi) {
+                this.lazy[2*k+1] += this.lazy[k];
+                this.lazy[2*k+2] += this.lazy[k];
+            }
+            this.lazy[k] = 0;
+        }
+        if (lo < hi && qlo < hi && lo < qhi) {
+            if (qlo <= lo && hi <= qhi) {
+                this.vals[k] = (this.vals[k] + 2*this.tree[k] + hi-lo) % this.mod;
+                this.tree[k] = (this.tree[k] + hi-lo) % this.mod;
+                if (lo+1 < hi) {
+                    ++this.lazy[2*k+1];
+                    ++this.lazy[2*k+2];
+                }
+            } else {
+                const mid = lo + Math.floor((hi-lo)/2);
+                this.increment(qlo, qhi, 2*k+1, lo, mid);
+                this.increment(qlo, qhi, 2*k+2, mid, hi);
+                this.vals[k] = (this.vals[2*k+1] + this.vals[2*k+2]) % this.mod;
+                this.tree[k] = (this.tree[2*k+1] + this.tree[2*k+2]) % this.mod;
+            }
+        }
+    }
+
+    /**
+     * Query the minimum in the range of [qlo, qhi).
+     * @param {number} qlo - the lower end of query range (inclusive).
+     * @param {number} qhi - the higher end of query range (exclusive).
+     * @param {number} k   - the index of the array representing the tree.
+     * @param {number} lo  - the lower end of the array representing the tree.
+     * @param {number} hi  - the higher end of the array representing the tree.
+     * @returns the minimum value in the range [qlo, qhi).
+     */
+    query(qlo: number, qhi: number, k=0, lo=0, hi=this.n): number {
+        if (this.lazy[k]) {
+            this.vals[k] = (this.vals[k] + 2*this.tree[k]*this.lazy[k] + (hi-lo)*this.lazy[k]**2) % this.mod;
+            this.tree[k] = (this.tree[k] + (hi-lo)*this.lazy[k]) % this.mod;
+            if (lo+1 < hi) {
+                this.lazy[2*k+1] += this.lazy[k];
+                this.lazy[2*k+2] += this.lazy[k];
+            }
+            this.lazy[k] = 0;
+        }
+        if (qhi <= lo || hi <= qlo) return 0;
+        if (qlo <= lo && hi <= qhi) return this.vals[k];
+        const mid = lo + Math.floor((hi-lo)/2);
+        return (this.query(qlo, qhi, 2*k+1, lo, mid) + this.query(qlo, qhi, 2*k+2, mid, hi)) % this.mod;
+    }
+}
+
+function sumCounts(nums: number[]): number {
+    const mod = 1_000_000_007, n = nums.length;
+    const tree = new LazySegTreeSum(n, mod);
+    const last = new Map();
+    let ans = 0;
+    for (const [i, x] of nums.entries()) {
+        let lo = 0;
+        if (last.has(x)) lo = last.get(x) + 1;
+        tree.increment(lo, i+1);
+        ans = (ans + tree.query(0, i+1)) % mod;
+        last.set(x, i);
+    }
+    return ans;
+};
+
+
 /*2917. Find the K-or of an Array (Easy)
 You are given a 0-indexed integer array nums, and an integer k. The K-or of
 nums is a non-negative integer that satisfies the following:

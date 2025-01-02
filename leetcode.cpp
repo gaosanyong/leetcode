@@ -69361,17 +69361,219 @@ public:
     * 1 <= nums.length <= 100
     * 1 <= nums[i] <= 100*/
 
-        int sumCounts(vector<int>& nums) {
-            int ans = 0;
-            for (int i = 0, n = nums.size(); i < n; ++i) {
-                unordered_set<int> seen;
-                for (int j = i; j < n; ++j) {
-                    seen.insert(nums[j]);
-                    ans += pow(seen.size(), 2);
-                }
+    int sumCounts(vector<int>& nums) {
+        int ans = 0;
+        for (int i = 0, n = nums.size(); i < n; ++i) {
+            unordered_set<int> seen;
+            for (int j = i; j < n; ++j) {
+                seen.insert(nums[j]);
+                ans += pow(seen.size(), 2);
             }
-            return ans;
         }
+        return ans;
+    }
+
+
+    /*2914. Minimum Number of Changes to Make Binary String Beautiful (Medium)
+    You are given a 0-indexed binary string s having an even length. A string is
+    beautiful if it's possible to partition it into one or more substrings such
+    that:
+    * Each substring has an even length.
+    * Each substring contains only 1's or only 0's.
+    You can change any character in s to 0 or 1. Return the minimum number of
+    changes required to make the string s beautiful.
+
+    Example 1:
+    Input: s = "1001"
+    Output: 2
+    Explanation: We change s[1] to 1 and s[3] to 0 to get string "1100". It can
+                 be seen that the string "1100" is beautiful because we can
+                 partition it into "11|00". It can be proven that 2 is the
+                 minimum number of changes needed to make the string beautiful.
+
+    Example 2:
+    Input: s = "10"
+    Output: 1
+    Explanation: We change s[1] to 1 to get string "11". It can be seen that the
+                 string "11" is beautiful because we can partition it into "11".
+                 It can be proven that 1 is the minimum number of changes needed
+                 to make the string beautiful.
+
+    Example 3:
+    Input: s = "0000"
+    Output: 0
+    Explanation: We don't need to make any changes as the string "0000" is
+                 beautiful already.
+
+    Constraints:
+    * 2 <= s.length <= 10^5
+    * s has an even length.
+    * s[i] is either '0' or '1'.*/
+
+    int minChanges(string s) {
+        return accumulate(s.begin(), s.end(), 0, [&, i=0](int v, auto _) mutable {
+            return v + (i++%2 == 0 && s[i-1] != s[i]);
+        });
+    }
+
+
+    /*2915. Length of the Longest Subsequence That Sums to Target (Medium)
+    You are given a 0-indexed array of integers nums, and an integer target.
+    Return the length of the longest subsequence of nums that sums up to target.
+    If no such subsequence exists, return -1. A subsequence is an array that can
+    be derived from another array by deleting some or no elements without
+    changing the order of the remaining elements.
+
+    Example 1:
+    Input: nums = [1,2,3,4,5], target = 9
+    Output: 3
+    Explanation: There are 3 subsequences with a sum equal to 9: [4,5], [1,3,5],
+                 and [2,3,4]. The longest subsequences are [1,3,5], and [2,3,4].
+                 Hence, the answer is 3.
+
+    Example 2:
+    Input: nums = [4,1,3,2,1,5], target = 7
+    Output: 4
+    Explanation: There are 5 subsequences with a sum equal to 7: [4,3], [4,1,2],
+                 [4,2,1], [1,1,5], and [1,3,2,1]. The longest subsequence is
+                 [1,3,2,1]. Hence, the answer is 4.
+
+    Example 3:
+    Input: nums = [1,1,5,4,5], target = 3
+    Output: -1
+    Explanation: It can be shown that nums has no subsequence that sums up to 3.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i] <= 1000
+    * 1 <= target <= 1000*/
+
+    int lengthOfLongestSubsequence(vector<int>& nums, int target) {
+        int n = nums.size();
+        vector<vector<int>> dp(n+1, vector<int>(target+1, INT_MIN));
+        dp[n][0] = 0;
+        for (int i = n-1; i >= 0; --i)
+             for (int j = 0; j <= target; ++j) {
+                dp[i][j] = dp[i+1][j];
+                if (j >= nums[i]) dp[i][j] = max(dp[i][j], 1 + dp[i+1][j-nums[i]]);
+             }
+        return max(-1, dp[0][target]);
+    }
+
+
+    /*2916. Subarrays Distinct Element Sum of Squares II (Hard)
+    You are given a 0-indexed integer array nums. The distinct count of a
+    subarray of nums is defined as:
+    * Let nums[i..j] be a subarray of nums consisting of all the indices from i
+      to j such that 0 <= i <= j < nums.length. Then the number of distinct
+      values in nums[i..j] is called the distinct count of nums[i..j].
+    Return the sum of the squares of distinct counts of all subarrays of nums.
+    Since the answer may be very large, return it modulo 10^9 + 7. A subarray is
+    a contiguous non-empty sequence of elements within an array.
+
+    Example 1:
+    Input: nums = [1,2,1]
+    Output: 15
+    Explanation: Six possible subarrays are:
+                 [1]: 1 distinct value
+                 [2]: 1 distinct value
+                 [1]: 1 distinct value
+                 [1,2]: 2 distinct values
+                 [2,1]: 2 distinct values
+                 [1,2,1]: 2 distinct values
+                 The sum of the squares of the distinct counts in all subarrays
+                 is equal to 12 + 12 + 12 + 22 + 22 + 22 = 15.
+
+    Example 2:
+    Input: nums = [2,2]
+    Output: 3
+    Explanation: Three possible subarrays are:
+                 [2]: 1 distinct value
+                 [2]: 1 distinct value
+                 [2,2]: 1 distinct value
+                 The sum of the squares of the distinct counts in all subarrays
+                 is equal to 12 + 12 + 12 = 3.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^5
+
+class LazySegTreeSum {
+    int n = 0, mod = 0;
+    vector<long long> lazy;
+    vector<long long> tree;
+    vector<long long> vals;
+public:
+    LazySegTreeSum(int n, int mod) {
+        this->mod = mod;
+        this->n = n;
+        lazy.resize(4*n);
+        tree.resize(4*n);
+        vals.resize(4*n);
+    }
+
+    void increment(int qlo, int qhi, int k = 0, int lo = 0, int hi = 0) {
+        if (hi == 0) hi = n;
+        if (lazy[k]) {
+            vals[k] = (vals[k] + 2*tree[k]*lazy[k] + (hi-lo)*lazy[k]*lazy[k]) % mod;
+            tree[k] = (tree[k] + (hi-lo)*lazy[k]) % mod;
+            if (lo+1 < hi) {
+                lazy[2*k+1] += lazy[k];
+                lazy[2*k+2] += lazy[k];
+            }
+            lazy[k] = 0;
+        }
+        if (lo < hi && qlo < hi && lo < qhi) {
+            if (qlo <= lo && hi <= qhi) {
+                vals[k] = (vals[k] + 2*tree[k] + hi-lo) % mod;
+                tree[k] = (tree[k] + hi-lo) % mod;
+                if (lo+1 < hi) {
+                    ++lazy[2*k+1];
+                    ++lazy[2*k+2];
+                }
+            } else {
+                int mid = lo + (hi-lo)/2;
+                increment(qlo, qhi, 2*k+1, lo, mid);
+                increment(qlo, qhi, 2*k+2, mid, hi);
+                tree[k] = (tree[2*k+1] + tree[2*k+2]) % mod;
+                vals[k] = (vals[2*k+1] + vals[2*k+2]) % mod;
+            }
+        }
+    }
+
+    long long query(int qlo, int qhi, int k = 0, int lo = 0, int hi = 0) {
+        if (hi == 0) hi = n;
+        if (lazy[k]) {
+            vals[k] = (vals[k] + 2*tree[k]*lazy[k] + (hi-lo)*lazy[k]*lazy[k]) % mod;
+            tree[k] = (tree[k] + (hi-lo)*lazy[k]) % mod;
+            if (lo+1 < hi) {
+                lazy[2*k+1] += lazy[k];
+                lazy[2*k+2] += lazy[k];
+            }
+            lazy[k] = 0;
+        }
+        if (qhi <= lo || hi <= qlo) return 0;
+        if (qlo <= lo && hi <= qhi) return vals[k];
+        int mid = lo + (hi-lo)/2;
+        return (query(qlo, qhi, 2*k+1, lo, mid) + query(qlo, qhi, 2*k+2, mid, hi)) % mod;
+    }
+};*/
+
+    int sumCounts(vector<int>& nums) {
+        const int mod = 1'000'000'007;
+        int n = nums.size();
+        LazySegTreeSum *tree = new LazySegTreeSum(n, mod);
+        unordered_map<int, int> last;
+        long long ans = 0;
+        for (int i = 0; i < n; ++i) {
+            int lo = 0;
+            if (last.contains(nums[i])) lo = last[nums[i]] + 1;
+            tree->increment(lo, i+1);
+            ans = (ans + tree->query(0, i+1)) % mod;
+            last[nums[i]] = i;
+        }
+        return ans;
+    }
 
 
     /*2917. Find the K-or of an Array (Easy)
