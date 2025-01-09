@@ -86102,6 +86102,224 @@ public:
         }
         return ans;
     }
+
+
+    /*3411. Maximum Subarray With Equal Products (Easy)
+    You are given an array of positive integers nums. An array arr is called
+    product equivalent if prod(arr) == lcm(arr) * gcd(arr), where:
+    * prod(arr) is the product of all elements of arr.
+    * gcd(arr) is the GCD of all elements of arr.
+    * lcm(arr) is the LCM of all elements of arr.
+    Return the length of the longest product equivalent subarray of nums.
+
+    Example 1:
+    Input: nums = [1,2,1,2,1,1,1]
+    Output: 5
+    Explanation: The longest product equivalent subarray is [1, 2, 1, 1, 1],
+                 where prod([1, 2, 1, 1, 1]) = 2, gcd([1, 2, 1, 1, 1]) = 1, and
+                 lcm([1, 2, 1, 1, 1]) = 2.
+
+    Example 2:
+    Input: nums = [2,3,4,5,6]
+    Output: 3
+    Explanation: The longest product equivalent subarray is [3, 4, 5].
+
+    Example 3:
+    Input: nums = [1,2,3,1,4,5,1]
+    Output: 5
+
+    Constraints:
+    * 2 <= nums.length <= 100
+    * 1 <= nums[i] <= 10*/
+
+    int maxLength(vector<int>& nums) {
+        int ans = 0;
+        for (int i = 0, n = nums.size(); i < n; ++i) {
+            int p = 1, g = 0, l = 1;
+            for (int j = i; j < n; ++j) {
+                p *= nums[j];
+                if (p > 50000) break;
+                g = gcd(g, nums[j]);
+                l = lcm(l, nums[j]);
+                if (p == g*l) ans = max(ans, j-i+1);
+            }
+        }
+        return ans;
+    }
+
+
+    /*3412. Find Mirror Score of a String (Medium)
+    You are given a string s. We define the mirror of a letter in the English
+    alphabet as its corresponding letter when the alphabet is reversed. For
+    example, the mirror of 'a' is 'z', and the mirror of 'y' is 'b'. Initially,
+    all characters in the string s are unmarked. You start with a score of 0,
+    and you perform the following process on the string s:
+    * Iterate through the string from left to right.
+    * At each index i, find the closest unmarked index j such that j < i and
+      s[j] is the mirror of s[i]. Then, mark both indices i and j, and add the
+      value i - j to the total score.
+    * If no such index j exists for the index i, move on to the next index
+      without making any changes.
+    Return the total score at the end of the process.
+
+    Example 1:
+    Input: s = "aczzx"
+    Output: 5
+    Explanation: * i = 0. There is no index j that satisfies the conditions, so
+                   we skip.
+                 * i = 1. There is no index j that satisfies the conditions, so
+                   we skip.
+                 * i = 2. The closest index j that satisfies the conditions is
+                   j = 0, so we mark both indices 0 and 2, and then add
+                   2 - 0 = 2 to the score.
+                 * i = 3. There is no index j that satisfies the conditions, so
+                   we skip.
+                 * i = 4. The closest index j that satisfies the conditions is
+                   j = 1, so we mark both indices 1 and 4, and then add
+                   4 - 1 = 3 to the score.
+
+    Example 2:
+    Input: s = "abcdef"
+    Output: 0
+    Explanation: For each index i, there is no index j that satisfies the
+                 conditions.
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s consists only of lowercase English letters.*/
+
+    long long calculateScore(string s) {
+        long long ans = 0;
+        vector<stack<int>> stk(26);
+        for (int i = 0; i < s.size(); ++i) {
+            int v = s[i] - 'a';
+            if (stk[25-v].size()) {
+                ans += i - stk[25-v].top();
+                stk[25-v].pop();
+            } else stk[v].push(i);
+        }
+        return ans;
+    }
+
+
+    /*3413. Maximum Coins From K Consecutive Bags (Medium)
+    There are an infinite amount of bags on a number line, one bag for each
+    coordinate. Some of these bags contain coins. You are given a 2D array
+    coins, where coins[i] = [li, ri, ci] denotes that every bag from li to ri
+    contains ci coins. The segments that coins contain are non-overlapping. You
+    are also given an integer k. Return the maximum amount of coins you can
+    obtain by collecting k consecutive bags.
+
+    Example 1:
+    Input: coins = [[8,10,1],[1,3,2],[5,6,4]], k = 4
+    Output: 10
+    Explanation: Selecting bags at positions [3, 4, 5, 6] gives the maximum
+                 number of coins: 2 + 0 + 4 + 4 = 10.
+
+    Example 2:
+    Input: coins = [[1,10,3]], k = 2
+    Output: 6
+    Explanation: Selecting bags at positions [1, 2] gives the maximum number of
+                 coins: 3 + 3 = 6.
+
+    Constraints:
+    * 1 <= coins.length <= 10^5
+    * 1 <= k <= 10^9
+    * coins[i] == [li, ri, ci]
+    * 1 <= li <= ri <= 10^9
+    * 1 <= ci <= 1000
+    * The given segments are non-overlapping.*/
+
+    long long maximumCoins(vector<vector<int>>& coins, int k) {
+        int n = coins.size();
+        sort(coins.begin(), coins.end());
+        long long ans = 0, prefix = 0;
+        for (int i = 0, ii = 0; i < n; ++i) {
+            long long l = coins[i][0], r = coins[i][1], c = coins[i][2];
+            prefix += (r-l+1)*c;
+            while (coins[ii][1] <= r-k) {
+                long long ll = coins[ii][0], rr = coins[ii][1], cc = coins[ii][2];
+                prefix -= (rr-ll+1)*cc;
+                ++ii;
+            }
+            long long cand = prefix - max(0ll, r-k-coins[ii][0]+1)*coins[ii][2];
+            ans = max(ans, cand);
+        }
+        prefix = 0;
+        for (int i = 0, ii = 0; i < n; ++i) {
+            long long l = coins[i][0], r = coins[i][1], c = coins[i][2];
+            while (ii < n && coins[ii][1] < l+k) {
+                long long ll = coins[ii][0], rr = coins[ii][1], cc = coins[ii][2];
+                prefix += (rr-ll+1)*cc;
+                ++ii;
+            }
+            long long cand = prefix;
+            if (ii < n) cand += max(0ll, l+k-coins[ii][0])*coins[ii][2];
+            ans = max(ans, cand);
+            prefix -= (r-l+1)*c;
+        }
+        return ans;
+    }
+
+
+    /*3414. Maximum Score of Non-overlapping Intervals (Hard)
+    You are given a 2D integer array intervals, where
+    intervals[i] = [li, ri, weighti]. Interval i starts at position li and ends
+    at ri, and has a weight of weighti. You can choose up to 4 non-overlapping
+    intervals. The score of the chosen intervals is defined as the total sum of
+    their weights. Return the lexicographically smallest array of at most 4
+    indices from intervals with maximum score, representing your choice of non-
+    overlapping intervals. Two intervals are said to be non-overlapping if they
+    do not share any points. In particular, intervals sharing a left or right
+    boundary are considered overlapping.
+
+    Example 1:
+    Input: intervals = [[1,3,2],[4,5,2],[1,5,5],[6,9,3],[6,7,1],[8,9,1]]
+    Output: [2,3]
+    Explanation: You can choose the intervals with indices 2, and 3 with
+                 respective weights of 5, and 3.
+
+    Example 2:
+    Input: intervals = [[5,8,1],[6,7,7],[4,7,3],[9,10,6],[7,8,2],[11,14,3],[3,5,5]]
+    Output: [1,3,5,6]
+    Explanation: You can choose the intervals with indices 1, 3, 5, and 6 with
+                 respective weights of 7, 6, 3, and 5.
+
+    Constraints:
+    * 1 <= intevals.length <= 5 * 10^4
+    * intervals[i].length == 3
+    * intervals[i] = [li, ri, weighti]
+    * 1 <= li <= ri <= 10^9
+    * 1 <= weighti <= 10^9*/
+
+    vector<int> maximumWeight(vector<vector<int>>& intervals) {
+        int n = intervals.size(), i = 0;
+        for (auto& interval : intervals)
+            interval.push_back(i++);
+        sort(intervals.begin(), intervals.end());
+        pair<long long, vector<int>> dp[n+1][5];
+        for (int i = 0; i <= n; ++i)
+            for (int j = 0; j < 5; ++j)
+                dp[i][j].first = 0ll;
+        for (int i = n-1; i >= 0; --i) {
+            int l = intervals[i][0], r = intervals[i][1], w = intervals[i][2], index = intervals[i][3];
+            int ii = lower_bound(intervals.begin(), intervals.end(), vector<int>{r+1, 0, 0, 0}) - intervals.begin();
+            for (int j = 0; j <= 4; ++j) {
+                auto [v, a] = dp[i+1][j];
+                for (int jj = 0; jj < j; ++jj) {
+                    auto [vv, aa] = dp[ii][jj];
+                    aa.push_back(index);
+                    sort(aa.begin(), aa.end());
+                    if (w+vv > v || w+vv == v && aa < a) {
+                        v = w+vv;
+                        a = aa;
+                    }
+                }
+                dp[i][j] = make_pair(v, a);
+            }
+        }
+        return dp[0][4].second;
+    }
 }
 
 
