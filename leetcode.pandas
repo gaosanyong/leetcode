@@ -3498,17 +3498,12 @@ Explanation:
 Result table is ordered by student_id, subject."""
 
 def find_students_who_improved(scores: pd.DataFrame) -> pd.DataFrame:
-    first = scores.loc[
-        scores.groupby(by = ["student_id", "subject"])["exam_date"].idxmin()
-        ].rename(columns = {"score" : "first_score", "exam_date" : "first_date"})
-    latest = scores.loc[
-        scores.groupby(by = ["student_id", "subject"])["exam_date"].idxmax()
-        ].rename(columns = {"score" : "latest_score", "exam_date" : "latest_date"})
-    return first.merge(
-        latest,
-        on = ["student_id", "subject"]
-    ).query(
-        "first_date < latest_date & first_score < latest_score"
-    ).sort_values(
-        by = ["student_id", "subject"]
-    )[["student_id", "subject", "first_score", "latest_score"]]
+    return scores.sort_values(
+        by = ["student_id", "subject", "exam_date"]
+    ).groupby(
+        by = ["student_id", "subject"],
+        as_index = False
+    ).agg(
+        first_score = ("score", "first"),
+        latest_score = ("score", "last")
+    ).query("first_score < latest_score")

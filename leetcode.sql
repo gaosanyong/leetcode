@@ -11006,27 +11006,24 @@ Explanation:
 * Student 104 in Physics: Improved from 75 to 85
 Result table is ordered by student_id, subject.*/
 
-WITH FIRST AS (
-        SELECT
-            student_id,
-            subject,
-            score AS first_score,
-            exam_date AS first_date
-        FROM Scores JOIN (SELECT student_id, subject, MIN(exam_date) AS exam_date FROM Scores GROUP BY 1, 2) a USING(student_id, subject, exam_date)
-    ),
-    LATEST AS (
-        SELECT
-            student_id,
-            subject,
-            score AS latest_score,
-            exam_date AS latest_date
-        FROM Scores JOIN (SELECT student_id, subject, MAX(exam_date) AS exam_date FROM Scores GROUP BY 1, 2) a USING(student_id, subject, exam_date)
-    )
+WITH CTE AS (
+    SELECT DISTINCT
+        student_id,
+        subject,
+        FIRST_VALUE(score) OVER (PARTITION BY student_id, subject ORDER BY exam_date) AS first_score,
+        LAST_VALUE(score) OVER (
+            PARTITION BY student_id, subject
+            ORDER BY exam_date
+            RANGE BETWEEN
+                UNBOUNDED PRECEDING AND
+                UNBOUNDED FOLLOWING
+            ) AS latest_score
+    FROM Scores
+)
 SELECT
     student_id,
     subject,
     first_score,
     latest_score
-FROM FIRST JOIN LATEST USING (student_id, subject)
-WHERE first_date < latest_date AND first_score < latest_score
-ORDER BY 1,2
+FROM CTE
+WHERE first_score < latest_score

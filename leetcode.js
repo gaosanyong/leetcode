@@ -12183,10 +12183,186 @@ Constraints:
 * words[i] consists only of lowercase English letters.*/
 
 var findWordsContaining = function(words, x) {
-    const ans = [];
-    for (let i = 0; i < words.length; ++i)
-        if (words[i].includes(x)) ans.push(i);
-    return ans;
+    return [...words.keys()].filter(i => words[i].indexOf(x) >= 0);
+};
+
+
+/*2943. Maximize Area of Square Hole in Grid (Medium)
+You are given the two integers, n and m and two integer arrays, hBars and
+vBars. The grid has n + 2 horizontal and m + 2 vertical bars, creating 1 x 1
+unit cells. The bars are indexed starting from 1. You can remove some of the
+bars in hBars from horizontal bars and some of the bars in vBars from
+vertical bars. Note that other bars are fixed and cannot be removed. Return
+an integer denoting the maximum area of a square-shaped hole in the grid,
+after removing some bars (possibly none).
+
+Example 1:
+Input: n = 2, m = 1, hBars = [2,3], vBars = [2]
+Output: 4
+Explanation: The left image shows the initial grid formed by the bars. The
+             horizontal bars are [1,2,3,4], and the vertical bars are
+             [1,2,3]. One way to get the maximum square-shaped hole is by
+             removing horizontal bar 2 and vertical bar 2.
+
+Example 2:
+Input: n = 1, m = 1, hBars = [2], vBars = [2]
+Output: 4
+Explanation: To get the maximum square-shaped hole, we remove horizontal bar
+             2 and vertical bar 2.
+
+Example 3:
+Input: n = 2, m = 3, hBars = [2,3], vBars = [2,4]
+Output: 4
+Explanation: One way to get the maximum square-shaped hole is by removing
+             horizontal bar 3, and vertical bar 4.
+
+Constraints:
+* 1 <= n <= 109
+* 1 <= m <= 109
+* 1 <= hBars.length <= 100
+* 2 <= hBars[i] <= n + 1
+* 1 <= vBars.length <= 100
+* 2 <= vBars[i] <= m + 1
+* All values in hBars are distinct.
+* All values in vBars are distinct.*/
+
+var maximizeSquareHoleArea = function(n, m, hBars, vBars) {
+    hBars.sort((x, y) => x-y);
+    vBars.sort((x, y) => x-y);
+    let ans = Infinity;
+    for (const bars of [hBars, vBars]) {
+        let cand = 0;
+        for (let i = 0, cnt = 0; i < bars.length; ++i) {
+            if (i && bars[i-1]+1 < bars[i]) cnt = 0;
+            cand = Math.max(cand, ++cnt);
+        }
+        ans = Math.min(ans, cand+1);
+    }
+    return Math.pow(ans, 2);
+};
+
+
+
+/*2944. Minimum Number of Coins for Fruits (Medium)
+You are given an 1-indexed integer array prices where prices[i] denotes the
+number of coins needed to purchase the ith fruit. The fruit market has the
+following reward for each fruit:
+* If you purchase the ith fruit at prices[i] coins, you can get any number
+  of the next i fruits for free.
+Note that even if you can take fruit j for free, you can still purchase it
+for prices[j] coins to receive its reward. Return the minimum number of
+coins needed to acquire all the fruits.
+
+Example 1:
+Input: prices = [3,1,2]
+Output: 4
+Explanation: * Purchase the 1st fruit with prices[0] = 3 coins, you are
+               allowed to take the 2nd fruit for free.
+             * Purchase the 2nd fruit with prices[1] = 1 coin, you are
+               allowed to take the 3rd fruit for free.
+             * Take the 3rd fruit for free.
+             Note that even though you could take the 2nd fruit for free as
+             a reward of buying 1st fruit, you purchase it to receive its
+             reward, which is more optimal.
+
+Example 2:
+Input: prices = [1,10,1,1]
+Output: 2
+Explanation: * Purchase the 1st fruit with prices[0] = 1 coin, you are
+               allowed to take the 2nd fruit for free.
+             * Take the 2nd fruit for free.
+             * Purchase the 3rd fruit for prices[2] = 1 coin, you are
+               allowed to take the 4th fruit for free.
+             Take the 4th fruit for free.
+
+Example 3:
+Input: prices = [26,18,6,12,49,7,45,45]
+Output: 39
+Explanation: * Purchase the 1st fruit with prices[0] = 26 coin, you are
+               allowed to take the 2nd fruit for free.
+             * Take the 2nd fruit for free.
+             * Purchase the 3rd fruit for prices[2] = 6 coin, you are
+               allowed to take the 4th, 5th and 6th (the next three) fruits for free.
+             * Take the 4th fruit for free.
+             * Take the 5th fruit for free.
+             * Purchase the 6th fruit with prices[5] = 7 coin, you are
+               allowed to take the 8th and 9th fruit for free.
+             * Take the 7th fruit for free.
+             * Take the 8th fruit for free.
+             Note that even though you could take the 6th fruit for free as
+             a reward of buying 3rd fruit, you purchase it to receive its
+             reward, which is more optimal.
+
+Constraints:
+* 1 <= prices.length <= 1000
+* 1 <= prices[i] <= 10^5*/
+
+var minimumCoins = function(prices) {
+    const n = prices.length;
+    const q = [[n, 0]];
+    for (let i = n-1; i >= 0; --i) {
+        while (q.length && q[q.length-1][0] > 2*i+2) q.pop();
+        const cand = prices[i] + q[q.length-1][1];
+        while (q.length && cand <= q[0][1]) q.shift();
+        q.unshift([i, cand]);
+    }
+    return q[0][1];
+};
+
+
+/*2945. Find Maximum Non-decreasing Array Length (Hard)
+You are given a 0-indexed integer array nums. You can perform any number of
+operations, where each operation involves selecting a subarray of the array
+and replacing it with the sum of its elements. For example, if the given
+array is [1,3,5,6] and you select subarray [3,5] the array will convert to
+[1,8,6]. Return the maximum length of a non-decreasing array that can be
+made after applying operations. A subarray is a contiguous non-empty
+sequence of elements within an array.
+
+Example 1:
+Input: nums = [5,2,2]
+Output: 1
+Explanation: This array with length 3 is not non-decreasing. We have two
+             ways to make the array length two. First, choosing subarray
+             [2,2] converts the array to [5,4]. Second, choosing subarray
+             [5,2] converts the array to [7,2]. In these two ways the array
+             is not non-decreasing. And if we choose subarray [5,2,2] and
+             replace it with [9] it becomes non-decreasing. So the answer is
+             1.
+
+Example 2:
+Input: nums = [1,2,3,4]
+Output: 4
+Explanation: The array is non-decreasing. So the answer is 4.
+
+Example 3:
+Input: nums = [4,3,2,6]
+Output: 3
+Explanation: Replacing [3,2] with [5] converts the given array to [4,5,6]
+             that is non-decreasing. Because the given array is not non-
+             decreasing, the maximum possible answer is 3.
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 1 <= nums[i] <= 10^5*/
+
+var findMaximumLength = function(nums) {
+    const n = nums.length;
+    const prefix = Array(n+1).fill(0);
+    for (let i = 0; i < n; ++i)
+        prefix[i+1] = prefix[i] + nums[i];
+    const q = [[-1, 0, 0]];
+    for (const [i, x] of nums.entries()) {
+        let [_, val, cnt] = q[q.length-1];
+        val += x;
+        while (q.length && q[0][1] <= prefix[i+1] - prefix[q[0][0]+1]) {
+            val = prefix[i+1] - prefix[q[0][0]+1];
+            cnt = q.shift()[2] + 1;
+        }
+        while (q.length && q[q.length-1][1] - val >= prefix[i+1] - prefix[q[q.length-1][0]+1]) q.pop();
+        q.push([i, val, cnt]);
+    }
+    return q[q.length-1][2];
 };
 
 
