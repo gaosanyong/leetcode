@@ -10727,6 +10727,138 @@ var getLongestSubsequence = function(words, groups) {
 };
 
 
+/*2901. Longest Unequal Adjacent Groups Subsequence II (Medium)
+You are given a string array words, and an array groups, both arrays having
+length n. The hamming distance between two strings of equal length is the
+number of positions at which the corresponding characters are different. You
+need to select the longest subsequence from an array of indices
+[0, 1, ..., n - 1], such that for the subsequence denoted as
+[i0, i1, ..., ik-1] having length k, the following holds:
+* For adjacent indices in the subsequence, their corresponding groups are
+  unequal, i.e., groups[ij] != groups[ij+1], for each j where 0 < j + 1 < k.
+* words[ij] and words[ij+1] are equal in length, and the hamming distance
+  between them is 1, where 0 < j + 1 < k, for all indices in the subsequence.
+Return a string array containing the words corresponding to the indices (in
+order) in the selected subsequence. If there are multiple answers, return
+any of them. Note: strings in words may be unequal in length.
+
+Example 1:
+Input: words = ["bab","dab","cab"], groups = [1,2,2]
+Output: ["bab","cab"]
+Explanation: A subsequence that can be selected is [0,2].
+             * groups[0] != groups[2]
+             * words[0].length == words[2].length, and the hamming distance
+               between them is 1.
+             So, a valid answer is [words[0],words[2]] = ["bab","cab"].
+             Another subsequence that can be selected is [0,1].
+             * groups[0] != groups[1]
+             * words[0].length == words[1].length, and the hamming distance
+               between them is 1.
+             So, another valid answer is [words[0],words[1]] = ["bab","dab"].
+             It can be shown that the length of the longest subsequence of
+             indices that satisfies the conditions is 2.
+
+Example 2:
+Input: words = ["a","b","c","d"], groups = [1,2,3,4]
+Output: ["a","b","c","d"]
+Explanation: We can select the subsequence [0,1,2,3]. It satisfies both
+             conditions. Hence, the answer is
+             [words[0],words[1],words[2],words[3]] = ["a","b","c","d"]. It
+             has the longest length among all subsequences of indices that
+             satisfy the conditions. Hence, it is the only answer.
+
+Constraints:
+* 1 <= n == words.length == groups.length <= 1000
+* 1 <= words[i].length <= 10
+* 1 <= groups[i] <= n
+* words consists of distinct strings.
+* words[i] consists of lowercase English letters.*/
+
+var getWordsInLongestSubsequence = function(words, groups) {
+    const n = words.length;
+    const dp = Array(n).fill(1), prev = Array(n).fill(-1);
+    for (let i = 0; i < n; ++i) {
+        const w = words[i], g = groups[i];
+        for (let j = 0; j < i; ++j) {
+            const ww = words[j], gg = groups[j];
+            if (g != gg && w.length == ww.length) {
+                let dist = 0;
+                for (let k = 0; k < w.length; ++k)
+                    if (w[k] != ww[k]) ++dist;
+                if (dist == 1 && 1 + dp[j] > dp[i]) {
+                    dp[i] = 1 + dp[j];
+                    prev[i] = j;
+                }
+            }
+        }
+    }
+    const ans = [];
+    for (let i = dp.indexOf(Math.max(...dp)); i >= 0; i = prev[i])
+        ans.push(words[i]);
+    return ans.reverse();
+};
+
+
+/*2902. Count of Sub-Multisets With Bounded Sum (Hard)
+You are given a 0-indexed array nums of non-negative integers, and two
+integers l and r. Return the count of sub-multisets within nums where the
+sum of elements in each subset falls within the inclusive range of [l, r].
+Since the answer may be large, return it modulo 10^9 + 7. A sub-multiset is
+an unordered collection of elements of the array in which a given value x
+can occur 0, 1, ..., occ[x] times, where occ[x] is the number of occurrences
+of x in the array.
+
+Note that:
+* Two sub-multisets are the same if sorting both sub-multisets results in
+  identical multisets.
+* The sum of an empty multiset is 0.
+
+Example 1:
+Input: nums = [1,2,2,3], l = 6, r = 6
+Output: 1
+Explanation: The only subset of nums that has a sum of 6 is {1, 2, 3}.
+
+Example 2:
+Input: nums = [2,1,4,2,7], l = 1, r = 5
+Output: 7
+Explanation: The subsets of nums that have a sum within the range [1, 5] are
+             {1}, {2}, {4}, {2, 2}, {1, 2}, {1, 4}, and {1, 2, 2}.
+
+Example 3:
+Input: nums = [1,2,1,3,5,2], l = 3, r = 5
+Output: 9
+Explanation: The subsets of nums that have a sum within the range [3, 5] are
+             {3}, {5}, {1, 2}, {1, 3}, {2, 2}, {2, 3}, {1, 1, 2}, {1, 1, 3},
+             and {1, 2, 2}.
+
+Constraints:
+* 1 <= nums.length <= 2 * 10^4
+* 0 <= nums[i] <= 2 * 10^4
+* Sum of nums does not exceed 2 * 10^4.
+* 0 <= l <= r <= 2 * 10^4*/
+
+var countSubMultisets = function(nums, l, r) {
+    const mod = 1_000_000_007;
+    const dp = Array(r+1).fill(0);
+    dp[0] = 1;
+    const freq = new Map();
+    for (const x of nums)
+        freq.set(x, (freq.get(x) ?? 0) + 1);
+    for (const [x, f] of freq) {
+        const prefix = dp.slice();
+        for (let i = 0; i <= r; ++i)
+            if (x) {
+                if (i >= x) {
+                    prefix[i] = (prefix[i] + prefix[i-x]) % mod;
+                    dp[i] = (dp[i] + prefix[i-x]) % mod;
+                }
+                if (i >= x*(f+1)) dp[i] = (mod + (dp[i] - prefix[i-x*(f+1)]) % mod) % mod;
+            } else dp[i] = dp[i] * (f+1) % mod;
+    }
+    return dp.slice(l, r+1).reduce((s, x) => (s + x) % mod, 0);
+};
+
+
 /*2913. Subarrays Distinct Element Sum of Squares I (Easy)
 You are given a 0-indexed integer array nums. The distinct count of a
 subarray of nums is defined as:
