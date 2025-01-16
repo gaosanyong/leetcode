@@ -9552,6 +9552,217 @@ function partial(fn: Fn, args: JSONValue[]): Fn {
 };
 
 
+/*2788. Split Strings by Separator (Easy)
+Given an array of strings words and a character separator, split each string
+in words by separator. Return an array of strings containing the new strings
+formed after the splits, excluding empty strings.
+
+Notes
+* separator is used to determine where the split should occur, but it is not
+  included as part of the resulting strings.
+* A split may result in more than two strings.
+* The resulting strings must maintain the same order as they were initially
+  given.
+
+Example 1:
+Input: words = ["one.two.three","four.five","six"], separator = "."
+Output: ["one","two","three","four","five","six"]
+Explanation: In this example we split as follows:
+             "one.two.three" splits into "one", "two", "three"
+             "four.five" splits into "four", "five"
+             "six" splits into "six"
+             Hence, the resulting array is
+             ["one","two","three","four","five","six"].
+
+Example 2:
+Input: words = ["$easy$","$problem$"], separator = "$"
+Output: ["easy","problem"]
+Explanation: In this example we split as follows:
+             "$easy$" splits into "easy" (excluding empty strings)
+             "$problem$" splits into "problem" (excluding empty strings)
+             Hence, the resulting array is ["easy","problem"].
+
+Example 3:
+Input: words = ["|||"], separator = "|"
+Output: []
+Explanation: In this example the resulting split of "|||" will contain only
+             empty strings, so we return an empty array [].
+
+Constraints:
+* 1 <= words.length <= 100
+* 1 <= words[i].length <= 20
+* characters in words[i] are either lowercase English letters or characters
+  from the string ".,|$#@" (excluding the quotes)
+* separator is a character from the string ".,|$#@" (excluding the quotes)*/
+
+function splitWordsBySeparator(words: string[], separator: string): string[] {
+    const ans = [];
+    for (const word of words)
+        ans.push(...word.split(separator));
+    return ans.filter(x => x.length);
+};
+
+
+/*2789. Largest Element in an Array after Merge Operations (Medium)
+You are given a 0-indexed array nums consisting of positive integers. You
+can do the following operation on the array any number of times:
+* Choose an integer i such that 0 <= i < nums.length - 1 and
+  nums[i] <= nums[i + 1]. Replace the element nums[i + 1] with
+  nums[i] + nums[i + 1] and delete the element nums[i] from the array.
+Return the value of the largest element that you can possibly obtain in the
+final array.
+
+Example 1:
+Input: nums = [2,3,7,9,3]
+Output: 21
+Explanation: We can apply the following operations on the array:
+             - Choose i = 0. The resulting array will be nums = [5,7,9,3].
+             - Choose i = 1. The resulting array will be nums = [5,16,3].
+             - Choose i = 0. The resulting array will be nums = [21,3].
+             The largest element in the final array is 21. It can be shown
+             that we cannot obtain a larger element.
+
+Example 2:
+Input: nums = [5,3,3]
+Output: 11
+Explanation: We can do the following operations on the array:
+             - Choose i = 1. The resulting array will be nums = [5,6].
+             - Choose i = 0. The resulting array will be nums = [11].
+             There is only one element in the final array, which is 11.
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* 1 <= nums[i] <= 10^6*/
+
+function maxArrayValue(nums: number[]): number {
+    let ans = 0;
+    for (const x of nums.reverse())
+        if (x <= ans) ans += x;
+        else ans = x;
+    return ans;
+};
+
+
+/*2790. Maximum Number of Groups With Increasing Length (Hard)
+You are given a 0-indexed array usageLimits of length n. Your task is to
+create groups using numbers from 0 to n - 1, ensuring that each number, i,
+is used no more than usageLimits[i] times in total across all groups. You
+must also satisfy the following conditions:
+* Each group must consist of distinct numbers, meaning that no duplicate
+  numbers are allowed within a single group.
+* Each group (except the first one) must have a length strictly greater than
+  the previous group.
+Return an integer denoting the maximum number of groups you can create while
+satisfying these conditions.
+
+Example 1:
+Input: usageLimits = [1,2,5]
+Output: 3
+Explanation: In this example, we can use 0 at most once, 1 at most twice,
+             and 2 at most five times. One way of creating the maximum
+             number of groups while satisfying the conditions is:
+             * Group 1 contains the number [2].
+             * Group 2 contains the numbers [1,2].
+             * Group 3 contains the numbers [0,1,2].
+             It can be shown that the maximum number of groups is 3. So, the
+             output is 3.
+
+Example 2:
+Input: usageLimits = [2,1,2]
+Output: 2
+Explanation: In this example, we can use 0 at most twice, 1 at most once,
+             and 2 at most twice. One way of creating the maximum number of
+             groups while satisfying the conditions is:
+             * Group 1 contains the number [0].
+             * Group 2 contains the numbers [1,2].
+             It can be shown that the maximum number of groups is 2. So, the
+             output is 2.
+
+Example 3:
+Input: usageLimits = [1,1]
+Output: 1
+Explanation: In this example, we can use both 0 and 1 at most once. One way
+             of creating the maximum number of groups while satisfying the
+             conditions is:
+             * Group 1 contains the number [0].
+             It can be shown that the maximum number of groups is 1. So, the
+             output is 1.
+
+Constraints:
+* 1 <= usageLimits.length <= 10^5
+* 1 <= usageLimits[i] <= 10^9*/
+
+function maxIncreasingGroups(usageLimits: number[]): number {
+    let ans = 0, prefix = 0;
+    usageLimits.sort((x, y) => x-y);
+    for (const x of usageLimits) {
+        prefix += x;
+        if (prefix >= (ans+1)*(ans+2)/2) ++ans;
+    }
+    return ans;
+};
+
+
+/*2791. Count Paths That Can Form a Palindrome in a Tree (Hard)
+You are given a tree (i.e. a connected, undirected graph that has no cycles)
+rooted at node 0 consisting of n nodes numbered from 0 to n - 1. The tree is
+represented by a 0-indexed array parent of size n, where parent[i] is the
+parent of node i. Since node 0 is the root, parent[0] == -1. You are also
+given a string s of length n, where s[i] is the character assigned to the
+edge between i and parent[i]. s[0] can be ignored. Return the number of
+pairs of nodes (u, v) such that u < v and the characters assigned to edges
+on the path from u to v can be rearranged to form a palindrome. A string is
+a palindrome when it reads the same backwards as forwards.
+
+Example 1:
+Input: parent = [-1,0,0,1,1,2], s = "acaabc"
+Output: 8
+Explanation: The valid pairs are:
+             - All the pairs (0,1), (0,2), (1,3), (1,4) and (2,5) result in
+               one character which is always a palindrome.
+             - The pair (2,3) result in the string "aca" which is a
+               palindrome.
+             - The pair (1,5) result in the string "cac" which is a
+               palindrome.
+             - The pair (3,5) result in the string "acac" which can be
+               rearranged into the palindrome "acca".
+
+Example 2:
+Input: parent = [-1,0,0,0,0], s = "aaaaa"
+Output: 10
+Explanation: Any pair of nodes (u,v) where u < v is valid.
+
+Constraints:
+* n == parent.length == s.length
+* 1 <= n <= 10^5
+* 0 <= parent[i] <= n - 1 for all i >= 1
+* parent[0] == -1
+* parent represents a valid tree.
+* s consists of only lowercase English letters.*/
+
+function countPalindromePaths(parent: number[], s: string): number {
+    const n = parent.length;
+    const tree = Array(n).fill(0).map(() => []);
+    for (const [i, x] of parent.entries())
+        if (x >= 0) tree[x].push(i);
+    let ans = 0;
+    const freq = new Map([[0, 1]]);
+    const stack = [[0, 0]];
+    while (stack.length) {
+        let [u, m] = stack.pop();
+        if (u) {
+            m ^= 1 << s.charCodeAt(u) - 97;
+            ans += freq.get(m) ?? 0;
+            for (let i = 0; i < 26; ++i)
+                ans += freq.get((1<<i) ^ m) ?? 0;
+            freq.set(m, (freq.get(m) ?? 0) + 1);
+        }
+        for (const v of tree[u]) stack.push([v, m]);
+    }
+    return ans;
+};
+
+
 /*2801. Count Stepping Numbers in Range (Hard)
 Given two positive integers low and high represented as strings, find the
 count of stepping numbers in the inclusive range [low, high]. A stepping
