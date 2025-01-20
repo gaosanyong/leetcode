@@ -25880,7 +25880,7 @@ Constraints:
 * 1 <= k <= 5*/
 
 var countKReducibleNumbers = function(s, k) {
-    const mod = 1_000_000_007n, n = s.length;
+    const m = 1_000_000_007, mm = 1_000_000_007n, n = s.length;
     const dp = Array(n+1).fill(0);
     for (let x = 2; x <= n; ++x) {
         const bits = x.toString(2).split('').filter(x => x === '1').length;
@@ -25888,10 +25888,11 @@ var countKReducibleNumbers = function(s, k) {
     }
 
     const fact = Array(n+1).fill(1n), ifact = Array(n+1).fill(1n), inv = Array(n+1).fill(1n);
-    for (let x = 1n; x <= BigInt(n); ++x) {
-        if (x >= 2n) inv[x] = mod - mod/x * inv[mod % x] % mod;
-        fact[x] = fact[x-1n] * x % mod;
-        ifact[x] = ifact[x-1n] * inv[x] % mod;
+    for (let x = 1; x <= n; ++x) {
+        const xx = BigInt(x);
+        if (x >= 2) inv[x] = mm - mm/xx * inv[m % x] % mm;
+        fact[x] = fact[x-1] * xx % mm;
+        ifact[x] = ifact[x-1] * inv[x] % mm;
     }
 
     let ans = 0n, prefix = 0;
@@ -25899,7 +25900,7 @@ var countKReducibleNumbers = function(s, k) {
         if (ch === '1') {
             for (let suffix = 0; suffix < n-i; ++suffix)
                 if (prefix + suffix && dp[prefix + suffix] + 1 <= k)
-                    ans = (ans + fact[n-i-1] * ifact[suffix] % mod * ifact[n-i-1-suffix] % mod) % mod;
+                    ans = (ans + fact[n-i-1] * ifact[suffix] % mm * ifact[n-i-1-suffix] % mm) % mm;
             ++prefix;
         }
     }
