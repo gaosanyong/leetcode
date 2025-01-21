@@ -44421,6 +44421,209 @@ class SegTree {
         }
         return ans;
     }
+
+
+    /*3423. Maximum Difference Between Adjacent Elements in a Circular Array (Easy)
+    Given a circular array nums, find the maximum absolute difference between
+    adjacent elements. Note: In a circular array, the first and last elements
+    are adjacent.
+
+    Example 1:
+    Input: nums = [1,2,4]
+    Output: 3
+    Explanation: Because nums is circular, nums[0] and nums[2] are adjacent.
+                 They have the maximum absolute difference of |4 - 1| = 3.
+
+    Example 2:
+    Input: nums = [-5,-10,-5]
+    Output: 5
+    Explanation: The adjacent elements nums[0] and nums[1] have the maximum
+                 absolute difference of |-5 - (-10)| = 5.
+
+    Constraints:
+    * 2 <= nums.length <= 100
+    * -100 <= nums[i] <= 100*/
+
+    public int maxAdjacentDistance(int[] nums) {
+        int n = nums.length;
+        return IntStream.range(0, n).map(i -> Math.abs(nums[i] - nums[(i+1)%n])).max().getAsInt();
+    }
+
+
+    /*3424. Minimum Cost to Make Arrays Identical (Medium)
+    You are given two integer arrays arr and brr of length n, and an integer k.
+    You can perform the following operations on arr any number of times:
+    * Split arr into any number of contiguous subarrays and rearrange these
+      subarrays in any order. This operation has a fixed cost of k.
+    * Choose any element in arr and add or subtract a positive integer x to it.
+      The cost of this operation is x.
+    Return the minimum total cost to make arr equal to brr.
+
+    Example 1:
+    Input: arr = [-7,9,5], brr = [7,-2,-5], k = 2
+    Explanation: * Split arr into two contiguous subarrays: [-7] and [9, 5] and
+                   rearrange them as [9, 5, -7], with a cost of 2.
+                 * Subtract 2 from element arr[0]. The array becomes [7, 5, -7].
+                   The cost of this operation is 2.
+                 * Subtract 7 from element arr[1]. The array becomes [7, -2, -7].
+                   The cost of this operation is 7.
+                 * Add 2 to element arr[2]. The array becomes [7, -2, -5]. The
+                   cost of this operation is 2.
+                 The total cost to make the arrays equal is 2 + 2 + 7 + 2 = 13.
+
+    Example 2:
+    Input: arr = [2,1], brr = [2,1], k = 0
+    Output: 0
+    Explanation: Since the arrays are already equal, no operations are needed,
+                 and the total cost is 0.
+
+    Constraints:
+    * 1 <= arr.length == brr.length <= 10^5
+    * 0 <= k <= 2 * 10^10
+    * -10^5 <= arr[i] <= 10^5
+    * -10^5 <= brr[i] <= 10^5*/
+
+    public long minCost(int[] arr, int[] brr, long k) {
+        long ans = 0;
+        for (int i = 0; i < arr.length; ++i)
+            ans += Math.abs(arr[i] - brr[i]);
+        long alt = k;
+        Arrays.sort(arr);
+        Arrays.sort(brr);
+        for (int i = 0; i < arr.length; ++i)
+            alt += Math.abs(arr[i] - brr[i]);
+        return Math.min(ans, alt);
+    }
+
+
+    /*3425. Longest Special Path (Hard)
+    You are given an undirected tree rooted at node 0 with n nodes numbered from
+    0 to n - 1, represented by a 2D array edges of length n - 1, where
+    edges[i] = [ui, vi, lengthi] indicates an edge between nodes ui and vi with
+    length lengthi. You are also given an integer array nums, where nums[i]
+    represents the value at node i. A special path is defined as a downward path
+    from an ancestor node to a descendant node such that all the values of the
+    nodes in that path are unique. Note that a path may start and end at the
+    same node. Return an array result of size 2, where result[0] is the length
+    of the longest special path, and result[1] is the minimum number of nodes in
+    all possible longest special paths.
+
+    Example 1:
+    Input: edges = [[0,1,2],[1,2,3],[1,3,5],[1,4,4],[2,5,6]], nums = [2,1,2,1,3,1]
+    Output: [6,2]
+    Explanation: The longest special paths are 2 -> 5 and 0 -> 1 -> 4, both
+                 having a length of 6. The minimum number of nodes across all
+                 longest special paths is 2.
+
+    Example 2:
+    Input: edges = [[1,0,8]], nums = [2,2]
+    Output: [0,1]
+    Explanation: The longest special paths are 0 and 1, both having a length of
+                 0. The minimum number of nodes across all longest special paths
+                 is 1.
+
+    Constraints:
+    * 2 <= n <= 5 * 10^4
+    * edges.length == n - 1
+    * edges[i].length == 3
+    * 0 <= ui, vi < n
+    * 1 <= lengthi <= 10^3
+    * nums.length == n
+    * 0 <= nums[i] <= 5 * 10^4
+    * The input is generated such that edges represents a valid tree.*/
+
+    private int[] dfs(int u, int p, int m, Map<Integer, Stack<Integer>> loc, List<Integer> prefix, int[] nums, List<int[]>[] tree) {
+        if (loc.containsKey(nums[u]) && !loc.get(nums[u]).isEmpty()) m = Math.max(m, loc.get(nums[u]).peek()+1);
+        if (!loc.containsKey(nums[u]))
+            loc.put(nums[u], new Stack<>());
+        loc.get(nums[u]).push(prefix.size()-1);
+        int sz = prefix.get(prefix.size()-1) - prefix.get(m);
+        int cnt = prefix.size() - m;
+        for (var elem : tree[u]) {
+            int v = elem[0], w = elem[1];
+            if (v != p) {
+                prefix.add(prefix.get(prefix.size()-1) + w);
+                var outcome = dfs(v, u, m, loc, prefix, nums, tree);
+                int ss = outcome[0], cc = outcome[1];
+                if (ss > sz || ss == sz && cc < cnt) {
+                    sz = ss;
+                    cnt = cc;
+                }
+                prefix.remove(prefix.size()-1);
+            }
+        }
+        loc.get(nums[u]).pop();
+        return new int[]{sz, cnt};
+    }
+
+    public int[] longestSpecialPath(int[][] edges, int[] nums) {
+        int n = edges.length+1;
+        List<int[]>[] tree = new List[n];
+        for (int u = 0; u < n; ++u)
+            tree[u] = new ArrayList<>();
+        for (var e : edges) {
+            int u = e[0], v = e[1], w = e[2];
+            tree[u].add(new int[]{v, w});
+            tree[v].add(new int[]{u, w});
+        }
+        Map<Integer, Stack<Integer>> loc = new HashMap<>();
+        List<Integer> prefix = new ArrayList<>(); prefix.add(0);
+        return dfs(0, -1, 0, loc, prefix, nums, tree);
+    }
+
+
+    /*3426. Manhattan Distances of All Arrangements of Pieces (Hard)
+    You are given three integers m, n, and k. There is a rectangular grid of
+    size m × n containing k identical pieces. Return the sum of Manhattan
+    distances between every pair of pieces over all valid arrangements of
+    pieces. A valid arrangement is a placement of all k pieces on the grid with
+    at most one piece per cell. Since the answer may be very large, return it
+    modulo 10^9 + 7. The Manhattan Distance between two cells (xi, yi) and
+    (xj, yj) is |xi - xj| + |yi - yj|.
+
+    Example 1:
+    Input: m = 2, n = 2, k = 2
+    Output: 8
+    Explanation: The valid arrangements of pieces on the board are:
+                 - In the first 4 arrangements, the Manhattan distance between
+                   the two pieces is 1.
+                 - In the last 2 arrangements, the Manhattan distance between
+                   the two pieces is 2.
+                 Thus, the total Manhattan distance across all valid
+                 arrangements is 1 + 1 + 1 + 1 + 2 + 2 = 8.
+
+    Example 2:
+    Input: m = 1, n = 4, k = 3
+    Output: 20
+    Explanation: The valid arrangements of pieces on the board are:
+                 - The first and last arrangements have a total Manhattan
+                   distance of 1 + 1 + 2 = 4.
+                 - The middle two arrangements have a total Manhattan distance
+                   of 1 + 2 + 3 = 6.
+                 The total Manhattan distance between all pairs of pieces across
+                 all arrangements is 4 + 6 + 6 + 4 = 20.
+
+    Constraints:
+    * 1 <= m, n <= 10^5
+    * 2 <= m * n <= 10^5
+    * 2 <= k <= m * n*/
+
+    public int distanceSum(int m, int n, int k) {
+        final int mod = 1_000_000_007;
+        long ans = 0;
+        for (long d = 1; d < m; ++d)
+            ans = (ans + d * (m-d) % mod * n % mod * n % mod) % mod;
+        for (long d = 1; d < n; ++d)
+            ans = (ans + d * (n-d) % mod * m % mod * m % mod) % mod;
+        long[] fact = new long[m*n], ifact = new long[m*n], inv = new long[m*n];
+        fact[0] = ifact[0] = inv[0] = inv[1] = 1;
+        for (int x = 1; x < m*n; ++x) {
+            if (x >= 2) inv[x] = mod - mod/x * inv[mod % x] % mod;
+            fact[x] = fact[x-1] * x % mod;
+            ifact[x] = ifact[x-1] * inv[x] % mod;
+        }
+        return (int) (ans * fact[m*n-2] % mod * ifact[k-2] % mod * ifact[m*n-k] % mod);
+    }
 }
 
 
