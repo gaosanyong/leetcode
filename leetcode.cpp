@@ -87356,6 +87356,236 @@ public:
         }
         return ans * fact[m*n-2] % mod * ifact[k-2] % mod * ifact[m*n-k] % mod;
     }
+
+
+    /*3427. Sum of Variable Length Subarrays (Easy)
+    You are given an integer array nums of size n. For each index i where
+    0 <= i < n, define a subarray nums[start ... i] where
+    start = max(0, i - nums[i]). Return the total sum of all elements from the
+    subarray defined for each index in the array.
+
+    Example 1:
+    Input: nums = [2,3,1]
+    Output: 11
+    Explanation: i   Subarray                Sum
+                 0   nums[0] = [2]            2
+                 1   nums[0 ... 1] = [2, 3]   5
+                 2   nums[1 ... 2] = [3, 1]   4
+                 Total Sum                   11
+                 The total sum is 11. Hence, 11 is the output.
+
+    Example 2:
+    Input: nums = [3,1,1,2]
+    Output: 13
+    Explanation: i   Subarray                  Sum
+                 0   nums[0] = [3]               3
+                 1   nums[0 ... 1] = [3, 1]      4
+                 2   nums[1 ... 2] = [1, 1]      2
+                 3   nums[1 ... 3] = [1, 1, 2]   4
+                 Total Sum                      13
+                 The total sum is 13. Hence, 13 is the output.
+
+    Constraints:
+    * 1 <= n == nums.length <= 100
+    * 1 <= nums[i] <= 1000*/
+
+    int subarraySum(vector<int>& nums) {
+        vector<int> prefix(1);
+        for (auto& x : nums)
+            prefix.push_back(prefix.back() + x);
+        int ans = 0;
+        for (int i = 0; i < nums.size(); ++i)
+            ans += prefix[i+1] - prefix[max(0, i-nums[i])];
+        return ans;
+    }
+
+
+    /*3428. Maximum and Minimum Sums of at Most Size K Subsequences (Medium)
+    You are given an integer array nums and a positive integer k. Return the sum
+    of the maximum and minimum elements of all subsequences of nums with at most
+    k elements. Since the answer may be very large, return it modulo 10^9 + 7.
+
+    Example 1:
+    Input: nums = [1,2,3], k = 2
+    Output: 24
+    Explanation: The subsequences of nums with at most 2 elements are:
+                 Subsequence Minimum Maximum Sum
+                 [1]         1       1       2
+                 [2]         2       2       4
+                 [3]         3       3       6
+                 [1, 2]      1       2       3
+                 [1, 3]      1       3       4
+                 [2, 3]      2       3       5
+                 Final Total                24
+                 The output would be 24.
+
+    Example 2:
+    Input: nums = [5,0,6], k = 1
+    Output: 22
+    Explanation: For subsequences with exactly 1 element, the minimum and
+                 maximum values are the element itself. Therefore, the total is
+                 5 + 5 + 0 + 0 + 6 + 6 = 22.
+
+    Example 3:
+    Input: nums = [1,1,1], k = 2
+    Output: 12
+    Explanation: The subsequences [1, 1] and [1] each appear 3 times. For all of
+                 them, the minimum and maximum are both 1. Thus, the total is
+                 12.
+
+    Constraints:
+    * 1 <= nums.length <= 10^5
+    * 0 <= nums[i] <= 10^9
+    * 1 <= k <= min(70, nums.length)*/
+
+    int minMaxSums(vector<int>& nums, int k) {
+        const int mod = 1'000'000'007, n = nums.size();
+        sort(nums.begin(), nums.end());
+        long long ans = 0, s = 1;
+        vector<long long> fact(n, 1), ifact(n, 1), inv(n, 1);
+        for (int i = 0; i < n; ++i) {
+            if (i >= 2) inv[i] = mod - mod/i * inv[mod % i] % mod;
+            if (i >= 1) {
+                fact[i] = fact[i-1] * i % mod;
+                ifact[i] = ifact[i-1] * inv[i] % mod;
+            }
+            ans = (ans + (nums[i] + nums[n-1-i]) * s) % mod;
+            long long comb = 0;
+            if (i >= k-1) comb = fact[i] * ifact[k-1] % mod * ifact[i-k+1] % mod;
+            s = (mod + (2*s - comb) % mod) % mod;
+        }
+        return ans;
+    }
+
+
+    /*3429. Paint House IV (Medium)
+    You are given an even integer n representing the number of houses arranged
+    in a straight line, and a 2D array cost of size n x 3, where cost[i][j]
+    represents the cost of painting house i with color j + 1. The houses will
+    look beautiful if they satisfy the following conditions:
+    * No two adjacent houses are painted the same color.
+    * Houses equidistant from the ends of the row are not painted the same
+      color. For example, if n = 6, houses at positions (0, 5), (1, 4), and
+      (2, 3) are considered equidistant.
+    Return the minimum cost to paint the houses such that they look beautiful.
+
+    Example 1:
+    Input: n = 4, cost = [[3,5,7],[6,2,9],[4,8,1],[7,3,5]]
+    Output: 9
+    Explanation: The optimal painting sequence is [1, 2, 3, 2] with
+                 corresponding costs [3, 2, 1, 3]. This satisfies the following
+                 conditions:
+                 - No adjacent houses have the same color.
+                 - Houses at positions 0 and 3 (equidistant from the ends) are
+                   not painted the same color (1 != 2).
+                 - Houses at positions 1 and 2 (equidistant from the ends) are
+                   not painted the same color (2 != 3).
+                 The minimum cost to paint the houses so that they look
+                 beautiful is 3 + 2 + 1 + 3 = 9.
+
+    Example 2:
+    Input: n = 6, cost = [[2,4,6],[5,3,8],[7,1,9],[4,6,2],[3,5,7],[8,2,4]]
+    Output: 18
+    Explanation: The optimal painting sequence is [1, 3, 2, 3, 1, 2] with
+                 corresponding costs [2, 8, 1, 2, 3, 2]. This satisfies the
+                 following conditions:
+                 - No adjacent houses have the same color.
+                 - Houses at positions 0 and 5 (equidistant from the ends) are
+                   not painted the same color (1 != 2).
+                 - Houses at positions 1 and 4 (equidistant from the ends) are
+                   not painted the same color (3 != 1).
+                 - Houses at positions 2 and 3 (equidistant from the ends) are
+                   not painted the same color (2 != 3).
+                 The minimum cost to paint the houses so that they look
+                 beautiful is 2 + 8 + 1 + 2 + 3 + 2 = 18.
+
+    Constraints:
+    * 2 <= n <= 10^5
+    * n is even.
+    * cost.length == n
+    * cost[i].length == 3
+    * 0 <= cost[i][j] <= 10^5*/
+
+    long long minCost(int n, vector<vector<int>>& cost) {
+        vector<vector<vector<long long>>> dp(n/2+1, vector<vector<long long>>(3, vector<long long>(3, LLONG_MAX)));
+        for (int j = 0; j < 3; ++j)
+            for (int k = 0; k < 3; ++k)
+                dp[n/2][j][k] = 0LL;
+        long long ans = LLONG_MAX;
+        for (int i = n/2-1; i >= 0; --i)
+            for (int j = 0; j < 3; ++j)
+                for (int k = 0; k < 3; ++k)
+                    for (int jj = 0; jj < 3; ++jj)
+                        for (int kk = 0; kk < 3; ++kk)
+                            if (j != k && j != jj && k != kk && jj != kk) {
+                                dp[i][j][k] = min(dp[i][j][k], cost[i][jj] + cost[n-1-i][kk] + dp[i+1][jj][kk]);
+                                if (i == 0) ans = min(ans, dp[i][j][k]);
+                            }
+        return ans;
+    }
+
+
+    /*3430. Maximum and Minimum Sums of at Most Size K Subarrays (Hard)
+    You are given an integer array nums and a positive integer k. Return the sum
+    of the maximum and minimum elements of all subarrays with at most k
+    elements.
+
+    Example 1:
+    Input: nums = [1,2,3], k = 2
+    Output: 20
+    Explanation: The subarrays of nums with at most 2 elements are:
+                 Subarray    Minimum Maximum Sum
+                 [1]         1       1       2
+                 [2]         2       2       4
+                 [3]         3       3       6
+                 [1, 2]      1       2       3
+                 [2, 3]      2       3       5
+                 Final Total                20
+                 The output would be 20.
+
+    Example 2:
+    Input: nums = [1,-3,1], k = 2
+    Output: -6
+    Explanation: The subarrays of nums with at most 2 elements are:
+                 Subarray    Minimum Maximum Sum
+                 [1]         1       1       2
+                 [-3]       -3      -3      -6
+                 [1]         1       1       2
+                 [1, -3]    -3       1      -2
+                 [-3, 1]    -3       1      -2
+                 Final Total                -6
+                 The output would be -6.
+
+    Constraints:
+    * 1 <= nums.length <= 80000
+    * 1 <= k <= nums.length
+    * -10^6 <= nums[i] <= 10^6*/
+
+    long long minMaxSubarraySum(vector<int>& nums, int k) {
+        long long ans = 0;
+        function<bool(int, int)> le = [&](int x, int y) { return x <= y; };
+        function<bool(int, int)> ge = [&](int x, int y) { return x >= y; };
+        for (auto& op : { le, ge }) {
+            long long val = 0;
+            deque<int> q;
+            for (int i = 0; i < nums.size(); ++i) {
+                if (i >= k) {
+                    val -= nums[q.front()];
+                    if (i-k == q.front()) q.pop_front();
+                }
+                while (q.size() && op(nums[q.back()], nums[i])) {
+                    int ii = q.back(); q.pop_back();
+                    int lo = q.size() ? q.back() : max(-1, i-k);
+                    val -= (long long) nums[ii] * (ii-lo);
+                }
+                int lo = q.size() ? q.back() : max(-1, i-k);
+                q.push_back(i);
+                val += (long long) nums[i]*(i-lo);
+                ans += val;
+            }
+        }
+        return ans;
+    }
 }
 
 
