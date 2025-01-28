@@ -87586,6 +87586,320 @@ public:
         }
         return ans;
     }
+
+
+    /*3432. Count Partitions with Even Sum Difference (Easy)
+    You are given an integer array nums of length n. A partition is defined as
+    an index i where 0 <= i < n - 1, splitting the array into two non-empty
+    subarrays such that:
+    * Left subarray contains indices [0, i].
+    * Right subarray contains indices [i + 1, n - 1].
+    Return the number of partitions where the difference between the sum of the
+    left and right subarrays is even.
+
+    Example 1:
+    Input: nums = [10,10,3,7,6]
+    Output: 4
+    Explanation: The 4 partitions are:
+                 * [10], [10, 3, 7, 6] with a sum difference of 10 - 26 = -16,
+                   which is even.
+                 * [10, 10], [3, 7, 6] with a sum difference of 20 - 16 = 4,
+                   which is even.
+                 * [10, 10, 3], [7, 6] with a sum difference of 23 - 13 = 10,
+                   which is even.
+                 * [10, 10, 3, 7], [6] with a sum difference of 30 - 6 = 24,
+                   which is even.
+
+    Example 2:
+    Input: nums = [1,2,2]
+    Output: 0
+    Explanation: No partition results in an even sum difference.
+
+    Example 3:
+    Input: nums = [2,4,6,8]
+    Output: 3
+    Explanation: All partitions result in an even sum difference.
+
+    Constraints:
+    * 2 <= n == nums.length <= 100
+    * 1 <= nums[i] <= 100*/
+
+    int countPartitions(vector<int>& nums) {
+        vector<int> prefix(1);
+        for (auto& x : nums)
+            prefix.push_back(prefix.back() + x);
+        int ans = 0;
+        for (int i = 1; i < nums.size(); ++i)
+            if (!(prefix.back()-2*prefix[i] & 1)) ++ans;
+        return ans;
+    }
+
+
+    /*3433. Count Mentions Per User (Medium)
+    You are given an integer numberOfUsers representing the total number of
+    users and an array events of size n x 3. Each events[i] can be either of the
+    following two types:
+    * Message Event: ["MESSAGE", "timestampi", "mentions_stringi"]
+      - This event indicates that a set of users was mentioned in a message at
+        timestampi.
+      - The mentions_stringi string can contain one of the following tokens:
+      - id<number>: where <number> is an integer in range [0,numberOfUsers - 1].
+        There can be multiple ids separated by a single whitespace and may
+        contain duplicates. This can mention even the offline users.
+      - ALL: mentions all users.
+      - HERE: mentions all online users.
+    * Offline Event: ["OFFLINE", "timestampi", "idi"]
+      - This event indicates that the user idi had become offline at timestampi
+        for 60 time units. The user will automatically be online again at time
+        timestampi + 60.
+    Return an array mentions where mentions[i] represents the number of mentions
+    the user with id i has across all MESSAGE events. All users are initially
+    online, and if a user goes offline or comes back online, their status change
+    is processed before handling any message event that occurs at the same
+    timestamp. Note that a user can be mentioned multiple times in a single
+    message event, and each mention should be counted separately.
+
+    Example 1:
+    Input: numberOfUsers = 2, events = [["MESSAGE","10","id1 id0"],["OFFLINE","11","0"],["MESSAGE","71","HERE"]]
+    Output: [2,2]
+    Explanation: Initially, all users are online.
+                 - At timestamp 10, id1 and id0 are mentioned. mentions = [1,1]
+                 - At timestamp 11, id0 goes offline.
+                 - At timestamp 71, id0 comes back online and "HERE" is
+                   mentioned. mentions = [2,2]
+
+    Example 2:
+    Input: numberOfUsers = 2, events = [["MESSAGE","10","id1 id0"],["OFFLINE","11","0"],["MESSAGE","12","ALL"]]
+    Output: [2,2]
+    Explanation: Initially, all users are online.
+                 - At timestamp 10, id1 and id0 are mentioned. mentions = [1,1]
+                 - At timestamp 11, id0 goes offline.
+                 - At timestamp 12, "ALL" is mentioned. This includes offline
+                   users, so both id0 and id1 are mentioned. mentions = [2,2]
+
+    Example 3:
+    Input: numberOfUsers = 2, events = [["OFFLINE","10","0"],["MESSAGE","12","HERE"]]
+    Output: [0,1]
+    Explanation: Initially, all users are online.
+                 - At timestamp 10, id0 goes offline.
+                 - At timestamp 12, "HERE" is mentioned. Because id0 is still
+                   offline, they will not be mentioned. mentions = [0,1]
+
+    Constraints:
+    * 1 <= numberOfUsers <= 100
+    * 1 <= events.length <= 100
+    * events[i].length == 3
+    * events[i][0] will be one of MESSAGE or OFFLINE.
+    * 1 <= int(events[i][1]) <= 105
+    * The number of id<number> mentions in any "MESSAGE" event is between 1 and
+      100.
+    * 0 <= <number> <= numberOfUsers - 1
+    * It is guaranteed that the user id referenced in the OFFLINE event is
+      online at the time the event occurs.*/
+
+    vector<int> countMentions(int numberOfUsers, vector<vector<string>>& events) {
+        sort(events.begin(), events.end(), [&](auto& x, auto& y) {
+            return x[1] != y[1] ? stoi(x[1]) < stoi(y[1]) : x[0] > y[0];
+        });
+        vector<int> ans(numberOfUsers), online(numberOfUsers);
+        for (auto& event : events) {
+            string evt = event[0], ids = event[2];
+            int time = stoi(event[1]);
+            if (evt == "MESSAGE") {
+                if (ids == "ALL") {
+                    for (int i = 0; i < numberOfUsers; ++i)
+                        ++ans[i];
+                } else if (ids == "HERE") {
+                    for (int i = 0; i < numberOfUsers; ++i)
+                        if (online[i] <= time) ++ans[i];
+                } else {
+                    istringstream iss(ids);
+                    string buf;
+                    while (iss >> buf)
+                        ++ans[stoi(buf.substr(2))];
+                }
+            } else online[stoi(ids)] = time + 60;
+        }
+        return ans;
+    }
+
+
+    /*3434. Maximum Frequency After Subarray Operation (Medium)
+    You are given an array nums of length n. You are also given an integer k.
+    You perform the following operation on nums once:
+    * Select a subarray nums[i..j] where 0 <= i <= j <= n - 1.
+    * Select an integer x and add x to all the elements in nums[i..j].
+    Find the maximum frequency of the value k after the operation.
+
+    Example 1:
+    Input: nums = [1,2,3,4,5,6], k = 1
+    Output: 2
+    Explanation: After adding -5 to nums[2..5], 1 has a frequency of 2 in
+                 [1, 2, -2, -1, 0, 1].
+
+    Example 2:
+    Input: nums = [10,2,3,4,5,5,4,3,2,2], k = 10
+    Output: 4
+    Explanation: After adding 8 to nums[1..9], 10 has a frequency of 4 in
+                 [10, 10, 11, 12, 13, 13, 12, 11, 10, 10].
+
+    Constraints:
+    * 1 <= n == nums.length <= 10^5
+    * 1 <= nums[i] <= 50
+    * 1 <= k <= 50*/
+
+    int maxFrequency(vector<int>& nums, int k) {
+        unordered_map<int, int> freq;
+        for (auto& x : nums) ++freq[x];
+        int ans = 0;
+        for (auto& [v, _] : freq) {
+            int cand = 0, val = 0;
+            for (auto& x : nums) {
+                if (x == v) ++val;
+                if (x == k) --val;
+                val = max(0, val);
+                cand = max(cand, val);
+            }
+            ans = max(ans, cand);
+        }
+        return ans + freq[k];
+    }
+
+
+    /*3435. Frequencies of Shortest Supersequences (Hard)
+    You are given an array of strings words. Find all shortest common
+    supersequences (SCS) of words that are not permutations of each other. A
+    shortest common supersequence is a string of minimum length that contains
+    each string in words as a subsequence. Return a 2D array of integers freqs
+    that represent all the SCSs. Each freqs[i] is an array of size 26,
+    representing the frequency of each letter in the lowercase English alphabet
+    for a single SCS. You may return the frequency arrays in any order.
+
+    Example 1:
+    Input: words = ["ab","ba"]
+    Output: [[1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+    Explanation: The two SCSs are "aba" and "bab". The output is the letter
+                 frequencies for each one.
+
+    Example 2:
+    Input: words = ["aa","ac"]
+    Output: [[2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+    Explanation: The two SCSs are "aac" and "aca". Since they are permutations
+                 of each other, keep only "aac".
+
+    Example 3:
+    Input: words = ["aa","bb","cc"]
+    Output: [[2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+    Explanation: "aabbcc" and all its permutations are SCSs.
+
+    Constraints:
+    * 1 <= words.length <= 256
+    * words[i].length == 2
+    * All strings in words will altogether be composed of no more than 16 unique
+      lowercase letters.
+    * All strings in words are unique.*/
+
+    vector<vector<int>> supersequences(vector<string>& words) {
+        vector<unordered_set<int>> graph(26);
+        vector<bool> seen(26);
+        for (auto& word : words) {
+            int u = word[0] - 'a', v = word[1] - 'a';
+            graph[u].insert(v);
+            seen[u] = seen[v] = true;
+        }
+        vector<int> low = tarjan(graph);
+        unordered_map<int, vector<int>> mp;
+        for (int u = 0; u < 26; ++u)
+            if (seen[u]) mp[low[u]].push_back(u);
+        vector<vector<int>> scc;
+        for (auto& [_, v] : mp)
+            scc.push_back(v);
+        vector<vector<int>> ans;
+        vector<int> freq(26);
+
+        function<void(int)> fn = [&](int i) {
+            if (i == scc.size()) {
+                ans.push_back(freq);
+                return;
+            }
+            for (auto& fvs : check(scc[i], graph)) {
+                for (auto& x : scc[i]) {
+                    if (fvs.count(x) || graph[x].count(x)) freq[x] = 2;
+                    else freq[x] = 1;
+                }
+                fn(i+1);
+                for (auto& x : scc[i]) freq[x] = 0;
+            }
+        };
+
+        fn(0);
+        return ans;
+    }
+
+    vector<int> tarjan(vector<unordered_set<int>>& graph) {
+        int n = graph.size();
+        vector<int> ids(n, -1);
+        vector<int> low(n, -1);
+        vector<bool> on(n);
+        stack<int> stk;
+        int k = 0;
+
+        function<void(int)> dfs = [&](int u) {
+            stk.push(u);
+            on[u] = true;
+            ids[u] = low[u] = k++;
+            for (auto& v : graph[u]) {
+                if (ids[v] == -1) dfs(v);
+                if (on[v]) low[u] = min(low[u], low[v]);
+            }
+            if (ids[u] == low[u])
+                while (true) {
+                    auto x = stk.top(); stk.pop();
+                    on[x] = false;
+                    low[x] = ids[u];
+                    if (x == u) break;
+                }
+        };
+
+        for (int u = 0; u < n; ++u)
+            if (ids[u] == -1) dfs(u);
+        return low;
+    }
+
+    vector<unordered_set<int>> check(vector<int>& scc, vector<unordered_set<int>>& graph) {
+        int n = scc.size(), most = INT_MAX;
+        unordered_map<int, int> mp;
+        for (int i = 0; i < n; ++i) mp[scc[i]] = i;
+        unordered_map<int, vector<unordered_set<int>>> ans;
+        for (int m = 0; m < (1<<n); ++m) {
+            vector<int> degree(n);
+            unordered_set<int> fvs;
+            for (auto& u : scc) {
+                if (m & 1<<mp[u])
+                    for (auto& v : graph[u]) {
+                        if (mp.count(v) && (m & 1<<mp[v])) ++degree[mp[v]];
+                    }
+                else fvs.insert(u);
+            }
+            int cnt = 0;
+            stack<int> stk;
+            for (auto& u : scc)
+                if ((m & 1<<mp[u]) && degree[mp[u]] == 0)
+                    stk.push(u);
+            while (stk.size()) {
+                int u = stk.top(); stk.pop();
+                ++cnt;
+                for (auto& v : graph[u])
+                    if (mp.count(v) && (m & 1<<mp[v]))
+                        if (--degree[mp[v]] == 0) stk.push(v);
+            }
+            if (cnt + fvs.size() == n) {
+                ans[fvs.size()].push_back(fvs);
+                most = m    in(most, (int) fvs.size());
+            }
+        }
+        return most < INT_MAX ? ans[most] : vector<unordered_set<int>>(0);
+    }
 }
 
 

@@ -29072,3 +29072,312 @@ var minMaxSubarraySum = function(nums, k) {
     }
     return ans;
 };
+
+
+/*3432. Count Partitions with Even Sum Difference (Easy)
+You are given an integer array nums of length n. A partition is defined as
+an index i where 0 <= i < n - 1, splitting the array into two non-empty
+subarrays such that:
+* Left subarray contains indices [0, i].
+* Right subarray contains indices [i + 1, n - 1].
+Return the number of partitions where the difference between the sum of the
+left and right subarrays is even.
+
+Example 1:
+Input: nums = [10,10,3,7,6]
+Output: 4
+Explanation: The 4 partitions are:
+             * [10], [10, 3, 7, 6] with a sum difference of 10 - 26 = -16,
+               which is even.
+             * [10, 10], [3, 7, 6] with a sum difference of 20 - 16 = 4,
+               which is even.
+             * [10, 10, 3], [7, 6] with a sum difference of 23 - 13 = 10,
+               which is even.
+             * [10, 10, 3, 7], [6] with a sum difference of 30 - 6 = 24,
+               which is even.
+
+Example 2:
+Input: nums = [1,2,2]
+Output: 0
+Explanation: No partition results in an even sum difference.
+
+Example 3:
+Input: nums = [2,4,6,8]
+Output: 3
+Explanation: All partitions result in an even sum difference.
+
+Constraints:
+* 2 <= n == nums.length <= 100
+* 1 <= nums[i] <= 100*/
+
+var countPartitions = function(nums) {
+    const n = nums.length;
+    const prefix = Array(n+1).fill(0);
+    for (const [i, x] of nums.entries())
+        prefix[i+1] = prefix[i] + x;
+    let ans = 0;
+    for (let i = 1; i < n; ++i)
+        if ((prefix[n] - 2*prefix[i]) % 2 == 0) ++ans;
+    return ans;
+};
+
+
+/*3433. Count Mentions Per User (Medium)
+You are given an integer numberOfUsers representing the total number of
+users and an array events of size n x 3. Each events[i] can be either of the
+following two types:
+* Message Event: ["MESSAGE", "timestampi", "mentions_stringi"]
+  - This event indicates that a set of users was mentioned in a message at
+    timestampi.
+  - The mentions_stringi string can contain one of the following tokens:
+  - id<number>: where <number> is an integer in range [0,numberOfUsers - 1].
+    There can be multiple ids separated by a single whitespace and may
+    contain duplicates. This can mention even the offline users.
+  - ALL: mentions all users.
+  - HERE: mentions all online users.
+* Offline Event: ["OFFLINE", "timestampi", "idi"]
+  - This event indicates that the user idi had become offline at timestampi
+    for 60 time units. The user will automatically be online again at time
+    timestampi + 60.
+Return an array mentions where mentions[i] represents the number of mentions
+the user with id i has across all MESSAGE events. All users are initially
+online, and if a user goes offline or comes back online, their status change
+is processed before handling any message event that occurs at the same
+timestamp. Note that a user can be mentioned multiple times in a single
+message event, and each mention should be counted separately.
+
+Example 1:
+Input: numberOfUsers = 2, events = [["MESSAGE","10","id1 id0"],["OFFLINE","11","0"],["MESSAGE","71","HERE"]]
+Output: [2,2]
+Explanation: Initially, all users are online.
+             - At timestamp 10, id1 and id0 are mentioned. mentions = [1,1]
+             - At timestamp 11, id0 goes offline.
+             - At timestamp 71, id0 comes back online and "HERE" is
+               mentioned. mentions = [2,2]
+
+Example 2:
+Input: numberOfUsers = 2, events = [["MESSAGE","10","id1 id0"],["OFFLINE","11","0"],["MESSAGE","12","ALL"]]
+Output: [2,2]
+Explanation: Initially, all users are online.
+             - At timestamp 10, id1 and id0 are mentioned. mentions = [1,1]
+             - At timestamp 11, id0 goes offline.
+             - At timestamp 12, "ALL" is mentioned. This includes offline
+               users, so both id0 and id1 are mentioned. mentions = [2,2]
+
+Example 3:
+Input: numberOfUsers = 2, events = [["OFFLINE","10","0"],["MESSAGE","12","HERE"]]
+Output: [0,1]
+Explanation: Initially, all users are online.
+             - At timestamp 10, id0 goes offline.
+             - At timestamp 12, "HERE" is mentioned. Because id0 is still
+               offline, they will not be mentioned. mentions = [0,1]
+
+Constraints:
+* 1 <= numberOfUsers <= 100
+* 1 <= events.length <= 100
+* events[i].length == 3
+* events[i][0] will be one of MESSAGE or OFFLINE.
+* 1 <= int(events[i][1]) <= 105
+* The number of id<number> mentions in any "MESSAGE" event is between 1 and
+  100.
+* 0 <= <number> <= numberOfUsers - 1
+* It is guaranteed that the user id referenced in the OFFLINE event is
+  online at the time the event occurs.*/
+
+var countMentions = function(numberOfUsers, events) {
+    events.sort((x, y) => x[1] !== y[1] ? x[1] - y[1] : y[0].localeCompare(x[0]));
+    const ans = Array(numberOfUsers).fill(0), online = Array(numberOfUsers).fill(0);
+    for (const [evt, time, ids] of events) {
+        if (evt === "MESSAGE") {
+            if (ids === "ALL") {
+                for (let i = 0; i < numberOfUsers; ++i)
+                    ++ans[i];
+            } else if (ids === "HERE") {
+                for (let i = 0; i < numberOfUsers; ++i)
+                    if (online[i] <= time) ++ans[i];
+            } else {
+                for (const id of ids.split(" "))
+                    ++ans[id.slice(2)];
+            }
+        } else online[ids] = Number(time) + 60;
+    }
+    return ans;
+};
+
+
+/*3434. Maximum Frequency After Subarray Operation (Medium)
+You are given an array nums of length n. You are also given an integer k.
+You perform the following operation on nums once:
+* Select a subarray nums[i..j] where 0 <= i <= j <= n - 1.
+* Select an integer x and add x to all the elements in nums[i..j].
+Find the maximum frequency of the value k after the operation.
+
+Example 1:
+Input: nums = [1,2,3,4,5,6], k = 1
+Output: 2
+Explanation: After adding -5 to nums[2..5], 1 has a frequency of 2 in
+             [1, 2, -2, -1, 0, 1].
+
+Example 2:
+Input: nums = [10,2,3,4,5,5,4,3,2,2], k = 10
+Output: 4
+Explanation: After adding 8 to nums[1..9], 10 has a frequency of 4 in
+             [10, 10, 11, 12, 13, 13, 12, 11, 10, 10].
+
+Constraints:
+* 1 <= n == nums.length <= 10^5
+* 1 <= nums[i] <= 50
+* 1 <= k <= 50*/
+
+var maxFrequency = function(nums, k) {
+    const freq = new Map();
+    for (const x of nums)
+        freq.set(x, (freq.get(x) ?? 0) + 1);
+    let ans = 0;
+    for (const [v, _] of freq) {
+        let cand = 0, val = 0;
+        for (const x of nums) {
+            if (x == v) ++val;
+            if (x == k) --val;
+            val = Math.max(val, 0);
+            cand = Math.max(cand, val);
+        }
+        ans = Math.max(ans, cand);
+    }
+    return ans + (freq.get(k) ?? 0);
+};
+
+
+/*3435. Frequencies of Shortest Supersequences (Hard)
+You are given an array of strings words. Find all shortest common
+supersequences (SCS) of words that are not permutations of each other. A
+shortest common supersequence is a string of minimum length that contains
+each string in words as a subsequence. Return a 2D array of integers freqs
+that represent all the SCSs. Each freqs[i] is an array of size 26,
+representing the frequency of each letter in the lowercase English alphabet
+for a single SCS. You may return the frequency arrays in any order.
+
+Example 1:
+Input: words = ["ab","ba"]
+Output: [[1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+Explanation: The two SCSs are "aba" and "bab". The output is the letter
+             frequencies for each one.
+
+Example 2:
+Input: words = ["aa","ac"]
+Output: [[2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+Explanation: The two SCSs are "aac" and "aca". Since they are permutations
+             of each other, keep only "aac".
+
+Example 3:
+Input: words = ["aa","bb","cc"]
+Output: [[2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+Explanation: "aabbcc" and all its permutations are SCSs.
+
+Constraints:
+* 1 <= words.length <= 256
+* words[i].length == 2
+* All strings in words will altogether be composed of no more than 16 unique
+  lowercase letters.
+* All strings in words are unique.*/
+
+function tarjan(graph) {
+    const n = graph.length;
+    const ids = Array(n).fill(-1);
+    const low = Array(n).fill(-1);
+    const on = Array(n).fill(false);
+    const stack = [];
+    let k = 0;
+
+    function dfs(u) {
+        stack.push(u);
+        on[u] = true;
+        ids[u] = low[u] = k++;
+        for (const v of graph[u]) {
+            if (ids[v] == -1) dfs(v);
+            if (on[v]) low[u] = Math.min(low[u], low[v]);
+        }
+        if (ids[u] == low[u])
+            while (true) {
+                const x = stack.pop();
+                on[x] = false;
+                low[x] = ids[u];
+                if (x == u) break;
+            }
+    }
+
+    for (let u = 0; u < n; ++u)
+        if (ids[u] == -1) dfs(u);
+    return low;
+}
+
+function check(scc, graph) {
+    const n = scc.length;
+    const mp = new Map();
+    for (const [i, x] of scc.entries())
+        mp.set(x, i);
+    const ans = new Map();
+    let mv = Infinity;
+    for (let m = 0; m < 1<<n; ++m) {
+        const degree = Array(n).fill(0);
+        const fvs = new Set();
+        for (const u of scc)
+            if (m & 1<<mp.get(u)) {
+                for (const v of graph[u])
+                    if (mp.has(v) && m & 1<<mp.get(v)) ++degree[mp.get(v)];
+            } else fvs.add(u);
+        let cnt = 0;
+        const stack = [];
+        for (const u of scc)
+            if (m & 1<<mp.get(u) && degree[mp.get(u)] == 0) stack.push(u);
+        while (stack.length) {
+            const u = stack.pop();
+            ++cnt;
+            for (const v of graph[u])
+                if (mp.has(v) && m & 1<<mp.get(v)) {
+                    --degree[mp.get(v)];
+                    if (degree[mp.get(v)] == 0) stack.push(v);
+                }
+        }
+        if (cnt + fvs.size == n) {
+            mv = Math.min(mv, fvs.size);
+            if (!ans.has(fvs.size)) ans.set(fvs.size, []);
+            ans.get(fvs.size).push(fvs);
+        }
+    }
+    return mv < Infinity ? ans.get(mv) : [[]];
+}
+
+var supersequences = function(words) {
+    const graph = Array(26).fill(0).map(() => new Set());
+    const seen = Array(26).fill(false)
+    for (const word of words) {
+        const u = word.charCodeAt(0) - 97, v = word.charCodeAt(1) - 97;
+        graph[u].add(v);
+        seen[u] = seen[v] = true;
+    }
+    const low = tarjan(graph);
+    const mp = new Map();
+    for (let u = 0; u < 26; ++u)
+        if (seen[u]) {
+            if (!mp.has(low[u])) mp.set(low[u], []);
+            mp.get(low[u]).push(u);
+        }
+    const scc = [...mp.values()];
+    const ans = [];
+    const freq = Array(26).fill(0);
+
+    function fn(i) {
+        if (i == scc.length) return ans.push([...freq]);
+        for (const fvs of check(scc[i], graph)) {
+            for (const x of scc[i])
+                if (fvs.has(x) || graph[x].has(x)) freq[x] = 2;
+                else freq[x] = 1;
+            fn(i+1);
+            for (const x of scc[i]) freq[x] = 0;
+        }
+    }
+
+    fn(0);
+    return ans;
+};

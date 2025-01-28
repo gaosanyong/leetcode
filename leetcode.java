@@ -44852,6 +44852,325 @@ class SegTree {
         }
         return ans;
     }
+
+
+    /*3432. Count Partitions with Even Sum Difference (Easy)
+    You are given an integer array nums of length n. A partition is defined as
+    an index i where 0 <= i < n - 1, splitting the array into two non-empty
+    subarrays such that:
+    * Left subarray contains indices [0, i].
+    * Right subarray contains indices [i + 1, n - 1].
+    Return the number of partitions where the difference between the sum of the
+    left and right subarrays is even.
+
+    Example 1:
+    Input: nums = [10,10,3,7,6]
+    Output: 4
+    Explanation: The 4 partitions are:
+                 * [10], [10, 3, 7, 6] with a sum difference of 10 - 26 = -16,
+                   which is even.
+                 * [10, 10], [3, 7, 6] with a sum difference of 20 - 16 = 4,
+                   which is even.
+                 * [10, 10, 3], [7, 6] with a sum difference of 23 - 13 = 10,
+                   which is even.
+                 * [10, 10, 3, 7], [6] with a sum difference of 30 - 6 = 24,
+                   which is even.
+
+    Example 2:
+    Input: nums = [1,2,2]
+    Output: 0
+    Explanation: No partition results in an even sum difference.
+
+    Example 3:
+    Input: nums = [2,4,6,8]
+    Output: 3
+    Explanation: All partitions result in an even sum difference.
+
+    Constraints:
+    * 2 <= n == nums.length <= 100
+    * 1 <= nums[i] <= 100*/
+
+    public int countPartitions(int[] nums) {
+        int n = nums.length;
+        int[] prefix = new int[n+1];
+        for (int i = 0; i < n; ++i)
+            prefix[i+1] = prefix[i] + nums[i];
+        int ans = 0;
+        for (int i = 1; i < n; ++i)
+            if ((prefix[n] - 2*prefix[i]) % 2 == 0) ++ans;
+        return ans;
+    }
+
+
+    /*3433. Count Mentions Per User (Medium)
+    You are given an integer numberOfUsers representing the total number of
+    users and an array events of size n x 3. Each events[i] can be either of the
+    following two types:
+    * Message Event: ["MESSAGE", "timestampi", "mentions_stringi"]
+      - This event indicates that a set of users was mentioned in a message at
+        timestampi.
+      - The mentions_stringi string can contain one of the following tokens:
+      - id<number>: where <number> is an integer in range [0,numberOfUsers - 1].
+        There can be multiple ids separated by a single whitespace and may
+        contain duplicates. This can mention even the offline users.
+      - ALL: mentions all users.
+      - HERE: mentions all online users.
+    * Offline Event: ["OFFLINE", "timestampi", "idi"]
+      - This event indicates that the user idi had become offline at timestampi
+        for 60 time units. The user will automatically be online again at time
+        timestampi + 60.
+    Return an array mentions where mentions[i] represents the number of mentions
+    the user with id i has across all MESSAGE events. All users are initially
+    online, and if a user goes offline or comes back online, their status change
+    is processed before handling any message event that occurs at the same
+    timestamp. Note that a user can be mentioned multiple times in a single
+    message event, and each mention should be counted separately.
+
+    Example 1:
+    Input: numberOfUsers = 2, events = [["MESSAGE","10","id1 id0"],["OFFLINE","11","0"],["MESSAGE","71","HERE"]]
+    Output: [2,2]
+    Explanation: Initially, all users are online.
+                 - At timestamp 10, id1 and id0 are mentioned. mentions = [1,1]
+                 - At timestamp 11, id0 goes offline.
+                 - At timestamp 71, id0 comes back online and "HERE" is
+                   mentioned. mentions = [2,2]
+
+    Example 2:
+    Input: numberOfUsers = 2, events = [["MESSAGE","10","id1 id0"],["OFFLINE","11","0"],["MESSAGE","12","ALL"]]
+    Output: [2,2]
+    Explanation: Initially, all users are online.
+                 - At timestamp 10, id1 and id0 are mentioned. mentions = [1,1]
+                 - At timestamp 11, id0 goes offline.
+                 - At timestamp 12, "ALL" is mentioned. This includes offline
+                   users, so both id0 and id1 are mentioned. mentions = [2,2]
+
+    Example 3:
+    Input: numberOfUsers = 2, events = [["OFFLINE","10","0"],["MESSAGE","12","HERE"]]
+    Output: [0,1]
+    Explanation: Initially, all users are online.
+                 - At timestamp 10, id0 goes offline.
+                 - At timestamp 12, "HERE" is mentioned. Because id0 is still
+                   offline, they will not be mentioned. mentions = [0,1]
+
+    Constraints:
+    * 1 <= numberOfUsers <= 100
+    * 1 <= events.length <= 100
+    * events[i].length == 3
+    * events[i][0] will be one of MESSAGE or OFFLINE.
+    * 1 <= int(events[i][1]) <= 105
+    * The number of id<number> mentions in any "MESSAGE" event is between 1 and
+      100.
+    * 0 <= <number> <= numberOfUsers - 1
+    * It is guaranteed that the user id referenced in the OFFLINE event is
+      online at the time the event occurs.*/
+
+    public int[] countMentions(int numberOfUsers, List<List<String>> events) {
+        Collections.sort(events, (x, y) -> !x.get(1).equals(y.get(1)) ? Integer.compare(Integer.parseInt(x.get(1)), Integer.parseInt(y.get(1))) : y.get(0).compareTo(x.get(0)));
+        int[] ans = new int[numberOfUsers];
+        int[] online = new int[numberOfUsers];
+        for (var event : events) {
+            String evt = event.get(0), ids = event.get(2);
+            int time = Integer.parseInt(event.get(1));
+            if (evt.equals("MESSAGE")) {
+                if (ids.equals("ALL")) {
+                    for (int i = 0; i < numberOfUsers; ++i)
+                        ++ans[i];
+                } else if (ids.equals("HERE")) {
+                    for (int i = 0; i < numberOfUsers; ++i)
+                        if (online[i] <= time) ++ans[i];
+                } else {
+                    for (var id : ids.split(" "))
+                        ++ans[Integer.parseInt(id.substring(2))];
+                }
+            } else online[Integer.parseInt(ids)] = time+60;
+        }
+        return ans;
+    }
+
+
+    /*3434. Maximum Frequency After Subarray Operation (Medium)
+    You are given an array nums of length n. You are also given an integer k.
+    You perform the following operation on nums once:
+    * Select a subarray nums[i..j] where 0 <= i <= j <= n - 1.
+    * Select an integer x and add x to all the elements in nums[i..j].
+    Find the maximum frequency of the value k after the operation.
+
+    Example 1:
+    Input: nums = [1,2,3,4,5,6], k = 1
+    Output: 2
+    Explanation: After adding -5 to nums[2..5], 1 has a frequency of 2 in
+                 [1, 2, -2, -1, 0, 1].
+
+    Example 2:
+    Input: nums = [10,2,3,4,5,5,4,3,2,2], k = 10
+    Output: 4
+    Explanation: After adding 8 to nums[1..9], 10 has a frequency of 4 in
+                 [10, 10, 11, 12, 13, 13, 12, 11, 10, 10].
+
+    Constraints:
+    * 1 <= n == nums.length <= 10^5
+    * 1 <= nums[i] <= 50
+    * 1 <= k <= 50*/
+
+    public int maxFrequency(int[] nums, int k) {
+        Map<Integer, Integer> freq = new HashMap<>();
+        for (var x : nums) freq.merge(x, 1, Integer::sum);
+        int ans = 0;
+        for (var v : freq.keySet()) {
+            int cand = 0, val = 0;
+            for (var x : nums) {
+                if (x == v) ++val;
+                if (x == k) --val;
+                val = Math.max(val, 0);
+                cand = Math.max(cand, val);
+            }
+            ans = Math.max(ans, cand);
+        }
+        return ans + freq.getOrDefault(k, 0);
+    }
+
+
+    /*3435. Frequencies of Shortest Supersequences (Hard)
+    You are given an array of strings words. Find all shortest common
+    supersequences (SCS) of words that are not permutations of each other. A
+    shortest common supersequence is a string of minimum length that contains
+    each string in words as a subsequence. Return a 2D array of integers freqs
+    that represent all the SCSs. Each freqs[i] is an array of size 26,
+    representing the frequency of each letter in the lowercase English alphabet
+    for a single SCS. You may return the frequency arrays in any order.
+
+    Example 1:
+    Input: words = ["ab","ba"]
+    Output: [[1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],[2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+    Explanation: The two SCSs are "aba" and "bab". The output is the letter
+                 frequencies for each one.
+
+    Example 2:
+    Input: words = ["aa","ac"]
+    Output: [[2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+    Explanation: The two SCSs are "aac" and "aca". Since they are permutations
+                 of each other, keep only "aac".
+
+    Example 3:
+    Input: words = ["aa","bb","cc"]
+    Output: [[2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
+    Explanation: "aabbcc" and all its permutations are SCSs.
+
+    Constraints:
+    * 1 <= words.length <= 256
+    * words[i].length == 2
+    * All strings in words will altogether be composed of no more than 16 unique
+      lowercase letters.
+    * All strings in words are unique.*/
+
+    public List<List<Integer>> supersequences(String[] words) {
+        Set<Integer>[] graph = new Set[26];
+        for (int u = 0; u < 26; ++u)
+            graph[u] = new HashSet<>();
+        boolean[] seen = new boolean[26];
+        for (var word : words) {
+            int u = word.charAt(0) - 'a', v = word.charAt(1) - 'a';
+            graph[u].add(v);
+            seen[u] = seen[v] = true;
+        }
+        int[] low = tarjan(graph);
+        Map<Integer, List<Integer>> mp = new HashMap<>();
+        for (int u = 0; u < 26; ++u)
+            if (seen[u]) {
+                if (!mp.containsKey(low[u])) mp.put(low[u], new ArrayList<>());
+                mp.get(low[u]).add(u);
+            }
+        List<List<Integer>> scc = new ArrayList<>();
+        for (var v : mp.values())
+            scc.add(v);
+        List<List<Integer>> ans = new ArrayList<>();
+        List<Integer> freq = new ArrayList<>(Collections.nCopies(26, 0));
+        fn(0, ans, freq, graph, scc);
+        return ans;
+    }
+
+    public int[] tarjan(Set<Integer>[] graph) {
+        int k = 0, n = graph.length;
+        int[] ids = new int[n]; Arrays.fill(ids, -1);
+        int[] low = new int[n]; Arrays.fill(low, -1);
+        Stack<Integer> stk = new Stack<>();
+        boolean[] on = new boolean[n];
+        for (int u = 0; u < n; ++u)
+            if (ids[u] == -1) dfs(u, k, graph, ids, low, stk, on);
+        return low;
+    }
+
+    private int dfs(int u, int k, Set<Integer>[] graph, int[] ids, int[] low, Stack<Integer> stk, boolean[] on) {
+        stk.push(u);
+        on[u] = true;
+        ids[u] = low[u] = k++;
+        for (var v : graph[u]) {
+            if (ids[v] == -1) k = dfs(v, k, graph, ids, low, stk, on);
+            if (on[v]) low[u] = Math.min(low[u], low[v]);
+        }
+        if (ids[u] == low[u])
+            while (true) {
+                var x = stk.pop();
+                on[x] = false;
+                low[x] = ids[u];
+                if (x == u) break;
+            }
+        return k;
+    }
+
+    private List<Set<Integer>> check(List<Integer> scc, Set<Integer>[] graph) {
+        int n = scc.size(), most = Integer.MAX_VALUE;
+        Map<Integer, Integer> mp = new HashMap<>();
+        for (int i = 0; i < n; ++i)
+            mp.put(scc.get(i), i);
+        Map<Integer, List<Set<Integer>>> ans = new HashMap<>();
+        for (int m = 0; m < 1<<n; ++m) {
+            int[] degree = new int[n];
+            Set<Integer> fvs = new HashSet<>();
+            for (var u : scc) {
+                if ((m & 1<<mp.get(u)) > 0) {
+                    for (var v : graph[u]) {
+                        if (mp.containsKey(v) && (m & 1<<mp.get(v)) > 0) ++degree[mp.get(v)];
+                    }
+                } else fvs.add(u);
+            }
+            int cnt = 0;
+            Stack<Integer> stk = new Stack<>();
+            for (var u : scc)
+                if ((m & 1<<mp.get(u)) > 0 && degree[mp.get(u)] == 0)
+                    stk.push(u);
+            while (!stk.isEmpty()) {
+                int u = stk.pop();
+                ++cnt;
+                for (var v : graph[u]) {
+                    if (mp.containsKey(v) && (m & 1<<mp.get(v)) > 0)
+                        if (--degree[mp.get(v)] == 0) stk.push(v);
+                }
+            }
+            if (cnt + fvs.size() == n) {
+                int sz = fvs.size();
+                if (!ans.containsKey(sz)) ans.put(sz, new ArrayList<>());
+                ans.get(sz).add(new HashSet<>(fvs));
+                most = Math.min(most, sz);
+            }
+        }
+        return most < Integer.MAX_VALUE ? ans.get(most) : new ArrayList<>();
+    }
+
+    private void fn(int i, List<List<Integer>> ans, List<Integer> freq, Set<Integer>[] graph, List<List<Integer>> scc) {
+        if (i == scc.size()) {
+            ans.add(new ArrayList<>(freq));
+            return;
+        }
+        for (var fvs : check(scc.get(i), graph)) {
+            for (var x : scc.get(i)) {
+                if (fvs.contains(x) || graph[x].contains(x)) freq.set(x, 2);
+                else freq.set(x, 1);
+            }
+            fn(i+1, ans, freq, graph, scc);
+            for (var x : scc.get(i)) freq.set(x, 0);
+        }
+    }
 }
 
 
