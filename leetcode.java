@@ -45171,6 +45171,254 @@ class SegTree {
             for (var x : scc.get(i)) freq.set(x, 0);
         }
     }
+
+
+    /*3438. Find Valid Pair of Adjacent Digits in String (Easy)
+    You are given a string s consisting only of digits. A valid pair is defined
+    as two adjacent digits in s such that:
+    * The first digit is not equal to the second.
+    * Each digit in the pair appears in s exactly as many times as its numeric
+      value.
+    Return the first valid pair found in the string s when traversing from left
+    to right. If no valid pair exists, return an empty string.
+
+    Example 1:
+    Input: s = "2523533"
+    Output: "23"
+    Explanation: Digit '2' appears 2 times and digit '3' appears 3 times. Each
+                 digit in the pair "23" appears in s exactly as many times as
+                 its numeric value. Hence, the output is "23".
+
+    Example 2:
+    Input: s = "221"
+    Output: "21"
+    Explanation: Digit '2' appears 2 times and digit '1' appears 1 time. Hence,
+                 the output is "21".
+
+    Example 3:
+    Input: s = "22"
+    Output: ""
+    Explanation: There are no valid adjacent pairs.
+
+    Constraints:
+    * 2 <= s.length <= 100
+    * s only consists of digits from '1' to '9'.*/
+
+    public String findValidPair(String s) {
+        Map<Character, Integer> freq = new HashMap<>();
+        for (var ch : s.toCharArray()) freq.merge(ch, 1, Integer::sum);
+        for (int i = 0; i < s.length()-1; ++i)
+            if (s.charAt(i) != s.charAt(i+1) && s.charAt(i)-'0' == freq.get(s.charAt(i)) && s.charAt(i+1)-'0' == freq.get(s.charAt(i+1))) return s.substring(i, i+2);
+        return "";
+    }
+
+
+    /*3439. Reschedule Meetings for Maximum Free Time I (Medium)
+    You are given an integer eventTime denoting the duration of an event, where
+    the event occurs from time t = 0 to time t = eventTime. You are also given
+    two integer arrays startTime and endTime, each of length n. These represent
+    the start and end time of n non-overlapping meetings, where the ith meeting
+    occurs during the time [startTime[i], endTime[i]]. You can reschedule at
+    most k meetings by moving their start time while maintaining the same
+    duration, to maximize the longest continuous period of free time during the
+    event. The relative order of all the meetings should stay the same and they
+    should remain non-overlapping. Return the maximum amount of free time
+    possible after rearranging the meetings. Note that the meetings can not be
+    rescheduled to a time outside the event.
+
+    Example 1:
+    Input: eventTime = 5, k = 1, startTime = [1,3], endTime = [2,5]
+    Output: 2
+    Explanation: Reschedule the meeting at [1, 2] to [2, 3], leaving no meetings
+                 during the time [0, 2].
+
+    Example 2:
+    Input: eventTime = 10, k = 1, startTime = [0,2,9], endTime = [1,4,10]
+    Output: 6
+    Explanation: Reschedule the meeting at [2, 4] to [1, 3], leaving no meetings
+                 during the time [3, 9].
+
+    Example 3:
+    Input: eventTime = 5, k = 2, startTime = [0,1,2,3,4], endTime = [1,2,3,4,5]
+    Output: 0
+    Explanation: There is no time during the event not occupied by meetings.
+
+    Constraints:
+    * 1 <= eventTime <= 10^9
+    * n == startTime.length == endTime.length
+    * 2 <= n <= 105
+    * 1 <= k <= n
+    * 0 <= startTime[i] < endTime[i] <= eventTime
+    * endTime[i] <= startTime[i + 1] where i lies in the range [0, n - 2].*/
+
+    public int maxFreeTime(int eventTime, int k, int[] startTime, int[] endTime) {
+        int ans = 0;
+        for (int i = 0, n = startTime.length, lo = 0, prefix = 0; i < n; ++i) {
+            int hi = i+1 == n ? eventTime : startTime[i+1];
+            prefix += endTime[i] - startTime[i];
+            if (i >= k) {
+                lo = endTime[i-k];
+                prefix -= endTime[i-k] - startTime[i-k];
+            }
+            ans = Math.max(ans, hi-lo-prefix);
+        }
+        return ans;
+    }
+
+
+    /*3440. Reschedule Meetings for Maximum Free Time II (Medium)
+    You are given an integer eventTime denoting the duration of an event. You
+    are also given two integer arrays startTime and endTime, each of length n.
+    These represent the start and end times of n non-overlapping meetings that
+    occur during the event between time t = 0 and time t = eventTime, where the
+    ith meeting occurs during the time [startTime[i], endTime[i]]. You can
+    reschedule at most one meeting by moving its start time while maintaining
+    the same duration, such that the meetings remain non-overlapping, to
+    maximize the longest continuous period of free time during the event. Return
+    the maximum amount of free time possible after rearranging the meetings.
+    Note that the meetings can not be rescheduled to a time outside the event
+    and they should remain non-overlapping. Note: In this version, it is valid
+    for the relative ordering of the meetings to change after rescheduling one
+    meeting.
+
+    Example 1:
+    Input: eventTime = 5, startTime = [1,3], endTime = [2,5]
+    Output: 2
+    Explanation: Reschedule the meeting at [1, 2] to [2, 3], leaving no meetings
+                 during the time [0, 2].
+
+    Example 2:
+    Input: eventTime = 10, startTime = [0,7,9], endTime = [1,8,10]
+    Output: 7
+    Explanation: Reschedule the meeting at [0, 1] to [8, 9], leaving no meetings
+                 during the time [0, 7].
+
+    Example 3:
+    Input: eventTime = 10, startTime = [0,3,7,9], endTime = [1,4,8,10]
+    Output: 6
+    Explanation: Reschedule the meeting at [3, 4] to [8, 9], leaving no meetings
+                 during the time [1, 7].
+
+    Example 4:
+    Input: eventTime = 5, startTime = [0,1,2,3,4], endTime = [1,2,3,4,5]
+    Output: 0
+    Explanation: There is no time during the event not occupied by meetings.
+
+    Constraints:
+    * 1 <= eventTime <= 10^9
+    * n == startTime.length == endTime.length
+    * 2 <= n <= 10^5
+    * 0 <= startTime[i] < endTime[i] <= eventTime
+    * endTime[i] <= startTime[i + 1] where i lies in the range [0, n - 2].*/
+
+    public int maxFreeTime(int eventTime, int[] startTime, int[] endTime) {
+        int n = startTime.length;
+        int[] suffix = new int[n];
+        for (int i = n-1, most = 0; i >= 0; --i) {
+            suffix[i] = most;
+            int hi = i+1 == n ? eventTime : startTime[i+1];
+            most = Math.max(most, hi - endTime[i]);
+        }
+        int ans = 0;
+        for (int i = 0, prefix = 0; i < n; ++i) {
+            int lo = i == 0 ? 0 : endTime[i-1];
+            int hi = i+1 == n ? eventTime : startTime[i+1];
+            int sz = endTime[i] - startTime[i];
+            if (sz <= prefix || sz <= suffix[i]) ans = Math.max(ans, hi-lo);
+            else ans = Math.max(ans, hi-lo-sz);
+            prefix = Math.max(prefix, startTime[i]-lo);
+        }
+        return ans;
+    }
+
+
+    /*3441. Minimum Cost Good Caption (Hard)
+    You are given a string caption of length n. A good caption is a string where
+    every character appears in groups of at least 3 consecutive occurrences. For
+    example:
+    * "aaabbb" and "aaaaccc" are good captions.
+    * "aabbb" and "ccccd" are not good captions.
+    You can perform the following operation any number of times: Choose an index
+    i (where 0 <= i < n) and change the character at that index to either:
+    * The character immediately before it in the alphabet (if caption[i] != 'a').
+    * The character immediately after it in the alphabet (if caption[i] != 'z').
+    Your task is to convert the given caption into a good caption using the
+    minimum number of operations, and return it. If there are multiple possible
+    good captions, return the lexicographically smallest one among them. If it
+    is impossible to create a good caption, return an empty string "".
+
+    Example 1:
+    Input: caption = "cdcd"
+    Output: "cccc"
+    Explanation: It can be shown that the given caption cannot be transformed
+                 into a good caption with fewer than 2 operations. The possible
+                 good captions that can be created using exactly 2 operations
+                 are:
+                 * "dddd": Change caption[0] and caption[2] to their next
+                   character 'd'.
+                 * "cccc": Change caption[1] and caption[3] to their previous
+                   character 'c'.
+                 Since "cccc" is lexicographically smaller than "dddd", return
+                 "cccc".
+
+    Example 2:
+    Input: caption = "aca"
+    Output: "aaa"
+    Explanation: It can be proven that the given caption requires at least 2
+                 operations to be transformed into a good caption. The only good
+                 caption that can be obtained with exactly 2 operations is as
+                 follows:
+                 * Operation 1: Change caption[1] to 'b'. caption = "aba".
+                 * Operation 2: Change caption[1] to 'a'. caption = "aaa".
+                 Thus, return "aaa".
+
+    Example 3:
+    Input: caption = "bc"
+    Output: ""
+    Explanation: It can be shown that the given caption cannot be converted to a
+                 good caption by using any number of operations.
+
+    Constraints:
+    * 1 <= caption.length <= 5 * 10^4
+    * caption consists only of lowercase English letters.*/
+
+    public String minCostGoodCaption(String caption) {
+        int n = caption.length();
+        if (n < 3) return "";
+        int[] ops = new int[n+1], reps = new int[n+1];
+        char[] chs = new char[n+1];
+        Arrays.fill(ops, -1);
+        ops[n] = 0;
+        for (int i = n-1; i >= 0; --i) {
+            String sub = "";
+            for (int k = i+2; k < n && k < i+5; ++k) {
+                int m = Integer.MAX_VALUE;
+                char c = 0;
+                for (var x : caption.substring(i, k+1).toCharArray()) {
+                    int diff = 0;
+                    for (var v : caption.substring(i, k+1).toCharArray()) {
+                        diff += Math.abs(x - v);
+                    }
+                    if (diff < m || diff == m && x < c) {
+                        m = diff;
+                        c = x;
+                    }
+                }
+                String cand = String.valueOf(c).repeat(k-i+1) + String.valueOf(chs[k+1]).repeat(reps[k+1]);
+                if (cand.length() > 6) cand = cand.substring(0, 6);
+                if (ops[k+1] != -1 && (ops[i] == -1 || m + ops[k+1] < ops[i] || m + ops[k+1] == ops[i] && cand.compareTo(sub) < 0)) {
+                    ops[i] = m + ops[k+1];
+                    chs[i] = c;
+                    reps[i] = k-i+1;
+                    sub = cand;
+                }
+            }
+        }
+        StringBuilder ans = new StringBuilder();
+        for (int i = 0; i < n; i += reps[i])
+            ans.append(String.valueOf(chs[i]).repeat(reps[i]));
+        return ans.toString();
+    }
 }
 
 
