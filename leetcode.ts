@@ -28624,3 +28624,190 @@ Explanation: It can be shown that the given caption cannot be converted to a
 Constraints:
 * 1 <= caption.length <= 5 * 10^4
 * caption consists only of lowercase English letters.*/
+
+
+/*3442. Maximum Difference Between Even and Odd Frequency I (Easy)
+You are given a string s consisting of lowercase English letters. Your task
+is to find the maximum difference between the frequency of two characters in
+the string such that:
+* One of the characters has an even frequency in the string.
+* The other character has an odd frequency in the string.
+Return the maximum difference, calculated as the frequency of the character
+with an odd frequency minus the frequency of the character with an even
+frequency.
+
+Example 1:
+Input: s = "aaaaabbc"
+Output: 3
+Explanation: The character 'a' has an odd frequency of 5, and 'b' has an
+             even frequency of 2. The maximum difference is 5 - 2 = 3.
+
+Example 2:
+Input: s = "abcabcab"
+Output: 1
+Explanation: The character 'a' has an odd frequency of 3, and 'c' has an
+             even frequency of 2. The maximum difference is 3 - 2 = 1.
+
+Constraints:
+* 3 <= s.length <= 100
+* s consists only of lowercase English letters.
+* s contains at least one character with an odd frequency and one with an
+even frequency.*/
+
+function maxDifference(s: string): number {
+    const freq = new Map();
+    for (const ch of s)
+        freq.set(ch, (freq.get(ch) ?? 0) + 1);
+    let odd = 0, even = Infinity;
+    for (const v of freq.values())
+        if (v & 1) odd = Math.max(odd, v);
+        else even = Math.min(even, v);
+    return odd - even;
+};
+
+
+/*3443. Maximum Manhattan Distance After K Changes (Medium)
+You are given a string s consisting of the characters 'N', 'S', 'E', and
+'W', where s[i] indicates movements in an infinite grid:
+* 'N' : Move north by 1 unit.
+* 'S' : Move south by 1 unit.
+* 'E' : Move east by 1 unit.
+* 'W' : Move west by 1 unit.
+Initially, you are at the origin (0, 0). You can change at most k characters
+to any of the four directions. Find the maximum Manhattan distance from the
+origin that can be achieved at any time while performing the movements in
+order. The Manhattan Distance between two cells (xi, yi) and (xj, yj) is
+|xi - xj| + |yi - yj|.
+
+Example 1:
+Input: s = "NWSE", k = 1
+Output: 3
+Explanation: Change s[2] from 'S' to 'N'. The string s becomes "NWNE".
+             Movement    Position (x, y)  Manhattan Distance  Maximum
+             s[0] == 'N' (0, 1)           0 + 1 = 1           1
+             s[1] == 'W' (-1, 1)          1 + 1 = 2           2
+             s[2] == 'N' (-1, 2)          1 + 2 = 3           3
+             s[3] == 'E' (0, 2)           0 + 2 = 2           3
+             The maximum Manhattan distance from the origin that can be
+             achieved is 3. Hence, 3 is the output.
+
+Example 2:
+Input: s = "NSWWEW", k = 3
+Output: 6
+Explanation: Change s[1] from 'S' to 'N', and s[4] from 'E' to 'W'. The
+             string s becomes "NNWWWW". The maximum Manhattan distance from
+             the origin that can be achieved is 6. Hence, 6 is the output.
+
+Constraints:
+* 1 <= s.length <= 10^5
+* 0 <= k <= s.length
+* s consists of only 'N', 'S', 'E', and 'W'.*/
+
+function maxDistance(s: string, k: number): number {
+    let ans = 0;
+    const freq = new Map([['N', 0], ['S', 0], ['E', 0], ['W', 0]]);
+    for (const ch of s) {
+        freq.set(ch, freq.get(ch) + 1);
+        const v = Math.min(freq.get('N'), freq.get('S'));
+        const h = Math.min(freq.get('E'), freq.get('W'));
+        let cand = 0;
+        if (v+h <= k) cand = freq.get('N') + freq.get('S') + freq.get('E') + freq.get('W');
+        else if (v <= k) cand = freq.get('N') + freq.get('S') + Math.max(freq.get('E'), freq.get('W')) + 2*(k-v) - h;
+        else cand = Math.max(freq.get('N'), freq.get('S')) + 2*k - v + Math.abs(freq.get('E') - freq.get('W'));
+        ans = Math.max(ans, cand);
+    }
+    return ans;
+};
+
+
+/*3444. Minimum Increments for Target Multiples in an Array (Hard)
+You are given two arrays, nums and target. In a single operation, you may
+increment any element of nums by 1. Return the minimum number of operations
+required so that each element in target has at least one multiple in nums.
+
+Example 1:
+Input: nums = [1,2,3], target = [4]
+Output: 1
+Explanation: The minimum number of operations required to satisfy the
+             condition is 1. Increment 3 to 4 with just one operation,
+             making 4 a multiple of itself.
+
+Example 2:
+Input: nums = [8,4], target = [10,5]
+Output: 2
+Explanation: The minimum number of operations required to satisfy the
+             condition is 2. Increment 8 to 10 with 2 operations, making 10
+             a multiple of both 5 and 10.
+
+Example 3:
+Input: nums = [7,9,10], target = [7]
+Output: 0
+Explanation: Target 7 already has a multiple in nums, so no additional
+             operations are needed.
+
+Constraints:
+* 1 <= nums.length <= 5 * 10^4
+* 1 <= target.length <= 4
+* target.length <= nums.length
+* 1 <= nums[i], target[i] <= 10^4*/
+
+
+/*3445. Maximum Difference Between Even and Odd Frequency II (Hard)
+You are given a string s and an integer k. Your task is to find the maximum
+difference between the frequency of two characters, freq[a] - freq[b], in a
+substring subs of s, such that:
+* subs has a size of at least k.
+* Character a has an odd frequency in subs.
+* Character b has an even frequency in subs.
+Return the maximum difference. Note that subs can contain more than 2
+distinct characters.
+
+Example 1:
+Input: s = "12233", k = 4
+Output: -1
+Explanation: For the substring "12233", the frequency of '1' is 1 and the
+             frequency of '3' is 2. The difference is 1 - 2 = -1.
+
+Example 2:
+Input: s = "1122211", k = 3
+Output: 1
+Explanation: For the substring "11222", the frequency of '2' is 3 and the
+             frequency of '1' is 2. The difference is 3 - 2 = 1.
+
+Example 3:
+Input: s = "110", k = 3
+Output: -1
+
+Constraints:
+* 3 <= s.length <= 3 * 10^4
+* s consists only of digits '0' to '4'.
+* The input is generated that at least one substring has a character with an
+  even frequency and a character with an odd frequency.
+* 1 <= k <= s.length*/
+
+function maxDifference(s: string, k: number): number {
+    const n = s.length;
+    let ans = -Infinity;
+    for (const a of "01234")
+        for (const b of "01234")
+            if (a !== b) {
+                const seen = Array(4).fill(n);
+                const pa = [0], pb = [0];
+                for (let i = 0, ii = 0; i < n; ++i) {
+                    pa.push(pa[i]);
+                    pb.push(pb[i]);
+                    if (s[i] === a) ++pa[i+1];
+                    else if (s[i] === b) ++pb[i+1];
+                    while (ii <= i-k+1 && pa[ii] < pa[i+1] && pb[ii] < pb[i+1]) {
+                        const key = 2*(pa[ii]%2) + pb[ii]%2;
+                        const diff = pa[ii] - pb[ii];
+                        seen[key] = Math.min(seen[key], diff);
+                        ++ii;
+                    }
+                    const key = 2*(1-pa[i+1]%2) + pb[i+1]%2;
+                    const diff = pa[i+1] - pb[i+1];
+                    ans = Math.max(ans, diff - seen[key]);
+                }
+            }
+    return ans;
+};
