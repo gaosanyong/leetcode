@@ -45645,6 +45645,247 @@ class SegTree {
     }
 
 
+    /*3446. Sort Matrix by Diagonals (Medium)
+    You are given an n x n square matrix of integers grid. Return the matrix
+    such that:
+    * The diagonals in the bottom-left triangle (including the middle diagonal)
+      are sorted in non-increasing order.
+    * The diagonals in the top-right triangle are sorted in non-decreasing order.
+
+    Example 1:
+    Input: grid = [[1,7,3],[9,8,2],[4,5,6]]
+    Output: [[8,2,3],[9,6,7],[4,5,1]]
+    Explanation: The diagonals with a black arrow (bottom-left triangle) should
+                 be sorted in non-increasing order:
+                 - [1, 8, 6] becomes [8, 6, 1].
+                 - [9, 5] and [4] remain unchanged.
+                 The diagonals with a blue arrow (top-right triangle) should be
+                 sorted in non-decreasing order:
+                 - [7, 2] becomes [2, 7].
+                 - [3] remains unchanged.
+
+    Example 2:
+    Input: grid = [[0,1],[1,2]]
+    Output: [[2,1],[1,0]]
+    Explanation: The diagonals with a black arrow must be non-increasing, so
+                 [0, 2] is changed to [2, 0]. The other diagonals are already in
+                 the correct order.
+
+    Example 3:
+    Input: grid = [[1]]
+    Output: [[1]]
+    Explanation: Diagonals with exactly one element are already in order, so no
+                 changes are needed.
+
+    Constraints:
+    * grid.length == grid[i].length == n
+    * 1 <= n <= 10
+    * -10^5 <= grid[i][j] <= 10^5*/
+
+    public int[][] sortMatrix(int[][] grid) {
+        int n = grid.length;
+        for (int i = 0; i < n; ++i) {
+            int[] vals = new int[n-i];
+            for (int j = 0; j < n-i; ++j)
+                vals[j] = grid[i+j][j];
+            Arrays.sort(vals);
+            for (int j = 0; j < n-i; ++j)
+                grid[i+j][j] = vals[n-i-1-j];
+        }
+        for (int j = 1; j < n; ++j) {
+            int[] vals = new int[n-j];
+            for (int i = 0; i < n-j; ++i)
+                vals[i] = grid[i][i+j];
+            Arrays.sort(vals);
+            for (int i = 0; i < n-j; ++i)
+                grid[i][i+j] = vals[i];
+        }
+        return grid;
+    }
+
+
+    /*3447. Assign Elements to Groups with Constraints (Medium)
+    You are given an integer array groups, where groups[i] represents the size
+    of the ith group. You are also given an integer array elements. Your task is
+    to assign one element to each group based on the following rules:
+    * An element at index j can be assigned to a group i if groups[i] is
+      divisible by elements[j].
+    * If there are multiple elements that can be assigned, assign the element
+      with the smallest index j.
+    * If no element satisfies the condition for a group, assign -1 to that
+      group.
+    Return an integer array assigned, where assigned[i] is the index of the
+    element chosen for group i, or -1 if no suitable element exists. Note: An
+    element may be assigned to more than one group.
+
+    Example 1:
+    Input: groups = [8,4,3,2,4], elements = [4,2]
+    Output: [0,0,-1,1,0]
+    Explanation: - elements[0] = 4 is assigned to groups 0, 1, and 4.
+                 - elements[1] = 2 is assigned to group 3.
+                 - Group 2 cannot be assigned any element.
+
+    Example 2:
+    Input: groups = [2,3,5,7], elements = [5,3,3]
+    Output: [-1,1,0,-1]
+    Explanation: - elements[1] = 3 is assigned to group 1.
+                 - elements[0] = 5 is assigned to group 2.
+                 - Groups 0 and 3 cannot be assigned any element.
+
+    Example 3:
+    Input: groups = [10,21,30,41], elements = [2,1]
+    Output: [0,1,0,1]
+    Explanation: elements[0] = 2 is assigned to the groups with even values, and
+                 elements[1] = 1 is assigned to the groups with odd values.
+
+    Constraints:
+    * 1 <= groups.length <= 10^5
+    * 1 <= elements.length <= 10^5
+    * 1 <= groups[i] <= 10^5
+    * 1 <= elements[i] <= 10^5*/
+
+    public int[] assignElements(int[] groups, int[] elements) {
+        int most = 0, n = groups.length;
+        Map<Integer, List<Integer>> mp = new HashMap<>();
+        for (int i = 0; i < n; ++i) {
+            most = Math.max(most, groups[i]);
+            if (!mp.containsKey(groups[i])) mp.put(groups[i], new ArrayList<>());
+            mp.get(groups[i]).add(i);
+        }
+        int[] ans = new int[n];
+        Arrays.fill(ans, -1);
+        Set<Integer> seen = new HashSet<>();
+        for (int i = 0; i < elements.length; ++i)
+            if (!seen.contains(elements[i])) {
+                for (int xx = elements[i]; xx <= most; xx += elements[i])
+                    if (mp.containsKey(xx)) {
+                        for (var j : mp.get(xx))
+                            ans[j] = i;
+                        mp.remove(xx);
+                    }
+                seen.add(elements[i]);
+            }
+        return ans;
+    }
+
+
+    /*3448. Count Substrings Divisible By Last Digit (Hard)
+    You are given a string s consisting of digits. Return the number of
+    substrings of s divisible by their non-zero last digit. Note: A substring
+    may contain leading zeros.
+
+    Example 1:
+    Input: s = "12936"
+    Output: 11
+    Explanation: Substrings "29", "129", "293" and "2936" are not divisible by
+                 their last digit. There are 15 substrings in total, so the
+                 answer is 15 - 4 = 11.
+
+    Example 2:
+    Input: s = "5701283"
+    Output: 18
+    Explanation: Substrings "01", "12", "701", "012", "128", "5701", "7012",
+                 "0128", "57012", "70128", "570128", and "701283" are all
+                 divisible by their last digit. Additionally, all substrings
+                 that are just 1 non-zero digit are divisible by themselves.
+                 Since there are 6 such digits, the answer is 12 + 6 = 18.
+
+    Example 3:
+    Input: s = "1010101010"
+    Output: 25
+    Explanation: Only substrings that end with digit '1' are divisible by their
+                 last digit. There are 25 such substrings.
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * s consists of digits only.*/
+
+    public long countSubstrings(String s) {
+        long ans = 0;
+        for (int d = 1; d < 10; ++d) {
+            long[] dp = new long[10];
+            for (var ch : s.toCharArray()) {
+                int x = ch - '0';
+                long[] freq = new long[10];
+                ++freq[x % d];
+                for (int r = 0; r < d; ++r)
+                    freq[(10*r+x) % d] += dp[r];
+                dp = freq;
+                if (d == x) ans += dp[0];
+            }
+        }
+        return ans;
+    }
+
+
+    /*3449. Maximize the Minimum Game Score (Hard)
+    You are given an array points of size n and an integer m. There is another
+    array gameScore of size n, where gameScore[i] represents the score achieved
+    at the ith game. Initially, gameScore[i] == 0 for all i. You start at index
+    -1, which is outside the array (before the first position at index 0). You
+    can make at most m moves. In each move, you can either:
+    * Increase the index by 1 and add points[i] to gameScore[i].
+    * Decrease the index by 1 and add points[i] to gameScore[i].
+    Note that the index must always remain within the bounds of the array after
+    the first move. Return the maximum possible minimum value in gameScore after
+    at most m moves.
+
+    Example 1:
+    Input: points = [2,4], m = 3
+    Output: 4
+    Explanation: Initially, index i = -1 and gameScore = [0, 0].
+                 Move        Index   gameScore
+                 -----------------------------
+                 Increase i  0       [2, 0]
+                 Increase i  1       [2, 4]
+                 Decrease i  0       [4, 4]
+                 The minimum value in gameScore is 4, and this is the maximum
+                 possible minimum among all configurations. Hence, 4 is the
+                 output.
+
+    Example 2:
+    Input: points = [1,2,3], m = 5
+    Output: 2
+    Explanation: Initially, index i = -1 and gameScore = [0, 0, 0].
+                 Move        Index   gameScore
+                 -----------------------------
+                 Increase i  0       [1, 0, 0]
+                 Increase i  1       [1, 2, 0]
+                 Decrease i  0       [2, 2, 0]
+                 Increase i  1       [2, 4, 0]
+                 Increase i  2       [2, 4, 3]
+                 The minimum value in gameScore is 2, and this is the maximum
+                 possible minimum among all configurations. Hence, 2 is the
+                 output.
+
+    Constraints:
+    * 2 <= n == points.length <= 5 * 10^4
+    * 1 <= points[i] <= 10^6
+    * 1 <= m <= 10^9*/
+
+    private boolean check(long val, int[] points, int m) {
+        long ans = 0, ops = 0;
+        for (int i = 0, n = points.length; i < n; ++i) {
+            if (i+1 < n || ops*points[i] < val) {
+                ops = Math.max(0, (val+points[i]-1)/points[i] - (ops+1));
+                ans += 2*ops + 1;
+            }
+        }
+        return ans <= m;
+    }
+
+    public long maxScore(int[] points, int m) {
+        final int n = points.length;
+        long lo = 0, hi = (long) m * Arrays.stream(points).min().getAsInt();
+        while (lo < hi) {
+            long mid = lo + hi + 1 >> 1;
+            if (check(mid, points, m)) lo = mid;
+            else hi = mid - 1;
+        }
+        return lo;
+    }
+
+
     /*3456. Find Special Substring of Length K (Easy)
     You are given a string s and an integer k. Determine if there exists a of
     length exactly k in s that satisfies the following conditions:
