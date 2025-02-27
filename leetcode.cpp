@@ -88353,6 +88353,252 @@ public:
                 }
         return ans;
     }
+
+
+    /*3461. Check If Digits Are Equal in String After Operations I (Easy)
+    You are given a string s consisting of digits. Perform the following
+    operation repeatedly until the string has exactly two digits:
+    * For each pair of consecutive digits in s, starting from the first digit,
+      calculate a new digit as the sum of the two digits modulo 10.
+    * Replace s with the sequence of newly calculated digits, maintaining the
+      order in which they are computed.
+    Return true if the final two digits in s are the same; otherwise, return
+    false.
+
+    Example 1:
+    Input: s = "3902"
+    Output: true
+    Explanation: Initially, s = "3902"
+                 First operation:
+                     (s[0] + s[1]) % 10 = (3 + 9) % 10 = 2
+                     (s[1] + s[2]) % 10 = (9 + 0) % 10 = 9
+                     (s[2] + s[3]) % 10 = (0 + 2) % 10 = 2
+                     s becomes "292"
+                 Second operation:
+                     (s[0] + s[1]) % 10 = (2 + 9) % 10 = 1
+                     (s[1] + s[2]) % 10 = (9 + 2) % 10 = 1
+                     s becomes "11"
+                 Since the digits in "11" are the same, the output is true.
+
+    Example 2:
+    Input: s = "34789"
+    Output: false
+    Explanation: Initially, s = "34789".
+                 After the first operation, s = "7157".
+                 After the second operation, s = "862".
+                 After the third operation, s = "48".
+                 Since '4' != '8', the output is false.
+
+    Constraints:
+    * 3 <= s.length <= 100
+    * s consists of only digits.*/
+
+    bool hasSameDigits(string s) {
+        vector<int> vals;
+        transform(s.begin(), s.end(), back_inserter(vals), [&](auto& ch) { return ch - '0'; });
+        for (int n = vals.size(); n > 2; --n) {
+            vector<int> temp;
+            for (int i = 0; i+1 < n; ++i)
+                temp.push_back((vals[i] + vals[i+1]) % 10);
+            vals = temp;
+        }
+        return vals[0] == vals[1];
+    }
+
+
+    /*3462. Maximum Sum With at Most K Elements (Medium)
+    You are given a 2D integer matrix grid of size n x m, an integer array
+    limits of length n, and an integer k. The task is to find the maximum sum of
+    at most k elements from the matrix grid such that:
+    * The number of elements taken from the ith row of grid does not exceed
+      limits[i].
+    Return the maximum sum.
+
+    Example 1:
+    Input: grid = [[1,2],[3,4]], limits = [1,2], k = 2
+    Output: 7
+    Explanation: From the second row, we can take at most 2 elements. The
+                 elements taken are 4 and 3. The maximum possible sum of at most
+                 2 selected elements is 4 + 3 = 7.
+
+    Example 2:
+    Input: grid = [[5,3,7],[8,2,6]], limits = [2,2], k = 3
+    Output: 21
+    Explanation: From the first row, we can take at most 2 elements. The element
+                 taken is 7. From the second row, we can take at most 2
+                 elements. The elements taken are 8 and 6. The maximum possible
+                 sum of at most 3 selected elements is 7 + 8 + 6 = 21.
+
+    Constraints:
+    * n == grid.length == limits.length
+    * m == grid[i].length
+    * 1 <= n, m <= 500
+    * 0 <= grid[i][j] <= 105
+    * 0 <= limits[i] <= m
+    * 0 <= k <= min(n * m, sum(limits))*/
+
+    long long maxSum(vector<vector<int>>& grid, vector<int>& limits, int k) {
+        int m = grid.size(), n = grid[0].size();
+        vector<pair<int, int>> vals;
+        for (int i = 0; i < m; ++i)
+            for (int j = 0; j < n; ++j)
+                vals.emplace_back(grid[i][j], i);
+        sort(vals.begin(), vals.end(), greater<>());
+        long long ans = 0;
+        for (auto& [x, i] : vals)
+            if (k && limits[i]) {
+                --k;
+                --limits[i];
+                ans += x;
+            }
+        return ans;
+    }
+
+
+    /*3463. Check If Digits Are Equal in String After Operations II (Hard)
+    You are given a string s consisting of digits. Perform the following
+    operation repeatedly until the string has exactly two digits:
+    * For each pair of consecutive digits in s, starting from the first digit,
+      calculate a new digit as the sum of the two digits modulo 10.
+    * Replace s with the sequence of newly calculated digits, maintaining the
+      order in which they are computed.
+    Return true if the final two digits in s are the same; otherwise, return
+    false.
+
+    Example 1:
+    Input: s = "3902"
+    Output: true
+    Explanation: Initially, s = "3902"
+                 First operation:
+                     (s[0] + s[1]) % 10 = (3 + 9) % 10 = 2
+                     (s[1] + s[2]) % 10 = (9 + 0) % 10 = 9
+                     (s[2] + s[3]) % 10 = (0 + 2) % 10 = 2
+                     s becomes "292"
+                 Second operation:
+                     (s[0] + s[1]) % 10 = (2 + 9) % 10 = 1
+                     (s[1] + s[2]) % 10 = (9 + 2) % 10 = 1
+                     s becomes "11"
+                 Since the digits in "11" are the same, the output is true.
+
+    Example 2:
+    Input: s = "34789"
+    Output: false
+    Explanation: Initially, s = "34789".
+                 After the first operation, s = "7157".
+                 After the second operation, s = "862".
+                 After the third operation, s = "48".
+                 Since '4' != '8', the output is false.
+
+    Constraints:
+    * 3 <= s.length <= 10^5
+    * s consists of only digits.*/
+
+    bool hasSameDigits(string s) {
+
+        function<int(int, int, int)> lucas = [](int n, int k, int mod) {
+            int ans = 1;
+            while (n || k) {
+                int nr = n % mod, kr = k % mod;
+                n /= mod;
+                k /= mod;
+                if (nr < kr) return 0;
+                int comb = 1;
+                for (int x = 0; x < kr && x < nr-kr; ++x) {
+                    comb *= nr-x;
+                    comb /= x+1;
+                }
+                ans = ans * comb % mod;
+            }
+            return ans;
+        };
+
+        int diff = 0, n = s.size();
+
+        for (int i = 0; i < n-1; ++i) {
+            int m2 = lucas(n-2, i, 2);
+            int m5 = lucas(n-2, i, 5);
+            int coef = 0;
+            for (int x = 0; x < 10; ++x)
+                if (x % 2 == m2 && x % 5 == m5) {
+
+                    coef = x;
+                    break;
+                }
+            diff += coef * (s[i] - s[i+1]);
+        }
+        return diff % 10 == 0;
+    }
+
+
+    /*3464. Maximize the Distance Between Points on a Square (Hard)
+    You are given an integer side, representing the edge length of a square with
+    corners at (0, 0), (0, side), (side, 0), and (side, side) on a Cartesian
+    plane. You are also given a positive integer k and a 2D integer array
+    points, where points[i] = [xi, yi] represents the coordinate of a point
+    lying on the boundary of the square. You need to select k elements among
+    points such that the minimum Manhattan distance between any two points is
+    maximized. Return the maximum possible minimum Manhattan distance between
+    the selected k points. The Manhattan Distance between two cells (xi, yi) and
+    (xj, yj) is |xi - xj| + |yi - yj|.
+
+    Example 1:
+    Input: side = 2, points = [[0,2],[2,0],[2,2],[0,0]], k = 4
+    Output: 2
+    Explanation: Select all four points.
+
+    Example 2:
+    Input: side = 2, points = [[0,0],[1,2],[2,0],[2,2],[2,1]], k = 4
+    Output: 1
+    Explanation: Select the points (0, 0), (2, 0), (2, 2), and (2, 1).
+
+    Example 3:
+    Input: side = 2, points = [[0,0],[0,1],[0,2],[1,2],[2,0],[2,2],[2,1]], k = 5
+    Output: 1
+    Explanation: Select the points (0, 0), (0, 1), (0, 2), (1, 2), and (2, 2).
+
+    Constraints:
+    * 1 <= side <= 10^9
+    * 4 <= points.length <= min(4 * side, 15 * 10^3)
+    * points[i] == [xi, yi]
+    * The input is generated such that:
+      - points[i] lies on the boundary of the square.
+      - All points[i] are unique.
+    * 4 <= k <= min(25, points.length)*/
+
+    int maxDistance(int side, vector<vector<int>>& points, int k) {
+        sort(points.begin(), points.end(), [&](auto& x, auto& y) {
+            return atan2(x[1]-0.5, x[0]-0.5) < atan2(y[1]-0.5, y[0]-0.5);
+        });
+
+        function<bool(int)> check = [&](int v) {
+            int ans = 0;
+            queue<tuple<int, int, int, int, int>> q;
+            for (auto& p : points) {
+                int cnt = 1, x = p[0], y = p[1], ox = x, oy = y;
+                while (q.size()) {
+                    auto [xx, yy, oxx, oyy, cc] = q.front();
+                    if (abs(x - xx) + abs(y - yy) >= v) {
+                        if (cc+1 >= cnt && abs(x - oxx) + abs(y - oyy) >= v) {
+                            cnt = cc+1;
+                            ox = oxx; oy = oyy;
+                        }
+                        q.pop();
+                    } else break;
+                }
+                ans = max(ans, cnt);
+                q.emplace(x, y, ox, oy, cnt);
+            }
+            return ans >= k;
+        };
+
+        int lo = 0, hi = side;
+        while (lo < hi) {
+            int mid = lo + hi + 1 >> 1;
+            if (check(mid)) lo = mid;
+            else hi = mid-1;
+        }
+        return lo;
+    }
 }
 
 
