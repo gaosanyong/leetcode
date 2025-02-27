@@ -45645,6 +45645,247 @@ class SegTree {
     }
 
 
+    /*3456. Find Special Substring of Length K (Easy)
+    You are given a string s and an integer k. Determine if there exists a of
+    length exactly k in s that satisfies the following conditions:
+    * The substring consists of only one distinct character (e.g., "aaa" or
+      "bbb").
+    * If there is a character immediately before the substring, it must be
+      different from the character in the substring.
+    * If there is a character immediately after the substring, it must also be
+      different from the character in the substring.
+    Return true if such a substring exists. Otherwise, return false.
+
+    Example 1:
+    Input: s = "aaabaaa", k = 3
+    Output: true
+    Explanation: The substring s[4..6] == "aaa" satisfies the conditions.
+                 - It has a length of 3.
+                 - All characters are the same.
+                 - The character before "aaa" is 'b', which is different from 'a'.
+                 - There is no character after "aaa".
+
+    Example 2:
+    Input: s = "abc", k = 2
+    Output: false
+    Explanation: There is no substring of length 2 that consists of one distinct
+                 character and satisfies the conditions.
+
+    Constraints:
+    * 1 <= k <= s.length <= 100
+    * s consists of lowercase English letters only.*/
+
+    public boolean hasSpecialSubstring(String s, int k) {
+        for (int cnt = 0, i = 0, n = s.length(); i <= n; ++i, ++cnt)
+            if (i == n || (i > 0 && s.charAt(i-1) != s.charAt(i))) {
+                if (cnt == k) return true;
+                cnt = 0;
+            }
+        return false;
+    }
+
+
+    /*3457. Eat Pizzas! (Medium)
+    You are given an integer array pizzas of size n, where pizzas[i] represents
+    the weight of the ith pizza. Every day, you eat exactly 4 pizzas. Due to
+    your incredible metabolism, when you eat pizzas of weights W, X, Y, and Z,
+    where W <= X <= Y <= Z, you gain the weight of only 1 pizza!
+    * On odd-numbered days (1-indexed), you gain a weight of Z.
+    * On even-numbered days, you gain a weight of Y.
+    Find the maximum total weight you can gain by eating all pizzas optimally.
+    Note: It is guaranteed that n is a multiple of 4, and each pizza can be
+    eaten only once.
+
+    Example 1:
+    Input: pizzas = [1,2,3,4,5,6,7,8]
+    Output: 14
+    Explanation: - On day 1, you eat pizzas at indices [1, 2, 4, 7] =
+                   [2, 3, 5, 8]. You gain a weight of 8.
+                 - On day 2, you eat pizzas at indices [0, 3, 5, 6] =
+                   [1, 4, 6, 7]. You gain a weight of 6.
+                 The total weight gained after eating all the pizzas is
+                 8 + 6 = 14.
+
+    Example 2:
+    Input: pizzas = [2,1,1,1,1,1,1,1]
+    Output: 3
+    Explanation: - On day 1, you eat pizzas at indices [4, 5, 6, 0] =
+                   [1, 1, 1, 2]. You gain a weight of 2.
+                 - On day 2, you eat pizzas at indices [1, 2, 3, 7] =
+                   [1, 1, 1, 1]. You gain a weight of 1.
+                 The total weight gained after eating all the pizzas is
+                 2 + 1 = 3.
+
+    Constraints:
+    * 4 <= n == pizzas.length <= 2 * 10^5
+    * 1 <= pizzas[i] <= 10^5
+    * n is a multiple of 4.*/
+
+    public long maxWeight(int[] pizzas) {
+        Arrays.sort(pizzas);
+        int odd = (pizzas.length/4+1)/2;
+        long ans = 0;
+        for (int i = 0, n = pizzas.length, k = n-1; i < n/4; ++i) {
+            if (i >= odd) --k;
+            ans += pizzas[k--];
+        }
+        return ans;
+    }
+
+
+    /*3458. Select K Disjoint Special Substrings (Medium)
+    Given a string s of length n and an integer k, determine whether it is
+    possible to select k disjoint special substrings. A special substring is a
+    substring where:
+    * Any character present inside the substring should not appear outside it in
+      the string.
+    * The substring is not the entire string s.
+    Note that all k substrings must be disjoint, meaning they cannot overlap.
+    Return true if it is possible to select k such disjoint special substrings;
+    otherwise, return false.
+
+    Example 1:
+    Input: s = "abcdbaefab", k = 2
+    Output: true
+    Explanation: We can select two disjoint special substrings: "cd" and "ef".
+                 - "cd" contains the characters 'c' and 'd', which do not appear
+                   elsewhere in s.
+                 - "ef" contains the characters 'e' and 'f', which do not appear
+                   elsewhere in s.
+
+    Example 2:
+    Input: s = "cdefdc", k = 3
+    Output: false
+    Explanation: There can be at most 2 disjoint special substrings: "e" and
+                 "f". Since k = 3, the output is false.
+
+    Example 3:
+    Input: s = "abeabe", k = 0
+    Output: true
+
+    Constraints:
+    * 2 <= n == s.length <= 5 * 10^4
+    * 0 <= k <= 26
+    * s consists only of lowercase English letters.*/
+
+    public boolean maxSubstringLength(String s, int k) {
+        int n = s.length();
+        Map<Character, int[]> loc = new HashMap<>();
+        Map<Character, Integer> freq = new HashMap<>();
+        for (int i = 0; i < n; ++i) {
+            char ch = s.charAt(i);
+            freq.merge(ch, 1, Integer::sum);
+            if (loc.containsKey(ch)) loc.get(ch)[1] = i;
+            else loc.put(ch, new int[]{i, i});
+        }
+        List<int[]> intervals = new ArrayList<>();
+        for (var start : loc.values()) {
+            int lo = start[0];
+            for (var end : loc.values()) {
+                int hi = end[1];
+                if (lo <= hi) {
+                    int total = 0;
+                    for (var ch : loc.keySet()) {
+                        int x = loc.get(ch)[0], y = loc.get(ch)[1];
+                        if (lo <= x && y <= hi) {
+                            total += freq.get(ch);
+                        }
+                    }
+                    if (total == hi-lo+1 && (lo != 0 || hi != n-1)) intervals.add(new int[]{lo, hi});
+                }
+            }
+        }
+        Collections.sort(intervals, (x, y) -> x[1] != y[1] ? Integer.compare(x[1], y[1]) : Integer.compare(y[0], x[0]));
+        int prev = -1;
+        for (var elem : intervals) {
+            int x = elem[0], y = elem[1];
+            if (prev < x) --k;
+            prev = y;
+        }
+        return k <= 0;
+    }
+
+
+    /*3459. Length of Longest V-Shaped Diagonal Segment (Hard)
+    You are given a 2D integer matrix grid of size n x m, where each element is
+    either 0, 1, or 2. A V-shaped diagonal segment is defined as:
+    * The segment starts with 1.
+    * The subsequent elements follow this infinite sequence: 2, 0, 2, 0, ....
+    * The segment:
+        - Starts along a diagonal direction (top-left to bottom-right, bottom-
+          right to top-left, top-right to bottom-left, or bottom-left to top-
+          right).
+        - Continues the sequence in the same diagonal direction.
+        - Makes at most one clockwise 90-degree turn to another diagonal
+          direction while maintaining the sequence.
+    Return the length of the longest V-shaped diagonal segment. If no valid
+    segment exists, return 0.
+
+    Example 1:
+    Input: grid = [[2,2,1,2,2],[2,0,2,2,0],[2,0,1,1,0],[1,0,2,2,2],[2,0,0,2,2]]
+    Output: 5
+    Explanation: The longest V-shaped diagonal segment has a length of 5 and
+                 follows these coordinates: (0,2) → (1,3) → (2,4), takes a 90-
+                 degree clockwise turn at (2,4), and continues as (3,3) → (4,2).
+
+    Example 2:
+    Input: grid = [[2,2,2,2,2],[2,0,2,2,0],[2,0,1,1,0],[1,0,2,2,2],[2,0,0,2,2]]
+    Output: 4
+    Explanation: The longest V-shaped diagonal segment has a length of 4 and
+                 follows these coordinates: (2,3) → (3,2), takes a 90-degree
+                 clockwise turn at (3,2), and continues as (2,1) → (1,0).
+
+    Example 3:
+    Input: grid = [[1,2,2,2,2],[2,2,2,2,0],[2,0,0,0,0],[0,0,2,2,2],[2,0,0,2,0]]
+    Output: 5
+    Explanation: The longest V-shaped diagonal segment has a length of 5 and
+                 follows these coordinates: (0,0) → (1,1) → (2,2) → (3,3) →
+                 (4,4).
+
+    Example 4:
+    Input: grid = [[1]]
+    Output: 1
+    Explanation: The longest V-shaped diagonal segment has a length of 1 and
+                 follows these coordinates: (0,0).
+
+    Constraints:
+    * n == grid.length
+    * m == grid[i].length
+    * 1 <= n, m <= 500
+    * grid[i][j] is either 0, 1 or 2.*/
+
+    private int fn(int i, int j, int k, int turn, int[] match, int[][] dirs, int[][] grid, int[][][][] memo) {
+        if (memo[i][j][k][turn] == 0) {
+            int ans = 1, n = grid.length, m = grid[0].length;
+            List<int[]> cand = new ArrayList<>();
+            cand.add(new int[]{k, turn});
+            if (turn == 1) cand.add(new int[]{(k+1)%4, 0});
+            for (var elem : cand) {
+                int kk = elem[0], tt = elem[1];
+                int di = dirs[kk][0], dj = dirs[kk][1], ii = i+di, jj = j+dj;
+                if (0 <= ii && ii < n && 0 <= jj && jj < m && grid[ii][jj] == match[grid[i][j]])
+                    ans = Math.max(ans, 1 + fn(ii, jj, kk, tt, match, dirs, grid, memo));
+            }
+            memo[i][j][k][turn] = ans;
+        }
+        return memo[i][j][k][turn];
+    }
+
+    public int lenOfVDiagonal(int[][] grid) {
+        int n = grid.length, m = grid[0].length;
+        int[] match = new int[]{2, 2, 0};
+        int[][] dirs = new int[][]{{-1, -1}, {-1, 1}, {1, 1}, {1, -1}};
+        int[][][][] memo = new int[n][m][4][2];
+        int ans = 0;
+        for (int i = 0; i < n; ++i)
+            for (int j = 0; j < m; ++j)
+                if (grid[i][j] == 1)
+                    for (int k = 0; k < 4; ++k)
+                        ans = Math.max(ans, fn(i, j, k, 1, match, dirs, grid, memo));
+        return ans;
+    }
+
+
     /*3461. Check If Digits Are Equal in String After Operations I (Easy)
     You are given a string s consisting of digits. Perform the following
     operation repeatedly until the string has exactly two digits:
