@@ -89077,6 +89077,243 @@ public:
         }
         return lo;
     }
+
+
+    /*3471. Find the Largest Almost Missing Integer (Easy)
+    You are given an integer array nums and an integer k. An integer x is almost
+    missing from nums if x appears in exactly one subarray of size k within
+    nums. Return the largest almost missing integer from nums. If no such
+    integer exists, return -1. A subarray is a contiguous sequence of elements
+    within an array.
+
+    Example 1:
+    Input: nums = [3,9,2,1,7], k = 3
+    Output: 7
+    Explanation: * 1 appears in 2 subarrays of size 3: [9, 2, 1] and [2, 1, 7].
+                 * 2 appears in 3 subarrays of size 3: [3, 9, 2], [9, 2, 1],
+                   [2, 1, 7].
+                 * 3 appears in 1 subarray of size 3: [3, 9, 2].
+                 * 7 appears in 1 subarray of size 3: [2, 1, 7].
+                 * 9 appears in 2 subarrays of size 3: [3, 9, 2], and [9, 2, 1].
+                 We return 7 since it is the largest integer that appears in
+                 exactly one subarray of size k.
+
+    Example 2:
+    Input: nums = [3,9,7,2,1,7], k = 4
+    Output: 3
+    Explanation: * 1 appears in 2 subarrays of size 4: [9, 7, 2, 1],
+                   [7, 2, 1, 7].
+                 * 2 appears in 3 subarrays of size 4: [3, 9, 7, 2],
+                   `[9, 7, 2, 1],
+                   [7, 2, 1, 7].
+                 * 3 appears in 1 subarray of size 4: [3, 9, 7, 2].
+                 * 7 appears in 3 subarrays of size 4: [3, 9, 7, 2],
+                   [9, 7, 2, 1], [7, 2, 1, 7].
+                 * 9 appears in 2 subarrays of size 4: [3, 9, 7, 2],
+                   [9, 7, 2, 1].
+                 We return 3 since it is the largest and only integer that
+                 appears in exactly one subarray of size k.
+
+    Example 3:
+    Input: nums = [0,0], k = 1
+    Output: -1
+    Explanation: There is no integer that appears in only one subarray of size 1.
+
+    Constraints:
+    * 1 <= nums.length <= 50
+    * 0 <= nums[i] <= 50
+    * 1 <= k <= nums.length*/
+
+    int largestInteger(vector<int>& nums, int k) {
+        int n = nums.size();
+        if (k == n) return *max_element(nums.begin(), nums.end());
+        unordered_map<int, int> freq;
+        for (auto& x : nums) ++freq[x];
+        if (k != 1)
+            nums = vector<int>{nums[0], nums[n-1]};
+        int ans = -1;
+        for (auto& x : nums)
+            if (freq[x] == 1) ans = max(ans, x);
+        return ans;
+    }
+
+
+    /*3472. Longest Palindromic Subsequence After at Most K Operations (Medium)
+    You are given a string s and an integer k. In one operation, you can replace
+    the character at any position with the next or previous letter in the
+    alphabet (wrapping around so that 'a' is after 'z'). For example, replacing
+    'a' with the next letter results in 'b', and replacing 'a' with the previous
+    letter results in 'z'. Similarly, replacing 'z' with the next letter results
+    in 'a', and replacing 'z' with the previous letter results in 'y'. Return
+    the length of the longest palindromic subsequence of s that can be obtained
+    after performing at most k operations.
+
+    Example 1:
+    Input: s = "abced", k = 2
+    Output: 3
+    Explanation: * Replace s[1] with the next letter, and s becomes "acced".
+                 * Replace s[4] with the previous letter, and s becomes "accec".
+                 The subsequence "ccc" forms a palindrome of length 3, which is
+                 the maximum.
+
+    Example 2:
+    Input: s = "aaazzz", k = 4
+    Output: 6
+    Explanation: * Replace s[0] with the previous letter, and s becomes "zaazzz".
+                 * Replace s[4] with the next letter, and s becomes "zaazaz".
+                 * Replace s[3] with the next letter, and s becomes "zaaaaz".
+                 The entire string forms a palindrome of length 6.
+
+    Constraints:
+    * 1 <= s.length <= 200
+    * 1 <= k <= 200
+    * s consists of only lowercase English letters.*/
+
+    int longestPalindromicSubsequence(string s, int k) {
+        const int n = s.size();
+        int dp[n][n][k+1];
+        memset(dp, 0, sizeof(dp));
+        for (int i = n-1; i >= 0; --i)
+            for (int j = i; j < n; ++j)
+                for (int v = 0; v <= k; ++v)
+                    if (i == j) dp[i][j][v] = 1;
+                    else {
+                        int diff = abs(s[i] - s[j]);
+                        diff = min(diff, 26-diff);
+                        if (i+1 < n) dp[i][j][v] = max(dp[i][j][v], dp[i+1][j][v]);
+                        if (0 < j) dp[i][j][v] = max(dp[i][j][v], dp[i][j-1][v]);
+                        if (diff <= v && i+1 < n && 0 < j) dp[i][j][v] = max(dp[i][j][v], 2 + dp[i+1][j-1][v-diff]);
+                    }
+        return dp[0][n-1][k];
+    }
+
+
+    /*3473. Sum of K Subarrays With Length at Least M (Medium)
+    You are given an integer array nums and two integers, k and m. Return the
+    maximum sum of k non-overlapping subarrays of nums, where each subarray has
+    a length of at least m.
+
+    Example 1:
+    Input: nums = [1,2,-1,3,3,4], k = 2, m = 2
+    Output: 13
+    Explanation: The optimal choice is:
+                 * Subarray nums[3..5] with sum 3 + 3 + 4 = 10 (length is
+                   3 >= m).
+                 * Subarray nums[0..1] with sum 1 + 2 = 3 (length is 2 >= m).
+                 The total sum is 10 + 3 = 13.
+
+    Example 2:
+    Input: nums = [-10,3,-1,-2], k = 4, m = 1
+    Output: -10
+    Explanation: The optimal choice is choosing each element as a subarray. The
+                 output is (-10) + 3 + (-1) + (-2) = -10.
+
+    Constraints:
+    * 1 <= nums.length <= 2000
+    * -10^4 <= nums[i] <= 10^4
+    * 1 <= k <= floor(nums.length / m)
+    * 1 <= m <= 3*/
+
+    int maxSum(vector<int>& nums, int k, int m) {
+        const int n = nums.size();
+        vector<int> prefix(n+1);
+        for (int i = 0; i < n; ++i)
+            prefix[i+1] = prefix[i] + nums[i];
+        int dp[n+1][k+1];
+        memset(dp, 0, sizeof(dp));
+        for (int j = 1; j <= k; ++j) {
+            int cand = INT_MIN/2;
+            for (int i = n; i >= 0; --i) {
+                if (n-i < j*m) dp[i][j] = INT_MIN/2;
+                else {
+                    dp[i][j] = dp[i+1][j];
+                    cand += nums[i];
+                    if (i+m <= n)
+                        cand = max(cand, prefix[i+m] - prefix[i] + dp[i+m][j-1]);
+                    dp[i][j] = max(dp[i][j], cand);
+                }
+            }
+        }
+        return dp[0][k];
+    }
+
+
+    /*3474. Lexicographically Smallest Generated String (Hard)
+    You are given two strings, str1 and str2, of lengths n and m, respectively.
+    A string word of length n + m - 1 is defined to be generated by str1 and
+    str2 if it satisfies the following conditions for each index
+    0 <= i <= n - 1:
+    * If str1[i] == 'T', the substring of word with size m starting at index i
+      is equal to str2, i.e., word[i..(i + m - 1)] == str2.
+    * If str1[i] == 'F', the substring of word with size m starting at index i
+      is not equal to str2, i.e., word[i..(i + m - 1)] != str2.
+    Return the lexicographically smallest possible string that can be generated
+    by str1 and str2. If no string can be generated, return an empty string "".
+
+    Example 1:
+    Input: str1 = "TFTF", str2 = "ab"
+    Output: "ababa"
+    Explanation: The table below represents the string "ababa"
+                 Index   T/F Substring of length m
+                 0   'T' "ab"
+                 1   'F' "ba"
+                 2   'T' "ab"
+                 3   'F' "ba"
+                 The strings "ababa" and "ababb" can be generated by str1 and
+                 str2. Return "ababa" since it is the lexicographically smaller
+                 string.
+
+    Example 2:
+    Input: str1 = "TFTF", str2 = "abc"
+    Output: ""
+    Explanation: No string that satisfies the conditions can be generated.
+
+    Example 3:
+    Input: str1 = "F", str2 = "d"
+    Output: "a"
+
+    Constraints:
+    * 1 <= n == str1.length <= 10^4
+    * 1 <= m == str2.length <= 500
+    * str1 consists only of 'T' or 'F'.
+    * str2 consists only of lowercase English characters.*/
+
+    string generateString(string str1, string str2) {
+        int n = str1.size(), m = str2.size();
+        string ans = string(m+n-1, 'a');
+        vector<int> ind(m+n-1, -1);
+        for (int i = 0, j = m; i < m+n-1; ++i, ++j) {
+            if (i < n && str1[i] == 'T') j = 0;
+            if (j < m) {
+                ans[i] = str2[j];
+                ind[i] = j;
+            }
+        }
+        int k = 0;
+        vector<int> lps(1);
+        for (int i = 1; i < m; ++i) {
+            while (k && str2[k] != str2[i]) k = lps[k-1];
+            if (str2[k] == str2[i]) ++k;
+            lps.push_back(k);
+        }
+        k = 0;
+        int last = -1;
+        for (int i = 0; i < m+n-1; ++i) {
+            if (ind[i] == -1) last = i;
+            while (k && (k == m || str2[k] != ans[i])) k = lps[k-1];
+            if (str2[k] == ans[i]) ++k;
+            if (i >= m-1) {
+                if (str1[i-m+1] == 'T' && k < m) return "";
+                if (str1[i-m+1] == 'F' && k == m) {
+                    if (last < i-m+1) return "";
+                    ans[last] = 'b';
+                    if (ind[i] != -1) k = ind[i] + 1;
+                    else k = 0;
+                }
+            }
+        }
+        return ans;
+    }
 }
 
 
