@@ -89079,6 +89079,223 @@ public:
     }
 
 
+    /*3467. Transform Array by Parity (Easy)
+    You are given an integer array nums. Transform nums by performing the
+    following operations in the exact order specified:
+    * Replace each even number with 0.
+    * Replace each odd numbers with 1.
+    * Sort the modified array in non-decreasing order.
+    Return the resulting array after performing these operations.
+
+    Example 1:
+    Input: nums = [4,3,2,1]
+    Output: [0,0,1,1]
+    Explanation: Replace the even numbers (4 and 2) with 0 and the odd numbers
+                 (3 and 1) with 1. Now, nums = [0, 1, 0, 1]. After sorting nums
+                 in non-descending order, nums = [0, 0, 1, 1].
+
+    Example 2:
+    Input: nums = [1,5,1,4,2]
+    Output: [0,0,1,1,1]
+    Explanation: Replace the even numbers (4 and 2) with 0 and the odd numbers
+                 (1, 5 and 1) with 1. Now, nums = [1, 1, 1, 0, 0]. After sorting
+                 nums in non-descending order, nums = [0, 0, 1, 1, 1].
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * 1 <= nums[i] <= 1000*/
+
+    vector<int> transformArray(vector<int>& nums) {
+        int odd = accumulate(nums.begin(), nums.end(), 0, [&](int s, int x) { return s + x % 2; });
+        vector<int> ans(nums.size());
+        fill(ans.end()-odd, ans.end(), 1);
+        return ans;
+    }
+
+
+    /*3468. Find the Number of Copy Arrays (Medium)
+    You are given an array original of length n and a 2D array bounds of length
+    n x 2, where bounds[i] = [ui, vi]. You need to find the number of possible
+    arrays copy of length n such that:
+    * (copy[i] - copy[i - 1]) == (original[i] - original[i - 1]) for 1 <= i <=
+      n - 1.
+    * ui <= copy[i] <= vi for 0 <= i <= n - 1.
+    Return the number of such arrays.
+
+    Example 1:
+    Input: original = [1,2,3,4], bounds = [[1,2],[2,3],[3,4],[4,5]]
+    Output: 2
+    Explanation: The possible arrays are:
+                 [1, 2, 3, 4]
+                 [2, 3, 4, 5]
+
+    Example 2:
+    Input: original = [1,2,3,4], bounds = [[1,10],[2,9],[3,8],[4,7]]
+    Output: 4
+    Explanation: The possible arrays are:
+                 [1, 2, 3, 4]
+                 [2, 3, 4, 5]
+                 [3, 4, 5, 6]
+                 [4, 5, 6, 7]
+
+    Example 3:
+    Input: original = [1,2,1,2], bounds = [[1,1],[2,3],[3,3],[2,3]]
+    Output: 0
+    Explanation: No array is possible.
+
+    Constraints:
+    * 2 <= n == original.length <= 10^5
+    * 1 <= original[i] <= 10^9
+    * bounds.length == n
+    * bounds[i].length == 2
+    * 1 <= bounds[i][0] <= bounds[i][1] <= 10^9*/
+
+    int countArrays(vector<int>& original, vector<vector<int>>& bounds) {
+        int lo = bounds[0][0], hi = bounds[0][1];
+        for (int i = 1; i < original.size(); ++i) {
+            int diff = original[i] - original[i-1];
+            lo = max(bounds[i][0], lo+diff);
+            hi = min(bounds[i][1], hi+diff);
+        }
+        return max(0, hi-lo+1);
+    }
+
+
+    /*3469. Find Minimum Cost to Remove Array Elements (Medium)
+    You are given an integer array nums. Your task is to remove all elements
+    from the array by performing one of the following operations at each step
+    until nums is empty:
+    * Choose any two elements from the first three elements of nums and remove
+      them. The cost of this operation is the maximum of the two elements
+      removed.
+    * If fewer than three elements remain in nums, remove all the remaining
+      elements in a single operation. The cost of this operation is the maximum
+      of the remaining elements.
+    Return the minimum cost required to remove all the elements.
+
+    Example 1:
+    Input: nums = [6,2,8,4]
+    Output: 12
+    Explanation: Initially, nums = [6, 2, 8, 4].
+                 - In the first operation, remove nums[0] = 6 and nums[2] = 8
+                   with a cost of max(6, 8) = 8. Now, nums = [2, 4].
+                 - In the second operation, remove the remaining elements with a
+                   cost of max(2, 4) = 4.
+                 The cost to remove all elements is 8 + 4 = 12. This is the
+                 minimum cost to remove all elements in nums. Hence, the output
+                 is 12.
+
+    Example 2:
+    Input: nums = [2,1,3,3]
+    Output: 5
+    Explanation: Initially, nums = [2, 1, 3, 3].
+                 - In the first operation, remove nums[0] = 2 and nums[1] = 1
+                   with a cost of max(2, 1) = 2. Now, nums = [3, 3].
+                 - In the second operation remove the remaining elements with a
+                   cost of max(3, 3) = 3.
+                 The cost to remove all elements is 2 + 3 = 5. This is the
+                 minimum cost to remove all elements in nums. Hence, the output
+                 is 5.
+
+    Constraints:
+    * 1 <= nums.length <= 1000
+    * 1 <= nums[i] <= 10^6*/
+
+    int minCost(vector<int>& nums) {
+        int n = nums.size();
+        vector<vector<int>> dp(n+1, vector<int>(n, INT_MAX));
+        for (int j = 0; j < n; ++j) {
+            dp[n][j] = nums[j];
+            dp[n-1][j] = max(nums[j], nums[n-1]);
+        }
+        for (int i = n-2; i > 0; --i)
+            for (int j = 0; j < i; ++j) {
+                dp[i][j] = min(dp[i][j], max(nums[i], nums[i+1]) + dp[i+2][j]);
+                dp[i][j] = min(dp[i][j], max(nums[j], nums[i]) + dp[i+2][i+1]);
+                dp[i][j] = min(dp[i][j], max(nums[j], nums[i+1]) + dp[i+2][i]);
+            }
+        return dp[1][0];
+    }
+
+
+    /*3470. Permutations IV (Hard)
+    Given two integers, n and k, an alternating permutation is a permutation of
+    the first n positive integers such that no two adjacent elements are both
+    odd or both even. Return the k-th alternating permutation sorted in
+    lexicographical order. If there are fewer than k valid alternating
+    permutations, return an empty list.
+
+    Example 1:
+    Input: n = 4, k = 6
+    Output: [3,4,1,2]
+    Explanation: The lexicographically-sorted alternating permutations of
+                 [1, 2, 3, 4] are:
+                 - [1, 2, 3, 4]
+                 - [1, 4, 3, 2]
+                 - [2, 1, 4, 3]
+                 - [2, 3, 4, 1]
+                 - [3, 2, 1, 4]
+                 - [3, 4, 1, 2] ← 6th permutation
+                 - [4, 1, 2, 3]
+                 - [4, 3, 2, 1]
+                 Since k = 6, we return [3, 4, 1, 2].
+
+    Example 2:
+    Input: n = 3, k = 2
+    Output: [3,2,1]
+    Explanation: The lexicographically-sorted alternating permutations of
+                 [1, 2, 3] are:
+                 - [1, 2, 3]
+                 - [3, 2, 1] ← 2nd permutation
+                 Since k = 2, we return [3, 2, 1].
+
+    Example 3:
+    Input: n = 2, k = 3
+    Output: []
+    Explanation: The lexicographically-sorted alternating permutations of [1, 2]
+                 are:
+                 - [1, 2]
+                 - [2, 1]
+                 There are only 2 alternating permutations, but k = 3, which is
+                 out of range. Thus, we return an empty list [].
+
+    Constraints:
+    * 1 <= n <= 100
+    * 1 <= k <= 10^15*/
+
+    vector<int> permute(int n, long long k) {
+        vector<long long> factorial(n+1, 1);
+        for (int x = 1; x <= n; ++x)
+            if (x > 11) factorial[x] = factorial[x-1];
+            else factorial[x] = factorial[x-1] * x;
+        long long total = factorial[n/2] * factorial[(n+1)/2];
+        if (n % 2 == 0) total *= 2;
+        if (total < k) return {};
+        vector<int> ans;
+        vector<bool> seen(n+1);
+        for (int i = 0; i < n; ++i) {
+            int start = 1, stride = 1 + (n&1);
+            if (i) {
+                start = (ans.back() & 1) + 1;
+                stride = 2;
+            }
+            long long step = factorial[(n-i)/2] * factorial[(n-1-i)/2];
+            long long prefix = 0;
+            for (int x = start; x <= n; x += stride) {
+                if (!seen[x]) {
+                    if (prefix < k && k <= prefix + step) {
+                        ans.push_back(x);
+                        seen[x] = true;
+                        k -= prefix;
+                    }
+                    prefix += step;
+                }
+            }
+        }
+        return ans;
+    }
+
+
     /*3471. Find the Largest Almost Missing Integer (Easy)
     You are given an integer array nums and an integer k. An integer x is almost
     missing from nums if x appears in exactly one subarray of size k within
