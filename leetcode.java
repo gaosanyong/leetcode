@@ -45886,6 +45886,283 @@ class SegTree {
     }
 
 
+    /*3452. Sum of Good Numbers (Easy)
+    Given an array of integers nums and an integer k, an element nums[i] is
+    considered good if it is strictly greater than the elements at indices i - k
+    and i + k (if those indices exist). If neither of these indices exists,
+    nums[i] is still considered good. Return the sum of all the good elements in
+    the array.
+
+    Example 1:
+    Input: nums = [1,3,2,1,5,4], k = 2
+    Output: 12
+    Explanation: The good numbers are nums[1] = 3, nums[4] = 5, and nums[5] = 4
+                 because they are strictly greater than the numbers at indices
+                 i - k and i + k.
+
+    Example 2:
+    Input: nums = [2,1], k = 1
+    Output: 2
+    Explanation: The only good number is nums[0] = 2 because it is strictly
+                 greater than nums[1].
+
+    Constraints:
+    * 2 <= nums.length <= 100
+    * 1 <= nums[i] <= 1000
+    * 1 <= k <= floor(nums.length / 2)*/
+
+    public int sumOfGoodNumbers(int[] nums, int k) {
+        int ans = 0;
+        for (int i = 0, n = nums.length; i < n; ++i)
+            if ((i-k < 0 || nums[i-k] < nums[i]) && (i+k >= n || nums[i] > nums[i+k]))
+                ans += nums[i];
+        return ans;
+    }
+
+
+    /*3453. Separate Squares I (Medium)
+    You are given a 2D integer array squares. Each squares[i] = [xi, yi, li]
+    represents the coordinates of the bottom-left point and the side length of a
+    square parallel to the x-axis. Find the minimum y-coordinate value of a
+    horizontal line such that the total area of the squares above the line
+    equals the total area of the squares below the line. Answers within 10-5 of
+    the actual answer will be accepted. Note: Squares may overlap. Overlapping
+    areas should be counted multiple times.
+
+    Example 1:
+    Input: squares = [[0,0,1],[2,2,1]]
+    Output: 1.00000
+    Explanation: Any horizontal line between y = 1 and y = 2 will have 1 square
+                 unit above it and 1 square unit below it. The lowest option is
+                 1.
+
+    Example 2:
+    Input: squares = [[0,0,2],[1,1,1]]
+    Output: 1.16667
+    Explanation: The areas are:
+                 * Below the line: 7/6 * 2 (Red) + 1/6 (Blue) = 15/6 = 2.5.
+                 * Above the line: 5/6 * 2 (Red) + 5/6 (Blue) = 15/6 = 2.5.
+                 Since the areas above and below the line are equal, the output
+                 is 7/6 = 1.16667.
+
+    Constraints:
+    * 1 <= squares.length <= 5 * 10^4
+    * squares[i] = [xi, yi, li]
+    * squares[i].length == 3
+    * 0 <= xi, yi <= 10^9
+    * 1 <= li <= 10^9
+    * The total area of all the squares will not exceed 10^12.*/
+
+    public double separateSquares(int[][] squares) {
+        double total = 0;
+        for (var s : squares)
+            total += (double) s[2]*s[2];
+        double lo = 0, hi = 1e9;
+        while (hi-lo >= 1e-5) {
+            double mid = (lo + hi)/2;
+            double val = 0;
+            for (var s : squares) {
+                double y = s[1], l = s[2];
+                val += l * Math.min(l, Math.max(0, mid-y));
+            }
+            double diff = total - 2*val;
+            if (diff <= 0) hi = mid;
+            else lo = mid;
+        }
+        return lo;
+    }
+
+
+    /*3454. Separate Squares II (Hard)
+    You are given a 2D integer array squares. Each squares[i] = [xi, yi, li]
+    represents the coordinates of the bottom-left point and the side length of a
+    square parallel to the x-axis. Find the minimum y-coordinate value of a
+    horizontal line such that the total area covered by squares above the line
+    equals the total area covered by squares below the line. Answers within 10-5
+    of the actual answer will be accepted. Note: Squares may overlap.
+    Overlapping areas should be counted only once in this version.
+
+    Example 1:
+    Input: squares = [[0,0,1],[2,2,1]]
+    Output: 1.00000
+    Explanation: Any horizontal line between y = 1 and y = 2 results in an equal
+                 split, with 1 square unit above and 1 square unit below. The
+                 minimum y-value is 1.
+
+    Example 2:
+    Input: squares = [[0,0,2],[1,1,1]]
+    Output: 1.00000
+    Explanation: Since the blue square overlaps with the red square, it will not
+                 be counted again. Thus, the line y = 1 splits the squares into
+                 two equal parts.
+
+    Constraints:
+    * 1 <= squares.length <= 5 * 10^4
+    * squares[i] = [xi, yi, li]
+    * squares[i].length == 3
+    * 0 <= xi, yi <= 10^9
+    * 1 <= li <= 10^9
+    * The total area of all the squares will not exceed 10^15.
+
+    class SegTree {
+        public int[] xs;
+        public int n;
+        public int[] count;
+        public int[] total;
+
+        public SegTree(Set<Integer> vals) {
+            n = vals.size();
+            vals.add(Integer.MAX_VALUE);
+            xs = vals.stream().mapToInt(Integer::intValue).toArray();
+            Arrays.sort(xs);
+            count = new int[4*n];
+            total = new int[4*n];
+        }
+
+        public void update(int qlo, int qhi, int val) {
+            update(qlo, qhi, val, 0, 0, n);
+        }
+
+        private void update(int qlo, int qhi, int val, int k, int lo, int hi) {
+            if (qlo >= qhi) return;
+            if (qlo == xs[lo] && qhi == xs[hi]) count[k] += val;
+            else {
+                int mid = (lo + hi)/2;
+                if (qlo < xs[mid]) update(qlo, Math.min(qhi, xs[mid]), val, 2*k+1, lo, mid);
+                if (qhi > xs[mid]) update(Math.max(qlo, xs[mid]), qhi, val, 2*k+2, mid, hi);
+            }
+            if (count[k] > 0) total[k] = xs[hi] - xs[lo];
+            else if (2*k+2 < 4*n) total[k] = total[2*k+1] + total[2*k+2];
+            else total[k] = 0;
+        }
+
+        public int query() {
+            return total[0];
+        }
+    }*/
+
+    public double separateSquares(int[][] squares) {
+        int n = squares.length;
+        Set<Integer> vals = new HashSet<>();
+        List<int[]> events = new ArrayList<>();
+        for (var s : squares) {
+            int x = s[0], y = s[1], l = s[2];
+            vals.add(x);
+            vals.add(x+l);
+            events.add(new int[]{y, 1, x, x+l});
+            events.add(new int[]{y+l, -1, x, x+l});
+        }
+        Collections.sort(events, (x, y) -> x[0] != y[0] ? Integer.compare(x[0], y[0]) : Integer.compare(x[1], y[1]));
+        double total = 0;
+        int prev = 0;
+        SegTree tree = new SegTree(vals);
+        for (var evt : events) {
+            int y = evt[0], v = evt[1], lo = evt[2], hi = evt[3];
+            double width = tree.query();
+            total += width * (y-prev);
+            tree.update(lo, hi, v);
+            prev = y;
+        }
+        double prefix = 0;
+        prev = 0;
+        for (var evt : events) {
+            int y = evt[0], v = evt[1], lo = evt[2], hi = evt[3];
+            double width = tree.query();
+            if (total/2 <= prefix + width*(y-prev))
+                return prev + (total/2-prefix)/width;
+            prefix += width*(y-prev);
+            tree.update(lo, hi, v);
+            prev = y;
+        }
+        return -1;
+    }
+
+
+    /*3455. Shortest Matching Substring (Hard)
+    You are given a string s and a pattern string p, where p contains exactly
+    two '*' characters. The '*' in p matches any sequence of zero or more
+    characters. Return the length of the shortest substring in s that matches p.
+    If there is no such substring, return -1. Note: The empty substring is
+    considered valid.
+
+    Example 1:
+    Input: s = "abaacbaecebce", p = "ba*c*ce"
+    Output: 8
+    Explanation: The shortest matching substring of p in s is "baecebce".
+
+    Example 2:
+    Input: s = "baccbaadbc", p = "cc*baa*adb"
+    Output: -1
+    Explanation: There is no matching substring in s.
+
+    Example 3:
+    Input: s = "a", p = "**"
+    Output: 0
+    Explanation: The empty substring is the shortest matching substring.
+
+    Example 4:
+    Input: s = "madlogic", p = "*adlogi*"
+    Output: 6
+    Explanation: The shortest matching substring of p in s is "adlogi".
+
+    Constraints:
+    * 1 <= s.length <= 10^5
+    * 2 <= p.length <= 10^5
+    * s contains only lowercase English letters.
+    * p contains only lowercase English letters and exactly two '*'.*/
+
+    public int[] kmp_all(String pattern, String text) {
+        int n = pattern.length();
+        List<Integer> lps = new ArrayList<>();
+        lps.add(0);
+        for (int i = 1, k = 0; i < n; ++i) {
+            while (k > 0 && pattern.charAt(k) != pattern.charAt(i)) k = lps.get(k-1);
+            if (pattern.charAt(k) == pattern.charAt(i)) ++k;
+            lps.add(k);
+        }
+        List<Integer> ans = new ArrayList();
+        for (int i = 0, k = 0; i < text.length(); ++i) {
+            while (k > 0 && (k == n || pattern.charAt(k) != text.charAt(i))) k = lps.get(k-1);
+            if (pattern.charAt(k) == text.charAt(i)) ++k;
+            if (k == n) ans.add(i-n+1);
+        }
+        return ans.stream().mapToInt(Integer::intValue).toArray();
+    }
+
+    public int shortestMatchingSubstring(String s, String p) {
+        List<String> patterns = new ArrayList<>();
+        List<int[]> loc = new ArrayList<>();
+        for (var pattern : p.split("\\*"))
+            if (pattern.length() > 0) {
+                patterns.add(pattern);
+                loc.add(kmp_all(pattern, s));
+            }
+        int sz = loc.size();
+        if (sz == 0) return 0;
+        int ans = Integer.MAX_VALUE;
+        for (var i : loc.get(0)) {
+            if (sz == 1) ans = Math.min(ans, patterns.get(0).length());
+            else {
+                int j = Arrays.binarySearch(loc.get(1), i+patterns.get(0).length());
+                if (j < 0) j = -j-1;
+                if (0 <= j && j < loc.get(1).length) {
+                    j = loc.get(1)[j];
+                    if (sz == 2) ans = Math.min(ans, j+patterns.get(1).length()-i);
+                    else {
+                        int k = Arrays.binarySearch(loc.get(2), j+patterns.get(1).length());
+                        if (k < 0) k = -k-1;
+                        if (0 <= k && k < loc.get(2).length) {
+                            k = loc.get(2)[k];
+                            ans = Math.min(ans, k+patterns.get(2).length()-i);
+                        }
+                    }
+                }
+            }
+        }
+        return ans < Integer.MAX_VALUE ? ans : -1;
+    }
+
+
     /*3456. Find Special Substring of Length K (Easy)
     You are given a string s and an integer k. Determine if there exists a of
     length exactly k in s that satisfies the following conditions:

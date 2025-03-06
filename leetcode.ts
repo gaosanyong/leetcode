@@ -29052,6 +29052,272 @@ function maxScore(points: number[], m: number): number {
 };
 
 
+/*3452. Sum of Good Numbers (Easy)
+Given an array of integers nums and an integer k, an element nums[i] is
+considered good if it is strictly greater than the elements at indices i - k
+and i + k (if those indices exist). If neither of these indices exists,
+nums[i] is still considered good. Return the sum of all the good elements in
+the array.
+
+Example 1:
+Input: nums = [1,3,2,1,5,4], k = 2
+Output: 12
+Explanation: The good numbers are nums[1] = 3, nums[4] = 5, and nums[5] = 4
+             because they are strictly greater than the numbers at indices
+             i - k and i + k.
+
+Example 2:
+Input: nums = [2,1], k = 1
+Output: 2
+Explanation: The only good number is nums[0] = 2 because it is strictly
+             greater than nums[1].
+
+Constraints:
+* 2 <= nums.length <= 100
+* 1 <= nums[i] <= 1000
+* 1 <= k <= floor(nums.length / 2)*/
+
+function sumOfGoodNumbers(nums: number[], k: number): number {
+    let ans = 0;
+    for (let i = 0, n = nums.length; i < n; ++i)
+        if ((i-k < 0 || nums[i-k] < nums[i]) && (i+k >= n || nums[i] > nums[i+k]))
+            ans += nums[i];
+    return ans;
+};
+
+
+/*3453. Separate Squares I (Medium)
+You are given a 2D integer array squares. Each squares[i] = [xi, yi, li]
+represents the coordinates of the bottom-left point and the side length of a
+square parallel to the x-axis. Find the minimum y-coordinate value of a
+horizontal line such that the total area of the squares above the line
+equals the total area of the squares below the line. Answers within 10-5 of
+the actual answer will be accepted. Note: Squares may overlap. Overlapping
+areas should be counted multiple times.
+
+Example 1:
+Input: squares = [[0,0,1],[2,2,1]]
+Output: 1.00000
+Explanation: Any horizontal line between y = 1 and y = 2 will have 1 square
+             unit above it and 1 square unit below it. The lowest option is
+             1.
+
+Example 2:
+Input: squares = [[0,0,2],[1,1,1]]
+Output: 1.16667
+Explanation: The areas are:
+             * Below the line: 7/6 * 2 (Red) + 1/6 (Blue) = 15/6 = 2.5.
+             * Above the line: 5/6 * 2 (Red) + 5/6 (Blue) = 15/6 = 2.5.
+             Since the areas above and below the line are equal, the output
+             is 7/6 = 1.16667.
+
+Constraints:
+* 1 <= squares.length <= 5 * 10^4
+* squares[i] = [xi, yi, li]
+* squares[i].length == 3
+* 0 <= xi, yi <= 10^9
+* 1 <= li <= 10^9
+* The total area of all the squares will not exceed 10^12.*/
+
+function separateSquares(squares: number[][]): number {
+    const total = squares.reduce((t, s) => t + s[2]*s[2], 0);
+    let lo = 0, hi = 1e9;
+    while (hi-lo >= 1e-5) {
+        const mid = (lo + hi)/2;
+        const val = squares.reduce((t, s) => {
+            const y = s[1], l = s[2];
+            return t + l * Math.min(l, Math.max(0, mid-y));
+        }, 0);
+        const diff = total - 2*val;
+        if (diff <= 0) hi = mid;
+        else lo = mid;
+    }
+    return lo;
+};
+
+
+/*3454. Separate Squares II (Hard)
+You are given a 2D integer array squares. Each squares[i] = [xi, yi, li]
+represents the coordinates of the bottom-left point and the side length of a
+square parallel to the x-axis. Find the minimum y-coordinate value of a
+horizontal line such that the total area covered by squares above the line
+equals the total area covered by squares below the line. Answers within 10-5
+of the actual answer will be accepted. Note: Squares may overlap.
+Overlapping areas should be counted only once in this version.
+
+Example 1:
+Input: squares = [[0,0,1],[2,2,1]]
+Output: 1.00000
+Explanation: Any horizontal line between y = 1 and y = 2 results in an equal
+             split, with 1 square unit above and 1 square unit below. The
+             minimum y-value is 1.
+
+Example 2:
+Input: squares = [[0,0,2],[1,1,1]]
+Output: 1.00000
+Explanation: Since the blue square overlaps with the red square, it will not
+             be counted again. Thus, the line y = 1 splits the squares into
+             two equal parts.
+
+Constraints:
+* 1 <= squares.length <= 5 * 10^4
+* squares[i] = [xi, yi, li]
+* squares[i].length == 3
+* 0 <= xi, yi <= 10^9
+* 1 <= li <= 10^9
+* The total area of all the squares will not exceed 10^15.*/
+
+class SegTree {
+    private xs;
+    private n;
+    private count;
+    private total;
+
+    constructor(xs) {
+        this.xs = xs;
+        this.n = xs.length;
+        this.xs.push(Infinity);
+        this.count = Array(4*this.n).fill(0);
+        this.total = Array(4*this.n).fill(0);
+    }
+
+    update(qlo, qhi, val, k = 0, lo = 0, hi = this.n) {
+        if (qlo >= qhi) return;
+        if (qlo == this.xs[lo] && qhi == this.xs[hi]) this.count[k] += val;
+        else {
+            const mid = lo + hi >> 1;
+            if (qlo < this.xs[mid]) this.update(qlo, Math.min(qhi, this.xs[mid]), val, 2*k+1, lo, mid);
+            if (qhi > this.xs[mid]) this.update(Math.max(qlo, this.xs[mid]), qhi, val, 2*k+2, mid, hi);
+        }
+        if (this.count[k]) this.total[k] = this.xs[hi] - this.xs[lo];
+        else if (2*k+2 < 4*this.n) this.total[k] = this.total[2*k+1] + this.total[2*k+2];
+        else this.total[k] = 0;
+    }
+
+    query() {
+        return this.total[0];
+    }
+};
+
+function separateSquares(squares: number[][]): number {
+    const n = squares.length;
+    const vals = new Set<number>();
+    const events = [];
+    for (const [x, y, l] of squares) {
+        vals.add(x);
+        vals.add(x+l);
+        events.push([y, 1, x, x+l]);
+        events.push([y+l, -1, x, x+l]);
+    }
+    const xs = [...vals].sort((x, y) => x-y);
+    events.sort((x, y) => x[0] !== y[0] ? x[0] - y[0] : x[1] - y[1]);
+    let total = 0, prev = 0;
+    const tree = new SegTree(xs);
+    for (const [y, v, lo, hi] of events) {
+        const width = tree.query();
+        total += width * (y-prev);
+        tree.update(lo, hi, v);
+        prev = y;
+    }
+    let prefix = 0; prev = 0;
+    for (const [y, v, lo, hi] of events) {
+        const width = tree.query();
+        if (total/2 <= prefix + width*(y-prev))
+            return prev + (total/2 - prefix)/width;
+        prefix += width * (y-prev);
+        tree.update(lo, hi, v);
+        prev = y;
+    }
+    return -1;
+};
+
+
+/*3455. Shortest Matching Substring (Hard)
+You are given a string s and a pattern string p, where p contains exactly
+two '*' characters. The '*' in p matches any sequence of zero or more
+characters. Return the length of the shortest substring in s that matches p.
+If there is no such substring, return -1. Note: The empty substring is
+considered valid.
+
+Example 1:
+Input: s = "abaacbaecebce", p = "ba*c*ce"
+Output: 8
+Explanation: The shortest matching substring of p in s is "baecebce".
+
+Example 2:
+Input: s = "baccbaadbc", p = "cc*baa*adb"
+Output: -1
+Explanation: There is no matching substring in s.
+
+Example 3:
+Input: s = "a", p = "**"
+Output: 0
+Explanation: The empty substring is the shortest matching substring.
+
+Example 4:
+Input: s = "madlogic", p = "*adlogi*"
+Output: 6
+Explanation: The shortest matching substring of p in s is "adlogi".
+
+Constraints:
+* 1 <= s.length <= 10^5
+* 2 <= p.length <= 10^5
+* s contains only lowercase English letters.
+* p contains only lowercase English letters and exactly two '*'.*/
+
+function kmp_all(pattern, text) {
+    const lps = [0];
+    for (let i = 1, k = 0, n = pattern.length; i < n; ++i) {
+        while (k && pattern[k] !== pattern[i]) k = lps[k-1];
+        if (pattern[k] === pattern[i]) ++k;
+        lps.push(k);
+    }
+    const ans = [];
+    for (let i = 0, k = 0, n = pattern.length; i < text.length; ++i) {
+        while (k && (k === n || pattern[k] !== text[i])) k = lps[k-1];
+        if (pattern[k] === text[i]) ++k;
+        if (k === n) ans.push(i-n+1);
+    }
+    return ans;
+}
+
+function bisect_left(nums, x) {
+    let lo = 0, hi = nums.length;
+    while (lo < hi) {
+        const mid = lo + hi >> 1;
+        if (nums[mid] < x) lo = mid+1;
+        else hi = mid;
+    }
+    return lo;
+}
+
+function shortestMatchingSubstring(s: string, p: string): number {
+    const patterns = p.split('*').filter(x => x.length > 0);
+    const loc = patterns.map(x => kmp_all(x, s));
+    const sz = loc.length;
+    if (sz == 0) return 0;
+    let ans = Infinity;
+    for (const i of loc[0]) {
+        if (sz == 1) ans = Math.min(ans, patterns[0].length);
+        else {
+            let j = bisect_left(loc[1], i+patterns[0].length);
+            if (j < loc[1].length) {
+                j = loc[1][j];
+                if (sz == 2) ans = Math.min(ans, j+patterns[1].length-i);
+                else {
+                    let k = bisect_left(loc[2], j+patterns[1].length);
+                    if (k < loc[2].length) {
+                        k = loc[2][k];
+                        ans = Math.min(ans, k+patterns[2].length-i);
+                    }
+                }
+            }
+        }
+    }
+    return ans < Infinity ? ans : -1;
+};
+
+
 /*3456. Find Special Substring of Length K (Easy)
 You are given a string s and an integer k. Determine if there exists a of
 length exactly k in s that satisfies the following conditions:
