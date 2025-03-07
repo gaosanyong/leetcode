@@ -16129,6 +16129,299 @@ var countPrefixSuffixPairs = function(words) {
 };
 
 
+/*3046. Split the Array (Easy)
+You are given an integer array nums of even length. You have to split the
+array into two parts nums1 and nums2 such that:
+* nums1.length == nums2.length == nums.length / 2.
+* nums1 should contain distinct elements.
+* nums2 should also contain distinct elements.
+Return true if it is possible to split the array, and false otherwise.
+
+Example 1:
+Input: nums = [1,1,2,2,3,4]
+Output: true
+Explanation: One of the possible ways to split nums is nums1 = [1,2,3] and
+             nums2 = [1,2,4].
+
+Example 2:
+Input: nums = [1,1,1,1]
+Output: false
+Explanation: The only possible way to split nums is nums1 = [1,1] and
+             nums2 = [1,1]. Both nums1 and nums2 do not contain distinct
+             elements. Therefore, we return false.
+
+Constraints:
+* 1 <= nums.length <= 100
+* nums.length % 2 == 0
+* 1 <= nums[i] <= 100*/
+
+var isPossibleToSplit = function(nums) {
+    const freq = new Map();
+    for (const x of nums) {
+        freq.set(x, 1 + (freq.get(x) ?? 0));
+        if (freq.get(x) > 2) return false;
+    }
+    return true;
+};
+
+
+/*3047. Find the Largest Area of Square Inside Two Rectangles (Medium)
+There exist n rectangles in a 2D plane with edges parallel to the x and y
+axis. You are given two 2D integer arrays bottomLeft and topRight where
+bottomLeft[i] = [a_i, b_i] and topRight[i] = [c_i, d_i] represent the
+bottom-left and top-right coordinates of the ith rectangle, respectively.
+You need to find the maximum area of a square that can fit inside the
+intersecting region of at least two rectangles. Return 0 if such a square
+does not exist.
+
+Example 1:
+Input: bottomLeft = [[1,1],[2,2],[3,1]], topRight = [[3,3],[4,4],[6,6]]
+Output: 1
+Explanation: A square with side length 1 can fit inside either the
+             intersecting region of rectangles 0 and 1 or the intersecting
+             region of rectangles 1 and 2. Hence the maximum area is 1. It
+             can be shown that a square with a greater side length can not
+             fit inside any intersecting region of two rectangles.
+
+Example 2:
+Input: bottomLeft = [[1,1],[1,3],[1,5]], topRight = [[5,5],[5,7],[5,9]]
+Output: 4
+Explanation: A square with side length 2 can fit inside either the
+             intersecting region of rectangles 0 and 1 or the intersecting
+             region of rectangles 1 and 2. Hence the maximum area is
+             2 * 2 = 4. It can be shown that a square with a greater side
+             length can not fit inside any intersecting region of two
+             rectangles.
+
+Example 3:
+Input: bottomLeft = [[1,1],[2,2],[1,2]], topRight = [[3,3],[4,4],[3,4]]
+Output: 1
+Explanation: A square with side length 1 can fit inside the intersecting
+             region of any two rectangles. Also, no larger square can, so
+             the maximum area is 1. Note that the region can be formed by
+             the intersection of more than 2 rectangles.
+
+Example 4:
+Input: bottomLeft = [[1,1],[3,3],[3,1]], topRight = [[2,2],[4,4],[4,2]]
+Output: 0
+Explanation: No pair of rectangles intersect, hence, the answer is 0.
+
+Constraints:
+* n == bottomLeft.length == topRight.length
+* 2 <= n <= 10^3
+* bottomLeft[i].length == topRight[i].length == 2
+* 1 <= bottomLeft[i][0], bottomLeft[i][1] <= 10^7
+* 1 <= topRight[i][0], topRight[i][1] <= 10^7
+* bottomLeft[i][0] < topRight[i][0]
+* bottomLeft[i][1] < topRight[i][1]*/
+
+var largestSquareArea = function(bottomLeft, topRight) {
+    let ans = 0;
+    for (let i = 0, n = bottomLeft.length; i < n; ++i)
+        for (let j = i+1; j < n; ++j) {
+            const w = Math.max(0, Math.min(topRight[i][0], topRight[j][0]) - Math.max(bottomLeft[i][0], bottomLeft[j][0]));
+            const h = Math.max(0, Math.min(topRight[i][1], topRight[j][1]) - Math.max(bottomLeft[i][1], bottomLeft[j][1]));
+            ans = Math.max(ans, Math.min(h, w));
+        }
+    return ans * ans;
+};
+
+
+/*3048. Earliest Second to Mark Indices I (Medium)
+You are given two 1-indexed integer arrays, nums and, changeIndices, having
+lengths n and m, respectively. Initially, all indices in nums are unmarked.
+Your task is to mark all indices in nums. In each second, s, in order from 1
+to m (inclusive), you can perform one of the following operations:
+* Choose an index i in the range [1, n] and decrement nums[i] by 1.
+* If nums[changeIndices[s]] is equal to 0, mark the index changeIndices[s].
+* Do nothing.
+Return an integer denoting the earliest second in the range [1, m] when all
+indices in nums can be marked by choosing operations optimally, or -1 if it
+is impossible.
+
+Example 1:
+Input: nums = [2,2,0], changeIndices = [2,2,2,2,3,2,2,1]
+Output: 8
+Explanation: In this example, we have 8 seconds. The following operations
+             can be performed to mark all indices:
+             - Second 1: Choose index 1 and decrement nums[1] by one. nums
+               becomes [1,2,0].
+             - Second 2: Choose index 1 and decrement nums[1] by one. nums
+               becomes [0,2,0].
+             - Second 3: Choose index 2 and decrement nums[2] by one. nums
+               becomes [0,1,0].
+             - Second 4: Choose index 2 and decrement nums[2] by one. nums
+               becomes [0,0,0].
+             - Second 5: Mark the index changeIndices[5], which is marking
+               index 3, since nums[3] is equal to 0.
+             - Second 6: Mark the index changeIndices[6], which is marking
+               index 2, since nums[2] is equal to 0.
+             - Second 7: Do nothing.
+             - Second 8: Mark the index changeIndices[8], which is marking
+               index 1, since nums[1] is equal to 0.
+             Now all indices have been marked. It can be shown that it is
+             not possible to mark all indices earlier than the 8th second.
+             Hence, the answer is 8.
+
+Example 2:
+Input: nums = [1,3], changeIndices = [1,1,1,2,1,1,1]
+Output: 6
+Explanation: In this example, we have 7 seconds. The following operations can be performed to mark all indices:
+             - Second 1: Choose index 2 and decrement nums[2] by one. nums
+               becomes [1,2].
+             - Second 2: Choose index 2 and decrement nums[2] by one. nums
+               becomes [1,1].
+             - Second 3: Choose index 2 and decrement nums[2] by one. nums
+               becomes [1,0].
+             - Second 4: Mark the index changeIndices[4], which is marking
+               index 2, since nums[2] is equal to 0.
+             - Second 5: Choose index 1 and decrement nums[1] by one. nums
+               becomes [0,0].
+             - Second 6: Mark the index changeIndices[6], which is marking
+               index 1, since nums[1] is equal to 0.
+             Now all indices have been marked. It can be shown that it is
+             not possible to mark all indices earlier than the 6th second.
+             Hence, the answer is 6.
+
+Example 3:
+Input: nums = [0,1], changeIndices = [2,2,2]
+Output: -1
+Explanation: In this example, it is impossible to mark all indices because
+             index 1 isn't in changeIndices. Hence, the answer is -1.
+
+Constraints:
+* 1 <= n == nums.length <= 2000
+* 0 <= nums[i] <= 10^9
+* 1 <= m == changeIndices.length <= 2000
+* 1 <= changeIndices[i] <= n*/
+
+var earliestSecondToMarkIndices = function(nums, changeIndices) {
+    const n = nums.length, m = changeIndices.length;
+
+    function check(k) {
+        const last = new Map();
+        for (let i = 0; i < k; ++i)
+            last.set(changeIndices[i], i);
+        if (last.size < n) return false;
+        let cnt = 0;
+        for (let i = 0; i < k; ++i) {
+            const x = changeIndices[i];
+            if (i == last.get(x)) {
+                if (cnt < nums[x-1]) return false;
+                else cnt -= nums[x-1];
+            } else ++cnt;
+        }
+        return true;
+    }
+
+    let lo = 0, hi = m+1;
+    while (lo < hi) {
+        const mid = lo + hi >> 1;
+        if (check(mid)) hi = mid;
+        else lo = mid+1;
+    }
+    return lo <= m ? lo : -1;
+};
+
+
+/*3049. Earliest Second to Mark Indices II (Hard)
+You are given two 1-indexed integer arrays, nums and, changeIndices, having
+lengths n and m, respectively. Initially, all indices in nums are unmarked.
+Your task is to mark all indices in nums. In each second, s, in order from 1
+to m (inclusive), you can perform one of the following operations:
+* Choose an index i in the range [1, n] and decrement nums[i] by 1.
+* Set nums[changeIndices[s]] to any non-negative value.
+* Choose an index i in the range [1, n], where nums[i] is equal to 0, and
+  mark index i.
+* Do nothing.
+Return an integer denoting the earliest second in the range [1, m] when all
+indices in nums can be marked by choosing operations optimally, or -1 if it
+is impossible.
+
+Example 1:
+Input: nums = [3,2,3], changeIndices = [1,3,2,2,2,2,3]
+Output: 6
+Explanation: In this example, we have 7 seconds. The following operations
+             can be performed to mark all indices:
+             - Second 1: Set nums[changeIndices[1]] to 0. nums becomes
+               [0,2,3].
+             - Second 2: Set nums[changeIndices[2]] to 0. nums becomes
+               [0,2,0].
+             - Second 3: Set nums[changeIndices[3]] to 0. nums becomes
+               [0,0,0].
+             - Second 4: Mark index 1, since nums[1] is equal to 0.
+             - Second 5: Mark index 2, since nums[2] is equal to 0.
+             - Second 6: Mark index 3, since nums[3] is equal to 0.
+             Now all indices have been marked. It can be shown that it is
+             not possible to mark all indices earlier than the 6th second.
+             Hence, the answer is 6.
+
+Example 2:
+Input: nums = [0,0,1,2], changeIndices = [1,2,1,2,1,2,1,2]
+Output: 7
+Explanation: In this example, we have 8 seconds. The following operations
+             can be performed to mark all indices:
+             - Second 1: Mark index 1, since nums[1] is equal to 0.
+             - Second 2: Mark index 2, since nums[2] is equal to 0.
+             - Second 3: Decrement index 4 by one. nums becomes [0,0,1,1].
+             - Second 4: Decrement index 4 by one. nums becomes [0,0,1,0].
+             - Second 5: Decrement index 3 by one. nums becomes [0,0,0,0].
+             - Second 6: Mark index 3, since nums[3] is equal to 0.
+             - Second 7: Mark index 4, since nums[4] is equal to 0.
+             Now all indices have been marked. It can be shown that it is
+             not possible to mark all indices earlier than the 7th second.
+             Hence, the answer is 7.
+
+Example 3:
+Input: nums = [1,2,3], changeIndices = [1,2,3]
+Output: -1
+Explanation: In this example, it can be shown that it is impossible to mark
+             all indices, as we don't have enough seconds. Hence, the answer
+             is -1.
+
+Constraints:
+* 1 <= n == nums.length <= 5000
+* 0 <= nums[i] <= 10^9
+* 1 <= m == changeIndices.length <= 5000
+* 1 <= changeIndices[i] <= n*/
+
+var earliestSecondToMarkIndices = function(nums, changeIndices) {
+    const n = nums.length, m = changeIndices.length;
+    const total = nums.reduce((s, x) => s+x, 0);
+    const loc = new Map();
+    for (const [i, x] of changeIndices.entries())
+        if (nums[x-1] && !loc.has(x)) loc.set(x, i);
+
+    function check(k) {
+        const pq = new PriorityQueue((x, y) => x-y);
+        let mark = 0;
+        for (let i = k-1; i >= 0; --i) {
+            const x = changeIndices[i];
+            if (loc.has(x) && loc.get(x) == i) {
+                pq.enqueue(nums[x-1]);
+                if (pq.size() > mark) {
+                    ++mark;
+                    pq.dequeue();
+                }
+            } else ++mark;
+        }
+        let val = 0;
+        while (pq.size())
+            val += pq.dequeue();
+        return total + n - val <= mark;
+    }
+
+    let lo = n, hi = m+1;
+    while (lo < hi) {
+        const mid = lo + hi >> 1;
+        if (check(mid)) hi = mid;
+        else lo = mid + 1;
+    }
+    return lo <= m ? lo : -1;
+};
+
+
+
 /*3063. Linked List Frequency (Medium)
 Given the head of a linked list containing k distinct elements, return the
 head to a linked list of length k containing the frequency of each distinct
