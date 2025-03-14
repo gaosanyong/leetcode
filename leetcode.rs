@@ -463,6 +463,37 @@ impl Solution {
 }
 
 
+/*69. Sqrt(x) (Easy)
+Given a non-negative integer x, return the square root of x rounded down to the
+nearest integer. The returned integer should be non-negative as well. You must
+not use any built-in exponent function or operator.
+* For example, do not use pow(x, 0.5) in c++ or x ** 0.5 in python.
+
+Example 1:
+Input: x = 4
+Output: 2
+Explanation: The square root of 4 is 2, so we return 2.
+
+Example 2:
+Input: x = 8
+Output: 2
+Explanation: The square root of 8 is 2.82842..., and since we round it down to
+             the nearest integer, 2 is returned.
+
+Constraints: 0 <= x <= 2^31 - 1*/
+
+impl Solution {
+    pub fn my_sqrt(x: i32) -> i32 {
+        let x = x as i64;
+        let mut ans = x;
+        while ans > 0 && ans > x/ans {
+            ans = (ans + x/ans)/2;
+        }
+        return ans as i32;
+    }
+}
+
+
 /*70. Climbing Stairs (Easy)
 You are climbing a staircase. It takes n steps to reach the top. Each time you
 can either climb 1 or 2 steps. In how many distinct ways can you climb to the
