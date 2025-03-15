@@ -740,3 +740,43 @@ impl Solution {
         return ans;
     }
 }
+
+
+/*108. Convert Sorted Array to Binary Search Tree (Easy)
+Given an integer array nums where the elements are sorted in ascending order,
+convert it to a height-balanced binary search tree.
+
+Example 1:
+Input: nums = [-10,-3,0,5,9]
+Output: [0,-3,9,-10,null,5]
+Explanation: [0,-10,5,null,-3,null,9] is also accepted:
+
+Example 2:
+Input: nums = [1,3]
+Output: [3,1]
+Explanation: [1,null,3] and [3,1] are both height-balanced BSTs.
+
+Constraints:
+* 1 <= nums.length <= 10^4
+* -10^4 <= nums[i] <= 10^4
+* nums is sorted in a strictly increasing order.*/
+
+use std::rc::Rc;
+use std::cell::RefCell;
+impl Solution {
+    fn help(lo: i32, hi: i32, nums: &Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+        if lo == hi {
+            return None;
+        }
+        let mid = lo + hi >> 1;
+        let mut node = TreeNode::new(nums[mid as usize]);
+        node.left = Self::help(lo, mid, nums);
+        node.right = Self::help(mid+1, hi, nums);
+        return Some(Rc::new(RefCell::new(node)));
+    }
+
+    pub fn sorted_array_to_bst(nums: Vec<i32>) -> Option<Rc<RefCell<TreeNode>>> {
+        let n = nums.len() as i32;
+        return Self::help(0, n, &nums);
+    }
+}
