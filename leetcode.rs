@@ -780,3 +780,41 @@ impl Solution {
         return Self::help(0, n, &nums);
     }
 }
+
+
+/*110. Balanced Binary Tree (Easy)
+Given a binary tree, determine if it is height-balanced.
+
+Example 1:
+Input: root = [3,9,20,null,null,15,7]
+Output: true
+
+Example 2:
+Input: root = [1,2,2,3,3,null,null,4,4]
+Output: false
+
+Example 3:
+Input: root = []
+Output: true
+
+Constraints:
+* The number of nodes in the tree is in the range [0, 5000].
+* -10^4 <= Node.val <= 10^4*/
+
+use std::rc::Rc;
+use std::cell::RefCell;
+impl Solution {
+    fn calc(node: Option<Rc<RefCell<TreeNode>>>) -> i32 {
+        match node {
+            Some(node) => {
+                let lv = Self::calc(node.borrow().left.clone());
+                let rv = Self::calc(node.borrow().right.clone());
+                return if lv == -1 || rv == -1 || (lv-rv).abs() > 1 {-1} else {1 + lv.max(rv)};
+            }
+            None => 0
+        }
+    }
+    pub fn is_balanced(root: Option<Rc<RefCell<TreeNode>>>) -> bool {
+        return Self::calc(root) >= 0;
+    }
+}
