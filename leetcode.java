@@ -47576,6 +47576,235 @@ class SegTree {
         }
         return new String(ans);
     }
+
+
+    /*3487. Maximum Unique Subarray Sum After Deletion (Easy)
+    You are given an integer array nums. You are allowed to delete any number of
+    elements from nums without making it empty. After performing the deletions,
+    select a subarray of nums such that:
+    * All elements in the subarray are unique.
+    * The sum of the elements in the subarray is maximized.
+    Return the maximum sum of such a subarray.
+
+    Example 1:
+    Input: nums = [1,2,3,4,5]
+    Output: 15
+    Explanation: Select the entire array without deleting any element to obtain
+                 the maximum sum.
+
+    Example 2:
+    Input: nums = [1,1,0,1,1]
+    Output: 1
+    Explanation: Delete the element nums[0] == 1, nums[1] == 1, nums[2] == 0,
+                 and nums[3] == 1. Select the entire array [1] to obtain the
+                 maximum sum.
+
+    Example 3:
+    Input: nums = [1,2,-1,-2,1,0,-1]
+    Output: 3
+    Explanation: Delete the elements nums[2] == -1 and nums[3] == -2, and select
+                 the subarray [2, 1] from [1, 2, 1, 0, -1] to obtain the maximum
+                 sum.
+
+    Constraints:
+    * 1 <= nums.length <= 100
+    * -100 <= nums[i] <= 100*/
+
+    public int maxSum(int[] nums) {
+        int ans = 0;
+        Set<Integer> seen = new HashSet<>();
+        for (var x : nums)
+            if (x > 0 && !seen.contains(x)) {
+                seen.add(x);
+                ans += x;
+            }
+        return ans > 0 ? ans : Arrays.stream(nums).max().getAsInt();
+    }
+
+
+    /*3488. Closest Equal Element Queries (Medium)
+    You are given a circular array nums and an array queries. For each query i,
+    you have to find the following:
+    * The minimum distance between the element at index queries[i] and any other
+      index j in the circular array, where nums[j] == nums[queries[i]]. If no
+      such index exists, the answer for that query should be -1.
+    Return an array answer of the same size as queries, where answer[i]
+    represents the result for query i.
+
+    Example 1:
+    Input: nums = [1,3,1,4,1,3,2], queries = [0,3,5]
+    Output: [2,-1,3]
+    Explanation: * Query 0: The element at queries[0] = 0 is nums[0] = 1.
+                   The nearest index with the same value is 2, and the distance
+                   between them is 2.
+                 * Query 1: The element at queries[1] = 3 is nums[3] = 4.
+                   No other index contains 4, so the result is -1.
+                 * Query 2: The element at queries[2] = 5 is nums[5] = 3.
+                   The nearest index with the same value is 1, and the distance
+                   between them is 3 (following the circular path:
+                   5 -> 6 -> 0 -> 1).
+
+    Example 2:
+    Input: nums = [1,2,3,4], queries = [0,1,2,3]
+    Output: [-1,-1,-1,-1]
+    Explanation: Each value in nums is unique, so no index shares the same value
+                 as the queried element. This results in -1 for all queries.
+
+    Constraints:
+    * 1 <= queries.length <= nums.length <= 10^5
+    * 1 <= nums[i] <= 10^6
+    * 0 <= queries[i] < nums.length*/
+
+    public List<Integer> solveQueries(int[] nums, int[] queries) {
+        int n = nums.length;
+        Map<Integer, List<Integer>> loc = new HashMap<>();
+        for (int i = 0; i < n; ++i) {
+            if (!loc.containsKey(nums[i])) loc.put(nums[i], new ArrayList<>());
+            loc.get(nums[i]).add(i);
+        }
+        int[] vals = new int[n];
+        Arrays.fill(vals, -1);
+        for (var v : loc.values()) {
+            int sz = v.size();
+            if (sz > 1)
+                for (int i = 0; i < sz; ++i) {
+                    int prv = (sz + (i-1) % sz) % sz;
+                    int nxt = (i+1) % sz;
+                    int v1 = Math.abs(v.get(i) - v.get(prv));
+                    int v2 = Math.abs(v.get(nxt) - v.get(i));
+                    vals[v.get(i)] = Math.min(Math.min(v1, n-v1), Math.min(v2, n-v2));
+                }
+        }
+        return Arrays.stream(queries).boxed().map(q -> vals[q]).collect(Collectors.toList());
+    }
+
+
+    /*3489. Zero Array Transformation IV (Medium)
+    You are given an integer array nums of length n and a 2D array queries,
+    where queries[i] = [li, ri, vali]. Each queries[i] represents the following
+    action on nums:
+    * Select a subset of indices in the range [li, ri] from nums.
+    * Decrement the value at each selected index by exactly vali.
+    A Zero Array is an array with all its elements equal to 0. Return the
+    minimum possible non-negative value of k, such that after processing the
+    first k queries in sequence, nums becomes a Zero Array. If no such k exists,
+    return -1.
+
+    Example 1:
+    Input: nums = [2,0,2], queries = [[0,2,1],[0,2,1],[1,1,3]]
+    Output: 2
+    Explanation: For query 0 (l = 0, r = 2, val = 1):
+                 - Decrement the values at indices [0, 2] by 1.
+                 - The array will become [1, 0, 1].
+                 For query 1 (l = 0, r = 2, val = 1):
+                 - Decrement the values at indices [0, 2] by 1.
+                 - The array will become [0, 0, 0], which is a Zero Array.
+                   Therefore, the minimum value of k is 2.
+
+    Example 2:
+    Input: nums = [4,3,2,1], queries = [[1,3,2],[0,2,1]]
+    Output: -1
+    Explanation: It is impossible to make nums a Zero Array even after all the
+                 queries.
+
+    Example 3:
+    Input: nums = [1,2,3,2,1], queries = [[0,1,1],[1,2,1],[2,3,2],[3,4,1],[4,4,1]]
+    Output: 4
+    Explanation: For query 0 (l = 0, r = 1, val = 1):
+                 - Decrement the values at indices [0, 1] by 1.
+                 - The array will become [0, 1, 3, 2, 1].
+                 For query 1 (l = 1, r = 2, val = 1):
+                 - Decrement the values at indices [1, 2] by 1.
+                 - The array will become [0, 0, 2, 2, 1].
+                 For query 2 (l = 2, r = 3, val = 2):
+                 - Decrement the values at indices [2, 3] by 2.
+                 - The array will become [0, 0, 0, 0, 1].
+                 For query 3 (l = 3, r = 4, val = 1):
+                 - Decrement the value at index 4 by 1.
+                 - The array will become [0, 0, 0, 0, 0]. Therefore, the minimum
+                   value of k is 4.
+
+    Example 4:
+    Input: nums = [1,2,3,2,6], queries = [[0,1,1],[0,2,1],[1,4,2],[4,4,4],[3,4,1],[4,4,5]]
+    Output: 4
+
+    Constraints:
+    * 1 <= nums.length <= 10
+    * 0 <= nums[i] <= 1000
+    * 1 <= queries.length <= 1000
+    * queries[i] = [li, ri, vali]
+    * 0 <= li <= ri < nums.length
+    * 1 <= vali <= 10*/
+
+    public int minZeroArray(int[] nums, int[][] queries) {
+        int q = queries.length;
+        int ans = 0;
+        for (int k = 0; k < nums.length; ++k) {
+            int x = nums[k];
+            int[][] dp = new int[q+1][x+1];
+            for (int i = 0; i <= q; ++i)
+                Arrays.fill(dp[i], Integer.MAX_VALUE);
+            dp[q][0] = q;
+            for (int i = q-1; i >= 0; --i) {
+                dp[i][0] = i;
+                int l = queries[i][0], r = queries[i][1], v = queries[i][2];
+                for (int j = 1; j <= x; ++j) {
+                    dp[i][j] = dp[i+1][j];
+                    if (l <= k && k <= r && v <= j) dp[i][j] = Math.min(dp[i][j], dp[i+1][j-v]);
+                }
+            }
+            ans = Math.max(ans, dp[0][x]);
+        }
+        return ans < Integer.MAX_VALUE ? ans : -1;
+    }
+
+
+    /*3490. Count Beautiful Numbers (Hard)
+    You are given two positive integers, l and r. A positive integer is called
+    beautiful if the product of its digits is divisible by the sum of its
+    digits. Return the count of beautiful numbers between l and r, inclusive.
+
+    Example 1:
+    Input: l = 10, r = 20
+    Output: 2
+    Explanation: The beautiful numbers in the range are 10 and 20.
+
+    Example 2:
+    Input: l = 1, r = 15
+    Output: 10
+    Explanation: The beautiful numbers in the range are 1, 2, 3, 4, 5, 6, 7, 8,
+                 9, and 10.
+
+    Constraints: 1 <= l <= r < 10^9*/
+
+    private int fn(String s, Map<Integer, Integer>[][][][] memo, int i, int sum, int prod, int lead, int profile) {
+        if (!memo[i][sum][lead][profile].containsKey(prod)) {
+            if (i == s.length()) memo[i][sum][lead][profile].put(prod, sum > 0 && prod % sum == 0 ? 1 : 0);
+            else {
+                int ans = 0, lo = 0, hi = profile == 1 ? s.charAt(i) - '0' : 9;
+                if (lead == 0) {
+                    lo = 1;
+                    ans += fn(s, memo, i+1, 0, 1, 0, 0);
+                }
+                for (int x = lo; x <= hi; ++x)
+                    ans += fn(s, memo, i+1, sum+x, prod*x, lead == 1 || lo > 0 ? 1 : 0, profile == 1 && x == hi ? 1 : 0);
+                memo[i][sum][lead][profile].put(prod, ans);
+            }
+        }
+        return memo[i][sum][lead][profile].get(prod);
+    }
+    public int beautifulNumbers(int l, int r) {
+        Map<Integer, Integer>[][][][] lmemo = new Map[10][100][2][2];
+        Map<Integer, Integer>[][][][] rmemo = new Map[10][100][2][2];
+        for (int i = 0; i < 10; ++i)
+            for (int j = 0; j < 100; ++j)
+                for (int k = 0; k < 2; ++k)
+                    for (int p = 0; p < 2; ++p) {
+                        lmemo[i][j][k][p] = new HashMap<>();
+                        rmemo[i][j][k][p] = new HashMap<>();
+                    }
+        return fn(Integer.toString(r), rmemo, 0, 0, 1, 0, 1) - fn(Integer.toString(l-1), lmemo, 0, 0, 1, 0, 1);
+    }
 }
 
 
