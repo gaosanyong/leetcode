@@ -90289,6 +90289,271 @@ public:
     }
 
 
+    /*3477. Fruits Into Baskets II (Easy)
+    You are given two arrays of integers, fruits and baskets, each of length n,
+    where fruits[i] represents the quantity of the ith type of fruit, and
+    baskets[j] represents the capacity of the jth basket. From left to right,
+    place the fruits according to these rules:
+    * Each fruit type must be placed in the leftmost available basket with a
+      capacity greater than or equal to the quantity of that fruit type.
+    * Each basket can hold only one type of fruit.
+    * If a fruit type cannot be placed in any basket, it remains unplaced.
+    Return the number of fruit types that remain unplaced after all possible
+    allocations are made.
+
+    Example 1:
+    Input: fruits = [4,2,5], baskets = [3,5,4]
+    Output: 1
+    Explanation: * fruits[0] = 4 is placed in baskets[1] = 5.
+                 * fruits[1] = 2 is placed in baskets[0] = 3.
+                 * fruits[2] = 5 cannot be placed in baskets[2] = 4.
+                 Since one fruit type remains unplaced, we return 1.
+
+    Example 2:
+    Input: fruits = [3,6,1], baskets = [6,4,7]
+    Output: 0
+    Explanation: * fruits[0] = 3 is placed in baskets[0] = 6.
+                 * fruits[1] = 6 cannot be placed in baskets[1] = 4
+                   (insufficient capacity) but can be placed in the next
+                   available basket, baskets[2] = 7.
+                 * fruits[2] = 1 is placed in baskets[1] = 4.
+                 Since all fruits are successfully placed, we return 0.
+
+    Constraints:
+    * n == fruits.length == baskets.length
+    * 1 <= n <= 100
+    * 1 <= fruits[i], baskets[i] <= 1000*/
+
+    int numOfUnplacedFruits(vector<int>& fruits, vector<int>& baskets) {
+        int ans = 0;
+        for (auto& f : fruits) {
+            bool found = false;
+            for (auto& b : baskets)
+                if (f <= b) {
+                    b = 0;
+                    found = true;
+                    break;
+                }
+            if (!found) ++ans;
+        }
+        return ans;
+    }
+
+
+    /*3478. Choose K Elements With Maximum Sum (Medium)
+    You are given two integer arrays, nums1 and nums2, both of length n, along
+    with a positive integer k. For each index i from 0 to n - 1, perform the
+    following:
+    * Find all indices j where nums1[j] is less than nums1[i].
+    * Choose at most k values of nums2[j] at these indices to maximize the total
+      sum.
+    Return an array answer of size n, where answer[i] represents the result for
+    the corresponding index i.
+
+    Example 1:
+    Input: nums1 = [4,2,1,5,3], nums2 = [10,20,30,40,50], k = 2
+    Output: [80,30,0,80,50]
+    Explanation: * For i = 0: Select the 2 largest values from nums2 at indices
+                   [1, 2, 4] where nums1[j] < nums1[0], resulting in
+                   50 + 30 = 80.
+                 * For i = 1: Select the 2 largest values from nums2 at index
+                   [2] where nums1[j] < nums1[1], resulting in 30.
+                 * For i = 2: No indices satisfy nums1[j] < nums1[2], resulting
+                   in 0.
+                 * For i = 3: Select the 2 largest values from nums2 at indices
+                   [0, 1, 2, 4] where nums1[j] < nums1[3], resulting in
+                   50 + 30 = 80.
+                 * For i = 4: Select the 2 largest values from nums2 at indices
+                   [1, 2] where nums1[j] < nums1[4], resulting in 30 + 20 = 50.
+
+    Example 2:
+    Input: nums1 = [2,2,2,2], nums2 = [3,1,2,3], k = 1
+    Output: [0,0,0,0]
+    Explanation: Since all elements in nums1 are equal, no indices satisfy the
+                 condition nums1[j] < nums1[i] for any i, resulting in 0 for all
+                 positions.
+
+    Constraints:
+    * n == nums1.length == nums2.length
+    * 1 <= n <= 10^5
+    * 1 <= nums1[i], nums2[i] <= 10^6
+    * 1 <= k <= n*/
+
+    vector<long long> findMaxSum(vector<int>& nums1, vector<int>& nums2, int k) {
+        int n = nums1.size();
+        map<int, vector<pair<int, int>>> mp;
+        for (int i = 0; i < n; ++i)
+            mp[nums1[i]].emplace_back(nums2[i], i);
+        vector<long long> ans(n);
+        priority_queue<int, vector<int>, greater<>> pq;
+        long long total = 0;
+        for (auto& [_, v] : mp) {
+            for (auto& [_, i] : v) ans[i] = total;
+            for (auto& [y, _] : v) {
+                pq.push(y);
+                total += y;
+                if (pq.size() > k) {
+                    total -= pq.top();
+                    pq.pop();
+                }
+            }
+        }
+        return ans;
+    }
+
+
+    /*3479. Fruits Into Baskets III (Medium)
+    You are given two arrays of integers, fruits and baskets, each of length n,
+    where fruits[i] represents the quantity of the ith type of fruit, and
+    baskets[j] represents the capacity of the jth basket. From left to right,
+    place the fruits according to these rules:
+    * Each fruit type must be placed in the leftmost available basket with a
+      capacity greater than or equal to the quantity of that fruit type.
+    * Each basket can hold only one type of fruit.
+    * If a fruit type cannot be placed in any basket, it remains unplaced.
+    Return the number of fruit types that remain unplaced after all possible
+    allocations are made.
+
+    Example 1:
+    Input: fruits = [4,2,5], baskets = [3,5,4]
+    Output: 1
+    Explanation: * fruits[0] = 4 is placed in baskets[1] = 5.
+                 * fruits[1] = 2 is placed in baskets[0] = 3.
+                 * fruits[2] = 5 cannot be placed in baskets[2] = 4.
+                 Since one fruit type remains unplaced, we return 1.
+
+    Example 2:
+    Input: fruits = [3,6,1], baskets = [6,4,7]
+    Output: 0
+    Explanation: * fruits[0] = 3 is placed in baskets[0] = 6.
+                 * fruits[1] = 6 cannot be placed in baskets[1] = 4
+                   (insufficient capacity) but can be placed in the next
+                   available basket, baskets[2] = 7.
+                 * fruits[2] = 1 is placed in baskets[1] = 4.
+                 Since all fruits are successfully placed, we return 0.
+
+    Constraints:
+    * n == fruits.length == baskets.length
+    * 1 <= n <= 10^5
+    * 1 <= fruits[i], baskets[i] <= 10^9
+
+    class SegTree {
+        int n;
+        vector<int> tree;
+        void build(vector<int>& arr, int k, int lo, int hi) {
+            if (lo+1 == hi) tree[k] = arr[lo];
+            else {
+                int mid = lo + (hi-lo)/2;
+                build(arr, 2*k+1, lo, mid);
+                build(arr, 2*k+2, mid, hi);
+                tree[k] = max(tree[2*k+1], tree[2*k+2]);
+            }
+        }
+    public:
+        SegTree(vector<int>& arr) {
+            n = arr.size();
+            tree.resize(4*n);
+            build(arr, 0, 0, n);
+        }
+
+        void update(int i, int val, int k = 0, int lo = 0, int hi = 0) {
+            if (hi == 0) hi = n;
+            if (lo+1 == hi) tree[k] = val;
+            else {
+                int mid = lo + (hi-lo)/2;
+                if (i < mid) update(i, val, 2*k+1, lo, mid);
+                else update(i, val, 2*k+2, mid, hi);
+                tree[k] = max(tree[2*k+1], tree[2*k+2]);
+            }
+        }
+
+        int query(int qlo, int qhi, int k = 0, int lo = 0, int hi = 0) {
+            if (hi == 0) hi = n;
+            if (qhi <= lo || hi <= qlo) return INT_MIN;
+            if (qlo <= lo && hi <= qhi) return tree[k];
+            int mid = lo + (hi-lo)/2;
+            return max(query(qlo, qhi, 2*k+1, lo, mid), query(qlo, qhi, 2*k+2, mid, hi));
+        }
+    }; */
+
+    int numOfUnplacedFruits(vector<int>& fruits, vector<int>& baskets) {
+        int n = fruits.size();
+        SegTree* tree = new SegTree(baskets);
+        int ans = 0;
+        for (auto& f : fruits) {
+            if (f <= tree->query(0, n)) {
+                int lo = 0, hi = n;
+                while (lo+1 < hi) {
+                    int mid = lo + hi >> 1;
+                    if (f <= tree->query(lo, mid)) hi = mid;
+                    else lo = mid;
+                }
+                tree->update(lo, 0);
+            } else ++ans;
+        }
+        delete tree;
+        return ans;
+    }
+
+
+    /*3480. Maximize Subarrays After Removing One Conflicting Pair (Hard)
+    You are given an integer n which represents an array nums containing the
+    numbers from 1 to n in order. Additionally, you are given a 2D array
+    conflictingPairs, where conflictingPairs[i] = [a, b] indicates that a and b
+    form a conflicting pair. Remove exactly one element from conflictingPairs.
+    Afterward, count the number of non-empty subarrays of nums which do not
+    contain both a and b for any remaining conflicting pair [a, b]. Return the
+    maximum number of subarrays possible after removing exactly one conflicting
+    pair.
+
+    Example 1:
+    Input: n = 4, conflictingPairs = [[2,3],[1,4]]
+    Output: 9
+    Explanation: * Remove [2, 3] from conflictingPairs. Now, conflictingPairs =
+                   [[1, 4]].
+                 * There are 9 subarrays in nums where [1, 4] do not appear
+                   together. They are [1], [2], [3], [4], [1, 2], [2, 3],
+                   [3, 4], [1, 2, 3] and [2, 3, 4].
+                 * The maximum number of subarrays we can achieve after removing
+                   one element from conflictingPairs is 9.
+
+    Example 2:
+    Input: n = 5, conflictingPairs = [[1,2],[2,5],[3,5]]
+    Output: 12
+    Explanation: * Remove [1, 2] from conflictingPairs. Now, conflictingPairs =
+                   [[2, 5], [3, 5]].
+                 * There are 12 subarrays in nums where [2, 5] and [3, 5] do not
+                   appear together.
+                 * The maximum number of subarrays we can achieve after removing
+                   one element from conflictingPairs is 12.
+
+    Constraints:
+    * 2 <= n <= 10^5
+    * 1 <= conflictingPairs.length <= 2 * n
+    * conflictingPairs[i].length == 2
+    * 1 <= conflictingPairs[i][j] <= n
+    * conflictingPairs[i][0] != conflictingPairs[i][1]*/
+
+    long long maxSubarrays(int n, vector<vector<int>>& conflictingPairs) {
+        vector<vector<int>> left(n+1);
+        for (auto& p : conflictingPairs) {
+            int x = p[0], y = p[1];
+            if (x > y) swap(x, y);
+            left[y].push_back(x);
+        }
+        long long ans = 0;
+        vector<long long> extra(n+1);
+        for (int y = 1, p = 0, pp = 0; y <= n; ++y) {
+            for (auto& x : left[y])
+                if (x > p) tie(p, pp) = make_pair(x, p);
+                else if (x > pp) pp = x;
+            ans += y - p;
+            extra[p] += p - pp;
+        }
+        return ans + *max_element(extra.begin(), extra.end());
+    }
+
+
     /*3487. Maximum Unique Subarray Sum After Deletion (Easy)
     You are given an integer array nums. You are allowed to delete any number of
     elements from nums without making it empty. After performing the deletions,
