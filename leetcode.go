@@ -163,6 +163,55 @@ func longestCommonPrefix(strs []string) string {
 }
 
 
+/*20. Valid Parentheses (Easy)
+Given a string s containing just the characters '(', ')', '{', '}', '[' and ']',
+determine if the input string is valid. An input string is valid if:
+* Open brackets must be closed by the same type of brackets.
+* Open brackets must be closed in the correct order.
+* Every close bracket has a corresponding open bracket of the same type.
+
+Example 1:
+Input: s = "()"
+Output: true
+
+Example 2:
+Input: s = "()[]{}"
+Output: true
+
+Example 3:
+Input: s = "(]"
+Output: false
+
+Example 4:
+Input: s = "([])"
+Output: true
+
+Constraints:
+* 1 <= s.length <= 10^4
+* s consists of parentheses only '()[]{}'.*/
+
+func isValid(s string) bool {
+    pair := map[rune]rune {
+        ')' : '(',
+        ']' : '[',
+        '}' : '{',
+    }
+    stack := []rune{}
+    for _, ch := range s {
+        if strings.ContainsRune("([{", ch) {
+            stack = append(stack, ch)
+        } else {
+            sz := len(stack)
+            if sz == 0 || stack[sz-1] != pair[ch] {
+                return false
+            }
+            stack = stack[:sz-1]
+        }
+    }
+    return len(stack) == 0
+}
+
+
 /*21. Merge Two Sorted Lists (Easy)
 You are given the heads of two sorted linked lists list1 and list2. Merge the
 two lists into one sorted list. The list should be made by splicing together the
