@@ -1,4 +1,5 @@
+.DS_Store
 *-internal.*
+*.code-workspace
 *.sublime-project
 *.sublime-workspace
-.DS_Store
