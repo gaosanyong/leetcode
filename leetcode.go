@@ -411,16 +411,8 @@ Constraints:
 * -10^4 <= target <= 10^4*/
 
 func searchInsert(nums []int, target int) int {
-    lo, hi := 0, len(nums)
-    for lo < hi {
-        mid := (lo+hi) / 2
-        if target <= nums[mid] {
-            hi = mid
-        } else {
-            lo = mid+1
-        }
-    }
-    return lo
+    k, _ := slices.BinarySearch(nums, target)
+    return k
 }
 
 
