@@ -1527,3 +1527,46 @@ func removeElements(head *ListNode, val int) *ListNode {
     }
     return dummy.Next
 }
+
+
+/*205. Isomorphic Strings (Easy)
+Given two strings s and t, determine if they are isomorphic. Two strings s and t
+are isomorphic if the characters in s can be replaced to get t. All occurrences
+of a character must be replaced with another character while preserving the
+order of characters. No two characters may map to the same character, but a
+character may map to itself.
+
+Example 1:
+Input: s = "egg", t = "add"
+Output: true
+Explanation: The strings s and t can be made identical by:
+             Mapping 'e' to 'a'.
+             Mapping 'g' to 'd'.
+
+Example 2:
+Input: s = "foo", t = "bar"
+Output: false
+Explanation: The strings s and t can not be made identical as 'o' needs to be
+             mapped to both 'a' and 'r'.
+
+Example 3:
+Input: s = "paper", t = "title"
+Output: true
+
+Constraints:
+* 1 <= s.length <= 5 * 10^4
+* t.length == s.length
+* s and t consist of any valid ascii character.*/
+
+func isIsomorphic(s string, t string) bool {
+    si := map[byte]int{}
+    ti := map[byte]int{}
+    for i := range s {
+        if si[s[i]] != ti[t[i]] {
+            return false
+        }
+        si[s[i]] = i+1
+        ti[t[i]] = i+1
+    }
+    return true
+}
