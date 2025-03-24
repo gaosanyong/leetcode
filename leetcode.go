@@ -2717,6 +2717,42 @@ func canConstruct(ransomNote string, magazine string) bool {
 }
 
 
+/*387. First Unique Character in a String (Easy)
+Given a string s, find the first non-repeating character in it and return its
+index. If it does not exist, return -1.
+
+Example 1:
+Input: s = "leetcode"
+Output: 0
+Explanation: The character 'l' at index 0 is the first character that does not
+             occur at any other index.
+
+Example 2:
+Input: s = "loveleetcode"
+Output: 2
+
+Example 3:
+Input: s = "aabb"
+Output: -1
+
+Constraints:
+* 1 <= s.length <= 10^5
+* s consists of only lowercase English letters.*/
+
+func firstUniqChar(s string) int {
+    freq := make([]int, 26)
+    for _, ch := range s {
+        freq[ch - 'a']++
+    }
+    for i, ch := range s {
+        if freq[ch - 'a'] == 1 {
+            return i
+        }
+    }
+    return -1
+}
+
+
 /*3492. Maximum Containers on a Ship (Easy)
 You are given a positive integer n representing an n x n cargo deck on a
 ship. Each cell on the deck can hold one container with a weight of exactly
