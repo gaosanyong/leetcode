@@ -90774,6 +90774,222 @@ public:
         unordered_map<int, int> rmemo[10][100][2][2];
         return fn(to_string(r), rmemo) - fn(to_string(l-1), lmemo);
     }
+
+
+    /*3492. Maximum Containers on a Ship (Easy)
+    You are given a positive integer n representing an n x n cargo deck on a
+    ship. Each cell on the deck can hold one container with a weight of exactly
+    w. However, the total weight of all containers, if loaded onto the deck,
+    must not exceed the ship's maximum weight capacity, maxWeight. Return the
+    maximum number of containers that can be loaded onto the ship.
+
+    Example 1:
+    Input: n = 2, w = 3, maxWeight = 15
+    Output: 4
+    Explanation: The deck has 4 cells, and each container weighs 3. The total
+                 weight of loading all containers is 12, which does not exceed
+                 maxWeight.
+
+    Example 2:
+    Input: n = 3, w = 5, maxWeight = 20
+    Output: 4
+    Explanation: The deck has 9 cells, and each container weighs 5. The maximum
+                 number of containers that can be loaded without exceeding
+                 maxWeight is 4.
+
+    Constraints:
+    * 1 <= n <= 1000
+    * 1 <= w <= 1000
+    * 1 <= maxWeight <= 10^9*/
+
+    int maxContainers(int n, int w, int maxWeight) {
+        return min(n*n, maxWeight/w);
+    }
+
+
+    /*3493. Properties Graph (Medium)
+    You are given a 2D integer array properties having dimensions n x m and an
+    integer k. Define a function intersect(a, b) that returns the number of
+    distinct integers common to both arrays a and b. Construct an undirected
+    graph where each index i corresponds to properties[i]. There is an edge
+    between node i and node j if and only if
+    intersect(properties[i], properties[j]) >= k, where i and j are in the range
+    [0, n - 1] and i != j. Return the number of connected components in the
+    resulting graph.
+
+    Example 1:
+    Input: properties = [[1,2],[1,1],[3,4],[4,5],[5,6],[7,7]], k = 1
+    Output: 3
+    Explanation: The graph formed has 3 connected components:
+
+    Example 2:
+    Input: properties = [[1,2,3],[2,3,4],[4,3,5]], k = 2
+    Output: 1
+    Explanation: The graph formed has 1 connected component:
+
+    Example 3:
+    Input: properties = [[1,1],[1,1]], k = 2
+    Output: 2
+    Explanation: intersect(properties[0], properties[1]) = 1, which is less than
+                 k. This means there is no edge between properties[0] and
+                 properties[1] in the graph.
+
+    Constraints:
+    * 1 <= n == properties.length <= 100
+    * 1 <= m == properties[i].length <= 100
+    * 1 <= properties[i][j] <= 100
+    * 1 <= k <= m*/
+
+    int numberOfComponents(vector<vector<int>>& properties, int k) {
+        int n = properties.size();
+        vector<set<int>> ps;
+        for (auto& p : properties)
+            ps.push_back(set<int>(p.begin(), p.end()));
+        vector<int> parent(n);
+        iota(parent.begin(), parent.end(), 0);
+
+        function<int(int)> find = [&](int p) {
+            if (p != parent[p])
+                parent[p] = find(parent[p]);
+            return parent[p];
+        };
+
+        for (int i = 0; i < n; ++i)
+            for (int j = i+1; j < n; ++j) {
+                vector<int> common;
+                set_intersection(ps[i].begin(), ps[i].end(), ps[j].begin(), ps[j].end(), back_inserter(common));
+                if (common.size() >= k)
+                    parent[find(i)] = find(j);
+            }
+        unordered_set<int> cc;
+        transform(parent.begin(), parent.end(), inserter(cc, cc.begin()), find);
+        return cc.size();
+    }
+
+
+    /*3494. Find the Minimum Amount of Time to Brew Potions (Medium)
+    You are given two integer arrays, skill and mana, of length n and m,
+    respectively. In a laboratory, n wizards must brew m potions in order. Each
+    potion has a mana capacity mana[j] and must pass through all the wizards
+    sequentially to be brewed properly. The time taken by the ith wizard on the
+    jth potion is timeij = skill[i] * mana[j]. Since the brewing process is
+    delicate, a potion must be passed to the next wizard immediately after the
+    current wizard completes their work. This means the timing must be
+    synchronized so that each wizard begins working on a potion exactly when it
+    arrives. Return the minimum amount of time required for the potions to be
+    brewed properly.
+
+    Example 1:
+    Input: skill = [1,5,2,4], mana = [5,1,4,2]
+    Output: 110
+    Explanation: Potion Number  Start time  Wizard 0 done by  Wizard 1 done by  Wizard 2 done by  Wizard 3 done by
+                 0              0           5                 30                40                60
+                 1              52          53                58                60                64
+                 2              54          58                78                86                102
+                 3              86          88                98                102               110
+                 As an example for why wizard 0 cannot start working on the 1st
+                 potion before time t = 52, consider the case where the wizards
+                 started preparing the 1st potion at time t = 50. At time
+                 t = 58, wizard 2 is done with the 1st potion, but wizard 3 will
+                 still be working on the 0th potion till time t = 60.
+
+    Example 2:
+    Input: skill = [1,1,1], mana = [1,1,1]
+    Output: 5
+    Explanation: - Preparation of the 0th potion begins at time t = 0, and is
+                   completed by time t = 3.
+                 - Preparation of the 1st potion begins at time t = 1, and is
+                   completed by time t = 4.
+                 - Preparation of the 2nd potion begins at time t = 2, and is
+                   completed by time t = 5.
+
+    Example 3:
+    Input: skill = [1,2,3,4], mana = [1,2]
+    Output: 21
+
+    Constraints:
+    * n == skill.length
+    * m == mana.length
+    * 1 <= n, m <= 5000
+    * 1 <= mana[i], skill[i] <= 5000*/
+
+    long long minTime(vector<int>& skill, vector<int>& mana) {
+        int n = skill.size(), m = mana.size();
+        vector<long long> dp(n);
+        for (int j = 0; j < m; ++j) {
+            for (int i = 0; i < n; ++i) {
+                if (i) dp[i] = max(dp[i-1], dp[i]);
+                dp[i] += skill[i] * mana[j];
+            }
+            for (int i = n-1; i > 0; --i)
+                dp[i-1] = dp[i] - skill[i] * mana[j];
+        }
+        return dp[n-1];
+    }
+
+
+    /*3495. Minimum Operations to Make Array Elements Zero (Hard)
+    You are given a 2D array queries, where queries[i] is of the form [l, r].
+    Each queries[i] defines an array of integers nums consisting of elements
+    ranging from l to r, both inclusive. In one operation, you can:
+    * Select two integers a and b from the array.
+    * Replace them with floor(a / 4) and floor(b / 4).
+    Your task is to determine the minimum number of operations required to
+    reduce all elements of the array to zero for each query. Return the sum of
+    the results for all queries.
+
+    Example 1:
+    Input: queries = [[1,2],[2,4]]
+    Output: 3
+    Explanation: For queries[0]:
+                 - The initial array is nums = [1, 2].
+                 - In the first operation, select nums[0] and nums[1]. The array
+                   becomes [0, 0].
+                 - The minimum number of operations required is 1.
+                 For queries[1]:
+                 - The initial array is nums = [2, 3, 4].
+                 - In the first operation, select nums[0] and nums[2]. The array
+                   becomes [0, 3, 1].
+                 - In the second operation, select nums[1] and nums[2]. The
+                   array becomes [0, 0, 0].
+                 - The minimum number of operations required is 2.
+                 The output is 1 + 2 = 3.
+
+    Example 2:
+    Input: queries = [[2,6]]
+    Output: 4
+    Explanation: For queries[0]:
+                 - The initial array is nums = [2, 3, 4, 5, 6].
+                 - In the first operation, select nums[0] and nums[3]. The array
+                   becomes [0, 3, 4, 1, 6].
+                 - In the second operation, select nums[2] and nums[4]. The
+                   array becomes [0, 3, 1, 1, 1].
+                 - In the third operation, select nums[1] and nums[2]. The array
+                   becomes [0, 0, 0, 1, 1].
+                 - In the fourth operation, select nums[3] and nums[4]. The
+                   array becomes [0, 0, 0, 0, 0].
+                 - The minimum number of operations required is 4.
+                 The output is 4.
+
+    Constraints:
+    * 1 <= queries.length <= 10^5
+    * queries[i].length == 2
+    * queries[i] == [l, r]
+    * 1 <= l < r <= 10^9*/
+
+    long long minOperations(vector<vector<int>>& queries) {
+        long long ans = 0;
+        for (auto& q : queries) {
+            int l = q[0], r = q[1];
+            long long ops = 0;
+            for (int p = 1, step = 1; p <= 15; ++p, step *= 4) {
+                int lo = max(step, l), hi = min(4*step, r+1);
+                if (lo < hi) ops += (long long) p * (hi-lo);
+            }
+            ans += (ops+1)/2;
+        }
+        return ans;
+    }
 }
 
 
