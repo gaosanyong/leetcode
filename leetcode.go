@@ -2064,6 +2064,48 @@ func isAnagram(s string, t string) bool {
 }
 
 
+/*257. Binary Tree Paths (Easy)
+Given the root of a binary tree, return all root-to-leaf paths in any order. A
+leaf is a node with no children.
+
+Example 1:
+Input: root = [1,2,3,null,5]
+Output: ["1->2->5","1->3"]
+
+Example 2:
+Input: root = [1]
+Output: ["1"]
+
+Constraints:
+* The number of nodes in the tree is in the range [1, 100].
+* -100 <= Node.val <= 100*/
+
+func binaryTreePaths(root *TreeNode) []string {
+    ans := []string{}
+    vals := []int{}
+
+    var dfs func(node *TreeNode)
+    dfs = func(node *TreeNode) {
+        vals = append(vals, node.Val)
+        if node.Left == nil && node.Right == nil {
+            elem := strings.Trim(strings.Join(strings.Fields(fmt.Sprint(vals)), "->"), "[]")
+            ans = append(ans, elem)
+        } else {
+            if node.Left != nil {
+                dfs(node.Left)
+            }
+            if node.Right != nil {
+                dfs(node.Right)
+            }
+        }
+        vals = vals[:len(vals)-1]
+    }
+
+    dfs(root)
+    return ans
+}
+
+
 /*3492. Maximum Containers on a Ship (Easy)
 You are given a positive integer n representing an n x n cargo deck on a
 ship. Each cell on the deck can hold one container with a weight of exactly
