@@ -2681,6 +2681,42 @@ func guessNumber(n int) int {
 }
 
 
+/*383. Ransom Note (Easy)
+Given two strings ransomNote and magazine, return true if ransomNote can be
+constructed by using the letters from magazine and false otherwise. Each letter
+in magazine can only be used once in ransomNote.
+
+Example 1:
+Input: ransomNote = "a", magazine = "b"
+Output: false
+
+Example 2:
+Input: ransomNote = "aa", magazine = "ab"
+Output: false
+
+Example 3:
+Input: ransomNote = "aa", magazine = "aab"
+Output: true
+
+Constraints:
+* 1 <= ransomNote.length, magazine.length <= 10^5
+* ransomNote and magazine consist of lowercase English letters.*/
+
+func canConstruct(ransomNote string, magazine string) bool {
+    freq := make([]int, 26)
+    for _, ch := range magazine {
+        freq[ch - 'a']++
+    }
+    for _, ch := range ransomNote {
+        freq[ch - 'a']--
+        if freq[ch - 'a'] < 0 {
+            return false
+        }
+    }
+    return true
+}
+
+
 /*3492. Maximum Containers on a Ship (Easy)
 You are given a positive integer n representing an n x n cargo deck on a
 ship. Each cell on the deck can hold one container with a weight of exactly
