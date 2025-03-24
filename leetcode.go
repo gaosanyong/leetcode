@@ -1988,6 +1988,46 @@ func (this *MyQueue) Empty() bool {
 }
 
 
+/*234. Palindrome Linked List (Easy)
+Given the head of a singly linked list, return true if it is a palindrome or
+false otherwise.
+
+Example 1:
+Input: head = [1,2,2,1]
+Output: true
+
+Example 2:
+Input: head = [1,2]
+Output: false
+
+Constraints:
+* The number of nodes in the list is in the range [1, 10^5].
+* 0 <= Node.val <= 9
+
+Follow up: Could you do it in O(n) time and O(1) space?*/
+
+func isPalindrome(head *ListNode) bool {
+    fast := head
+    slow := head
+    for fast != nil && fast.Next != nil {
+        fast = fast.Next.Next
+        slow = slow.Next
+    }
+    var prev *ListNode = nil
+    for slow != nil {
+        prev, slow.Next, slow = slow, prev, slow.Next
+    }
+    for head != nil && prev != nil {
+        if head.Val != prev.Val {
+            return false
+        }
+        head = head.Next
+        prev = prev.Next
+    }
+    return true
+}
+
+
 /*3492. Maximum Containers on a Ship (Easy)
 You are given a positive integer n representing an n x n cargo deck on a
 ship. Each cell on the deck can hold one container with a weight of exactly
