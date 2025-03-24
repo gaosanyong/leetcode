@@ -2106,6 +2106,31 @@ func binaryTreePaths(root *TreeNode) []string {
 }
 
 
+/*258. Add Digits (Easy)
+Given an integer num, repeatedly add all its digits until the result has only
+one digit, and return it.
+
+Example 1:
+Input: num = 38
+Output: 2
+Explanation: The process is
+             38 --> 3 + 8 --> 11
+             11 --> 1 + 1 --> 2
+             Since 2 has only one digit, return it.
+
+Example 2:
+Input: num = 0
+Output: 0
+
+Constraints: 0 <= num <= 2^31 - 1
+
+Follow up: Could you do it without any loop/recursion in O(1) runtime?*/
+
+func addDigits(num int) int {
+    return (num-1) % 9 + 1
+}
+
+
 /*3492. Maximum Containers on a Ship (Easy)
 You are given a positive integer n representing an n x n cargo deck on a
 ship. Each cell on the deck can hold one container with a weight of exactly
