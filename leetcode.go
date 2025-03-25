@@ -2918,6 +2918,40 @@ func sumOfLeftLeaves(root *TreeNode) int {
 }
 
 
+/*405. Convert a Number to Hexadecimal (Easy)
+Given a 32-bit integer num, return a string representing its hexadecimal
+representation. For negative integers, two’s complement method is used. All the
+letters in the answer string should be lowercase characters, and there should
+not be any leading zeros in the answer except for the zero itself. Note: You are
+not allowed to use any built-in library method to directly solve this problem.
+
+Example 1:
+Input: num = 26
+Output: "1a"
+
+Example 2:
+Input: num = -1
+Output: "ffffffff"
+
+Constraints: -2^31 <= num <= 2^31 - 1*/
+
+func toHex(num int) string {
+    if num == 0 {
+        return "0"
+    }
+    if num < 0 {
+        num += 0xffffffff + 1
+    }
+    ans := []byte{}
+    digits := "0123456789abcdef"
+    for ; num > 0; num /= 16 {
+        ans = append(ans, digits[num%16])
+    }
+    slices.Reverse(ans)
+    return string(ans)
+}
+
+
 /*409. Longest Palindrome (Easy)
 Given a string s which consists of lowercase or uppercase letters, return the
 length of the longest palindrome that can be built with those letters. Letters
