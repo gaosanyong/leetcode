@@ -2995,6 +2995,48 @@ func fizzBuzz(n int) []string {
 }
 
 
+/*415. Add Strings (Easy)
+Given two non-negative integers, num1 and num2 represented as string, return the
+sum of num1 and num2 as a string. You must solve the problem without using any
+built-in library for handling large integers (such as BigInteger). You must also
+not convert the inputs to integers directly.
+
+Example 1:
+Input: num1 = "11", num2 = "123"
+Output: "134"
+
+Example 2:
+Input: num1 = "456", num2 = "77"
+Output: "533"
+
+Example 3:
+Input: num1 = "0", num2 = "0"
+Output: "0"
+
+Constraints:
+* 1 <= num1.length, num2.length <= 10^4
+* num1 and num2 consist of only digits.
+* num1 and num2 don't have any leading zeros except for the zero itself.*/
+
+func addStrings(num1 string, num2 string) string {
+    n1, n2 := len(num1), len(num2)
+    ans := []byte{}
+    carry := 0
+    for i := 0; i < n1 || i < n2 || carry > 0; i++ {
+        if i < n1 {
+            carry += int(num1[n1-i-1] - '0')
+        }
+        if i < n2 {
+            carry += int(num2[n2-i-1] - '0')
+        }
+        ans = append(ans, byte(carry%10 + '0'))
+        carry /= 10
+    }
+    slices.Reverse(ans)
+    return string(ans)
+}
+
+
 /*3492. Maximum Containers on a Ship (Easy)
 You are given a positive integer n representing an n x n cargo deck on a
 ship. Each cell on the deck can hold one container with a weight of exactly
