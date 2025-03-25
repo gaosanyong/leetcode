@@ -2918,6 +2918,42 @@ func sumOfLeftLeaves(root *TreeNode) int {
 }
 
 
+/*409. Longest Palindrome (Easy)
+Given a string s which consists of lowercase or uppercase letters, return the
+length of the longest palindrome that can be built with those letters. Letters
+are case sensitive, for example, "Aa" is not considered a palindrome.
+
+Example 1:
+Input: s = "abccccdd"
+Output: 7
+Explanation: One longest palindrome that can be built is "dccaccd", whose length
+             is 7.
+
+Example 2:
+Input: s = "a"
+Output: 1
+Explanation: The longest palindrome that can be built is "a", whose length is 1.
+
+Constraints:
+* 1 <= s.length <= 2000
+* s consists of lowercase and/or uppercase English letters only.*/
+
+func longestPalindrome(s string) int {
+    freq := map[rune]int{}
+    for _, ch := range s {
+        freq[ch]++
+    }
+    ans := 0
+    for _, x := range freq {
+        ans += x/2*2
+        if ans & 1 == 0 && x & 1 == 1 {
+            ans++
+        }
+    }
+    return ans
+}
+
+
 /*3492. Maximum Containers on a Ship (Easy)
 You are given a positive integer n representing an n x n cargo deck on a
 ship. Each cell on the deck can hold one container with a weight of exactly
