@@ -3013,7 +3013,8 @@ func fizzBuzz(n int) []string {
     ans := []string{}
     for x := 1; x <= n; x++ {
         var elem string
-        switch true {
+        // naked switch
+        switch {
             case x % 3 == 0 && x % 5 == 0:
                 elem = "FizzBuzz"
             case x % 3 == 0:
