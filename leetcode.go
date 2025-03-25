@@ -1445,11 +1445,7 @@ Constraints: 1 <= n <= 2^31 - 1
 Follow up: If this function is called many times, how would you optimize it?*/
 
 func hammingWeight(n int) int {
-    ans := 0
-    for ; n > 0; n &= n-1 {
-        ans++
-    }
-    return ans
+    return bits.OnesCount(uint(n))
 }
 
 
