@@ -2696,9 +2696,9 @@ func guessNumber(n int) int {
     for lo <= hi {
         mid := (lo+hi) / 2
         switch guess(mid) {
-            case -1: hi = mid-1
-            case 1: lo = mid+1
-            default: return mid
+        case -1: hi = mid-1
+        case 1: lo = mid+1
+        default: return mid
         }
     }
     return lo
@@ -3015,14 +3015,14 @@ func fizzBuzz(n int) []string {
         var elem string
         // naked switch
         switch {
-            case x % 3 == 0 && x % 5 == 0:
-                elem = "FizzBuzz"
-            case x % 3 == 0:
-                elem = "Fizz"
-            case x % 5 == 0:
-                elem = "Buzz"
-            default:
-                elem = strconv.Itoa(x)
+        case x % 3 == 0 && x % 5 == 0:
+            elem = "FizzBuzz"
+        case x % 3 == 0:
+            elem = "Fizz"
+        case x % 5 == 0:
+            elem = "Buzz"
+        default:
+            elem = strconv.Itoa(x)
         }
         ans = append(ans, elem)
     }
