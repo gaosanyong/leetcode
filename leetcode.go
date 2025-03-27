@@ -3346,6 +3346,38 @@ func licenseKeyFormatting(s string, k int) string {
 }
 
 
+/*485. Max Consecutive Ones (Easy)
+Given a binary array nums, return the maximum number of consecutive 1's in the
+array.
+
+Example 1:
+Input: nums = [1,1,0,1,1,1]
+Output: 3
+Explanation: The first two digits or the last three digits are consecutive 1s.
+             The maximum number of consecutive 1s is 3.
+
+Example 2:
+Input: nums = [1,0,1,1,0,1]
+Output: 2
+
+Constraints:
+* 1 <= nums.length <= 10^5
+* nums[i] is either 0 or 1.*/
+
+func findMaxConsecutiveOnes(nums []int) int {
+    ans, cnt := 0, 0
+    for _, x := range nums {
+        if x == 0 {
+            cnt = 0
+        } else {
+            cnt++
+            ans = max(ans, cnt)
+        }
+    }
+    return ans
+}
+
+
 /*3492. Maximum Containers on a Ship (Easy)
 You are given a positive integer n representing an n x n cargo deck on a
 ship. Each cell on the deck can hold one container with a weight of exactly
