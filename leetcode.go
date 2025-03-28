@@ -3673,6 +3673,24 @@ func findMode(root *TreeNode) []int {
 }
 
 
+/*504. Base 7 (Easy)
+Given an integer num, return a string of its base 7 representation.
+
+Example 1:
+Input: num = 100
+Output: "202"
+
+Example 2:
+Input: num = -7
+Output: "-10"
+
+Constraints: -10^7 <= num <= 10^7*/
+
+func convertToBase7(num int) string {
+    return strconv.FormatInt(int64(num), 7)
+}
+
+
 /*506. Relative Ranks (Easy)
 You are given an integer array score of size n, where score[i] is the score of
 the ith athlete in a competition. All the scores are guaranteed to be unique.
