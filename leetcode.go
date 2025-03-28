@@ -3201,6 +3201,46 @@ func findContentChildren(g []int, s []int) int {
 }
 
 
+/*459. Repeated Substring Pattern (Easy)
+Given a string s, check if it can be constructed by taking a substring of it and
+appending multiple copies of the substring together.
+
+Example 1:
+Input: s = "abab"
+Output: true
+Explanation: It is the substring "ab" twice.
+
+Example 2:
+Input: s = "aba"
+Output: false
+
+Example 3:
+Input: s = "abcabcabcabc"
+Output: true
+Explanation: It is the substring "abc" four times or the substring "abcabc"
+             twice.
+
+Constraints:
+* 1 <= s.length <= 10^4
+* s consists of lowercase English letters.*/
+
+func repeatedSubstringPattern(s string) bool {
+    n := len(s)
+    lps := []int{0}
+    k := 0
+    for i := 1; i < n; i++ {
+        for k > 0 && s[k] != s[i] {
+            k = lps[k-1]
+        }
+        if s[k] == s[i] {
+            k++
+        }
+        lps = append(lps, k)
+    }
+    return lps[n-1] > 0 && n % (n - lps[n-1]) == 0
+}
+
+
 /*461. Hamming Distance (Easy)
 The Hamming distance between two integers is the number of positions at which
 the corresponding bits are different. Given two integers x and y, return the
