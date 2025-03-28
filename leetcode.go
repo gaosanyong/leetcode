@@ -3743,6 +3743,35 @@ func findRelativeRanks(score []int) []string {
 }
 
 
+/*507. Perfect Number (Easy)
+A perfect number is a positive integer that is equal to the sum of its positive
+divisors, excluding the number itself. A divisor of an integer x is an integer
+that can divide x evenly. Given an integer n, return true if n is a perfect
+number, otherwise return false.
+
+Example 1:
+Input: num = 28
+Output: true
+Explanation: 28 = 1 + 2 + 4 + 7 + 14
+             1, 2, 4, 7, and 14 are all divisors of 28.
+
+Example 2:
+Input: num = 7
+Output: false
+
+Constraints: 1 <= num <= 10^8*/
+
+func checkPerfectNumber(num int) bool {
+    total := 0
+    for x := 1; x*x <= num; x++ {
+        if num % x == 0 {
+            total += x + num/x
+        }
+    }
+    return 1 < num && total == 2*num
+}
+
+
 /*3492. Maximum Containers on a Ship (Easy)
 You are given a positive integer n representing an n x n cargo deck on a
 ship. Each cell on the deck can hold one container with a weight of exactly
