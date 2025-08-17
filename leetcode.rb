@@ -535,3 +535,33 @@ def add_binary(a, b)
     end
     return ans.reverse.map(&:to_s).join
 end
+
+
+=begin
+69. Sqrt(x) (Easy)
+Given a non-negative integer x, return the square root of x rounded down to the
+nearest integer. The returned integer should be non-negative as well. You must
+not use any built-in exponent function or operator. For example, do not use
+pow(x, 0.5) in c++ or x ** 0.5 in python.
+
+Example 1:
+Input: x = 4
+Output: 2
+Explanation: The square root of 4 is 2, so we return 2.
+
+Example 2:
+Input: x = 8
+Output: 2
+Explanation: The square root of 8 is 2.82842..., and since we round it down to
+             the nearest integer, 2 is returned.
+
+Constraints: 0 <= x <= 2^31 - 1
+=end
+
+def my_sqrt(x)
+    ans = x
+    while ans * ans > x
+        ans = (ans + x / ans)/2
+    end
+    return ans
+end
