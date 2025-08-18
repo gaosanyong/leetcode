@@ -1056,8 +1056,8 @@ end
 
 =begin
 125. Valid Palindrome (Easy)
-A phrase is a palindrome if, after converting all uppercase letters into 
-lowercase letters and removing all non-alphanumeric characters, it reads the 
+A phrase is a palindrome if, after converting all uppercase letters into
+lowercase letters and removing all non-alphanumeric characters, it reads the
 same forward and backward. Alphanumeric characters include letters and numbers.
 Given a string s, return true if it is a palindrome, or false otherwise.
 
@@ -1075,7 +1075,7 @@ Example 3:
 Input: s = " "
 Output: true
 Explanation: s is an empty string "" after removing non-alphanumeric characters.
-             Since an empty string reads the same forward and backward, it is a 
+             Since an empty string reads the same forward and backward, it is a
              palindrome.
 
 Constraints:
@@ -1091,8 +1091,8 @@ end
 
 =begin
 136. Single Number (Easy)
-Given a non-empty array of integers nums, every element appears twice except for 
-one. Find that single one. You must implement a solution with a linear runtime 
+Given a non-empty array of integers nums, every element appears twice except for
+one. Find that single one. You must implement a solution with a linear runtime
 complexity and use only constant extra space.
 
 Example 1:
@@ -1110,7 +1110,7 @@ Output: 1
 Constraints:
 * 1 <= nums.length <= 3 * 10^4
 * -3 * 104 <= nums[i] <= 3 * 10^4
-* Each element in the array appears twice except for one element which appears 
+* Each element in the array appears twice except for one element which appears
   only once.
 =end
 
@@ -1121,23 +1121,23 @@ end
 
 =begin
 141. Linked List Cycle (Easy)
-Given head, the head of a linked list, determine if the linked list has a cycle 
-in it. There is a cycle in a linked list if there is some node in the list that 
-can be reached again by continuously following the next pointer. Internally, pos 
-is used to denote the index of the node that tail's next pointer is connected to. 
-Note that pos is not passed as a parameter. Return true if there is a cycle in 
+Given head, the head of a linked list, determine if the linked list has a cycle
+in it. There is a cycle in a linked list if there is some node in the list that
+can be reached again by continuously following the next pointer. Internally, pos
+is used to denote the index of the node that tail's next pointer is connected to.
+Note that pos is not passed as a parameter. Return true if there is a cycle in
 the linked list. Otherwise, return false.
 
 Example 1:
 Input: head = [3,2,0,-4], pos = 1
 Output: true
-Explanation: There is a cycle in the linked list, where the tail connects to the 
+Explanation: There is a cycle in the linked list, where the tail connects to the
              1st node (0-indexed).
 
 Example 2:
 Input: head = [1,2], pos = 0
 Output: true
-Explanation: There is a cycle in the linked list, where the tail connects to the 
+Explanation: There is a cycle in the linked list, where the tail connects to the
              0th node.
 
 Example 3:
@@ -1154,19 +1154,19 @@ Follow up: Can you solve it using O(1) (i.e. constant) memory?
 =end
 
 def hasCycle(head)
-    fast = slow = head 
-    while fast && fast.next 
+    fast = slow = head
+    while fast && fast.next
         fast = fast.next.next
         slow = slow.next
-        return true if fast == slow 
-    end 
-    return false 
+        return true if fast == slow
+    end
+    return false
 end
 
 
 =begin
 144. Binary Tree Preorder Traversal (Easy)
-Given the root of a binary tree, return the preorder traversal of its nodes' 
+Given the root of a binary tree, return the preorder traversal of its nodes'
 values.
 
 Example 1:
@@ -1205,5 +1205,5 @@ def preorder_traversal(root)
             stack.push(node.left) if node.left
         end
     end
-    return ans 
+    return ans
 end
