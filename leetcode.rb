@@ -2232,9 +2232,5 @@ Follow up: Could you implement a solution using only O(1) extra space
 =end
 
 def missing_number(nums)
-    mask = (0..nums.size).inject {|s, x| s ^ x}
-    nums.each do |x|
-        mask ^= x
-    end
-    return mask
+    return (0..nums.size).inject(&:^) ^ nums.inject(&:^)
 end
