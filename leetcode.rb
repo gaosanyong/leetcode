@@ -621,7 +621,7 @@ Constraints:
 
 def delete_duplicates(head)
     node = head
-    while node && node.next
+    while node&.next
         if node.val == node.next.val
             node.next = node.next.next
         else
