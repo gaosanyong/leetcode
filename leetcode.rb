@@ -2161,3 +2161,35 @@ Follow up: Could you do it without any loop/recursion in O(1) runtime?
 def add_digits(num)
     return num == 0 ? 0 : (num-1)%9 + 1
 end
+
+
+=begin
+263. Ugly Number (Easy)
+An ugly number is a positive integer which does not have a prime factor other
+than 2, 3, and 5. Given an integer n, return true if n is an ugly number.
+
+Example 1:
+Input: n = 6
+Output: true
+Explanation: 6 = 2 × 3
+
+Example 2:
+Input: n = 1
+Output: true
+Explanation: 1 has no prime factors.
+
+Example 3:
+Input: n = 14
+Output: false
+Explanation: 14 is not ugly since it includes the prime factor 7.
+
+Constraints: -2^31 <= n <= 2^31 - 1
+=end
+
+def is_ugly(n)
+    return false if n <= 0
+    [2,3,5].each do |p|
+        n /= p while n % p == 0
+    end
+    return n == 1
+end
