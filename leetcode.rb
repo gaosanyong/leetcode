@@ -2074,3 +2074,31 @@ def is_palindrome(head)
     end
     return !prev
 end
+
+
+=begin
+242. Valid Anagram (Easy)
+Given two strings s and t, return true if t is an anagram of s, and false
+otherwise.
+
+Example 1:
+Input: s = "anagram", t = "nagaram"
+Output: true
+
+Example 2:
+Input: s = "rat", t = "car"
+Output: false
+
+Constraints:
+* 1 <= s.length, t.length <= 5 * 104
+* s and t consist of lowercase English letters.
+
+Follow up: What if the inputs contain Unicode characters? How would you adapt
+           your solution to such a case?
+=end
+
+def is_anagram(s, t)
+    freq = s.chars.inject(Hash.new(0)) { |f, ch| f[ch] += 1; f }
+    freq = t.chars.inject(freq) { |f, ch| f[ch] -= 1; f }
+    freq.values.all?(&:zero?)
+end
