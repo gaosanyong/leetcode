@@ -2651,3 +2651,36 @@ Constraints:
 def guessNumber(n)
     (1..n).bsearch {guess _1}
 end
+
+
+=begin
+383. Ransom Note (Easy)
+Given two strings ransomNote and magazine, return true if ransomNote can be
+constructed by using the letters from magazine and false otherwise. Each letter
+in magazine can only be used once in ransomNote.
+
+Example 1:
+Input: ransomNote = "a", magazine = "b"
+Output: false
+
+Example 2:
+Input: ransomNote = "aa", magazine = "ab"
+Output: false
+
+Example 3:
+Input: ransomNote = "aa", magazine = "aab"
+Output: true
+
+Constraints:
+* 1 <= ransomNote.length, magazine.length <= 10^5
+* ransomNote and magazine consist of lowercase English letters.
+=end
+
+def can_construct(ransom_note, magazine)
+    freq = magazine.chars.tally
+    ransom_note.chars.each do |ch|
+        return false if freq.fetch(ch, 0) == 0
+        freq[ch] -= 1
+    end
+    return true
+end
