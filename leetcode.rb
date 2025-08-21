@@ -2263,7 +2263,7 @@ Constraints: 1 <= bad <= n <= 2^31 - 1
 =end
 
 def first_bad_version(n)
-    (1..n).bsearch(&method(:is_bad_version))
+    (1..n).bsearch {is_bad_version _1}
 end
 
 
