@@ -2580,10 +2580,10 @@ Follow up:
 =end
 
 def intersect(nums1, nums2)
-    freq = nums1.inject(Hash.new(0)) { |f, x| f[x] += 1; f }
+    freq = nums1.tally
     ans = []
     nums2.each do |x|
-        if freq[x] > 0
+        if freq.fetch(x, 0) > 0
             ans << x
             freq[x] -= 1
         end
