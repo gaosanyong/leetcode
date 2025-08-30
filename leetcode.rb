@@ -3508,3 +3508,35 @@ def find_relative_ranks(score)
     medal = ["Gold Medal", "Silver Medal", "Bronze Medal"]
     score.map{|x| (v = hs[x]) < 3 ? medal[v] : (v+1).to_s}
 end
+
+
+=begin
+507. Perfect Number (Easy)
+A perfect number is a positive integer that is equal to the sum of its positive
+divisors, excluding the number itself. A divisor of an integer x is an integer
+that can divide x evenly. Given an integer n, return true if n is a perfect
+number, otherwise return false.
+
+Example 1:
+Input: num = 28
+Output: true
+Explanation: 28 = 1 + 2 + 4 + 7 + 14
+             1, 2, 4, 7, and 14 are all divisors of 28.
+
+Example 2:
+Input: num = 7
+Output: false
+
+Constraints: 1 <= num <= 10^8
+=end
+
+def check_perfect_number(num)
+    total = num > 1 ? 1 : 0
+    (2..Math.sqrt(num)).each do |x|
+        if num % x == 0
+            total += x
+            total += num/x if x != num/x
+        end
+    end
+    total == num
+end
