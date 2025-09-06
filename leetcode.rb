@@ -4646,3 +4646,31 @@ Constraints:
 def find_length_of_lcis(nums)
     nums.chunk_while(&:<).map(&:size).max
 end
+
+
+=begin
+680. Valid Palindrome II (Easy)
+Given a string s, return true if the s can be palindrome after deleting at most
+one character from it.
+
+Example 1:
+Input: s = "aba"
+Output: true
+
+Example 2:
+Input: s = "abca"
+Output: true
+Explanation: You could delete the character 'c'.
+
+Example 3:
+Input: s = "abc"
+Output: false
+
+Constraints:
+* 1 <= s.length <= 10^5
+* s consists of lowercase English letters.
+=end
+
+def valid_palindrome(s)
+    s.each_char.tally.values.count {|x| x.odd?} <= 2
+end
