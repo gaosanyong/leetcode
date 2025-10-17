@@ -5783,6 +5783,63 @@ end
 
 
 =begin
+844. Backspace String Compare (Easy)
+Given two strings s and t, return true if they are equal when both are typed
+into empty text editors. '#' means a backspace character. Note that after
+backspacing an empty text, the text will continue empty.
+
+Example 1:
+Input: s = "ab#c", t = "ad#c"
+Output: true
+Explanation: Both s and t become "ac".
+
+Example 2:
+Input: s = "ab##", t = "c#d#"
+Output: true
+Explanation: Both s and t become "".
+
+Example 3:
+Input: s = "a#c", t = "b"
+Output: false
+Explanation: s becomes "c" while t becomes "b".
+
+Constraints:
+* 1 <= s.length, t.length <= 200
+* s and t only contain lowercase letters and '#' characters.
+
+Follow up: Can you solve it in O(n) time and O(1) space?
+=end
+
+def backspace_compare(s, t)
+    i, j = s.size-1, t.size-1
+    cs = ct = 0
+    while 0 <= i || 0 <= j
+        while 0 <= i && (s[i] == '#' || cs > 0)
+            if s[i] == '#'
+                cs += 1
+            else
+                cs -= 1
+            end
+            i -= 1
+        end
+        while 0 <= j && (t[j] == '#' || ct > 0)
+            if t[j] == '#'
+                ct += 1
+            else
+                ct -= 1
+            end
+            j -= 1
+        end
+        puts "#{i} #{j}"
+        return false if i < 0 && 0 <= j || 0 <= i && j < 0 || 0 <= i && 0 <= j && s[i] != t[j]
+        i -= 1
+        j -= 1
+    end
+    true
+end
+
+
+=begin
 859. Buddy Strings (Easy)
 Given two strings s and goal, return true if you can swap two letters in s
 so the result is equal to goal, otherwise, return false. Swapping letters
